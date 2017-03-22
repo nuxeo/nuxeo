@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriter;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
-import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -107,7 +106,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
     protected void writeScalarProperty(JsonGenerator jg, Property prop) throws IOException {
         Type type = prop.getType();
         Object value = prop.getValue();
-        if (!fetchProperty(jg, prop.getType().getObjectResolver(), value, prop.getPath())) {
+        if (!fetchProperty(jg, prop.getType().getObjectResolver(), value, prop.getXPath())) {
             writeScalarPropertyValue(jg, ((SimpleType) type).getPrimitiveType(), value);
         }
     }
@@ -137,12 +136,11 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
         }
         boolean fetched = false;
         if (resolver != null) {
-            String propertyPath = path.replaceFirst("/", "");
-            String genericPropertyPath = propertyPath.replaceAll("\\[[0-9]*\\]", "");
+            String genericPropertyPath = path.replaceAll("/[0-9]*/", "/*/");
             Set<String> fetchElements = ctx.getFetched(ENTITY_TYPE);
             boolean fetch = false;
             for (String fetchElement : fetchElements) {
-                if ("properties".equals(fetchElement) || propertyPath.startsWith(fetchElement)
+                if ("properties".equals(fetchElement) || path.startsWith(fetchElement)
                         || genericPropertyPath.startsWith(fetchElement)) {
                     fetch = true;
                     break;
@@ -175,7 +173,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
             }
             Type itemType = ((ListType) prop.getType()).getFieldType();
             ObjectResolver resolver = itemType.getObjectResolver();
-            String path = prop.getPath();
+            String path = prop.getXPath();
             for (Object o : ar) {
                 if (!fetchProperty(jg, resolver, o, path)) {
                     writeScalarPropertyValue(jg, ((SimpleType) itemType).getPrimitiveType(), o);
@@ -258,7 +256,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
         }
         DownloadService downloadService = Framework.getService(DownloadService.class);
 
-        String xpath = ComplexTypeImpl.canonicalXPath(prop.getPath().substring(1));
+        String xpath = prop.getXPath();
         // if no prefix, use schema name as prefix:
         if (!xpath.contains(":")) {
             xpath = prop.getSchema().getName() + ":" + xpath;

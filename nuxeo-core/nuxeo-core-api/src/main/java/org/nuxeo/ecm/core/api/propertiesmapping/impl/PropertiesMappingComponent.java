@@ -80,7 +80,7 @@ public class PropertiesMappingComponent extends DefaultComponent implements Prop
                         String.format("Invalid mapping. Cannot map %s on type %s ", sourceType, targetType));
             }
 
-            targetDoc.setPropertyValue(targetProperty.getPath(), sourceProperty.getValue());
+            targetDoc.setPropertyValue(targetProperty.getXPath(), sourceProperty.getValue());
         }
         session.saveDocument(targetDoc);
     }

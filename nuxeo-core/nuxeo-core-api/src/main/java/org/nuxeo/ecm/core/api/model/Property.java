@@ -320,12 +320,32 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     String getName();
 
     /**
+     * Gets the xpath of this property.
+     * <p>
+     * The xpath is of the form {@code pref:foo/mylist/123/elem}, of note:
+     * <ul>
+     * <li>there is no initial {@code /}
+     * <li>the schema prefix is only present if a prefix is configured for the base property's schema
+     * <li>list elements indexes start at 0
+     * <li>list elements aren't using the old syntax {@code foo/bar[123]/baz} but the new syntax {@code foo/123/baz}
+     * </ul>
+     *
+     * @return the xpath
+     * @since 9.1
+     */
+    String getXPath();
+
+    /**
      * Gets the path of this property relative to the owner document.
      * <p>
      * The path for top level properties is the same to the property name.
+     * <p>
+     * NOTE the path returned contains an initial {@code /} and expresses list indexes using an old syntax
      *
      * @return the path
+     * @deprecated since 9.1 as it's cumbersome to use; use {@link #getXPath} instead
      */
+    @Deprecated
     String getPath();
 
     /**

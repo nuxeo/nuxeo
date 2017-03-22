@@ -90,7 +90,7 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
         if (isNormalized(value)) {
             return (Serializable) value;
         }
-        throw new PropertyConversionException(value.getClass(), Map.class, getPath());
+        throw new PropertyConversionException(value.getClass(), Map.class, getXPath());
     }
 
     @Override
@@ -204,7 +204,7 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
             return;
         }
         if (isReadOnly()) {
-            throw new ReadOnlyPropertyException(getPath());
+            throw new ReadOnlyPropertyException(getXPath());
         }
         if (value == null) {
             remove();
@@ -215,7 +215,7 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
             return; // TODO how to treat nulls?
         }
         if (!(value instanceof Map)) {
-            throw new InvalidPropertyValueException(getPath());
+            throw new InvalidPropertyValueException(getXPath());
         }
         Map<String, Object> map = (Map<String, Object>) value;
         for (Entry<String, Object> entry : map.entrySet()) {

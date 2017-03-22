@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
-import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
@@ -346,10 +345,12 @@ public class JSONPropertyWriter {
     private static String getBlobUrl(Property prop, String filesBaseUrl)
             throws UnsupportedEncodingException, PropertyException {
         StringBuilder blobUrlBuilder = new StringBuilder(filesBaseUrl);
-        blobUrlBuilder.append(prop.getSchema().getName());
-        blobUrlBuilder.append(":");
-        String canonicalXPath = ComplexTypeImpl.canonicalXPath(prop.getPath().substring(1));
-        blobUrlBuilder.append(canonicalXPath);
+        String xpath = prop.getXPath();
+        if (!xpath.contains(":")) {
+            // if no prefix, use schema name as prefix:
+            xpath = prop.getSchema().getName() + ":" + xpath;
+        }
+        blobUrlBuilder.append(xpath);
         blobUrlBuilder.append("/");
         String filename = ((Blob) prop.getValue()).getFilename();
         if (filename != null) {

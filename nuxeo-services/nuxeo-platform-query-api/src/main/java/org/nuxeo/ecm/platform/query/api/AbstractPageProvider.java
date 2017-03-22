@@ -1038,10 +1038,10 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
                             && !SKIPPED_SCHEMAS_FOR_SEARCHFIELD.contains(prop.getSchema().getNamespace().prefix)) {
                         if (prop.isList()) {
                             if (ArrayUtils.isNotEmpty(prop.getValue(Object[].class))) {
-                                searchFields.add(prop.getPath());
+                                searchFields.add(prop.getXPath());
                             }
                         } else {
-                            searchFields.add(prop.getPath());
+                            searchFields.add(prop.getXPath());
                         }
                     }
                 }

@@ -147,7 +147,7 @@ public class ExternalBlobProperty extends MapProperty {
             return;
         }
         if (isReadOnly()) {
-            throw new ReadOnlyPropertyException(getPath());
+            throw new ReadOnlyPropertyException(getXPath());
         }
         if (value == null) {
             remove();
@@ -171,7 +171,7 @@ public class ExternalBlobProperty extends MapProperty {
             return;
         }
         if (!(value instanceof Map)) {
-            throw new InvalidPropertyValueException(getPath());
+            throw new InvalidPropertyValueException(getXPath());
         }
         Map<String, Object> map = (Map<String, Object>) value;
         for (Entry<String, Object> entry : map.entrySet()) {

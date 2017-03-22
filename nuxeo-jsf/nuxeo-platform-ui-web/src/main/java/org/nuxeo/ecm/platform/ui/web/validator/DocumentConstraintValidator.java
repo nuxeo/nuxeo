@@ -196,7 +196,7 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
             xpath = dc.getSchema() + ":" + prop;
             field = getField(xpath);
         } else if (Property.class.isAssignableFrom(baseClass)) {
-            xpath = ((Property) base).getPath() + "/" + prop;
+            xpath = ((Property) base).getXPath() + "/" + prop;
             field = getField(((Property) base).getField(), prop);
         } else if (ProtectedEditableModel.class.isAssignableFrom(baseClass)) {
             ProtectedEditableModel model = (ProtectedEditableModel) base;
