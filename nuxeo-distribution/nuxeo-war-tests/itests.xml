@@ -18,6 +18,7 @@
 
     <antcall target="create-pack"/>
 
+    <var name="server.gav" unset="true"/>
     <property name="server.gav" value="org.apache.tomcat:tomcat::zip"/>
     <antcall target="download"/>
     <antcall target="deploy-war"/>
@@ -27,7 +28,9 @@
 
   <target name="start" depends="_init,stop,start-unix,start-windows">
     <!-- Sadly, Tomcat startup return too quickly -->
-    <sleep seconds="60"/>
+    <waitfor maxwait="120" maxwaitunit="second">
+      <http url="http://localhost:8080/nuxeo"/>
+    </waitfor>
   </target>
 
   <target name="stop" depends="_init,_use-catalina,stop-unix,stop-windows">
