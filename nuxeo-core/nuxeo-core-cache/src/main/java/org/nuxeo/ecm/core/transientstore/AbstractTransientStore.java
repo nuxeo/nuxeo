@@ -36,6 +36,7 @@ import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
@@ -62,12 +63,19 @@ public abstract class AbstractTransientStore implements TransientStore {
     @Override
     public void init(TransientStoreConfig config) {
         this.config = config;
-
-        // initialize caching directory
-        File transienStoreHome = new File(Environment.getDefault().getData(), "transientstores");
-        File data = new File(transienStoreHome, config.getName());
+        File data = getDataDir(config);
         data.mkdirs();
         cacheDir = data.getAbsoluteFile();
+    }
+
+    private File getDataDir(TransientStoreConfig config) {
+        String dataDirPath = config.getDataDir();
+        if (StringUtils.isBlank(dataDirPath)) {
+            File transienStoreHome = new File(Environment.getDefault().getData(), "transientstores");
+            return new File(transienStoreHome, config.getName());
+        } else {
+            return new File(dataDirPath);
+        }
     }
 
     @Override
@@ -279,6 +287,10 @@ public abstract class AbstractTransientStore implements TransientStore {
         log.debug("Removing all entries from TransientStore " + config.getName());
         removeAllEntries();
         doGC();
+    }
+
+    public File getCacheDir() {
+        return cacheDir;
     }
 
 }

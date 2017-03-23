@@ -35,6 +35,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -42,6 +43,7 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.transientstore.AbstractTransientStore;
 import org.nuxeo.ecm.core.transientstore.SimpleTransientStore;
+import org.nuxeo.ecm.core.transientstore.TransientStorageComponent;
 import org.nuxeo.ecm.core.transientstore.TransientStorageGCTrigger;
 import org.nuxeo.ecm.core.transientstore.api.MaximumTransientSpaceExceeded;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
@@ -50,11 +52,17 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
+
+import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(TransientStoreFeature.class)
 @Deploy("org.nuxeo.ecm.core.event")
 public class TransientStorageComplianceFixture {
+
+    @Inject
+    RuntimeHarness harness;
 
     @Test
     public void verifyServiceDeclared() throws Exception {
@@ -336,6 +344,28 @@ public class TransientStorageComplianceFixture {
 
         // check no longer there
         assertFalse(ts.exists("XXX"));
+    }
+
+    @Test
+    public void verifyStorePathCanBeSpecified() throws Exception {
+        Framework.getProperties().setProperty("nuxeo.data.dir", Environment.getDefault().getData().getAbsolutePath());
+
+        TransientStoreService tss = Framework.getService(TransientStoreService.class);
+
+        // Verify default behavior (store cache dir is in ${nuxeo.data.dir}/transientstores/{name}
+        AbstractTransientStore ts = (AbstractTransientStore) tss.getStore("microStore");
+        assertEquals(Framework.expandVars("${nuxeo.data.dir}/transientstores/microStore"),
+                ts.getCacheDir().getAbsolutePath());
+
+        // Verify when a path is given
+        harness.deployContrib("org.nuxeo.ecm.core.cache.test", "testpath-store.xml");
+        // Call to register the cache.
+        ((TransientStorageComponent)tss).applicationStarted(null);
+
+        ts = (SimpleTransientStore) tss.getStore("testPath");
+        assertEquals(Framework.expandVars("${nuxeo.data.dir}/test"),
+                ts.getCacheDir().getAbsolutePath());
+
     }
 
 }
