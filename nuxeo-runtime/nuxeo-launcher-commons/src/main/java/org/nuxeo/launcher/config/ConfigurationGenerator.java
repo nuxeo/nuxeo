@@ -47,9 +47,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -57,6 +55,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -213,6 +213,14 @@ public class ConfigurationGenerator {
      * @since 8.1
      */
     public static final String PARAM_MONGODB_SERVER = "nuxeo.mongodb.server";
+
+    /**
+     * Catch values like ${env:PARAM_KEY:defaultValue}
+     *
+     * @since 9.1
+     */
+    private static final Pattern ENV_VALUE_PATTERN = Pattern.compile(
+            "\\$\\{env(?<boolean>\\?\\?)?:(?<envparam>\\w*)(:?(?<defaultvalue>.*?)?)?\\}");
 
     /**
      * Keys which value must be displayed thoughtfully
@@ -634,9 +642,45 @@ public class ConfigurationGenerator {
      */
     protected HashMap<String, String> evalDynamicProperties() throws ConfigurationException {
         HashMap<String, String> newParametersToSave = new HashMap<>();
+        evalEnvironmentVariables(newParametersToSave);
         evalLoopbackURL();
         evalServerStatusKey(newParametersToSave);
         return newParametersToSave;
+    }
+
+    /**
+     * Expand environment variable for properties values of the form ${env:MY_VAR}.
+     *
+     * @since 9.1
+     */
+    protected void evalEnvironmentVariables(Map<String, String> newParametersToSave) {
+        for (Object keyObject : userConfig.keySet()) {
+            String key = (String) keyObject;
+            String value = userConfig.getProperty(key);
+
+            Matcher matcher = ENV_VALUE_PATTERN.matcher(value);
+            StringBuffer sb = new StringBuffer();
+            while (matcher.find()) {
+                boolean booleanValue = "??".equals(matcher.group("boolean"));
+                String envVarName = matcher.group("envparam");
+                String defaultValue = matcher.group("defaultvalue");
+
+                String envValue = getEnvironmentVariableValue(envVarName);
+
+                String result;
+                if (booleanValue) {
+                    result = StringUtils.isBlank(envValue) ? "false" : "true";
+                } else {
+                    result = StringUtils.isBlank(envValue) ? defaultValue : envValue;
+                }
+                matcher.appendReplacement(sb, result);
+            }
+            matcher.appendTail(sb);
+
+            if (matcher.hitEnd()) {
+                newParametersToSave.put(key, sb.toString());
+            }
+        }
     }
 
     /**
@@ -1727,7 +1771,7 @@ public class ConfigurationGenerator {
      */
     public void checkDatabaseConnection(String databaseTemplate, String dbName, String dbUser, String dbPassword,
             String dbHost, String dbPort)
-                    throws FileNotFoundException, IOException, DatabaseDriverException, SQLException {
+            throws FileNotFoundException, IOException, DatabaseDriverException, SQLException {
         File databaseTemplateDir = new File(nuxeoHome, TEMPLATES + File.separator + databaseTemplate);
         Properties templateProperties = loadTrimmedProperties(new File(databaseTemplateDir, NUXEO_DEFAULT_CONF));
         String classname, connectionUrl;
@@ -1958,4 +2002,12 @@ public class ConfigurationGenerator {
         return StrSubstitutor.replace(System.getProperty(key, value), getUserConfig());
     }
 
+    /**
+     * @return the value of an environment variable.
+     * Overriden for testing.
+     * @since 9.1
+     */
+    protected String getEnvironmentVariableValue(String key) {
+        return System.getenv(key);
+    }
 }

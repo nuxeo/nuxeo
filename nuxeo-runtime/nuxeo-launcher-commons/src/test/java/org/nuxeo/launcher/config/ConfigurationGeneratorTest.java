@@ -22,6 +22,7 @@ package org.nuxeo.launcher.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_FAIL;
@@ -46,6 +47,8 @@ import org.junit.Test;
 
 public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
+    Map<String, String> env = new HashMap<>();
+
     /**
      * @throws java.lang.Exception
      */
@@ -53,9 +56,15 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        env.put("NUXEO_DB_HOST", "10.0.0.1");
         FileUtils.copyDirectory(getResourceFile("templates/jboss"), new File(nuxeoHome, "templates"));
         System.setProperty("jboss.home.dir", nuxeoHome.getPath());
-        configGenerator = new ConfigurationGenerator();
+        configGenerator = new ConfigurationGenerator() {
+            @Override
+            protected String getEnvironmentVariableValue(String key) {
+                return env.get(key);
+            };
+        };
         assertTrue(configGenerator.init());
         log.debug(
                 "Test with " + configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
@@ -495,6 +504,34 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         } finally {
             Logger.getRootLogger().removeAppender(logCaptureAppender);
         }
+    }
+
+    @Test
+    public void testEnvironmentVariablesExpansion() throws Exception {
+
+        //Nominal case
+        assertEquals("10.0.0.1",
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_DB_HOST));
+
+        //No env variable with no default value
+        assertNull(configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_DB_JDBC_URL));
+
+        //No env variable with default value
+        assertEquals("myvalue", configGenerator.getUserConfig().getProperty("nuxeo.default.prop"));
+
+        //Nominal case for boolean env variables
+        assertEquals("true",
+                configGenerator.getUserConfig().getProperty("nuxeo.env.prop4"));
+
+        assertEquals("false",
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_FAKE_WINDOWS));
+
+        //Case where only part of the value has to be replaced
+        assertEquals("jdbc://10.0.0.1",
+                configGenerator.getUserConfig().getProperty("nuxeo.env.prop2"));
+
+        assertEquals("jdbc://10.0.0.1 false",
+                configGenerator.getUserConfig().getProperty("nuxeo.env.prop3"));
     }
 
     private static class LogCaptureAppender extends AppenderSkeleton {
