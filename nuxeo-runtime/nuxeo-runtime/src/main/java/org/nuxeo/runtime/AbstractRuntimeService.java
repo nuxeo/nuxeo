@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
-
 package org.nuxeo.runtime;
 
 import java.io.File;
@@ -240,8 +238,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        return sb.append(getName()).append(" version ").append(getVersion().toString()).toString();
+        return getName() + " version " + getVersion();
     }
 
     @Override

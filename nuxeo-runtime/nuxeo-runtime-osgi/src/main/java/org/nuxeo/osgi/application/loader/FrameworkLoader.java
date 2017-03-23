@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ public class FrameworkLoader {
     public static final String HOST_VERSION = "org.nuxeo.app.host.version";
 
     /**
-     * @deprecated prefer use of {@link Environment#NUXEO_TMP_DIR}
+     * @deprecated since 5.4.2 prefer use of {@link Environment#NUXEO_TMP_DIR}
      */
     @Deprecated
     public static final String TMP_DIR = "org.nuxeo.app.tmp";
@@ -164,7 +164,7 @@ public class FrameworkLoader {
             StringBuilder buf = new StringBuilder();
             for (File file : files) {
                 if (file != null) {
-                    buf.append("\n\t" + file.getPath());
+                    buf.append("\n\t").append(file.getPath());
                 }
             }
             log.debug("Deployment order: " + buf.toString());
@@ -177,11 +177,8 @@ public class FrameworkLoader {
         Manifest mf;
         try {
             if (f.isFile()) { // jar file
-                JarFile jf = new JarFile(f);
-                try {
+                try (JarFile jf = new JarFile(f)) {
                     mf = jf.getManifest();
-                } finally {
-                    jf.close();
                 }
                 if (mf == null) {
                     return false;
@@ -192,11 +189,8 @@ public class FrameworkLoader {
                     return false;
                 }
                 mf = new Manifest();
-                FileInputStream input = new FileInputStream(f);
-                try {
+                try (FileInputStream input = new FileInputStream(f)) {
                     mf.read(input);
-                } finally {
-                    input.close();
                 }
             } else {
                 return false;
@@ -225,15 +219,8 @@ public class FrameworkLoader {
             }
             try {
                 install(f);
-            } catch (IOException e) {
+            } catch (IOException | BundleException | RuntimeException e) {
                 log.error("Failed to install bundle: " + f, e);
-                // continue
-            } catch (BundleException e) {
-                log.error("Failed to install bundle: " + f, e);
-                // continue
-            } catch (RuntimeException e) {
-                log.error("Failed to install bundle: " + f, e);
-                // continue
             }
         }
         osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, systemBundle, null));
@@ -257,7 +244,7 @@ public class FrameworkLoader {
     }
 
     public static String install(File f) throws IOException, BundleException {
-        BundleFile bf = null;
+        BundleFile bf;
         if (f.isDirectory()) {
             bf = new DirectoryBundleFile(f);
         } else {
@@ -281,15 +268,8 @@ public class FrameworkLoader {
             Class<?> klass = loader.loadClass("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
             Method main = klass.getMethod("main", String[].class);
             main.invoke(null, new Object[] { new String[] { home.getAbsolutePath() } });
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (SecurityException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
+        } catch (ClassNotFoundException | SecurityException | NoSuchMethodException | IllegalAccessException
+                | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
@@ -414,17 +394,17 @@ public class FrameworkLoader {
         Environment env = Environment.getDefault();
         String hr = "======================================================================";
         StringBuilder msg = new StringBuilder(newline);
-        msg.append(hr + newline);
-        msg.append("= Starting Nuxeo Framework" + newline);
-        msg.append(hr + newline);
-        msg.append("  * Server home = " + env.getServerHome() + newline);
-        msg.append("  * Runtime home = " + env.getRuntimeHome() + newline);
-        msg.append("  * Data Directory = " + env.getData() + newline);
-        msg.append("  * Log Directory = " + env.getLog() + newline);
-        msg.append("  * Configuration Directory = " + env.getConfig() + newline);
-        msg.append("  * Temp Directory = " + env.getTemp() + newline);
-        // System.out.println("  * System Bundle = "+systemBundle);
-        // System.out.println("  * Command Line Args = "+Arrays.asList(env.getCommandLineArguments()));
+        msg.append(hr).append(newline);
+        msg.append("= Starting Nuxeo Framework").append(newline);
+        msg.append(hr).append(newline);
+        msg.append("  * Server home = ").append(env.getServerHome()).append(newline);
+        msg.append("  * Runtime home = ").append(env.getRuntimeHome()).append(newline);
+        msg.append("  * Data Directory = ").append(env.getData()).append(newline);
+        msg.append("  * Log Directory = ").append(env.getLog()).append(newline);
+        msg.append("  * Configuration Directory = ").append(env.getConfig()).append(newline);
+        msg.append("  * Temp Directory = ").append(env.getTemp()).append(newline);
+        // System.out.println(" * System Bundle = "+systemBundle);
+        // System.out.println(" * Command Line Args = "+Arrays.asList(env.getCommandLineArguments()));
         msg.append(hr);
         return msg;
     }
