@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.operations;
 
-import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -55,6 +54,11 @@ public class NuxeoDriveAttachBlob {
     @Param(name = "applyVersioningPolicy", required = false, values = "false")
     protected boolean applyVersioningPolicy = false;
 
+    /**
+     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
+     * drive level, this parameter is not used anymore
+     */
+    @Deprecated
     @Param(name = "factoryName", required = false, values = "defaultFileSystemItemFactory")
     protected String factoryName = "defaultFileSystemItemFactory";
 
