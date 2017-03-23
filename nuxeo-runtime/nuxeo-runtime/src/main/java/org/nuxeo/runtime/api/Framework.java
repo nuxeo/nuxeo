@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
-
 package org.nuxeo.runtime.api;
 
 import java.io.File;
@@ -39,7 +37,6 @@ import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.RuntimeService;
@@ -618,8 +615,8 @@ public final class Framework {
      */
     private static File getTempDir() {
         Environment env = Environment.getDefault();
-        File temp = env != null ? env.getTemp() : new File(System.getProperty("nuxeo.tmp.dir",
-                System.getProperty("java.io.tmpdir")));
+        File temp = env != null ? env.getTemp()
+                : new File(System.getProperty("nuxeo.tmp.dir", System.getProperty("java.io.tmpdir")));
         temp.mkdirs();
         return temp;
     }

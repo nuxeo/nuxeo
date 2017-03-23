@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
-
 package org.nuxeo.runtime;
 
 import java.io.File;
@@ -217,8 +215,6 @@ public interface RuntimeService {
 
     /**
      * Get an installed bundle given its symbolic name. This method is not handling versions.
-     *
-     * @param symbolicName
      */
     Bundle getBundle(String symbolicName);
 
@@ -227,7 +223,6 @@ public interface RuntimeService {
      * detected.
      *
      * @since 5.6
-     * @param msg
      * @return true if there are warnings/errors on current runtime.
      */
     boolean getStatusMessage(StringBuilder msg);
