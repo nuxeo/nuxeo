@@ -268,8 +268,7 @@ public class FrameworkLoader {
             Class<?> klass = loader.loadClass("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
             Method main = klass.getMethod("main", String[].class);
             main.invoke(null, new Object[] { new String[] { home.getAbsolutePath() } });
-        } catch (ClassNotFoundException | SecurityException | NoSuchMethodException | IllegalAccessException
-                | InvocationTargetException e) {
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
     }

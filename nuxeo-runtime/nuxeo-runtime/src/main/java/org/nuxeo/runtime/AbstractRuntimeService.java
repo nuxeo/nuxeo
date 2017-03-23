@@ -84,9 +84,16 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         this(context, null);
     }
 
-    // warnings during the deployment. Here are collected all errors occurred
-    // during the startup
+    /**
+     * Warnings during the deployment. These messages don't block startup, even in strict mode.
+     */
     protected final List<String> warnings = new ArrayList<>();
+
+    /**
+     * Errors during the deployment. Here are collected all errors occurred during the startup. These messages block
+     * startup in strict mode.
+     */
+    protected final List<String> errors = new ArrayList<>();
 
     protected AbstractRuntimeService(DefaultRuntimeContext context, Map<String, String> properties) {
         this.context = context;
@@ -97,7 +104,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         // get errors set by NuxeoDeployer
         String errs = System.getProperty("org.nuxeo.runtime.deployment.errors");
         if (errs != null) {
-            warnings.addAll(Arrays.asList(errs.split("\n")));
+            errors.addAll(Arrays.asList(errs.split("\n")));
             System.clearProperty("org.nuxeo.runtime.deployment.errors");
         }
     }
@@ -105,6 +112,11 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     @Override
     public List<String> getWarnings() {
         return warnings;
+    }
+
+    @Override
+    public List<String> getErrors() {
+        return errors;
     }
 
     protected ComponentManager createComponentManager() {
@@ -314,9 +326,15 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     public boolean getStatusMessage(StringBuilder msg) {
         String hr = "======================================================================";
         if (!warnings.isEmpty()) {
-            msg.append(hr).append("\n= Component Loading Errors:\n");
+            msg.append(hr).append("\n= Component Loading Warnings:\n");
             for (String warning : warnings) {
                 msg.append("  * ").append(warning).append('\n');
+            }
+        }
+        if (!errors.isEmpty()) {
+            msg.append(hr).append("\n= Component Loading Errors:\n");
+            for (String error : errors) {
+                msg.append("  * ").append(error).append('\n');
             }
         }
         Map<ComponentName, Set<ComponentName>> pendingRegistrations = manager.getPendingRegistrations();
@@ -351,7 +369,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
             msg.append("  - ").append(componentName).append('\n');
         }
         msg.append(hr);
-        return (warnings.isEmpty() && pendingRegistrations.isEmpty() && missingRegistrations.isEmpty()
+        return (errors.isEmpty() && pendingRegistrations.isEmpty() && missingRegistrations.isEmpty()
                 && unstartedRegistrations.isEmpty());
     }
 

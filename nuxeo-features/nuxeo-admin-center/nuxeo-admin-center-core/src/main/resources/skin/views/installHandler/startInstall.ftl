@@ -25,6 +25,17 @@ function closePopup() {
       </ul>
    </#if>
 
+    <#if status.hasErrors()>
+      <div class="installErrorsTitle">
+      ${Context.getMessage('label.startInstall.message.haserror')}
+      </div>
+      <ul class="installErrors">
+        <#list status.getErrors() as error>
+          <li> ${error} </li>
+        </#list>
+      </ul>
+    </#if>
+
    <#if installTask.isRestartRequired()>
      <div>
          ${Context.getMessage('label.startInstall.message.restartrequired')}

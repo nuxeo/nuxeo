@@ -21,6 +21,17 @@
         </div>
     </#if>
 
+   <#if status.hasErrors()>
+     <div class="installErrorsTitle">
+     ${Context.getMessage('label.startInstall.message.haserror')}
+     </div>
+     <ul class="installErrors">
+       <#list status.getErrors() as error>
+         <li> ${error} </li>
+       </#list>
+     </ul>
+   </#if>
+
     <#if uninstallTask.isRestartRequired()>
       <div>
        ${Context.getMessage('label.simpleListing.titles.restartlink')}
