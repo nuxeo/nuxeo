@@ -37,6 +37,9 @@ public class TransientStoreConfig {
     @XNode("@name")
     protected String name;
 
+    @XNode("@path")
+    protected String path;
+
     // target size that ideally should never be exceeded
     @XNode("targetMaxSizeMB")
     protected int targetMaxSizeMB = -1;
@@ -112,6 +115,15 @@ public class TransientStoreConfig {
             }
         }
         return store;
+    }
+
+    /**
+     * Returns the directory where blobs will be stored.
+     *
+     * @since 9.1
+     */
+    public String getDataDir() {
+        return path;
     }
 
 }
