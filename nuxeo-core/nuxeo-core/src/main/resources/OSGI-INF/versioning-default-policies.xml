@@ -19,9 +19,7 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
-    <filter id="system-document">
-      <facet>SystemDocument</facet>
-    </filter>
+    <filter id="system-document" class="org.nuxeo.ecm.core.versioning.NoVersioningPolicyFilter" />
     <filter id="note-filter">
       <type>Note</type>
     </filter>
