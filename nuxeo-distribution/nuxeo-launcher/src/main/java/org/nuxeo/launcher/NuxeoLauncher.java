@@ -1279,9 +1279,8 @@ public abstract class NuxeoLauncher {
                         gzip ? ".gz" : ""));
             }
             log.info("Dumping connect report in " + outputpath);
-            try (OutputStream output = Files.newOutputStream(outputpath, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)) {
-                commandSucceeded = launcher.dumpConnectReport(gzip ? new GZIPOutputStream(output) : output,
-                        prettyprinting);
+            try (OutputStream output = openOutput(outputpath, gzip)) {
+                commandSucceeded = launcher.dumpConnectReport(output,prettyprinting);
             }
         } else {
             log.error("Unknown command " + launcher.command);
@@ -1298,6 +1297,14 @@ public abstract class NuxeoLauncher {
         if (!commandSucceeded) {
             System.exit(launcher.errorValue);
         }
+    }
+
+    protected static OutputStream openOutput(Path path, boolean gzip) throws IOException {
+        OutputStream output = Files.newOutputStream(path, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+        if (gzip) {
+            output = new GZIPOutputStream(output);
+        }
+        return output;
     }
 
     /**
