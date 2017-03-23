@@ -62,7 +62,7 @@ public class NuxeoDriveSyncRootCopyListener implements EventListener {
 
     protected DocumentModelList getSyncRoots(DocumentModel doc, CoreSession session) {
         String nxql = "SELECT * FROM Document WHERE ecm:mixinType = '" + NuxeoDriveManagerImpl.NUXEO_DRIVE_FACET
-                + "' AND ecm:path STARTSWITH " + NXQL.escapeString(doc.getPathAsString());
+                + "' AND ecm:isVersion = 0 AND ecm:path STARTSWITH " + NXQL.escapeString(doc.getPathAsString());
         DocumentModelList syncRoots = session.query(nxql);
         if (doc.hasFacet(NuxeoDriveManagerImpl.NUXEO_DRIVE_FACET)) {
             syncRoots.add(doc);
