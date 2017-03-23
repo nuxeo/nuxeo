@@ -90,7 +90,9 @@ public final class Framework {
      *
      * @since 5.6
      * @see #handleDevError(Throwable)
+     * @deprecated since 9.1 This property is not documented and doesn't work.
      */
+    @Deprecated
     public static final String NUXEO_STRICT_RUNTIME_SYSTEM_PROP = "org.nuxeo.runtime.strict";
 
     /**
@@ -454,9 +456,6 @@ public final class Framework {
      * <p>
      * For instance, it'll enable hot-reload if some packages are installed while the framework is running. It will also
      * reset some caches when that happens.
-     * <p>
-     * Before 5.6, when activating this mode, the Runtime Framework stopped on low-level errors, see
-     * {@link #handleDevError(Throwable)} but this behaviour has been removed.
      */
     public static boolean isDevModeSet() {
         return isBooleanPropertyTrue(NUXEO_DEV_SYSTEM_PROP);
@@ -526,7 +525,10 @@ public final class Framework {
      * when using hot reload.
      *
      * @param t the exception or null if none
+     * @deprecated since 9.1 DON'T USE THIS METHOD ANYMORE, its behavior is not documented. It also seems to not work.
+     *             If you want to stop server startup add messages to {@link RuntimeService#getErrors()}.
      */
+    @Deprecated
     public static void handleDevError(Throwable t) {
         if (isBooleanPropertyTrue(NUXEO_STRICT_RUNTIME_SYSTEM_PROP)) {
             System.err.println("Fatal error caught in strict " + "runtime mode => exiting.");

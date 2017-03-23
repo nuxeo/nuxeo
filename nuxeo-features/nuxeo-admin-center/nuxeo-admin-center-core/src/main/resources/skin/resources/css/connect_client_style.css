@@ -226,7 +226,7 @@ h3 {
   background: #fff3f3 url("../images/ko-red.png") no-repeat 20px 18px;
 }
 
-.installWarningsTitle {
+.installWarningsTitle, .installErrorsTitle {
   padding: 20px 30px 20px 50px;
   margin: 20px 0px;
   border: 1px solid #dedede;

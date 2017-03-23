@@ -196,10 +196,21 @@ public interface RuntimeService {
 
     /**
      * Gets a list of startup warnings. Can be modified to add new warnings.
+     * <p />
+     * Warning messages don't block server startup.
      *
      * @return the warning list
      */
     List<String> getWarnings();
+
+    /**
+     * Gets a list of startup errors. Can be modified to add new errors.
+     * <p />
+     * Error messages block server startup in strict mode.
+     *
+     * @return the error list
+     */
+    List<String> getErrors();
 
     /**
      * OSGi frameworks are using a string {@link Bundle#getLocation()} to identify bundle locations.

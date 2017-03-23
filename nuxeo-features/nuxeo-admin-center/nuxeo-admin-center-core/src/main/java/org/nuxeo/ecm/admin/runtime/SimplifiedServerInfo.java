@@ -33,6 +33,8 @@ public class SimplifiedServerInfo {
 
     protected List<String> warnings;
 
+    protected List<String> errors;
+
     public List<SimplifiedBundleInfo> getBundleInfos() {
         return bundleInfos;
     }
@@ -85,6 +87,18 @@ public class SimplifiedServerInfo {
         return warnings != null && !warnings.isEmpty();
     }
 
+    public List<String> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(List<String> errors) {
+        this.errors = errors;
+    }
+
+    public boolean hasErrors() {
+        return errors != null && !errors.isEmpty();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -105,6 +119,16 @@ public class SimplifiedServerInfo {
             for (String warn : warnings) {
                 sb.append("\n  ");
                 sb.append(warn);
+            }
+        }
+
+        sb.append("errors :  ");
+        if (errors == null || errors.isEmpty()) {
+            sb.append("none");
+        } else {
+            for (String error : errors) {
+                sb.append("\n  ");
+                sb.append(error);
             }
         }
 

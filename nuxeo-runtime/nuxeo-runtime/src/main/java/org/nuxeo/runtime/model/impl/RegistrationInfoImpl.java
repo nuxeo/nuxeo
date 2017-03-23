@@ -300,8 +300,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             String msg = "Failed to instantiate component: " + implementation;
             log.error(msg, e);
             msg += " (" + e.toString() + ')';
-            Framework.getRuntime().getWarnings().add(msg);
-            Framework.handleDevError(e);
+            Framework.getRuntime().getErrors().add(msg);
             throw e;
         }
     }
@@ -368,8 +367,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getWarnings().add(msg);
-                    Framework.handleDevError(e);
+                    Framework.getRuntime().getErrors().add(msg);
                 }
             }
         }
@@ -392,8 +390,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getWarnings().add(msg);
-                    Framework.handleDevError(e);
+                    Framework.getRuntime().getErrors().add(msg);
                 }
             }
         }
@@ -413,10 +410,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 try {
                     manager.unregisterExtension(xt);
                 } catch (RuntimeException e) {
-                    log.error(
-                            "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
-                                    + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint(), e);
-                    Framework.handleDevError(e);
+                    String message = "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
+                            + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint();
+                    log.error(message, e);
+                    Framework.getRuntime().getErrors().add(message);
                 }
             }
         }

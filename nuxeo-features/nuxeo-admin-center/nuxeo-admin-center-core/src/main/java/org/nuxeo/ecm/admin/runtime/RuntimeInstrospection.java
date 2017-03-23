@@ -76,6 +76,7 @@ public class RuntimeInstrospection {
             info.setBundleInfos(bundles);
             info.setRuntimeVersion(runtime.getVersion().toString());
             info.setWarnings(runtime.getWarnings());
+            info.setErrors(runtime.getErrors());
         }
         return info;
     }
