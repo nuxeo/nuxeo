@@ -346,11 +346,8 @@ limitations under the License.
         },
 
         _readTemplateParams: function() {
-          if (this.templateData) {
-            this.set('params', Polymer.dom(parser.parseFromString(this.templateData, 'text/xml')));
-          } else {
-            this.set('params', null);
-          }
+          this.set('params', Polymer.dom(parser.parseFromString(this.templateData ? this.templateData :
+              '<nxdt:templateParams xmlns:nxdt="http://www.nuxeo.org/DocumentTemplate"/>', 'text/xml')));
         },
 
         _getParams: function() {
