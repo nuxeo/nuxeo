@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
@@ -593,7 +594,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 throw new PropertyException("Expected Blob value for: " + field.getName().getPrefixedName() + ", got "
                         + value.getClass().getName() + " instead");
             }
-            setValueBlob(state, (Blob) value);
+            setValueBlob(state,(Blob) value, field.getName().getPrefixedName());
             return;
         }
         if (value != null && !(value instanceof Map)) {
@@ -615,12 +616,12 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         }
     }
 
-    protected void setValueBlob(T state, Blob blob) throws PropertyException {
+    protected void setValueBlob(T state, Blob blob, String xpath) throws PropertyException {
         BlobInfo blobInfo = new BlobInfo();
         if (blob != null) {
             BlobManager blobManager = Framework.getService(BlobManager.class);
             try {
-                blobInfo.key = blobManager.writeBlob(blob, this);
+                blobInfo.key = blobManager.writeBlob(blob, this, xpath);
             } catch (IOException e) {
                 throw new PropertyException("Cannot get blob info for: " + blob, e);
             }
@@ -686,7 +687,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
     protected static class BlobWriteContext<T extends StateAccessor> implements WriteContext {
 
-        public final Map<BaseDocument<T>, List<Pair<T, Blob>>> blobWriteInfosPerDoc = new HashMap<>();
+        public final Map<BaseDocument<T>, List<Triple<T, String, Blob>>> blobWriteInfosPerDoc = new HashMap<>();
 
         public final Set<String> xpaths = new HashSet<>();
 
@@ -700,12 +701,12 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         /**
          * Records a blob update.
          */
-        public void recordBlob(T state, Blob blob, BaseDocument<T> doc) {
-            List<Pair<T, Blob>> list = blobWriteInfosPerDoc.get(doc);
+        public void recordBlob(T state, Blob blob, BaseDocument<T> doc, String xpath) {
+            List<Triple<T, String, Blob>> list = blobWriteInfosPerDoc.get(doc);
             if (list == null) {
                 blobWriteInfosPerDoc.put(doc, list = new ArrayList<>());
             }
-            list.add(Pair.of(state, blob));
+            list.add(Triple.of(state, xpath, blob));
         }
 
         @Override
@@ -717,12 +718,13 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         @Override
         public void flush(Document baseDoc) {
             // first, write all updated blobs
-            for (Entry<BaseDocument<T>, List<Pair<T, Blob>>> en : blobWriteInfosPerDoc.entrySet()) {
+            for (Entry<BaseDocument<T>, List<Triple<T, String, Blob>>> en : blobWriteInfosPerDoc.entrySet()) {
                 BaseDocument<T> doc = en.getKey();
-                for (Pair<T, Blob> pair : en.getValue()) {
-                    T state = pair.getLeft();
-                    Blob blob = pair.getRight();
-                    doc.setValueBlob(state, blob);
+                for (Triple<T, String, Blob> triple : en.getValue()) {
+                    T state = triple.getLeft();
+                    Blob blob = triple.getRight();
+                    String xpath = triple.getMiddle();
+                    doc.setValueBlob(state, blob, xpath);
                 }
             }
             // then inform the blob manager about the changed xpaths
@@ -762,7 +764,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             if (value != null && !(value instanceof Blob)) {
                 throw new PropertyException("Cannot write a non-Blob value: " + value);
             }
-            writeContext.recordBlob(state, (Blob) value, this);
+            writeContext.recordBlob(state, (Blob) value, this, xpath);
             return true;
         }
         boolean changed = false;
@@ -992,7 +994,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         @Override
         public void setBlob(Blob blob) throws PropertyException {
             markDirty.run();
-            setValueBlob(state, blob);
+            setValueBlob(state, blob, getXPath());
         }
     }
 

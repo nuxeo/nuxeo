@@ -77,6 +77,19 @@ public interface BlobDispatcher {
     BlobDispatch getBlobProvider(Document doc, Blob blob);
 
     /**
+     * @since 9.1
+     * Decides which {@link BlobProvider} to use to write the given blob, and whether the provider id should be added as
+     * prefix to the managed blob key.
+     *
+     * @param doc the document containing the blob
+     * @param blob the blob
+     * @param xpath the xpath of blob in doc
+     * @return the blob provider id and whether it should be added as prefix
+     */
+    BlobDispatch getBlobProvider(Document doc, Blob blob, String xpath);
+
+
+    /**
      * Notifies the blob dispatcher that a set of xpaths have changed on a document.
      *
      * @param doc the document

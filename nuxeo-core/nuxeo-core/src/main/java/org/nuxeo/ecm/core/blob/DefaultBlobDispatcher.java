@@ -90,6 +90,8 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
 
     protected static final String BLOB_LENGTH = "length";
 
+    protected static final String BLOB_XPATH = "xpath";
+
     protected enum Op {
         EQ, NEQ, LT, GT;
     }
@@ -198,7 +200,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         return providerIds;
     }
 
-    protected String getProviderId(Document doc, Blob blob) {
+    protected String getProviderId(Document doc, Blob blob, String blobXpath) {
         if (useRepositoryName) {
             return doc.getRepositoryName();
         }
@@ -225,6 +227,9 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                         break;
                     case BLOB_LENGTH:
                         value = Long.valueOf(blob.getLength());
+                        break;
+                    case BLOB_XPATH:
+                        value = blobXpath;
                         break;
                     default:
                         log.error("Invalid dispatcher configuration property name: " + xpath);
@@ -287,11 +292,16 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
 
     @Override
     public BlobDispatch getBlobProvider(Document doc, Blob blob) {
+        return getBlobProvider(doc,blob,null);
+    }
+
+    @Override
+    public BlobDispatch getBlobProvider(Document doc, Blob blob, String xpath) {
         if (useRepositoryName) {
             String providerId = doc.getRepositoryName();
             return new BlobDispatch(providerId, false);
         }
-        String providerId = getProviderId(doc, blob);
+        String providerId = getProviderId(doc, blob, xpath);
         return new BlobDispatch(providerId, true);
     }
 
@@ -314,7 +324,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             return;
         }
         // compare current provider with expected
-        String expectedProviderId = getProviderId(doc, blob);
+        String expectedProviderId = getProviderId(doc, blob, accessor.getXPath());
         if (((ManagedBlob) blob).getProviderId().equals(expectedProviderId)) {
             return;
         }
