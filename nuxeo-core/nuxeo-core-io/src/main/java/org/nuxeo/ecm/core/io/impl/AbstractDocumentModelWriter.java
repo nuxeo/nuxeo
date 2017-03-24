@@ -16,6 +16,7 @@ package org.nuxeo.ecm.core.io.impl;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +47,7 @@ import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.JavaTypes;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -205,6 +207,20 @@ public abstract class AbstractDocumentModelWriter extends
         while (facets.hasNext()) {
             Element element = facets.next();
             String facet = element.getTextTrim();
+
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+            CompositeType facetType = schemaManager.getFacet(facet);
+
+            if (facetType == null) {
+                log.warn("The document " + docModel.getName() + " with id=" + docModel.getId() + " and type="
+                        + docModel.getDocumentType().getName() + " contains the facet '" + facet
+                        + "', which is not registered as available in the schemaManager. This facet will be ignored.");
+                if (log.isDebugEnabled()) {
+                    log.debug("Available facets: " + Arrays.toString(schemaManager.getFacets()));
+                }
+                continue;
+            }
+
             if (!docModel.hasFacet(facet)) {
                 docModel.addFacet(facet);
                 added = true;
@@ -263,7 +279,13 @@ public abstract class AbstractDocumentModelWriter extends
             String schemaName = element.attributeValue(ExportConstants.NAME_ATTR);
             Schema schema = schemaMgr.getSchema(schemaName);
             if (schema == null) {
-                throw new ClientException("Schema not found: " + schemaName);
+                log.warn("The document " + docModel.getName() + " with id=" + docModel.getId() + " and type="
+                        + docModel.getDocumentType() + " contains the schema '" + schemaName
+                        + "', which is not registered as available in the schemaManager. This schema will be ignored.");
+                if (log.isDebugEnabled()) {
+                    log.debug("Available schemas: " + Arrays.toString(schemaMgr.getSchemas()));
+                }
+                continue;
             }
             loadSchema(xdoc, schema, docModel, element);
         }
