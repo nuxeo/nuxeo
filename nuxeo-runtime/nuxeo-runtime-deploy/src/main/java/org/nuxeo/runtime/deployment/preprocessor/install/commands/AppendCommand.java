@@ -73,14 +73,16 @@ public class AppendCommand implements Command {
         File dstFile = new File(baseDir, ctx.expandVars(dst.toString()));
 
         if (pattern == null && !srcFile.exists()) {
-            throw new FileNotFoundException("Could not find the file " + srcFile.getAbsolutePath() + " to append.");
+            throw new FileNotFoundException("Could not find the file " + srcFile.getAbsolutePath()
+                    + " to append to ' when deploying bundle '" + ctx.get("bundle") + "'.");
         }
 
         if (!dstFile.isFile()) {
             try {
                 dstFile.createNewFile();
             } catch (IOException e) {
-                throw new IOException("Could not create " + dstFile, e);
+                throw new IOException(
+                        "Could not create '" + dstFile + "' when deploying bundle '" + ctx.get("bundle") + "'.", e);
             }
         }
         if (pattern == null) {
