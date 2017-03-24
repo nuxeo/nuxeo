@@ -28,7 +28,7 @@
       desc="Discover through an inspiring demo how the Template Rendering addon can improve your everyday business processes. This demo showcases the BigCorp company, generating financial reports for internal use, and case studies demonstrating their expertise for potential new customers. All being achieved by extracting their relevant content into office templates on the fly." />
     <package id="nuxeo-liveconnect" label="Live Connect" color="#ff452a" textcolor="#FFF" shortlabel="LIVE" implies="nuxeo-jsf-ui"
       desc="The Nuxeo Live Connect addon allows users to reference their files stored on most common EFSS systems (Dropbox, Box, Google Drive, One Drive). User can then apply business workflows to those external ressources, benefit from full text search and edit metadata as if they were stored in the Nuxeo repository." />
-    <package id="nuxeo-web-ui" label="Nuxeo Web UI" color="#00adff" textcolor="#FFF"
+    <package id="nuxeo-web-ui" label="Nuxeo Web UI - Beta" color="#00adff" textcolor="#FFF"
       shortlabel="WEBUI"
       desc="Web UI is the new UI for Nuxeo Server. Thanks to its great flexibility, it is the ideal start for any Digital Asset Management, Case Managent and Document Management project. Web UI is made with great client side web technology and adopts most recent standards of the Web." />
     <package id="nuxeo-jsf-ui" label="Nuxeo JSF UI" color="#0000ff" textcolor="#FFF"
@@ -63,7 +63,7 @@
   </install>
   <presets>
     <preset id="nuxeo-server-preset" label="Nuxeo Server Preset">
-      nuxeo-server,nuxeo-web-ui,nuxeo-dam,nuxeo-drive,nuxeo-showcase-content,nuxeo-template-rendering-samples
+      nuxeo-server,nuxeo-jsf-ui,nuxeo-web-ui,nuxeo-dam,nuxeo-drive,nuxeo-showcase-content,nuxeo-template-rendering-samples
     </preset>
   </presets>
 </packages>
