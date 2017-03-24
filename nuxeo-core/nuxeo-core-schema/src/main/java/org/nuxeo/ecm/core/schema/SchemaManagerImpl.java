@@ -230,6 +230,17 @@ public class SchemaManagerImpl implements SchemaManager {
         return last;
     }
 
+    // NXP-14218: used for tests, to be able to unregister it
+    public FacetDescriptor getFacetDescriptor(String name) {
+        return allFacets.stream().filter(f -> f.getName().equals(name)).reduce((a, b) -> b).orElse(null);
+    }
+
+    // NXP-14218: used for tests, to recompute available facets
+    public void recomputeDynamicFacets() {
+        recomputeFacets();
+        dirty = false;
+    }
+
     public synchronized void registerProxies(ProxiesDescriptor pd) {
         allProxies.add(pd);
         dirty = true;
