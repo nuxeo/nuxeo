@@ -131,6 +131,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     public static final String TRASH_KEEP_CHECKED_IN_PROPERTY = "org.nuxeo.trash.keepCheckedIn";
 
+    // @since 9.1 disable ecm:isLatestVersion and ecm:isLatestMajorVersion updates for performance purpose
+    public static final String DISABLED_ISLATESTVERSION_PROPERTY = "org.nuxeo.core.isLatestVersion.disabled";
+
     public static final String BINARY_TEXT_SYS_PROP = "fulltextBinary";
 
     private Boolean limitedResults;
