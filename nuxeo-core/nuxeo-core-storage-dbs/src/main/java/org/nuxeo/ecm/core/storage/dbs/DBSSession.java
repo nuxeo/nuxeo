@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.storage.dbs;
 
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.api.AbstractSession.DISABLED_ISLATESTVERSION_PROPERTY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_BEGIN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_CREATOR;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_END;
@@ -162,6 +163,8 @@ public class DBSSession implements Session {
 
     private long LOG_MIN_DURATION_NS = -1 * 1000000;
 
+    protected boolean isLatestVersionDisabled = false;
+
     public DBSSession(DBSRepository repository) {
         this.repository = repository;
         transaction = new DBSTransactionState(repository, this);
@@ -171,6 +174,7 @@ public class DBSSession implements Session {
         saveTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "saves"));
         queryTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "queries"));
         LOG_MIN_DURATION_NS = Long.parseLong(Framework.getProperty(LOG_MIN_DURATION_KEY, "-1")) * 1000000;
+        isLatestVersionDisabled = Framework.isBooleanPropertyTrue(DISABLED_ISLATESTVERSION_PROPERTY);
     }
 
     @Override
@@ -559,7 +563,10 @@ public class DBSSession implements Session {
         docState.put(KEY_IS_CHECKED_IN, TRUE);
         docState.put(KEY_BASE_VERSION_ID, verId);
 
-        recomputeVersionSeries(id);
+        if (!isLatestVersionDisabled) {
+            recomputeVersionSeries(id);
+        }
+
         transaction.save();
 
         return getDocument(verId);
