@@ -121,10 +121,10 @@ public class RedisCache extends AbstractCache {
 
     protected byte[] serializeValue(Serializable value) throws IOException {
         ByteArrayOutputStream baout = new ByteArrayOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(baout);
-        out.writeObject(value);
-        out.flush();
-        out.close();
+        try (ObjectOutputStream out = new ObjectOutputStream(baout)) {
+            out.writeObject(value);
+            out.flush();
+        }
         return baout.toByteArray();
     }
 
@@ -165,12 +165,20 @@ public class RedisCache extends AbstractCache {
 
     @Override
     public boolean hasEntry(final String key) {
-        return (Boolean) executor.execute(new RedisCallable<Serializable>() {
+        return executor.<Boolean>execute(new RedisCallable<Boolean>() {
             @Override
-            public Serializable call(Jedis jedis) {
+            public Boolean call(Jedis jedis) {
                 return jedis.exists(bytes(formatKey(key)));
             }
-        });
+        }).booleanValue();
     }
 
+    /**
+     * Too expensive to evaluate the # keys redis side, should monitor redis itself
+     * @return -1L
+     */
+    @Override
+    public long getSize() {
+        return -1L;
+    }
 }

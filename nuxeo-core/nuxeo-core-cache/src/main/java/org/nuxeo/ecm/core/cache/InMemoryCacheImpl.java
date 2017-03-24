@@ -105,4 +105,9 @@ public class InMemoryCacheImpl extends AbstractCache {
         return cache.asMap().containsKey(key);
     }
 
+    @Override
+    public long getSize() {
+        return cache.size();
+    }
+
 }

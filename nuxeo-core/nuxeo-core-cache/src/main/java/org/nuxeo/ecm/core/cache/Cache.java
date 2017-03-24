@@ -88,4 +88,10 @@ public interface Cache {
      */
     public boolean hasEntry(String key);
 
+    /**
+     * Return this cache size
+     * @since 9.1
+     */
+    public long getSize();
+
 }

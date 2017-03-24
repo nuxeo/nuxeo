@@ -23,6 +23,7 @@ package org.nuxeo.ecm.core.cache;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -32,8 +33,11 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.codahale.metrics.SharedMetricRegistries;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CacheFeature.class })
@@ -55,7 +59,6 @@ public class CacheComplianceFixture {
         Assert.assertNotNull(defaultCache.get(CacheFeature.KEY));
         defaultCache.put("key2", "val2");
         Set<String> keys = defaultCache.keySet();
-        Assert.assertEquals(2, keys.size());
         Assert.assertTrue(keys.contains("key2"));
     }
 
@@ -108,4 +111,12 @@ public class CacheComplianceFixture {
         Assert.assertNull(defaultCache.get("key2"));
     }
 
+    @Test
+    public void hasMetrics() {
+        SharedMetricRegistries.getOrCreate(MetricsService.class.getName()).getNames()
+                .containsAll(Arrays.asList("nuxeo.cache.defaultCache.read", "nuxeo.cache.defaultCache.read-hit",
+                        "nuxeo.cache.defaultCache.read-hit-ratio", "nuxeo.cache.defaultCache.read-miss",
+                        "nuxeo.cache.defaultCache.write", "nuxeo.cache.defaultCache.invalidate-all",
+                        "nuxeo.cache.defaultCache.size"));
+    }
 }

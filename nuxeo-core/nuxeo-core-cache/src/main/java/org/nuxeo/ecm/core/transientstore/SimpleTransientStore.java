@@ -77,8 +77,6 @@ public class SimpleTransientStore extends AbstractTransientStore {
         l2cd = getL2CacheConfig();
         ((CacheServiceImpl) cs).registerCache(l1cd);
         ((CacheServiceImpl) cs).registerCache(l2cd);
-        l1cd.start();
-        l2cd.start();
 
         // get caches
         l1Cache = cs.getCache(l1cd.name);
