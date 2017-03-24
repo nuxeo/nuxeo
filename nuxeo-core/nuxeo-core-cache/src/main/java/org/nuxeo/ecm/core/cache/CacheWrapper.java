@@ -19,6 +19,9 @@ package org.nuxeo.ecm.core.cache;
 import java.io.Serializable;
 import java.util.Set;
 
+/**
+ * @since 9.1
+ */
 public abstract class CacheWrapper implements Cache {
 
     public final Cache cache;
@@ -29,7 +32,7 @@ public abstract class CacheWrapper implements Cache {
 
     public void stop() {
         if (cache instanceof CacheWrapper) {
-            ((CacheWrapper)cache).stop();
+            ((CacheWrapper) cache).stop();
         }
         onStop();
     }
