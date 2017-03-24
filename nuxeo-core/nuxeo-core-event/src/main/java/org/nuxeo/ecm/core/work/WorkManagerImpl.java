@@ -846,7 +846,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         SequenceTracer.start("awaitCompletion on " + ((queueId == null) ? "all queues" : queueId));
         long durationInMs = TimeUnit.MILLISECONDS.convert(duration, unit);
         long deadline = getTimestampAfter(durationInMs);
-        int pause = (int) Math.min(duration, 500L);
+        int pause = (int) Math.min(durationInMs, 500L);
         log.debug("awaitForCompletion " + durationInMs + " ms");
         do {
             if (noScheduledOrRunningWork(queueId)) {
