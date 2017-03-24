@@ -108,17 +108,17 @@ public final class CacheRegistry extends ContributionFragmentRegistry<CacheDescr
 
     }
 
-    public CacheAttributesChecker getCache(String name) {
+    public Cache getCache(String name) {
         if (caches.containsKey(name)) {
-            return caches.get(name).cacheChecker;
+            return caches.get(name).cache;
         }
         return null;
     }
 
-    public List<CacheAttributesChecker> getCaches() {
-        List<CacheAttributesChecker> res = new ArrayList<CacheAttributesChecker>(caches.size());
+    public List<Cache> getCaches() {
+        List<Cache> res = new ArrayList<>(caches.size());
         for (CacheDescriptor desc : caches.values()) {
-            res.add(desc.cacheChecker);
+            res.add(desc.cache);
         }
         return res;
     }
