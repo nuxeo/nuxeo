@@ -39,6 +39,10 @@ public class FacetDescriptor {
         this.schemas = schemas == null ? new SchemaDescriptor[0] : schemas;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
         return "Facet(" + name + ',' + SchemaDescriptor.getSchemaNames(schemas) + ')';

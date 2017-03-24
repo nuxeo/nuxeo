@@ -14,6 +14,7 @@
 package org.nuxeo.ecm.core.io.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -39,12 +40,16 @@ import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentTreeReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
+import org.nuxeo.ecm.core.schema.FacetDescriptor;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -80,6 +85,7 @@ public class TestExportImportZipArchive {
         docToExport = session.createDocument(docToExport);
 
         docToExport.addFacet("HiddenInNavigation");
+        docToExport.addFacet("NotFulltextIndexable");
         docToExport = session.saveDocument(docToExport);
 
         session.save();
@@ -127,6 +133,13 @@ public class TestExportImportZipArchive {
         session.save();
         assertEquals(0, session.getChildren(session.getRootDocument().getRef()).size());
 
+        //NXP-14218: do not fail if a facet becomes unknown
+        SchemaManagerImpl schemaManager = (SchemaManagerImpl) Framework.getService(SchemaManager.class);
+        FacetDescriptor fd = schemaManager.getFacetDescriptor("NotFulltextIndexable");
+        schemaManager.unregisterFacet(fd);
+        // Recompute available facets
+        schemaManager.recomputeDynamicFacets();
+
         // reimport
         reader = new NuxeoArchiveReader(archive);
         writer = new DocumentModelWriter(session, "/");
@@ -154,6 +167,7 @@ public class TestExportImportZipArchive {
 
         // check that facets have been reimported
         assertTrue(importedDocument.hasFacet("HiddenInNavigation"));
+        assertFalse(importedDocument.hasFacet("NotFulltextIndexable"));
     }
 
 }
