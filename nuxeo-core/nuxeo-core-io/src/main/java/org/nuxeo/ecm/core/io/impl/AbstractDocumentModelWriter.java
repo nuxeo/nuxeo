@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.io.impl;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -29,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.nuxeo.common.collections.PrimitiveArrays;
@@ -50,6 +53,7 @@ import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.JavaTypes;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -65,6 +69,8 @@ import org.nuxeo.runtime.api.Framework;
 // TODO: improve it ->
 // modify core session to add a batch create method and use it
 public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter {
+
+    private static final Log log = LogFactory.getLog(AbstractDocumentModelWriter.class);
 
     protected CoreSession session;
 
@@ -207,6 +213,20 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
         while (facets.hasNext()) {
             Element element = facets.next();
             String facet = element.getTextTrim();
+
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+            CompositeType facetType = schemaManager.getFacet(facet);
+
+            if (facetType == null) {
+                log.warn("The document " + docModel.getName() + " with id=" + docModel.getId() + " and type="
+                        + docModel.getDocumentType().getName() + " contains the facet '" + facet
+                        + "', which is not registered as available in the schemaManager. This facet will be ignored.");
+                if (log.isDebugEnabled()) {
+                    log.debug("Available facets: " + Arrays.toString(schemaManager.getFacets()));
+                }
+                continue;
+            }
+
             if (!docModel.hasFacet(facet)) {
                 docModel.addFacet(facet);
                 added = true;
@@ -279,7 +299,13 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
             String schemaName = element.attributeValue(ExportConstants.NAME_ATTR);
             Schema schema = schemaMgr.getSchema(schemaName);
             if (schema == null) {
-                throw new NuxeoException("Schema not found: " + schemaName);
+                log.warn("The document " + docModel.getName() + " with id=" + docModel.getId() + " and type="
+                        + docModel.getDocumentType() + " contains the schema '" + schemaName
+                        + "', which is not registered as available in the schemaManager. This schema will be ignored.");
+                if (log.isDebugEnabled()) {
+                    log.debug("Available schemas: " + Arrays.toString(schemaMgr.getSchemas()));
+                }
+                continue;
             }
             loadSchema(xdoc, schema, docModel, element);
         }
