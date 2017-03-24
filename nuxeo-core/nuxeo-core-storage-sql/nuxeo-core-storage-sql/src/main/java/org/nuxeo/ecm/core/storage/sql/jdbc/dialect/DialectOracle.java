@@ -286,26 +286,44 @@ public class DialectOracle extends Dialect {
         if (expected == Types.DOUBLE && actual == Types.FLOAT) {
             return true;
         }
+        if (expected == Types.VARCHAR && actual == Types.NVARCHAR) {
+            return true;
+        }
         if (expected == Types.VARCHAR && actual == Types.OTHER && actualName.equals("NVARCHAR2")) {
+            return true;
+        }
+        if (expected == Types.CLOB && actual == Types.NCLOB) {
             return true;
         }
         if (expected == Types.CLOB && actual == Types.OTHER && actualName.equals("NCLOB")) {
             return true;
         }
-        if (expected == Types.BIT && actual == Types.DECIMAL && actualName.equals("NUMBER") && actualSize == 1) {
+        if (expected == Types.BIT && actual == Types.DECIMAL && actualSize == 1) {
             return true;
         }
-        if (expected == Types.TINYINT && actual == Types.DECIMAL && actualName.equals("NUMBER") && actualSize == 3) {
+        if (expected == Types.TINYINT && actual == Types.DECIMAL && actualSize == 3) {
             return true;
         }
-        if (expected == Types.INTEGER && actual == Types.DECIMAL && actualName.equals("NUMBER") && actualSize == 10) {
+        if (expected == Types.INTEGER && actual == Types.DECIMAL && actualSize == 10) {
             return true;
         }
-        if (expected == Types.BIGINT && actual == Types.DECIMAL && actualName.equals("NUMBER") && actualSize == 19) {
+        if (expected == Types.BIGINT && actual == Types.DECIMAL && actualSize == 19) {
+            return true;
+        }
+        if (expected == Types.BIGINT && actual == Types.DECIMAL && actualSize == 38) {
             return true;
         }
         // CLOB vs VARCHAR compatibility
+        if (expected == Types.VARCHAR && actual == Types.NCLOB) {
+            return true;
+        }
         if (expected == Types.VARCHAR && actual == Types.OTHER && actualName.equals("NCLOB")) {
+            return true;
+        }
+        if (expected == Types.CLOB && actual == Types.VARCHAR) {
+            return true;
+        }
+        if (expected == Types.CLOB && actual == Types.NVARCHAR) {
             return true;
         }
         if (expected == Types.CLOB && actual == Types.OTHER && actualName.equals("NVARCHAR2")) {
