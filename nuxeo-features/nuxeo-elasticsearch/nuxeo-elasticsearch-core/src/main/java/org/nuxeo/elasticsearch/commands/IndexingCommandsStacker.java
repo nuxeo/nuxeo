@@ -37,6 +37,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -44,6 +45,7 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Contains logic to stack ElasticSearch commands depending on Document events This class is mainly here to make testing
@@ -117,13 +119,15 @@ public abstract class IndexingCommandsStacker {
                 type = Type.UPDATE;
                 break;
             case DOCUMENT_CHECKEDIN:
-                CoreSession session = doc.getCoreSession();
-                if (session != null) {
-                    // The previous doc version with isLastestVersion and isLatestMajorVersion need to be updated
-                    // Here we have no way to get this exact doc version so we reindex all versions
-                    for (DocumentModel version : doc.getCoreSession().getVersions(doc.getRef())) {
-                        stackCommand(version, BEFORE_DOC_UPDATE, false);
-                    }
+                if (indexIsLatestVersion()) {
+                    CoreSession session = doc.getCoreSession();
+                    if (session != null) {
+                        // The previous doc version with isLastestVersion and isLatestMajorVersion need to be updated
+                        // Here we have no way to get this exact doc version so we reindex all versions
+                        for (DocumentModel version : doc.getCoreSession().getVersions(doc.getRef())) {
+                            stackCommand(version, BEFORE_DOC_UPDATE, false);
+                        }
+                   }
                 }
                 type = Type.UPDATE;
                 break;
@@ -153,6 +157,10 @@ public abstract class IndexingCommandsStacker {
         } else {
             cmds.add(type, sync, recurse);
         }
+    }
+
+    private boolean indexIsLatestVersion() {
+        return !Framework.isBooleanPropertyTrue(AbstractSession.DISABLED_ISLATESTVERSION_PROPERTY);
     }
 
     private boolean isFolderish(DocumentModel doc) {
