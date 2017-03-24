@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.collections.core.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +73,7 @@ public class CollectionTestCase {
 
     protected static final int MAX_CARDINALITY = (int) ((2 * CollectionAsynchrnonousQuery.MAX_RESULT) + 1);
 
-    protected static final int WORK_TIME_OUT_MS = 5000;
+    protected static final int WORK_TIMEOUT_S = 30;
 
     protected DocumentModel testWorkspace;
 
@@ -94,9 +94,7 @@ public class CollectionTestCase {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        workManager.awaitCompletion(CollectionConstants.COLLECTION_QUEUE_ID, WORK_TIME_OUT_MS, TimeUnit.MILLISECONDS);
-
-        assertEquals(0, workManager.getQueueSize(CollectionConstants.COLLECTION_QUEUE_ID, null));
+        assertTrue(workManager.awaitCompletion(CollectionConstants.COLLECTION_QUEUE_ID, WORK_TIMEOUT_S, TimeUnit.SECONDS));
     }
 
 }
