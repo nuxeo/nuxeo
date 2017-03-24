@@ -428,7 +428,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertMetrics(0, 0, 1, 0);
 
         // Schedule a first work
-        int durationMS = 2000;
+        int durationMS = 3000;
         String workId = "1234";
         SleepWork work = new SleepWork(durationMS, false, workId);
         service.schedule(work);
@@ -438,8 +438,8 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertMetrics(0, 1, 1, 0);
 
         // schedule another work with the same workId
-        int durationBisMS = 1000;
-        SleepWork workbis = new SleepWork(durationBisMS, false, workId);
+        // don't try to put a different duration, same work id means same work serializatoin
+        SleepWork workbis = new SleepWork(durationMS, false, workId);
         service.schedule(workbis);
 
         // wait a bit, the first work is still running, the scheduled work should wait
@@ -448,7 +448,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertMetrics(1, 1, 1, 0);
 
         // wait enough so the first work is done and the second should be running
-        Thread.sleep(durationMS / 3 + durationBisMS / 2);
+        Thread.sleep(durationMS);
         assertMetrics(0, 1, 2, 0);
 
         assertTrue(service.awaitCompletion(2 * durationMS, TimeUnit.MILLISECONDS));
