@@ -124,19 +124,19 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         doc.getCoreSession().save();
         String query = "SELECT ecm:uuid FROM Document WHERE ecm:parentId = '" + doc.getId()
                 + "' AND ecm:currentLifeCycleState != 'deleted' ORDER BY ecm:pos";
-        try (IterableQueryResult res = doc.getCoreSession().queryAndFetch(query, "NXQL")) {
+        IterableQueryResult res = doc.getCoreSession().queryAndFetch(query, "NXQL");
 
-            vuuids = new String[(int) res.size()];
-            for (Map<String, Serializable> item : res) {
-                DocumentModel child = doc.getCoreSession().getDocument(new IdRef((String) item.get(NXQL.ECM_UUID)));
-                if (child.isFolder()) {
-                    folders.add(child);
-                } else {
-                    leafs.add(child);
-                }
+        vuuids = new String[(int) res.size()];
+        for (Map<String, Serializable> item : res) {
+            DocumentModel child = doc.getCoreSession().getDocument(new IdRef((String) item.get(NXQL.ECM_UUID)));
+            if (child.isFolder()) {
+                folders.add(child);
+            } else {
+                leafs.add(child);
             }
-
         }
+
+        res.close();
 
         int i = 0;
 
