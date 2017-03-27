@@ -243,7 +243,11 @@ public class TestAutoVersioning extends AbstractTestVersioning {
         doc.setPropertyValue("dc:title", "A");
         doc = session.saveDocument(doc);
         // get last version (document before update)
-        DocumentModel lastVersion = session.getLastDocumentVersion(doc.getRef());
+        // here we use getVersions instead of getLastDocumentVersion because on mem repository created date could the
+        // same and we don't retrieve the right versions
+        List<DocumentModel> versions = session.getVersions(doc.getRef());
+        assertEquals(1, versions.size());
+        DocumentModel lastVersion = versions.get(0);
         assertFalse(lastVersion.isCheckedOut());
         assertEquals("0.1", lastVersion.getVersionLabel());
         assertTrue(doc.isCheckedOut());
@@ -253,7 +257,9 @@ public class TestAutoVersioning extends AbstractTestVersioning {
         doc.setPropertyValue("dc:title", "B");
         doc = session.saveDocument(doc);
         // get last version (document before update)
-        lastVersion = session.getLastDocumentVersion(doc.getRef());
+        versions = session.getVersions(doc.getRef());
+        assertEquals(2, versions.size());
+        lastVersion = versions.get(1);
         assertFalse(lastVersion.isCheckedOut());
         assertEquals("0.2", lastVersion.getVersionLabel());
         assertTrue(doc.isCheckedOut());
@@ -286,6 +292,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
         doc = session.saveDocument(doc);
         // get versions (document before update)
         versions = session.getVersions(doc.getRef());
+        versions.sort((v1, v2) -> v1.getVersionLabel().compareTo(v2.getVersionLabel()));
         assertEquals(3, versions.size());
         DocumentModel versionAfterCreation = versions.get(0);
         DocumentModel versionBeforeUpdate = versions.get(1);
@@ -299,11 +306,12 @@ public class TestAutoVersioning extends AbstractTestVersioning {
         assertFalse(doc.isCheckedOut());
         assertEquals("2.0", doc.getVersionLabel());
 
-        // an edition should create a version
+        // an edition should create a version after update as document is already checked out
         doc.setPropertyValue("dc:title", "C");
         doc = session.saveDocument(doc);
-        // get versions (document before update)
+        // get versions
         versions = session.getVersions(doc.getRef());
+        versions.sort((v1, v2) -> v1.getVersionLabel().compareTo(v2.getVersionLabel()));
         // as document before update was already a version - service will just create one new version
         assertEquals(4, versions.size());
         versionAfterUpdate = versions.get(3);
@@ -330,8 +338,9 @@ public class TestAutoVersioning extends AbstractTestVersioning {
         assertFalse(doc.isCheckedOut());
         assertEquals("1.0", doc.getVersionLabel());
 
-        // Check that before automatic versioning wasn't trigger
+        // Check that before automatic versioning was trigger
         List<DocumentModel> versions = session.getVersions(doc.getRef());
+        versions.sort((v1, v2) -> v1.getVersionLabel().compareTo(v2.getVersionLabel()));
         assertEquals(2, versions.size());
         assertEquals("0.1", versions.get(0).getVersionLabel());
         assertEquals("1.0", versions.get(1).getVersionLabel());
