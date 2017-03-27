@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.CoreSessionService;
 import org.nuxeo.ecm.core.api.CoreSessionService.CoreSessionRegistrationInfo;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryService;
@@ -94,6 +96,8 @@ import com.google.inject.Binder;
 @Features({ RuntimeFeature.class, TransactionalFeature.class })
 @LocalDeploy("org.nuxeo.ecm.core.event:test-queuing.xml")
 public class CoreFeature extends SimpleFeature {
+
+    protected ACP rootAcp;
 
     public class WorksWaiter implements Waiter {
         @Override
@@ -284,6 +288,10 @@ public class CoreFeature extends SimpleFeature {
                     NXQL.NXQL)) {
                 batchRemoveDocuments(results);
             }
+            // set original ACP on root
+            DocumentModel root = session.getRootDocument();
+            root.setACP(rootAcp, true);
+
             session.save();
             waitForAsyncCompletion();
             if (!session.query("SELECT * FROM Document, Relation").isEmpty()) {
@@ -346,6 +354,9 @@ public class CoreFeature extends SimpleFeature {
             session.save();
             waitForAsyncCompletion();
         }
+        // save current root acp
+        DocumentModel root = session.getRootDocument();
+        rootAcp = root.getACP();
     }
 
     public String getRepositoryName() {
