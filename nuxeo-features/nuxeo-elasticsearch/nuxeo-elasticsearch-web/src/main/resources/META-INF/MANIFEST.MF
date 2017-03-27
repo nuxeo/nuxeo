@@ -4,5 +4,4 @@ Bundle-Name: ElasticSearch WebApp integration
 Bundle-SymbolicName: org.nuxeo.elasticsearch.web;singleton:=true
 Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/actions-contrib.xml,
- OSGI-INF/admin-pageprovider-contrib.xml,
  OSGI-INF/operations-contrib.xml
