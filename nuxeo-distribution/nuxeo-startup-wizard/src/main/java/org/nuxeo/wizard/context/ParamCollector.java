@@ -31,7 +31,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
@@ -90,9 +89,13 @@ public class ParamCollector {
     }
 
     public String getConfigurationParam(String name) {
+        return getConfigurationParam(name, "");
+    }
+
+    public String getConfigurationParam(String name, String defaultValue) {
         String param = configurationParams.get(name);
         if (param == null) {
-            param = configurationGenerator.getUserConfig().getProperty(name, "");
+            param = configurationGenerator.getUserConfig().getProperty(name, defaultValue);
         }
         return param;
     }

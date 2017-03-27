@@ -24,17 +24,17 @@ import static org.nuxeo.common.Environment.NUXEO_DATA_DIR;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.DB_EXCLUDE_CHECK_LIST;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.DB_NOSQL_LIST;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.INSTALL_AFTER_RESTART;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_MONGODB_NAME;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_MONGODB_SERVER;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_BIND_ADDRESS;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_HOST;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_NAME;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_PORT;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_PWD;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_USER;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_MONGODB_NAME;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_MONGODB_SERVER;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBNAME;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBNOSQL_NAME;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_WIZARD_DONE;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_BIND_ADDRESS;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +67,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.launcher.commons.DatabaseDriverException;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
@@ -187,22 +186,13 @@ public class RouterServlet extends HttpServlet {
 
     public void handleConnectGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        Context ctx = Context.instance(req);
-        // compute CB url
-        String cbUrl = req.getRequestURL().toString();
-        cbUrl = cbUrl.replace("/router/" + currentPage.getAction(), "/ConnectCallback?cb=yes");
-        // In order to avoid any issue with badly configured reverse proxies
-        // => get url from the client side
-        if (ctx.getBaseUrl() != null) {
-            cbUrl = ctx.getBaseUrl() + "ConnectCallback?cb=yes";
-        }
-        cbUrl = URLEncoder.encode(cbUrl, "UTF-8");
-        req.setAttribute("callBackUrl", cbUrl);
+        req.setAttribute("popupUrl", req.getContextPath() + "/ConnectCallback?action=display");
         handleDefaultGET(currentPage, req, resp);
     }
 
     public void handleConnectCallbackGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        Context ctx = Context.instance(req);
         String token = req.getParameter(CONNECT_TOKEN_KEY);
         String action = req.getParameter("action");
         String targetNav = null;
@@ -247,6 +237,23 @@ public class RouterServlet extends HttpServlet {
             targetNav = currentPage.next().getAction();
         } else if ("prev".equals(action)) {
             targetNav = currentPage.prev().prev().getAction();
+        } else if ("display".equals(action)) {
+            // compute CB url
+            String cbUrl = req.getRequestURL().toString();
+            cbUrl = cbUrl.replace("/router/" + currentPage.getAction(), "/ConnectCallback?cb=yes");
+            // In order to avoid any issue with badly configured reverse proxies
+            // => get url from the client side
+            if (ctx.getBaseUrl() != null) {
+                cbUrl = ctx.getBaseUrl() + "ConnectCallback?cb=yes";
+            }
+            cbUrl = URLEncoder.encode(cbUrl, "UTF-8");
+
+            String redirect = ctx.getCollector().getConfigurationParam("org.nuxeo.connect.url",
+                    "https://connect.nuxeo.com/nuxeo/site/") + "../../register/#/embedded?wizardCallbackUrl=" + cbUrl
+                    + "&pkg=" + ctx.getDistributionKey();
+
+            resp.sendRedirect(redirect);
+            return;
         }
 
         String targetUrl = req.getContextPath() + "/" + targetNav;
@@ -391,8 +398,9 @@ public class RouterServlet extends HttpServlet {
                     } else {
                         scts.setSearchScope(SearchControls.SUBTREE_SCOPE);
                     }
-                    String filter = String.format("(&(%s)(objectClass=%s))", searchFilter.isEmpty() ? "objectClass=*"
-                            : searchFilter, searchClass.isEmpty() ? "*" : searchClass);
+                    String filter = String.format("(&(%s)(objectClass=%s))",
+                            searchFilter.isEmpty() ? "objectClass=*" : searchFilter,
+                            searchClass.isEmpty() ? "*" : searchClass);
                     NamingEnumeration<SearchResult> results;
                     try {
                         results = dirContext.search(searchBaseDn, filter, scts);
@@ -738,7 +746,8 @@ public class RouterServlet extends HttpServlet {
             throws ServletException, IOException {
         ParamCollector collector = Context.instance(req).getCollector();
 
-        String installationFilePath = new File(collector.getConfigurationParam(NUXEO_DATA_DIR), INSTALL_AFTER_RESTART).getAbsolutePath();
+        String installationFilePath = new File(collector.getConfigurationParam(NUXEO_DATA_DIR),
+                INSTALL_AFTER_RESTART).getAbsolutePath();
 
         PackageDownloader.instance().scheduleDownloadedPackagesForInstallation(installationFilePath);
         PackageDownloader.reset();
