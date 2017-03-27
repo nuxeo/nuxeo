@@ -18,6 +18,7 @@ package org.nuxeo.elasticsearch.web.admin;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -57,7 +58,9 @@ import com.codahale.metrics.Timer;
  */
 @Name("esAdmin")
 @Scope(CONVERSATION)
-public class ElasticSearchManager {
+public class ElasticSearchManager implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(ElasticSearchManager.class);
 
