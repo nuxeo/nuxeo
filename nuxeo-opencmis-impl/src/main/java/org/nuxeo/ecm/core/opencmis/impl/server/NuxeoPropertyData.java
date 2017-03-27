@@ -73,7 +73,9 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
@@ -82,6 +84,8 @@ import org.nuxeo.runtime.api.Framework;
  * Nuxeo implementation of an object's property, backed by a property of a {@link DocumentModel}.
  */
 public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
+
+    private static final Log log = LogFactory.getLog(NuxeoPropertyData.class);
 
     protected final String name;
 
@@ -255,8 +259,24 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
     /** Gets the doc's relevant facets. */
     public static List<String> getFacets(DocumentModel doc) {
-        List<String> facets = new ArrayList<String>(doc.getFacets());
-        facets.remove(FacetNames.IMMUTABLE); // not actually stored or registered
+        List<String> facets = new ArrayList<>();
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        for (String facet : doc.getFacets()) {
+            CompositeType facetType = schemaManager.getFacet(facet);
+            if (facetType != null) {
+                // immutable facet is not actually stored or registered
+                if (!FacetNames.IMMUTABLE.equals(facet)) {
+                    facets.add(facet);
+                }
+            } else {
+                log.warn("The document " + doc.getName() + " with id=" + doc.getId() + " and type="
+                        + doc.getDocumentType().getName() + " contains the facet '" + facet
+                        + "', which is not registered as available in the schemaManager. This facet will be ignored.");
+                if (log.isDebugEnabled()) {
+                    log.debug("Available facets: " + Arrays.toString(schemaManager.getFacets()));
+                }
+            }
+        }
         Collections.sort(facets);
         return facets;
     }
