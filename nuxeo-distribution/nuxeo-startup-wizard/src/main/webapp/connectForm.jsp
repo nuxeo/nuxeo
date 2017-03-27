@@ -1,48 +1,40 @@
 <%@ include file="includes/header.jsp" %>
 <%@ page import="org.nuxeo.wizard.helpers.ConnectRegistrationHelper" %>
 <%
-    String cbUrl = (String) request.getAttribute("callBackUrl");
-
-    String connectUrl = collector.getConfigurationParam("org.nuxeo.connect.url");
-    if (connectUrl.equals("")) {
-        connectUrl = "https://connect.nuxeo.com/nuxeo/site/";
-    }
-    String formUrl = connectUrl + "../../register/#/embedded";
-    formUrl = formUrl + "?wizardCallbackUrl=" + cbUrl;
-    formUrl = formUrl + "&pkg=" + ctx.getDistributionKey();
+    String popupUrl = (String) request.getAttribute("popupUrl");
 
     boolean showRegistrationForm = !ctx.isConnectRegistrationDone();
-
     if (ConnectRegistrationHelper.isConnectRegistrationFileAlreadyPresent(ctx)) {
         showRegistrationForm = false;
     }
 %>
 
-<script>
-    var connectFormLoaded = false;
-    function setSize() {
-        var $form = $('#connectForm');
-        $form.css('height', '600px');
-        $form.css('display', 'block');
-        connectFormLoaded = true;
-    }
-
-    function handleFallbackIfNeeded() {
-        if (!connectFormLoaded) {
-            $('#fallback').css('display', 'block');
-        }
-    }
-
-    window.setTimeout(handleFallbackIfNeeded, 25000);
-
-</script>
-
 <% if (showRegistrationForm) { %>
+<script>
+    function showFallback() {
+        $('#fallback').css('display', 'block');
+    }
 
-<iframe id="connectForm" src="<%=formUrl%>" onload="setSize()" width="100%" marginwidth="0" marginheight="0"
-        frameborder="0" vspace="0" hspace="0" style="overflow:auto; width:100%; display:none"></iframe>
+    function openConnectRegister() {
+        // Warning, it will only work when using a Same Origin popup's url
+        var w = window.open("<%=popupUrl%>", 'Nuxeo Online Services', 'width=650,height=500');
+        if (w === undefined) {
+            showFallback();
+        }
 
-<div style="display:none" id="fallback">
+        // Keep a timed fallback in case Connect is not reachable
+        setTimeout(showFallback, 120 * 1000);
+    }
+
+    $(openConnectRegister);
+</script>
+<h1><fmt:message key="label.connectFinish"/></h1>
+<div class="formPadding">
+    <p><fmt:message key="label.connectForm.popup.description"/></p>
+    <p><a href="#" onclick="openConnectRegister()"><fmt:message key="label.connectForm.popup.manual"/></a></p>
+</div>
+
+<div style="display:none" id="fallback" class="formPadding">
 
     <p><fmt:message key="label.connectForm.loadError1"/></p>
     <p><fmt:message key="label.connectForm.loadError2"/></p>
@@ -57,14 +49,13 @@
 <div class="formPadding">
     <fmt:message key="label.connectFinish.ok.details"/>
     <%@ include file="includes/prevnext.jsp" %>
-
     <script>
-        window.setTimeout(function () {
+        $('#btnNext').bind('click', function () {
             navigateTo('<%=currentPage.next().getAction()%>')
-        }, 3000);
+        });
     </script>
-    <%} %>
 </div>
 
+<%} %>
 
 <%@ include file="includes/footer.jsp" %>
