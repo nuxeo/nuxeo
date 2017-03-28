@@ -216,7 +216,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
             } catch (ExecutionException e) {
                 log.error(e.getMessage(), e);
             } catch (TimeoutException e) {
-                log.warn(String.format("Indexation of repository %s not finised after %d s, continuing in background",
+                log.warn(String.format("Indexation of repository %s not finished after %d s, continuing in background",
                         repositoryName, REINDEX_TIMEOUT));
             }
         }
