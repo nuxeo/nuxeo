@@ -30,6 +30,9 @@
         <row>
           <widget>listOfListsWidget</widget>
         </row>
+        <row>
+          <widget>sublistOfListsWidget</widget>
+        </row>
       </rows>
       <widget name="title" type="text">
         <labels>
@@ -178,6 +181,54 @@
                 <fields>
                   <field>#{value}</field>
                 </fields>
+              </widget>
+            </subWidgets>
+          </widget>
+        </subWidgets>
+      </widget>
+      <widget name="sublistOfListsWidget" type="list">
+        <labels>
+          <label mode="any">A prop</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>vs:aProp</field>
+        </fields>
+        <subWidgets>
+          <widget name="bProp" type="list">
+            <labels>
+              <label mode="any">B Prop</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>bProp</field>
+            </fields>
+            <properties widgetMode="edit">
+              <property name="listTemplateItem">#{nxd:propertyDefaultValue('cc:aProp/bProp')}</property>
+            </properties>
+            <subWidgets>
+              <widget name="cProp" type="list">
+                <labels>
+                  <label mode="any">C Prop</label>
+                </labels>
+                <translated>false</translated>
+                <fields>
+                  <field>cProp</field>
+                </fields>
+                <properties widgetMode="edit">
+                  <property name="listTemplateItem">#{nxd:propertyDefaultValue('cc:aProp/bProp/cProp')}</property>
+                </properties>
+                <subWidgets>
+                  <widget name="subStringProp" type="text">
+                    <labels>
+                      <label mode="any">My String</label>
+                    </labels>
+                    <translated>false</translated>
+                    <fields>
+                      <field>myString</field>
+                    </fields>
+                  </widget>
+                </subWidgets>
               </widget>
             </subWidgets>
           </widget>

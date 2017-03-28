@@ -82,4 +82,45 @@
     <xs:list itemType="nxv:lnType" />
   </xs:simpleType>
 
+  <!-- 3 level list -->
+  <xs:element name="aProp" type="nxv:cc_aPropListType" />
+  <xs:complexType name="cc_aPropListType">
+    <xs:sequence>
+      <xs:element name="item" type="nxv:cc_aPropType" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="cc_aPropType">
+    <xs:sequence>
+      <xs:element name="bProp" type="nxv:cc_bPropListType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="cc_bPropListType">
+    <xs:sequence>
+      <xs:element name="item" type="nxv:cc_bPropType" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="cc_bPropType">
+    <xs:sequence>
+      <xs:element name="cProp" type="nxv:cc_cPropListType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="cc_cPropListType">
+    <xs:sequence>
+      <xs:element name="item" type="nxv:cc_cPropType" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="cc_cPropType">
+    <xs:sequence>
+      <xs:element name="myString" nillable="false" nxsv:nillable="false">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[a-zA-Z0-9]+"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
 </xs:schema>
