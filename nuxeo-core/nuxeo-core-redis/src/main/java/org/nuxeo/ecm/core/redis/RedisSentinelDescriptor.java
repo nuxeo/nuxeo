@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 import redis.clients.jedis.JedisPoolConfig;
@@ -20,6 +21,9 @@ import redis.clients.jedis.JedisSentinelPool;
 @XObject("sentinel")
 public class RedisSentinelDescriptor extends RedisServerDescriptor {
 
+    @XNodeList(value = "host", type = RedisHostDescriptor[].class, componentType = RedisHostDescriptor.class)
+    public RedisHostDescriptor[] hosts = new RedisHostDescriptor[0];
+    
     @XNode("master")
     public String master = "master";
 
