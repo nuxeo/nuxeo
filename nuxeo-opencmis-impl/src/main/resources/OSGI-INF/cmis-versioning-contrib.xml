@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.opencmis.impl.server.versioning" version="1.0">
+
+  <require>org.nuxeo.ecm.core.versioning.default-policies</require>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <policy id="no-versioning-for-cmis-before-update" beforeUpdate="true" increment="NONE" order="2">
+      <filter-id>cmis-document</filter-id>
+    </policy>
+    <policy id="no-versioning-for-cmis-after-update" increment="NONE" order="2">
+      <filter-id>cmis-document</filter-id>
+    </policy>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+    <filter id="cmis-document" class="org.nuxeo.ecm.core.opencmis.impl.server.versioning.CMISVersioningFilter" />
+  </extension>
+
+</component>

@@ -154,6 +154,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.opencmis.impl.server.versioning.CMISVersioningFilter;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
@@ -289,6 +290,7 @@ public class NuxeoCmisService extends AbstractCmisService
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
         errorOnCancelCheckOutOfDraftVersion = configurationService.isBooleanPropertyTrue(
                 ERROR_ON_CANCEL_CHECK_OUT_OF_DRAFT_VERSION_PROP);
+        CMISVersioningFilter.enable();
     }
 
     // called in a finally block from dispatcher
@@ -299,6 +301,7 @@ public class NuxeoCmisService extends AbstractCmisService
             coreSession = null;
         }
         clearObjectInfos();
+        CMISVersioningFilter.disable();
     }
 
     @Override
@@ -370,6 +373,8 @@ public class NuxeoCmisService extends AbstractCmisService
             String username = callContext.getBinding().equals(CallContext.BINDING_LOCAL) ? callContext.getUsername()
                     : null;
             coreSession = repository == null ? null : openCoreSession(repository.getId(), username);
+            // re-set CMIS automatic versioning filter as it was disabled at close
+            CMISVersioningFilter.enable();
         }
     }
 
