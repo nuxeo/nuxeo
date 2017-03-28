@@ -38,6 +38,8 @@ import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
@@ -225,24 +227,23 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     public void handleUpdate(List<MetadataMappingDescriptor> mappingDescriptors, DocumentModel doc) {
         for (MetadataMappingDescriptor mappingDescriptor : mappingDescriptors) {
             Property fileProp = doc.getProperty(mappingDescriptor.getBlobXPath());
-            boolean isDirtyMapping = isDirtyMapping(mappingDescriptor, doc);
             Blob blob = fileProp.getValue(Blob.class);
             if (blob != null) {
-                if (fileProp.isDirty()) {
-                    if (isDirtyMapping) {
-                        // if Blob dirty and document metadata dirty, write metadata from doc to Blob
-                        Blob newBlob = writeMetadata(mappingDescriptor.getProcessor(), fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
-                        fileProp.setValue(newBlob);
-                    } else {
-                        // if Blob dirty and document metadata not dirty, write metadata from Blob to doc
-                        writeMetadata(doc);
+                boolean isDirtyMapping = isDirtyMapping(mappingDescriptor, doc);
+                if (isDirtyMapping) {
+                    BlobManager blobManager = Framework.getService(BlobManager.class);
+                    BlobProvider blobProvider = blobManager.getBlobProvider(blob);
+                    // do not write metadata in blobs backed by extended blob providers (ex: Google Drive) or blobs from
+                    // providers that prevent user updates
+                    if (blobProvider != null && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null)) {
+                        return;
                     }
-                } else {
-                    if (isDirtyMapping) {
-                        // if Blob not dirty and document metadata dirty, write metadata from doc to Blob
-                        Blob newBlob = writeMetadata(mappingDescriptor.getProcessor(), fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
-                        fileProp.setValue(newBlob);
-                    }
+                    // if document metadata dirty, write metadata from doc to Blob
+                    Blob newBlob = writeMetadata(mappingDescriptor.getProcessor(), fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
+                    fileProp.setValue(newBlob);
+                } else if (fileProp.isDirty()) {
+                    // if Blob dirty and document metadata not dirty, write metadata from Blob to doc
+                    writeMetadata(doc);
                 }
             }
         }

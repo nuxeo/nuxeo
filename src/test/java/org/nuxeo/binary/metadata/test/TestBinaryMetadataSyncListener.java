@@ -31,6 +31,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -47,7 +49,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.platform.rendition.core",
         "org.nuxeo.ecm.automation.core" })
 @LocalDeploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-test.xml",
-        "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml" })
+        "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml",
+        "org.nuxeo.binary.metadata:binary-metadata-contrib-provider.xml"})
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestBinaryMetadataSyncListener {
 
@@ -143,5 +146,35 @@ public class TestBinaryMetadataSyncListener {
         picture = session.getDocument(doc.getRef());
         assertEquals("DDP", picture.getPropertyValue("dc:source"));
         assertEquals("ImageForum", picture.getPropertyValue("dc:rights"));
+    }
+
+    @Test
+    public void testUpdateOnBlobsFromProvidersWhichPreventUserUpdate() {
+        // Create a folder
+        DocumentModel doc = session.createDocumentModel("/", "folder", "Folder");
+        doc.setPropertyValue("dc:title", "Folder");
+        session.createDocument(doc);
+
+        // Create a doc
+        doc = session.createDocumentModel("/folder", "picture", "Picture");
+        doc.setPropertyValue("dc:title", "a picture file");
+        doc = session.createDocument(doc);
+
+        // Attach blob from provider
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = "testProvider:user@testProvider.com:0134cc5";
+        blobInfo.digest = "5cc31b4305e2beb7191f717448";
+        blobInfo.filename = "iptc_sample.jpg";
+        blobInfo.mimeType = "image/jpeg";
+        Blob blob = new SimpleManagedBlob(blobInfo);
+        DocumentHelper.addBlob(doc.getProperty("file:content"), blob);
+        session.save();
+
+        // update metadata and check if the blob is still a blob from the provider
+        doc.setPropertyValue("imd:user_comment", "a comment");
+        session.saveDocument(doc);
+        Blob anotherBlob = (Blob) doc.getProperty("file:content").getValue();
+        // assert the blob was not modified even if the metadata was updated
+        assertEquals(blob, anotherBlob);
     }
 }
