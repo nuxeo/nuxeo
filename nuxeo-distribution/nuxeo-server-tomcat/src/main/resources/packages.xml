@@ -63,7 +63,7 @@
   </install>
   <presets>
     <preset id="nuxeo-server-preset" label="Nuxeo Server Preset">
-      nuxeo-server,nuxeo-jsf-ui,nuxeo-web-ui,nuxeo-dam,nuxeo-drive,nuxeo-showcase-content,nuxeo-template-rendering-samples
+      nuxeo-server,nuxeo-jsf-ui,nuxeo-web-ui,nuxeo-dam,nuxeo-drive,nuxeo-spreadsheet,nuxeo-showcase-content,nuxeo-template-rendering-samples
     </preset>
   </presets>
 </packages>
