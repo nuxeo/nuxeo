@@ -61,12 +61,14 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
@@ -104,6 +106,9 @@ public class TestAutomaticIndexing {
 
     @Inject
     ElasticSearchAdmin esa;
+
+    @Inject
+    protected ElasticSearchIndexing esi;
 
     @Inject
     protected TagService tagService;
@@ -174,6 +179,62 @@ public class TestAutomaticIndexing {
     @Before
     public void setupIndex() throws Exception {
         esa.initIndexes(true);
+    }
+
+    @Test
+    public void shouldNotIndexRootDocument() throws Exception {
+        startTransaction();
+        // update acp on root document as it is reinit during tear down
+        DocumentModel root = session.getRootDocument();
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acp.addACL(acl);
+        root.setACP(acp, true);
+
+        // check no indexing was performed
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        assertNumberOfCommandProcessed(0);
+
+        // check no root document from search response
+        startTransaction();
+        SearchResponse searchResponse = esa.getClient()
+                                           .prepareSearch(IDX_NAME)
+                                           .setTypes(TYPE_NAME)
+                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                                           .setFrom(0)
+                                           .setSize(60)
+                                           .execute()
+                                           .actionGet();
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+    }
+
+    @Test
+    public void shouldNotIndexRootDocumentDuringReindexAll() throws Exception {
+        startTransaction();
+        // Re-index all repositories
+        for (String repositoryName : esa.getRepositoryNames()) {
+            esa.dropAndInitRepositoryIndex(repositoryName);
+            esi.runReindexingWorker(repositoryName, "SELECT ecm:uuid FROM Document");
+        }
+
+        // check no indexing was performed
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        assertNumberOfCommandProcessed(0);
+
+        // check no root document from search response
+        startTransaction();
+        SearchResponse searchResponse = esa.getClient()
+                                           .prepareSearch(IDX_NAME)
+                                           .setTypes(TYPE_NAME)
+                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                                           .setFrom(0)
+                                           .setSize(60)
+                                           .execute()
+                                           .actionGet();
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
     }
 
     @Test

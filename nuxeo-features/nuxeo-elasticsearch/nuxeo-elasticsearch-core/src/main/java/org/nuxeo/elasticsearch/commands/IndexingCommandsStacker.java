@@ -67,6 +67,10 @@ public abstract class IndexingCommandsStacker {
         if (doc == null) {
             return;
         }
+        if ("/".equals(doc.getPathAsString())) {
+            log.debug("Skip indexing command for root document");
+            return;
+        }
         Boolean block = (Boolean) docCtx.getProperty(ElasticSearchConstants.DISABLE_AUTO_INDEXING);
         if (block != null && block) {
             if (log.isDebugEnabled()) {
