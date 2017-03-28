@@ -26,9 +26,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.versioning.VersioningPolicyFilter;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -40,6 +43,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Deploy({"org.nuxeo.ecm.core.test.tests"})
 @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-document-type.xml")
 public class TestAutoVersioning extends AbstractTestVersioning {
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     @Test
     @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-initial-version.xml")
@@ -305,6 +311,10 @@ public class TestAutoVersioning extends AbstractTestVersioning {
         assertEquals("2.0", versionAfterUpdate.getVersionLabel());
         assertFalse(doc.isCheckedOut());
         assertEquals("2.0", doc.getVersionLabel());
+
+        // wait for mem repository - repository is fast, we assume that some workers update states with a previous state
+        // of metadata, in this case version label for version 3.0 is not correct (ie: 2.0)
+        txFeature.nextTransaction();
 
         // an edition should create a version after update as document is already checked out
         doc.setPropertyValue("dc:title", "C");
