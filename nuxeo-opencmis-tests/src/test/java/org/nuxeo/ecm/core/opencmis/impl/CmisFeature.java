@@ -66,8 +66,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.ecm.platform.web.common" })
 @LocalDeploy({ "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/validation-contrib.xml", //
         "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/disable-thumbnail-listener.xml", //
-        "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/disable-filemanager-icon-listener.xml", //
-        "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/disable-collaborative-versioning-policy.xml" })
+        "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/disable-filemanager-icon-listener.xml"})
 public class CmisFeature extends SimpleFeature {
 
     @Override
