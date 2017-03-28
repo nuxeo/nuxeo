@@ -106,10 +106,12 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker impleme
 
     @Override
     public void afterCompletion(int status) {
-        if (getAllCommands().isEmpty()) {
-            return;
-        }
         try {
+            if (getAllCommands().isEmpty()) {
+                // return and un hook the current listener even if there's no commands to index
+                // unless, during next transaction this listener won't be hooked to it
+                return;
+            }
             if (Status.STATUS_MARKED_ROLLBACK == status || Status.STATUS_ROLLEDBACK == status) {
                 return;
             }
