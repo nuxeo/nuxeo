@@ -120,11 +120,95 @@
 
   <extension-point name="policies">
 
+    <documentation>
+      Extension point defining versioning policies for documents.
+      Contributions to this extension point are available for VersioningService
+      implementing ExtendableVersioningService interface.
+
+      Example:
+      <code>
+        <policy id="no-versioning-for-system-before-update" beforeUpdate="true" increment="NONE" order="1">
+          <filter-id>system-document</filter-id>
+        </policy>
+        <policy id="no-versioning-for-system-after-update" increment="NONE" order="1">
+          <filter-id>system-document</filter-id>
+        </policy>
+        <policy id="versioning-with-initial-version" increment="MINOR" order="2">
+          <initialState major="1" minor="0" />
+        </policy>
+      </code>
+
+      The beforeUpdate attribute enables, if set to true,
+      to apply versioning before the actual update of the document.
+      The default value for this attribute is false.
+
+      The increment attribute defines which version number
+      (minor or major) have to be incremented.
+      The available options for this attribute are :
+        - NONE
+        - MINOR
+        - MAJOR
+
+      The order attribute defines in which order the policies
+      should be taken into account. They are taken in ascending order.
+
+      Initial state is the initial version number of the document.
+      Default is 0.0.
+
+      Each policy contains one or multiple filters
+      defining under which conditions the document should be versioned
+      (Note that filters for a policy are OR-ed).
+
+      @since 9.1
+    </documentation>
+
     <object class="org.nuxeo.ecm.core.versioning.VersioningPolicyDescriptor" />
 
   </extension-point>
 
   <extension-point name="filters">
+
+    <documentation>
+      Extension point defining filters which can be used
+      by one or multiple versioning policies.
+      Contributions to this extension point are available for VersioningService
+      implementing ExtendableVersioningService interface.
+
+      Example :
+      <code>
+
+        <filter id="class-filter" class="foo.bar.CustomVersioningFilter"/>
+
+        <filter id="collaborative-filter-on-files">
+          <type>File</type>
+          <condition>#{previousDocument.dc.lastContributor != currentDocument.dc.lastContributor}</condition>
+        </filter>
+
+        <filter id="empty">
+          <type></type>
+          <facet></facet>
+          <schema></schema>
+          <condition></condition>
+        </filter>
+      </code>
+
+      A custom filter can be defined with the class attribute
+      if a java class should be used for the filter.
+      Otherwise, a StandardVersioningFilter will be used
+      with the following elements available:
+
+       - The type element defines which document type will be versioned.
+
+       - The facet/schema element defines that the document
+         will be versioned if it contains the facet/schema.
+
+       - The condition element enables creating
+         a custom condition with an EL expression.
+
+      Note that elements for a filter are AND-ed.
+
+      @since 9.1
+    </documentation>
 
     <object class="org.nuxeo.ecm.core.versioning.VersioningFilterDescriptor" />
 
