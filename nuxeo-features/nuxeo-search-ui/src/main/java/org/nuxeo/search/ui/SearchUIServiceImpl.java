@@ -30,6 +30,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelFactory;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
@@ -113,6 +115,13 @@ public class SearchUIServiceImpl implements SearchUIService {
         DocumentModel uws = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
 
         DocumentModel searchDoc = searchContentViewState.getSearchDocumentModel();
+        DocumentRef ref = searchDoc.getRef();
+        if (ref != null && session.exists(ref)) {
+            // already a saved search, init a new doc
+            DocumentModel bareDoc = DocumentModelFactory.createDocumentModel(searchDoc.getType());
+            bareDoc.copyContent(searchDoc);
+            searchDoc = bareDoc;
+        }
         searchDoc.setPropertyValue("dc:title", title);
 
         if (searchDoc.hasFacet(CONTENT_VIEW_DISPLAY_FACET)) {
