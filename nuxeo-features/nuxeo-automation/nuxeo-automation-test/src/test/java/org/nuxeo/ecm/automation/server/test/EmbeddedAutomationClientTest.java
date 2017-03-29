@@ -108,6 +108,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -1004,18 +1005,33 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         assertEquals("documents", ((PropertyMap) root.getContextParameters().get("breadcrumb")).get("entity-type"));
     }
 
-    /**
-     * @since 8.10
-     */
+    @Test
+    public void canSendCalendarParameters() throws IOException {
+        canSendCalendarParameters("existingMembers");
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.automation.test.test:test-allow-virtual-user.xml")
+    public void canSendCalendarParametersIfUserNotFound() throws IOException {
+        ConfigurationService configService = Framework.getService(ConfigurationService.class);
+        assertTrue(configService.isBooleanPropertyTrue(AddPermission.ALLOW_VIRTUAL_USER));
+
+        canSendCalendarParameters("nonExistentMembers");
+    }
+
     @Test
     public void cannotSendCalendarParametersIfUserNotFound() throws IOException {
+        cannotSendCalendarParameters("nonExistentMembers");
+    }
+
+    private void cannotSendCalendarParameters(String username) throws IOException {
         Document root = (Document) super.session.newRequest(FetchDocument.ID).set("value", "/").execute();
         OperationRequest request = session.newRequest(AddPermission.ID);
         GregorianCalendar begin = new GregorianCalendar(2015, Calendar.JUNE, 20, 12, 34, 56);
         GregorianCalendar end = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
         try {
             request.setInput(root)
-                   .set("username", "nonExistentMembers")
+                   .set("username", username)
                    .set("permission", "Write")
                    .set("begin", begin)
                    .set("end", end)
@@ -1026,14 +1042,10 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         }
     }
 
-    /**
-     * @since 7.4
-     */
-    @Test
-    public void canSendCalendarParameters() throws IOException {
+    private void canSendCalendarParameters(String username) throws IOException {
         // Setup
         DocumentModel testUser = userManager.getBareUserModel();
-        testUser.setProperty("user", "username", "existingMembers");
+        testUser.setProperty("user", "username", username);
         testUser = userManager.createUser(testUser);
         assertNotNull(testUser.getId());
         txFeature.nextTransaction();
@@ -1044,7 +1056,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             GregorianCalendar begin = new GregorianCalendar(2015, Calendar.JUNE, 20, 12, 34, 56);
             GregorianCalendar end = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
             request.setInput(root)
-                   .set("username", "existingMembers")
+                   .set("username", username)
                    .set("permission", "Write")
                    .set("begin", begin)
                    .set("end", end)

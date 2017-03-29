@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Operation that adds a permission to a given ACL for a given user.
@@ -57,6 +58,13 @@ public class AddPermission {
     public static final String NOTIFY_KEY = "notify";
 
     public static final String COMMENT_KEY = "comment";
+
+    /**
+     * Configuration property name, which defines whether virtual user (non-existent user) is allowed in Nuxeo
+     * automation. If allowed, Nuxeo server will not check the user existence during automation execution. Set this
+     * property to true if you use Nuxeo computed user or computed group.
+     */
+    public static final String ALLOW_VIRTUAL_USER = "nuxeo.automation.allowVirtualUser";
 
     @Context
     protected CoreSession session;
@@ -119,10 +127,9 @@ public class AddPermission {
             username = NuxeoPrincipal.computeTransientUsername(email);
         } else {
             username = user;
-            UserManager userManager = Framework.getService(UserManager.class);
-            if (userManager.getUserModel(username) == null && userManager.getGroupModel(username) == null) {
-                String errorMsg = "User or group name '" + username + "' does not exist. Please provide a valid name.";
-                throw new NuxeoException(errorMsg);
+            ConfigurationService configService = Framework.getService(ConfigurationService.class);
+            if (configService.isBooleanPropertyFalse(ALLOW_VIRTUAL_USER)) {
+                checkUserExistence(username);
             }
         }
 
@@ -145,6 +152,14 @@ public class AddPermission {
         permissionChanged = acp.addACE(aclName, ace) || permissionChanged;
         if (permissionChanged) {
             doc.setACP(acp, true);
+        }
+    }
+
+    protected void checkUserExistence(String username) {
+        UserManager userManager = Framework.getService(UserManager.class);
+        if (userManager.getUserModel(username) == null && userManager.getGroupModel(username) == null) {
+            String errorMsg = "User or group name '" + username + "' does not exist. Please provide a valid name.";
+            throw new NuxeoException(errorMsg);
         }
     }
 
