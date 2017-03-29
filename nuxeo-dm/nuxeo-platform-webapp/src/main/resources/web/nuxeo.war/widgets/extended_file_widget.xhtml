@@ -23,7 +23,7 @@
     <nxu:set var="actions"
              value="#{documentActions.getBlobActions(document, blobXPath, blob)}"
              cache="true">
-    <nxh:graphicImage value="#{nxd:fileIconPath(blob)}"
+    <nxh:graphicImage styleClass="smallIcon" value="#{nxd:fileIconPath(blob)}"
                       rendered="#{! empty nxd:fileIconPath(blob)}" />
     <c:if test="#{blobLength >= 0}">
       <nxh:outputLink value="#{fileUrl}">
