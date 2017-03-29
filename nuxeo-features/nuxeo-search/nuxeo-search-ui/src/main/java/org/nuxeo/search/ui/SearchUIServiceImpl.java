@@ -139,10 +139,11 @@ public class SearchUIServiceImpl implements SearchUIService {
                 searchDoc.setPropertyValue("saved:sortBy", sortBy);
                 searchDoc.setPropertyValue("saved:sortOrder", sortOrder);
             }
-            searchDoc.setPropertyValue("cvd:selectedLayoutColumns", (Serializable) searchContentViewState.getResultColumns());
+            searchDoc.setPropertyValue("cvd:selectedLayoutColumns",
+                    (Serializable) searchContentViewState.getResultColumns());
         } else {
             log.warn(String.format("Search document type %s is missing %s facet", searchDoc.getType(),
-                CONTENT_VIEW_DISPLAY_FACET));
+                    CONTENT_VIEW_DISPLAY_FACET));
         }
 
         PathSegmentService pathService = Framework.getService(PathSegmentService.class);
@@ -158,8 +159,7 @@ public class SearchUIServiceImpl implements SearchUIService {
     }
 
     @SuppressWarnings("unchecked")
-    protected List<DocumentModel> getDocuments(String pageProviderName, CoreSession session, Object... parameters)
-            {
+    protected List<DocumentModel> getDocuments(String pageProviderName, CoreSession session, Object... parameters) {
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("coreSession", (Serializable) session);
@@ -177,7 +177,7 @@ public class SearchUIServiceImpl implements SearchUIService {
     public ContentViewState loadSearch(DocumentModel savedSearch) {
         if (!savedSearch.hasFacet(CONTENT_VIEW_DISPLAY_FACET)) {
             log.warn(String.format("Search document type %s is missing %s facet", savedSearch.getType(),
-                CONTENT_VIEW_DISPLAY_FACET));
+                    CONTENT_VIEW_DISPLAY_FACET));
             return null;
         }
         ContentViewState state = new ContentViewStateImpl();
@@ -191,7 +191,7 @@ public class SearchUIServiceImpl implements SearchUIService {
     @SuppressWarnings("unchecked")
     List<SortInfo> getSortInfos(DocumentModel savedSearch) {
         List<Map<String, Serializable>> list = (List<Map<String, Serializable>>) savedSearch.getPropertyValue(
-            "cvd:sortInfos");
+                "cvd:sortInfos");
         List<SortInfo> sortInfos = new ArrayList<>();
         for (Map<String, Serializable> info : list) {
             sortInfos.add(SortInfo.asSortInfo(info));
