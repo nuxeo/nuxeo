@@ -29,9 +29,12 @@ import static org.nuxeo.ecm.platform.usermanager.UserConfig.USERNAME_COLUMN;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -42,6 +45,7 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 import net.sf.json.JSONArray;
@@ -50,13 +54,17 @@ import net.sf.json.JSONObject;
 /**
  * @since 5.6
  */
-@Operation(id = QueryUsers.ID, category = Constants.CAT_SERVICES, label = "Query users", description = "Query users filtered by a tenantId if provided.")
+@Operation(id = QueryUsers.ID, //
+        category = Constants.CAT_USERS_GROUPS, //
+        aliases = { "Services.QueryUsers" }, //
+        label = "Query users", //
+        description = "Query users on a combination of their username, firstName and lastName fields, or on any of them (pattern).")
 public class QueryUsers {
 
-    public static final String ID = "Services.QueryUsers";
+    public static final String ID = "User.Query";
 
-    public static final List<String> FULLTEXT_FIELDS = Arrays.asList(USERNAME_COLUMN, FIRSTNAME_COLUMN,
-            LASTNAME_COLUMN);
+    public static final Set<String> FULLTEXT_FIELDS = new HashSet<>(
+            Arrays.asList(USERNAME_COLUMN, FIRSTNAME_COLUMN, LASTNAME_COLUMN));
 
     public static final String JSON_USERNAME = USERNAME_COLUMN;
 
@@ -73,6 +81,15 @@ public class QueryUsers {
     @Context
     protected UserManager userManager;
 
+    @Param(name = "username", required = false)
+    protected String username;
+
+    @Param(name = "firstName", required = false)
+    protected String firstName;
+
+    @Param(name = "lastName", required = false)
+    protected String lastName;
+
     @Param(name = "pattern", required = false)
     protected String pattern;
 
@@ -81,21 +98,37 @@ public class QueryUsers {
 
     @OperationMethod
     public Blob run() {
-        List<DocumentModel> users = new ArrayList<>();
+        List<DocumentModel> users;
         if (StringUtils.isBlank(pattern)) {
             Map<String, Serializable> filter = new HashMap<>();
-            if (!StringUtils.isBlank(tenantId)) {
+            if (StringUtils.isNotBlank(username)) {
+                filter.put(USERNAME_COLUMN, username);
+            }
+            if (StringUtils.isNotBlank(firstName)) {
+                filter.put(FIRSTNAME_COLUMN, firstName);
+            }
+            if (StringUtils.isNotBlank(lastName)) {
+                filter.put(LASTNAME_COLUMN, lastName);
+            }
+            if (StringUtils.isNotBlank(tenantId)) {
                 filter.put(TENANT_ID_COLUMN, tenantId);
             }
-            users.addAll(userManager.searchUsers(filter, filter.keySet()));
+            users = userManager.searchUsers(filter, FULLTEXT_FIELDS);
         } else {
+            users = new ArrayList<>();
+            Set<String> userIds = new HashSet<>();
             for (String field : FULLTEXT_FIELDS) {
                 Map<String, Serializable> filter = new HashMap<>();
                 filter.put(field, pattern);
-                if (!StringUtils.isBlank(tenantId)) {
+                if (StringUtils.isNotBlank(tenantId)) {
                     filter.put(TENANT_ID_COLUMN, tenantId);
                 }
-                users.addAll(userManager.searchUsers(filter, filter.keySet()));
+                DocumentModelList userDocs = userManager.searchUsers(filter, Collections.singleton(field));
+                for (DocumentModel userDoc : userDocs) {
+                    if (userIds.add(userDoc.getId())) { // avoid duplicates
+                        users.add(userDoc);
+                    }
+                }
             }
         }
         return buildResponse(users);
