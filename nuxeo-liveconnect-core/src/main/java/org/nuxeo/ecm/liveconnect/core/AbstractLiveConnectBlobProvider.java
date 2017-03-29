@@ -169,10 +169,10 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
                     if (nextDocumentsToBeUpdated.isEmpty()) {
                         break;
                     }
-                    List<String> docIds = nextDocumentsToBeUpdated.stream().map(DocumentModel::getId)
-                            .collect(Collectors.toList());
-                    BlobProviderDocumentsUpdateWork work = new BlobProviderDocumentsUpdateWork(buildWorkId(
-                            repositoryName, offset), blobProviderId);
+                    List<String> docIds = nextDocumentsToBeUpdated.stream().map(DocumentModel::getId).collect(
+                            Collectors.toList());
+                    BlobProviderDocumentsUpdateWork work = new BlobProviderDocumentsUpdateWork(
+                            buildWorkId(repositoryName, offset), blobProviderId);
                     work.setDocuments(repositoryName, docIds);
                     workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
                     offset += maxResult;
@@ -211,7 +211,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
         blobInfo.mimeType = file.getMimeType();
         blobInfo.encoding = file.getEncoding();
         blobInfo.filename = file.getFilename().replace('/', '-');
-        blobInfo.length = file.getFileSize();
+        blobInfo.length = Long.valueOf(file.getFileSize());
         blobInfo.digest = file.getDigest();
         return new SimpleManagedBlob(blobInfo);
     }
@@ -285,7 +285,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
             throw new NuxeoException("No credentials found for user " + user + " and service " + blobProviderId);
         }
         Long expiresInSeconds = credential.getExpiresInSeconds();
-        if (expiresInSeconds != null && expiresInSeconds <= 0) {
+        if (expiresInSeconds != null && expiresInSeconds.longValue() <= 0) {
             credential.refreshToken();
         }
         return credential;
