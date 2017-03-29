@@ -209,6 +209,7 @@ public interface RuntimeService {
      * Error messages block server startup in strict mode.
      *
      * @return the error list
+     * @since 9.1
      */
     List<String> getErrors();
 

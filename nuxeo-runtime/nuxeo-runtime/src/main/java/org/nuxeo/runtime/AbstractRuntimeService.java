@@ -92,6 +92,8 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     /**
      * Errors during the deployment. Here are collected all errors occurred during the startup. These messages block
      * startup in strict mode.
+     *
+     * @since 9.1
      */
     protected final List<String> errors = new ArrayList<>();
 
@@ -114,6 +116,9 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         return warnings;
     }
 
+    /**
+     * @since 9.1
+     */
     @Override
     public List<String> getErrors() {
         return errors;

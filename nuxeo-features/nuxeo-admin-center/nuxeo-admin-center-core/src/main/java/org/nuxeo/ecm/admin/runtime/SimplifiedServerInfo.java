@@ -87,14 +87,23 @@ public class SimplifiedServerInfo {
         return warnings != null && !warnings.isEmpty();
     }
 
+    /**
+     * @since 9.1
+     */
     public List<String> getErrors() {
         return errors;
     }
 
+    /**
+     * @since 9.1
+     */
     public void setErrors(List<String> errors) {
         this.errors = errors;
     }
 
+    /**
+     * @since 9.1
+     */
     public boolean hasErrors() {
         return errors != null && !errors.isEmpty();
     }
