@@ -15,6 +15,11 @@
           <strong>nuxeo.automation.export.aliases</strong>: if true, add an operation documentation for each alias of a given operation.
           Mainly to be backward compatible with old Java Automation client.
         </li>
+        <li>
+          <strong>nuxeo.automation.allowVirtualUser</strong>: define whether virtual user (non-existent user) is allowed
+          in Nuxeo automation. If allowed, Nuxeo server will not check the user existence during automation execution.
+          Set this property to true if you use Nuxeo computed user or computed group.
+        </li>
       </ul>
 
       @since 8.2
@@ -23,6 +28,8 @@
     <property name="nuxeo.automation.properties.value.trim">false</property>
 
     <property name="nuxeo.automation.export.aliases">false</property>
+
+    <property name="nuxeo.automation.allowVirtualUser">false</property>
 
   </extension>
 

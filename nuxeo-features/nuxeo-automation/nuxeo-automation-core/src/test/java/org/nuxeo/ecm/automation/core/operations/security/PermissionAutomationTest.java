@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.core.operations.security;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
@@ -51,8 +52,10 @@ import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.mockito.RuntimeService;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -122,6 +125,22 @@ public class PermissionAutomationTest {
     @Test
     public void cannotAddPermissionForNonExistentGroup() throws OperationException {
         cannotAddPermissionFor("nonExistentGroup");
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.automation.core:test-allow-virtual-user.xml")
+    public void canAddPermissionForNonExistentUser() throws OperationException {
+        ConfigurationService configService = Framework.getService(ConfigurationService.class);
+        assertTrue(configService.isBooleanPropertyTrue(AddPermission.ALLOW_VIRTUAL_USER));
+        canAddPermissionFor("nonExistentUser");
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.automation.core:test-allow-virtual-user.xml")
+    public void canAddPermissionForNonExistentGroup() throws OperationException {
+        ConfigurationService configService = Framework.getService(ConfigurationService.class);
+        assertTrue(configService.isBooleanPropertyTrue(AddPermission.ALLOW_VIRTUAL_USER));
+        canAddPermissionFor("nonExistentGroup");
     }
 
     private void canAddPermissionFor(String existingGroupOrUser) throws OperationException {
