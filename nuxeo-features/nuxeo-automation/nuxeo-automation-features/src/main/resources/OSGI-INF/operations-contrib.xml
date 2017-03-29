@@ -79,9 +79,11 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.users.GetDocumentUsersAndGroups" />
     <operation
-      class="org.nuxeo.ecm.automation.core.operations.users.CreateUser" />
-    <operation
       class="org.nuxeo.ecm.automation.core.operations.users.QueryUsers" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.users.CreateOrUpdateUser" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.users.CreateOrUpdateGroup" />
 
     <operation
       class="org.nuxeo.ecm.automation.core.operations.notification.SendMail" />

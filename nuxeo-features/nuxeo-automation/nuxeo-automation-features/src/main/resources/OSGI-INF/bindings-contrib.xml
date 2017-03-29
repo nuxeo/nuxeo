@@ -8,5 +8,12 @@
     <binding name="Audit.QueryWithPageProvider">
       <administrator>true</administrator>
     </binding>
+    <!-- don't allow direct access to user operations -->
+    <binding name="User.CreateOrUpdate">
+      <administrator>true</administrator>
+    </binding>
+    <binding name="Group.CreateOrUpdate">
+      <administrator>true</administrator>
+    </binding>
   </extension>
 </component>
