@@ -9,11 +9,11 @@ function formatSuggestedCollection(collection) {
   markup += "<tr><td>";
   if (!isNew) {
     if (collection.icon) {
-      markup += "<img src='" + window.nxContextPath
+      markup += "<img class='smallIcon' src='" + window.nxContextPath
           + collection.icon + "'/>"
     }
   } else {
-    markup += "<img src='" + window.nxContextPath + "/icons/action_add.gif'/>"
+    markup += "<img class='smallIcon' src='" + window.nxContextPath + "/icons/action_add.gif'/>"
   }
   markup += "</td><td>";
   markup += collection.displayLabel;

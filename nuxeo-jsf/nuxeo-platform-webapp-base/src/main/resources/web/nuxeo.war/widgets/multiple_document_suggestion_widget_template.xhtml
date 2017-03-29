@@ -39,7 +39,7 @@
             <nxu:set var="doc"
               value="#{docSuggestionActions.getDocumentWithId(docid)}">
               <nxu:graphicImage value="#{nxd:iconPath(doc)}"
-                rendered="#{!empty nxd:iconPath(doc)}" />
+                rendered="#{!empty nxd:iconPath(doc)}" styleClass="smallIcon" />
               <h:outputText value=" #{nxd:titleOrId(doc)} " />
             </nxu:set>
           </h:panelGroup>

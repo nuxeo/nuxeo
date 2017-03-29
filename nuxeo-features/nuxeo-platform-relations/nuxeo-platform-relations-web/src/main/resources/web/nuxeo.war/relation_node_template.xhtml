@@ -11,11 +11,11 @@
     <tr>
       <td class="iconColumn">
         <f:subview rendered="#{node.documentModel != null}">
-          <nxu:graphicImage value="#{nxd:iconPath(node.documentModel)}" />
+          <nxu:graphicImage value="#{nxd:iconPath(node.documentModel)}" styleClass="smallIcon" />
         </f:subview>
-        <nxu:graphicImage rendered="#{node.resource and not node.QNameResource}" value="/icons/html.png" />
-        <nxu:graphicImage rendered="#{node.QNameResource and not node.documentVisible}" value="/icons/relation_not_visible.png" />
-        <nxu:graphicImage rendered="#{node.literal}" value="/icons/page_text.gif" />
+        <nxu:graphicImage rendered="#{node.resource and not node.QNameResource}" styleClass="smallIcon" value="/icons/html.png" />
+        <nxu:graphicImage rendered="#{node.QNameResource and not node.documentVisible}" styleClass="smallIcon" value="/icons/relation_not_visible.png" />
+        <nxu:graphicImage rendered="#{node.literal}" styleClass="smallIcon" value="/icons/page_text.gif" />
       </td>
       <td>
         <f:subview rendered="#{node.QNameResource}">
