@@ -20,6 +20,7 @@ package org.nuxeo.ecm.liveconnect.core;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.common.base.Splitter;
@@ -280,15 +282,34 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
     }
 
     public final synchronized Credential getCredential(String user) throws IOException {
-        Credential credential = getCredentialFactory().build(user);
-        if (credential == null) {
-            throw new NuxeoException("No credentials found for user " + user + " and service " + blobProviderId);
+        // suspend current transaction and start a new one responsible for access token update
+        try {
+            return TransactionHelper.runInNewTransaction(() -> retrieveAndRefreshCredential(user));
+        } catch (UncheckedIOException uioe) {
+            // re-throw IOException because methods implementing interface throwing IOException use this method
+            throw uioe.getCause();
         }
-        Long expiresInSeconds = credential.getExpiresInSeconds();
-        if (expiresInSeconds != null && expiresInSeconds.longValue() <= 0) {
-            credential.refreshToken();
+    }
+
+    /**
+     * Declare this method as {@code private} because we don't want upper class to override it and as there's concurrent
+     * access on it, don't let anyone calling it.
+     */
+    private Credential retrieveAndRefreshCredential(String user) {
+        try {
+            Credential credential = getCredentialFactory().build(user);
+            if (credential == null) {
+                throw new NuxeoException(
+                        "No credentials found for user " + user + " and service " + blobProviderId);
+            }
+            Long expiresInSeconds = credential.getExpiresInSeconds();
+            if (expiresInSeconds != null && expiresInSeconds.longValue() <= 0) {
+                credential.refreshToken();
+            }
+            return credential;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
-        return credential;
     }
 
     /**
