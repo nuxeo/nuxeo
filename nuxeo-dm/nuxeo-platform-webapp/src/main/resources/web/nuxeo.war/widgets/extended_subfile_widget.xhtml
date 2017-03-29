@@ -13,7 +13,7 @@
 
     <nxh:outputLink
       value="#{nxd:complexFileUrl('downloadFile', layoutValue, widget_0.fieldDefinitions[0].propertyName, model.rowIndex, widget.fieldDefinitions[0].propertyName, field_1)}">
-      <nxh:graphicImage value="#{nxd:fileIconPath(field_0)}"
+      <nxh:graphicImage styleClass="smallIcon" value="#{nxd:fileIconPath(field_0)}"
         rendered="#{! empty nxd:fileIconPath(field_0)}" />
       <nxh:outputText value="#{field_1}" />
     </nxh:outputLink>
