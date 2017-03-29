@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.core.test-allow-virtual-user">
+
+  <require>org.nuxeo.ecm.core.automation.core.properties</require>
+
+  <extension point="configuration" target="org.nuxeo.runtime.ConfigurationService">
+    <property name="nuxeo.automation.allowVirtualUser">true</property>
+  </extension>
+
+</component>
