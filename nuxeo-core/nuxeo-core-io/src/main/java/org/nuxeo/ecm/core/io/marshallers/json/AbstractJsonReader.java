@@ -25,6 +25,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
@@ -139,6 +141,62 @@ public abstract class AbstractJsonReader<EntityType> implements Reader<EntityTyp
         JsonNode elNode = jn.get(elName);
         if (elNode != null && !elNode.isNull() && elNode.isTextual()) {
             return elNode.getTextValue();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Tries to get a boolean property of the given {@link JsonNode}. Return {@code null} if the node is {@code null} or
+     *  not a boolean.
+     * @param jn the {@link JsonNode} to parse
+     * @param elName the property name
+     * @return the boolean value if it exists and is a boolean property, {@code null} otherwise
+     *
+     * @since 9.2
+     */
+    protected Boolean getBooleanField(JsonNode jn, String elName) {
+        JsonNode elNode = jn.get(elName);
+        if (elNode != null && !elNode.isNull()) {
+            if (elNode.isBoolean()) {
+                return elNode.getBooleanValue();
+            } else if (elNode.isTextual()) {
+                return Boolean.valueOf(elNode.getTextValue());
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Tries to get a string list property of the given {@link JsonNode}. Return {@code null} if the node is
+     * {@code null} or not a string list.
+     * @param jn the {@link JsonNode} to parse
+     * @param elName the property name
+     * @return a string list if it exists and is a valid string list property, {@code null} otherwise
+     *
+     * @since 9.2
+     */
+    protected List<String> getStringListField(JsonNode jn, String elName) {
+        JsonNode elNode = jn.get(elName);
+        if (elNode != null && !elNode.isNull()) {
+            if (elNode.isArray()) {
+                List<String> result = new ArrayList<>();
+                String value;
+                for (JsonNode subNode : elNode) {
+                    if (subNode != null && !subNode.isNull() && subNode.isTextual()) {
+                        value = subNode.getTextValue();
+                    } else {
+                        value = null;
+                    }
+                    result.add(value);
+                }
+                return  result;
+            } else {
+                return null;
+            }
         } else {
             return null;
         }

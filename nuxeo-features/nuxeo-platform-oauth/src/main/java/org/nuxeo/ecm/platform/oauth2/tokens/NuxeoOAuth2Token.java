@@ -53,6 +53,8 @@ public class NuxeoOAuth2Token {
 
     private boolean isShared;
 
+    protected String sharedWith;
+
     protected String serviceLogin;
 
     public NuxeoOAuth2Token(long expirationTimeMilliseconds, String clientId) {
@@ -67,6 +69,7 @@ public class NuxeoOAuth2Token {
         this.expirationTimeMilliseconds = expirationTimeMilliseconds;
         this.creationDate = Calendar.getInstance();
         this.isShared = false;
+        this.sharedWith = "";
     }
 
     public NuxeoOAuth2Token(StoredCredential credential) {
@@ -83,6 +86,7 @@ public class NuxeoOAuth2Token {
         this.clientId = (String) entry.getProperty(SCHEMA, "clientId");
         this.creationDate = (Calendar) entry.getProperty(SCHEMA, "creationDate");
         this.isShared = (Boolean) entry.getProperty(SCHEMA, "isShared");
+        this.sharedWith = (String) entry.getProperty(SCHEMA, "sharedWith");
         this.serviceLogin = (String) entry.getProperty(SCHEMA, "serviceLogin");
     }
 
@@ -107,6 +111,7 @@ public class NuxeoOAuth2Token {
         map.put("clientId", clientId);
         map.put("creationDate", creationDate);
         map.put("isShared", isShared);
+        map.put("sharedWith", sharedWith);
         map.put("serviceLogin", serviceLogin);
         return map;
     }
@@ -129,6 +134,7 @@ public class NuxeoOAuth2Token {
         entry.setProperty(SCHEMA, "expirationTimeMilliseconds", this.expirationTimeMilliseconds);
         entry.setProperty(SCHEMA, "clientId", this.clientId);
         entry.setProperty(SCHEMA, "isShared", this.isShared);
+        entry.setProperty(SCHEMA, "sharedWith", this.sharedWith);
         entry.setProperty(SCHEMA, "serviceLogin", this.serviceLogin);
     }
 
@@ -199,6 +205,14 @@ public class NuxeoOAuth2Token {
         this.isShared = isShared;
     }
 
+    public String getSharedWith() {
+        return sharedWith;
+    }
+
+    public void setSharedWith(String sharedWith) {
+        this.sharedWith = sharedWith;
+    }
+
     public String getServiceLogin() {
         return serviceLogin;
     }
@@ -214,4 +228,9 @@ public class NuxeoOAuth2Token {
     public void setCreationDate(Calendar creationDate) {
         this.creationDate = creationDate;
     }
+
+    public Long getId() {
+        return id;
+    }
+
 }

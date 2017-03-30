@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -57,8 +58,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
      */
     protected OAuth2ServiceProviderContributionRegistry registry = new OAuth2ServiceProviderContributionRegistry();
 
-    @Override
-    public OAuth2ServiceProvider getProvider(String serviceName) {
+    protected DocumentModel getProviderDocModel(String serviceName) {
         try {
             if (StringUtils.isBlank(serviceName)) {
                 log.warn("Can not find provider without a serviceName!");
@@ -69,7 +69,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
             filter.put("serviceName", serviceName);
 
             List<DocumentModel> providers = queryProviders(filter, 1);
-            return providers.isEmpty() ? null : buildProvider(providers.get(0));
+            return providers.isEmpty() ? null : providers.get(0);
         } catch (DirectoryException e) {
             log.error("Unable to read provider from Directory backend", e);
             return null;
@@ -77,28 +77,85 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
     }
 
     @Override
+    public OAuth2ServiceProvider getProvider(String serviceName) {
+        DocumentModel model = getProviderDocModel(serviceName);
+        return model == null ? null : buildProvider(model);
+    }
+
+    @Override
+    public List<OAuth2ServiceProvider> getProviders() {
+        List<DocumentModel> providers = queryProviders(Collections.emptyMap(), 0);
+        return providers.stream().map(this::buildProvider).collect(Collectors.toList());
+    }
+
+    @Override
     public OAuth2ServiceProvider addProvider(String serviceName, String description, String tokenServerURL,
-            String authorizationServerURL, String clientId, String clientSecret, List<String> scopes) {
+        String authorizationServerURL, String clientId, String clientSecret, List<String> scopes) {
+        return addProvider(serviceName, description, tokenServerURL, authorizationServerURL, null, clientId,
+            clientSecret, scopes, true);
+    }
+
+    @Override
+    public OAuth2ServiceProvider addProvider(String serviceName, String description, String tokenServerURL,
+            String authorizationServerURL, String userAuthorizationURL, String clientId, String clientSecret,
+            List<String> scopes, Boolean isEnabled) {
 
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put("serviceName", serviceName);
+            List<DocumentModel> providers = queryProviders(filter, 1);
             DocumentModel creationEntry = BaseSession.createEntryModel(null, SCHEMA, null, null);
             DocumentModel entry = session.createEntry(creationEntry);
             entry.setProperty(SCHEMA, "serviceName", serviceName);
             entry.setProperty(SCHEMA, "description", description);
             entry.setProperty(SCHEMA, "authorizationServerURL", authorizationServerURL);
             entry.setProperty(SCHEMA, "tokenServerURL", tokenServerURL);
+            entry.setProperty(SCHEMA, "userAuthorizationURL", userAuthorizationURL);
             entry.setProperty(SCHEMA, "clientId", clientId);
             entry.setProperty(SCHEMA, "clientSecret", clientSecret);
-            entry.setProperty(SCHEMA, "scopes", StringUtils.join(scopes, ","));
+            entry.setProperty(SCHEMA, "scopes", String.join(",", scopes));
             boolean enabled = (clientId != null && clientSecret != null);
-            entry.setProperty(SCHEMA, "enabled", enabled);
+            entry.setProperty(SCHEMA, "enabled", enabled && (isEnabled == null ? false : isEnabled));
             if (!enabled) {
                 log.info("OAuth2 provider for " + serviceName
                         + " is disabled because clientId and/or clientSecret are empty");
             }
             session.updateEntry(entry);
             return getProvider(serviceName);
+        }
+    }
+
+    @Override
+    public OAuth2ServiceProvider updateProvider(String serviceName, OAuth2ServiceProvider provider) {
+        DirectoryService ds = Framework.getService(DirectoryService.class);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
+            DocumentModel entry = getProviderDocModel(serviceName);
+            entry.setProperty(SCHEMA, "serviceName", provider.getServiceName());
+            entry.setProperty(SCHEMA, "description", provider.getDescription());
+            entry.setProperty(SCHEMA, "authorizationServerURL", provider.getAuthorizationServerURL());
+            entry.setProperty(SCHEMA, "tokenServerURL", provider.getTokenServerURL());
+            entry.setProperty(SCHEMA, "userAuthorizationURL", provider.getUserAuthorizationURL());
+            entry.setProperty(SCHEMA, "clientId", provider.getClientId());
+            entry.setProperty(SCHEMA, "clientSecret", provider.getClientSecret());
+            entry.setProperty(SCHEMA, "scopes", String.join(",", provider.getScopes()));
+            boolean enabled = provider.getClientId() != null && provider.getClientSecret() != null;
+            entry.setProperty(SCHEMA, "enabled", enabled && provider.isEnabled());
+            if (!enabled) {
+                log.info("OAuth2 provider for " + serviceName
+                    + " is disabled because clientId and/or clientSecret are empty");
+            }
+            session.updateEntry(entry);
+            return getProvider(serviceName);
+        }
+    }
+
+    @Override
+    public void deleteProvider(String serviceName) {
+        DirectoryService ds = Framework.getService(DirectoryService.class);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
+            DocumentModel entry = getProviderDocModel(serviceName);
+            session.deleteEntry(entry);
         }
     }
 
@@ -127,8 +184,10 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
             provider.setServiceName(serviceName);
         }
         provider.setId((Long) entry.getProperty(SCHEMA, "id"));
+        provider.setDescription((String) entry.getProperty(SCHEMA, "description"));
         provider.setAuthorizationServerURL((String) entry.getProperty(SCHEMA, "authorizationServerURL"));
         provider.setTokenServerURL((String) entry.getProperty(SCHEMA, "tokenServerURL"));
+        provider.setUserAuthorizationURL((String) entry.getProperty(SCHEMA, "userAuthorizationURL"));
         provider.setClientId((String) entry.getProperty(SCHEMA, "clientId"));
         provider.setClientSecret((String) entry.getProperty(SCHEMA, "clientSecret"));
         String scopes = (String) entry.getProperty(SCHEMA, "scopes");
