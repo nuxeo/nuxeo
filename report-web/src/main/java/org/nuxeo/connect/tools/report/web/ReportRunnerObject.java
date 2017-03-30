@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -63,7 +64,7 @@ public class ReportRunnerObject extends DefaultObject {
     @Path("run")
     @Consumes("application/x-www-form-urlencoded")
     @Produces("text/json")
-    public Response run(@FormParam("report") List<String> reports) throws IOException {
+    public Response run(@FormParam("reports") List<String> reports) throws IOException {
         selection = reports;
 
         StreamingOutput stream = new StreamingOutput() {

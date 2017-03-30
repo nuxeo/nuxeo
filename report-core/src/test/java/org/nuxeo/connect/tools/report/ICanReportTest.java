@@ -187,9 +187,11 @@ public class ICanReportTest extends ScenarioTest<Given, When, Then> {
 
         public When i_run_the_report() throws IOException {
             try (ByteArrayOutputStream sink = new ByteArrayOutputStream()) {
-                writer.write(new TeeOutputStream(sink,
+                try (TeeOutputStream output = new TeeOutputStream(sink,
                         Files.newOutputStream(Paths.get("target/".concat(writer.getClass().getSimpleName()).concat(".json")),
-                                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)));
+                                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))) {
+                    writer.write(output);
+                }
                 buffer = sink.toByteArray();
             }
             return self();
@@ -226,10 +228,6 @@ public class ICanReportTest extends ScenarioTest<Given, When, Then> {
 
         public ConfigReport the_report_is_a_config() throws IOException {
             return config;
-        }
-
-        Then which() {
-            return self();
         }
 
         public static class MXReport extends Stage<MXReport> {
