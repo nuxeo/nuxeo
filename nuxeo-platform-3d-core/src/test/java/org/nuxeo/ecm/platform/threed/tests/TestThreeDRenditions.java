@@ -44,6 +44,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import java.io.IOException;
@@ -76,6 +77,7 @@ import static org.nuxeo.ecm.platform.threed.rendition.ThreeDRenditionDefinitionP
         "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.threed.api", "org.nuxeo.ecm.platform.threed.core",
         "org.nuxeo.ecm.platform.threed.convert" })
+@RandomBug.Repeat(issue = "NXP-21972: Fix random ThreeDConvertersTest failures")
 public class TestThreeDRenditions {
 
     public static final List<String> OVERRIDDEN_RENDITION_DEFINITION_NAMES = Arrays.asList("mini_top", "mini_left",

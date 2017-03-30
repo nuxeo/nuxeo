@@ -43,6 +43,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import javax.inject.Inject;
@@ -71,6 +72,7 @@ import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.RENDER_VIEWS
         "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.platform.rendition.core" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.threed.api", "org.nuxeo.ecm.platform.threed.core",
         "org.nuxeo.ecm.platform.threed.convert" })
+@RandomBug.Repeat(issue = "NXP-21972: Fix random ThreeDConvertersTest failures")
 public class TestThreeDThumbnail {
 
     @Inject
