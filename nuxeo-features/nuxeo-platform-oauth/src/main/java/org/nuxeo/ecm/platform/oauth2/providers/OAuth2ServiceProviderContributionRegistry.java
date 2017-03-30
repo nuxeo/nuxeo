@@ -125,6 +125,7 @@ public class OAuth2ServiceProviderContributionRegistry extends ContributionFragm
             try {
                 Class<? extends OAuth2ServiceProvider> providerClass = descriptor.getProviderClass();
                 provider = providerClass.newInstance();
+                provider.setDescription(descriptor.getDescription());
                 provider.setAuthorizationServerURL(descriptor.getAuthorizationServerURL());
                 provider.setTokenServerURL(descriptor.getTokenServerURL());
                 provider.setServiceName(descriptor.getName());

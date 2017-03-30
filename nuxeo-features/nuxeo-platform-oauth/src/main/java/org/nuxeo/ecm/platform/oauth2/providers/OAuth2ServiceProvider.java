@@ -34,6 +34,13 @@ public interface OAuth2ServiceProvider {
     String getAuthorizationUrl(HttpServletRequest request);
 
     /**
+     * Returns the authorization URL
+     *
+     * @since 9.2
+     */
+    String getAuthorizationUrl(String serverURL);
+
+    /**
      * Handles the authorization response and stores the token(s)
      */
     Credential handleAuthorizationCallback(HttpServletRequest request);
@@ -45,9 +52,19 @@ public interface OAuth2ServiceProvider {
 
     void setId(Long id);
 
+    /**
+     * @since 9.2
+     */
+    void setDescription(String description);
+
     void setAuthorizationServerURL(String authorizationServerURL);
 
     void setTokenServerURL(String tokenServerURL);
+
+    /**
+     * @since 9.2
+     */
+    void setUserAuthorizationURL(String userAuthorizationURL);
 
     void setServiceName(String serviceName);
 
@@ -61,7 +78,17 @@ public interface OAuth2ServiceProvider {
 
     Long getId();
 
+    /**
+     * @since 9.2
+     */
+    String getDescription();
+
     String getTokenServerURL();
+
+    /**
+     * @since 9.2
+     */
+    String getUserAuthorizationURL();
 
     String getClientId();
 

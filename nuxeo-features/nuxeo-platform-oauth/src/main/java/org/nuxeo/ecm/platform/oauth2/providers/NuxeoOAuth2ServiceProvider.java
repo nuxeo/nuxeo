@@ -65,9 +65,13 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
 
     protected Long id;
 
+    protected String description;
+
     private String tokenServerURL;
 
     private String authorizationServerURL;
+
+    protected String userAuthorizationURL;
 
     private String clientId;
 
@@ -89,9 +93,19 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
             .build();
     }
 
-    protected String getCallbackUrl(HttpServletRequest request) {
-        String serverURL = VirtualHostHelper.getBaseURL(request);
+    @Override
+    public String getAuthorizationUrl(String serverURL) {
+        return getAuthorizationCodeFlow()
+            .newAuthorizationUrl()
+            .setRedirectUri(getCallbackUrl(serverURL))
+            .build();
+    }
 
+    protected String getCallbackUrl(HttpServletRequest request) {
+        return getCallbackUrl(VirtualHostHelper.getBaseURL(request));
+    }
+
+    protected String getCallbackUrl(String serverURL) {
         if (serverURL.endsWith("/")) {
             serverURL = serverURL.substring(0, serverURL.length() - 1);
         }
@@ -217,8 +231,18 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
     }
 
     @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
     public String getTokenServerURL() {
         return tokenServerURL;
+    }
+
+    @Override
+    public String getUserAuthorizationURL() {
+        return userAuthorizationURL;
     }
 
     @Override
@@ -267,8 +291,18 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
     }
 
     @Override
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
     public void setTokenServerURL(String tokenServerURL) {
         this.tokenServerURL = tokenServerURL;
+    }
+
+    @Override
+    public void setUserAuthorizationURL(String userAuthorizationURL) {
+        this.userAuthorizationURL = userAuthorizationURL;
     }
 
     @Override
