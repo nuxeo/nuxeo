@@ -27,6 +27,24 @@ public interface OAuth2ServiceProviderRegistry {
 
     OAuth2ServiceProvider getProvider(String serviceName);
 
-    OAuth2ServiceProvider addProvider(String serviceName, String description, String tokenServerURL, String authorizationServerURL,
-            String clientId, String clientSecret, List<String> scopes);
+    List<OAuth2ServiceProvider> getProviders();
+
+    OAuth2ServiceProvider addProvider(String serviceName, String description, String tokenServerURL,
+        String authorizationServerURL, String clientId, String clientSecret,
+        List<String> scopes);
+
+    OAuth2ServiceProvider addProvider(String serviceName, String description, String tokenServerURL,
+        String authorizationServerURL, String userAuthorizationURL, String clientId, String clientSecret,
+        List<String> scopes, Boolean isEnabled);
+
+    /**
+     * @since 9.2
+     */
+    OAuth2ServiceProvider updateProvider(String serviceName, OAuth2ServiceProvider provider);
+
+    /**
+     * @since 9.2
+     */
+    void deleteProvider(String serviceName);
+
 }

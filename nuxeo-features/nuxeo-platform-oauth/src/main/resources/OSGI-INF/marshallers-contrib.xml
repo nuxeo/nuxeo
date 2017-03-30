@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.oauth.marshallers" version="1.0.0">
+  <documentation>
+    OAuth2 registered marshallers set.
+  </documentation>
+  <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
+    <register class="org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProviderReader" enable="true" />
+    <register class="org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProviderWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProviderListWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2TokenReader" enable="true" />
+    <register class="org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2TokenWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2TokenListWriter" enable="true" />
+  </extension>
+</component>
