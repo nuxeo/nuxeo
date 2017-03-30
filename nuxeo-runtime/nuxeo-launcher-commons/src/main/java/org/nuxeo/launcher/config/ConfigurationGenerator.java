@@ -1393,6 +1393,18 @@ public class ConfigurationGenerator {
     public static void checkAddressReachable(InetAddress address) throws ConfigurationException {
         try {
             log.debug("Checking availability of " + address);
+            InetAddress bindAddress = address;
+            try {
+                if (bindAddress.isAnyLocalAddress()) {
+                    boolean preferIPv6 = "false".equals(System.getProperty("java.net.preferIPv4Stack"))
+                            && "true".equals(System.getProperty("java.net.preferIPv6Addresses"));
+                    bindAddress = preferIPv6 ? InetAddress.getByName("::1") : InetAddress.getByName("127.0.0.1");
+                    log.debug("Bind address is \"ANY\", using local address instead: " + bindAddress);
+                }
+            } catch (UnknownHostException e) {
+                log.debug(e, e);
+                log.error(e.getMessage());
+            }
             address.isReachable(ADDRESS_PING_TIMEOUT);
         } catch (IOException e) {
             throw new ConfigurationException("Unreachable bind address " + address);
