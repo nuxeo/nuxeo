@@ -5,7 +5,7 @@
   <require>org.nuxeo.web.ui.resources</require>
 
   <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
-    <resource name="nuxeo-dam.html" type="import" shrinkable="false">
+    <resource name="nuxeo-dam.html" type="import">
       <uri>/ui/nuxeo-dam/nuxeo-dam.html</uri>
     </resource>
   </extension>
