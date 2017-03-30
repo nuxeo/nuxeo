@@ -66,8 +66,6 @@ public class DirectoryCache {
 
     protected final Counter invalidationsCounter;
 
-    protected final Counter maxCounter;
-
     protected final Counter sizeCounter;
 
     private final static Log log = LogFactory.getLog(DirectoryCache.class);
@@ -80,7 +78,6 @@ public class DirectoryCache {
         invalidationsCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache",
                 "invalidations"));
         sizeCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "size"));
-        maxCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "max"));
     }
 
     protected boolean isCacheEnabled() {

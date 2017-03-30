@@ -86,10 +86,13 @@ public class CacheFeature extends SimpleFeature {
     }
 
     public static <T extends Cache> T unwrapImpl(Class<T> type, Cache cache) {
-        if (!(cache instanceof CacheAttributesChecker)) {
-            Assert.fail("Not an attribute checker " + cache.getClass());
+        if (!(cache instanceof CacheWrapper)) {
+            Assert.fail("Not a wrapper " + cache.getClass());
         }
-        cache = ((CacheAttributesChecker) cache).cache;
+        cache = ((CacheWrapper) cache).cache;
+        if (cache instanceof CacheWrapper) {
+            return unwrapImpl(type, cache);
+        }
         if (!type.isAssignableFrom(cache.getClass())) {
             Assert.fail("Not of requested type  " + type);
         }
