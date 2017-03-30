@@ -63,7 +63,7 @@ public class ThumbnailJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
     public static final String THUMBNAIL_URL_LABEL = "url";
 
-    public static final String THUMBNAIL_URL_PATTERN = "%s/api/v1/id/%s/@rendition/thumbnail";
+    public static final String THUMBNAIL_URL_PATTERN = "%s/api/v1/repo/%s/id/%s/@rendition/thumbnail";
 
     public ThumbnailJsonEnricher() {
         super(NAME);
@@ -74,7 +74,9 @@ public class ThumbnailJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
         jg.writeFieldName(NAME);
         jg.writeStartObject();
         jg.writeStringField(THUMBNAIL_URL_LABEL,
-                String.format(THUMBNAIL_URL_PATTERN, ctx.getBaseUrl().replaceAll("/$", ""), document.getId()));
+                String.format(THUMBNAIL_URL_PATTERN, ctx.getBaseUrl().replaceAll("/$", ""),
+                        document.getRepositoryName(), document.getId()));
         jg.writeEndObject();
+
     }
 }
