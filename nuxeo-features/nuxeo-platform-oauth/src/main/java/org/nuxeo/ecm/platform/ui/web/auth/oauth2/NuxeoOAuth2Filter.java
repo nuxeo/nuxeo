@@ -19,6 +19,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.HashMap;
@@ -36,7 +37,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
 import org.nuxeo.ecm.platform.oauth2.request.TokenRequest;
@@ -117,9 +117,8 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String uri = httpRequest.getRequestURI();
-        if (uri.contains(OAUTH2_SEGMENT)) {
+        if (httpRequest.getPathInfo() != null && httpRequest.getPathInfo().startsWith(OAUTH2_SEGMENT)) {
             String endpoint = uri.split(OAUTH2_SEGMENT)[1];
-
             switch (endpoint) {
             case ENDPOINT_AUTH:
                 processAuthorization(httpRequest, httpResponse, chain);
