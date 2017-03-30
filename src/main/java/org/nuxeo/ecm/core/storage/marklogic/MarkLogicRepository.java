@@ -66,6 +66,7 @@ import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
+import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
 import org.nuxeo.ecm.core.storage.marklogic.MarkLogicQueryBuilder.MarkLogicQuery;
 import org.nuxeo.runtime.api.Framework;
 
@@ -222,7 +223,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void updateState(String id, StateDiff diff) {
+    public void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater) {
+        // TODO changeTokenUpdater
         String patch = MarkLogicStateSerializer.serialize(diff);
         if (log.isTraceEnabled()) {
             log.trace("MarkLogic: UPDATE " + id + ": " + patch);

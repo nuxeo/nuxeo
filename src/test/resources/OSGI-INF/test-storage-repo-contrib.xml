@@ -7,6 +7,7 @@
       <user>${nuxeo.test.marklogic.user}</user>
       <password>${nuxeo.test.marklogic.password}</password>
       <dbname>${nuxeo.test.marklogic.dbname}</dbname>
+      <changeTokenEnabled>${nuxeo.test.changetoken.enabled}</changeTokenEnabled>
       <fulltext disabled="${nuxeo.test.fulltext.disabled}" searchDisabled="${nuxeo.test.fulltext.search.disabled}">
         <index> <!-- name="default" implied -->
           <!-- all props implied -->
