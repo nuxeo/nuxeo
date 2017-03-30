@@ -114,7 +114,19 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     public static final String INVALIDATE_ALL_PRINCIPALS_EVENT_ID = "invalidateAllPrincipals";
 
-    private static final String USER_GROUP_CATEGORY = "userGroup";
+    /**
+     * Possible value for the {@link DocumentEventContext#CATEGORY_PROPERTY_KEY} key of a core event context.
+     *
+     * @since 9.2
+     */
+    public static final String USER_GROUP_CATEGORY = "userGroup";
+
+    /**
+     * Key for the id of a user or a group in a core event context.
+     *
+     * @since 9.2
+     */
+    public static final String ID_PROPERTY_KEY = "id";
 
     protected final DirectoryService dirService;
 
@@ -751,7 +763,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     private void notifyCore(String userOrGroupId, String eventId) {
         Map<String, Serializable> eventProperties = new HashMap<>();
         eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, USER_GROUP_CATEGORY);
-        eventProperties.put("id", userOrGroupId);
+        eventProperties.put(ID_PROPERTY_KEY, userOrGroupId);
         NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
         UnboundEventContext envContext = new UnboundEventContext(principal, eventProperties);
         envContext.setProperties(eventProperties);
