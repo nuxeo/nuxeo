@@ -80,6 +80,10 @@ public class StorageConfiguration {
 
     private static final String DEFAULT_MONGODB_DBNAME = "unittests";
 
+    private static final String CHANGE_TOKEN_ENABLED_PROPERTY = "nuxeo.test.changetoken.enabled";
+
+    private static final String CHANGE_TOKEN_ENABLED_DEFAULT = "false";
+
     private String coreType;
 
     private boolean isVCS;
@@ -91,6 +95,8 @@ public class StorageConfiguration {
     private DBSHelper dbsHelper;
 
     final CoreFeature feature;
+
+    private boolean changeTokenEnabled;
 
     public StorageConfiguration(CoreFeature feature) {
         coreType = defaultSystemProperty(CORE_PROPERTY, DEFAULT_CORE);
@@ -115,6 +121,8 @@ public class StorageConfiguration {
     }
 
     protected void init() {
+        changeTokenEnabled = Boolean.parseBoolean(
+                defaultProperty(CHANGE_TOKEN_ENABLED_PROPERTY, CHANGE_TOKEN_ENABLED_DEFAULT));
         initJDBC();
         switch (coreType) {
         case CORE_VCS:
@@ -343,6 +351,10 @@ public class StorageConfiguration {
         URL contribURL = bundle.getEntry(contribPath);
         assertNotNull("deployment contrib " + contribPath + " not found", contribURL);
         return contribURL;
+    }
+
+    public boolean isChangeTokenEnabled() {
+        return changeTokenEnabled;
     }
 
 }

@@ -888,4 +888,8 @@ public class SQLSession implements Session {
         return session.getBinaryFulltext(idFromString(id));
     }
 
+    public boolean isChangeTokenEnabled() {
+        return session.isChangeTokenEnabled();
+    }
+
 }

@@ -96,6 +96,9 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
     public static final String DC_ISSUED = "dc:issued";
 
+    // used instead of ecm:changeToken when change tokens are disabled
+    public static final String DC_MODIFIED = "dc:modified";
+
     public static final String RELATED_TEXT_RESOURCES = "relatedtextresources";
 
     public static final String RELATED_TEXT_ID = "relatedtextid";

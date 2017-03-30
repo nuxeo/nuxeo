@@ -35,6 +35,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.model.Delta;
+import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 
@@ -89,17 +90,6 @@ public class JDBCLogger {
         }
     }
 
-    public void logCounts(int[] counts) {
-        if (!isLogEnabled()) {
-            return;
-        }
-        int count = 0;
-        for (int c : counts) {
-            count += c;
-        }
-        logCount(count);
-    }
-
     public void logResultSet(ResultSet rs, List<Column> columns) throws SQLException {
         List<String> res = new LinkedList<>();
         int i = 0;
@@ -141,16 +131,30 @@ public class JDBCLogger {
     }
 
     public void logSQL(String sql, List<Column> columns, Row row) {
-        logSQL(sql, columns, row, Collections.<String> emptySet());
+        logSQL(sql, columns, row, Collections.emptyList(), Collections.emptyMap());
     }
 
-    public void logSQL(String sql, List<Column> columns, Row row, Set<String> deltas) {
-        List<Serializable> values = new ArrayList<>(columns.size());
+    public void logSQL(String sql, List<Column> columns, Row row, List<Column> whereColumns,
+            Map<String, Serializable> conditions) {
+        List<Serializable> values = new ArrayList<>();
         for (Column column : columns) {
             String key = column.getKey();
             Serializable value = row.get(key);
-            if (deltas.contains(key)) {
-                value = ((Delta) value).getDeltaValue();
+            if (value instanceof Delta) {
+                Delta delta = (Delta) value;
+                if (delta.getBase() != null) {
+                    value = delta.getDeltaValue();
+                }
+            }
+            values.add(value);
+        }
+        for (Column column : whereColumns) {
+            String key = column.getKey();
+            Serializable value;
+            if (column.getKey().equals(Model.MAIN_KEY)) {
+                value = row.get(key);
+            } else {
+                value = conditions.get(key);
             }
             values.add(value);
         }

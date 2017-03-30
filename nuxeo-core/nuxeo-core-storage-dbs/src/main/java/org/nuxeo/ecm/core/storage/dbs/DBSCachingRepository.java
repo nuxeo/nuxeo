@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
+import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.MetricRegistry;
@@ -213,8 +214,8 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     @Override
-    public void updateState(String id, StateDiff diff) {
-        repository.updateState(id, diff);
+    public void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater) {
+        repository.updateState(id, diff, changeTokenUpdater);
         invalidate(id);
     }
 
@@ -312,6 +313,11 @@ public class DBSCachingRepository implements DBSRepository {
     @Override
     public boolean isFulltextDisabled() {
         return repository.isFulltextDisabled();
+    }
+
+    @Override
+    public boolean isChangeTokenEnabled() {
+        return repository.isChangeTokenEnabled();
     }
 
     @Override

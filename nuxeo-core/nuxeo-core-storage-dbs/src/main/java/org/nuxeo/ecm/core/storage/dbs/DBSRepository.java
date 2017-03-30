@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
+import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
 
 /**
  * Interface for a {@link Repository} for Document-Based Storage.
@@ -62,6 +63,14 @@ public interface DBSRepository extends Repository, LockManager {
      * @since 7.1, 6.0-HF02
      */
     boolean isFulltextDisabled();
+
+    /**
+     * Checks if database-managed document change tokens are enabled.
+     *
+     * @return {@code true} if the database maintains document change tokens
+     * @since 9.1
+     */
+    boolean isChangeTokenEnabled();
 
     /**
      * Gets the root id.
@@ -116,8 +125,9 @@ public interface DBSRepository extends Repository, LockManager {
      *
      * @param id the document id
      * @param diff the diff to apply
+     * @param changeTokenUpdater how to get and update the change token (may be {@code null})
      */
-    void updateState(String id, StateDiff diff);
+    void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater);
 
     /**
      * Deletes a set of document.

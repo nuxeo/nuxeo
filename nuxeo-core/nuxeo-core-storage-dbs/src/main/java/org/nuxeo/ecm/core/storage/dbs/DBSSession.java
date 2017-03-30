@@ -155,6 +155,8 @@ public class DBSSession implements Session {
 
     protected final boolean fulltextSearchDisabled;
 
+    protected final boolean changeTokenEnabled;
+
     protected boolean closed;
 
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
@@ -174,6 +176,7 @@ public class DBSSession implements Session {
         transaction = new DBSTransactionState(repository, this);
         FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
         fulltextSearchDisabled = fulltextConfiguration == null || fulltextConfiguration.fulltextSearchDisabled;
+        changeTokenEnabled = repository.isChangeTokenEnabled();
 
         saveTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "saves"));
         queryTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "queries"));

@@ -123,8 +123,8 @@ public class TestDBSCachingRepository {
         verify(subRepository, times(1)).readState(eq(id));
 
         // Second update this state
-        repository.updateState(id, mock(StateDiff.class));
-        verify(subRepository, times(1)).updateState(eq(id), any());
+        repository.updateState(id, mock(StateDiff.class), null);
+        verify(subRepository, times(1)).updateState(eq(id), any(), any());
 
         // Check state is no longer in cache
         repository.readState(id);

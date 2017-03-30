@@ -167,6 +167,11 @@ public class DBSDocument extends BaseDocument<State> {
 
     public static final String KEY_LOCK_CREATED = "ecm:lockCreated";
 
+    public static final String KEY_CHANGE_TOKEN = "ecm:changeToken";
+
+    // used instead of ecm:changeToken when change tokens are disabled
+    public static final String KEY_DC_MODIFIED = "dc:modified";
+
     public static final String KEY_BLOB_NAME = "name";
 
     public static final String KEY_BLOB_MIME_TYPE = "mime-type";
@@ -188,6 +193,8 @@ public class DBSDocument extends BaseDocument<State> {
     public static final String KEY_FULLTEXT_SCORE = "ecm:fulltextScore";
 
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
+
+    public static final String INITIAL_CHANGE_TOKEN = "0";
 
     protected final String id;
 
@@ -754,6 +761,17 @@ public class DBSDocument extends BaseDocument<State> {
             }
         }
         return (T) value;
+    }
+
+    @Override
+    public String getChangeToken() {
+        DBSDocumentState docState = getStateOrTarget();
+        if (session.changeTokenEnabled) {
+            return (String) docState.get(KEY_CHANGE_TOKEN);
+        } else {
+            Calendar modified = (Calendar) docState.get(KEY_DC_MODIFIED);
+            return modified == null ? null : String.valueOf(modified.getTimeInMillis());
+        }
     }
 
     protected DBSDocumentState getStateOrTarget(Type type) throws PropertyException {

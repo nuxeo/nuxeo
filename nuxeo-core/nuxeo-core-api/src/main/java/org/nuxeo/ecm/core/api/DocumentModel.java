@@ -920,13 +920,20 @@ public interface DocumentModel extends Serializable {
     DocumentModel clone() throws CloneNotSupportedException;
 
     /**
-     * Opaque string that represents the last update state of the DocumentModel.
+     * Gets the current change token for this document.
      * <p>
-     * This token can be used for optimistic locking and avoid dirty updates. See CMIS spec :
-     * http://docs.oasis-open.org/cmis/CMIS/v1.0/os/cmis-spec-v1.0.html#_Toc243905432
+     * The change token is an opaque string which is modified every time the document is changed.
+     * <p>
+     * Before saving a document through {@link CoreSession#saveDocument} it's possible to pass an expected change token
+     * in the document context data through {@code doc.putContextData(CoreSession.CHANGE_TOKEN, expectedChangeToken)}.
+     * If the change token does not match the stored one, it means that a concurrent update happened, and a
+     * {@link org.nuxeo.ecm.core.api.ConcurrentUpdateException ConcurrentUpdateException} will be thrown.
      *
+     * @return the change token
      * @since 5.5
-     * @return the ChangeToken string that can be null for some Document types
+     * @see #putContextData
+     * @see CoreSession#CHANGE_TOKEN
+     * @see CoreSession#getChangeToken
      */
     String getChangeToken();
 

@@ -531,7 +531,11 @@ public class NuxeoContainer {
         public void commit() throws HeuristicMixedException, HeuristicRollbackException, IllegalStateException,
                 RollbackException, SecurityException, SystemException {
             SequenceTracer.start("tx commiting", "#de6238");
-            Timer.Context timerContext = timers.remove(transactionManager.getTransaction());
+            Transaction transaction = transactionManager.getTransaction();
+            if (transaction == null) {
+                throw new IllegalStateException("No transaction associated with current thread");
+            }
+            Timer.Context timerContext = timers.remove(transaction);
             transactionManager.commit();
             if (timerContext != null) {
                 long elapsed = timerContext.stop();
@@ -544,7 +548,11 @@ public class NuxeoContainer {
         @Override
         public void rollback() throws IllegalStateException, SecurityException, SystemException {
             SequenceTracer.mark("tx rollbacking");
-            Timer.Context timerContext = timers.remove(transactionManager.getTransaction());
+            Transaction transaction = transactionManager.getTransaction();
+            if (transaction == null) {
+                throw new IllegalStateException("No transaction associated with current thread");
+            }
+            Timer.Context timerContext = timers.remove(transaction);
             transactionManager.rollback();
             concurrentCount.dec();
             if (timerContext != null) {

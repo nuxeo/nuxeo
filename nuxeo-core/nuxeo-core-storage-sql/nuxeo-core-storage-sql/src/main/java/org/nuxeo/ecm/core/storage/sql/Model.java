@@ -121,6 +121,10 @@ public class Model {
 
     public static final String MAIN_IS_VERSION_KEY = "isversion";
 
+    public static final String MAIN_CHANGE_TOKEN_PROP = "ecm:changeToken";
+
+    public static final String MAIN_CHANGE_TOKEN_KEY = "changetoken";
+
     // for soft-delete
     public static final String MAIN_IS_DELETED_PROP = "ecm:isDeleted";
 
@@ -284,6 +288,8 @@ public class Model {
     // some random long that's not in the database
     // first half of md5 of "nosuchlongid"
     public static final Long NO_SUCH_LONG_ID = Long.valueOf(0x3153147dd69fcea4L);
+
+    public static final String INITIAL_CHANGE_TOKEN = "0";
 
     protected final boolean softDeleteEnabled;
 
@@ -1287,6 +1293,8 @@ public class Model {
                 LongType.INSTANCE, ColumnType.INTEGER);
         addPropertyInfo(MAIN_IS_VERSION_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_IS_VERSION_KEY, false,
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
+        addPropertyInfo(MAIN_CHANGE_TOKEN_PROP, PropertyType.STRING, HIER_TABLE_NAME, MAIN_CHANGE_TOKEN_KEY, false,
+                StringType.INSTANCE, ColumnType.SYSNAME);
         if (softDeleteEnabled) {
             addPropertyInfo(MAIN_IS_DELETED_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_IS_DELETED_KEY, true,
                     BooleanType.INSTANCE, ColumnType.BOOLEAN);

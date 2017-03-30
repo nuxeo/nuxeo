@@ -390,6 +390,20 @@ public class RepositoryDescriptor {
     @XNode("usersSeparator@key")
     public String usersSeparatorKey;
 
+    /** @since 9.1 */
+    @XNode("changeTokenEnabled")
+    private Boolean changeTokenEnabled;
+
+    /** @since 9.1 */
+    public boolean isChangeTokenEnabled() {
+        return defaultFalse(changeTokenEnabled);
+    }
+
+    /** @since 9.1 */
+    public void setChangeTokenEnabled(boolean enabled) {
+        this.changeTokenEnabled = Boolean.valueOf(enabled);
+    }
+
     public RepositoryDescriptor() {
     }
 
@@ -424,6 +438,7 @@ public class RepositoryDescriptor {
         aclOptimizationsEnabled = other.aclOptimizationsEnabled;
         readAclMaxSize = other.readAclMaxSize;
         usersSeparatorKey = other.usersSeparatorKey;
+        changeTokenEnabled = other.changeTokenEnabled;
     }
 
     public void merge(RepositoryDescriptor other) {
@@ -519,6 +534,9 @@ public class RepositoryDescriptor {
         }
         if (other.usersSeparatorKey != null) {
             usersSeparatorKey = other.usersSeparatorKey;
+        }
+        if (other.changeTokenEnabled != null) {
+            changeTokenEnabled = other.changeTokenEnabled;
         }
     }
 

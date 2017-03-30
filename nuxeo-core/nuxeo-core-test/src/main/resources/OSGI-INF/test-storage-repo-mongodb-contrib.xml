@@ -9,6 +9,7 @@
       <sequenceBlockSize>1</sequenceBlockSize>
       <nativeId>false</nativeId>
       -->
+      <changeTokenEnabled>${nuxeo.test.changetoken.enabled}</changeTokenEnabled>
       <fulltext disabled="${nuxeo.test.fulltext.disabled}" searchDisabled="${nuxeo.test.fulltext.search.disabled}">
         <index> <!-- name="default" implied -->
           <!-- all props implied -->

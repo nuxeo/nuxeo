@@ -219,6 +219,10 @@ public class RepositoryImpl implements Repository {
         return fulltextParserClass;
     }
 
+    public boolean isChangeTokenEnabled() {
+        return repositoryDescriptor.isChangeTokenEnabled();
+    }
+
     /*
      * ----- javax.resource.cci.ConnectionFactory -----
      */

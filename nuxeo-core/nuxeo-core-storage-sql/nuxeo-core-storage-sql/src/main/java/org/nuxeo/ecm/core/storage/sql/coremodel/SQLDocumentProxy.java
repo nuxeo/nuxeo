@@ -218,6 +218,11 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
+    public String getChangeToken() {
+        return target.getChangeToken(); // TODO take into account proxy changes as well
+    }
+
+    @Override
     public Set<String> getAllFacets() {
         return target.getAllFacets(); // TODO proxy facets
     }

@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,6 +71,7 @@ import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession.OrderByComparator;
+import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -161,7 +163,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void updateState(String id, StateDiff diff) {
+    public void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater) {
         if (log.isTraceEnabled()) {
             log.trace("Mem: UPDATE " + id + ": " + diff);
         }
@@ -169,7 +171,20 @@ public class MemRepository extends DBSRepositoryBase {
         if (state == null) {
             throw new ConcurrentUpdateException("Missing: " + id);
         }
-        applyDiff(state, diff);
+        synchronized (state) {
+            // synchronization needed for atomic change token
+            if (changeTokenUpdater != null) {
+                for (Entry<String, Serializable> en : changeTokenUpdater.getConditions().entrySet()) {
+                    if (!Objects.equals(state.get(en.getKey()), en.getValue())) {
+                        throw new ConcurrentUpdateException((String) state.get(KEY_ID));
+                    }
+                }
+                for (Entry<String, Serializable> en : changeTokenUpdater.getUpdates().entrySet()) {
+                    applyDiff(state, en.getKey(), en.getValue());
+                }
+            }
+            applyDiff(state, diff);
+        }
     }
 
     @Override
@@ -392,34 +407,41 @@ public class MemRepository extends DBSRepositoryBase {
      */
     public static void applyDiff(State state, StateDiff stateDiff) {
         for (Entry<String, Serializable> en : stateDiff.entrySet()) {
-            String key = en.getKey();
-            Serializable diffElem = en.getValue();
-            if (diffElem instanceof StateDiff) {
-                Serializable old = state.get(key);
-                if (old == null) {
-                    old = new State(true); // thread-safe
-                    state.put(key, old);
-                    // enter the next if
-                }
-                if (!(old instanceof State)) {
-                    throw new UnsupportedOperationException("Cannot apply StateDiff on non-State: " + old);
-                }
-                applyDiff((State) old, (StateDiff) diffElem);
-            } else if (diffElem instanceof ListDiff) {
-                state.put(key, applyDiff(state.get(key), (ListDiff) diffElem));
-            } else if (diffElem instanceof Delta) {
-                Delta delta = (Delta) diffElem;
-                Number oldValue = (Number) state.get(key);
-                Number value;
-                if (oldValue == null) {
-                    value = delta.getFullValue();
-                } else {
-                    value = delta.add(oldValue);
-                }
-                state.put(key, value);
-            } else {
-                state.put(key, StateHelper.deepCopy(diffElem, true)); // thread-safe
+            applyDiff(state, en.getKey(), en.getValue());
+        }
+    }
+
+    /**
+     * Applies a key/value diff in-place onto a base {@link State}.
+     * <p>
+     * Uses thread-safe datastructures.
+     */
+    protected static void applyDiff(State state, String key, Serializable value) {
+        if (value instanceof StateDiff) {
+            Serializable old = state.get(key);
+            if (old == null) {
+                old = new State(true); // thread-safe
+                state.put(key, old);
+                // enter the next if
             }
+            if (!(old instanceof State)) {
+                throw new UnsupportedOperationException("Cannot apply StateDiff on non-State: " + old);
+            }
+            applyDiff((State) old, (StateDiff) value);
+        } else if (value instanceof ListDiff) {
+            state.put(key, applyDiff(state.get(key), (ListDiff) value));
+        } else if (value instanceof Delta) {
+            Delta delta = (Delta) value;
+            Number oldValue = (Number) state.get(key);
+            Number newValue;
+            if (oldValue == null) {
+                newValue = delta.getFullValue();
+            } else {
+                newValue = delta.add(oldValue);
+            }
+            state.put(key, newValue);
+        } else {
+            state.put(key, StateHelper.deepCopy(value, true)); // thread-safe
         }
     }
 

@@ -17,6 +17,7 @@
     point="repository">
     <repository name="test">
       <idType>${nuxeo.test.vcs.idtype}</idType>
+      <changeTokenEnabled>${nuxeo.test.changetoken.enabled}</changeTokenEnabled>
       <schema>
         <field type="largetext">note</field>
         <field type="largetext">relatedtext</field>

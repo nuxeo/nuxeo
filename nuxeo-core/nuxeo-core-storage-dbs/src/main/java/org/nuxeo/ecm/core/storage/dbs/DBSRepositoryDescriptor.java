@@ -143,6 +143,20 @@ public class DBSRepositoryDescriptor implements Cloneable {
         clusteringEnabled = Boolean.valueOf(enabled);
     }
 
+    /** @since 9.1 */
+    @XNode("changeTokenEnabled")
+    private Boolean changeTokenEnabled;
+
+    /** @since 9.1 */
+    public boolean isChangeTokenEnabled() {
+        return defaultFalse(changeTokenEnabled);
+    }
+
+    /** @since 9.1 */
+    public void setChangeTokenEnabled(boolean enabled) {
+        this.changeTokenEnabled = Boolean.valueOf(enabled);
+    }
+
     @Override
     public DBSRepositoryDescriptor clone() {
         try {
@@ -188,6 +202,9 @@ public class DBSRepositoryDescriptor implements Cloneable {
         }
         if (other.clusterInvalidatorClass != null) {
             clusterInvalidatorClass = other.clusterInvalidatorClass;
+        }
+        if (other.changeTokenEnabled != null) {
+            changeTokenEnabled = other.changeTokenEnabled;
         }
     }
 

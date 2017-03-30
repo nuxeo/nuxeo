@@ -117,6 +117,8 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     protected final ConnectionManager cm;
 
+    protected final boolean changeTokenEnabled;
+
     /**
      * @since 7.4 : used to know if the LockManager was provided by this repository or externally
      */
@@ -145,6 +147,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
             fulltextConfiguration = new FulltextConfiguration(fulltextDescriptor);
         }
         this.cm = cm;
+        changeTokenEnabled = descriptor.isChangeTokenEnabled();
         blobManager = Framework.getService(BlobManager.class);
         initBlobsPaths();
         initLockManager();
@@ -319,6 +322,11 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     @Override
     public boolean isFulltextDisabled() {
         return fulltextConfiguration == null;
+    }
+
+    @Override
+    public boolean isChangeTokenEnabled() {
+        return changeTokenEnabled;
     }
 
     @Override

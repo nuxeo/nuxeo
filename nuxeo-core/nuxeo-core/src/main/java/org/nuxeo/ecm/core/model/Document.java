@@ -255,6 +255,14 @@ public interface Document {
     <T extends Serializable> T getSystemProp(String name, Class<T> type);
 
     /**
+     * Gets the current change token for this document.
+     *
+     * @return the change token
+     * @since 9.1
+     */
+    String getChangeToken();
+
+    /**
      * Loads a {@link DocumentPart} from storage.
      * <p>
      * Reading data is done by {@link DocumentPart} because of per-proxy schemas.

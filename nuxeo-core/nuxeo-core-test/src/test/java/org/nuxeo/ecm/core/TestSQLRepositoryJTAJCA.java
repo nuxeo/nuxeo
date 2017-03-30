@@ -425,7 +425,7 @@ public class TestSQLRepositoryJTAJCA {
             TransactionHelper.commitOrRollbackTransaction();
             fail("commit after timeout should raise an exception");
         } catch (TransactionRuntimeException e) {
-            assertEquals("Unable to commit/rollback: Unable to commit: Transaction timeout", e.getMessage());
+            assertEquals("Unable to commit: Transaction timeout", e.getMessage());
         }
         TransactionHelper.startTransaction();
     }

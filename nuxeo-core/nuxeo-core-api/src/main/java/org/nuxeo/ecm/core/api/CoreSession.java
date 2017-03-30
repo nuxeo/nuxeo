@@ -114,6 +114,16 @@ public interface CoreSession extends AutoCloseable {
     String SOURCE = "source";
 
     /**
+     * Change token, a String parameter passed in context data at {@link #saveDocument} time.
+     *
+     * @see DocumentModel#putContextData
+     * @see #getChangeToken
+     * @see DocumentModel#getChangeToken
+     * @since 9.1
+     */
+    String CHANGE_TOKEN = "changeToken";
+
+    /**
      * Closes this session.
      *
      * @since 5.9.3
@@ -1354,5 +1364,24 @@ public interface CoreSession extends AutoCloseable {
         }
 
     }
+
+    /**
+     * Gets the current change token for the document.
+     * <p>
+     * The change token is an opaque string which is modified every time the document is changed.
+     * <p>
+     * Before saving a document through {@link CoreSession#saveDocument} it's possible to pass an expected change token
+     * in the document context data through {@code doc.putContextData(CoreSession.CHANGE_TOKEN, expectedChangeToken)}.
+     * If the change token does not match the stored one, it means that a concurrent update happened, and a
+     * {@link org.nuxeo.ecm.core.api.ConcurrentUpdateException ConcurrentUpdateException} will be thrown.
+     *
+     * @param ref the document reference
+     * @return the change token
+     * @since 9.1
+     * @see DocumentModel#putContextData
+     * @see #CHANGE_TOKEN
+     * @see #getChangeToken
+     */
+    String getChangeToken(DocumentRef ref);
 
 }

@@ -413,4 +413,9 @@ public class ConnectionImpl implements Session {
         return getSession().getBinaryFulltext(id);
     }
 
+    @Override
+    public boolean isChangeTokenEnabled() {
+        return getSession().isChangeTokenEnabled();
+    }
+
 }

@@ -1336,7 +1336,7 @@ public class TestSQLRepositoryProperties {
     protected void changeDoc(String id, StateDiff diff) throws Exception {
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
         Repository repository = repositoryService.getRepository(session.getRepositoryName());
-        ((DBSRepository) repository).updateState(id, diff);
+        ((DBSRepository) repository).updateState(id, diff, null);
     }
 
     @Test

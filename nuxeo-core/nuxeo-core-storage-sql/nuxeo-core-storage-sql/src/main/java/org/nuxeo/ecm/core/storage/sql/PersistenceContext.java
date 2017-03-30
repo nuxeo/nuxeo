@@ -264,6 +264,18 @@ public class PersistenceContext {
     protected RowBatch getSaveBatch(List<Fragment> fragmentsToClearDirty) {
         RowBatch batch = new RowBatch();
 
+        // update change tokens
+        Map<Serializable, Map<String, Serializable>> rowUpdateConditions = new HashMap<>();
+        if (session.changeTokenEnabled) {
+            // find which docs are modified and therefore need a change token check
+            Set<Serializable> modifiedDocIds = findModifiedDocuments();
+            for (Serializable id : modifiedDocIds) {
+                SimpleFragment hier = getHier(id, false);
+                Map<String, Serializable> conditions = updateChangeToken(hier);
+                rowUpdateConditions.put(id, conditions);
+            }
+        }
+
         // created main rows are saved first in the batch (in their order of
         // creation), because they are used as foreign keys in all other tables
         for (Serializable id : createdIds) {
@@ -295,6 +307,12 @@ public class PersistenceContext {
             case MODIFIED:
                 RowUpdate rowu = fragment.getRowUpdate();
                 if (rowu != null) {
+                    if (Model.HIER_TABLE_NAME.equals(fragment.row.tableName)) {
+                        Map<String, Serializable> conditions = rowUpdateConditions.get(fragment.getId());
+                        if (conditions != null) {
+                            rowu.setConditions(conditions);
+                        }
+                    }
                     batch.updates.add(rowu);
                     fragmentsToClearDirty.add(fragment);
                 }
@@ -331,6 +349,25 @@ public class PersistenceContext {
         return batch;
     }
 
+    /** Updates a change token in the main fragment, and returns the condition to check. */
+    protected Map<String, Serializable> updateChangeToken(SimpleFragment hier) {
+        String oldToken = (String) hier.get(Model.MAIN_CHANGE_TOKEN_KEY);
+        String newToken;
+        if (oldToken == null) {
+            // document without change token, just created
+            newToken = Model.INITIAL_CHANGE_TOKEN;
+        } else {
+            newToken = updateChangeToken(oldToken);
+        }
+        hier.put(Model.MAIN_CHANGE_TOKEN_KEY, newToken);
+        return Collections.singletonMap(Model.MAIN_CHANGE_TOKEN_KEY, oldToken);
+    }
+
+    /** Updates a change token to its new value. */
+    protected String updateChangeToken(String token) {
+        return Long.toString(Long.parseLong(token) + 1);
+    }
+
     private boolean complexProp(SimpleFragment fragment) {
         return complexProp((Boolean) fragment.get(Model.HIER_CHILD_ISPROPERTY_KEY));
     }
@@ -344,6 +381,46 @@ public class PersistenceContext {
     }
 
     /**
+     * Finds the documents having been modified.
+     * <p>
+     * A document is modified if any of its direct fragments (same id) is modified, or if any of its complex property
+     * fragments having it as an ancestor is created, modified or deleted.
+     * <p>
+     * Created and deleted documents aren't considered modified.
+     *
+     * @return the set of modified documents
+     * @since 9.1
+     */
+    protected Set<Serializable> findModifiedDocuments() {
+        Set<Serializable> modifiedDocIds = new HashSet<>();
+        Set<Serializable> deletedDocIds = new HashSet<>();
+        for (Fragment fragment : modified.values()) {
+            Serializable docId = getContainingDocument(fragment.getId());
+            boolean complexProp = !fragment.getId().equals(docId);
+            switch (fragment.getState()) {
+            case MODIFIED:
+                modifiedDocIds.add(docId);
+                break;
+            case CREATED:
+                modifiedDocIds.add(docId);
+                break;
+            case DELETED:
+            case DELETED_DEPENDENT:
+                if (complexProp) {
+                    modifiedDocIds.add(docId);
+                } else if (Model.HIER_TABLE_NAME.equals(fragment.row.tableName)) {
+                    deletedDocIds.add(docId);
+                }
+                break;
+            default:
+            }
+        }
+        modifiedDocIds.removeAll(deletedDocIds);
+        modifiedDocIds.removeAll(createdIds);
+        return modifiedDocIds;
+    }
+
+    /**
      * Finds the documents having dirty text or dirty binaries that have to be reindexed as fulltext.
      *
      * @param dirtyStrings set of ids, updated by this method
@@ -351,7 +428,7 @@ public class PersistenceContext {
      */
     protected void findDirtyDocuments(Set<Serializable> dirtyStrings, Set<Serializable> dirtyBinaries) {
         // deleted documents, for which we don't need to reindex anything
-        Set<Serializable> deleted = null;
+        Set<Serializable> deleted = new HashSet<>();
         for (Fragment fragment : modified.values()) {
             Serializable docId = getContainingDocument(fragment.getId());
             String tableName = fragment.row.tableName;
@@ -361,9 +438,6 @@ public class PersistenceContext {
             case DELETED_DEPENDENT:
                 if (Model.HIER_TABLE_NAME.equals(tableName) && fragment.getId().equals(docId)) {
                     // deleting the document, record this
-                    if (deleted == null) {
-                        deleted = new HashSet<>();
-                    }
                     deleted.add(docId);
                 }
                 if (isDeleted(docId)) {
@@ -402,11 +476,9 @@ public class PersistenceContext {
                 break;
             default:
             }
-            if (deleted != null) {
-                dirtyStrings.removeAll(deleted);
-                dirtyBinaries.removeAll(deleted);
-            }
         }
+        dirtyStrings.removeAll(deleted);
+        dirtyBinaries.removeAll(deleted);
     }
 
     /**

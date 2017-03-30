@@ -47,6 +47,7 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
@@ -583,48 +584,28 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             return;
         }
 
-        // reorganize by unique sets of keys + which ones are for delta updates
-        Map<String, List<RowUpdate>> updatesByCanonKeys = new HashMap<>();
-        Map<String, Collection<String>> keysByCanonKeys = new HashMap<>();
-        Map<String, Set<String>> deltasByCanonKeys = new HashMap<>();
+        // reorganize by identical queries to allow batching
+        Map<String, SQLInfoSelect> sqlToInfo = new HashMap<>();
+        Map<String, List<RowUpdate>> sqlRowUpdates = new HashMap<>();
         for (RowUpdate rowu : rows) {
-            List<String> keys = new ArrayList<String>(rowu.keys);
-            if (keys.isEmpty()) {
-                continue;
-            }
-            Set<String> deltas = new HashSet<>();
-            for (ListIterator<String> it = keys.listIterator(); it.hasNext();) {
-                String key = it.next();
-                Serializable value = rowu.row.get(key);
-                if (value instanceof Delta && ((Delta) value).getBase() != null) {
-                    deltas.add(key);
-                    it.set(key + '+');
-                }
-            }
-            Collections.sort(keys);
-            String ck = StringUtils.join(keys, ','); // canonical keys
-            List<RowUpdate> keysUpdates = updatesByCanonKeys.get(ck);
-            if (keysUpdates == null) {
-                updatesByCanonKeys.put(ck, keysUpdates = new LinkedList<RowUpdate>());
-                keysByCanonKeys.put(ck, rowu.keys);
-                deltasByCanonKeys.put(ck, deltas);
-            }
-            keysUpdates.add(rowu);
+            SQLInfoSelect update = sqlInfo.getUpdateById(tableName, rowu);
+            String sql = update.sql;
+            sqlToInfo.put(sql, update);
+            sqlRowUpdates.computeIfAbsent(sql, k -> new ArrayList<RowUpdate>()).add(rowu);
         }
 
-        for (String ck : updatesByCanonKeys.keySet()) {
-            List<RowUpdate> keysUpdates = updatesByCanonKeys.get(ck);
-            Collection<String> keys = keysByCanonKeys.get(ck);
-            Set<String> deltas = deltasByCanonKeys.get(ck);
-            SQLInfoSelect update = sqlInfo.getUpdateById(tableName, keys, deltas);
-            boolean batched = supportsBatchUpdates && keysUpdates.size() > 1;
+        for (Entry<String, List<RowUpdate>> en : sqlRowUpdates.entrySet()) {
+            String sql = en.getKey();
+            List<RowUpdate> rowUpdates = en.getValue();
+            SQLInfoSelect update = sqlToInfo.get(sql);
+            boolean batched = supportsBatchUpdates && rowUpdates.size() > 1;
             String loggedSql = batched ? update.sql + " -- BATCHED" : update.sql;
             try (PreparedStatement ps = connection.prepareStatement(update.sql)) {
                 int batch = 0;
-                for (Iterator<RowUpdate> rowIt = keysUpdates.iterator(); rowIt.hasNext();) {
+                for (Iterator<RowUpdate> rowIt = rowUpdates.iterator(); rowIt.hasNext();) {
                     RowUpdate rowu = rowIt.next();
                     if (logger.isLogEnabled()) {
-                        logger.logSQL(loggedSql, update.whatColumns, rowu.row, deltas);
+                        logger.logSQL(loggedSql, update.whatColumns, rowu.row, update.whereColumns, rowu.conditions);
                     }
                     int i = 1;
                     for (Column column : update.whatColumns) {
@@ -634,18 +615,41 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         }
                         column.setToPreparedStatement(ps, i++, value);
                     }
+                    for (Column column : update.whereColumns) {
+                        // id or condition
+                        String key = column.getKey();
+                        Serializable value;
+                        if (key.equals(Model.MAIN_KEY)) {
+                            value = rowu.row.get(key);
+                        } else {
+                            value = rowu.conditions.get(key);
+                        }
+                        column.setToPreparedStatement(ps, i++, value);
+                    }
                     if (batched) {
                         ps.addBatch();
                         batch++;
                         if (batch % UPDATE_BATCH_SIZE == 0 || !rowIt.hasNext()) {
                             int[] counts = ps.executeBatch();
                             countExecute();
-                            logger.logCounts(counts);
+                            for (int j = 0; j < counts.length; j++) {
+                                if (counts[j] != 1) {
+                                    // find which id this is about
+                                    Serializable id = rowUpdates.get(j).row.id;
+                                    logger.log("  -> CONCURRENT UPDATE: " + id);
+                                    throw new ConcurrentUpdateException(id.toString());
+                                }
+
+                            }
                         }
                     } else {
                         int count = ps.executeUpdate();
                         countExecute();
-                        logger.logCount(count);
+                        if (count != 1) {
+                            Serializable id = rowu.row.id;
+                            logger.log("  -> CONCURRENT UPDATE: " + id);
+                            throw new ConcurrentUpdateException(id.toString());
+                        }
                     }
                 }
             } catch (SQLException e) {
@@ -1017,7 +1021,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             dialect.setId(ps, i, row.id); // id last in SQL
             int count = ps.executeUpdate();
             countExecute();
-            logger.logCount(count);
         } catch (SQLException e) {
             throw new NuxeoException("Could not update: " + sql, e);
         }
@@ -1111,7 +1114,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
             int count = ps.executeUpdate();
             countExecute();
-            logger.logCount(count);
 
             // TODO DB_IDENTITY
             // post insert fetch idrow
@@ -1197,7 +1199,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     dialect.setId(deletePs, 1, newId);
                     int delCount = deletePs.executeUpdate();
                     countExecute();
-                    logger.logCount(delCount);
                     before = delCount > 0;
                 }
                 copyIdColumn.setToPreparedStatement(copyPs, 1, newId);
@@ -1207,7 +1208,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
                 int copyCount = copyPs.executeUpdate();
                 countExecute();
-                logger.logCount(copyCount);
                 if (overwrite) {
                     after = copyCount > 0;
                 }

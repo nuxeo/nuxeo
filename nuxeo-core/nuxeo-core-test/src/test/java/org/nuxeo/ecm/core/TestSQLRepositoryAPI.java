@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -56,6 +57,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -179,6 +181,31 @@ public class TestSQLRepositoryAPI {
 
     protected boolean isDBS() {
         return coreFeature.getStorageConfiguration().isDBS();
+    }
+
+    protected boolean isChangeTokenEnabled() {
+        return coreFeature.getStorageConfiguration().isChangeTokenEnabled();
+    }
+
+    /**
+     * Simulate change token init when there is no database-level change token.
+     */
+    protected void maybeCreateChangeToken(DocumentModel doc) {
+        if (!isChangeTokenEnabled()) {
+            doc.setPropertyValue("dc:modified", Calendar.getInstance());
+        }
+    }
+
+    /**
+     * Simulate change token update when there is no database-level change token.
+     * <p>
+     * Done through the dublincore listener in a real instance.
+     */
+    protected void maybeUpdateChangeToken(DocumentModel doc) {
+        if (!isChangeTokenEnabled()) {
+            maybeSleepToNextSecond();
+            doc.setPropertyValue("dc:modified", Calendar.getInstance());
+        }
     }
 
     /**
@@ -4314,15 +4341,208 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testChangeToken() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
-        doc.setPropertyValue("dc:modified", Calendar.getInstance());
+        maybeCreateChangeToken(doc);
         doc = session.createDocument(doc);
         session.save();
         String token = doc.getChangeToken();
 
+        // now change the doc
+        doc.setPropertyValue("dc:title", "Doc Changed");
+        maybeUpdateChangeToken(doc);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // the change token has been updated
+        String token2 = doc.getChangeToken();
+        assertNotEquals(token, token2);
+
+        // change token is available on a detached document
+        doc.detach(true);
+        assertEquals(token2, doc.getChangeToken());
+    }
+
+    @Test
+    public void testChangeTokenForList() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        maybeCreateChangeToken(doc);
+        doc = session.createDocument(doc);
+        session.save();
+
+        // do a first change to provoke the initial update VCS side effects (fulltext table)
+        doc.setPropertyValue("dc:title", "Doc Changed");
+        maybeUpdateChangeToken(doc);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // get the token
+        String token = doc.getChangeToken();
+
+        // change the doc by changing a list
+        doc.setPropertyValue("dc:subjects", (Serializable) Arrays.asList("foo", "bar"));
+        maybeUpdateChangeToken(doc);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // the change token has been updated
+        String token2 = doc.getChangeToken();
+        assertNotEquals(token, token2);
+    }
+
+    @Test
+    public void testChangeTokenForComplex() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        maybeCreateChangeToken(doc);
+        doc = session.createDocument(doc);
+        session.save();
+
+        // do a first change to provoke the initial update VCS side effects (fulltext table)
+        doc.setPropertyValue("dc:title", "foo");
+        maybeUpdateChangeToken(doc);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // get the token
+        String token = doc.getChangeToken();
+
+        // change the doc by creating a complex property list
+        doc.setPropertyValue("relatedtext:relatedtextresources",
+                (Serializable) Arrays.asList(Collections.singletonMap("relatedtextid", "123")));
+        maybeUpdateChangeToken(doc);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // the change token has been updated
+        String token2 = doc.getChangeToken();
+        assertNotEquals(token, token2);
+
+        // change the doc by updating a complex property list
+        doc.setPropertyValue("relatedtext:relatedtextresources",
+                (Serializable) Arrays.asList(Collections.singletonMap("relatedtextid", "456")));
+        maybeUpdateChangeToken(doc);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // the change token has been updated again
+        String token3 = doc.getChangeToken();
+        assertNotEquals(token2, token3);
+
+        // change the doc by removing a complex property list
+        doc.setPropertyValue("relatedtext:relatedtextresources", (Serializable) Collections.emptyList());
+        maybeUpdateChangeToken(doc);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // the change token has been updated again
+        String token4 = doc.getChangeToken();
+        assertNotEquals(token3, token4);
+    }
+
+    @Test
+    public void testOptimisticLockingWithExplicitChangeToken() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        maybeCreateChangeToken(doc);
+        doc = session.createDocument(doc);
+        session.save();
+        String token = doc.getChangeToken();
+
+        // now change the doc, using the appropriate change token
+        doc.setPropertyValue("dc:title", "foo");
+        doc.putContextData(CoreSession.CHANGE_TOKEN, token);
+        maybeUpdateChangeToken(doc);
+        doc = session.saveDocument(doc);
+        session.save(); // save succeeds
+        String token2 = doc.getChangeToken();
+        assertNotEquals(token, token2);
+
+        // change again the doc, using a wrong change token
+        doc.setPropertyValue("dc:title", "bar");
+        doc.putContextData(CoreSession.CHANGE_TOKEN, "wrongchangetoken");
+        maybeUpdateChangeToken(doc);
+        try {
+            session.saveDocument(doc);
+            fail("save should fail because of wrong change token");
+        } catch (ConcurrentUpdateException e) {
+            TransactionHelper.setTransactionRollbackOnly();
+            assertEquals(doc.getId(), e.getMessage());
+        }
+    }
+
+    // TODO this test fails randomly because of concurrent updates
+    @Test
+    public void testOptimisticLockingWithRandomParallelWork() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        maybeCreateChangeToken(doc);
+        doc.setPropertyValue("dc:title", "foo");
+        doc = session.createDocument(doc);
+        session.save();
         nextTransaction();
+
+        doc.setPropertyValue("dc:title", "bar");
+        maybeUpdateChangeToken(doc);
+        session.saveDocument(doc);
+        // save may fail due to concurrent exception
+        // this happens if the async fulltext-indexing job changing the document
+        // runs in a different session than the main one
+        // FIXME fix change token management for this case
+        assumeTrue("FIXME", !isChangeTokenEnabled());
+        session.save();
+    }
+
+    @Test
+    public void testOptimisticLockingWithParallelChange() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        // create row in VCS dublincore table to avoid later concurrent update upon its creation
+        doc.setPropertyValue("dc:title", "foo");
+        maybeCreateChangeToken(doc);
+        doc = session.createDocument(doc);
+        DocumentRef docRef = doc.getRef();
+        session.save();
+
+        // re-start a new transaction that hasn't done any writes
+        nextTransaction();
+        waitForAsyncCompletion();
         reopenSession();
-        doc = session.getDocument(doc.getRef());
-        assertEquals(token, doc.getChangeToken());
+
+        doc = session.getDocument(docRef);
+
+        // in other thread, update the doc as well
+        MutableObject<RuntimeException> me = new MutableObject<>();
+        Thread thread = new Thread(() -> {
+            TransactionHelper.runInTransaction(() -> {
+                try (CoreSession session2 = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
+                    DocumentModel doc2 = session2.getDocument(docRef);
+                    doc2.setPropertyValue("dc:title", "bar parallel");
+                    maybeUpdateChangeToken(doc2);
+                    doc2 = session2.saveDocument(doc2);
+                    session2.save(); // save succeeds
+                } catch (RuntimeException e) {
+                    me.setValue(e);
+                }
+            });
+        });
+        thread.start();
+        thread.join();
+        if (me.getValue() != null) {
+            throw me.getValue();
+        }
+
+        // now try to save the doc, using the implicit change token
+        doc.setPropertyValue("dc:title", "bar");
+        maybeUpdateChangeToken(doc);
+        doc = session.saveDocument(doc);
+        try {
+            session.save();
+            if (isChangeTokenEnabled()) { // not failing for manual change tokens
+                fail("save should fail because of concurrent update in other transaction");
+            }
+        } catch (ConcurrentUpdateException e) {
+            if (!isChangeTokenEnabled()) {
+                // no exception expected for manual change token
+                throw e;
+            }
+            // ok
+            TransactionHelper.setTransactionRollbackOnly();
+        }
     }
 
 }

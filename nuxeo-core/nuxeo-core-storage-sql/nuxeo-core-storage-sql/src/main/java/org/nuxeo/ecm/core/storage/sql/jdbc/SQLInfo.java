@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,12 +38,14 @@ import java.util.stream.Collectors;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.RowUpdate;
 import org.nuxeo.ecm.core.storage.sql.Selection;
 import org.nuxeo.ecm.core.storage.sql.SelectionType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
@@ -324,17 +327,45 @@ public class SQLInfo {
 
     // TODO these two methods are redundant with one another
 
-    public SQLInfoSelect getUpdateById(String tableName, Collection<String> keys, Set<String> deltas) {
+    /**
+     * <pre>
+     * UPDATE tableName SET key1 = ?, key2 = ?, ... WHERE id = ? AND condition1 = ? AND condition2 IS NULL ...
+     * </pre>
+     */
+    public SQLInfoSelect getUpdateById(String tableName, RowUpdate rowu) {
         Table table = database.getTable(tableName);
-        List<Column> columns = new LinkedList<>();
-        for (String key : keys) {
-            columns.add(table.getColumn(key));
-        }
         Update update = new Update(table);
-        update.setUpdatedColumns(columns, deltas);
-        update.setWhere(getIdEqualsClause(tableName));
-        columns.add(table.getColumn(Model.MAIN_KEY));
-        return new SQLInfoSelect(update.getStatement(), columns, null, null);
+
+        List<Column> whatColumns = new ArrayList<>();
+        Set<String> deltas = new HashSet<>();
+        for (String key : rowu.keys) {
+            whatColumns.add(table.getColumn(key));
+            Serializable value = rowu.row.get(key);
+            if (value instanceof Delta && ((Delta) value).getBase() != null) {
+                deltas.add(key);
+            }
+        }
+        update.setUpdatedColumns(whatColumns, deltas);
+
+        List<Column> whereColumns = new ArrayList<>(2);
+        String where = getIdEqualsClause(tableName);
+        whereColumns.add(table.getColumn(Model.MAIN_KEY));
+        if (rowu.conditions != null) {
+            for (Entry<String, Serializable> es : rowu.conditions.entrySet()) {
+                String key = es.getKey();
+                boolean isNull = es.getValue() == null;
+                Column column = table.getColumn(key);
+                String columnName = column.getQuotedName();
+                if (isNull) {
+                    where += " AND " + columnName + " IS NULL";
+                } else {
+                    where += " AND " + columnName + " = ?";
+                    whereColumns.add(column);
+                }
+            }
+        }
+        update.setWhere(where);
+        return new SQLInfoSelect(update.getStatement(), whatColumns, whereColumns, null);
     }
 
     public Update getUpdateByIdForKeys(String tableName, List<String> keys) {

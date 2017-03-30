@@ -476,4 +476,11 @@ public interface Session extends Connection {
      */
     Map<String, String> getBinaryFulltext(Serializable id);
 
+    /**
+     * Checks if change token management is enabled.
+     *
+     * @since 9.1
+     */
+    boolean isChangeTokenEnabled();
+
 }

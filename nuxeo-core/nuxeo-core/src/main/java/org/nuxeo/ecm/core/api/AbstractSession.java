@@ -2315,6 +2315,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
+    public String getChangeToken(DocumentRef ref) {
+        Document doc = resolveReference(ref);
+        return doc.getChangeToken();
+    }
+
+    @Override
     public void orderBefore(DocumentRef parent, String src, String dest) {
         if ((src == null) || (src.equals(dest))) {
             return;

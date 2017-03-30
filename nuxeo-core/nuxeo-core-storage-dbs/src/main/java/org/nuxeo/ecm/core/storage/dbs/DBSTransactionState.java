@@ -23,12 +23,14 @@ import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.INITIAL_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_GRANT;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_PERMISSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
@@ -575,7 +577,9 @@ public class DBSTransactionState {
             if (undoLog != null) {
                 undoLog.put(id, null); // marker to denote create
             }
-            statesToCreate.add(docState.getState());
+            State state = docState.getState();
+            state.put(KEY_CHANGE_TOKEN, INITIAL_CHANGE_TOKEN);
+            statesToCreate.add(state);
         }
         if (!statesToCreate.isEmpty()) {
             repository.createStates(statesToCreate);
@@ -593,12 +597,67 @@ public class DBSTransactionState {
                     }
                     // else there's already a create or an update in the undo log so original info is enough
                 }
-                repository.updateState(id, diff);
+                ChangeTokenUpdater changeTokenUpdater;
+                if (session.changeTokenEnabled) {
+                    changeTokenUpdater = new ChangeTokenUpdater(docState);
+                } else {
+                    changeTokenUpdater = null;
+                }
+                repository.updateState(id, diff, changeTokenUpdater);
             }
             docState.setNotDirty();
         }
         transientCreated.clear();
         scheduleWork(works);
+    }
+
+    /**
+     * Logic to get the conditions to use to match and update a change token.
+     * <p>
+     * This may be called several times for a single DBS document update, because the low-level storage may need several
+     * database updates for a single high-level update in some cases.
+     *
+     * @since 9.1
+     */
+    public static class ChangeTokenUpdater {
+
+        protected final DBSDocumentState docState;
+
+        protected String oldToken;
+
+        public ChangeTokenUpdater(DBSDocumentState docState) {
+            this.docState = docState;
+            oldToken = (String) docState.getOriginalState().get(KEY_CHANGE_TOKEN);
+        }
+
+        /**
+         * Gets the conditions to use to match a change token.
+         */
+        public Map<String, Serializable> getConditions() {
+            return Collections.singletonMap(KEY_CHANGE_TOKEN, oldToken);
+        }
+
+        /**
+         * Gets the updates to make to write the updated change token.
+         */
+        public Map<String, Serializable> getUpdates() {
+            String newToken;
+            if (oldToken == null) {
+                // document without change token, just created
+                newToken = INITIAL_CHANGE_TOKEN;
+            } else {
+                newToken = updateChangeToken(oldToken);
+            }
+            // also store the new token in the state (without marking dirty), for the next update
+            docState.getState().put(KEY_CHANGE_TOKEN, newToken);
+            oldToken = newToken;
+            return Collections.singletonMap(KEY_CHANGE_TOKEN, newToken);
+        }
+
+        /** Updates a change token to its new value. */
+        protected String updateChangeToken(String token) {
+            return Long.toString(Long.parseLong(token) + 1);
+        }
     }
 
     protected void applyUndoLog() {
@@ -618,7 +677,7 @@ public class DBSTransactionState {
                     if (currentState != null) {
                         StateDiff diff = StateHelper.diff(currentState, state);
                         if (!diff.isEmpty()) {
-                            repository.updateState(id, diff);
+                            repository.updateState(id, diff, null);
                         }
                     }
                     // else we expected to read a current state but it was concurrently deleted...

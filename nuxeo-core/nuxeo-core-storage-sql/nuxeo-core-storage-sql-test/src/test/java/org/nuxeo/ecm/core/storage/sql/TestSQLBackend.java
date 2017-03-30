@@ -1667,7 +1667,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 TransactionHelper.commitOrRollbackTransaction();
                 throw new AssertionError("should rollback");
             } catch (TransactionRuntimeException cause) {
-                ;
+                assertEquals("Unable to commit: transaction marked for rollback", cause.getMessage());
             }
             nodea = session.getNodeByPath("/foo", null);
             assertEquals("old", nodea.getSimpleProperty("tst:title").getString());

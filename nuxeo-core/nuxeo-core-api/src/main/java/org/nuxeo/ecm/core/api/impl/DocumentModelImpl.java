@@ -196,6 +196,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     private String detachedVersionLabel;
 
+    // always refetched when a session is accessible, but also available without one
+    protected String changeToken;
+
     protected DocumentModelImpl() {
     }
 
@@ -397,6 +400,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 isCheckedOut();
                 getCurrentLifeCycleState();
                 getLockInfo();
+                getChangeToken();
             }
         } finally {
             sid = null;
@@ -1484,18 +1488,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public String getChangeToken() {
-        if (!hasSchema("dublincore")) {
-            return null;
+        if (hasSession()) {
+            changeToken = getSession().getChangeToken(ref);
         }
-        try {
-            Calendar modified = (Calendar) getPropertyValue("dc:modified");
-            if (modified != null) {
-                return String.valueOf(modified.getTimeInMillis());
-            }
-        } catch (PropertyException e) {
-            log.error("Error while retrieving dc:modified", e);
-        }
-        return null;
+        return changeToken;
     }
 
     /**

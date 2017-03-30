@@ -354,9 +354,26 @@ public class TransactionHelper {
             int status = ut.getStatus();
             if (status == Status.STATUS_ACTIVE) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Commiting transaction");
+                    log.debug("Committing transaction");
                 }
-                ut.commit();
+                try {
+                    ut.commit();
+                } catch (RollbackException | HeuristicRollbackException | HeuristicMixedException e) {
+                    String msg = "Unable to commit";
+                    // messages from org.apache.geronimo.transaction.manager.TransactionImpl.commit
+                    switch (e.getMessage()) {
+                    case "Unable to commit: transaction marked for rollback":
+                        // don't log as error, this happens if there's a ConcurrentUpdateException
+                        // at transaction end inside VCS
+                    case "Unable to commit: Transaction timeout":
+                        // don't log either
+                        log.debug(msg, e);
+                        break;
+                    default:
+                        log.error(msg, e);
+                    }
+                    throw new TransactionRuntimeException(e.getMessage(), e);
+                }
             } else if (status == Status.STATUS_MARKED_ROLLBACK) {
                 if (log.isDebugEnabled()) {
                     log.debug("Cannot commit transaction because it is marked rollback only");
@@ -367,26 +384,10 @@ public class TransactionHelper {
                     log.debug("Cannot commit transaction with unknown status: " + status);
                 }
             }
-        } catch (SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException
-                | IllegalStateException | SecurityException e) {
+        } catch (SystemException | IllegalStateException | SecurityException e) {
             String msg = "Unable to commit/rollback";
-            String message = e.getMessage();
-            if (e instanceof RollbackException) {
-                switch (message) {
-                case "Unable to commit: transaction marked for rollback":
-                    // don't log as error, this happens if there's a ConcurrentModificationException
-                    // at transaction end inside VCS
-                case "Unable to commit: Transaction timeout":
-                    // don't log either
-                    log.debug(msg, e);
-                    break;
-                default:
-                    log.error(msg, e);
-                }
-            } else {
-                log.error(msg, e);
-            }
-            throw new TransactionRuntimeException(msg + ": " + message, e);
+            log.error(msg, e);
+            throw new TransactionRuntimeException(msg + ": " + e.getMessage(), e);
         }
     }
 

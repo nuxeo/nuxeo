@@ -108,6 +108,8 @@ public class SessionImpl implements Session, XAResource {
     // public because used by unit tests
     public final PersistenceContext context;
 
+    protected final boolean changeTokenEnabled;
+
     private volatile boolean live;
 
     private boolean inTransaction;
@@ -140,6 +142,7 @@ public class SessionImpl implements Session, XAResource {
         this.mapper = mapper;
         this.model = model;
         context = new PersistenceContext(model, mapper, this);
+        changeTokenEnabled = repository.isChangeTokenEnabled();
         live = true;
         readAclsChanged = false;
 
@@ -1525,6 +1528,11 @@ public class SessionImpl implements Session, XAResource {
         }
         RowId rowId = new RowId(Model.FULLTEXT_TABLE_NAME, id);
         return mapper.getBinaryFulltext(rowId);
+    }
+
+    @Override
+    public boolean isChangeTokenEnabled() {
+        return changeTokenEnabled;
     }
 
 }

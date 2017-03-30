@@ -80,6 +80,7 @@ import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
+import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
 import org.nuxeo.runtime.api.Framework;
 
 import com.mongodb.BasicDBObject;
@@ -367,14 +368,36 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void updateState(String id, StateDiff diff) {
-        DBObject query = new BasicDBObject(idKey, id);
+    public void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater) {
         List<DBObject> updates = converter.diffToBson(diff);
         for (DBObject update : updates) {
-            if (log.isTraceEnabled()) {
-                log.trace("MongoDB: UPDATE " + id + ": " + update);
+            DBObject query = new BasicDBObject(idKey, id);
+            if (changeTokenUpdater == null) {
+                if (log.isTraceEnabled()) {
+                    log.trace("MongoDB: UPDATE " + id + ": " + update);
+                }
+            } else {
+                // assume bson is identical to dbs internals
+                // condition works even if value is null
+                Map<String, Serializable> conditions = changeTokenUpdater.getConditions();
+                Map<String, Serializable> tokenUpdates = changeTokenUpdater.getUpdates();
+                if (update.containsField(MONGODB_SET)) {
+                    ((DBObject) update.get(MONGODB_SET)).putAll(tokenUpdates);
+                } else {
+                    DBObject set = new BasicDBObject();
+                    set.putAll(tokenUpdates);
+                    update.put(MONGODB_SET, set);
+                }
+                if (log.isTraceEnabled()) {
+                    log.trace("MongoDB: UPDATE " + id + ": IF " + conditions + " THEN " + update);
+                }
+                query.putAll(conditions);
             }
-            coll.update(query, update);
+            WriteResult w = coll.update(query, update);
+            if (w.getN() != 1) {
+                log.trace("MongoDB:    -> CONCURRENT UPDATE: " + id);
+                throw new ConcurrentUpdateException(id);
+            }
             // TODO dupe exception
             // throw new DocumentException("Missing: " + id);
         }

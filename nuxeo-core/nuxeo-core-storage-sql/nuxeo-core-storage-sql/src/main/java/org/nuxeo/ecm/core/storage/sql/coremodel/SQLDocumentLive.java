@@ -323,6 +323,21 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
         return (T) value;
     }
 
+    @Override
+    public String getChangeToken() {
+        if (session.isChangeTokenEnabled()) {
+            return (String) getPropertyValue(Model.MAIN_CHANGE_TOKEN_PROP);
+        } else {
+            Calendar modified;
+            try {
+                modified = (Calendar) getPropertyValue(DC_MODIFIED);
+            } catch (PropertyNotFoundException e) {
+                modified = null;
+            }
+            return modified == null ? null : String.valueOf(modified.getTimeInMillis());
+        }
+    }
+
     /*
      * ----- LifeCycle -----
      */
