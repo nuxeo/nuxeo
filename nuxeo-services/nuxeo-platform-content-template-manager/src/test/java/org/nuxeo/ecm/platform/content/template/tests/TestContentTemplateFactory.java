@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.content.template.service.ContentFactory;
 import org.nuxeo.ecm.platform.content.template.service.ContentFactoryDescriptor;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateServiceImpl;
@@ -156,17 +155,6 @@ public class TestContentTemplateFactory {
         assertTrue(!groups.isEmpty());
         assertEquals(1, groups.size());
         assertEquals("members", groups.get(0));
-    }
-
-    @Test
-    public void testServiceFactoryInstancesContribs() {
-        ContentTemplateServiceImpl serviceImpl = (ContentTemplateServiceImpl) service;
-        assertNotNull(serviceImpl);
-
-        Map<String, ContentFactory> factoryInstances = serviceImpl.getFactoryInstancesByType();
-        assertEquals(3, factoryInstances.size());
-        assertTrue(factoryInstances.containsKey("Root"));
-        assertTrue(factoryInstances.containsKey("Domain"));
     }
 
     @Test
