@@ -59,6 +59,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(AuditFeature.class)
 @LocalDeploy("org.nuxeo.ecm.platform.audit.tests:test-pageprovider-contrib.xml")
 @RepositoryConfig(init = Pfouh.class)
+@Ignore("NXP-21915")
 public class TestDocumentAuditPageProvider {
 
     protected static final Calendar testDate = Calendar.getInstance();
