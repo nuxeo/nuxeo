@@ -11,14 +11,6 @@ module.exports = function (grunt) {
       source: 'src/main/resources/web/nuxeo.war',
       target: 'target/classes/web/nuxeo.war'
     },
-    copy: {
-      pdfjs: {
-        cwd: '<%= config.target %>/bower_components/nuxeo-ui-elements/viewers/pdfjs',
-        src: ['**/*'],
-        dest: '<%= config.target %>/viewers/pdfjs',
-        expand: true
-      }
-    },
     vulcanize: {
       permissions: {
         options: {
@@ -28,50 +20,6 @@ module.exports = function (grunt) {
         files: {
           '<%= config.target %>/permissions/components/elements.vulcanized.html': [
             '<%= config.target %>/bower_components/nuxeo-document-permissions/nuxeo-document-permissions.html'
-          ]
-        },
-      },
-      pdfViewer: {
-        options: {
-          inlineScripts: true,
-          inlineCss: true
-        },
-        files: {
-          '<%= config.target %>/viewers/nuxeo-pdf-viewer.vulcanized.html': [
-            '<%= config.target %>/bower_components/nuxeo-ui-elements/viewers/nuxeo-pdf-viewer.html'
-          ]
-        }
-      },
-      imageViewer: {
-        options: {
-          inlineScripts: true,
-          inlineCss: true
-        },
-        files: {
-          '<%= config.target %>/viewers/nuxeo-image-viewer.vulcanized.html': [
-            '<%= config.target %>/bower_components/nuxeo-ui-elements/viewers/nuxeo-image-viewer.html'
-          ]
-        }
-      },
-      videoViewer: {
-        options: {
-          inlineScripts: true,
-          inlineCss: true
-        },
-        files: {
-          '<%= config.target %>/viewers/nuxeo-video-viewer.vulcanized.html': [
-            '<%= config.target %>/bower_components/nuxeo-ui-elements/viewers/nuxeo-video-viewer.html'
-          ]
-        },
-      },
-      markdownViewer: {
-        options: {
-          inlineScripts: true,
-          inlineCss: true
-        },
-        files: {
-          '<%= config.target %>/viewers/marked-element.vulcanized.html': [
-            '<%= config.target %>/bower_components/marked-element/marked-element.html'
           ]
         },
       },
@@ -93,11 +41,6 @@ module.exports = function (grunt) {
 
   grunt.registerTask('default', [
     'vulcanize:permissions',
-    'vulcanize:pdfViewer',
-    'copy:pdfjs',
-    'vulcanize:imageViewer',
-    'vulcanize:videoViewer',
-    'vulcanize:markdownViewer',
     'clean:bower_components'
   ]);
 };
