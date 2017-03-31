@@ -64,7 +64,7 @@ public class AddPermission {
      * automation. If allowed, Nuxeo server will not check the user existence during automation execution. Set this
      * property to true if you use Nuxeo computed user or computed group.
      *
-     * @since 8.10
+     * @since 9.1
      */
     public static final String ALLOW_VIRTUAL_USER = "nuxeo.automation.allowVirtualUser";
 
