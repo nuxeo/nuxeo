@@ -43,12 +43,8 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
-import org.nuxeo.ecm.platform.publisher.impl.service.ProxyTree;
-import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
 import org.nuxeo.ecm.platform.publisher.test.TestServiceWithCore.Populate;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.RegistrationInfo;
-import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -117,11 +113,6 @@ public class TestServiceWithCore extends PublisherTestCase {
         assertEquals("RootSectionsPublicationTree", tree.getTreeType());
         assertTrue(tree.getConfigName().startsWith("DefaultSectionsTree"));
 
-        Boolean isRemotable = false;
-        if (tree instanceof ProxyTree) {
-            isRemotable = true;
-        }
-        assertTrue(isRemotable);
         List<PublicationNode> nodes = tree.getChildrenNodes();
 
         assertEquals(2, nodes.size());
@@ -133,11 +124,8 @@ public class TestServiceWithCore extends PublisherTestCase {
 
         PublicationNode targetNode = subnodes.get(0);
 
-        // check treeconfigName propagation
-        assertEquals(tree.getConfigName(), tree.getTreeConfigName());
-        assertEquals(tree.getConfigName(), nodes.get(1).getTreeConfigName());
-
-        assertEquals(tree.getSessionId(), nodes.get(1).getSessionId());
+        // check tree propagation
+        assertEquals(tree, nodes.get(1).getTree());
 
         // check publishing
         PublishedDocument pubDoc = tree.publish(Populate.self.doc2Publish, targetNode);
@@ -286,32 +274,4 @@ public class TestServiceWithCore extends PublisherTestCase {
         assertFalse(session.exists(proxyRef));
     }
 
-    @Test
-    public void testCleanUp() throws Exception {
-        RegistrationInfo ri = new DefaultRuntimeContext().deploy("OSGI-INF/publisher-remote-contrib-test.xml");
-        try {
-
-            PublisherServiceImpl service = (PublisherServiceImpl) Framework.getLocalService(PublisherService.class);
-
-            assertEquals(0, service.getLiveTreeCount());
-
-            // get a local tree
-            PublicationTree ltree = service.getPublicationTree("DefaultSectionsTree-default-domain", session, null);
-            assertEquals(1, service.getLiveTreeCount());
-
-            // get a remote tree
-            PublicationTree rtree = service.getPublicationTree("ClientRemoteTree", session, null);
-            assertEquals(3, service.getLiveTreeCount());
-
-            // release local tree
-            ltree.release();
-            assertEquals(2, service.getLiveTreeCount());
-
-            // release remote tree
-            rtree.release();
-            assertEquals(0, service.getLiveTreeCount());
-        } finally {
-            ri.getManager().unregister(ri);
-        }
-    }
 }

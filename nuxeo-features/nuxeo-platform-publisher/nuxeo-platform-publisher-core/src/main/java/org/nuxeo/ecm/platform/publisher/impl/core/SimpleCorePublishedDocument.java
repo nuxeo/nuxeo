@@ -54,10 +54,6 @@ public class SimpleCorePublishedDocument implements PublishedDocument {
         return new IdRef(proxy.getSourceId());
     }
 
-    public String getSourceServer() {
-        return "local";
-    }
-
     public String getSourceRepositoryName() {
         return proxy.getRepositoryName();
     }
@@ -85,10 +81,6 @@ public class SimpleCorePublishedDocument implements PublishedDocument {
 
     public boolean isPending() {
         return isPending;
-    }
-
-    public Type getType() {
-        return Type.LOCAL;
     }
 
 }

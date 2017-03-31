@@ -47,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author tiry
  */
-public class SectionPublicationTree extends AbstractBasePublicationTree implements PublicationTree {
+public class SectionPublicationTree extends AbstractBasePublicationTree {
 
     private static final long serialVersionUID = 1L;
 
@@ -62,9 +62,9 @@ public class SectionPublicationTree extends AbstractBasePublicationTree implemen
     protected String sessionId;
 
     @Override
-    public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
-            PublishedDocumentFactory factory, String configName, String title) {
-        super.initTree(sid, coreSession, parameters, factory, configName, title);
+    public void initTree(CoreSession coreSession, Map<String, String> parameters, PublishedDocumentFactory factory,
+            String configName, String title) {
+        super.initTree(coreSession, parameters, factory, configName, title);
 
         DocumentRef ref = new PathRef(rootPath);
         boolean exists = coreSession.exists(ref);
@@ -74,10 +74,9 @@ public class SectionPublicationTree extends AbstractBasePublicationTree implemen
         }
         if (exists && coreSession.hasPermission(ref, SecurityConstants.READ)) {
             treeRoot = coreSession.getDocument(new PathRef(rootPath));
-            rootNode = new CoreFolderPublicationNode(treeRoot, getConfigName(), sid, factory);
+            rootNode = new CoreFolderPublicationNode(treeRoot, this, factory);
         } else {
-            rootNode = new VirtualCoreFolderPublicationNode(coreSession.getSessionId(), rootPath, getConfigName(), sid,
-                    factory);
+            rootNode = new VirtualCoreFolderPublicationNode(coreSession.getSessionId(), rootPath, this, factory);
             sessionId = coreSession.getSessionId();
         }
     }
@@ -136,10 +135,9 @@ public class SectionPublicationTree extends AbstractBasePublicationTree implemen
     public PublicationNode getNodeByPath(String path) {
         DocumentRef docRef = new PathRef(path);
         if (coreSession.hasPermission(docRef, SecurityConstants.READ)) {
-            return new CoreFolderPublicationNode(coreSession.getDocument(new PathRef(path)), getConfigName(),
-                    getSessionId(), factory);
+            return new CoreFolderPublicationNode(coreSession.getDocument(new PathRef(path)), this, factory);
         } else {
-            return new VirtualCoreFolderPublicationNode(coreSession.getSessionId(), path, getConfigName(), sid, factory);
+            return new VirtualCoreFolderPublicationNode(coreSession.getSessionId(), path, this, factory);
         }
 
     }
@@ -193,7 +191,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree implemen
             throw new NuxeoException("Document " + documentModel.getPathAsString()
                     + " is not a valid publication node.");
         }
-        return new CoreFolderPublicationNode(documentModel, getConfigName(), sid, factory);
+        return new CoreFolderPublicationNode(documentModel, this, factory);
     }
 
     @Override

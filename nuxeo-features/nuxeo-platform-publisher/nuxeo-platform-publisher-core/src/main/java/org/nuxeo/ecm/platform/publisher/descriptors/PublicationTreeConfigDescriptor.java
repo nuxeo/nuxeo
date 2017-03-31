@@ -52,9 +52,6 @@ public class PublicationTreeConfigDescriptor implements Serializable {
     @XNode("@factory")
     private String factory;
 
-    @XNode("@localSectionTree")
-    private boolean localSectionTree = false;
-
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> parameters = new HashMap<String, String>();
 
@@ -67,7 +64,6 @@ public class PublicationTreeConfigDescriptor implements Serializable {
         title = other.title;
         validatorsRule = other.validatorsRule;
         factory = other.factory;
-        localSectionTree = other.localSectionTree;
         parameters = new HashMap<String, String>(other.parameters);
     }
 
@@ -97,10 +93,6 @@ public class PublicationTreeConfigDescriptor implements Serializable {
 
     public void setFactory(String factory) {
         this.factory = factory;
-    }
-
-    public boolean islocalSectionTree() {
-        return localSectionTree;
     }
 
     public Map<String, String> getParameters() {

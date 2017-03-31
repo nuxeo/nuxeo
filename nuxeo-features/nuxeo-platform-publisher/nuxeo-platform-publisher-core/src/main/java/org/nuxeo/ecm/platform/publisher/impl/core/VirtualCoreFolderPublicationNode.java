@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.publisher.api.AbstractPublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
+import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 import org.nuxeo.runtime.api.Framework;
@@ -49,19 +50,14 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
 
     protected String path;
 
-    protected String treeConfigName;
-
     protected PublishedDocumentFactory factory;
 
-    protected String sid;
-
-    public VirtualCoreFolderPublicationNode(String coreSessionId, String documentPath, String treeConfigName,
-            String sid, PublishedDocumentFactory factory) {
+    public VirtualCoreFolderPublicationNode(String coreSessionId, String documentPath, PublicationTree tree,
+            PublishedDocumentFactory factory) {
+        super(tree);
         this.coreSessionId = coreSessionId;
         this.path = documentPath;
-        this.treeConfigName = treeConfigName;
         this.factory = factory;
-        this.sid = sid;
     }
 
     public String getTitle() {
@@ -91,7 +87,7 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
                     }
                 }
                 if (!foundParent) {
-                    childrenNodes.add(new CoreFolderPublicationNode(doc, treeConfigName, sid, this, factory));
+                    childrenNodes.add(new CoreFolderPublicationNode(doc, tree, this, factory));
                 }
             }
         }
@@ -108,10 +104,6 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
 
     public String getPath() {
         return path;
-    }
-
-    public String getSessionId() {
-        return sid;
     }
 
 }

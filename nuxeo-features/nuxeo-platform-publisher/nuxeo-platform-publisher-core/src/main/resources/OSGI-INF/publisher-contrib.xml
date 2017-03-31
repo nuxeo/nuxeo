@@ -28,22 +28,11 @@
 
       - CoreProxy: to manage published documents based on a proxy
 
-      - LocalFile: to manage published documents on the file system
-
-      - RemoteDocModel: to manage published documents on the server when using
-      the remote publication
-
       @author Thomas Roger(troger@nuxeo.com)
     </documentation>
 
     <publishedDocumentFactory name="CoreProxy"
                               class="org.nuxeo.ecm.platform.publisher.impl.core.CoreProxyFactory"/>
-    <publishedDocumentFactory name="LocalFile"
-                              class="org.nuxeo.ecm.platform.publisher.impl.localfs.FSPublishedDocumentFactory"/>
-    <publishedDocumentFactory name="RemoteDocModel"
-                              class="org.nuxeo.ecm.platform.publisher.remoting.server.SimpleExternalDocumentModelFactory"/>
-    <publishedDocumentFactory name="ClientProxyFactory"
-                              class="org.nuxeo.ecm.platform.publisher.remoting.client.ClientProxyFactory"/>
 
   </extension>
 
@@ -60,14 +49,6 @@
       using the information stored in the Workspace to get the sections where
       a publication is allowed
 
-      - LocalFSTree: tree to use when publishing on the file system
-
-      - ClientForRemoteTree: tree to use on the client side when using the
-      remote publication
-
-      - CoreTreeWithExternalDocs: tree to use on the server side when using the
-      remote publication
-
       @author Thomas Roger(troger@nuxeo.com)
     </documentation>
 
@@ -75,12 +56,6 @@
                      class="org.nuxeo.ecm.platform.publisher.impl.core.SectionPublicationTree"/>
     <publicationTree name="RootSectionsCoreTree"
                      class="org.nuxeo.ecm.platform.publisher.impl.core.RootSectionsPublicationTree"/>
-    <publicationTree name="LocalFSTree"
-                     class="org.nuxeo.ecm.platform.publisher.impl.localfs.LocalFSPublicationTree"/>
-    <publicationTree name="ClientForRemoteTree"
-                     class="org.nuxeo.ecm.platform.publisher.remoting.client.ClientRemotePublicationTree"/>
-    <publicationTree name="CoreTreeWithExternalDocs"
-                     class="org.nuxeo.ecm.platform.publisher.remoting.server.CoreTreeWithExternalDocs"/>
 
   </extension>
 
@@ -94,7 +69,7 @@
     </documentation>
 
     <publicationTreeConfig name="DefaultSectionsTree" tree="RootSectionsCoreTree"
-                           factory="CoreProxy" localSectionTree="true"
+                           factory="CoreProxy"
                            title="label.publication.tree.local.sections" >
       <parameters>
         <!-- <parameter name="RootPath">/default-domain/sections</parameter> -->

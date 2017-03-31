@@ -47,8 +47,6 @@ public interface PublicationNode extends Serializable {
 
     String getPath();
 
-    String getTreeConfigName();
-
-    String getSessionId();
+    PublicationTree getTree();
 
 }

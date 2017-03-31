@@ -68,7 +68,6 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
-import org.nuxeo.ecm.platform.publisher.api.PublicationTreeNotAvailable;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.api.PublishingEvent;
@@ -134,8 +133,6 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
 
     protected Map<String, String> publicationParameters = new HashMap<>();
 
-    protected String treeSID;
-
     @Create
     public void create() {
         publisherService = Framework.getService(PublisherService.class);
@@ -147,12 +144,9 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
             currentPublicationTree.release();
             currentPublicationTree = null;
         }
-        if (treeSID != null) {
-            publisherService.releaseAllTrees(treeSID);
-        }
     }
 
-    protected Map<String, String> filterEmptyTrees(Map<String, String> trees) throws PublicationTreeNotAvailable {
+    protected Map<String, String> filterEmptyTrees(Map<String, String> trees) {
 
         Map<String, String> filteredTrees = new HashMap<>();
 
@@ -165,25 +159,20 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
         return filteredTrees;
     }
 
-    protected List<String> filterEmptyTrees(Collection<String> trees) throws PublicationTreeNotAvailable {
+    protected List<String> filterEmptyTrees(Collection<String> trees) {
         List<String> filteredTrees = new ArrayList<>();
 
         for (String tree : trees) {
-            try {
-                PublicationTree pTree = publisherService.getPublicationTree(tree, documentManager, null,
-                        navigationContext.getCurrentDocument());
-                if (pTree != null) {
-                    if (TREE_TYPES_TO_FILTER.contains(pTree.getTreeType())) {
-                        if (pTree.getChildrenNodes().size() > 0) {
-                            filteredTrees.add(tree);
-                        }
-                    } else {
+            PublicationTree pTree = publisherService.getPublicationTree(tree, documentManager, null,
+                    navigationContext.getCurrentDocument());
+            if (pTree != null) {
+                if (TREE_TYPES_TO_FILTER.contains(pTree.getTreeType())) {
+                    if (pTree.getChildrenNodes().size() > 0) {
                         filteredTrees.add(tree);
                     }
+                } else {
+                    filteredTrees.add(tree);
                 }
-            } catch (PublicationTreeNotAvailable e) {
-                log.warn("Publication tree " + tree + " is not available : check config");
-                log.debug("Publication tree " + tree + " is not available : root cause is ", e);
             }
         }
         return filteredTrees;
@@ -299,13 +288,8 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
             if (getCurrentPublicationTreeNameForPublishing() == null) {
                 return currentPublicationTree;
             }
-            try {
-                treeSID = documentManager.getSessionId();
-                currentPublicationTree = publisherService.getPublicationTree(currentPublicationTreeNameForPublishing,
-                        documentManager, null, navigationContext.getCurrentDocument());
-            } catch (PublicationTreeNotAvailable e) {
-                currentPublicationTree = null;
-            }
+            currentPublicationTree = publisherService.getPublicationTree(currentPublicationTreeNameForPublishing,
+                    documentManager, null, navigationContext.getCurrentDocument());
         }
         return currentPublicationTree;
     }
@@ -336,12 +320,8 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
             return null;
         }
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        try {
-            PublicationTree tree = publisherService.getPublicationTree(treeName, documentManager, null);
-            return tree.getExistingPublishedDocument(new DocumentLocationImpl(currentDocument));
-        } catch (PublicationTreeNotAvailable e) {
-            return null;
-        }
+        PublicationTree tree = publisherService.getPublicationTree(treeName, documentManager, null);
+        return tree.getExistingPublishedDocument(new DocumentLocationImpl(currentDocument));
     }
 
     public String unPublish(PublishedDocument publishedDocument) {
@@ -556,24 +536,15 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
     }
 
     public boolean isRemotePublishedDocument(PublishedDocument publishedDocument) {
-        if (publishedDocument == null) {
-            return false;
-        }
-        return publishedDocument.getType().equals(PublishedDocument.Type.REMOTE);
+        return false;
     }
 
     public boolean isFileSystemPublishedDocument(PublishedDocument publishedDocument) {
-        if (publishedDocument == null) {
-            return false;
-        }
-        return publishedDocument.getType().equals(PublishedDocument.Type.FILE_SYSTEM);
+        return false;
     }
 
     public boolean isLocalPublishedDocument(PublishedDocument publishedDocument) {
-        if (publishedDocument == null) {
-            return false;
-        }
-        return publishedDocument.getType().equals(PublishedDocument.Type.LOCAL);
+        return true;
     }
 
     public String publishWorkList() {
@@ -697,14 +668,10 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
     }
 
     public String getDomainName(String treeName) {
-        try {
-            PublicationTree tree = publisherService.getPublicationTree(treeName, documentManager, null);
-            Map<String, String> parameters = publisherService.getParametersFor(tree.getConfigName());
-            String domainName = parameters.get(PublisherService.DOMAIN_NAME_KEY);
-            return domainName != null ? " (" + domainName + ")" : "";
-        } catch (PublicationTreeNotAvailable e) {
-            return "";
-        }
+        PublicationTree tree = publisherService.getPublicationTree(treeName, documentManager, null);
+        Map<String, String> parameters = publisherService.getParametersFor(tree.getConfigName());
+        String domainName = parameters.get(PublisherService.DOMAIN_NAME_KEY);
+        return domainName != null ? " (" + domainName + ")" : "";
     }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false)

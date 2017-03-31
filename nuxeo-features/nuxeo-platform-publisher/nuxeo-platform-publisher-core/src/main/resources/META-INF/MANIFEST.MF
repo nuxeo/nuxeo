@@ -14,4 +14,3 @@ Nuxeo-Component: OSGI-INF/publisher-framework.xml,
  OSGI-INF/publisher-listeners-contrib.xml,
  OSGI-INF/publisher-type-contrib.xml,
  OSGI-INF/publisher-pageprovider-contrib.xml
-Nuxeo-WebModule: org.nuxeo.ecm.platform.publisher.remoting.restHandler.RemotePubApp

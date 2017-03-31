@@ -43,8 +43,6 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
 
     protected String configName;
 
-    protected String sid;
-
     protected String rootPath;
 
     protected String treeTitle;
@@ -57,9 +55,8 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
 
     protected abstract PublishedDocumentFactory getDefaultFactory();
 
-    public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
+    public void initTree(CoreSession coreSession, Map<String, String> parameters,
             PublishedDocumentFactory factory, String configName, String title) {
-        this.sid = sid;
         this.coreSession = coreSession;
         if (factory != null) {
             this.factory = factory;
@@ -87,10 +84,6 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
 
     public String getConfigName() {
         return configName;
-    }
-
-    public String getSessionId() {
-        return sid;
     }
 
     public String getNodeType() {
@@ -130,8 +123,9 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return rootNode.getName();
     }
 
-    public String getTreeConfigName() {
-        return getConfigName();
+    @Override
+    public PublicationTree getTree() {
+        return this;
     }
 
     public PublicationNode getParent() {

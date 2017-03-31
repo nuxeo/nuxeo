@@ -30,15 +30,9 @@ import java.io.Serializable;
  */
 public interface PublishedDocument extends Serializable {
 
-    enum Type {
-        REMOTE, LOCAL, FILE_SYSTEM;
-    }
-
     DocumentRef getSourceDocumentRef();
 
     String getSourceRepositoryName();
-
-    String getSourceServer();
 
     String getSourceVersionLabel();
 
@@ -50,10 +44,5 @@ public interface PublishedDocument extends Serializable {
      * Returns {@code true} if this document is waiting approval, {@code false} otherwise.
      */
     boolean isPending();
-
-    /**
-     * Returns the {@code Type} of this PublishedDocument.
-     */
-    Type getType();
 
 }
