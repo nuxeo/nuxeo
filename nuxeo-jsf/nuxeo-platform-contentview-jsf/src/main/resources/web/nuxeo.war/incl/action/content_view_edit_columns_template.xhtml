@@ -27,6 +27,10 @@
           onevent="jQuery.fancybox.close" />
       </h:commandButton>
       <h:commandButton value="#{messages['command.cancel']}" styleClass="button">
+        <f:setPropertyActionListener
+          value="#{fancyboxFormId}"
+          target="#{jsfResetActions.baseComponentId}" />
+        <nxu:actionListenerMethod value="#{jsfResetActions.resetComponentsFor}" />
         <f:ajax
           execute="@this"
           onevent="jQuery.fancybox.close" />
