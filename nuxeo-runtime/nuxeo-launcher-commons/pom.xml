@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.runtime</groupId>
     <artifactId>nuxeo-runtime-parent</artifactId>
-    <version>9.1-SNAPSHOT</version>
+    <version>9.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-launcher-commons</artifactId>
