@@ -236,7 +236,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
         if (cacheService != null && descriptor.userCacheName != null) {
             principalCache = cacheService.getCache(descriptor.userCacheName);
-            principalCache.invalidateAll();
+            invalidateAllPrincipals();
         }
 
     }
