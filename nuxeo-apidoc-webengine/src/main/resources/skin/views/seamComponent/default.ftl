@@ -51,7 +51,7 @@
           $.ajax({
             url: "${Root.path}/../../ajaxProxy?type=text&url=${urlBase?url}.type.html",
             dataType: "text",
-            success: function(data) { $("#shortjavadociface${iface_index}").html(data) }
+            success: fixJavaDocPaths('#shortjavadociface${iface_index}', '${javaDocBaseUrl}')
           });
         });
       </script>
@@ -73,7 +73,7 @@
     $.ajax({
       url: "${Root.path}/../../ajaxProxy?type=text&url=${urlBaseImpl?url}.type.html",
       dataType: "text",
-      success: function(data) { $("#shortjavadocimpl").html(data) }
+      success: fixJavaDocPaths("#shortjavadocimpl", '${javaDocBaseUrl}')
     });
   });
 </script>
