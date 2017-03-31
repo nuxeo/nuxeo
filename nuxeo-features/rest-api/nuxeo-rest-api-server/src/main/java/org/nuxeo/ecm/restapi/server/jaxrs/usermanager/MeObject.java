@@ -30,10 +30,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -61,29 +58,10 @@ public class MeObject extends DefaultObject {
         UserManager userManager = Framework.getService(UserManager.class);
         if (userManager.checkUsernamePassword(currentUser.getName(), oldPassword)) {
             currentUser.setPassword(newPassword);
-            UpdateUserUnrestricted updateUserUnrestricted = new UpdateUserUnrestricted(ctx.getCoreSession(),
-                    currentUser.getModel());
-            updateUserUnrestricted.runUnrestricted();
+            Framework.doPrivileged(() -> userManager.updateUser(currentUser.getModel()));
             return currentUser;
         } else {
             return Response.status(Status.UNAUTHORIZED).build();
-        }
-
-    }
-
-    static class UpdateUserUnrestricted extends UnrestrictedSessionRunner {
-
-        private DocumentModel updatedUser;
-
-        public UpdateUserUnrestricted(CoreSession session, DocumentModel userDoc) {
-            super(session);
-            this.updatedUser = userDoc;
-        }
-
-        @Override
-        public void run() {
-            UserManager userManager = Framework.getService(UserManager.class);
-            userManager.updateUser(updatedUser);
         }
 
     }
