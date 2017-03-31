@@ -53,8 +53,8 @@ public interface PublicationTree extends PublicationNode {
 
     String getTreeTitle();
 
-    void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
-            PublishedDocumentFactory factory, String configName, String title);
+    void initTree(CoreSession coreSession, Map<String, String> parameters, PublishedDocumentFactory factory,
+            String configName, String title);
 
     /**
      * Sets the current document on which the tree will be based, if needed.

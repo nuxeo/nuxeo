@@ -21,28 +21,22 @@ package org.nuxeo.ecm.platform.publisher.impl.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.CoreSessionService;
-import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
-import org.nuxeo.ecm.platform.publisher.api.PublicationTreeNotAvailable;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
-import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 import org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeConfigDescriptor;
 import org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeDescriptor;
 import org.nuxeo.ecm.platform.publisher.descriptors.PublishedDocumentFactoryDescriptor;
@@ -60,12 +54,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * POJO implementation of the publisher service Implements both {@link PublisherService} and
- * {@link RemotePublicationTreeManager}.
+ * POJO implementation of the publisher service.
  *
  * @author tiry
  */
-public class PublisherServiceImpl extends DefaultComponent implements PublisherService, RemotePublicationTreeManager {
+public class PublisherServiceImpl extends DefaultComponent implements PublisherService {
 
     private final Log log = LogFactory.getLog(PublisherServiceImpl.class);
 
@@ -79,13 +72,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
 
     protected Map<String, PublicationTreeConfigDescriptor> pendingDescriptors = new HashMap<String, PublicationTreeConfigDescriptor>();
 
-    protected Map<String, PublicationTree> liveTrees = new HashMap<String, PublicationTree>();
-
     protected RootSectionFinderFactory rootSectionFinderFactory = null;
-
-    // Store association between treeSid and CoreSession that was opened locally
-    // for them : this unable proper cleanup of allocated sessions
-    protected Map<String, String> remoteLiveTrees = new HashMap<String, String>();
 
     public static final String TREE_EP = "tree";
 
@@ -143,21 +130,11 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
 
     @Override
     public void activate(ComponentContext context) {
-        liveTrees = new HashMap<String, PublicationTree>();
         treeDescriptors = new HashMap<String, PublicationTreeDescriptor>();
         factoryDescriptors = new HashMap<String, PublishedDocumentFactoryDescriptor>();
         treeConfigDescriptors = new HashMap<String, PublicationTreeConfigDescriptor>();
         validatorsRuleDescriptors = new HashMap<String, ValidatorsRuleDescriptor>();
         pendingDescriptors = new HashMap<String, PublicationTreeConfigDescriptor>();
-    }
-
-    // for testing cleanup
-    public int getLiveTreeCount() {
-        return liveTrees.size();
-    }
-
-    public PublicationTree getTreeBySid(String sid) {
-        return liveTrees.get(sid);
     }
 
     @Override
@@ -210,14 +187,6 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         }
     }
 
-    protected String computeTreeSessionId(String treeConfigName, CoreSession coreSession) {
-        return computeTreeSessionId(treeConfigName, coreSession.getSessionId());
-    }
-
-    protected String computeTreeSessionId(String treeConfigName, String sid) {
-        return treeConfigName + sid;
-    }
-
     @Override
     public List<String> getAvailablePublicationTree() {
         List<String> treeConfigs = new ArrayList<String>();
@@ -236,90 +205,30 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
     }
 
     @Override
-    public PublicationTree getPublicationTree(String treeName, CoreSession coreSession, Map<String, String> params)
-            throws PublicationTreeNotAvailable {
+    public PublicationTree getPublicationTree(String treeName, CoreSession coreSession, Map<String, String> params) {
         return getPublicationTree(treeName, coreSession, params, null);
     }
 
     @Override
     public PublicationTree getPublicationTree(String treeName, CoreSession coreSession, Map<String, String> params,
-            DocumentModel currentDocument) throws PublicationTreeNotAvailable {
-        PublicationTree tree = getOrBuildTree(treeName, coreSession, params);
+            DocumentModel currentDocument) {
+        PublicationTree tree = buildTree(treeName, coreSession, params);
         if (tree == null) {
             return null;
         }
         if (currentDocument != null) {
             tree.setCurrentDocument(currentDocument);
         }
-        return new ProxyTree(tree, tree.getSessionId());
-    }
-
-    @Override
-    public Map<String, String> initRemoteSession(String treeConfigName, Map<String, String> params) {
-        CoreSession coreSession = CoreInstance.openCoreSession(null);
-        PublicationTree tree = getPublicationTree(treeConfigName, coreSession, params);
-
-        remoteLiveTrees.put(tree.getSessionId(), coreSession.getSessionId());
-
-        Map<String, String> res = new HashMap<String, String>();
-        res.put("sessionId", tree.getSessionId());
-        res.put("title", tree.getTitle());
-        res.put("nodeType", tree.getNodeType());
-        res.put("treeName", tree.getConfigName());
-        res.put("path", tree.getPath());
-
-        return res;
-    }
-
-    @Override
-    public void release(String sid) {
-        PublicationTree tree;
-
-        if (liveTrees.containsKey(sid)) {
-            tree = liveTrees.get(sid);
-            tree.release();
-            liveTrees.remove(sid);
-        }
-        if (remoteLiveTrees.containsKey(sid)) {
-            // close here session opened for remote trees
-            String sessionId = remoteLiveTrees.get(sid);
-            CoreSession remoteSession = Framework.getService(CoreSessionService.class).getCoreSession(sessionId);
-            remoteSession.close();
-            remoteLiveTrees.remove(sid);
-        }
-    }
-
-    @Override
-    public void releaseAllTrees(String sessionId) {
-        for (String configName : treeConfigDescriptors.keySet()) {
-            String treeid = computeTreeSessionId(configName, sessionId);
-            release(treeid);
-        }
-    }
-
-    protected PublicationTree getOrBuildTree(String treeConfigName, CoreSession coreSession, Map<String, String> params)
-            throws PublicationTreeNotAvailable {
-        String key = computeTreeSessionId(treeConfigName, coreSession);
-        PublicationTree tree;
-        if (liveTrees.containsKey(key)) {
-            tree = liveTrees.get(key);
-        } else {
-            tree = buildTree(key, treeConfigName, coreSession, params);
-            if (tree != null) {
-                liveTrees.put(key, tree);
-            }
-        }
         return tree;
     }
 
-    protected PublicationTree buildTree(String sid, String treeConfigName, CoreSession coreSession,
-            Map<String, String> params) throws PublicationTreeNotAvailable {
+    protected PublicationTree buildTree(String treeConfigName, CoreSession coreSession, Map<String, String> params) {
         PublicationTreeConfigDescriptor config = getPublicationTreeConfigDescriptor(treeConfigName);
         Map<String, String> allParameters = computeAllParameters(config, params);
         PublicationTreeDescriptor treeDescriptor = getPublicationTreeDescriptor(config);
         PublishedDocumentFactory publishedDocumentFactory = getPublishedDocumentFactory(config, treeDescriptor,
                 coreSession, allParameters);
-        return getPublicationTree(treeDescriptor, sid, coreSession, allParameters, publishedDocumentFactory,
+        return getPublicationTree(treeDescriptor, coreSession, allParameters, publishedDocumentFactory,
                 config.getName(), config.getTitle());
     }
 
@@ -393,16 +302,15 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         return treeDescriptors.get(treeImplName);
     }
 
-    protected PublicationTree getPublicationTree(PublicationTreeDescriptor treeDescriptor, String sid,
-            CoreSession coreSession, Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName, String treeTitle) throws PublicationTreeNotAvailable {
+    protected PublicationTree getPublicationTree(PublicationTreeDescriptor treeDescriptor, CoreSession coreSession,
+            Map<String, String> parameters, PublishedDocumentFactory factory, String configName, String treeTitle) {
         PublicationTree treeImpl;
         try {
             treeImpl = treeDescriptor.getKlass().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException("Error while creating tree implementation", e);
         }
-        treeImpl.initTree(sid, coreSession, parameters, factory, configName, treeTitle);
+        treeImpl.initTree(coreSession, parameters, factory, configName, treeTitle);
         return treeImpl;
     }
 
@@ -413,173 +321,12 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
 
     @Override
     public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params) {
-
-        PublicationTree tree = liveTrees.get(targetNode.getSessionId());
-        if (tree != null) {
-            return tree.publish(doc, targetNode, params);
-        } else {
-            throw new NuxeoException("Calling getChildrenNodes on a closed tree");
-        }
+        return targetNode.getTree().publish(doc, targetNode, params);
     }
 
     @Override
     public void unpublish(DocumentModel doc, PublicationNode targetNode) {
-        PublicationTree tree = liveTrees.get(targetNode.getSessionId());
-        if (tree != null) {
-            tree.unpublish(doc, targetNode);
-        } else {
-            throw new NuxeoException("Calling getChildrenNodes on a closed tree");
-        }
-    }
-
-    @Override
-    public void unpublish(String sid, PublishedDocument publishedDocument) {
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            tree.unpublish(publishedDocument);
-        } else {
-            throw new NuxeoException("Calling getChildrenNodes on a closed tree");
-        }
-    }
-
-    @Override
-    public List<PublishedDocument> getChildrenDocuments(PublicationNode node) {
-
-        PublicationTree tree = liveTrees.get(node.getSessionId());
-        if (tree != null) {
-            return tree.getPublishedDocumentInNode(tree.getNodeByPath(node.getPath()));
-        } else {
-            throw new NuxeoException("Calling getChildrenDocuments on a closed tree");
-        }
-    }
-
-    protected List<PublicationNode> makeRemotable(List<PublicationNode> nodes, String sid) {
-        List<PublicationNode> remoteNodes = new ArrayList<PublicationNode>();
-
-        for (PublicationNode node : nodes) {
-            remoteNodes.add(new ProxyNode(node, sid));
-        }
-
-        return remoteNodes;
-    }
-
-    @Override
-    public List<PublicationNode> getChildrenNodes(PublicationNode node) {
-        String sid = node.getSessionId();
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            return makeRemotable(tree.getNodeByPath(node.getPath()).getChildrenNodes(), sid);
-        } else {
-            throw new NuxeoException("Calling getChildrenNodes on a closed tree");
-        }
-    }
-
-    @Override
-    public PublicationNode getParent(PublicationNode node) {
-        String sid = node.getSessionId();
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            PublicationNode liveNode;
-            liveNode = tree.getNodeByPath(node.getPath()).getParent();
-            if (liveNode == null) {
-                return null;
-            }
-            return new ProxyNode(liveNode, sid);
-        } else {
-            log.error("Calling getParent on a closed tree");
-            return null;
-        }
-    }
-
-    @Override
-    public PublicationNode getNodeByPath(String sid, String path) {
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            return new ProxyNode(tree.getNodeByPath(path), sid);
-        } else {
-            throw new NuxeoException("Calling getNodeByPath on a closed tree");
-        }
-    }
-
-    @Override
-    public List<PublishedDocument> getExistingPublishedDocument(String sid, DocumentLocation docLoc) {
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            return tree.getExistingPublishedDocument(docLoc);
-        } else {
-            throw new NuxeoException("Calling getNodeByPath on a closed tree");
-        }
-    }
-
-    @Override
-    public List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node) {
-        String sid = node.getSessionId();
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            return tree.getPublishedDocumentInNode(tree.getNodeByPath(node.getPath()));
-        } else {
-            throw new NuxeoException("Calling getPublishedDocumentInNode on a closed tree");
-        }
-    }
-
-    @Override
-    public void setCurrentDocument(String sid, DocumentModel currentDocument) {
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            tree.setCurrentDocument(currentDocument);
-        } else {
-            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
-        }
-    }
-
-    @Override
-    public void validatorPublishDocument(String sid, PublishedDocument publishedDocument, String comment) {
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            tree.validatorPublishDocument(publishedDocument, comment);
-        } else {
-            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
-        }
-    }
-
-    @Override
-    public void validatorRejectPublication(String sid, PublishedDocument publishedDocument, String comment) {
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            tree.validatorRejectPublication(publishedDocument, comment);
-        } else {
-            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
-        }
-    }
-
-    @Override
-    public boolean canPublishTo(String sid, PublicationNode publicationNode) {
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            return tree.canPublishTo(publicationNode);
-        } else {
-            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
-        }
-    }
-
-    @Override
-    public boolean canUnpublish(String sid, PublishedDocument publishedDocument) {
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            return tree.canUnpublish(publishedDocument);
-        } else {
-            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
-        }
-    }
-
-    @Override
-    public boolean canManagePublishing(String sid, PublishedDocument publishedDocument) {
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            return tree.canManagePublishing(publishedDocument);
-        } else {
-            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
-        }
+        targetNode.getTree().unpublish(doc, targetNode);
     }
 
     @Override
@@ -607,55 +354,9 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
     }
 
     @Override
-    public boolean hasValidationTask(String sid, PublishedDocument publishedDocument) {
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            return tree.hasValidationTask(publishedDocument);
-        } else {
-            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
-        }
-    }
-
-    @Override
-    public PublishedDocument wrapToPublishedDocument(String sid, DocumentModel documentModel) {
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            return tree.wrapToPublishedDocument(documentModel);
-        } else {
-            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
-        }
-    }
-
-    @Override
-    public boolean isPublicationNode(String sid, DocumentModel documentModel) {
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            return tree.isPublicationNode(documentModel);
-        } else {
-            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
-        }
-    }
-
-    @Override
-    public PublicationNode wrapToPublicationNode(String sid, DocumentModel documentModel) {
-        PublicationTree tree = liveTrees.get(sid);
-        if (tree != null) {
-            return tree.wrapToPublicationNode(documentModel);
-        } else {
-            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
-        }
-    }
-
-    @Override
-    public PublicationNode wrapToPublicationNode(DocumentModel documentModel, CoreSession coreSession)
-            throws PublicationTreeNotAvailable {
+    public PublicationNode wrapToPublicationNode(DocumentModel documentModel, CoreSession coreSession) {
         for (String name : getAvailablePublicationTree()) {
             PublicationTree tree = getPublicationTree(name, coreSession, null);
-            PublicationTreeConfigDescriptor config = treeConfigDescriptors.get(tree.getConfigName());
-            if (!config.islocalSectionTree()) {
-                // ignore all non local section tree
-                continue;
-            }
             if (tree.isPublicationNode(documentModel)) {
                 return tree.wrapToPublicationNode(documentModel);
             }
@@ -698,12 +399,6 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         for (PublicationTreeConfigDescriptor desc : pendingDescriptors.values()) {
             String treeName = desc.getName() + "-" + domainName;
             treeConfigDescriptors.remove(treeName);
-            for (Iterator<String> it = liveTrees.keySet().iterator(); it.hasNext();) {
-                String entry = it.next();
-                if (entry.startsWith(treeName)) {
-                    it.remove();
-                }
-            }
         }
     }
 

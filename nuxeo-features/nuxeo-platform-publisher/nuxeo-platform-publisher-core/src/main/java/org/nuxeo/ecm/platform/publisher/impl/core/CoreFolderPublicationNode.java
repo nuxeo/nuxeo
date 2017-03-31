@@ -24,8 +24,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -49,11 +47,9 @@ import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
  *
  * @author tiry
  */
-public class CoreFolderPublicationNode extends AbstractPublicationNode implements PublicationNode {
+public class CoreFolderPublicationNode extends AbstractPublicationNode {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Log log = LogFactory.getLog(CoreFolderPublicationNode.class);
 
     private static final String DEFAULT_SORT_PROP_NAME = "dc:title";
 
@@ -61,44 +57,20 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode implement
 
     protected PublicationNode parent;
 
-    protected String treeConfigName;
-
     protected PublishedDocumentFactory factory;
-
-    protected String sid;
-
-    public CoreFolderPublicationNode(DocumentModel doc, PublicationTree tree, PublishedDocumentFactory factory)
-            {
-        this.folder = doc;
-        this.treeConfigName = tree.getConfigName();
-        this.factory = factory;
-        this.sid = tree.getSessionId();
-    }
 
     public CoreFolderPublicationNode(DocumentModel doc, PublicationTree tree, PublicationNode parent,
             PublishedDocumentFactory factory) {
+        super(tree);
         this.folder = doc;
-        this.treeConfigName = tree.getConfigName();
         this.parent = parent;
         this.factory = factory;
-        this.sid = tree.getSessionId();
     }
 
-    public CoreFolderPublicationNode(DocumentModel doc, String treeConfigName, String sid, PublicationNode parent,
-            PublishedDocumentFactory factory) {
+    public CoreFolderPublicationNode(DocumentModel doc, PublicationTree tree, PublishedDocumentFactory factory) {
+        super(tree);
         this.folder = doc;
-        this.treeConfigName = treeConfigName;
-        this.parent = parent;
         this.factory = factory;
-        this.sid = sid;
-    }
-
-    public CoreFolderPublicationNode(DocumentModel doc, String treeConfigName, String sid,
-            PublishedDocumentFactory factory) {
-        this.folder = doc;
-        this.treeConfigName = treeConfigName;
-        this.factory = factory;
-        this.sid = sid;
     }
 
     protected CoreSession getCoreSession() {
@@ -132,7 +104,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode implement
 
         List<PublicationNode> childrenNodes = new ArrayList<PublicationNode>();
         for (DocumentModel child : children) {
-            childrenNodes.add(new CoreFolderPublicationNode(child, treeConfigName, sid, this, factory));
+            childrenNodes.add(new CoreFolderPublicationNode(child, tree, this, factory));
         }
         return childrenNodes;
     }
@@ -171,11 +143,11 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode implement
         if (parent == null) {
             DocumentRef docRef = folder.getParentRef();
             if (getCoreSession().hasPermission(docRef, SecurityConstants.READ)) {
-                parent = new CoreFolderPublicationNode(getCoreSession().getDocument(folder.getParentRef()),
-                        treeConfigName, sid, factory);
+                parent = new CoreFolderPublicationNode(getCoreSession().getDocument(folder.getParentRef()), tree,
+                        factory);
             } else {
-                parent = new VirtualCoreFolderPublicationNode(getCoreSession().getSessionId(), docRef.toString(),
-                        treeConfigName, sid, factory);
+                parent = new VirtualCoreFolderPublicationNode(getCoreSession().getSessionId(), docRef.toString(), tree,
+                        factory);
             }
         }
         return parent;
@@ -185,21 +157,12 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode implement
         return folder.getPathAsString();
     }
 
-    @Override
-    public String getTreeConfigName() {
-        return treeConfigName;
-    }
-
     public DocumentRef getTargetDocumentRef() {
         return folder.getRef();
     }
 
     public DocumentModel getTargetDocumentModel() {
         return folder;
-    }
-
-    public String getSessionId() {
-        return sid;
     }
 
 }

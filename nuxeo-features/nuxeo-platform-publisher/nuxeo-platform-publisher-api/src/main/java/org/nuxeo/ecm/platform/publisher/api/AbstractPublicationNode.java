@@ -23,7 +23,11 @@ public abstract class AbstractPublicationNode implements PublicationNode {
 
     private static final long serialVersionUID = 1L;
 
-    protected String treeName;
+    protected PublicationTree tree;
+
+    public AbstractPublicationNode(PublicationTree tree) {
+        this.tree = tree;
+    }
 
     public String getNodeType() {
         return getType();
@@ -33,8 +37,9 @@ public abstract class AbstractPublicationNode implements PublicationNode {
         return this.getClass().getSimpleName();
     }
 
-    public String getTreeConfigName() {
-        return treeName;
+    @Override
+    public PublicationTree getTree() {
+        return tree;
     }
 
 }

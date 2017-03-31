@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
-import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -59,17 +58,9 @@ public class TestServiceRegistration {
     @Inject
     protected PublisherService publisherService;
 
-    @Inject
-    RemotePublicationTreeManager remotePublicationTreeManager;
-
     @Test
     public void testMainService() throws Exception {
         assertNotNull(publisherService);
-    }
-
-    @Test
-    public void testTreeService() throws Exception {
-        assertNotNull(remotePublicationTreeManager);
     }
 
     @Test

@@ -12,8 +12,6 @@
   <service>
     <provide
         interface="org.nuxeo.ecm.platform.publisher.api.PublisherService"/>
-    <provide
-        interface="org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager"/>
   </service>
 
 
@@ -44,7 +42,7 @@
       Here is the default contribution:
       <code>
         <publicationTreeConfig name="DefaultSectionsTree" tree="RootSectionsCoreTree"
-            factory="CoreProxy" localSectionTree="true"
+            factory="CoreProxy"
             title="label.publication.tree.local.sections" >
           <parameters>
             <!-- <parameter name="RootPath">/default-domain/sections</parameter> -->
@@ -68,22 +66,6 @@
 
       - iconExpanded and iconCollapsed: specify which icons to use when
       displaying the PublicationTree on the interface.
-
-      You can contribute other kinds of PublicationTree: here is a contribution
-      for a new tree that will be used to publish on the file system, on
-      '/opt/publishing-folder'.
-      <code>
-        <publicationTreeConfig name="FSTree" tree="LocalFSTree"
-                             factory="LocalFile" localSectionTree="false"
-                             title="label.publication.tree.fileSystem">
-          <parameters>
-            <parameter name="RootPath">/opt/publishing-folder</parameter>
-            <parameter name="enableSnapshot">true</parameter>
-            <parameter name="iconExpanded">/icons/folder_open.gif</parameter>
-            <parameter name="iconCollapsed">/icons/folder.gif</parameter>
-          </parameters>
-        </publicationTreeConfig>
-      </code>
 
       @author Thierry Delprat (td@nuxeo.com)
     </documentation>

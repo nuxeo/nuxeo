@@ -42,11 +42,10 @@ public interface PublisherService {
      */
     Map<String, String> getAvailablePublicationTrees();
 
-    PublicationTree getPublicationTree(String treeName, CoreSession coreSession, Map<String, String> params)
-            throws PublicationTreeNotAvailable;
+    PublicationTree getPublicationTree(String treeName, CoreSession coreSession, Map<String, String> params);
 
     PublicationTree getPublicationTree(String treeName, CoreSession coreSession, Map<String, String> params,
-            DocumentModel currentDocument) throws PublicationTreeNotAvailable;
+            DocumentModel currentDocument);
 
     PublishedDocument publish(DocumentModel doc, PublicationNode targetNode);
 
@@ -58,12 +57,9 @@ public interface PublisherService {
 
     PublicationTree getPublicationTreeFor(DocumentModel doc, CoreSession coreSession);
 
-    PublicationNode wrapToPublicationNode(DocumentModel documentModel, CoreSession coreSession) throws
-            PublicationTreeNotAvailable;
+    PublicationNode wrapToPublicationNode(DocumentModel documentModel, CoreSession coreSession);
 
     Map<String, String> getParametersFor(String treeConfigName);
-
-    void releaseAllTrees(String sessionId);
 
     RootSectionFinder getRootSectionFinder(CoreSession session);
 

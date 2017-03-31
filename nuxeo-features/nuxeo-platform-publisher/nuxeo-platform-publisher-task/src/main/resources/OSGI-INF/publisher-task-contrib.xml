@@ -19,7 +19,7 @@
       point="treeInstance">
 
     <publicationTreeConfig name="DefaultSectionsTree" tree="RootSectionsCoreTree"
-                           factory="CoreProxyWithWorkflow" localSectionTree="true"
+                           factory="CoreProxyWithWorkflow"
                            title="label.publication.tree.local.sections">
       <parameters>
         <!-- <parameter name="RootPath">/default-domain/sections</parameter> -->

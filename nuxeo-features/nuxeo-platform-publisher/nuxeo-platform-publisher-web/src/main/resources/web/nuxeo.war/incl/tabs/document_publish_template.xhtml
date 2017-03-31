@@ -111,24 +111,12 @@
             </f:facet>
 
             <h:panelGroup
-              rendered="#{publishActions.isRemotePublishedDocument(publishedDocument)}">
-              <h:outputText
-                value="Remote: #{publishedDocument.parentPath}" />
-            </h:panelGroup>
-
-            <h:panelGroup
-              rendered="#{publishActions.isLocalPublishedDocument(publishedDocument)
-                      and publishActions.hasReadRight(publishedDocument.parentPath)}">
+              rendered="#{publishActions.hasReadRight(publishedDocument.parentPath)}">
               <nxd:restDocumentLink
                 document="#{publishActions.getDocumentModelFor(publishedDocument.parentPath)}">
                 <h:outputText
                   value="#{publishActions.getFormattedPath(publishedDocument.parentPath)}" />
               </nxd:restDocumentLink>
-            </h:panelGroup>
-
-            <h:panelGroup
-              rendered="#{publishActions.isFileSystemPublishedDocument(publishedDocument)}">
-              <h:outputText value="#{publishedDocument.parentPath}" />
             </h:panelGroup>
           </nxu:column>
 

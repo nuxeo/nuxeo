@@ -39,7 +39,7 @@
     </documentation>
     <publicationTreeConfig name="DefaultSectionsTree"
       tree="RenditionPublicationCoreTree" factory="RenditionPublication"
-      localSectionTree="true" title="label.publication.tree.local.sections">
+      title="label.publication.tree.local.sections">
       <parameters>
         <!-- <parameter name="RootPath">/default-domain/sections</parameter> -->
         <parameter name="RelativeRootPath">/sections</parameter>
