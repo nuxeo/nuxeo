@@ -38,7 +38,7 @@
     $.ajax({
       url: "${Root.path}/../../ajaxProxy?type=text&url=${urlBase?url}.type.html",
       dataType: "text",
-      success: function(data) { $("#shortjavadoc").html(data) }
+      success: fixJavaDocPaths('#shortjavadoc', '${javaDocBaseUrl}')
     });
   });
 </script>

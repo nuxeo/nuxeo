@@ -19,6 +19,18 @@
   <@block name="stylesheets" />
    <script type="text/javascript">
      var skinPath = '${skinPath}';
+
+     function fixJavaDocPaths(javaDocDiv, javaDocBaseUrl) {
+       return function(data) {
+         var $data = $(data);
+         // URLs come with a local href; fix them to target javadoc website instead
+         $data.find('a[href^="../../../../../"]').each(function() {
+           this.href = $(this).attr('href').replace('../../../../../', javaDocBaseUrl + '/javadoc/');
+         });
+
+         $(javaDocDiv).html($data);
+       };
+     }
    </script>
    <script src="//code.jquery.com/jquery-1.7.2.min.js"></script>
    <script src="${skinPath}/script/jquery/cookie.js"></script>
