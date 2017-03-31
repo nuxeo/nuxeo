@@ -98,6 +98,7 @@
         </property>
         <property name="addForm">true</property>
         <property name="ajaxSupport">true</property>
+        <property name="modal">true</property>
       </properties>
       <filter-id>contentViewShowEditColumns</filter-id>
     </action>
@@ -111,6 +112,7 @@
         </property>
         <property name="addForm">true</property>
         <property name="ajaxSupport">true</property>
+        <property name="modal">true</property>
       </properties>
       <filter-id>contentViewShowEditRows</filter-id>
     </action>
