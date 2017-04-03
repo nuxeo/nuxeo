@@ -4361,6 +4361,15 @@ public class TestSQLRepositoryAPI {
         assertEquals(token2, doc.getChangeToken());
     }
 
+    // query providers create "search" doc types to collect results
+    @Test
+    public void testChangeTokenOnFakeDocument() {
+        DocumentModel doc = session.createDocumentModel("File");
+        doc.setPropertyValue("dc:modified", Calendar.getInstance());
+        String token = doc.getChangeToken();
+        assertNotNull(token);
+    }
+
     @Test
     public void testChangeTokenForList() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
