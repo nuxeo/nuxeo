@@ -223,7 +223,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         if (isError) {
             log.error(response.buildFailureMessage());
         } else {
-            log.info(sb);
+            log.debug(sb);
         }
     }
 
