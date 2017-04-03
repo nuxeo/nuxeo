@@ -262,18 +262,17 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         List<String> facets = new ArrayList<>();
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         for (String facet : doc.getFacets()) {
-            CompositeType facetType = schemaManager.getFacet(facet);
-            if (facetType != null) {
-                // immutable facet is not actually stored or registered
-                if (!FacetNames.IMMUTABLE.equals(facet)) {
+            // immutable facet is not actually stored or registered
+            if (!FacetNames.IMMUTABLE.equals(facet)) {
+                CompositeType facetType = schemaManager.getFacet(facet);
+                if (facetType != null) {
                     facets.add(facet);
-                }
-            } else {
-                log.warn("The document " + doc.getName() + " with id=" + doc.getId() + " and type="
-                        + doc.getDocumentType().getName() + " contains the facet '" + facet
-                        + "', which is not registered as available in the schemaManager. This facet will be ignored.");
-                if (log.isDebugEnabled()) {
-                    log.debug("Available facets: " + Arrays.toString(schemaManager.getFacets()));
+                } else {
+                    log.warn("The document " + doc.getName() + " with id=" + doc.getId() + " and type=" + doc.getDocumentType().getName() + " contains the facet '" + facet
+                            + "', which is not registered as available in the schemaManager. This facet will be ignored.");
+                    if (log.isDebugEnabled()) {
+                        log.debug("Available facets: " + Arrays.toString(schemaManager.getFacets()));
+                    }
                 }
             }
         }
