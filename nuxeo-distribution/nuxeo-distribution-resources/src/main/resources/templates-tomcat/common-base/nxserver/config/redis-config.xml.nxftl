@@ -11,7 +11,7 @@
       <failoverTimeout>${nuxeo.redis.ha.timeout}</failoverTimeout>
 <#assign names="${nuxeo.redis.ha.hosts}"?split(",") />
 <#list names as name>
-      <host name="${name}" port="${nuxeo.redis.ha.port}"/>
+      <hap name="${name}" port="${nuxeo.redis.ha.port}"/>
 </#list>
       <password>${nuxeo.redis.password}</password>
       <database>${nuxeo.redis.database}</database>
