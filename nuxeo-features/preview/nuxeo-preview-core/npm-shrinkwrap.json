@@ -1,5 +1,5 @@
 {
-  "name": "nuxeo-platform-webapp",
+  "name": "nuxeo-preview-core",
   "version": "0.0.0",
   "dependencies": {
     "grunt": {
