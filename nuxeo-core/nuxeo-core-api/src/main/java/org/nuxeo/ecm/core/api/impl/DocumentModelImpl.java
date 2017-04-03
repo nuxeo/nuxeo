@@ -1488,6 +1488,19 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public String getChangeToken() {
+        if (ref == null) {
+            // not an actual connected document
+            if (changeToken == null) {
+                Calendar modified;
+                try {
+                    modified = (Calendar) getPropertyValue("dc:modified");
+                } catch (PropertyNotFoundException e) {
+                    modified = null;
+                }
+                changeToken = modified == null ? null : String.valueOf(modified.getTimeInMillis());
+            }
+            return changeToken;
+        }
         if (hasSession()) {
             changeToken = getSession().getChangeToken(ref);
         }
