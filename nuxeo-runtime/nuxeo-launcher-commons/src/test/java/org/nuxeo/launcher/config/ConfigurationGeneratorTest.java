@@ -29,6 +29,7 @@ import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_PROP;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -438,6 +439,32 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         } finally {
             Logger.getRootLogger().removeAppender(logCaptureAppender);
         }
+    }
+
+    /**
+     * NXP-22031 - test the configuration reloading after wizard setup when using Nuxeo GUI launcher.
+     */
+    @Test
+    public void testReloadConfigurationWhenConfigurationFileWasEditedByAnotherGenerator() throws Exception {
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        // Update template - write it to nuxeo.conf
+        configGenerator.saveConfiguration(Collections.singletonMap(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "default,mongodb"));
+
+        // Test configuration generator context before reloading it
+        // getUserTemplates lazy load templates in the configuration generator context and put it back to userConfig
+        // That's explain the two assertions below
+        assertEquals("default,common,testinclude", configGenerator.getUserTemplates());
+        assertEquals("default,common,testinclude", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+
+        // Reload it
+        // At this point we test that we flush correctly the configuration generator context
+        assertTrue(configGenerator.init(true));
+
+        // Check values
+        // userConfig was filled with values from nuxeo.conf and getUserTemplates re-load templates from userConfig
+        assertEquals("default,mongodb", configGenerator.getUserTemplates());
+        assertEquals("default,mongodb", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
     }
 
     private static class LogCaptureAppender extends AppenderSkeleton {
