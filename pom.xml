@@ -48,7 +48,6 @@
     <nuxeo.resources.compat.version>9.2-SNAPSHOT</nuxeo.resources.compat.version>
     <nuxeo.dmk.version>9.2-SNAPSHOT</nuxeo.dmk.version>
     <nuxeo.style.guide.version>9.2-SNAPSHOT</nuxeo.style.guide.version>
-    <nuxeo.box.version>9.2-SNAPSHOT</nuxeo.box.version>
     <nuxeo.easyshare.version>9.2-SNAPSHOT</nuxeo.easyshare.version>
     <nuxeo.logs.viewer.version>9.2-SNAPSHOT</nuxeo.logs.viewer.version>
     <nuxeo.spreadsheet.version>9.2-SNAPSHOT</nuxeo.spreadsheet.version>
@@ -104,7 +103,6 @@
     <module>nuxeo-style-guide</module>
     <module>nuxeo-javaagent</module>
     <module>nuxeo-session-inspector</module>
-    <module>nuxeo-box-api</module>
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-easyshare</module>
     <module>nuxeo-duoweb-authentication</module>
@@ -739,13 +737,6 @@
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-session-inspector</artifactId>
         <version>${nuxeo.javaagent.version}</version>
-      </dependency>
-
-      <!-- Box API -->
-      <dependency>
-        <groupId>org.nuxeo.box.api</groupId>
-        <artifactId>nuxeo-box-api</artifactId>
-        <version>${nuxeo.box.version}</version>
       </dependency>
 
       <!-- Easyshare -->
