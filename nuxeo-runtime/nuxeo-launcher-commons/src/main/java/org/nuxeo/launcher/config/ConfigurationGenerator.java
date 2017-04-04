@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -319,9 +319,6 @@ public class ConfigurationGenerator {
 
     private boolean quiet = false;
 
-    @SuppressWarnings("unused")
-    private boolean debug = false;
-
     private static boolean hideDeprecationWarnings = false;
 
     private Environment env;
@@ -365,7 +362,6 @@ public class ConfigurationGenerator {
      */
     public ConfigurationGenerator(boolean quiet, boolean debug) {
         this.quiet = quiet;
-        this.debug = debug;
         File serverHome = Environment.getDefault().getServerHome();
         if (serverHome != null) {
             nuxeoHome = serverHome.getAbsoluteFile();
@@ -1029,7 +1025,7 @@ public class ConfigurationGenerator {
     private StringBuffer readConfiguration() throws ConfigurationException {
         // Will change wizardParam value instead of appending it
         String wizardParam = userConfig.getProperty(PARAM_WIZARD_DONE);
-        ;
+
         // Will change templatesParam value instead of appending it
         String templatesParam = userConfig.getProperty(PARAM_TEMPLATES_NAME);
         Integer generationIndex = null, wizardIndex = null, templatesIndex = null;
@@ -1771,7 +1767,7 @@ public class ConfigurationGenerator {
      */
     public void checkDatabaseConnection(String databaseTemplate, String dbName, String dbUser, String dbPassword,
             String dbHost, String dbPort)
-            throws FileNotFoundException, IOException, DatabaseDriverException, SQLException {
+                    throws FileNotFoundException, IOException, DatabaseDriverException, SQLException {
         File databaseTemplateDir = new File(nuxeoHome, TEMPLATES + File.separator + databaseTemplate);
         Properties templateProperties = loadTrimmedProperties(new File(databaseTemplateDir, NUXEO_DEFAULT_CONF));
         String classname, connectionUrl;
@@ -2003,8 +1999,7 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @return the value of an environment variable.
-     * Overriden for testing.
+     * @return the value of an environment variable. Overriden for testing.
      * @since 9.1
      */
     protected String getEnvironmentVariableValue(String key) {

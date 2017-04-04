@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Julien Carsique
- *
  */
-
 package org.nuxeo.launcher.config;
 
 import static org.junit.Assert.assertEquals;
@@ -60,10 +58,12 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         FileUtils.copyDirectory(getResourceFile("templates/jboss"), new File(nuxeoHome, "templates"));
         System.setProperty("jboss.home.dir", nuxeoHome.getPath());
         configGenerator = new ConfigurationGenerator() {
+
             @Override
             protected String getEnvironmentVariableValue(String key) {
                 return env.get(key);
-            };
+            }
+
         };
         assertTrue(configGenerator.init());
         log.debug(
@@ -133,11 +133,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     }
 
     /**
-     * According to
-     * {@link ConfigurationGenerator#saveConfiguration(Map, boolean, boolean)}:
-     * <br>
-     * <q>{@link ConfigurationGenerator#PARAM_WIZARD_DONE},
-     * {@link ConfigurationGenerator#PARAM_TEMPLATES_NAME} and
+     * According to {@link ConfigurationGenerator#saveConfiguration(Map, boolean, boolean)}: <br>
+     * <q>{@link ConfigurationGenerator#PARAM_WIZARD_DONE}, {@link ConfigurationGenerator#PARAM_TEMPLATES_NAME} and
      * {@link ConfigurationGenerator#PARAM_FORCE_GENERATION} cannot be unset</q>
      *
      * <pre>
@@ -211,8 +208,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     }
 
     /**
-     * Test on property "sampled" in nuxeo.conf: already present and not
-     * commented
+     * Test on property "sampled" in nuxeo.conf: already present and not commented
      *
      * <pre>
      * test.sampled.prop2 = someValue
@@ -239,7 +235,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     @Test
     public void testAddRmTemplate() throws ConfigurationException {
         String originalTemplates = configGenerator.getUserConfig()
-                .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+                                                  .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
         assertEquals("Error calculating db template", "default",
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
         configGenerator.addTemplate("newTemplate");
@@ -282,7 +278,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     @Test
     public void testChangeDatabase() throws Exception {
         String originalTemplates = configGenerator.getUserConfig()
-                .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+                                                  .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
         configGenerator.changeDBTemplate("postgresql");
         assertEquals("Failed to change database default to postgresql",
                 originalTemplates.replaceFirst("default", "postgresql"), configGenerator.getUserTemplates());
@@ -292,7 +288,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     public void testChangeDatabaseFromCustom() throws Exception {
         configGenerator.changeTemplates("testinclude2");
         String originalTemplates = configGenerator.getUserConfig()
-                .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+                                                  .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
         configGenerator.changeDBTemplate("postgresql");
         assertEquals("Failed to change database default to postgresql", originalTemplates.concat(",postgresql"),
                 configGenerator.getUserTemplates());
@@ -312,7 +308,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     @Test
     public void testChangeNoSqlDatabase() throws Exception {
         String originalTemplates = configGenerator.getUserConfig()
-                .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
+                                                  .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
         configGenerator.changeDBTemplate("mongodb");
         assertEquals("Failed to set NoSQL database to mongodb", originalTemplates.concat(",mongodb"),
                 configGenerator.getUserTemplates());
@@ -322,7 +318,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     public void testChangeNoSqlDatabaseFromCustom() throws Exception {
         configGenerator.changeTemplates("testinclude2");
         String originalTemplates = configGenerator.getUserConfig()
-                .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
+                                                  .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
         configGenerator.changeDBTemplate("mongodb");
         assertEquals("Failed to set NoSQL database to mongodb", originalTemplates.concat(",mongodb"),
                 configGenerator.getUserTemplates());
@@ -344,7 +340,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
         String originalTemplates = configGenerator.getUserConfig()
-                .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
+                                                  .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
         configGenerator.changeDBTemplate("marklogic");
         assertEquals("Failed to set NoSQL database to marklogic", originalTemplates.concat(",marklogic"),
                 configGenerator.getUserTemplates());
@@ -356,7 +352,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertTrue(configGenerator.init());
         configGenerator.changeTemplates("testinclude2");
         String originalTemplates = configGenerator.getUserConfig()
-                .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
+                                                  .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
         configGenerator.changeDBTemplate("marklogic");
         assertEquals("Failed to set NoSQL database to marklogic", originalTemplates.concat(",marklogic"),
                 configGenerator.getUserTemplates());
@@ -395,22 +391,11 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testWrongJavaVersionNoFail() {
-        runJVMCheck(false, new Runnable() {
-            @Override
-            public void run() {
-                ConfigurationGenerator.checkJavaVersion("not-a-version", "1.8.0_40", true, true);
-            }
-        });
+        runJVMCheck(false, () -> ConfigurationGenerator.checkJavaVersion("not-a-version", "1.8.0_40", true, true));
     }
 
     protected void testCheckJavaVersion(boolean fail) {
-        runJVMCheck(fail, new Runnable() {
-
-            @Override
-            public void run() {
-                checkJavaVersions(!fail);
-            }
-        });
+        runJVMCheck(fail, () -> checkJavaVersions(!fail));
     }
 
     protected void runJVMCheck(boolean fail, Runnable runnable) {
@@ -479,27 +464,24 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
             logCaptureAppender.clear();
 
             // jvmcheck=nofail case
-            runJVMCheck(false, new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        ConfigurationGenerator.checkJavaVersion("1.6.0_1", new String[] { "1.7.0_1" });
-                        assertEquals(1, logCaptureAppender.size());
-                        assertEquals("Nuxeo requires Java 1.7.0_1+ (detected 1.6.0_1).", logCaptureAppender.get(0));
-                        logCaptureAppender.clear();
-                    } catch (Exception e) {
-                        fail("Exception thrown " + e.getMessage());
-                    }
+            runJVMCheck(false, () -> {
+                try {
+                    ConfigurationGenerator.checkJavaVersion("1.6.0_1", new String[] { "1.7.0_1" });
+                    assertEquals(1, logCaptureAppender.size());
+                    assertEquals("Nuxeo requires Java 1.7.0_1+ (detected 1.6.0_1).", logCaptureAppender.get(0));
+                    logCaptureAppender.clear();
+                } catch (Exception e) {
+                    fail("Exception thrown " + e.getMessage());
                 }
-
             });
 
             // fail case
             try {
                 ConfigurationGenerator.checkJavaVersion("1.6.0_1", new String[] { "1.7.0_1" });
             } catch (ConfigurationException ce) {
-                assertEquals("Nuxeo requires Java {1.7.0_1} (detected 1.6.0_1). See 'jvmcheck' option to bypass version check.", ce.getMessage());
+                assertEquals(
+                        "Nuxeo requires Java {1.7.0_1} (detected 1.6.0_1). See 'jvmcheck' option to bypass version check.",
+                        ce.getMessage());
             }
         } finally {
             Logger.getRootLogger().removeAppender(logCaptureAppender);
@@ -509,29 +491,24 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     @Test
     public void testEnvironmentVariablesExpansion() throws Exception {
 
-        //Nominal case
-        assertEquals("10.0.0.1",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_DB_HOST));
+        // Nominal case
+        assertEquals("10.0.0.1", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_DB_HOST));
 
-        //No env variable with no default value
+        // No env variable with no default value
         assertNull(configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_DB_JDBC_URL));
 
-        //No env variable with default value
+        // No env variable with default value
         assertEquals("myvalue", configGenerator.getUserConfig().getProperty("nuxeo.default.prop"));
 
-        //Nominal case for boolean env variables
-        assertEquals("true",
-                configGenerator.getUserConfig().getProperty("nuxeo.env.prop4"));
+        // Nominal case for boolean env variables
+        assertEquals("true", configGenerator.getUserConfig().getProperty("nuxeo.env.prop4"));
 
-        assertEquals("false",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_FAKE_WINDOWS));
+        assertEquals("false", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_FAKE_WINDOWS));
 
-        //Case where only part of the value has to be replaced
-        assertEquals("jdbc://10.0.0.1",
-                configGenerator.getUserConfig().getProperty("nuxeo.env.prop2"));
+        // Case where only part of the value has to be replaced
+        assertEquals("jdbc://10.0.0.1", configGenerator.getUserConfig().getProperty("nuxeo.env.prop2"));
 
-        assertEquals("jdbc://10.0.0.1 false",
-                configGenerator.getUserConfig().getProperty("nuxeo.env.prop3"));
+        assertEquals("jdbc://10.0.0.1 false", configGenerator.getUserConfig().getProperty("nuxeo.env.prop3"));
     }
 
     private static class LogCaptureAppender extends AppenderSkeleton {
@@ -546,7 +523,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
         @Override
         protected void append(LoggingEvent event) {
-            if ("org.nuxeo.launcher.config.ConfigurationGenerator".equals(event.getLoggerName()) && level.equals(event.getLevel())) {
+            if ("org.nuxeo.launcher.config.ConfigurationGenerator".equals(event.getLoggerName())
+                    && level.equals(event.getLevel())) {
                 messages.add(event.getRenderedMessage());
             }
         }
