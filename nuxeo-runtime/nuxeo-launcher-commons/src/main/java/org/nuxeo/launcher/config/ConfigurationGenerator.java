@@ -474,6 +474,10 @@ public class ConfigurationGenerator {
             userConfig = new CryptoProperties();
         } else if (userConfig == null || userConfig.size() == 0 || forceReload) {
             try {
+                if (forceReload) {
+                    // force 'templates' reload
+                    templates = null;
+                }
                 setBasicConfiguration();
                 configurable = true;
             } catch (ConfigurationException e) {
