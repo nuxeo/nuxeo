@@ -502,6 +502,10 @@ public class ConfigurationGenerator {
             defaultConfig = new Properties();
         } else if (userConfig == null || userConfig.size() == 0 || forceReload) {
             try {
+                if (forceReload) {
+                    // force 'templates' reload
+                    templates = null;
+                }
                 setBasicConfiguration();
                 configurable = true;
             } catch (ConfigurationException e) {
