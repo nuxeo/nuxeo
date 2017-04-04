@@ -245,22 +245,28 @@ limitations under the License.
       },
 
       _download: function(response) {
-        if (response.body) {
-          var contentDisposition = response.headers.get('Content-Disposition');
+        var contentDisposition = response.headers.get('Content-Disposition');
+        if (contentDisposition) {
           var filenameMatches = contentDisposition
               .match(/filename[^;=\n]*=([^;\n]*''([^;\n]*)|[^;\n]*)/).filter(function(match) { return !!match; });
           var filename = decodeURI(filenameMatches[filenameMatches.length - 1]);
           return response.blob().then(function(blob) {
-            var a = document.createElement('a');
-            a.style = 'display: none';
-            a.download = filename;
-            a.href = URL.createObjectURL(blob);
-            a.click();
-            URL.revokeObjectURL(a.href);
-            Promise.resolve();
+            if (navigator.msSaveBlob) {
+              // handle IE11 and Edge
+              navigator.msSaveBlob(blob, filename);
+            } else {
+              var a = document.createElement('a');
+              a.style = 'display: none';
+              a.download = filename;
+              a.href = URL.createObjectURL(blob);
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(a.href);
+            }
           }.bind(this));
         } else {
-          return Promise.reject(new Error('response did not carry a valid blob'));
+          return Promise.reject(new Error('missing Content-Disposition header'));
         }
       }
 
