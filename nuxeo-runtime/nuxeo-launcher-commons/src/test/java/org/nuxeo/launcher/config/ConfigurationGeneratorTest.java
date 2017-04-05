@@ -152,7 +152,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     @Test
     public void testSetSpecialProperties() throws ConfigurationException {
         String oldValue = configGenerator.setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, null);
-        assertEquals("Wrong old value", "default,common,testinclude", oldValue);
+        assertEquals("Wrong old value", "default,common,testinclude,testenv", oldValue);
         assertEquals(ConfigurationGenerator.PARAM_TEMPLATES_NAME + " should be reset", "default",
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
         configGenerator.changeTemplates(oldValue);
@@ -548,8 +548,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         // Test configuration generator context before reloading it
         // getUserTemplates lazy load templates in the configuration generator context and put it back to userConfig
         // That's explain the two assertions below
-        assertEquals("default,common,testinclude", configGenerator.getUserTemplates());
-        assertEquals("default,common,testinclude", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+        assertEquals("default,common,testinclude,testenv", configGenerator.getUserTemplates());
+        assertEquals("default,common,testinclude,testenv", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
 
         // Reload it
         // At this point we test that we flush correctly the configuration generator context

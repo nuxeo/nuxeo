@@ -1578,7 +1578,7 @@ public class ConfigurationGenerator {
             // current db template is explicit => replace it
             templatesList.set(dbIdx, dbTemplate);
         }
-        return StringUtils.join(templatesList, TEMPLATE_SEPARATOR);
+        return replaceEnvironmentVariables(StringUtils.join(templatesList, TEMPLATE_SEPARATOR));
     }
 
     /**
