@@ -2,13 +2,21 @@
 <component name="org.nuxeo.elasticsearch.test.dynamic.mapping.contrib">
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchLocal">
-    <elasticSearchLocal clusterName="nuxeoTestClusterLocal" nodeName="nuxeoTestNode"
-      indexStoreType="mmapfs" httpEnabled="true" />
+    <elasticSearchLocal clusterName="nuxeoTestClusterLocal" nodeName="nuxeoTestNode" indexStoreType="mmapfs"
+      httpEnabled="true" />
+  </extension>
+
+  <!--<extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchRemote">-->
+    <!--<elasticSearchRemote clusterName="elasticsearch" addressList="localhost:9300" />-->
+  <!--</extension>-->
+
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchClientInitialization">
+    <clientInitialization class="org.nuxeo.elasticsearch.core.ESClientInitializationServiceImpl" />
   </extension>
 
   <!-- custom writer to be used with the dynamic mapper -->
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchDocWriter">
-   <writer class="org.nuxeo.elasticsearch.test.CustomJsonESDocumentWriter" />
+    <writer class="org.nuxeo.elasticsearch.test.CustomJsonESDocumentWriter" />
   </extension>
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">
