@@ -35,6 +35,10 @@
             "description": "Access groups"
         },
         {
+            "path": "/me.{format}",
+            "description": "Access logged in user"
+        },
+        {
             "path": "/directory.{format}",
             "description": "Access directories"
         },
