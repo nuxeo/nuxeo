@@ -45,6 +45,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -620,11 +621,15 @@ public class TestUserManager extends UserManagerTestCase {
         userManager.createGroup(g2);
 
         List<String> expectedUsersInGroup2 = Arrays.asList("test_u2bis", "test_u2", "test_u1");
-        // infinite loop can occure here:
+        // infinite loop can occur here:
         List<String> usersInGroupAndSubGroups2 = userManager.getUsersInGroupAndSubGroups("test_g2");
         Collections.sort(expectedUsersInGroup2);
         Collections.sort(usersInGroupAndSubGroups2);
         assertEquals(expectedUsersInGroup2, usersInGroupAndSubGroups2);
+
+        // and here
+        List<String> g1AncestorGroups = userManager.getAncestorGroups("test_g1");
+        assertTrue(CollectionUtils.isEqualCollection(Arrays.asList("test_g2", "test_g1"), g1AncestorGroups));
     }
 
     @Test
@@ -1179,6 +1184,51 @@ public class TestUserManager extends UserManagerTestCase {
             assertEquals("Administrator", ois.stack.get(0));
             assertEquals(NuxeoPrincipalImpl.TransferableClone.class, ois.stack.get(1).getClass());
         }
+    }
+
+    /**
+     * Checks the ancestor groups of the ABCD group with the following hierarchy:
+     *
+     * <pre>
+     * A  B  C  D
+     *  \/    \/
+     *  AB    CD
+     *   \    /
+     *    \  /
+     *    ABCD
+     * </pre>
+     */
+    @Test
+    public void testAncestorGroups() throws Exception {
+        DocumentModel groupABCD = getGroup("ABCD");
+        userManager.createGroup(groupABCD);
+
+        DocumentModel groupAB = getGroup("AB");
+        groupAB.setPropertyValue("group:subGroups", (Serializable) Collections.singletonList("ABCD"));
+        userManager.createGroup(groupAB);
+
+        DocumentModel groupCD = getGroup("CD");
+        groupCD.setPropertyValue("group:subGroups", (Serializable) Collections.singletonList("ABCD"));
+        userManager.createGroup(groupCD);
+
+        DocumentModel groupA = getGroup("A");
+        groupA.setPropertyValue("group:subGroups", (Serializable) Collections.singletonList("AB"));
+        userManager.createGroup(groupA);
+
+        DocumentModel groupB = getGroup("B");
+        groupB.setPropertyValue("group:subGroups", (Serializable) Collections.singletonList("AB"));
+        userManager.createGroup(groupB);
+
+        DocumentModel groupC = getGroup("C");
+        groupC.setPropertyValue("group:subGroups", (Serializable) Collections.singletonList("CD"));
+        userManager.createGroup(groupC);
+
+        DocumentModel groupD = getGroup("D");
+        groupD.setPropertyValue("group:subGroups", (Serializable) Collections.singletonList("CD"));
+        userManager.createGroup(groupD);
+
+        assertTrue(CollectionUtils.isEqualCollection(Arrays.asList("AB", "A", "B", "CD", "C", "D"),
+                userManager.getAncestorGroups("ABCD")));
     }
 
 }
