@@ -172,6 +172,9 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                 .put("node.name", conf.getNodeName())
                 .put("http.netty.worker_count", 4)
                 .put("http.cors.enabled", true)
+                .put("http.cors.allow-origin", "*")
+                .put("http.cors.allow-credentials", true)
+                .put("http.cors.allow-headers", "Authorization, X-Requested-With, Content-Type, Content-Length")
                 .put("cluster.routing.allocation.disk.threshold_enabled", false)
                 .put("http.port", conf.getHttpPort());
         if (conf.getIndexStorageType() != null) {
