@@ -463,4 +463,50 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      */
     String[] getUsersForPermission(String perm, ACP acp);
 
+    /**
+     * Returns the ancestor groups of the group with the given id.
+     *
+     * @since 9.2
+     */
+    List<String> getAncestorGroups(String groupId);
+
+    /**
+     * Notifies that the given user has changed with the given event:
+     * <ul>
+     * <li>At the runtime level so that the JaasCacheFlusher listener can make sure the principal cache is reset.</li>
+     * <li>At the core level, passing the {@code userName} as the {@code "id"} property of the fired event.</li>
+     * </ul>
+     *
+     * @since 9.2
+     */
+    void notifyUserChanged(String userName, String eventId);
+
+    /**
+     * Notifies that the given group has changed with the given event:
+     * <ul>
+     * <li>At the runtime level so that the JaasCacheFlusher listener can make sure the principal cache is reset.</li>
+     * <li>At the core level, passing the {@code groupName} as the {@code "id"} property of the fired event.</li>
+     * </ul>
+     *
+     * @since 9.2
+     */
+    default void notifyGroupChanged(String groupName, String eventId) {
+        notifyGroupChanged(groupName, eventId, null);
+    }
+
+    /**
+     * Notifies that the given group has changed with the given event:
+     * <ul>
+     * <li>At the runtime level so that the JaasCacheFlusher listener can make sure the principal cache is reset.</li>
+     * <li>At the core level, passing the {@code groupName} as the {@code "id"} property of the fired event.</li>
+     * </ul>
+     * <p>
+     * The {@code ancestorGroupNames} list must contain the ancestor groups of the given group. It can be computed by
+     * calling {@link #getAncestorGroups(String)}. It will be passed as the {@code "ancestorGroups"} property of the
+     * fired core event.
+     *
+     * @since 9.2
+     */
+    void notifyGroupChanged(String groupName, String eventId, List<String> ancestorGroupNames);
+
 }
