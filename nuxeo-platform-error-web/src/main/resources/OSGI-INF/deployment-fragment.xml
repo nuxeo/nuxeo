@@ -127,6 +127,19 @@
 
   </extension>
 
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>Nuxeo Error Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.platform.error.web.ErrorServlet
+      </servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo Error Servlet</servlet-name>
+      <url-pattern>/nxerror/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+
   <install>
     <unzip from="${bundle.fileName}" to="/" prefix="web">
       <include>web/nuxeo.war/**</include>
