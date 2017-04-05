@@ -58,6 +58,10 @@ public class RestApiDocBasePage {
     public WebElement groupLink;
 
     @Required
+    @FindBy(linkText = "me")
+    public WebElement meLink;
+
+    @Required
     @FindBy(linkText = "directory")
     public WebElement directoryLink;
 
