@@ -128,6 +128,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
      */
     public static final String ID_PROPERTY_KEY = "id";
 
+    /**
+     * Key for the ancestor group names of a group in a core event context.
+     *
+     * @since 9.2
+     */
+    public static final String ANCESTOR_GROUPS_PROPERTY_KEY = "ancestorGroups";
+
     protected final DirectoryService dirService;
 
     protected final CacheService cacheService;
@@ -759,14 +766,24 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     /**
      * @since 8.2
      */
-    private void notifyCore(String userOrGroupId, String eventId) {
+    protected void notifyCore(String userOrGroupId, String eventId) {
+        notifyCore(userOrGroupId, eventId, null);
+    }
+
+    /**
+     * @since 9.2
+     */
+    protected void notifyCore(String userOrGroupId, String eventId, List<String> ancestorGroupIds) {
         Map<String, Serializable> eventProperties = new HashMap<>();
         eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, USER_GROUP_CATEGORY);
         eventProperties.put(ID_PROPERTY_KEY, userOrGroupId);
+        if (ancestorGroupIds != null) {
+            eventProperties.put(ANCESTOR_GROUPS_PROPERTY_KEY, (Serializable) ancestorGroupIds);
+        }
         NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
         UnboundEventContext envContext = new UnboundEventContext(principal, eventProperties);
         envContext.setProperties(eventProperties);
-        EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
+        EventProducer eventProducer = Framework.getService(EventProducer.class);
         eventProducer.fireEvent(envContext.newEvent(eventId));
     }
 
@@ -775,10 +792,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         eventService.sendEvent(new Event(USERMANAGER_TOPIC, eventId, this, userOrGroupName));
     }
 
-    /**
-     * Notifies user has changed so that the JaasCacheFlusher listener can make sure principals cache is reset.
-     */
-    protected void notifyUserChanged(String userName, String eventId) {
+    @Override
+    public void notifyUserChanged(String userName, String eventId) {
         invalidatePrincipal(userName);
         notifyRuntime(userName, USERCHANGED_EVENT_ID);
         if (eventId != null) {
@@ -793,15 +808,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         }
     }
 
-    /**
-     * Notifies group has changed so that the JaasCacheFlusher listener can make sure principals cache is reset.
-     */
-    protected void notifyGroupChanged(String groupName, String eventId) {
+    @Override
+    public void notifyGroupChanged(String groupName, String eventId, List<String> ancestorGroupNames) {
         invalidateAllPrincipals();
         notifyRuntime(groupName, GROUPCHANGED_EVENT_ID);
         if (eventId != null) {
             notifyRuntime(groupName, eventId);
-            notifyCore(groupName, eventId);
+            notifyCore(groupName, eventId, ancestorGroupNames);
         }
     }
 
@@ -1315,8 +1328,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             if (!groupDir.hasEntry(groupId)) {
                 throw new DirectoryException("Group does not exist: " + groupId);
             }
+            // Get ancestor group names before deletion to pass them as a property of the core event
+            List<String> ancestorGroupNames = getAncestorGroups(groupId);
             groupDir.deleteEntry(groupId);
-            notifyGroupChanged(groupId, GROUPDELETED_EVENT_ID);
+            notifyGroupChanged(groupId, GROUPDELETED_EVENT_ID, ancestorGroupNames);
         }
     }
 
@@ -1420,6 +1435,25 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             }
         }
         return usernames.toArray(new String[usernames.size()]);
+    }
+
+    @Override
+    public List<String> getAncestorGroups(String groupId) {
+        List<String> ancestorGroups = new ArrayList<>();
+        populateAncestorGroups(groupId, ancestorGroups);
+        return ancestorGroups;
+    }
+
+    protected void populateAncestorGroups(String groupId, List<String> ancestorGroups) {
+        NuxeoGroup group = getGroup(groupId);
+        if (group != null) {
+            List<String> parentGroups = group.getParentGroups();
+            // Avoid infinite loop in case a group has one of its parents as a subgroup
+            parentGroups.stream().filter(parentGroup -> !ancestorGroups.contains(parentGroup)).forEach(parentGroup -> {
+                ancestorGroups.add(parentGroup);
+                populateAncestorGroups(parentGroup, ancestorGroups);
+            });
+        }
     }
 
     @Override
