@@ -50,7 +50,7 @@ public interface NuxeoGroup extends Serializable {
     /**
      * Gets the list of groups this group is a member of.
      *
-     * @return the list of member groups of this group
+     * @return the list of parent groups of this group
      */
     List<String> getParentGroups();
 
