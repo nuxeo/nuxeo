@@ -41,13 +41,14 @@ public class NXTextRenderer extends TextRenderer {
 
     private static final Attribute[] INPUT_ATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.INPUTTEXT);
 
-    private static final Attribute[] OUTPUT_ATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.OUTPUTTEXT);
+    private static final Attribute[] OUTPUT_ATTRIBUTES = AttributeManager.getAttributes(
+            AttributeManager.Key.OUTPUTTEXT);
 
     @Override
-    protected void getEndTextToRender(FacesContext context,
-            UIComponent component, String currentValue) throws IOException {
+    protected void getEndTextToRender(FacesContext context, UIComponent component, String currentValue)
+            throws IOException {
         ResponseWriter writer = context.getResponseWriter();
-        assert(writer != null);
+        assert (writer != null);
         boolean shouldWriteIdAttribute = false;
         boolean isOutput = false;
 
@@ -56,8 +57,7 @@ public class NXTextRenderer extends TextRenderer {
         String dir = (String) component.getAttributes().get("dir");
         String lang = (String) component.getAttributes().get("lang");
         String title = (String) component.getAttributes().get("title");
-        String placeholder = (String) component.getAttributes().get(
-                "placeholder");
+        String placeholder = (String) component.getAttributes().get("placeholder");
         Map<String, Object> passthroughAttributes = component.getPassThroughAttributes(false);
         boolean hasPassthroughAttributes = null != passthroughAttributes && !passthroughAttributes.isEmpty();
         if (component instanceof UIInput) {
@@ -66,20 +66,16 @@ public class NXTextRenderer extends TextRenderer {
 
             if (component instanceof HtmlInputFile) {
                 writer.writeAttribute("type", "file", null);
-            }
-            else {
+            } else {
                 writer.writeAttribute("type", "text", null);
             }
-            writer.writeAttribute("name", (component.getClientId(context)),
-                    "clientId");
+            writer.writeAttribute("name", (component.getClientId(context)), "clientId");
 
             // only output the autocomplete attribute if the value
             // is 'off' since its lack of presence will be interpreted
             // as 'on' by the browser
             if ("off".equals(component.getAttributes().get("autocomplete"))) {
-                writer.writeAttribute("autocomplete",
-                        "off",
-                        "autocomplete");
+                writer.writeAttribute("autocomplete", "off", "autocomplete");
             }
 
             // render default text specified
@@ -96,36 +92,24 @@ public class NXTextRenderer extends TextRenderer {
             }
 
             // style is rendered as a passthur attribute
-            RenderKitUtils.renderPassThruAttributes(context,
-                    writer,
-                    component,
-                    INPUT_ATTRIBUTES,
+            RenderKitUtils.renderPassThruAttributes(context, writer, component, INPUT_ATTRIBUTES,
                     getNonOnChangeBehaviors(component));
             RenderKitUtils.renderXHTMLStyleBooleanAttributes(writer, component);
 
             RenderKitUtils.renderOnchange(context, component, false);
 
-
             writer.endElement("input");
 
         } else if (isOutput = (component instanceof UIOutput)) {
-            if (styleClass != null
-                    || style != null
-                    || dir != null
-                    || lang != null
-                    || title != null
-                    || hasPassthroughAttributes
-                    || (shouldWriteIdAttribute = shouldWriteIdAttribute(component))) {
+            if (styleClass != null || style != null || dir != null || lang != null || title != null
+                    || hasPassthroughAttributes || (shouldWriteIdAttribute = shouldWriteIdAttribute(component))) {
                 writer.startElement("span", component);
                 writeIdAttributeIfNecessary(context, writer, component);
                 if (null != styleClass) {
                     writer.writeAttribute("class", styleClass, "styleClass");
                 }
                 // style is rendered as a passthru attribute
-                RenderKitUtils.renderPassThruAttributes(context,
-                        writer,
-                        component,
-                        OUTPUT_ATTRIBUTES);
+                RenderKitUtils.renderPassThruAttributes(context, writer, component, OUTPUT_ATTRIBUTES);
 
             }
             if (currentValue != null) {
@@ -137,13 +121,8 @@ public class NXTextRenderer extends TextRenderer {
                 }
             }
         }
-        if (isOutput && (styleClass != null
-                || style != null
-                || dir != null
-                || lang != null
-                || title != null
-                || hasPassthroughAttributes
-                || (shouldWriteIdAttribute))) {
+        if (isOutput && (styleClass != null || style != null || dir != null || lang != null || title != null
+                || hasPassthroughAttributes || (shouldWriteIdAttribute))) {
             writer.endElement("span");
         }
     }
