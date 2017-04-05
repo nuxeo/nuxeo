@@ -143,6 +143,9 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
 
             parameters.getListener().beforeForwardToErrorPage(unwrappedException, request, response);
             if (!response.isCommitted()) {
+                // The JSP error page needs the response Writer but somebody may already have retrieved
+                // the OutputStream and usage of these two can't be mixed. So we reset the response.
+                response.reset();
                 response.setStatus(status);
                 String errorPage = handler.getPage();
                 errorPage = (errorPage == null) ? parameters.getDefaultErrorPage() : errorPage;
