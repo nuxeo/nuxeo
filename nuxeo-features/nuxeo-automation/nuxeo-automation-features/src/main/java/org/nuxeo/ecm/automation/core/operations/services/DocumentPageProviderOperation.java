@@ -300,6 +300,7 @@ public class DocumentPageProviderOperation {
             res = new PaginableDocumentModelListImpl(pp, documentLinkBuilder);
         }
         if (res.hasError()) {
+            log.warn("NXP-21973: strParameters = " + strParameters.toString());
             throw new OperationException(res.getErrorMessage());
         }
         return res;
