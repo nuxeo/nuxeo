@@ -56,6 +56,7 @@ public class TestDeckJSPDFConverter {
     protected CoreSession session;
 
     @Test
+    @Ignore("NXP-22051")
     public void testSampleDocument() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
