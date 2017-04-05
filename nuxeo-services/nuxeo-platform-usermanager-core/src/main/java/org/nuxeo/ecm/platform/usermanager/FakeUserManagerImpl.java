@@ -455,4 +455,19 @@ public class FakeUserManagerImpl implements UserManager {
     public void handleEvent(Event event) {
     }
 
+    @Override
+    public List<String> getAncestorGroups(String groupId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void notifyUserChanged(String userName, String eventId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void notifyGroupChanged(String groupName, String eventId, List<String> ancestorGroupNames) {
+        throw new UnsupportedOperationException();
+    }
+
 }
