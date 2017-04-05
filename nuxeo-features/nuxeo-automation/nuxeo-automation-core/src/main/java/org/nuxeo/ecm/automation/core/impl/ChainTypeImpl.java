@@ -235,10 +235,10 @@ public class ChainTypeImpl implements OperationType {
     protected Class<?> getChainOutput(OperationChainContribution.Operation[] operations) throws OperationException {
         for (OperationChainContribution.Operation operation : operations) {
             OperationType operationType = service.getOperation(operation.getId());
-            if (operationType instanceof OperationTypeImpl) {
-                outputChain = getOperationOutput(outputChain, operationType);
-            } else {
+            if (operationType instanceof ChainTypeImpl) {
                 outputChain = getChainOutput(operationType.getDocumentation().getOperations());
+            } else {
+                outputChain = getOperationOutput(outputChain, operationType);
             }
         }
         return outputChain;
