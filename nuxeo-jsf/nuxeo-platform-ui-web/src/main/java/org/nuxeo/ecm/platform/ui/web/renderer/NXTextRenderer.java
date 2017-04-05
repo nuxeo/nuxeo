@@ -18,10 +18,12 @@
 package org.nuxeo.ecm.platform.ui.web.renderer;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.UIOutput;
+import javax.faces.component.html.HtmlInputFile;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
@@ -45,7 +47,7 @@ public class NXTextRenderer extends TextRenderer {
     protected void getEndTextToRender(FacesContext context,
             UIComponent component, String currentValue) throws IOException {
         ResponseWriter writer = context.getResponseWriter();
-        assert (writer != null);
+        assert(writer != null);
         boolean shouldWriteIdAttribute = false;
         boolean isOutput = false;
 
@@ -56,10 +58,18 @@ public class NXTextRenderer extends TextRenderer {
         String title = (String) component.getAttributes().get("title");
         String placeholder = (String) component.getAttributes().get(
                 "placeholder");
+        Map<String, Object> passthroughAttributes = component.getPassThroughAttributes(false);
+        boolean hasPassthroughAttributes = null != passthroughAttributes && !passthroughAttributes.isEmpty();
         if (component instanceof UIInput) {
             writer.startElement("input", component);
             writeIdAttributeIfNecessary(context, writer, component);
-            writer.writeAttribute("type", "text", null);
+
+            if (component instanceof HtmlInputFile) {
+                writer.writeAttribute("type", "file", null);
+            }
+            else {
+                writer.writeAttribute("type", "text", null);
+            }
             writer.writeAttribute("name", (component.getClientId(context)),
                     "clientId");
 
@@ -67,7 +77,9 @@ public class NXTextRenderer extends TextRenderer {
             // is 'off' since its lack of presence will be interpreted
             // as 'on' by the browser
             if ("off".equals(component.getAttributes().get("autocomplete"))) {
-                writer.writeAttribute("autocomplete", "off", "autocomplete");
+                writer.writeAttribute("autocomplete",
+                        "off",
+                        "autocomplete");
             }
 
             // render default text specified
@@ -84,9 +96,15 @@ public class NXTextRenderer extends TextRenderer {
             }
 
             // style is rendered as a passthur attribute
-            RenderKitUtils.renderPassThruAttributes(context, writer, component,
-                    INPUT_ATTRIBUTES);
+            RenderKitUtils.renderPassThruAttributes(context,
+                    writer,
+                    component,
+                    INPUT_ATTRIBUTES,
+                    getNonOnChangeBehaviors(component));
             RenderKitUtils.renderXHTMLStyleBooleanAttributes(writer, component);
+
+            RenderKitUtils.renderOnchange(context, component, false);
+
 
             writer.endElement("input");
 
@@ -96,6 +114,7 @@ public class NXTextRenderer extends TextRenderer {
                     || dir != null
                     || lang != null
                     || title != null
+                    || hasPassthroughAttributes
                     || (shouldWriteIdAttribute = shouldWriteIdAttribute(component))) {
                 writer.startElement("span", component);
                 writeIdAttributeIfNecessary(context, writer, component);
@@ -103,7 +122,9 @@ public class NXTextRenderer extends TextRenderer {
                     writer.writeAttribute("class", styleClass, "styleClass");
                 }
                 // style is rendered as a passthru attribute
-                RenderKitUtils.renderPassThruAttributes(context, writer, component,
+                RenderKitUtils.renderPassThruAttributes(context,
+                        writer,
+                        component,
                         OUTPUT_ATTRIBUTES);
 
             }
@@ -116,9 +137,13 @@ public class NXTextRenderer extends TextRenderer {
                 }
             }
         }
-        if (isOutput
-                && (styleClass != null || style != null || dir != null
-                        || lang != null || title != null || (shouldWriteIdAttribute))) {
+        if (isOutput && (styleClass != null
+                || style != null
+                || dir != null
+                || lang != null
+                || title != null
+                || hasPassthroughAttributes
+                || (shouldWriteIdAttribute))) {
             writer.endElement("span");
         }
     }
