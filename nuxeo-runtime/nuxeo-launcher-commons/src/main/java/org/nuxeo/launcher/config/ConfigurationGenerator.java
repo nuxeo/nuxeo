@@ -662,29 +662,41 @@ public class ConfigurationGenerator {
             String key = (String) keyObject;
             String value = userConfig.getProperty(key);
 
-            Matcher matcher = ENV_VALUE_PATTERN.matcher(value);
-            StringBuffer sb = new StringBuffer();
-            while (matcher.find()) {
-                boolean booleanValue = "??".equals(matcher.group("boolean"));
-                String envVarName = matcher.group("envparam");
-                String defaultValue = matcher.group("defaultvalue");
-
-                String envValue = getEnvironmentVariableValue(envVarName);
-
-                String result;
-                if (booleanValue) {
-                    result = StringUtils.isBlank(envValue) ? "false" : "true";
-                } else {
-                    result = StringUtils.isBlank(envValue) ? defaultValue : envValue;
+            if (StringUtils.isNotBlank(value)) {
+                String newValue = replaceEnvironmentVariables(value);
+                if (!value.equals(newValue)) {
+                    newParametersToSave.put(key, newValue);
                 }
-                matcher.appendReplacement(sb, result);
-            }
-            matcher.appendTail(sb);
-
-            if (matcher.hitEnd()) {
-                newParametersToSave.put(key, sb.toString());
             }
         }
+    }
+
+    private String replaceEnvironmentVariables(String value) {
+        if(StringUtils.isBlank(value)) {
+            return value;
+        }
+
+        Matcher matcher = ENV_VALUE_PATTERN.matcher(value);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            boolean booleanValue = "??".equals(matcher.group("boolean"));
+            String envVarName = matcher.group("envparam");
+            String defaultValue = matcher.group("defaultvalue");
+
+            String envValue = getEnvironmentVariableValue(envVarName);
+
+            String result;
+            if (booleanValue) {
+                result = StringUtils.isBlank(envValue) ? "false" : "true";
+            } else {
+                result = StringUtils.isBlank(envValue) ? defaultValue : envValue;
+            }
+            matcher.appendReplacement(sb, result);
+        }
+        matcher.appendTail(sb);
+
+        return sb.toString();
+
     }
 
     /**
@@ -808,7 +820,7 @@ public class ConfigurationGenerator {
         List<File> orderedTemplates = new ArrayList<>();
         StringTokenizer st = new StringTokenizer(templatesList, TEMPLATE_SEPARATOR);
         while (st.hasMoreTokens()) {
-            String nextToken = st.nextToken();
+            String nextToken = replaceEnvironmentVariables(st.nextToken());
             File chosenTemplate = new File(nextToken);
             // is it absolute and existing or relative path ?
             if (!chosenTemplate.exists() || !chosenTemplate.getPath().equals(chosenTemplate.getAbsolutePath())) {
@@ -833,7 +845,8 @@ public class ConfigurationGenerator {
             }
 
             Properties subTemplateConf = loadTrimmedProperties(chosenTemplateConf);
-            String subTemplatesList = subTemplateConf.getProperty(PARAM_INCLUDED_TEMPLATES);
+            String subTemplatesList = replaceEnvironmentVariables(
+                    subTemplateConf.getProperty(PARAM_INCLUDED_TEMPLATES));
             if (subTemplatesList != null && subTemplatesList.length() > 0) {
                 orderedTemplates.addAll(includeTemplates(subTemplatesList));
             }
