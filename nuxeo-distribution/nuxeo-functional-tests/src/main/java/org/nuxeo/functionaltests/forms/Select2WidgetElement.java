@@ -232,8 +232,8 @@ public class Select2WidgetElement extends WebFragmentImpl {
         char c;
         for (int i = 0; i < value.length(); i++) {
             c = value.charAt(i);
-            suggestInput.sendKeys(c + "");
             try {
+                suggestInput.sendKeys(c + "");
                 waitSelect2();
             } catch (UnhandledAlertException e) {
                 ScreenshotTaker taker = new ScreenshotTaker();
