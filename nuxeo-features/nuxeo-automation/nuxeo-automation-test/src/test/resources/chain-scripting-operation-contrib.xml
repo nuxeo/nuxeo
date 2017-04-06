@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.automation.rest.test.chainScriptingOperationContrib"
+           version="1.0">
+
+  <extension point="chains"
+             target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <chain id="testChain2">
+
+      <operation id="testOp">
+        <param type="string" name="one">One</param>
+        <param type="long" name="two">2</param>
+      </operation>
+
+      <operation id="javascript.RemoteScriptWithDoc">
+        <param type="string" name="lang">lang</param>
+      </operation>
+
+    </chain>
+  </extension>
+
+</component>
