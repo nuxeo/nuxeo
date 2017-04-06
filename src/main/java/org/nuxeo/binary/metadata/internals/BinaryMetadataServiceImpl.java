@@ -231,11 +231,6 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                             doc.getPath()));
                 }
             }
-
-            // document should exist if id != null
-            if (doc.getId() != null) {
-                doc.getCoreSession().saveDocument(doc);
-            }
         }
     }
 
