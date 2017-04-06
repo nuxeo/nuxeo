@@ -18,7 +18,9 @@
  */
 package org.nuxeo.ecm.platform.template.tests;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -40,8 +42,10 @@ public class TestXMLSerialization extends TestCase {
         input1.setDesciption("Some description");
         params.add(input1);
 
-        Date date = new Date();
-        TemplateInput input2 = new TemplateInput("field2", date);
+        Calendar cal = Calendar.getInstance();
+        cal.set(2017, Calendar.JULY, 14, 13, 14, 15); // after 12 to check hour format
+        cal.set(Calendar.MILLISECOND, 678);
+        TemplateInput input2 = new TemplateInput("field2", new Date(cal.getTimeInMillis()));
         params.add(input2);
 
         TemplateInput input3 = new TemplateInput("field3", new Boolean(true));
@@ -77,8 +81,8 @@ public class TestXMLSerialization extends TestCase {
 
         assertEquals("field2", params2.get(1).getName());
         assertEquals(InputType.DateValue, params2.get(1).getType());
-        assertEquals(XMLSerializer.dateFormat.format(date),
-                XMLSerializer.dateFormat.format(params2.get(1).getDateValue()));
+        SimpleDateFormat dateFormat = new SimpleDateFormat(XMLSerializer.DATE_FORMAT);
+        assertEquals("2017-07-14 13:14:15.678", dateFormat.format(params2.get(1).getDateValue()));
 
         assertEquals("field3", params2.get(2).getName());
         assertEquals(InputType.BooleanValue, params2.get(2).getType());
