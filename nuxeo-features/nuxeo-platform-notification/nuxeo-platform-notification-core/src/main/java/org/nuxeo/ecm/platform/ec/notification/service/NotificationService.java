@@ -227,30 +227,9 @@ public class NotificationService extends DefaultComponent implements Notificatio
         return notificationVetoRegistry;
     }
 
-    /**
-     * @deprecated since 7.3
-     * @see NotificationService#getSubscribers(String, DocumentModel)
-     */
-    @Deprecated
-    @Override
-    public List<String> getSubscribers(String notification, String docId) {
-        return getSubscribers(notification, UnrestrictedDocFetcher.fetch(docId));
-    }
-
     @Override
     public List<String> getSubscribers(String notification, DocumentModel doc) {
         return doc.getAdapter(SubscriptionAdapter.class).getNotificationSubscribers(notification);
-    }
-
-    /**
-     * @deprecated since 7.3
-     * @see NotificationService#getSubscriptionsForUserOnDocument(String, DocumentModel)
-     */
-
-    @Deprecated
-    @Override
-    public List<String> getSubscriptionsForUserOnDocument(String username, String docId) {
-        return getSubscriptionsForUserOnDocument(username, UnrestrictedDocFetcher.fetch(docId));
     }
 
     @Override
@@ -310,11 +289,6 @@ public class NotificationService extends DefaultComponent implements Notificatio
     }
 
     @Override
-    public void removeSubscriptions(String username, List<String> notifications, String docId) {
-        removeSubscriptions(username, notifications, UnrestrictedDocFetcher.fetch(docId));
-    }
-
-    @Override
     public void removeSubscriptions(String username, List<String> notifications, DocumentModel doc) {
         UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getRepositoryName()) {
 
@@ -365,23 +339,8 @@ public class NotificationService extends DefaultComponent implements Notificatio
     }
 
     @Override
-    public void removeSubscription(String username, String notification, String docId) {
-        removeSubscription(username, notification, UnrestrictedDocFetcher.fetch(docId));
-    }
-
-    @Override
     public void removeSubscription(String username, String notification, DocumentModel doc) {
         removeSubscriptions(username, Arrays.asList(notification), doc);
-    }
-
-    /**
-     * @deprecated since 7.3 use {@link #getUsersSubscribedToNotificationOnDocument(String, DocumentModel)}
-     * @see NotificationService#getSubscribers(String, DocumentModel)
-     */
-    @Deprecated
-    @Override
-    public List<String> getUsersSubscribedToNotificationOnDocument(String notification, String docId) {
-        return getSubscribers(notification, docId);
     }
 
     private static void registerTemplate(TemplateDescriptor td) {
