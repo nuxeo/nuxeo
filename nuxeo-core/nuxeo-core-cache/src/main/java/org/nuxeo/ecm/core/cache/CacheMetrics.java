@@ -44,21 +44,27 @@ public class CacheMetrics extends CacheWrapper {
 
     protected final Gauge<Long> size;
 
-    protected final String readHitName = nameOf("read-hit-counter");
-    protected final String readHitRatio = nameOf("read-hit-ratio");
-    protected final String readMissName = nameOf("read-miss-counter");
-    protected final String readName = nameOf("read-counter");
-    protected final String writeName = nameOf("write-counter");
-    protected final String invalidateAllName = nameOf("invalidate-all-counter");
-    protected final String sizeName = nameOf("size");
+    protected final String READ_HIT_NAME = nameOf("read-hit-counter");
+
+    protected final String READ_HIT_RATIO_NAME = nameOf("read-hit-ratio");
+
+    protected final String READ_MISS_NAME = nameOf("read-miss-counter");
+
+    protected final String READ_NAME = nameOf("read-counter");
+
+    protected final String WRITE_NAME = nameOf("write-counter");
+
+    protected final String INVALIDATE_ALL_NAME = nameOf("invalidate-all-counter");
+
+    protected final String SIZE_NAME = nameOf("size");
 
     public CacheMetrics(Cache cache) {
         super(cache);
         registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
-        read = registry.counter(readName);
-        read_hit = registry.counter(readHitName);
-        read_miss = registry.counter(readMissName);
-        registry.register(readHitRatio, read_hit_ratio = new RatioGauge() {
+        read = registry.counter(READ_NAME);
+        read_hit = registry.counter(READ_HIT_NAME);
+        read_miss = registry.counter(READ_MISS_NAME);
+        registry.register(READ_HIT_RATIO_NAME, read_hit_ratio = new RatioGauge() {
 
             @Override
             protected Ratio getRatio() {
@@ -66,9 +72,9 @@ public class CacheMetrics extends CacheWrapper {
                 return ratio;
             }
         });
-        write = registry.counter(writeName);
-        invalidation = registry.counter(invalidateAllName);
-        registry.register(sizeName, size = new Gauge<Long>() {
+        write = registry.counter(WRITE_NAME);
+        invalidation = registry.counter(INVALIDATE_ALL_NAME);
+        registry.register(SIZE_NAME, size = new Gauge<Long>() {
 
             @Override
             public Long getValue() {
@@ -84,13 +90,13 @@ public class CacheMetrics extends CacheWrapper {
 
     @Override
     protected void onStop() {
-        registry.remove(readName);
-        registry.remove(readHitName);
-        registry.remove(readHitRatio);
-        registry.remove(readMissName);
-        registry.remove(writeName);
-        registry.remove(invalidateAllName);
-        registry.remove(sizeName);
+        registry.remove(READ_NAME);
+        registry.remove(READ_HIT_NAME);
+        registry.remove(READ_HIT_RATIO_NAME);
+        registry.remove(READ_MISS_NAME);
+        registry.remove(WRITE_NAME);
+        registry.remove(INVALIDATE_ALL_NAME);
+        registry.remove(SIZE_NAME);
     }
 
     @Override
@@ -132,6 +138,5 @@ public class CacheMetrics extends CacheWrapper {
     public long getSize() {
         return cache.getSize();
     }
-
 
 }
