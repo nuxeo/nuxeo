@@ -60,7 +60,7 @@ public class XMLSerializer {
 
     public static final QName fieldTag = DocumentFactory.getInstance().createQName("field", ns);
 
-    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss:sss");
+    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
     public static String serialize(List<TemplateInput> params) {
 
@@ -89,6 +89,7 @@ public class XMLSerializer {
             if (InputType.StringValue.equals(type)) {
                 field.addAttribute("value", input.getStringValue());
             } else if (InputType.DateValue.equals(type)) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
                 field.addAttribute("value", dateFormat.format(input.getDateValue()));
             } else if (InputType.BooleanValue.equals(type)) {
                 field.addAttribute("value", input.getBooleanValue().toString());
@@ -130,6 +131,7 @@ public class XMLSerializer {
                 param.setStringValue(strValue);
             } else if (InputType.DateValue.equals(type)) {
                 try {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
                     param.setDateValue(dateFormat.parse(strValue));
                 } catch (ParseException e) {
                     throw new DocumentException(e);

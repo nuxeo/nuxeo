@@ -56,7 +56,7 @@ import org.nuxeo.template.processors.BidirectionalTemplateProcessor;
  */
 public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor implements BidirectionalTemplateProcessor {
 
-    public static SimpleDateFormat wordXMLDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
+    public static final String WORD_XML_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     public static final String TEMPLATE_TYPE = "wordXMLTemplate";
 
@@ -100,6 +100,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
                         Serializable value = templateDocument.getAdaptedDoc().getPropertyValue(param.getSource());
                         if (value != null) {
                             if (value instanceof Date) {
+                                SimpleDateFormat wordXMLDateFormat = new SimpleDateFormat(WORD_XML_DATE_FORMAT);
                                 strValue = wordXMLDateFormat.format((Date) value);
                             } else {
                                 strValue = value.toString();
@@ -112,6 +113,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
                     } else if (InputType.BooleanValue.equals(param.getType())) {
                         strValue = param.getBooleanValue().toString();
                     } else if (InputType.DateValue.equals(param.getType())) {
+                        SimpleDateFormat wordXMLDateFormat = new SimpleDateFormat(WORD_XML_DATE_FORMAT);
                         strValue = wordXMLDateFormat.format(param.getDateValue());
                     }
                 }
@@ -248,6 +250,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
                     } else if (InputType.BooleanValue.equals(param.getType())) {
                         adaptedDoc.setPropertyValue(param.getSource(), new Boolean(xmlValue));
                     } else if (Date.class.getSimpleName().equals(param.getType())) {
+                        SimpleDateFormat wordXMLDateFormat = new SimpleDateFormat(WORD_XML_DATE_FORMAT);
                         try {
                             adaptedDoc.setPropertyValue(param.getSource(), wordXMLDateFormat.parse(xmlValue));
                         } catch (PropertyException | ParseException e) {
@@ -260,6 +263,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
                     } else if (InputType.BooleanValue.equals(param.getType())) {
                         param.setBooleanValue(new Boolean(xmlValue));
                     } else if (InputType.DateValue.equals(param.getType())) {
+                        SimpleDateFormat wordXMLDateFormat = new SimpleDateFormat(WORD_XML_DATE_FORMAT);
                         try {
                             param.setDateValue(wordXMLDateFormat.parse(xmlValue));
                         } catch (ParseException e) {

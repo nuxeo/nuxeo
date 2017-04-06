@@ -432,7 +432,7 @@ limitations under the License.
           this.set('selectedParamProperties.loop', (!loop || loop === 'false') ? false : true);
           var value = this._getParamValue(this.param);
           if (this.selectedParamProperties.type === 'Date') {
-            value = this.formatDate(value, 'YYYY-MM-DDThh:mm:ss')
+            value = this.formatDate(value, 'yyyy-MM-ddTHH:mm:ss')
           } else if (this.selectedParamProperties.type === 'Boolean') {
             value = (!value || value === 'false') ? false : true;
           }
@@ -484,7 +484,7 @@ limitations under the License.
           }
           if (this.selectedParamProperties.type === 'Date') {
             this._setParamValue(this.param,
-                this.formatDate(this.selectedParamProperties.value, 'YYYY-MM-DD hh:mm:ss:SSS'));
+                this.formatDate(this.selectedParamProperties.value, 'yyyy-MM-dd HH:mm:ss.SSS'));
           } else if (this.selectedParamProperties.type === 'content' &&
               this.selectedParamProperties.contentType !== 'xpath') {
             this._setParamValue(this.param,  this.selectedParamProperties.contentType);
