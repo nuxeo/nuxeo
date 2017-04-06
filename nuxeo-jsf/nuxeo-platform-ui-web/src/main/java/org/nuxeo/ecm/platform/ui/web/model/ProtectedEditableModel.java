@@ -77,4 +77,9 @@ public interface ProtectedEditableModel {
      */
     ProtectedEditableModel getParent();
 
+    /**
+     * @since 9.1
+     */
+    String getModelName();
+
 }

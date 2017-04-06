@@ -18,9 +18,11 @@
  */
 package org.nuxeo.ecm.platform.ui.web.validator;
 
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.el.ValueExpression;
@@ -35,6 +37,7 @@ import javax.faces.validator.ValidatorException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.el.ValueExpressionLiteral;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.validation.ConstraintViolation;
@@ -83,7 +86,7 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
         }
 
         ValueExpressionAnalyzer expressionAnalyzer = new ValueExpressionAnalyzer(ve);
-        ValueReference vref = expressionAnalyzer.getReference(context.getELContext());
+        ValueReference vref = expressionAnalyzer.getReference(context.getELContext(), null);
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Validating  value '%s' for expression '%s', base=%s, prop=%s", value,
@@ -113,6 +116,7 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
     @SuppressWarnings("rawtypes")
     private boolean isResolvable(ValueReference ref, ValueExpression ve) {
         if (ve == null || ref == null) {
+            log.error("not resolvable null stuff");
             return false;
         }
         Object base = ref.getBase();
@@ -142,7 +146,7 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
         if (!validationService.isActivated(CTX_JSFVALIDATOR, null)) {
             return null;
         }
-        XPathAndField field = resolveField(context, vref, e);
+        XPathAndField field = resolveField(context, vref, e, false);
         if (field != null) {
             boolean validateSubs = getHandleSubProperties().booleanValue();
             // use the xpath to validate the field
@@ -178,13 +182,21 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
             this.xpath = xpath;
         }
 
+        @Override
+        public String toString() {
+            return "Field[" + xpath + "]";
+        }
+
     }
 
-    protected XPathAndField resolveField(FacesContext context, ValueReference vref, ValueExpression ve) {
+    protected XPathAndField resolveField(FacesContext context, ValueReference vref, ValueExpression ve,
+            boolean subResolution) {
         Object base = vref.getBase();
         Object propObj = vref.getProperty();
+        log.error("Resolve field for base='" + base + "' and prop='" + propObj + "'.");
         if (propObj != null && !(propObj instanceof String)) {
             // ignore cases where prop would not be a String
+            log.error("null prop");
             return null;
         }
         String xpath = null;
@@ -202,9 +214,9 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
             ProtectedEditableModel model = (ProtectedEditableModel) base;
             ValueExpression listVe = model.getBinding();
             ValueExpressionAnalyzer expressionAnalyzer = new ValueExpressionAnalyzer(listVe);
-            ValueReference listRef = expressionAnalyzer.getReference(context.getELContext());
+            ValueReference listRef = expressionAnalyzer.getReference(context.getELContext(), null);
             if (isResolvable(listRef, listVe)) {
-                XPathAndField parentField = resolveField(context, listRef, listVe);
+                XPathAndField parentField = resolveField(context, listRef, listVe, true);
                 if (parentField != null) {
                     field = getField(parentField.field, "*");
                     if (parentField.xpath == null) {
@@ -218,18 +230,39 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
             ListItemMapper mapper = (ListItemMapper) base;
             ProtectedEditableModel model = mapper.getModel();
 
-            while (model.getParent() != null) {
-                model = model.getParent();
+            ProtectedEditableModel parentModel = model.getParent();
+            Map<String, ValueExpression> vars = null;
+            ValueExpression listVe;
+            if (parentModel != null) {
+                // move one level up to resolve parent list binding
+                listVe = parentModel.getBinding();
+                if (subResolution) {
+                    // push model to the context for nested use cases
+                    vars = new HashMap<>();
+                    vars.put(parentModel.getModelName(),
+                            new ValueExpressionLiteral(parentModel, ProtectedEditableModel.class));
+                }
+            } else {
+                listVe = model.getBinding();
             }
-            ValueExpression listVe = model.getBinding();
+
             ValueExpressionAnalyzer expressionAnalyzer = new ValueExpressionAnalyzer(listVe);
-            ValueReference listRef = expressionAnalyzer.getReference(context.getELContext());
+            ValueReference listRef = expressionAnalyzer.getReference(context.getELContext(), vars);
+            if (listRef == null) {
+                log.error("cannot resolve ref " + listVe);
+            }
             if (isResolvable(listRef, listVe)) {
-                XPathAndField parentField = resolveField(context, listRef, listVe);
+                XPathAndField parentField = resolveField(context, listRef, listVe, true);
                 if (parentField != null) {
-                    field = getField(parentField.field, prop);
+                    log.error("resolved parent field " + parentField);
+                    if (parentModel != null) {
+                        field = getField(parentField.field, prop);
+                    } else {
+                        field = getField(parentField.field, prop);
+                    }
                     if (field == null || field.getName() == null) {
                         // it should not happen but still, just in case
+                        log.error("null field for parent " + parentField.field + " and prop " + prop);
                         return null;
                     }
                     if (parentField.xpath == null) {
@@ -237,6 +270,8 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
                     } else {
                         xpath = parentField.xpath + "/" + field.getName().getLocalName();
                     }
+                } else {
+                    log.error("null parent field for listRef " + listRef);
                 }
             }
         } else {
@@ -246,13 +281,17 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
         if (xpath != null) {
             xpath = StringUtils.strip(xpath, "/");
         } else if (field == null && xpath == null) {
+            log.error("null path");
             return null;
         }
-        return new XPathAndField(field, xpath);
+        XPathAndField res = new XPathAndField(field, xpath);
+        log.error(" **** Resolved " + res + " for vref='" + vref + "', ve='" + ve + "'.");
+        return res;
     }
 
     protected Field getField(Field field, String subName) {
         SchemaManager tm = Framework.getService(SchemaManager.class);
+        log.error("Resolve field for " + field + " and " + subName);
         return tm.getField(field, subName);
     }
 

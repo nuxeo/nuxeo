@@ -37,15 +37,18 @@ public class ProtectedEditableModelImpl implements ProtectedEditableModel {
 
     protected final String componentId;
 
+    protected final String modelName;
+
     protected final EditableModel delegate;
 
     protected final ProtectedEditableModel parent;
 
     protected final ValueExpression binding;
 
-    public ProtectedEditableModelImpl(String compId, EditableModel delegate, ProtectedEditableModel parent,
-            ValueExpression binding) {
+    public ProtectedEditableModelImpl(String compId, String modelName, EditableModel delegate,
+            ProtectedEditableModel parent, ValueExpression binding) {
         this.componentId = compId;
+        this.modelName = modelName;
         this.delegate = delegate;
         this.parent = parent;
         this.binding = binding;
@@ -96,6 +99,11 @@ public class ProtectedEditableModelImpl implements ProtectedEditableModel {
     }
 
     @Override
+    public String getModelName() {
+        return modelName;
+    }
+
+    @Override
     public String toString() {
         final StringBuilder buf = new StringBuilder();
         buf.append(ProtectedEditableModelImpl.class.getSimpleName());
@@ -104,6 +112,8 @@ public class ProtectedEditableModelImpl implements ProtectedEditableModel {
         buf.append(componentId);
         buf.append(", binding=");
         buf.append(binding);
+        buf.append(", modelName=");
+        buf.append(modelName);
         buf.append(", delegate=");
         buf.append(delegate);
         buf.append(", parent=");

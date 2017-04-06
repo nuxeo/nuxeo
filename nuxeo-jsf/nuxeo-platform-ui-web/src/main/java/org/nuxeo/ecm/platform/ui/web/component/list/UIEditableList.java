@@ -353,7 +353,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         if (model == null || !model.isRowAvailable()) {
             modelValue = oldRequestValue;
         } else {
-            modelValue = getProtectedModel(model);
+            modelValue = getProtectedModel(getModel(), model);
         }
         restoreRequestMapModelValue(modelValue);
     }
@@ -425,8 +425,8 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         }
     }
 
-    public ProtectedEditableModel getProtectedModel(EditableModel model) {
-        return new ProtectedEditableModelImpl(getId(), model, getParentList(), getValueExpression("value"));
+    public ProtectedEditableModel getProtectedModel(String name, EditableModel model) {
+        return new ProtectedEditableModelImpl(getId(), name, model, getParentList(), getValueExpression("value"));
     }
 
     // parent list detection, cached
@@ -452,7 +452,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
             }
         }
         if (parentList != null) {
-            return parentList.getProtectedModel(parentList.getEditableModel());
+            return parentList.getProtectedModel(getModel(), parentList.getEditableModel());
         }
         return null;
     }

@@ -46,6 +46,7 @@ package org.nuxeo.ecm.platform.ui.web.validator;
 import java.beans.FeatureDescriptor;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.el.ELContext;
 import javax.el.ELException;
@@ -56,6 +57,8 @@ import javax.el.ValueReference;
 import javax.el.VariableMapper;
 import javax.faces.el.CompositeComponentExpressionHolder;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.model.ProtectedEditableModel;
 
 /**
@@ -72,10 +75,10 @@ public class ValueExpressionAnalyzer {
         this.expression = expression;
     }
 
-    public ValueReference getReference(ELContext elContext) {
-        InterceptingResolver resolver = new InterceptingResolver(elContext.getELResolver());
+    public ValueReference getReference(ELContext elContext, Map<String, ValueExpression> vars) {
+        InterceptingResolver resolver = new InterceptingResolver(elContext.getELResolver(), vars);
         try {
-            expression.setValue(decorateELContext(elContext, resolver), null);
+            expression.setValue(decorateELContext(elContext, resolver, vars), null);
         } catch (ELException ele) {
             return null;
         }
@@ -88,7 +91,7 @@ public class ValueExpressionAnalyzer {
                     ValueExpression ve = ((CompositeComponentExpressionHolder) base).getExpression((String) prop);
                     if (ve != null) {
                         this.expression = ve;
-                        reference = getReference(elContext);
+                        reference = getReference(elContext, vars);
                     }
                 }
             }
@@ -96,7 +99,8 @@ public class ValueExpressionAnalyzer {
         return reference;
     }
 
-    private ELContext decorateELContext(final ELContext context, final ELResolver resolver) {
+    private ELContext decorateELContext(final ELContext context, final ELResolver resolver,
+            final Map<String, ValueExpression> vars) {
         return new ELContext() {
 
             // punch in our new ELResolver
@@ -188,12 +192,17 @@ public class ValueExpressionAnalyzer {
 
     private static class InterceptingResolver extends ELResolver {
 
+        private static Log log = LogFactory.getLog(InterceptingResolver.class);
+
         private ELResolver delegate;
+
+        private Map<String, ValueExpression> vars;
 
         private ValueReference valueReference;
 
-        public InterceptingResolver(ELResolver delegate) {
+        public InterceptingResolver(ELResolver delegate, Map<String, ValueExpression> vars) {
             this.delegate = delegate;
+            this.vars = vars;
         }
 
         public ValueReference getValueReference() {
@@ -213,7 +222,20 @@ public class ValueExpressionAnalyzer {
 
         @Override
         public Object getValue(ELContext context, Object base, Object property) {
-            Object value = delegate.getValue(context, base, property);
+            //log.error("Resolve value base='" + base + "', property='" + property + "'.");
+            Object value = null;
+            boolean resolved = false;
+            if (vars != null && !vars.isEmpty() && base == null && property instanceof String) {
+                String key = (String) property;
+                if (vars.containsKey(key)) {
+                    value = vars.get(key);
+                    resolved = true;
+                }
+            }
+            if (!resolved) {
+                value = delegate.getValue(context, base, property);
+            }
+            //log.error("Resolved value='" + value + "'.");
             if (base != null && ProtectedEditableModel.class.isAssignableFrom(base.getClass())
                     && "rowData".equals(property)) {
                 // mapping a list element => wrap result
@@ -233,6 +255,7 @@ public class ValueExpressionAnalyzer {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object base) {
             return delegate.getFeatureDescriptors(context, base);
         }
