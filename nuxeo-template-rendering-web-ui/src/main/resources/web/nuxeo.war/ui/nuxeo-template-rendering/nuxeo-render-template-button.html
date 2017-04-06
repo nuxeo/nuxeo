@@ -264,7 +264,6 @@ limitations under the License.
               document.body.removeChild(a);
               URL.revokeObjectURL(a.href);
             }
-            return Promise.resolve();
           }.bind(this));
         } else {
           return Promise.reject(new Error('missing Content-Disposition header'));
