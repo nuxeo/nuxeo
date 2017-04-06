@@ -82,7 +82,7 @@ public class UserNotificationActions implements Serializable {
         NotificationManager nm = Framework.getService(NotificationManager.class);
         List<DocumentModel> subscribedDocs = nm.getSubscribedDocuments(prefixedUserName);
         for (DocumentModel doc : subscribedDocs) {
-            //Avoid treating document the current user can't read
+            // Avoid treating document the current user can't read
             if (documentManager.exists(doc.getRef())) {
                 SubscriptionAdapter sa = doc.getAdapter(SubscriptionAdapter.class);
                 List<String> notifications = sa.getUserSubscriptions(prefixedUserName);
