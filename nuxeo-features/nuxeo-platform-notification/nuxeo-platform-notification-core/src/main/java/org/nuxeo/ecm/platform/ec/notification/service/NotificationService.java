@@ -183,8 +183,8 @@ public class NotificationService extends DefaultComponent implements Notificatio
         generalSettings = desc;
         String serverPrefix = Framework.expandVars(generalSettings.serverPrefix);
         if (serverPrefix != null) {
-            generalSettings.serverPrefix = serverPrefix.endsWith("//") ? serverPrefix.substring(0,
-                    serverPrefix.length() - 1) : serverPrefix;
+            generalSettings.serverPrefix = serverPrefix.endsWith("//")
+                    ? serverPrefix.substring(0, serverPrefix.length() - 1) : serverPrefix;
         }
         generalSettings.eMailSubjectPrefix = Framework.expandVars(generalSettings.eMailSubjectPrefix);
         generalSettings.mailSessionJndiName = Framework.expandVars(generalSettings.mailSessionJndiName);
@@ -432,10 +432,8 @@ public class NotificationService extends DefaultComponent implements Notificatio
         DocumentLocation docLoc = new DocumentLocationImpl(doc);
         DocumentView docView = new DocumentViewImpl(docLoc);
         docView.setViewId("view_documents");
-        infoMap.put(
-                "docUrl",
-                getDocLocator().getUrlFromDocumentView(docView, true,
-                        NotificationServiceHelper.getNotificationService().getServerUrlPrefix()));
+        infoMap.put("docUrl", getDocLocator().getUrlFromDocumentView(docView, true,
+                NotificationServiceHelper.getNotificationService().getServerUrlPrefix()));
 
         if (freemarkerTemplateName == null) {
             freemarkerTemplateName = "defaultNotifTemplate";
