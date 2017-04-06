@@ -29,10 +29,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
+import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
+import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
@@ -50,7 +53,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features({ EmbeddedAutomationServerFeature.class })
 @Deploy({ "org.nuxeo.ecm.automation.scripting" })
-@LocalDeploy({ "org.nuxeo.ecm.automation.test:operation-contrib.xml" })
+@LocalDeploy({ "org.nuxeo.ecm.automation.test:operation-contrib.xml",
+               "org.nuxeo.ecm.automation.test:chain-scripting-operation-contrib.xml" })
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestRemoteAutomationScript {
@@ -61,6 +65,9 @@ public class TestRemoteAutomationScript {
 
     @Inject
     Session session;
+
+    @Inject
+    AutomationService service;
 
     @Inject
     HttpAutomationClient client;
@@ -109,5 +116,15 @@ public class TestRemoteAutomationScript {
                                                  .execute();
         assertNotNull(documents);
         assertEquals("Simple" + System.lineSeparator(), outContent.toString());
+    }
+
+    @Test
+    public void testRemoteChainWithScriptingOp() throws Exception {
+        OperationDocumentation opd = session.getOperation("testChain2");
+        assertNotNull(opd);
+        assertNotNull(service.getOperation("testChain2").getDocumentation().getOperations());
+        Document doc = (Document) session.newRequest("testChain2").setInput(DocRef.newRef("/")).execute();
+        assertNotNull(doc);
+
     }
 }
