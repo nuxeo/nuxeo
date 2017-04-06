@@ -111,6 +111,24 @@ public class TestBinaryMetadataSyncListener {
     }
 
     @Test
+    public void testCollaborativeSaveOnlyIncrementsVersionOnce() throws Exception {
+        // create file with one contributor
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc.setPropertyValue("dc:lastContributor", "laurel");
+        doc = session.createDocument(doc);
+
+        // attach PDF with another contributor
+        File file = FileUtils.getResourceFileFromContext("data/hello.pdf");
+        Blob blob = Blobs.createBlob(file, "application/pdf");
+        DocumentHelper.addBlob(doc.getProperty("file:content"), blob);
+        doc.setPropertyValue("dc:lastContributor", "hardy");
+        doc = session.saveDocument(doc);
+
+        // version incremented only once by the collaborative-save versioning policy
+        assertEquals("0.1+", doc.getVersionLabel());
+    }
+
+    @Test
     public void testEXIFandIPTC() throws IOException {
         // Create folder
         DocumentModel doc = session.createDocumentModel("/", "folder", "Folder");

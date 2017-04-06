@@ -50,5 +50,8 @@ public class TriggerMetadataMappingOnDocument {
     @OperationMethod
     public void run(DocumentModel document) {
         binaryMetadataService.writeMetadata(document, metadataMappingId);
+        if (document.getId() != null) { // if not called during creation
+            document.getCoreSession().saveDocument(document);
+        }
     }
 }

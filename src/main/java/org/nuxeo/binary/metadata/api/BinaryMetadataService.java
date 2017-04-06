@@ -118,6 +118,8 @@ public interface BinaryMetadataService {
     /**
      * Write metadata (from a binary) into a given Nuxeo Document according to the metadata mapping and rules
      * contributions.
+     * <p>
+     * The document is not saved in the session, it's up to the caller to deal with this.
      *
      * @param doc Nuxeo Document which metadata are written.
      */
@@ -125,6 +127,8 @@ public interface BinaryMetadataService {
 
     /**
      * Apply metadata mapping and override document properties according to the contribution.
+     * <p>
+     * The document is not saved in the session, it's up to the caller to deal with this.
      *
      * @param doc The input document.
      * @param mappingDescriptorId The metadata mapping to apply on the document.
@@ -136,6 +140,8 @@ public interface BinaryMetadataService {
      * executed in async or sync mode. - If Blob dirty and document metadata dirty, write metadata from doc to Blob. -
      * If Blob dirty and document metadata not dirty, write metadata from Blob to doc. - If Blob not dirty and document
      * metadata dirty, write metadata from doc to Blob.
+     * <p>
+     * The document is not saved in the session, it's up to the caller to deal with this.
      */
     void handleUpdate(List<MetadataMappingDescriptor> syncMappingDescriptors, DocumentModel doc);
 
@@ -144,6 +150,8 @@ public interface BinaryMetadataService {
      * executed in async or sync mode. - If Blob dirty and document metadata dirty, write metadata from doc to Blob. -
      * If Blob dirty and document metadata not dirty, write metadata from Blob to doc. - If Blob not dirty and document
      * metadata dirty, write metadata from doc to Blob.
+     * <p>
+     * The document is not saved in the session, it's up to the caller to deal with this.
      */
     void handleSyncUpdate(DocumentModel doc);
 
