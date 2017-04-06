@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -251,18 +250,11 @@ public class NotificationService extends DefaultComponent implements Notificatio
     public void addSubscription(String username, String notification, DocumentModel doc, Boolean sendConfirmationEmail,
             NuxeoPrincipal principal, String notificationName) {
 
-        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getRepositoryName()) {
-
-            @Override
-            public void run() {
-                doc.getAdapter(SubscriptionAdapter.class).addSubscription(username, notification);
-                disableEvents(doc);
-                session.saveDocument(doc);
-            }
-
-        };
-
-        runner.runUnrestricted();
+        CoreInstance.doPrivileged(doc.getRepositoryName(), (CoreSession session) -> {
+            doc.getAdapter(SubscriptionAdapter.class).addSubscription(username, notification);
+            disableEvents(doc);
+            session.saveDocument(doc);
+        });
 
         // send event for email if necessary
         if (sendConfirmationEmail) {
@@ -273,16 +265,11 @@ public class NotificationService extends DefaultComponent implements Notificatio
     @Override
     public void addSubscriptions(String username, DocumentModel doc, Boolean sendConfirmationEmail,
             NuxeoPrincipal principal) {
-        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getRepositoryName()) {
-
-            @Override
-            public void run() {
-                doc.getAdapter(SubscriptionAdapter.class).addSubscriptionsToAll(username);
-                disableEvents(doc);
-                session.saveDocument(doc);
-            }
-        };
-        runner.runUnrestricted();
+        CoreInstance.doPrivileged(doc.getRepositoryName(), (CoreSession session) -> {
+            doc.getAdapter(SubscriptionAdapter.class).addSubscriptionsToAll(username);
+            disableEvents(doc);
+            session.saveDocument(doc);
+        });
 
         // send event for email if necessary
         if (sendConfirmationEmail) {
@@ -292,20 +279,14 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     @Override
     public void removeSubscriptions(String username, List<String> notifications, DocumentModel doc) {
-        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getRepositoryName()) {
-
-            @Override
-            public void run() {
-                SubscriptionAdapter sa = doc.getAdapter(SubscriptionAdapter.class);
-                for (String notification : notifications) {
-                    sa.removeUserNotificationSubscription(username, notification);
-                }
-                disableEvents(doc);
-                session.saveDocument(doc);
+        CoreInstance.doPrivileged(doc.getRepositoryName(), (CoreSession session) -> {
+            SubscriptionAdapter sa = doc.getAdapter(SubscriptionAdapter.class);
+            for (String notification : notifications) {
+                sa.removeUserNotificationSubscription(username, notification);
             }
-        };
-        runner.runUnrestricted();
-
+            disableEvents(doc);
+            session.saveDocument(doc);
+        });
     }
 
     protected EventProducer producer;
