@@ -55,7 +55,7 @@
         <h:commandButton rendered="#{userNotificationActions.getCanRemoveNotification(row.userId)}"
           value="${messages['action.user.unsubscribe']}"
           styleClass="button"
-          action="${notificationManager.removeSubscription(row.userId, row.notification, row.docId)}" />
+          action="${notificationManager.removeSubscription(row.userId, row.notification, doc)}" />
       </nxu:column>
   </nxu:dataTable>
 
