@@ -123,6 +123,15 @@ public final class CacheRegistry extends ContributionFragmentRegistry<CacheDescr
         return res;
     }
 
+    /**
+     * Invalidate all caches
+     * 
+     * @since 9.1
+     */
+    public void invalidateAll() {
+        caches.values().forEach(CacheDescriptor::invalidateAll);
+    }
+
     public void start() {
         RuntimeException errors = new RuntimeException("Cannot start caches, check suppressed error");
         for (CacheDescriptor desc : caches.values()) {
