@@ -27,11 +27,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -494,12 +496,19 @@ public class NotificationService extends DefaultComponent implements Notificatio
     }
 
     @Override
-    public List<DocumentModel> getSubscribedDocuments(String prefixedPrincipalName) {
+    public List<DocumentModel> getSubscribedDocuments(String prefixedPrincipalName, String repositoryName) {
         String nxql = "SELECT * FROM Document WHERE ecm:mixinType = '" + SubscriptionAdapter.NOTIFIABLE_FACET + "' "
                 + "AND ecm:isCheckedInVersion = 0 " + "AND notif:notifications/*/subscribers/* = "
                 + NXQL.escapeString(prefixedPrincipalName);
 
-        return UnrestrictedDocFetcher.query(nxql);
+        return CoreInstance.doPrivileged(repositoryName,
+                (CoreSession s) -> s.query(nxql).stream().map(NotificationService::detachDocumentModel).collect(
+                        Collectors.toList()));
+    }
+
+    protected static DocumentModel detachDocumentModel(DocumentModel doc) {
+        doc.detach(true);
+        return doc;
     }
 
 }
