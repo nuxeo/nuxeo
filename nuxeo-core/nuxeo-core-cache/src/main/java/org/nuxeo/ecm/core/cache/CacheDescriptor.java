@@ -88,6 +88,10 @@ public class CacheDescriptor {
         return name + ": " + implClass + ": " + ttl + ": " + options;
     }
 
+    protected void invalidateAll() {
+        cache.invalidateAll();
+    }
+
     protected void start() {
         try {
             cache = implClass.getConstructor(CacheDescriptor.class).newInstance(this);
