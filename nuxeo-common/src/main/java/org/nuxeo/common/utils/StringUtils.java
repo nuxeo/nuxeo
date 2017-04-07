@@ -171,6 +171,10 @@ public final class StringUtils {
             throw new IllegalArgumentException("Delimiter cannot be the escape character");
         }
         List<String> ar = new ArrayList<>();
+        if (str.isEmpty()) {
+            ar.add(str);
+            return ar;
+        }
         StringBuilder segment = new StringBuilder();
         int i = 0;
         int length = str.length();
