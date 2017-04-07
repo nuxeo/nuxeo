@@ -37,6 +37,4 @@ import org.nuxeo.runtime.test.runner.Features;
 @SuiteClasses({ AuditChangeFinderTestSuite.class, AuditChangeFinderClusteringEnabledTestSuite.class })
 public class TestESAuditChangeFinder {
 
-    protected static final String NXP_20517 = "InstanceNotFoundException";
-
 }

@@ -85,9 +85,11 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
             topLevelFolderItemFactoryRegistry.addContribution((TopLevelFolderItemFactoryDescriptor) contribution);
         } else if (ACTIVE_FILE_SYSTEM_ITEM_FACTORIES_EP.equals(extensionPoint)) {
             if (contribution instanceof ActiveTopLevelFolderItemFactoryDescriptor) {
-                activeTopLevelFolderItemFactoryRegistry.addContribution((ActiveTopLevelFolderItemFactoryDescriptor) contribution);
+                activeTopLevelFolderItemFactoryRegistry.addContribution(
+                        (ActiveTopLevelFolderItemFactoryDescriptor) contribution);
             } else if (contribution instanceof ActiveFileSystemItemFactoriesDescriptor) {
-                activeFileSystemItemFactoryRegistry.addContribution((ActiveFileSystemItemFactoriesDescriptor) contribution);
+                activeFileSystemItemFactoryRegistry.addContribution(
+                        (ActiveFileSystemItemFactoriesDescriptor) contribution);
             }
         } else {
             log.error("Unknown extension point " + extensionPoint);
@@ -102,9 +104,11 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
             topLevelFolderItemFactoryRegistry.removeContribution((TopLevelFolderItemFactoryDescriptor) contribution);
         } else if (ACTIVE_FILE_SYSTEM_ITEM_FACTORIES_EP.equals(extensionPoint)) {
             if (contribution instanceof ActiveTopLevelFolderItemFactoryDescriptor) {
-                activeTopLevelFolderItemFactoryRegistry.removeContribution((ActiveTopLevelFolderItemFactoryDescriptor) contribution);
+                activeTopLevelFolderItemFactoryRegistry.removeContribution(
+                        (ActiveTopLevelFolderItemFactoryDescriptor) contribution);
             } else if (contribution instanceof ActiveFileSystemItemFactoriesDescriptor) {
-                activeFileSystemItemFactoryRegistry.removeContribution((ActiveFileSystemItemFactoriesDescriptor) contribution);
+                activeFileSystemItemFactoryRegistry.removeContribution(
+                        (ActiveFileSystemItemFactoriesDescriptor) contribution);
             }
         } else {
             log.error("Unknown extension point " + extensionPoint);
@@ -153,7 +157,8 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted,
+            boolean relaxSyncRootConstraint) {
         return getFileSystemItem(doc, false, null, includeDeleted, relaxSyncRootConstraint, true);
     }
 
@@ -203,10 +208,9 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
         if (getTopLevelFolderItemFactory().canHandleFileSystemItemId(id)) {
             return getTopLevelFolderItemFactory();
         }
-        throw new NuxeoDriveContribException(
-                String.format(
-                        "No fileSystemItemFactory found for FileSystemItem with id %s. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\"> and make sure there is at least one defining a FileSystemItemFactory class for which the #canHandleFileSystemItemId(String id) method returns true.",
-                        id));
+        throw new NuxeoDriveContribException(String.format(
+                "No fileSystemItemFactory found for FileSystemItem with id %s. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\"> and make sure there is at least one defining a FileSystemItemFactory class for which the #canHandleFileSystemItemId(String id) method returns true.",
+                id));
     }
 
     @Override
@@ -222,15 +226,14 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     public VirtualFolderItemFactory getVirtualFolderItemFactory(String factoryName) {
         FileSystemItemFactory factory = getFileSystemItemFactory(factoryName);
         if (factory == null) {
-            throw new NuxeoDriveContribException(
-                    String.format(
-                            "No factory named %s. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
-                            factoryName));
+            throw new NuxeoDriveContribException(String.format(
+                    "No factory named %s. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
+                    factoryName));
         }
         if (!(factory instanceof VirtualFolderItemFactory)) {
-            throw new NuxeoDriveContribException(String.format(
-                    "Factory class %s for factory %s is not a VirtualFolderItemFactory.", factory.getClass().getName(),
-                    factory.getName()));
+            throw new NuxeoDriveContribException(
+                    String.format("Factory class %s for factory %s is not a VirtualFolderItemFactory.",
+                            factory.getClass().getName(), factory.getName()));
         }
         return (VirtualFolderItemFactory) factory;
     }
@@ -272,8 +275,10 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     }
 
     public void setActiveFactories() {
-        topLevelFolderItemFactory = topLevelFolderItemFactoryRegistry.getActiveFactory(activeTopLevelFolderItemFactoryRegistry.activeFactory);
-        fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedActiveFactories(activeFileSystemItemFactoryRegistry.activeFactories);
+        topLevelFolderItemFactory = topLevelFolderItemFactoryRegistry.getActiveFactory(
+                activeTopLevelFolderItemFactoryRegistry.activeFactory);
+        fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedActiveFactories(
+                activeFileSystemItemFactoryRegistry.activeFactories);
     }
 
     /*--------------------------- Protected ---------------------------------------*/
@@ -335,16 +340,16 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
                     // Give more information in the exception message on the
                     // document whose adaption failed to recursively find the
                     // top level item.
-                    throw new RootlessItemException(String.format("Cannot find path to registered top"
-                            + " level when adapting document " + " '%s' (path: %s) with factory %s", doc.getTitle(),
-                            doc.getPathAsString(), factory.getFactory().getName()), e);
+                    throw new RootlessItemException(String.format(
+                            "Cannot find path to registered top" + " level when adapting document "
+                                    + " '%s' (path: %s) with factory %s",
+                            doc.getTitle(), doc.getPathAsString(), factory.getFactory().getName()), e);
                 }
                 if (fileSystemItem != null) {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "Adapted document '%s' (path: %s) to item with path %s with factory %s",
-                                doc.getTitle(), doc.getPathAsString(), fileSystemItem.getPath(), factory.getFactory()
-                                                                                                        .getName()));
+                        log.debug(String.format("Adapted document '%s' (path: %s) to item with path %s with factory %s",
+                                doc.getTitle(), doc.getPathAsString(), fileSystemItem.getPath(),
+                                factory.getFactory().getName()));
                     }
                     return fileSystemItem;
                 }
@@ -413,7 +418,8 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     @SuppressWarnings("unchecked")
     protected boolean syncRootFactoryMatches(DocumentModel doc, boolean relaxSyncRootConstraint) {
         String userName = doc.getCoreSession().getPrincipal().getName();
-        List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) doc.getPropertyValue(NuxeoDriveManagerImpl.DRIVE_SUBSCRIPTIONS_PROPERTY);
+        List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) doc.getPropertyValue(
+                NuxeoDriveManagerImpl.DRIVE_SUBSCRIPTIONS_PROPERTY);
         for (Map<String, Object> subscription : subscriptions) {
             if (Boolean.TRUE.equals(subscription.get("enabled"))
                     && (userName.equals(subscription.get("username")) || relaxSyncRootConstraint)) {
