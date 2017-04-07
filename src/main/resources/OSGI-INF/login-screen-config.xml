@@ -13,7 +13,6 @@
         <locale>eu_ES</locale><!-- Basque -->
         <locale>fr</locale><!-- French - France -->
         <locale>fr_FR</locale><!-- French - France -->
-        <locale>fr_CA</locale><!-- French - Canada -->
         <locale>ja_JP</locale><!-- Japanese (Gregorian calendar) - Japan -->
         <locale>nl</locale><!-- Dutch - Netherlands -->
         <locale>nl_NL</locale><!-- Dutch - Netherlands -->
