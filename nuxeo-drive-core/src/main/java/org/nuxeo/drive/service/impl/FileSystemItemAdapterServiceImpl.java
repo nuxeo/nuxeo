@@ -421,13 +421,22 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
         List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) doc.getPropertyValue(
                 NuxeoDriveManagerImpl.DRIVE_SUBSCRIPTIONS_PROPERTY);
         for (Map<String, Object> subscription : subscriptions) {
-            if (Boolean.TRUE.equals(subscription.get("enabled"))
-                    && (userName.equals(subscription.get("username")) || relaxSyncRootConstraint)) {
-                if (log.isTraceEnabled()) {
-                    log.trace(String.format("Doc %s (path: %s) registered as a sync root for user %s", doc.getId(),
-                            doc.getPathAsString(), userName));
+            if (Boolean.TRUE.equals(subscription.get("enabled"))) {
+                if (userName.equals(subscription.get("username"))) {
+                    if (log.isTraceEnabled()) {
+                        log.trace(String.format("Doc %s (path: %s) registered as a sync root for user %s", doc.getId(),
+                                doc.getPathAsString(), userName));
+                    }
+                    return true;
                 }
-                return true;
+                if (relaxSyncRootConstraint) {
+                    if (log.isTraceEnabled()) {
+                        log.trace(String.format(
+                                "Doc %s (path: %s) registered as a sync root for at least one user (relaxSyncRootConstraint is true)",
+                                doc.getId(), doc.getPathAsString()));
+                    }
+                    return true;
+                }
             }
         }
         return false;
