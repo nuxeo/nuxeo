@@ -21,7 +21,9 @@
   </c:if>
   <c:if test="#{!empty currentDocument.dc.created}">
     <span class="creationDate nowrap">
-      <h:outputText value="#{currentDocument.dc.created}" />
+      <nxwt:datetime mode="view"
+        value="#{currentDocument.dc.created}"
+        pattern="#{nxu:basicDateAndTimeFormatter()}" />
     </span>
   </c:if>
   <c:if test="#{currentDocumentVersionInfo.available}">
