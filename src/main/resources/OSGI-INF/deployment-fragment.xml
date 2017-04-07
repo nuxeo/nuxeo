@@ -14,6 +14,7 @@
       <supported-locale>eu_ES</supported-locale><!-- Basque -->
       <supported-locale>fr</supported-locale><!-- French - France -->
       <supported-locale>fr_FR</supported-locale><!-- French - France -->
+      <supported-locale>ja</supported-locale><!-- Japanese (Gregorian calendar) - Japan -->
       <supported-locale>ja_JP</supported-locale><!-- Japanese (Gregorian calendar) - Japan -->
       <supported-locale>nl</supported-locale><!-- Dutch - Netherlands -->
       <supported-locale>nl_NL</supported-locale><!-- Dutch - Netherlands -->
@@ -42,6 +43,8 @@
         to="nuxeo.war/WEB-INF/classes/messages_pl.properties"/>
     <copy from="nuxeo.war/WEB-INF/classes/messages_pt_PT.properties"
         to="nuxeo.war/WEB-INF/classes/messages_pt.properties"/>
+    <copy from="nuxeo.war/WEB-INF/classes/messages_ja_JP.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_ja.properties"/>
     <copy from="nuxeo.war/WEB-INF/classes/messages_ru_RU.properties"
         to="nuxeo.war/WEB-INF/classes/messages_ru.properties"/>
 
