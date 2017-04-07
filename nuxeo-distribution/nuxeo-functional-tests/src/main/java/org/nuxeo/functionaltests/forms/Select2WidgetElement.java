@@ -19,7 +19,6 @@
  */
 package org.nuxeo.functionaltests.forms;
 
-import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
-import org.nuxeo.functionaltests.ScreenshotTaker;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.openqa.selenium.By;
@@ -36,7 +34,6 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.FluentWait;
@@ -232,17 +229,8 @@ public class Select2WidgetElement extends WebFragmentImpl {
         char c;
         for (int i = 0; i < value.length(); i++) {
             c = value.charAt(i);
-            try {
-                suggestInput.sendKeys(c + "");
-                waitSelect2();
-            } catch (UnhandledAlertException e) {
-                ScreenshotTaker taker = new ScreenshotTaker();
-                File screenShot = taker.takeScreenshot(driver, "UnhandledAlertDialogOnSelect2Request-");
-                log.warn(String.format(
-                        "Select2 request failed with input value %s when typing character '%s', screenshot is '%s'",
-                        value, c, screenShot.getAbsolutePath()));
-                throw e;
-            }
+            suggestInput.sendKeys(c + "");
+            waitSelect2();
             if (i >= 2) {
                 if (getSuggestedEntries().size() > nbSuggested) {
                     throw new IllegalArgumentException(
