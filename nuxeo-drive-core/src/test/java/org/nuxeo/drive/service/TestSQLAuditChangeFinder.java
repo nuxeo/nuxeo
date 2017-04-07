@@ -20,21 +20,24 @@ package org.nuxeo.drive.service;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
+import org.nuxeo.drive.fixtures.AbstractChangeFinderTestCase;
 import org.nuxeo.drive.fixtures.AuditChangeFinderClusteringEnabledTestSuite;
 import org.nuxeo.drive.fixtures.AuditChangeFinderTestSuite;
+import org.nuxeo.drive.fixtures.GroupChangesTestSuite;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.drive.test.SQLAuditFeature;
 import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
- * Runs the {@link AuditChangeFinderClusteringEnabledTestSuite} using the {@link AuditChangeFinder}.
+ * Runs the {@link AbstractChangeFinderTestCase} implementations using the {@link AuditChangeFinder}.
  *
  * @since 8.2
  */
 @RunWith(ContributableFeaturesRunner.class)
 @Features(SQLAuditFeature.class)
-@SuiteClasses({AuditChangeFinderTestSuite.class, AuditChangeFinderClusteringEnabledTestSuite.class})
+@SuiteClasses({ AuditChangeFinderTestSuite.class, AuditChangeFinderClusteringEnabledTestSuite.class,
+        GroupChangesTestSuite.class })
 public class TestSQLAuditChangeFinder {
 
 }

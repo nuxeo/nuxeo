@@ -35,7 +35,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class SQLAuditFeature extends AuditFeature {
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) throws Exception {
         cleanUpAuditLog();
     }
 

@@ -37,6 +37,7 @@
       <event>beforeDocumentSecurityModification</event>
       <event>aboutToUnregisterRoot</event>
       <event>beforeRemovedFromCollection</event>
+      <event>groupUpdated</event>
     </listener>
 
     <documentation>
@@ -46,6 +47,18 @@
     </documentation>
     <listener name="nuxeoDriveVirtualEventLoggerListener" async="true" postCommit="true"
       class="org.nuxeo.drive.listener.NuxeoDriveVirtualEventLogger" />
+
+    <documentation>
+      Handle group change events fired by the UserManager.
+
+      @author Antoine Taillefer
+    </documentation>
+    <listener name="nuxeoDriveGroupUpdateListener" async="true" postCommit="true"
+      class="org.nuxeo.drive.listener.NuxeoDriveGroupUpdateListener">
+      <event>group_created</event>
+      <event>group_deleted</event>
+      <event>group_modified</event>
+    </listener>
 
     <documentation>
       Reset synchronization root registrations on a copied document and its children.

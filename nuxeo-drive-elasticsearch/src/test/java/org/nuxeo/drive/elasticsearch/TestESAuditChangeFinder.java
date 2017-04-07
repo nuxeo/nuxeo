@@ -21,20 +21,23 @@ package org.nuxeo.drive.elasticsearch;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
+import org.nuxeo.drive.fixtures.AbstractChangeFinderTestCase;
 import org.nuxeo.drive.fixtures.AuditChangeFinderClusteringEnabledTestSuite;
 import org.nuxeo.drive.fixtures.AuditChangeFinderTestSuite;
+import org.nuxeo.drive.fixtures.GroupChangesTestSuite;
 import org.nuxeo.drive.test.ESAuditFeature;
 import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
- * Runs the {@link AuditChangeFinderTestSuite} using the {@link ESAuditChangeFinder}.
+ * Runs the {@link AbstractChangeFinderTestCase} implementations using the {@link ESAuditChangeFinder}.
  *
  * @since 7.3
  */
 @RunWith(ContributableFeaturesRunner.class)
 @Features({ ESAuditFeature.class })
-@SuiteClasses({ AuditChangeFinderTestSuite.class, AuditChangeFinderClusteringEnabledTestSuite.class })
+@SuiteClasses({ AuditChangeFinderTestSuite.class, AuditChangeFinderClusteringEnabledTestSuite.class,
+        GroupChangesTestSuite.class })
 public class TestESAuditChangeFinder {
 
 }

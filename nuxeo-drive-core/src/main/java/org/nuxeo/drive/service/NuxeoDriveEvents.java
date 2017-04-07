@@ -46,6 +46,11 @@ public final class NuxeoDriveEvents {
 
     public static final String VIRTUAL_EVENT_CREATED = "virtualEventCreated";
 
+    /**
+     * @since 9.2
+     */
+    public static final String GROUP_UPDATED = "groupUpdated";
+
     public static final String DELETED_EVENT = "deleted";
 
     public static final String SECURITY_UPDATED_EVENT = "securityUpdated";

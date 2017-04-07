@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.NuxeoDriveContribException;
 import org.nuxeo.drive.adapter.RootlessItemException;
+import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
 import org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl;
@@ -54,13 +55,25 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Event listener to track events that should be mapped to file system item deletions in the the ChangeSummary
- * computation. In particular this includes
+ * Synchronous event listener to track events that cannot be directly handled by the {@link FileSystemChangeFinder}
+ * because the document bound to the event is either no more adaptable as a {@link FileSystemItem} after the transaction
+ * has been committed (e.g. deletion) or not a descendant of a synchronization root (e.g. security update on any
+ * document). In particular this includes:
  * <ul>
- * <li>Synchronization root unregistration (user specific)</li>
- * <li>Simple document or root document lifecycle change to the 'deleted' state</li>
- * <li>Simple document or root physical removal from the directory.</li>
+ * <li>Synchronization root unregistration (user specific).</li>
+ * <li>Simple document or synchronization root lifecycle change to the 'deleted' state.</li>
+ * <li>Simple document or synchronization root physical removal from the directory.</li>
+ * <li>Update of a document after which it has no blob.</li>
+ * <li>Move of a document to a non synchronized folder.</li>
+ * <li>Security update.</li>
+ * <li>Group change.</li>
  * </ul>
+ * <p>
+ * The listener injects virtual entries in the audit logs with the {@link NuxeoDriveEvents#EVENT_CATEGORY} category to
+ * be handled by the {@link FileSystemChangeFinder}. These entries are set in the context of a
+ * {@link NuxeoDriveEvents#VIRTUAL_EVENT_CREATED} event handled by the post-commit asynchronous
+ * {@link NuxeoDriveVirtualEventLogger} to ensure that the transaction is committed before the log entries are actually
+ * added.
  */
 public class NuxeoDriveFileSystemDeletionListener implements EventListener {
 
@@ -95,7 +108,8 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         }
         // Virtual event name
         String virtualEventName;
-        if (DocumentEventTypes.BEFORE_DOC_SECU_UPDATE.equals(event.getName())) {
+        if (DocumentEventTypes.BEFORE_DOC_SECU_UPDATE.equals(event.getName())
+                || NuxeoDriveEvents.GROUP_UPDATED.equals(event.getName())) {
             virtualEventName = NuxeoDriveEvents.SECURITY_UPDATED_EVENT;
         } else if (DocumentEventTypes.ABOUT_TO_MOVE.equals(event.getName())) {
             virtualEventName = NuxeoDriveEvents.MOVED_EVENT;

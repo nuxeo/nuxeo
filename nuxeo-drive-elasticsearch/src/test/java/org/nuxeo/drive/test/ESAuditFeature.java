@@ -85,7 +85,7 @@ public class ESAuditFeature extends SimpleFeature {
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) throws Exception {
         cleanUpAuditLog();
     }
 
