@@ -152,6 +152,10 @@ public class TestStringUtils {
         str = "foo\\zbar";
         li = StringUtils.split("foo\\zbar", ',', '\\', false);
         assertTrue(Arrays.equals(new String[] { "foo\\zbar" }, li.toArray(new String[li.size()])));
+
+        str = "";
+        li = StringUtils.split(str, ',', '\\', false);
+        assertTrue(Arrays.equals(new String[] { "" }, li.toArray(new String[li.size()])));
     }
 
     @Test
