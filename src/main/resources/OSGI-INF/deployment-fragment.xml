@@ -14,7 +14,6 @@
       <supported-locale>eu_ES</supported-locale><!-- Basque -->
       <supported-locale>fr</supported-locale><!-- French - France -->
       <supported-locale>fr_FR</supported-locale><!-- French - France -->
-      <supported-locale>fr_CA</supported-locale><!-- French - Canada -->
       <supported-locale>ja_JP</supported-locale><!-- Japanese (Gregorian calendar) - Japan -->
       <supported-locale>nl</supported-locale><!-- Dutch - Netherlands -->
       <supported-locale>nl_NL</supported-locale><!-- Dutch - Netherlands -->
