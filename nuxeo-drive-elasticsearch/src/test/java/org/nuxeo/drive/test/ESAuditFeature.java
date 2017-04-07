@@ -52,37 +52,36 @@ public class ESAuditFeature extends SimpleFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        runner.getFeature(TransactionalFeature.class)
-                .addWaiter(new Waiter() {
+        runner.getFeature(TransactionalFeature.class).addWaiter(new Waiter() {
 
-                    @Override
-                    public boolean await(long deadline) throws InterruptedException {
-                        if (!Framework.getService(AuditLogger.class)
-                                .await(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS)) {
-                            return false;
-                        }
-                        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-                        if (esa == null) {
-                            return true;
-                        }
-                        // Wait for indexing
-                        try {
-                            esa.prepareWaitForIndexing().get(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-                        } catch (ExecutionException | TimeoutException cause) {
-                            return false;
-                        }
-                        // Explicit refresh
-                        esa.refresh();
-                        // Explicit refresh for the audit index until it is handled by esa.refresh
-                        esa.getClient()
-                           .admin()
-                           .indices()
-                           .prepareRefresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE))
-                           .get();
-                        return true;
-                    }
+            @Override
+            public boolean await(long deadline) throws InterruptedException {
+                if (!Framework.getService(AuditLogger.class).await(deadline - System.currentTimeMillis(),
+                        TimeUnit.MILLISECONDS)) {
+                    return false;
+                }
+                ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+                if (esa == null) {
+                    return true;
+                }
+                // Wait for indexing
+                try {
+                    esa.prepareWaitForIndexing().get(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                } catch (ExecutionException | TimeoutException cause) {
+                    return false;
+                }
+                // Explicit refresh
+                esa.refresh();
+                // Explicit refresh for the audit index until it is handled by esa.refresh
+                esa.getClient()
+                   .admin()
+                   .indices()
+                   .prepareRefresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE))
+                   .get();
+                return true;
+            }
 
-                });
+        });
     }
 
     @Override
