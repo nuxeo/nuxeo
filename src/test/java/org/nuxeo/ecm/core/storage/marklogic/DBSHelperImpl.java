@@ -40,7 +40,7 @@ public class DBSHelperImpl implements DBSHelper {
 
     private static final String DEFAULT_HOST = "localhost";
 
-    private static final String DEFAULT_PORT = "8030";
+    private static final String DEFAULT_PORT = "8010";
 
     private static final String DEFAULT_DBNAME = "unittests";
 
