@@ -6446,7 +6446,7 @@
        <properties>
         <nuxeo.test.core>marklogic</nuxeo.test.core>
         <nuxeo.marklogic.host.default>localhost</nuxeo.marklogic.host.default>
-        <nuxeo.marklogic.port.default>8030</nuxeo.marklogic.port.default>
+        <nuxeo.marklogic.port.default>8010</nuxeo.marklogic.port.default>
       </properties>
     </profile>
 
