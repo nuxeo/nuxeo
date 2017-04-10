@@ -24,6 +24,7 @@ import static org.junit.Assume.assumeTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -266,6 +267,31 @@ public class TestAutomaticIndexing {
                                            .execute()
                                            .actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
+    }
+
+    @Test
+    public void shouldIndexImportedDocument() throws Exception {
+        startTransaction();
+        // import one doc
+        DocumentModelImpl doc = new DocumentModelImpl("/", "testDoc", "File");
+        doc.setId(UUID.randomUUID().toString());
+        doc.setPropertyValue("dc:title", "TestMe");
+        session.importDocuments(Collections.singletonList(doc));
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        assertNumberOfCommandProcessed(1);
+
+        startTransaction();
+        SearchResponse searchResponse = esa.getClient()
+                                           .prepareSearch(IDX_NAME)
+                                           .setTypes(TYPE_NAME)
+                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                                           .setFrom(0)
+                                           .setSize(60)
+                                           .execute()
+                                           .actionGet();
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
     }
 
     @Test

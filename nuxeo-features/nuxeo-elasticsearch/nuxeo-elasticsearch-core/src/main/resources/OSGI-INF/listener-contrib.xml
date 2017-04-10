@@ -10,6 +10,7 @@
       class="org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener">
       <event>beforeDocumentModification</event>
       <event>documentCreated</event>
+      <event>documentImported</event>
       <event>documentCreatedByCopy</event>
       <event>documentMoved</event>
       <event>lifecycle_transition_event</event>
