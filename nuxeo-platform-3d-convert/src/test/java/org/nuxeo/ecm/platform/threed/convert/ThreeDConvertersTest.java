@@ -34,7 +34,6 @@ import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RandomBug;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -74,7 +73,6 @@ import static org.nuxeo.ecm.platform.threed.convert.Constants.BATCH_CONVERTER;
 @Features(CoreFeature.class)
 @LocalDeploy({ "org.nuxeo.ecm.platform.threed.convert", "org.nuxeo.ecm.platform.threed.api",
     "org.nuxeo.ecm.platform.commandline.executor" })
-@RandomBug.Repeat(issue = "NXP-21972: Fix random ThreeDConvertersTest failures")
 public class ThreeDConvertersTest {
 
     protected static final String TEST_MODEL = "suzanne";
