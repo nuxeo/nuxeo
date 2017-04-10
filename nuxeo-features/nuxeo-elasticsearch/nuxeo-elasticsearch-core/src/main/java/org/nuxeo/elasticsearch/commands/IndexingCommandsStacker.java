@@ -26,6 +26,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOU
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHILDREN_ORDER_CHANGED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_IMPORTED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PROXY_UPDATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
@@ -104,6 +105,7 @@ public abstract class IndexingCommandsStacker {
         boolean recurse = false;
         switch (eventId) {
         case DOCUMENT_CREATED:
+        case DOCUMENT_IMPORTED:
             type = Type.INSERT;
             break;
         case DOCUMENT_CREATED_BY_COPY:
