@@ -573,8 +573,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
      */
     protected String computeSyncRootsQuery(String username) {
         return String.format(
-                "SELECT ecm:uuid FROM Document WHERE %s/*1/username = %s"
-                        + " AND %s/*1/enabled = 1 AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isVersion = 0 ORDER BY dc:title, dc:created DESC",
+                "SELECT ecm:uuid FROM Document WHERE %s/*1/username = %s" + " AND %s/*1/enabled = 1"
+                        + " AND ecm:currentLifeCycleState <> 'deleted'" + " ORDER BY dc:title, dc:created DESC",
                 DRIVE_SUBSCRIPTIONS_PROPERTY, NXQLQueryBuilder.prepareStringLiteral(username, true, true),
                 DRIVE_SUBSCRIPTIONS_PROPERTY);
     }

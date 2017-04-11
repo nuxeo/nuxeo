@@ -56,19 +56,19 @@ import org.nuxeo.runtime.api.Framework;
  *
  * <pre>
  * from LogEntry log where log.repositoryId = :repositoryId
- * 
+ *
  * + AND if ActiveRoots (activeRoots) NOT empty
- * 
+ *
  * from LogEntry log where log.repositoryId = :repositoryId and (
  * LIST_DOC_EVENTS_IDS_QUERY and ( ROOT_PATHS or COLECTIONS_PATHS) or
  * (log.category = 'NuxeoDrive' and log.eventId != 'rootUnregistered') )
- * 
- * 
+ *
+ *
  * if ActiveRoots EMPTY:
- * 
+ *
  * from LogEntry log where log.repositoryId = :repositoryId and ((log.category =
  * 'NuxeoDrive' and log.eventId != 'rootUnregistered'))
- * 
+ *
  * + AND (log.id > :lowerBound and log.id <= :upperBound) + order by
  * log.repositoryId asc, log.eventDate desc
  * </pre>
