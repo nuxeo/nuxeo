@@ -423,8 +423,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             for (LogEntry entry : entries) {
                 entry.setId(seq.getNext(SEQ_NAME));
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Indexing log enry Id: %s, with logDate : %s, for docUUID: %s ",
-                            entry.getId(), entry.getLogDate(), entry.getDocUUID()));
+                    log.debug(String.format("Indexing log entry: %s", entry));
                 }
                 OutputStream out = new BytesStreamOutput();
                 JsonGenerator jsonGen = factory.createJsonGenerator(out);
