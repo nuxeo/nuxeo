@@ -166,6 +166,9 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     public void registerSynchronizationRoot(Principal principal, final DocumentModel newRootContainer,
             CoreSession session) {
         final String userName = principal.getName();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Registering synchronization root %s for %s", newRootContainer, userName));
+        }
         // If new root is child of a sync root, ignore registration, except for
         // the 'Locally Edited' collection: it is under the personal workspace
         // and we want to allow both the personal workspace and the 'Locally
@@ -270,6 +273,9 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     public void unregisterSynchronizationRoot(Principal principal, final DocumentModel rootContainer,
             CoreSession session) {
         final String userName = principal.getName();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Unregistering synchronization root %s for %s", rootContainer, userName));
+        }
         checkCanUpdateSynchronizationRoot(rootContainer, session);
         UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(session) {
             @Override
@@ -398,6 +404,11 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
                     if (repoCollectionSyncRootMemberIds == null) {
                         repoCollectionSyncRootMemberIds = Collections.emptySet();
                     }
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format(
+                                "Start: getting FileSystemItem changes for repository %s / user %s between %s and %s with activeRoots = %s",
+                                repositoryName, principal.getName(), lowerBound, upperBound, activeRoots.getPaths()));
+                    }
                     List<FileSystemItemChange> changes;
                     if (integerBounds) {
                         changes = changeFinder.getFileSystemChangesIntegerBounds(session, lastRefs, activeRoots,
@@ -422,7 +433,14 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         for (Map.Entry<String, SynchronizationRoots> rootsEntry : roots.entrySet()) {
             activeRootRefs.put(rootsEntry.getKey(), rootsEntry.getValue().getRefs());
         }
-        return new FileSystemChangeSummaryImpl(allChanges, activeRootRefs, syncDate, upperBound, hasTooManyChanges);
+        FileSystemChangeSummary summary = new FileSystemChangeSummaryImpl(allChanges, activeRootRefs, syncDate,
+                upperBound, hasTooManyChanges);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "End: getting %d FileSystemItem changes for user %s between %s and %s with activeRoots = %s -> %s",
+                    allChanges.size(), principal.getName(), lowerBound, upperBound, roots, summary));
+        }
+        return summary;
     }
 
     @Override

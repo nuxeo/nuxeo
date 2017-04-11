@@ -147,12 +147,11 @@ public class FileSystemItemChangeImpl implements FileSystemItemChange {
 
     @Override
     public String toString() {
-        if (fileSystemItem != null) {
-            return String.format("%s(eventId=\"%s\", eventDate=%d, item=%s)", getClass().getSimpleName(), eventId,
-                    eventDate, fileSystemItem);
-        } else {
-            return String.format("%s(eventId=\"%s\", eventDate=%d)", getClass().getSimpleName(), eventId, eventDate);
-        }
+        return String.format(
+                "%s(eventId=\"%s\", eventDate=%d, repositoryId=%s, docUuid=%s, fileSystemItemId=%s, fileSystemItemName=%s, fileSystemItem=%s)",
+                getClass().getSimpleName(), eventId, eventDate, repositoryId, docUuid, fileSystemItemId,
+                fileSystemItemName, fileSystemItem);
+
     }
 
 }

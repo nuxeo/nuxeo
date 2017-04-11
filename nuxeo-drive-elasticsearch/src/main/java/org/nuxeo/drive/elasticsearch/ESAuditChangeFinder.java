@@ -100,7 +100,9 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         builder.addSort("eventDate", SortOrder.DESC);
 
         List<LogEntry> entries = new ArrayList<>();
+        logSearchRequest(builder);
         SearchResponse searchResponse = builder.setSize(limit).execute().actionGet();
+        logSearchResponse(searchResponse);
         for (SearchHit hit : searchResponse.getHits()) {
             try {
                 entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
@@ -229,7 +231,9 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         builder.setQuery(QueryBuilders.matchAllQuery());
         builder.addSort("id", SortOrder.DESC);
         builder.setSize(1);
+        logSearchRequest(builder);
         SearchResponse searchResponse = builder.execute().actionGet();
+        logSearchResponse(searchResponse);
         List<LogEntry> entries = new ArrayList<>();
         SearchHits hits = searchResponse.getHits();
         for (SearchHit hit : hits) {
@@ -264,7 +268,9 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         }
         builder.addSort("id", SortOrder.DESC);
         builder.setSize(1);
+        logSearchRequest(builder);
         SearchResponse searchResponse = builder.execute().actionGet();
+        logSearchResponse(searchResponse);
         List<LogEntry> entries = new ArrayList<>();
         SearchHits hits = searchResponse.getHits();
         for (SearchHit hit : hits) {
@@ -280,7 +286,9 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
                 // case and make sure the lower bound of the next call to NuxeoDriveManager#getChangeSummary will be >=
                 // 0
                 builder.setQuery(queryBuilder);
+                logSearchRequest(builder);
                 searchResponse = builder.execute().actionGet();
+                logSearchResponse(searchResponse);
                 if (searchResponse.getHits().iterator().hasNext()) {
                     log.debug("Found no audit log entries matching the criterias but some exist, returning 0");
                     return 0;
@@ -311,9 +319,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
             }
             if (log.isDebugEnabled()) {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Change with eventId=%d detected at eventDate=%s, logDate=%s: %s on %s",
-                            entry.getId(), entry.getEventDate(), entry.getLogDate(), entry.getEventId(),
-                            entry.getDocPath()));
+                    log.debug(String.format("Change detected: %s", entry));
                 }
             }
             postFilteredEntries.add(entry);
@@ -323,7 +329,6 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
     protected Client getClient() {
         if (esClient == null) {
-            log.info("Activate Elasticsearch backend for Audit");
             ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
             esClient = esa.getClient();
         }
@@ -333,5 +338,19 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
     protected String getESIndexName() {
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
         return esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
+    }
+
+    protected void logSearchRequest(SearchRequestBuilder request) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "Elasticsearch search request: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
+                    getESIndexName(), ElasticSearchConstants.ENTRY_TYPE, request.toString()));
+        }
+    }
+
+    protected void logSearchResponse(SearchResponse response) {
+        if (log.isDebugEnabled()) {
+            log.debug("Elasticsearch search response: " + response.toString());
+        }
     }
 }
