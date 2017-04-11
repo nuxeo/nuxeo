@@ -92,8 +92,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     }
 
     protected List<FileSystemItemChange> getFileSystemChanges(CoreSession session, Set<IdRef> lastActiveRootRefs,
-            SynchronizationRoots activeRoots, Set<String> collectionSyncRootMemberIds, long lowerBound,
-            long upperBound, boolean integerBounds, int limit) throws TooManyChangesException {
+            SynchronizationRoots activeRoots, Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound,
+            boolean integerBounds, int limit) throws TooManyChangesException {
         String principalName = session.getPrincipal().getName();
         List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
 
@@ -132,12 +132,13 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
                 driveManager.invalidateSynchronizationRootsCache(principalName);
                 driveManager.invalidateCollectionSyncRootMemberCache(principalName);
-                Map<String, SynchronizationRoots> synchronizationRoots = driveManager.getSynchronizationRoots(session.getPrincipal());
+                Map<String, SynchronizationRoots> synchronizationRoots = driveManager.getSynchronizationRoots(
+                        session.getPrincipal());
                 SynchronizationRoots updatedActiveRoots = synchronizationRoots.get(session.getRepositoryName());
                 Set<String> updatedCollectionSyncRootMemberIds = driveManager.getCollectionSyncRootMemberIds(
                         session.getPrincipal()).get(session.getRepositoryName());
-                entries = queryAuditEntries(session, updatedActiveRoots, updatedCollectionSyncRootMemberIds,
-                        lowerBound, upperBound, integerBounds, limit);
+                entries = queryAuditEntries(session, updatedActiveRoots, updatedCollectionSyncRootMemberIds, lowerBound,
+                        upperBound, integerBounds, limit);
                 break;
             }
         }
@@ -349,7 +350,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
 
     @SuppressWarnings("unchecked")
     protected List<LogEntry> queryAuditEntries(CoreSession session, SynchronizationRoots activeRoots,
-            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds, int limit) {
+            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds,
+            int limit) {
         AuditReader auditService = Framework.getLocalService(AuditReader.class);
         // Set fixed query parameters
         Map<String, Object> params = new HashMap<String, Object>();
@@ -366,7 +368,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             auditQuerySb.append("(");
             auditQuerySb.append("log.category = 'eventDocumentCategory'");
             // TODO: don't hardcode event ids (contribute them?)
-            auditQuerySb.append(" and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved' or log.eventId = 'documentCreatedByCopy' or log.eventId = 'documentRestored' or log.eventId = 'addedToCollection' or log.eventId = 'documentProxyPublished' or log.eventId = 'documentLocked' or log.eventId = 'documentUnlocked')");
+            auditQuerySb.append(
+                    " and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved' or log.eventId = 'documentCreatedByCopy' or log.eventId = 'documentRestored' or log.eventId = 'addedToCollection' or log.eventId = 'documentProxyPublished' or log.eventId = 'documentLocked' or log.eventId = 'documentUnlocked')");
             auditQuerySb.append(" or ");
             auditQuerySb.append("log.category = 'eventLifeCycleCategory'");
             auditQuerySb.append(" and log.eventId = 'lifecycle_transition_event' and log.docLifeCycle != 'deleted' ");
@@ -492,8 +495,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             return null;
         }
         if (expectedFileSystemItemId != null
-                && !fsItem.getId().endsWith(
-                        AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR + expectedFileSystemItemId)) {
+                && !fsItem.getId()
+                          .endsWith(AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR + expectedFileSystemItemId)) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "Id %s of FileSystemItem adapted from document %s (%s) doesn't match expected FileSystemItem id %s, returning null.",
@@ -513,8 +516,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         // detection filtering is using the log id to have a
         // guaranteed monotonic behavior that evenDate cannot
         // guarantee when facing long transactions.
-        return new FileSystemItemChangeImpl(entry.getEventId(), entry.getEventDate().getTime(),
-                entry.getRepositoryId(), entry.getDocUUID(), fsItem);
+        return new FileSystemItemChangeImpl(entry.getEventId(), entry.getEventDate().getTime(), entry.getRepositoryId(),
+                entry.getDocUUID(), fsItem);
     }
 
 }

@@ -124,8 +124,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
 
     protected Cache getCollectionSyncRootMemberCache() {
         if (collectionSyncRootMemberCache == null) {
-            collectionSyncRootMemberCache = Framework.getService(CacheService.class).getCache(
-                    DRIVE_COLLECTION_SYNC_ROOT__MEMBER_CACHE);
+            collectionSyncRootMemberCache = Framework.getService(CacheService.class)
+                                                     .getCache(DRIVE_COLLECTION_SYNC_ROOT__MEMBER_CACHE);
         }
         return collectionSyncRootMemberCache;
     }
@@ -234,7 +234,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
                 fireEvent(newRootContainer, session, NuxeoDriveEvents.ABOUT_TO_REGISTER_ROOT, userName);
 
                 @SuppressWarnings("unchecked")
-                List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) newRootContainer.getPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY);
+                List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) newRootContainer.getPropertyValue(
+                        DRIVE_SUBSCRIPTIONS_PROPERTY);
                 boolean updated = false;
                 for (Map<String, Object> subscription : subscriptions) {
                     if (userName.equals(subscription.get("username"))) {
@@ -283,7 +284,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
                 }
                 fireEvent(rootContainer, session, NuxeoDriveEvents.ABOUT_TO_UNREGISTER_ROOT, userName);
                 @SuppressWarnings("unchecked")
-                List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) rootContainer.getPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY);
+                List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) rootContainer.getPropertyValue(
+                        DRIVE_SUBSCRIPTIONS_PROPERTY);
                 for (Map<String, Object> subscription : subscriptions) {
                     if (userName.equals(subscription.get("username"))) {
                         subscription.put("enabled", Boolean.FALSE);
@@ -546,9 +548,10 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     protected void checkCanUpdateSynchronizationRoot(DocumentModel newRootContainer, CoreSession session) {
         // Cannot update a proxy or a version
         if (newRootContainer.isProxy() || newRootContainer.isVersion()) {
-            throw new NuxeoException(String.format("Document '%s' (%s) is not a suitable synchronization root"
-                    + " as it is either a readonly proxy or an archived version.", newRootContainer.getTitle(),
-                    newRootContainer.getRef()));
+            throw new NuxeoException(String.format(
+                    "Document '%s' (%s) is not a suitable synchronization root"
+                            + " as it is either a readonly proxy or an archived version.",
+                    newRootContainer.getTitle(), newRootContainer.getRef()));
         }
     }
 
@@ -567,8 +570,9 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
      * @since 5.9.5
      */
     protected String computeSyncRootsQuery(String username) {
-        return String.format("SELECT ecm:uuid FROM Document WHERE %s/*1/username = %s" + " AND %s/*1/enabled = 1"
-                + " AND ecm:currentLifeCycleState <> 'deleted'" + " ORDER BY dc:title, dc:created DESC",
+        return String.format(
+                "SELECT ecm:uuid FROM Document WHERE %s/*1/username = %s" + " AND %s/*1/enabled = 1"
+                        + " AND ecm:currentLifeCycleState <> 'deleted'" + " ORDER BY dc:title, dc:created DESC",
                 DRIVE_SUBSCRIPTIONS_PROPERTY, NXQLQueryBuilder.prepareStringLiteral(username, true, true),
                 DRIVE_SUBSCRIPTIONS_PROPERTY);
     }
