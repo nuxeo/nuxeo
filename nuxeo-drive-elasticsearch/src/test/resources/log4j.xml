@@ -9,7 +9,7 @@
     <param name="Threshold" value="WARN" />
 
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%X%n" />
+      <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%X%n" />
     </layout>
   </appender>
 
@@ -21,6 +21,16 @@
       <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%X%n" />
     </layout>
   </appender>
+
+  <category name="org.nuxeo.elasticsearch.audit" additivity="false">
+     <priority value="TRACE"/>
+     <appender-ref ref="FILE"/>
+  </category>
+
+  <category name="org.nuxeo.drive" additivity="false">
+     <priority value="TRACE"/>
+     <appender-ref ref="FILE"/>
+  </category>
 
   <root>
     <priority value="WARN" />

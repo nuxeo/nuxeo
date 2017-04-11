@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -50,6 +52,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoDriveGroupUpdateListener implements PostCommitFilteringEventListener {
 
+    protected static final Log log = LogFactory.getLog(NuxeoDriveFileSystemDeletionListener.class);
+
     @Override
     public boolean acceptEvent(Event event) {
         return event.getContext() != null && UserManagerImpl.USER_GROUP_CATEGORY.equals(
@@ -66,6 +70,10 @@ public class NuxeoDriveGroupUpdateListener implements PostCommitFilteringEventLi
             String groupName = (String) context.getProperty(UserManagerImpl.ID_PROPERTY_KEY);
             if (groupName == null) {
                 continue;
+            }
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("NuxeoDriveGroupUpdateListener handling %s event for group %s", event.getName(),
+                        groupName));
             }
             List<String> groupNames = getAllGroupNames(groupName, context);
             handleUpdatedGroups(groupNames);

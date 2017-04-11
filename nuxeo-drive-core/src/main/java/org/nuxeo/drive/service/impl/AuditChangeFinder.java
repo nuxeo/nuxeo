@@ -146,6 +146,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             throw new TooManyChangesException("Too many changes found in the audit logs.");
         }
         for (LogEntry entry : entries) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Handling log entry %s", entry));
+            }
             FileSystemItemChange change = null;
             DocumentRef docRef = new IdRef(entry.getDocUUID());
             ExtendedInfo fsIdInfo = entry.getExtendedInfos().get("fileSystemItemId");
@@ -153,9 +156,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 // This document has been deleted, moved, is an unregistered synchronization root or its security has
                 // been updated, we just know the FileSystemItem id and name.
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Found extended info in audit log entry, document %s has been deleted or is an unregistered synchronization root.",
-                            docRef));
+                    log.debug(String.format("Found extended info in audit log entry: document has been deleted, moved,"
+                            + " is an unregistered synchronization root or its security has been updated,"
+                            + " we just know the FileSystemItem id and name."));
                 }
                 boolean isChangeSet = false;
                 // First try to adapt the document as a FileSystemItem to provide it to the FileSystemItemChange entry,
@@ -170,8 +173,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                             // virtual event.
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format(
-                                        "Document %s has been moved to another synchronzation root, not adding entry to the change summary.",
-                                        docRef));
+                                        "Document %s (%s) has been moved to another synchronzation root, not adding entry to the change summary.",
+                                        entry.getDocPath(), docRef));
                             }
                             continue;
                         }
@@ -185,8 +188,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                     // FileSystemItem id and name to the FileSystemItemChange entry.
                     if (log.isDebugEnabled()) {
                         log.debug(String.format(
-                                "Document %s doesn't exist or is not adaptable as a FileSystemItem, only providing the FileSystemItem id and name to the FileSystemItemChange entry.",
-                                docRef));
+                                "Document %s (%s) doesn't exist or is not adaptable as a FileSystemItem, only providing the FileSystemItem id and name to the FileSystemItemChange entry.",
+                                entry.getDocPath(), docRef));
                     }
                     String fsId = fsIdInfo.getValue(String.class);
                     String eventId;
@@ -201,23 +204,23 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                             entry.getRepositoryId(), entry.getDocUUID(), fsId, null);
                 }
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Adding FileSystemItemChange entry for document %s to the change summary.",
-                            docRef));
+                    log.debug(String.format("Adding FileSystemItemChange entry to the change summary: %s", change));
                 }
                 changes.add(change);
             } else {
-                // No extended info in the audit log entry, this should not be a
-                // deleted document, nor an unregistered synchronization root
-                // nor a security update denying access to the current user.
+                // No extended info in the audit log entry, this should not be a deleted document, a moved document, an
+                // unregistered synchronization root nor a security update denying access to the current user.
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
-                            "No extended info found in audit log entry, document %s has not been deleted nor is an unregistered synchronization root.",
+                            "No extended info found in audit log entry: this is not a deleted document, a moved document,"
+                                    + " an unregistered synchronization root nor a security update denying access to the current user.",
                             docRef));
                 }
                 if (!session.exists(docRef)) {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Document %s doesn't exist, not adding entry to the change summary.",
-                                docRef));
+                        log.debug(
+                                String.format("Document %s (%s) doesn't exist, not adding entry to the change summary.",
+                                        entry.getDocPath(), docRef));
                     }
                     // Deleted or non accessible documents are mapped to
                     // deleted file system items in a separate event: no need to
@@ -231,13 +234,12 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                     // Non-adaptable documents are ignored
                     if (log.isDebugEnabled()) {
                         log.debug(String.format(
-                                "Document %s is not adaptable as a FileSystemItem, not adding any entry to the change summary.",
-                                docRef));
+                                "Document %s (%s) is not adaptable as a FileSystemItem, not adding any entry to the change summary.",
+                                entry.getDocPath(), docRef));
                     }
                 } else {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "Adding FileSystemItemChange entry for document %s to the change summary.", docRef));
+                        log.debug(String.format("Adding FileSystemItemChange entry to the change summary: %s", change));
                     }
                     changes.add(change);
                 }
@@ -400,9 +402,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         String auditQuery = auditQuerySb.toString();
 
         if (log.isDebugEnabled()) {
-            if (log.isDebugEnabled()) {
-                log.debug("Querying audit log for changes: " + auditQuery + " with params: " + params);
-            }
+            log.debug("Querying audit log for changes: " + auditQuery + " with params: " + params);
         }
         List<LogEntry> entries = (List<LogEntry>) auditService.nativeQuery(auditQuery, params, 1, limit);
 
@@ -417,11 +417,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 continue;
             }
             if (log.isDebugEnabled()) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Change with eventId=%d detected at eventDate=%s, logDate=%s: %s on %s",
-                            entry.getId(), entry.getEventDate(), entry.getLogDate(), entry.getEventId(),
-                            entry.getDocPath()));
-                }
+                log.debug(String.format("Change detected: %s", entry));
             }
             postFilteredEntries.add(entry);
         }
@@ -484,12 +480,14 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             // be adapted as a FileSystemItem: nothing to do.
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
-                        "RootlessItemException thrown while trying to adapt document %s as a FileSystemItem.", docRef));
+                        "RootlessItemException thrown while trying to adapt document %s (%s) as a FileSystemItem.",
+                        entry.getDocPath(), docRef));
             }
         }
         if (fsItem == null) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Document %s is not adaptable as a FileSystemItem, returning null.", docRef));
+                log.debug(String.format("Document %s (%s) is not adaptable as a FileSystemItem, returning null.",
+                        entry.getDocPath(), docRef));
             }
             return null;
         }
@@ -498,15 +496,15 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                         AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR + expectedFileSystemItemId)) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
-                        "Id %s of FileSystemItem adapted from document %s doesn't match expected FileSystemItem id %s, returning null.",
-                        fsItem.getId(), docRef, expectedFileSystemItemId));
+                        "Id %s of FileSystemItem adapted from document %s (%s) doesn't match expected FileSystemItem id %s, returning null.",
+                        fsItem.getId(), entry.getDocPath(), docRef, expectedFileSystemItemId));
             }
             return null;
         }
         if (log.isDebugEnabled()) {
             log.debug(String.format(
-                    "Document %s is adaptable as a FileSystemItem, providing it to the FileSystemItemChange entry.",
-                    docRef));
+                    "Document %s (%s) is adaptable as a FileSystemItem, providing it to the FileSystemItemChange entry.",
+                    entry.getDocPath(), docRef));
         }
         // EventDate is able to reflect the ordering of the events
         // inside a transaction (e.g. when several documents are

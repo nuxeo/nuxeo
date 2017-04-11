@@ -106,6 +106,10 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName()) && !handleAboutToRemove(doc)) {
             return;
         }
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("NuxeoDriveFileSystemDeletionListener handling %s event for %s", event.getName(),
+                    doc));
+        }
         // Virtual event name
         String virtualEventName;
         if (DocumentEventTypes.BEFORE_DOC_SECU_UPDATE.equals(event.getName())
