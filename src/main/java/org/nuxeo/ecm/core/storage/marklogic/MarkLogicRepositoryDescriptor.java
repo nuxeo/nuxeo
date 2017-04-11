@@ -53,6 +53,12 @@ public class MarkLogicRepositoryDescriptor extends DBSRepositoryDescriptor {
     @XNode("dbname")
     public String dbname;
 
+    /**
+     * @since 9.2
+     */
+    @XNode("ssl@enabled")
+    public boolean sslEnabled;
+
     @XNodeList(value = "range-element-indexes/range-element-index", type = ArrayList.class, componentType = MarkLogicRangeElementIndexDescriptor.class)
     public List<MarkLogicRangeElementIndexDescriptor> rangeElementIndexes = new ArrayList<>(0);
 

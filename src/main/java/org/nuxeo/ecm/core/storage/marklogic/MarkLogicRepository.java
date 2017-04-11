@@ -31,6 +31,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 
 import java.io.Serializable;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -43,6 +44,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.net.ssl.SSLContext;
 import javax.resource.spi.ConnectionManager;
 
 import org.apache.commons.lang.StringUtils;
@@ -77,6 +79,7 @@ import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.ContentSourceFactory;
 import com.marklogic.xcc.ModuleInvoke;
 import com.marklogic.xcc.ResultSequence;
+import com.marklogic.xcc.SecurityOptions;
 import com.marklogic.xcc.Session;
 import com.marklogic.xcc.exceptions.RequestException;
 
@@ -126,7 +129,18 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         String dbname = StringUtils.defaultIfBlank(descriptor.dbname, DB_DEFAULT);
         String user = descriptor.user;
         String password = descriptor.password;
-        return ContentSourceFactory.newContentSource(host, port.intValue(), user, password, dbname);
+        // handle SSL
+        SecurityOptions securityOptions = descriptor.sslEnabled ? newTrustOptions() : null;
+        return ContentSourceFactory.newContentSource(host, port.intValue(), user, password, dbname, securityOptions);
+    }
+
+    protected static SecurityOptions newTrustOptions() {
+        try {
+            SSLContext sslContext = SSLContext.getDefault();
+            return new SecurityOptions(sslContext);
+        } catch (GeneralSecurityException e) {
+            throw new NuxeoException("Unable to initialize Security options for MarkLogic connection.", e);
+        }
     }
 
     protected void initRepository() {
