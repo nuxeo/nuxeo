@@ -24,6 +24,7 @@
           <port>8003</port>
           <user>user</user>
           <password>password</password>
+          <ssl enabled="true" />
           <fulltext disabled="false" />
         </repository>
       </code>
