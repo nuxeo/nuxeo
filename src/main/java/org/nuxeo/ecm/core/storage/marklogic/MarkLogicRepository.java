@@ -39,9 +39,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Spliterator;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.net.ssl.SSLContext;
 import javax.resource.spi.ConnectionManager;
@@ -82,6 +86,7 @@ import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.SecurityOptions;
 import com.marklogic.xcc.Session;
 import com.marklogic.xcc.exceptions.RequestException;
+import com.marklogic.xcc.types.XdmItem;
 
 /**
  * MarkLogic implementation of a {@link Repository}.
@@ -298,7 +303,9 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(rangeElementIndexes);
         builder.eq(key, value);
         builder.notIn(KEY_ID, ignored);
-        return findAll(builder.build());
+        try (Stream<State> states = findAll(builder.build())) {
+            return states.collect(Collectors.toList());
+        }
     }
 
     @Override
@@ -307,7 +314,9 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         builder.eq(key1, value1);
         builder.eq(key2, value2);
         builder.notIn(KEY_ID, ignored);
-        return findAll(builder.build());
+        try (Stream<State> states = findAll(builder.build())) {
+            return states.collect(Collectors.toList());
+        }
     }
 
     @Override
@@ -315,19 +324,22 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             Map<String, Object[]> targetProxies) {
         MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(rangeElementIndexes);
         builder.eq(key, value);
-        for (State state : findAll(builder.build(), KEY_ID, KEY_IS_PROXY, KEY_PROXY_TARGET_ID, KEY_PROXY_IDS)) {
-            String id = (String) state.get(KEY_ID);
-            ids.add(id);
-            if (proxyTargets != null && TRUE.equals(state.get(KEY_IS_PROXY))) {
-                String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
-                proxyTargets.put(id, targetId);
-            }
-            if (targetProxies != null) {
-                Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
-                if (proxyIds != null) {
-                    targetProxies.put(id, proxyIds);
+        try (Stream<State> states = findAll(builder.build(), KEY_ID, KEY_IS_PROXY, KEY_PROXY_TARGET_ID,
+                KEY_PROXY_IDS)) {
+            states.forEach(state -> {
+                String id = (String) state.get(KEY_ID);
+                ids.add(id);
+                if (proxyTargets != null && TRUE.equals(state.get(KEY_IS_PROXY))) {
+                    String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
+                    proxyTargets.put(id, targetId);
                 }
-            }
+                if (targetProxies != null) {
+                    Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
+                    if (proxyIds != null) {
+                        targetProxies.put(id, proxyIds);
+                    }
+                }
+            });
         }
     }
 
@@ -575,8 +587,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         BlobManager blobManager = Framework.getService(BlobManager.class);
         // TODO add a query to not scan all documents
         String query = new MarkLogicQuerySimpleBuilder(rangeElementIndexes).build();
-        for (State state : findAll(query, binaryPaths.toArray(new String[0]))) {
-            markReferencedBinaries(state, blobManager);
+        try (Stream<State> states = findAll(query, binaryPaths.toArray(new String[0]))) {
+            states.forEach(state -> markReferencedBinaries(state, blobManager));
         }
     }
 
@@ -653,7 +665,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         }
     }
 
-    private List<State> findAll(String ctsQuery, String... selects) {
+    private Stream<State> findAll(String ctsQuery, String... selects) {
         String query = ctsQuery;
         if (selects.length > 0) {
             query = "import module namespace extract = 'http://nuxeo.com/extract' at '/ext/nuxeo/extract.xqy';\n"
@@ -669,15 +681,39 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             logQuery(query);
         }
         // Run query
-        try (Session session = xccContentSource.newSession()) {
-            AdhocQuery request = session.newAdhocQuery(query);
-            // ResultSequence will be closed by Session close
-            ResultSequence rs = session.submitRequest(request);
-            return Arrays.stream(rs.asStrings())
-                         .map(MarkLogicStateDeserializer::deserialize)
-                         .collect(Collectors.toList());
-        } catch (RequestException e) {
-            throw new NuxeoException("An exception happened during xcc call", e);
+        boolean completedAbruptly = true;
+        Session session = xccContentSource.newSession();
+        try {
+            // As we can get a lot of results don't buffer the result
+            RequestOptions options = new RequestOptions();
+            options.setCacheResult(false);
+            AdhocQuery request = session.newAdhocQuery(query, options);
+
+            // We give 0 as characteristics because it's the value used by Iterable#spliterator() and according to
+            // StreamSupport.stream(Supplier, int, boolean) documentation, characteristics must be equal to
+            // supplier.get().characteristics()
+            Supplier<Spliterator<ResultItem>> spliteratorSupplier = () -> {
+                try {
+                    // ResultSequence will be closed by Session close (closed by stream closed)
+                    ResultSequence rs = session.submitRequest(request);
+                    Iterable<ResultItem> items = rs::iterator;
+                    return items.spliterator();
+                } catch (RequestException e) {
+                    throw new NuxeoException("An exception happened during xcc call", e);
+                }
+            };
+            Stream<State> stream = StreamSupport.stream(spliteratorSupplier, 0, false)
+                                                .onClose(session::close)
+                                                .map(ResultItem::getItem)
+                                                .map(XdmItem::asInputStream)
+                                                .map(MarkLogicStateDeserializer::deserialize);
+            // the stream takes responsibility for closing the session
+            completedAbruptly = false;
+            return stream;
+        } finally {
+            if (completedAbruptly) {
+                session.close();
+            }
         }
     }
 
