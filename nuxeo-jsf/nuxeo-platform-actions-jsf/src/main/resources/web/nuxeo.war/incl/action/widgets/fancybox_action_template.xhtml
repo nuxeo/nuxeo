@@ -73,6 +73,7 @@
       <c:if test="#{not widgetProperty_useButton}">
         <a4j:commandLink id="#{widget.id}_link"
           execute="@this"
+          render="#{elementsToReRender}"
           ignoreDupResponses="true" requestDelay="100"
           onclick="#{widgetProperty_onclick};#{fancyboxJs}"
           disabled="#{!widgetProperty_available}"
@@ -86,6 +87,7 @@
       <c:if test="#{widgetProperty_useButton}">
         <a4j:commandButton id="#{widget.id}_link"
           execute="@this"
+          render="#{elementsToReRender}"
           ignoreDupResponses="true" requestDelay="100"
           onclick="#{widgetProperty_onclick};#{fancyboxJs}"
           value="#{messages[widget.label]}"
