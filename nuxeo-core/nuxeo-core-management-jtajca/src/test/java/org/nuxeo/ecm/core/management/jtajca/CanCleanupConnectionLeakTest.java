@@ -28,6 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.inject.Inject;
 
 import org.assertj.core.api.Assertions;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -131,6 +132,7 @@ public class CanCleanupConnectionLeakTest {
         }
     }
 
+    @Ignore("NXP-21638")
     @Test
     public void openAndKill() throws InterruptedException, ExecutionException {
         ExecutorService executor = Executors.newCachedThreadPool();
