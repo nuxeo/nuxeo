@@ -26,7 +26,7 @@
     </documentation>
     <publicationTreeConfig name="DefaultSectionsTree"
       tree="RootSectionsCoreTree" factory="FolderishProxyFactory"
-      localSectionTree="true" title="label.publication.tree.local.sections">
+      title="label.publication.tree.local.sections">
       <parameters>
         <parameter name="RelativeRootPath">/sections</parameter>
         <parameter name="enableSnapshot">true</parameter>
