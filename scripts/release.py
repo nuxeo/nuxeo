@@ -1006,14 +1006,14 @@ Default tag message:\n
         versioning_options.add_option(
             '--aip', '--auto-increment-policy', action="store", type="string", dest='auto_increment_policy',
             default='auto_patch',
-            help="""Version increment policy when in 'auto' mode. Default: 'auto_patch'\n
+            help="""Auto increment version policy. Ignored if not '--final' or if '--next!=auto'. Default: 'auto_patch'\n
 Available options:\n
- - 'auto_last':\tincrement last explicitly defined number (1.2.3 => 1.2.4, 1.2 => 1.3, 1 => 2)\n
- - 'auto_major':\t1.2.3 => 2.0.0\n
+ - 'auto_major':\t\t1.2.3 => 2.0.0\n
  - 'auto_major_no_zero':\t1.2.3 => 2.0.1\n
- - 'auto_minor':\t1.2.3 => 1.3.0\n
- - 'auto_patch':\t1.2.3 => 1.2.4\n
-Note: 'auto_last' is not recommended since 1 = 1.0 = 1.0.0, then the zero being explicit or not should not intervene.
+ - 'auto_minor':\t\t1.2.3 => 1.3.0\n
+ - 'auto_patch':\t\t1.2.3 => 1.2.4\n
+ - 'auto_last':\t\t\t** NOT RECOMMENDED ** increment last explicitly defined number (1.2.3 => 1.2.4, 1.2 => 1.3, 1 => 2).\n
+\t\t\t\tThis is not recommended since 1 = 1.0 = 1.0.0, then the zero being explicit or not should not intervene.\n
 """)
         parser.add_option_group(versioning_options)
         (options, args) = parser.parse_args()
