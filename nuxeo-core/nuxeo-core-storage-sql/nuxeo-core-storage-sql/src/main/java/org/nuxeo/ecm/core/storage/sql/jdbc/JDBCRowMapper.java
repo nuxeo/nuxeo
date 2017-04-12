@@ -634,10 +634,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                             countExecute();
                             for (int j = 0; j < counts.length; j++) {
                                 if (counts[j] != 1) {
-                                    // find which id this is about
-                                    Serializable id = rowUpdates.get(j).row.id;
-                                    logger.log("  -> CONCURRENT UPDATE: " + id);
-                                    throw new ConcurrentUpdateException(id.toString());
+                                    if (model.getRepositoryDescriptor().isChangeTokenEnabled()) {
+                                        Serializable id = rowUpdates.get(j).row.id;
+                                        logger.log("  -> CONCURRENT UPDATE: " + id);
+                                        throw new ConcurrentUpdateException(id.toString());
+                                    }
                                 }
 
                             }
@@ -646,9 +647,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         int count = ps.executeUpdate();
                         countExecute();
                         if (count != 1) {
-                            Serializable id = rowu.row.id;
-                            logger.log("  -> CONCURRENT UPDATE: " + id);
-                            throw new ConcurrentUpdateException(id.toString());
+                            if (model.getRepositoryDescriptor().isChangeTokenEnabled()) {
+                                Serializable id = rowu.row.id;
+                                logger.log("  -> CONCURRENT UPDATE: " + id);
+                                throw new ConcurrentUpdateException(id.toString());
+                            }
                         }
                     }
                 }
