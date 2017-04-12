@@ -19,6 +19,7 @@
 package org.nuxeo.runtime;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -144,6 +145,14 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         if (isStarted) {
             return;
         }
+
+        manager = createComponentManager();
+        try {
+            loadConfig();
+        } catch (IOException e) {
+            throw new RuntimeServiceException(e);
+        }
+
         if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "true"))) {
             Level threshold = Level.parse(getProperty(REDIRECT_JUL_THRESHOLD, "INFO").toUpperCase());
             JavaUtilLoggingHelper.redirectToApacheCommons(threshold);
@@ -164,8 +173,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
             log.info("Disabled log4j.xml change detection");
         }
         log.info("Starting Nuxeo Runtime service " + getName() + "; version: " + getVersion());
-        // NXRuntime.setInstance(this);
-        manager = createComponentManager();
+
         Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_START, this));
         ServicePassivator.passivate()
                          .withQuietDelay(Duration.ofSeconds(0))
@@ -226,6 +234,9 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     @Override
     public boolean isShuttingDown() {
         return isShuttingDown;
+    }
+
+    protected void loadConfig() throws IOException {
     }
 
     protected void doStart() {
