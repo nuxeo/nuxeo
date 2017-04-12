@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
+import org.nuxeo.common.logging.Log4JHelper;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.ServicePassivator;
@@ -65,6 +66,12 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     public static final String REDIRECT_JUL = "org.nuxeo.runtime.redirectJUL";
 
     public static final String REDIRECT_JUL_THRESHOLD = "org.nuxeo.runtime.redirectJUL.threshold";
+
+    public static final String LOG4J_WATCH_DISABLED = "org.nuxeo.runtime.log4jwatch.disabled";
+
+    public static final String LOG4J_WATCH_DELAY = "org.nuxeo.runtime.log4jwatch.delay";
+
+    public static final long LOG4J_WATCH_DELAY_DEFAULT = 10;
 
     private static final Log log = LogFactory.getLog(RuntimeService.class);
 
@@ -125,6 +132,21 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "false"))) {
             Level threshold = Level.parse(getProperty(REDIRECT_JUL_THRESHOLD, "INFO").toUpperCase());
             JavaUtilLoggingHelper.redirectToApacheCommons(threshold);
+        }
+        if (!Boolean.parseBoolean(getProperty(LOG4J_WATCH_DISABLED, "false"))) {
+            long delay;
+            try {
+                delay = Long.parseLong(getProperty(LOG4J_WATCH_DELAY, Long.toString(LOG4J_WATCH_DELAY_DEFAULT)));
+            } catch (NumberFormatException e) {
+                delay = LOG4J_WATCH_DELAY_DEFAULT;
+            }
+            if (Log4JHelper.configureAndWatch(delay * 1000)) {
+                log.info("Configured log4j.xml change detection with a delay of " + delay + "s");
+            } else {
+                log.info("Failed to configure log4j.xml change detection");
+            }
+        } else {
+            log.info("Disabled log4j.xml change detection");
         }
         log.info("Starting Nuxeo Runtime service " + getName() + "; version: " + getVersion());
         // NXRuntime.setInstance(this);
