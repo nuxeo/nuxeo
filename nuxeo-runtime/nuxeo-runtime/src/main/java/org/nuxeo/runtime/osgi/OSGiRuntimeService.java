@@ -190,12 +190,6 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     @Override
     protected void doStart() {
         bundleContext.addFrameworkListener(this);
-        try {
-            loadConfig();
-        } catch (IOException e) {
-            throw new RuntimeServiceException(e);
-        }
-        // load configuration if any
         loadComponents(bundleContext.getBundle(), context);
     }
 
@@ -277,6 +271,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         return true;
     }
 
+    @Override
     protected void loadConfig() throws IOException {
         Environment env = Environment.getDefault();
         if (env != null) {
