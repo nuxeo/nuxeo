@@ -146,6 +146,10 @@ public class TestSQLRepositoryQuery {
         coreFeature.getStorageConfiguration().waitForFulltextIndexing();
     }
 
+    protected void maybeSleepToNextSecond() {
+        coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
+    }
+
     protected void nextTransaction() {
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.commitOrRollbackTransaction();
@@ -1907,6 +1911,7 @@ public class TestSQLRepositoryQuery {
         DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         DocumentRef v1 = session.checkIn(file1.getRef(), VersioningOption.MAJOR, "comment1");
         session.checkOut(file1.getRef());
+        maybeSleepToNextSecond();
         DocumentRef v2 = session.checkIn(file1.getRef(), VersioningOption.MAJOR, "comment2");
         session.save();
         // note is automatically versioned
