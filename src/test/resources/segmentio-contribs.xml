@@ -35,12 +35,12 @@
   </extension>
 
   <extension target="org.nuxeo.segment.io.SegmentIOComponent"
-    point="providers">
-    <providersConfig>
-      <providers>
-        <provider name="Marketo">true</provider>
-      </providers>
-    </providersConfig>
+    point="integrations">
+    <integrationsConfig>
+      <integrations>
+        <integration name="Marketo">true</integration>
+      </integrations>
+    </integrationsConfig>
   </extension>
 
   <extension target="org.nuxeo.segment.io.SegmentIOComponent"

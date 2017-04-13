@@ -25,14 +25,10 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
 
     protected static Log log = LogFactory.getLog(SegmentIOAsyncListener.class);
 
-    protected SegmentIOComponent getComponent() {
-        return (SegmentIOComponent) Framework.getRuntime().getComponent(SegmentIOComponent.class.getName());
-    }
-
     @Override
     public void handleEvent(EventBundle bundle) throws ClientException {
 
-        SegmentIOComponent component = getComponent();
+        SegmentIOComponent component = (SegmentIOComponent) Framework.getService(SegmentIO.class);
 
         List<String> eventToProcess = new ArrayList<String>();
 
@@ -87,10 +83,10 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
                 Map<String, Serializable> mapped =  mapper.getMappedData(ctx);
 
                 if (mapper.isIdentify()) {
-                    Framework.getLocalService(SegmentIO.class).identify(principal, mapped);
+                    Framework.getService(SegmentIO.class).identify(principal, mapped);
                 }
                 else {
-                    Framework.getLocalService(SegmentIO.class).track(principal, event.getName(), mapped);
+                    Framework.getService(SegmentIO.class).track(principal, event.getName(), mapped);
                 }
 
             }

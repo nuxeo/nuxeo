@@ -60,7 +60,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     public final static String MAPPER_EP = "mapper";
 
-    public final static String PROVIDER_EP = "providers";
+    public final static String INTEGRATIONS_EP = "integrations";
 
     public final static String FILTERS_EP = "filters";
 
@@ -74,7 +74,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     protected SegmentIOConfig config;
 
-    protected SegmentIOProviders providersConfig;
+    protected SegmentIOIntegrations integrationsConfig;
 
     protected SegmentIOUserFilter userFilters;
 
@@ -106,8 +106,8 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         } else if (MAPPER_EP.equalsIgnoreCase(extensionPoint)) {
             SegmentIOMapper mapper = (SegmentIOMapper) contribution;
             mappers.put(mapper.name, mapper);
-        } else if (PROVIDER_EP.equalsIgnoreCase(extensionPoint)) {
-            providersConfig = (SegmentIOProviders) contribution;
+        } else if (INTEGRATIONS_EP.equalsIgnoreCase(extensionPoint)) {
+            integrationsConfig = (SegmentIOIntegrations) contribution;
         } else if (FILTERS_EP.equalsIgnoreCase(extensionPoint)) {
             userFilters = (SegmentIOUserFilter) contribution;
         }
@@ -183,8 +183,8 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     @Override
     public Map<String, Boolean> getIntegrations() {
-        if (providersConfig != null && providersConfig.providers != null) {
-            return providersConfig.providers;
+        if (integrationsConfig != null && integrationsConfig.integrations != null) {
+            return integrationsConfig.integrations;
         }
         return new HashMap<>();
     }
@@ -328,6 +328,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         }
     }
 
+    @Override
     public Map<String, List<SegmentIOMapper>> getMappers(List<String> events) {
         Map<String, List<SegmentIOMapper>> targetMappers = new HashMap<String, List<SegmentIOMapper>>();
         for (String event : events) {
@@ -338,10 +339,12 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return targetMappers;
     }
 
+    @Override
     public Set<String> getMappedEvents() {
         return event2Mappers.keySet();
     }
 
+    @Override
     public Map<String, List<SegmentIOMapper>> getAllMappers() {
         return event2Mappers;
     }
