@@ -27,16 +27,16 @@
       class="org.nuxeo.segment.io.SegmentIOMapper" />
   </extension-point>
 
-  <extension-point name="providers">
+  <extension-point name="integrations">
     <documentation>
-      Allows to configure segment.io providers configuration.
+      Allows to configure segment.io integrations configuration.
 
-      See https://segment.io/docs/libraries/java/#selecting-providers
+      See https://segment.com/docs/sources/server/java/#selecting-integrations
 
       @author Thierry Delprat (td@nuxeo.com)
     </documentation>
     <object
-      class="org.nuxeo.segment.io.SegmentIOProviders" />
+      class="org.nuxeo.segment.io.SegmentIOIntegrations" />
   </extension-point>
 
   <extension-point name="filters">

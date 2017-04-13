@@ -61,14 +61,10 @@ public class TestSegmentIOService {
 
     @Test
     public void checkDeploy() {
-
-        SegmentIOComponent component = (SegmentIOComponent) Framework.getRuntime().getComponent(SegmentIOComponent.class.getName());
-        Assert.assertNotNull(component);
-
-        SegmentIO service = Framework.getLocalService(SegmentIO.class);
+        SegmentIO service = Framework.getService(SegmentIO.class);
         Assert.assertNotNull(service);
 
-        Map<String, List<SegmentIOMapper>> allMappers = component.getAllMappers();
+        Map<String, List<SegmentIOMapper>> allMappers = service.getAllMappers();
         Assert.assertTrue(allMappers.size()>0);
         Assert.assertTrue(allMappers.containsKey("loginSuccess"));
         Assert.assertTrue(allMappers.get("loginSuccess").size()>0);
@@ -79,7 +75,7 @@ public class TestSegmentIOService {
     @Test
     public void shouldRunIdentifyOnLogin() throws Exception {
 
-        SegmentIOComponent component = (SegmentIOComponent) Framework.getRuntime().getComponent(SegmentIOComponent.class.getName());
+        SegmentIOComponent component = (SegmentIOComponent) Framework.getService(SegmentIO.class);
         Assert.assertNotNull(component);
 
         component.getTestData().clear();
@@ -103,9 +99,9 @@ public class TestSegmentIOService {
     }
 
     @Test
-    public void shouldRunTracOnDocEvent() throws Exception {
+    public void shouldRunTrackOnDocEvent() throws Exception {
 
-        SegmentIOComponent component = (SegmentIOComponent) Framework.getRuntime().getComponent(SegmentIOComponent.class.getName());
+        SegmentIOComponent component = (SegmentIOComponent) Framework.getService(SegmentIO.class);
         Assert.assertNotNull(component);
 
         component.getTestData().clear();
@@ -133,7 +129,7 @@ public class TestSegmentIOService {
     @Test
     public void shouldHaveDefaultProvidersConfig() throws Exception {
 
-        SegmentIO sio = Framework.getLocalService(SegmentIO.class);
+        SegmentIO sio = Framework.getService(SegmentIO.class);
         Assert.assertNotNull(sio);
 
         Map<String, Boolean> integrations = sio.getIntegrations();
@@ -148,13 +144,10 @@ public class TestSegmentIOService {
     @Test
     public void shouldHaveUserFilter() throws Exception {
 
-        SegmentIO sio = Framework.getLocalService(SegmentIO.class);
+        SegmentIO sio = Framework.getService(SegmentIO.class);
         Assert.assertNotNull(sio);
 
-        SegmentIOComponent component = (SegmentIOComponent) Framework.getRuntime().getComponent(SegmentIOComponent.class.getName());
-        Assert.assertNotNull(component);
-
-        SegmentIOUserFilter filters = component.getUserFilters();
+        SegmentIOUserFilter filters = sio.getUserFilters();
 
         Assert.assertNotNull(filters);
 
