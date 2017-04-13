@@ -168,35 +168,5 @@ public class TestImportedModelRendering {
     assertTrue(text.contains("Subjects technology/it human sciences/information"));
     assertTrue(text.contains("Format Html"));
   }
-
-  @Test
-  public void testInterventionStatement() throws Exception {
-
-    PathRef ref = new PathRef("/default-domain/workspaces/templatesamples/rawsamples/");
-    DocumentModel sampleFolder = session.getDocument(ref);
-    assertNotNull(sampleFolder);
-
-    ref = new PathRef("/default-domain/workspaces/templatesamples/rawsamples/intervention");
-    DocumentModel intervention = session.getDocument(ref);
-
-    TemplateBasedDocument interventionTemplate = intervention.getAdapter(TemplateBasedDocument.class);
-    assertNotNull(interventionTemplate);
-
-    List<String> templateNames = interventionTemplate.getTemplateNames();
-    assertEquals(1, templateNames.size());
-    assertEquals("Delivery Statement", templateNames.get(0));
-
-    Blob blob = interventionTemplate.renderWithTemplate("Delivery Statement");
-    assertNotNull(blob);
-    assertTrue(blob.getFilename().endsWith(".pdf"));
-
-    BlobHolder textBH = cs.convertToMimeType("text/plain", new SimpleBlobHolder(blob),
-        new HashMap<String, Serializable>());
-    assertNotNull(textBH);
-    String text = textBH.getBlob().getString();
-
-    assertTrue(text.contains("110"));
-    assertTrue(text.contains("Freeman"));
-    assertTrue(text.contains("Poissonniers"));
-  }
+  
 }
