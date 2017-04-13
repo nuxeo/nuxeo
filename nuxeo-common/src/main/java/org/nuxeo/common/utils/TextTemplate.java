@@ -268,7 +268,8 @@ public class TextTemplate {
     }
 
     protected String unescape(String value) {
-        return value.replaceAll("(?<!\\{)\\$\\$", "\\$");
+        // unescape doubled $ characters, only if in front of a {
+        return value.replaceAll("\\$\\$\\{", "\\${");
     }
 
     private void preprocessVars() {

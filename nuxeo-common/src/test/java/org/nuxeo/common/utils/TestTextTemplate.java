@@ -146,6 +146,15 @@ public class TestTextTemplate {
         TextTemplate templates = new TextTemplate();
         templates.setVariable("pfouh", "bar");
         assertEquals("bar${pfouh}", templates.processText("${pfouh}$${pfouh}"));
+        // $$ unchanged if not in front of a {
+        assertEquals("$mypass", templates.processText("$mypass"));
+        assertEquals("my$pass", templates.processText("my$pass"));
+        assertEquals("mypass$", templates.processText("mypass$"));
+        assertEquals("$$mypass", templates.processText("$$mypass"));
+        assertEquals("my$$pass", templates.processText("my$$pass"));
+        assertEquals("mypass$$", templates.processText("mypass$$"));
+        // $$ unchanged if used in a crypto value (cf org.nuxeo.common.codec.Crypto.CRYPTO_PATTERN)
+        assertEquals("{$$CZjbsiX748UF583qkbinsQ==}", templates.processText("{$$CZjbsiX748UF583qkbinsQ==}"));
     }
 
 }
