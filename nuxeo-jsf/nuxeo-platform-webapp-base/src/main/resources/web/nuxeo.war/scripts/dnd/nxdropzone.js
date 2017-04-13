@@ -497,59 +497,46 @@ DropZoneUIHandler.prototype.removeDropPanel = function (dropId, batchId) {
 
 
 // ******************************
-// Global vars (may be stored in JQuery data on the body ?
-
-var NXDropZone = {
-  handlerIdx: 0,
-  highLightOn: false,
-  targetSelected: false,
-  initDone: false
-};
-
-
-// ******************************
 // JQuery binding
 
 (function ($) {
-  // reinitialize NXDropZone object state
-  NXDropZone.handlerIdx = 0;
-  NXDropZone.highLightOn = false;
-  NXDropZone.targetSelected = false;
-  NXDropZone.initDone = false;
+
+  var handlerIdx = 0;
+  var dropZones = [];
+  var targetSelected = false;
+  var highLightOn = false;
 
   $.fn.nxDropZone = function (options) {
-    // reinitialize NXDropZone object state
-    NXDropZone.handlerIdx = 0;
-    NXDropZone.highLightOn = false;
-    NXDropZone.targetSelected = false;
-    NXDropZone.initDone = false;
 
-    var ids = [];
     this.each(function () {
       var dropZone = jQuery(this);
       var dropId = dropZone.attr("id");
-      ids.push(dropId);
       // only get the ids
       // real underlying object will be initialized when needed
       // to avoid any clash with other DnD features ...
+      dropZones.push({
+        id: dropId,
+        initDone: false,
+        options: options
+      });
 
-      if (!NXDropZone.initDone && dropZone.data("loadalreadyuploadedfiles")) {
-        highlightDropZones(null, ids, options, dropId);
+      if (dropZone.data("loadalreadyuploadedfiles")) {
+        highlightDropZones(null, dropZones, dropId);
       }
     });
 
     // bind events on body to show the drop box
     document.body.ondragover = function (event) {
-      highlightDropZones(event, ids, options)
+      highlightDropZones(event, dropZones)
     };
     document.body.ondragleave = function (event) {
-      removeHighlights(event, ids)
+      removeHighlights(event, dropZones)
     };
     document.body.ondrop = function (event) {
       var dt = event.dataTransfer;
       if (dt && dt.files != null && dt.files.length == 0) {
-        jQuery.each(ids, function (idx, id) {
-          var dzone = jQuery("#" + id);
+        jQuery.each(dropZones, function (idx, dropZone) {
+          var dzone = jQuery("#" + dropZone.id);
           dzone.removeClass("dropzoneTarget");
           dzone.removeClass("dropzoneTargetExtended");
           var dragoverTimer = dzone.data("dragoverTimer");
@@ -580,11 +567,12 @@ var NXDropZone = {
     return false;
   }
 
-  function highlightDropZones(event, ids, options, dropZoneId) {
+  function highlightDropZones(event, dropZones, dropZone) {
 
     function targetSelect(targetId) {
-      NXDropZone.targetSelected = true;
-      jQuery.each(ids, function (idx, id) {
+      targetSelected = true;
+      jQuery.each(dropZones, function (idx, dropZone) {
+        var id = dropZone.id;
         var ele = jQuery("#" + id);
         if (id != targetId) {
           ele.unbind();
@@ -593,55 +581,54 @@ var NXDropZone = {
       });
     }
 
-    function cancel() {
-      NXDropZone.highLightOn = true;
-      NXDropZone.initDone = false;
-      removeHighlights(null, ids)
+    function cancel(dropZone) {
+      highLightOn = true;
+      dropZone.initDone = false;
+      removeHighlights(null, dropZones)
     }
 
-    function initDropZone(id, loadAlreadyUploadedFiles) {
-      if (!NXDropZone.initDone) {
-        var ele = jQuery("#" + id);
-        var handlerFunc = options.handler || DropZoneUIHandler;
-        var uiHandler = new handlerFunc(NXDropZone.handlerIdx++, id, options, targetSelect, cancel);
+    function initDropZone(dropZone, loadAlreadyUploadedFiles) {
+      if (!dropZone.initDone) {
+        var ele = jQuery("#" + dropZone.id);
+        var handlerFunc = dropZone.options.handler || DropZoneUIHandler;
+        var uiHandler = new handlerFunc(handlerIdx++, dropZone.id, dropZone.options, targetSelect, cancel.bind(null, dropZone));
         // copy optionMap
-        var instanceOptions = jQuery.extend({}, options);
+        var instanceOptions = jQuery.extend({}, dropZone.options);
         // register callback Handler
         instanceOptions.handler = uiHandler;
-        log("Init Drop zone " + id);
+        log("Init Drop zone " + dropZone.id);
         ele.dropzone(instanceOptions, loadAlreadyUploadedFiles);
         ele.addClass("dropzoneHL");
+        dropZone.initDone = true;
       }
     }
 
-    if (NXDropZone.highLightOn || NXDropZone.targetSelected) {
+    if (highLightOn || targetSelected) {
       return;
     }
 
-    if (dropZoneId !== undefined) {
-      initDropZone(dropZoneId, true);
-      NXDropZone.initDone = true;
-      NXDropZone.highLightOn = true;
+    if (dropZone !== undefined) {
+      initDropZone(dropZone, true);
+      highLightOn = true;
       return;
     }
 
     if (isFileDndEvent(event)) {
-      jQuery.each(ids, function (idx, id) {
-        initDropZone(id);
+      jQuery.each(dropZones, function (idx, dropZone) {
+        initDropZone(dropZone);
       });
-      NXDropZone.initDone = true;
-      NXDropZone.highLightOn = true;
+      highLightOn = true;
     }
   }
 
-  function removeHighlights(event, ids) {
-    if (!NXDropZone.highLightOn || NXDropZone.targetSelected) {
+  function removeHighlights(event, dropZones) {
+    if (!highLightOn || targetSelected) {
       return;
     }
-    jQuery.each(ids, function (idx, id) {
-      jQuery("#" + id).removeClass("dropzoneHL");
+    jQuery.each(dropZones, function (idx, dropZone) {
+      jQuery("#" + dropZone.id).removeClass("dropzoneHL");
     });
-    NXDropZone.highLightOn = false;
+    highLightOn = false;
   }
 
 })(jQuery);
