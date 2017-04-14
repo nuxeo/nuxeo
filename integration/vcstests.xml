@@ -55,12 +55,35 @@
         nuxeo.test.vcs.password=${nuxeo.db.pass}
       </echo>
     </nx:profile>
+    <nx:profile name="oracle12c">
+      <echo file="${vcsprops}" append="false">
+        nuxeo.test.vcs.db=Oracle
+        nuxeo.test.vcs.url=jdbc:oracle:thin:@//${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}
+        nuxeo.test.vcs.user=${nuxeo.db.user}
+        nuxeo.test.vcs.password=${nuxeo.db.pass}
+      </echo>
+    </nx:profile>
     <nx:profile name="mysql">
       <echo file="${vcsprops}" append="false">
         nuxeo.test.vcs.db=MySQL
         nuxeo.test.vcs.url=jdbc:mysql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}
         nuxeo.test.vcs.user=${nuxeo.db.user}
         nuxeo.test.vcs.password=${nuxeo.db.pass}
+      </echo>
+    </nx:profile>
+    <nx:profile name="mariadb">
+      <echo file="${vcsprops}" append="false">
+        nuxeo.test.vcs.db=MySQL
+        nuxeo.test.vcs.url=jdbc:mariadb://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}
+        nuxeo.test.vcs.user=${nuxeo.db.user}
+        nuxeo.test.vcs.password=${nuxeo.db.pass}
+      </echo>
+    </nx:profile>
+    <nx:profile name="mongodb">
+      <echo file="${vcsprops}" append="false">
+        nuxeo.test.core=mongodb
+        nuxeo.test.mongodb.server=${nuxeo.mongodb.server}
+        nuxeo.test.mongodb.dbname=${nuxeo.mongodb.dbname}
       </echo>
     </nx:profile>
   </target>
