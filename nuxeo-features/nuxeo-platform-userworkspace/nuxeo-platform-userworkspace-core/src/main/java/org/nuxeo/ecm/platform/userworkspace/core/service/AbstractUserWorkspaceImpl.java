@@ -22,7 +22,9 @@ import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Hex;
@@ -35,6 +37,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -85,8 +88,49 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         return targetDomainName;
     }
 
-    protected String getUserWorkspaceNameForUser(String username) {
-        return IdUtils.generateId(username, "-", false, maxsize);
+    /**
+     * Gets the base username to use to determine a user's workspace. This is not used directly as a path segment, but
+     * forms the sole basis for it.
+     *
+     * @since 9.2
+     */
+    protected String getUserName(Principal principal, String username) {
+        if (principal instanceof NuxeoPrincipal) {
+            username = ((NuxeoPrincipal) principal).getActingUser();
+        } else if (username == null) {
+            username = principal.getName();
+        }
+        if (StringUtils.isEmpty(username)) {
+            username = null;
+        }
+        return username;
+    }
+
+    /**
+     * Finds the list of potential names for the user workspace. They're all tried in order.
+     *
+     * @return the list of candidate names
+     * @since 9.2
+     */
+    // public for tests
+    public List<String> getCandidateUserWorkspaceNames(String username) {
+        List<String> names = new ArrayList<>();
+        generateCandidates(names, username, maxsize);
+        generateCandidates(names, username, 30); // compat
+        return names;
+    }
+
+    protected void generateCandidates(List<String> names, String username, int max) {
+        String name = IdUtils.generateId(username, "-", false, max);
+        if (!names.contains(name)) {
+            names.add(name);
+            if (name.length() == max) { // at max size or truncated
+                String digested = name.substring(0, name.length() - 8) + digest(username, 8);
+                if (!names.contains(digested)) {
+                    names.add(digested);
+                }
+            }
+        }
     }
 
     protected String digest(String username, int maxsize) {
@@ -133,17 +177,10 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
      */
     protected DocumentModel getCurrentUserPersonalWorkspace(Principal principal, String userName,
             CoreSession userCoreSession, DocumentModel context) {
-        if (principal == null && StringUtils.isEmpty(userName)) {
+        String usedUsername = getUserName(principal, userName);
+        if (usedUsername == null) {
             return null;
         }
-
-        String usedUsername;
-        if (principal instanceof NuxeoPrincipal) {
-            usedUsername = ((NuxeoPrincipal) principal).getActingUser();
-        } else {
-            usedUsername = userName;
-        }
-
         PathRef rootref = getExistingUserWorkspaceRoot(userCoreSession, usedUsername, context);
         PathRef uwref = getExistingUserWorkspace(userCoreSession, rootref, principal, usedUsername);
         DocumentModel uw = userCoreSession.getDocument(uwref);
@@ -159,27 +196,41 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         return new PathRef(new UnrestrictedRootCreator(rootref, username, session).create().getPathAsString());
     }
 
-    protected PathRef getExistingUserWorkspace(CoreSession session, PathRef rootref, Principal principal, String username) {
-        String workspacename = getUserWorkspaceNameForUser(username);
-        PathRef uwref = resolveUserWorkspace(session, rootref, username, workspacename, maxsize);
-        if (session.exists(uwref)) {
-            return uwref;
+    protected PathRef getExistingUserWorkspace(CoreSession session, PathRef rootref, Principal principal,
+            String username) {
+        PathRef freeRef = null;
+        for (String name : getCandidateUserWorkspaceNames(username)) {
+            PathRef ref = new PathRef(rootref, name);
+            if (session.exists(ref)
+                    && session.hasPermission(session.getPrincipal(), ref, SecurityConstants.EVERYTHING)) {
+                return ref;
+            }
+            boolean[] exists = new boolean[1];
+            new UnrestrictedSessionRunner(session) {
+                @Override
+                public void run() {
+                    exists[0] = session.exists(ref);
+                }
+            }.runUnrestricted();
+            if (!exists[0] && freeRef == null) {
+                // we have a candidate name for creation if we don't find anything else
+                freeRef = ref;
+            }
+            // else if exists it means there's a collision with the truncated workspace of another user
+            // try next name
         }
-        PathRef uwcompatref = resolveUserWorkspace(session, rootref, username, IdUtils.generateId(username, "-", false, 30), 30);
-        if (uwcompatref != null && session.exists(uwcompatref)) {
-            return uwcompatref;
+        if (freeRef != null) {
+            PathRef ref = freeRef; // effectively final
+            new UnrestrictedSessionRunner(session) {
+                @Override
+                public void run() {
+                    doCreateUserWorkspace(session, ref, principal, username);
+                }
+            }.runUnrestricted();
+            return freeRef;
         }
-        new UnrestrictedUWSCreator(uwref, session, principal, username).create();
-        return uwref;
-    }
-
-    protected PathRef resolveUserWorkspace(CoreSession session, PathRef rootref, String username, String workspacename, int maxsize) {
-        PathRef uwref = new PathRef(rootref, workspacename);
-        if (workspacename.length() == maxsize && !new UnrestrictedPermissionChecker(session, uwref).hasPermission()) {
-            String substring = workspacename.substring(0, workspacename.length()-8);
-            return new PathRef(rootref, substring.concat(digest(username, 8)));
-        }
-        return uwref;
+        // couldn't find anything, because we lacked permission to existing docs (collision)
+        throw new DocumentSecurityException(username);
     }
 
     @Override
@@ -193,6 +244,40 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         UnrestrictedUserWorkspaceFinder finder = new UnrestrictedUserWorkspaceFinder(userName, context);
         finder.runUnrestricted();
         return finder.getDetachedUserWorkspace();
+    }
+
+    @Override
+    public boolean isUnderUserWorkspace(Principal principal, String username, DocumentModel doc) {
+        if (doc == null) {
+            return false;
+        }
+        username = getUserName(principal, username);
+        if (username == null) {
+            return false;
+        }
+
+        // fast checks that are useful to return a negative without the cost of accessing the user workspace
+        Path path = doc.getPath();
+        if (path.segmentCount() < 2) {
+            return false;
+        }
+        // check domain
+        String domainName = getDomainName(doc.getCoreSession(), doc);
+        if (!domainName.equals(path.segment(0))) {
+            return false;
+        }
+        // check UWS root
+        if (!UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT.equals(path.segment(1))) {
+            return false;
+        }
+        // check workspace name among candidates
+        if (!getCandidateUserWorkspaceNames(username).contains(path.segment(2))) {
+            return false;
+        }
+
+        // fetch actual workspace to compare its path
+        DocumentModel uws = getCurrentUserPersonalWorkspace(principal, username, doc.getCoreSession(), doc);
+        return uws.getPath().isPrefixOf(doc.getPath());
     }
 
     protected String buildUserWorkspaceTitle(Principal principal, String userName) {
@@ -298,69 +383,6 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
                 runUnrestricted();
                 return doc;
             }
-        }
-    }
-
-    protected class UnrestrictedUWSCreator extends UnrestrictedSessionRunner {
-
-        PathRef userWSRef;
-
-        String userName;
-
-        Principal principal;
-
-        DocumentModel uw;
-
-        public UnrestrictedUWSCreator(PathRef userWSRef, CoreSession userCoreSession,
-                Principal principal, String userName) {
-            super(userCoreSession);
-            this.userWSRef = userWSRef;
-            this.userName = userName;
-            this.principal = principal;
-        }
-
-        @Override
-        public void run() {
-            if (session.exists(userWSRef)) {
-                uw = session.getDocument(userWSRef);
-            } else {
-                uw = doCreateUserWorkspace(session, userWSRef, principal, userName);
-            }
-            uw.detach(true);
-            assert (uw.getPathAsString()
-                    .equals(userWSRef.toString()));
-        }
-
-        DocumentModel create() {
-            synchronized (UnrestrictedSessionRunner.class) {
-                runUnrestricted();
-                return uw;
-            }
-        }
-
-    }
-
-    protected class UnrestrictedPermissionChecker extends UnrestrictedSessionRunner {
-        protected UnrestrictedPermissionChecker(CoreSession session, PathRef ref) {
-            super(session);
-            this.ref = ref;
-            principal = session.getPrincipal();
-        }
-
-        final Principal principal;
-
-        final PathRef ref;
-
-        boolean hasPermission;
-
-        @Override
-        public void run() {
-            hasPermission = !session.exists(ref) || session.hasPermission(principal, ref, SecurityConstants.EVERYTHING);
-        }
-
-        boolean hasPermission() {
-            runUnrestricted();
-            return hasPermission;
         }
     }
 
