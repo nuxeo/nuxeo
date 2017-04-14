@@ -42,9 +42,9 @@ final class MarkLogicHelper {
 
     public static final String ATTRIBUTE_XSI_TYPE = "xsi:" + ATTRIBUTE_TYPE;
 
-    private static final String SCHEMA_ORIGINAL_DELIMITER = ":";
+    public static final char SCHEMA_ORIGINAL_DELIMITER = ':';
 
-    private static final String SCHEMA_MARKLOGIC_DELIMITER = "__";
+    public static final String SCHEMA_MARKLOGIC_DELIMITER = "__";
 
     public static String serializeCalendar(Calendar cal) {
         return DateTime.now().withMillis(cal.getTimeInMillis()).toString(DATE_TIME_FORMATTER);
@@ -57,12 +57,39 @@ final class MarkLogicHelper {
         return cal;
     }
 
-    public static String serializeKey(String key) {
-        return key.replace(SCHEMA_ORIGINAL_DELIMITER, SCHEMA_MARKLOGIC_DELIMITER);
+    public static String serializeKey(String nxKey) {
+        // Do it this way to avoid memory issues by instantiating to many object to replace character
+        StringBuilder mlKey = new StringBuilder(nxKey.length());
+        for (int i = 0; i < nxKey.length(); i++) {
+            char c = nxKey.charAt(i);
+            if (c == SCHEMA_ORIGINAL_DELIMITER) {
+                mlKey.append(SCHEMA_MARKLOGIC_DELIMITER);
+            } else {
+                mlKey.append(c);
+            }
+        }
+        return mlKey.toString();
     }
 
-    public static String deserializeKey(String key) {
-        return key.replace(SCHEMA_MARKLOGIC_DELIMITER, SCHEMA_ORIGINAL_DELIMITER);
+    public static String deserializeKey(String mlKey) {
+        // Do it this way to avoid memory issues by instantiating to many object to replace character
+        StringBuilder nxKey = new StringBuilder(mlKey.length());
+        boolean underscore = false;
+        for (int i = 0; i < mlKey.length(); i++) {
+            boolean underscoreNext = false;
+            char c = mlKey.charAt(i);
+            if (c == '_') {
+                if (underscore) {
+                    nxKey.append(SCHEMA_ORIGINAL_DELIMITER);
+                } else {
+                    underscoreNext = true;
+                }
+            } else {
+                nxKey.append(c);
+            }
+            underscore = underscoreNext;
+        }
+        return nxKey.toString();
     }
 
     public static String getLastElementName(String path) {

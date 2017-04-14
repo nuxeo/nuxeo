@@ -665,7 +665,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         }
     }
 
-    private Stream<State> findAll(String ctsQuery, String... selects) {
+    protected Stream<State> findAll(String ctsQuery, String... selects) {
         String query = ctsQuery;
         if (selects.length > 0) {
             query = "import module namespace extract = 'http://nuxeo.com/extract' at '/ext/nuxeo/extract.xqy';\n"
