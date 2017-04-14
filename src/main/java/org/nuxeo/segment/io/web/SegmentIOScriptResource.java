@@ -25,15 +25,12 @@ public class SegmentIOScriptResource extends ModuleRoot {
 
     @GET
     public Object anonymous() {
-        // here the security context won't be initialized
-        // so there is no need to try to find the user
         return buildScript(null);
     }
 
     @GET
     @Path("user/{login}")
-    public Object signed(@PathParam("login")
-    String login) {
+    public Object signed(@PathParam("login") String login) {
         return buildScript(login);
     }
 
@@ -71,9 +68,7 @@ public class SegmentIOScriptResource extends ModuleRoot {
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getPrincipal();
 
         if (principal != null) {
-            if (login == null) {
-                ctx.put("principal", principal);
-            } else if (principal.getName().equals(login)) {
+            if (login == null || principal.getName().equals(login)) {
                 ctx.put("principal", principal);
             }
         }
@@ -91,9 +86,8 @@ public class SegmentIOScriptResource extends ModuleRoot {
     @GET
     @Path("marketo/{email}")
     @Produces("text/plain")
-    public String getMarketo(@PathParam("email")
-    String email) {
-        if (email==null || email.isEmpty()) {
+    public String getMarketo(@PathParam("email") String email) {
+        if (email == null || email.isEmpty()) {
             return "";
         }
         return MarketoHelper.getLeadHash(email);
