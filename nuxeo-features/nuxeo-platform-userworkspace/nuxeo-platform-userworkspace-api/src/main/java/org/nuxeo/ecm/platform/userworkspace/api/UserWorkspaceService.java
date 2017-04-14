@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.platform.userworkspace.api;
 
 import java.io.Serializable;
+import java.security.Principal;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -67,5 +68,16 @@ public interface UserWorkspaceService extends Serializable {
      * @since 5.7
      */
     DocumentModel getUserPersonalWorkspace(NuxeoPrincipal principal, DocumentModel context);
+
+    /**
+     * Checks whether the passed document is under the user's workspace (or is the workspace itself).
+     *
+     * @param principal the user
+     * @param username the username, if principal is not available
+     * @param doc the document
+     * @return {@code true} if the document is under the user's workspace
+     * @since 9.2
+     */
+    boolean isUnderUserWorkspace(Principal principal, String username, DocumentModel doc);
 
 }
