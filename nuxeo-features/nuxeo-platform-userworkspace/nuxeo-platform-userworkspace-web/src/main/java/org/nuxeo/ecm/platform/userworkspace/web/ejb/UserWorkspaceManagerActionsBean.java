@@ -43,7 +43,6 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceManagerActions;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
-import org.nuxeo.ecm.platform.userworkspace.constants.UserWorkspaceConstants;
 import org.nuxeo.ecm.webapp.action.MainTabsActions;
 import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -186,26 +185,15 @@ public class UserWorkspaceManagerActionsBean implements UserWorkspaceManagerActi
         return returnView;
     }
 
+    @Override
     @Factory(value = "isInsidePersonalWorkspace", scope = ScopeType.EVENT)
     public boolean isShowingPersonalWorkspace() {
         if (!initialized) {
             initialize();
         }
-
-        // NXP-9813 : navigating to a tab different than Documents should not change
-        // the value for showingPersonalWorkspace
         if (mainTabsActions.isOnMainTab(DOCUMENT_MANAGEMENT_ACTION)) {
             DocumentModel currentDoc = navigationContext.getCurrentDocument();
-
-            if (currentDoc == null || currentDoc.getPath().segmentCount() < 2) {
-                return false;
-            }
-
-            String rootChild = currentDoc.getPath().segment(1);
-            String wsName = currentDoc.getPath().segment(2);
-            showingPersonalWorkspace = rootChild != null
-                    && rootChild.startsWith(UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT) && wsName != null
-                    && wsName.equals(currentUser.getName());
+            showingPersonalWorkspace = getUserWorkspaceService().isUnderUserWorkspace(currentUser, null, currentDoc);
         }
         return showingPersonalWorkspace;
     }
