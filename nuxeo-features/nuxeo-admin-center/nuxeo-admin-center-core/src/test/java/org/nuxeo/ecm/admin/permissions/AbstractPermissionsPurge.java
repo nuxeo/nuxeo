@@ -57,7 +57,7 @@ public abstract class AbstractPermissionsPurge {
     @Inject
     protected WorkManager workManager;
 
-    public abstract void scheduleWork(DocumentModel doc) throws Exception;
+    public abstract void scheduleWork(List<String> username) throws Exception;
 
     @Test
     public void shouldArchiveACEs() throws Exception {
@@ -75,13 +75,9 @@ public abstract class AbstractPermissionsPurge {
         assertEquals("Read", ace.getPermission());
         assertTrue(ace.isEffective());
 
-        DocumentModel searchDocument = session.createDocumentModel("PermissionsSearch");
-        List<String> usernames = Collections.singletonList("leela");
-        searchDocument.setPropertyValue("rs:ace_username", (Serializable) usernames);
-
         TransactionHelper.commitOrRollbackTransaction();
 
-        scheduleWork(searchDocument);
+        scheduleWork(Collections.singletonList("leela"));
 
         workManager.awaitCompletion(10000, TimeUnit.SECONDS);
 

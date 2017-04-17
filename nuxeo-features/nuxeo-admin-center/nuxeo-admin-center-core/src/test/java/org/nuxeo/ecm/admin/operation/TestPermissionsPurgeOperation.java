@@ -19,17 +19,20 @@
 
 package org.nuxeo.ecm.admin.operation;
 
-import java.util.Collections;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.admin.permissions.AbstractPermissionsPurge;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -43,10 +46,12 @@ public class TestPermissionsPurgeOperation extends AbstractPermissionsPurge {
     protected AutomationService automationService;
 
     @Override
-    public void scheduleWork(DocumentModel doc) throws OperationException {
+    public void scheduleWork(List<String> usernames) throws OperationException {
         OperationContext ctx = new OperationContext(session);
-        ctx.setInput(doc);
+        Map<String, Serializable> params = new HashMap<>();
 
-        automationService.run(ctx, PermissionsPurge.ID, Collections.emptyMap());
+        params.put("usernames", StringUtils.join(usernames, ","));
+
+        automationService.run(ctx, PermissionsPurge.ID, params);
     }
 }

@@ -19,10 +19,20 @@
 
 package org.nuxeo.ecm.admin.operation;
 
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.nuxeo.ecm.admin.permissions.PermissionsPurgeWork;
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.collectors.DocumentModelListCollector;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -35,8 +45,31 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public class PermissionsPurge {
     static final String ID = "PermissionsPurge";
 
+    @Param(name = "usernames", description = "Coma separate list of username")
+    protected String usernames = "";
+
+    @Context
+    protected CoreSession session;
+
     @OperationMethod
-    public void purge(DocumentModel doc) {
-        new PermissionsPurgeWork(doc).launch();
+    public void purgeDocs(List<DocumentModel> docs) {
+        List<String> ancestorIds = docs.stream().map(DocumentModel::getId).collect(Collectors.toList());
+        List<String> usernames = Arrays.asList(this.usernames.split(",\\s*"));
+
+        DocumentModel searchDocument = session.createDocumentModel("PermissionsSearch");
+        searchDocument.setPropertyValue("rs:ace_username", (Serializable) usernames);
+        searchDocument.setPropertyValue("rs:ecm_ancestorIds", (Serializable) ancestorIds);
+
+        new PermissionsPurgeWork(searchDocument).launch();
+    }
+
+    @OperationMethod
+    public void purgeDoc(DocumentModel doc) {
+        purgeDocs(Collections.singletonList(doc));
+    }
+
+    @OperationMethod
+    public void purge() {
+        purgeDocs(Collections.emptyList());
     }
 }

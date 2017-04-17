@@ -19,10 +19,15 @@
 
 package org.nuxeo.ecm.admin.permissions;
 
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 7.10
@@ -31,8 +36,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestPermissionsPurge extends AbstractPermissionsPurge {
 
     @Override
-    public void scheduleWork(DocumentModel doc) {
-        PermissionsPurgeWork work = new PermissionsPurgeWork(doc);
+    public void scheduleWork(List<String> usernames) {
+        DocumentModel searchDocument = session.createDocumentModel("PermissionsSearch");
+        searchDocument.setPropertyValue("rs:ace_username", (Serializable) usernames);
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        PermissionsPurgeWork work = new PermissionsPurgeWork(searchDocument);
         workManager.schedule(work, WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
     }
 }
