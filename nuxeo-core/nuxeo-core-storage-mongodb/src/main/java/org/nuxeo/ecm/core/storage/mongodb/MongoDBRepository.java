@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.TRUE;
-import static org.nuxeo.ecm.core.api.ScrollResultImpl.emptyResult;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_STATUS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
@@ -53,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.resource.spi.ConnectionManager;
@@ -62,12 +60,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.CursorService;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
-import org.nuxeo.ecm.core.api.ScrollResultImpl;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
@@ -168,7 +166,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected final MongoDBConverter converter;
 
-    protected static Map<String, CursorResult> cursorResults = new ConcurrentHashMap<>();
+    protected final CursorService<DBCursor, DBObject> cursorService = new CursorService<>();
 
     public MongoDBRepository(ConnectionManager cm, MongoDBRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
@@ -202,6 +200,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @Override
     public void shutdown() {
         super.shutdown();
+        cursorService.clear();
         mongoClient.close();
     }
 
@@ -623,7 +622,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
-        checkForTimedoutScroll();
+        cursorService.checkForTimedOutScroll();
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder(this, evaluator.getExpression(),
                 evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
         builder.walk();
@@ -637,59 +636,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
 
         DBCursor cursor = coll.find(query, keys);
-        String scrollId = UUID.randomUUID().toString();
-        registerCursor(scrollId, cursor, batchSize, keepAliveSeconds);
+        String scrollId = cursorService.registerCursor(cursor, batchSize, keepAliveSeconds);
         return scroll(scrollId);
-    }
-
-    protected void checkForTimedoutScroll() {
-        cursorResults.forEach((id, cursor) -> cursor.timedOut(id));
-    }
-
-    protected void registerCursor(String scrollId, DBCursor cursor, int batchSize, int keepAliveSeconds) {
-        cursorResults.put(scrollId, new CursorResult(cursor, batchSize, keepAliveSeconds));
     }
 
     @Override
     public ScrollResult scroll(String scrollId) {
-        CursorResult cursorResult = cursorResults.get(scrollId);
-        if (cursorResult == null) {
-            throw new NuxeoException("Unknown or timed out scrollId");
-        } else if (cursorResult.timedOut(scrollId)) {
-            throw new NuxeoException("Timed out scrollId");
-        }
-        cursorResult.touch();
-        List<String> ids = new ArrayList<>(cursorResult.batchSize);
-        synchronized (cursorResult) {
-            if (cursorResult.cursor == null || !cursorResult.cursor.hasNext()) {
-                unregisterCursor(scrollId);
-                return emptyResult();
-            }
-            while (ids.size() < cursorResult.batchSize) {
-                if (cursorResult.cursor == null || !cursorResult.cursor.hasNext()) {
-                    cursorResult.close();
-                    break;
-                } else {
-                    DBObject ob = cursorResult.cursor.next();
-                    String id = (String) ob.get(converter.keyToBson(KEY_ID));
-                    if (id != null) {
-                        ids.add(id);
-                    } else {
-                        log.error("Got a document without id: " + ob);
-                    }
-                }
-            }
-        }
-        return new ScrollResultImpl(scrollId, ids);
-    }
-
-    protected boolean unregisterCursor(String scrollId) {
-        CursorResult cursor = cursorResults.remove(scrollId);
-        if (cursor != null) {
-            cursor.close();
-            return true;
-        }
-        return false;
+        return cursorService.scroll(scrollId, ob -> (String) ob.get(converter.keyToBson(KEY_ID)));
     }
 
     protected void addPrincipals(DBObject query, Set<String> principals) {
@@ -892,40 +845,4 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public void clearLockManagerCaches() {
     }
 
-    protected class CursorResult {
-        // Note that MongoDB cursor automatically timeout after 10 minutes of inactivity by default.
-        protected DBCursor cursor;
-        protected final int batchSize;
-        protected long lastCallTimestamp;
-        protected final int keepAliveSeconds;
-
-        public CursorResult(DBCursor cursor, int batchSize, int keepAliveSeconds) {
-            this.cursor = cursor;
-            this.batchSize = batchSize;
-            this.keepAliveSeconds = keepAliveSeconds;
-            lastCallTimestamp = System.currentTimeMillis();
-        }
-
-        void touch() {
-            lastCallTimestamp = System.currentTimeMillis();
-        }
-
-        boolean timedOut(String scrollId) {
-            long now = System.currentTimeMillis();
-            if (now - lastCallTimestamp > (keepAliveSeconds * 1000)) {
-                if (unregisterCursor(scrollId)) {
-                    log.warn("Scroll " + scrollId + " timed out");
-                }
-                return true;
-            }
-            return false;
-        }
-
-        public void close() {
-            if (cursor != null) {
-                cursor.close();
-            }
-            cursor = null;
-        }
-    }
 }
