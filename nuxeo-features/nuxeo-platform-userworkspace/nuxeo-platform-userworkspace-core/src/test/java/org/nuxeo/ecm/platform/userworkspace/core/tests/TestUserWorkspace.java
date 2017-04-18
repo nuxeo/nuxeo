@@ -251,11 +251,11 @@ public class TestUserWorkspace {
         DocumentModel context = session.getRootDocument();
 
         // Automatically create the user workspace
-        DocumentModel uw = uwm.getUserPersonalWorkspace("Jack Von", context);
+        DocumentModel uw = uwm.getUserPersonalWorkspace("AC/DC", context);
 
         assertNotNull(uw);
         // Check the document name was mapped
-        assertEquals(uw.getPath().lastSegment(), "Jack-Von");
+        assertEquals(uw.getPath().lastSegment(), "AC~2fDC");
     }
 
     @Test
@@ -328,8 +328,15 @@ public class TestUserWorkspace {
     public void testCandidateNames() {
         expectCandidateNames("user", //
                 "user");
+        expectCandidateNames("Dr. John Doe", //
+                "Dr. John Doe", //
+                "Dr-John-Doe");
         expectCandidateNames("user@example.com", //
+                "user~40example.com", //
                 "user-example-com");
+        expectCandidateNames("a/b@c~d?f&g", //
+                "a~2fb~40c~7ed~3ff~26g", //
+                "a-b-c-d-f-g");
         // 23 chars
         expectCandidateNames("useruseruseruseruseruse", //
                 "useruseruseruseruseruse");
@@ -339,17 +346,18 @@ public class TestUserWorkspace {
                 "useruseruseruser37fcb8c6");
         // 26 chars
         expectCandidateNames("useruseruseruseruseruserus", //
+                "useruseruseruseruseruserus", //
                 "useruseruseruseruseruser", //
-                "useruseruserusercc1f8605", //
-                "useruseruseruseruseruserus");
+                "useruseruserusercc1f8605");
         // 30 chars
         expectCandidateNames("useruseruseruseruseruseruserus", //
+                "useruseruseruseruseruseruserus", //
                 "useruseruseruseruseruser", //
                 "useruseruseruserbe8cd76e", //
-                "useruseruseruseruseruseruserus", //
                 "useruseruseruseruserusbe8cd76e");
         // 32 chars
         expectCandidateNames("useruseruseruseruseruseruseruser", //
+                "useruseruseruseruseruseruseruser", //
                 "useruseruseruseruseruser", //
                 "useruseruseruser13980873", //
                 "useruseruseruseruseruseruserus", //
