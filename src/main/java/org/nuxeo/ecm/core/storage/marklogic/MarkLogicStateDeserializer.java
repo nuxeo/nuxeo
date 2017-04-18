@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ final class MarkLogicStateDeserializer {
     private static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
 
     static {
-        xmlInputFactory.setProperty(XMLInputFactory.IS_COALESCING, true);
+        xmlInputFactory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.TRUE);
     }
 
     private MarkLogicStateDeserializer() {
@@ -80,7 +80,7 @@ final class MarkLogicStateDeserializer {
                 }
             }
         }
-        throw new NuxeoException("An error occured during xml deserialization.");
+        throw new NuxeoException("An error occurred during xml deserialization.");
     }
 
     private static State deserializeState(XMLEventReader xmler) throws XMLStreamException {
