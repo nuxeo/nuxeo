@@ -19,6 +19,7 @@ package org.nuxeo.connect.tools.report;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,10 +32,6 @@ import org.nuxeo.runtime.management.ResourcePublisher;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.reload.ReloadService;
-import org.nuxeo.runtime.services.event.Event;
-import org.nuxeo.runtime.services.event.EventListener;
-import org.nuxeo.runtime.services.event.EventService;
 
 /**
  * Reports aggregator, exposed as a service in the runtime.
@@ -47,26 +44,6 @@ public class ReportComponent extends DefaultComponent {
 
     public ReportComponent() {
         instance = this;
-    }
-
-    ReloadListener reloadListener;
-
-    class ReloadListener implements EventListener {
-        final ComponentContext context;
-
-        ReloadListener(ComponentContext context) {
-            this.context = context;
-        }
-
-        @Override
-        public void handleEvent(Event event) {
-            if (ReloadService.AFTER_RELOAD_EVENT_ID.equals(event.getId())) {
-                start(context);
-            } else if (ReloadService.BEFORE_RELOAD_EVENT_ID.equals(event.getId())) {
-                stop(context);
-            }
-        }
-
     }
 
     final ReportConfiguration configuration = new ReportConfiguration();
@@ -129,18 +106,14 @@ public class ReportComponent extends DefaultComponent {
 
     @Override
     public void start(ComponentContext context) {
-        instance = this;
-        Framework.getService(EventService.class).addListener(ReloadService.RELOAD_TOPIC,
-                reloadListener = new ReloadListener(context));
         Framework.getService(ResourcePublisher.class).registerResource("connect-report", "connect-report", ReportServer.class, management);
     }
 
     @Override
     public void stop(ComponentContext context) {
-        Framework.getService(EventService.class).removeListener(ReloadService.RELOAD_TOPIC, reloadListener);
         Framework.getService(ResourcePublisher.class).unregisterResource("connect-report", "connect-report");
-        reloadListener = null;
     }
+
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
