@@ -69,6 +69,10 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
 
     private static final long serialVersionUID = 1L;
 
+    protected static final char ESCAPE_CHAR = '~';
+
+    protected static final String ESCAPED_CHARS = ESCAPE_CHAR + "/\\?&;@";
+
     protected String targetDomainName;
 
     protected final int maxsize;
@@ -115,20 +119,46 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
     // public for tests
     public List<String> getCandidateUserWorkspaceNames(String username) {
         List<String> names = new ArrayList<>();
-        generateCandidates(names, username, maxsize);
-        generateCandidates(names, username, 30); // compat
+        names.add(escape(username));
+        generateCandidates(names, username, maxsize); // compat
+        generateCandidates(names, username, 30); // old compat
         return names;
+    }
+
+    /**
+     * Bijective escaping for user names.
+     * <p>
+     * Escapes some chars not allowed in a path segment or URL. The escaping character is a {@code ~} followed by the
+     * one-byte hex value of the character.
+     *
+     * @since 9.2
+     */
+    protected String escape(String string) {
+        StringBuilder buf = new StringBuilder(string.length());
+        for (char c : string.toCharArray()) {
+            if (ESCAPED_CHARS.indexOf(c) == -1) {
+                buf.append(c);
+            } else {
+                buf.append(ESCAPE_CHAR);
+                if (c < 16) {
+                    buf.append('0');
+                }
+                buf.append(Integer.toHexString(c)); // assumed to be < 256
+            }
+        }
+        // don't re-allocate a new string if we didn't escape anything
+        return buf.length() == string.length() ? string : buf.toString();
     }
 
     protected void generateCandidates(List<String> names, String username, int max) {
         String name = IdUtils.generateId(username, "-", false, max);
         if (!names.contains(name)) {
             names.add(name);
-            if (name.length() == max) { // at max size or truncated
-                String digested = name.substring(0, name.length() - 8) + digest(username, 8);
-                if (!names.contains(digested)) {
-                    names.add(digested);
-                }
+        }
+        if (name.length() == max) { // at max size or truncated
+            String digested = name.substring(0, name.length() - 8) + digest(username, 8);
+            if (!names.contains(digested)) {
+                names.add(digested);
             }
         }
     }
