@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,6 @@ import java.util.stream.Collectors;
 
 import javax.resource.spi.ConnectionManager;
 
-import com.mongodb.MongoClientOptions;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -89,6 +88,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
 import com.mongodb.QueryOperators;
 import com.mongodb.ServerAddress;
@@ -207,7 +207,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     // used also by unit tests
     public static MongoClient newMongoClient(MongoDBRepositoryDescriptor descriptor) throws UnknownHostException {
-        MongoClient ret = null;
+        MongoClient ret;
         String server = descriptor.server;
         if (StringUtils.isBlank(server)) {
             throw new NuxeoException("Missing <server> in MongoDB repository descriptor");
@@ -457,7 +457,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected void addIgnoredIds(DBObject query, Set<String> ignored) {
         if (!ignored.isEmpty()) {
-            DBObject notInIds = new BasicDBObject(QueryOperators.NIN, new ArrayList<String>(ignored));
+            DBObject notInIds = new BasicDBObject(QueryOperators.NIN, new ArrayList<>(ignored));
             query.put(idKey, notInIds);
         }
     }
@@ -492,8 +492,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         if (log.isTraceEnabled()) {
             logQuery(query, fields);
         }
-        DBCursor cursor = coll.find(query, fields);
-        try {
+        try (DBCursor cursor = coll.find(query, fields)) {
             for (DBObject ob : cursor) {
                 String id = (String) ob.get(idKey);
                 ids.add(id);
@@ -508,8 +507,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
                     }
                 }
             }
-        } finally {
-            cursor.close();
         }
     }
 
@@ -534,9 +531,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
         if (log.isTraceEnabled()) {
             logQuery(query, null);
         }
-        DBCursor cursor = coll.find(query);
         Set<String> seen = new HashSet<>();
-        try {
+        try (DBCursor cursor = coll.find(query)) {
             List<State> list = new ArrayList<>(sizeHint);
             for (DBObject ob : cursor) {
                 if (!seen.add((String) ob.get(idKey))) {
@@ -547,8 +543,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 list.add(converter.bsonToState(ob));
             }
             return list;
-        } finally {
-            cursor.close();
         }
     }
 
@@ -586,8 +580,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
         List<Map<String, Serializable>> projections;
         long totalSize;
-        DBCursor cursor = coll.find(query, keys).skip(offset).limit(limit);
-        try {
+        try (DBCursor cursor = coll.find(query, keys).skip(offset).limit(limit)) {
             if (orderBy != null) {
                 cursor.sort(orderBy);
             }
@@ -621,8 +614,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
                     totalSize = -2; // truncated
                 }
             }
-        } finally {
-            cursor.close();
         }
         if (log.isTraceEnabled() && projections.size() != 0) {
             log.trace("MongoDB:    -> " + projections.size());
@@ -703,7 +694,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected void addPrincipals(DBObject query, Set<String> principals) {
         if (principals != null) {
-            DBObject inPrincipals = new BasicDBObject(QueryOperators.IN, new ArrayList<String>(principals));
+            DBObject inPrincipals = new BasicDBObject(QueryOperators.IN, new ArrayList<>(principals));
             query.put(DBSDocument.KEY_READ_ACL, inPrincipals);
         }
     }
@@ -736,13 +727,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
         if (log.isTraceEnabled()) {
             logQuery(new BasicDBObject(), binaryKeys);
         }
-        DBCursor cursor = coll.find(new BasicDBObject(), binaryKeys);
-        try {
+        try (DBCursor cursor = coll.find(new BasicDBObject(), binaryKeys)) {
             for (DBObject ob : cursor) {
                 markReferencedBinaries(ob, blobManager);
             }
-        } finally {
-            cursor.close();
         }
     }
 
