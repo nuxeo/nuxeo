@@ -26,6 +26,7 @@ import java.net.URL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
+import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -148,7 +149,7 @@ public class OSGiRuntimeActivator implements BundleActivator {
      *
      * @param runtime the current runtime
      */
-    protected void initialize(OSGiRuntimeService runtime) {
+    protected void initialize(AbstractRuntimeService runtime) {
         // do nothing
     }
 
@@ -157,7 +158,7 @@ public class OSGiRuntimeActivator implements BundleActivator {
      *
      * @param runtime the current runtime
      */
-    protected void uninitialize(OSGiRuntimeService runtime) {
+    protected void uninitialize(AbstractRuntimeService runtime) {
         // do nothing
     }
 

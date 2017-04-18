@@ -28,6 +28,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -191,9 +193,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         initOsgiRuntime();
     }
 
-    /**
-     * Fire the event {@code FrameworkEvent.STARTED}.
-     */
+
     @Override
     public void fireFrameworkStarted() throws Exception {
         boolean txStarted = !TransactionHelper.isTransactionActiveOrMarkedRollback()
@@ -210,6 +210,11 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                 TransactionHelper.commitOrRollbackTransaction();
             }
         }
+    }
+
+    @Override
+    public void standby(Duration delay) throws Exception {
+        Framework.getRuntime().standby(Instant.now().plus(delay));
     }
 
     @After
@@ -417,7 +422,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         RuntimeContext ctx = new OSGiRuntimeContext(runtime, bundle);
         listBundleComponents(bundle).map(URLStreamRef::new).forEach(component -> {
             try {
-                this.deployPartialComponent(ctx, targetExtensions, component);
+                deployPartialComponent(ctx, targetExtensions, component);
             } catch (IOException e) {
                 log.error("PartialBundle: " + name + " failed to load: " + component, e);
             }
@@ -428,7 +433,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     /**
      * Read a component from his StreamRef and create a new component (suffixed with `-partial`, and the base component
      * name aliased) with only matching contributions of the extensionPoints parameter.
-     * 
+     *
      * @param ctx RuntimeContext in which the new component will be deployed
      * @param extensionPoints Set of white listed TargetExtensions
      * @param component Reference to the original component
@@ -457,7 +462,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     /**
      * Listing component's urls of a bundle. Inspired from org.nuxeo.runtime.osgi.OSGiRuntimeService#loadComponents but
      * without deploying anything.
-     * 
+     *
      * @param bundle Bundle to be read
      */
     protected Stream<URL> listBundleComponents(Bundle bundle) {
@@ -468,7 +473,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
             return null;
         }
 
-        return Arrays.stream(list.split("[, \t\n\r\f]")).map(s -> bundle.getEntry((String) s)).filter(Objects::nonNull);
+        return Arrays.stream(list.split("[, \t\n\r\f]")).map(s -> bundle.getEntry(s)).filter(Objects::nonNull);
     }
 
     /**

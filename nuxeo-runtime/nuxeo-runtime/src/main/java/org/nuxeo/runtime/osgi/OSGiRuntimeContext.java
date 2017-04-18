@@ -23,6 +23,7 @@ package org.nuxeo.runtime.osgi;
 
 import java.net.URL;
 
+import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
@@ -104,7 +105,7 @@ public class OSGiRuntimeContext extends DefaultRuntimeContext {
 
     public Bundle getHostBundle() {
         if (hostBundleId != null) {
-            if (hostBundle == null && runtime instanceof OSGiRuntimeService) {
+            if (hostBundle == null && runtime instanceof AbstractRuntimeService) {
                 hostBundle = ((OSGiRuntimeService) runtime).findHostBundle(bundle);
             }
         }

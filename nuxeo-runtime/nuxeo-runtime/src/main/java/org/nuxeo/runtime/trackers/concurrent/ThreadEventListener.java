@@ -48,7 +48,7 @@ public class ThreadEventListener implements EventListener {
         if (!installed) {
             return false;
         }
-        ThreadEvent.ignore(this);
+        ThreadEvent.forget(this);
         return true;
     }
 

@@ -20,6 +20,7 @@ package org.nuxeo.runtime;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Properties;
 
@@ -52,6 +53,19 @@ public interface RuntimeService {
     void start();
 
     /**
+     * put runtime in standby mode
+     * @since 9.2
+     */
+    void standby(Instant limit);
+
+    /**
+     * resume from standby mode
+     *
+     * @since 9.2
+     */
+    void resume();
+
+    /**
      * Stops the runtime.
      */
     void stop();
@@ -70,6 +84,21 @@ public interface RuntimeService {
      * @since 5.5
      */
     boolean isShuttingDown();
+
+
+    /**
+     * Returns true if the runtime is in standby mode
+     *
+     * @since 9.2
+     */
+    boolean isStandby();
+
+    /**
+     * Returns true if the runtime is in resume mode
+     *
+     * @since 9.2
+     */
+    boolean isRunning();
 
     /**
      * Gets the home directory of the runtime.

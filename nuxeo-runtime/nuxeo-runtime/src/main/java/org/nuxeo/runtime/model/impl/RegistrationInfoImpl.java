@@ -20,6 +20,7 @@
 package org.nuxeo.runtime.model.impl;
 
 import java.net.URL;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -151,7 +152,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     }
 
     public void setContext(RuntimeContext rc) {
-        this.context = rc;
+        context = rc;
     }
 
     @Override
@@ -335,6 +336,24 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                     state = START_FAILURE;
                 }
             }
+        }
+    }
+
+
+    @Override
+    public void notifyApplicationStandby(Instant instant) {
+        if (component == null) {
+            return;
+        }
+        Object ci = component.getInstance();
+        if (!(ci instanceof Component)) {
+            return;
+        }
+        try {
+            ((Component) ci).applicationStandby(component, instant);
+        } catch (RuntimeException e) {
+            log.error(String.format("Component %s notification of application end of life failed: %s", component.getName(),
+                    e.getMessage()), e);
         }
     }
 

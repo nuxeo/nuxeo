@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.jar.Manifest;
 
@@ -31,13 +31,10 @@ import javax.transaction.Transaction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.JarUtils;
-import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.ServicePassivator;
 import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -305,7 +302,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         TransactionHelper.startTransaction();
         try {
             try {
-                triggerReloadWithPassivate(id);
+                triggerReload(id);
             } catch (RuntimeException cause) {
                 TransactionHelper.setTransactionRollbackOnly();
                 throw cause;
@@ -317,19 +314,14 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
     }
 
-    protected void triggerReloadWithPassivate(String id) {
-        log.info("about to passivate for " + id);
+    protected void triggerReload(String id) {
+        log.info("about to reload for " + id);
         Framework.getLocalService(EventService.class).sendEvent(
                 new Event(RELOAD_TOPIC, BEFORE_RELOAD_EVENT_ID, this, null));
+        Framework.getRuntime().standby(Instant.now());
         try {
-            ServicePassivator.proceed(Duration.ofSeconds(5), Duration.ofSeconds(30), true, () -> {
-                log.info("about to send " + id);
-                Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, id, this, null));
-            }).onFailure(
-                    snapshot -> {
-                        throw new UnsupportedOperationException("Detected access, should initiate a reboot "
-                                + snapshot.toString());
-                    });
+            Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, id, this, null));
+            Framework.getRuntime().resume();
         } finally {
             Framework.getLocalService(EventService.class).sendEvent(
                     new Event(RELOAD_TOPIC, AFTER_RELOAD_EVENT_ID, this, null));

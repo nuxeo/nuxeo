@@ -155,6 +155,20 @@
 
   <extension target="web#FIRST-FILTER">
     <filter>
+      <display-name>Nuxeo Standby Filter</display-name>
+      <filter-name>NuxeoStandby</filter-name>
+      <filter-class>
+        org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoStandbyFilter
+      </filter-class>
+    </filter>
+    <filter-mapping>
+      <filter-name>NuxeoStandby</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+  </extension>
+
+  <extension target="web#FIRST-FILTER">
+    <filter>
       <display-name>Nuxeo Thread Tracker Filter</display-name>
       <filter-name>NuxeoThreadTracker</filter-name>
       <filter-class>
@@ -166,7 +180,7 @@
       <url-pattern>/*</url-pattern>
     </filter-mapping>
   </extension>
-
+  
   <extension target="web#FILTER">
     <filter>
       <display-name>Nuxeo Simple Cache Filter</display-name>

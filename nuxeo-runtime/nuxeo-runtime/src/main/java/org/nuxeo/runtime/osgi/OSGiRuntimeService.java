@@ -28,13 +28,11 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -51,9 +49,7 @@ import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.ServicePassivator;
 import org.nuxeo.runtime.model.ComponentName;
-import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.ComponentPersistence;
 import org.nuxeo.runtime.model.impl.RegistrationInfoImpl;
@@ -91,13 +87,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
 
     public static final Version VERSION = Version.parseString("1.4.0");
 
-    private static final Log log = LogFactory.getLog(OSGiRuntimeService.class);
+    public static final Log log = LogFactory.getLog(OSGiRuntimeService.class);
 
     private final BundleContext bundleContext;
 
     private final Map<String, RuntimeContext> contexts;
-
-    private boolean appStarted = false;
 
     /**
      * OSGi doesn't provide a method to lookup bundles by symbolic name. This table is used to map symbolic names to
@@ -195,6 +189,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
 
     @Override
     protected void doStart() {
+        super.doStart();
         bundleContext.addFrameworkListener(this);
         loadComponents(bundleContext.getBundle(), context);
     }
@@ -446,36 +441,13 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         }.processText(expression);
     }
 
-    protected void notifyComponentsOnStarted() {
-        List<RegistrationInfo> ris = new ArrayList<>(manager.getRegistrations());
-        Collections.sort(ris, new RIApplicationStartedComparator());
-        for (RegistrationInfo ri : ris) {
-            try {
-                ri.notifyApplicationStarted();
-            } catch (RuntimeException e) {
-                log.error("Failed to notify component '" + ri.getName() + "' on application started", e);
-            }
-        }
-    }
 
-    protected static class RIApplicationStartedComparator implements Comparator<RegistrationInfo> {
-        @Override
-        public int compare(RegistrationInfo r1, RegistrationInfo r2) {
-            int cmp = Integer.compare(r1.getApplicationStartedOrder(), r2.getApplicationStartedOrder());
-            if (cmp == 0) {
-                // fallback on name order, to be deterministic
-                cmp = r1.getName().getName().compareTo(r2.getName().getName());
-            }
-            return cmp;
-        }
-    }
+    /* --------------- FrameworkListener API ------------------ */
 
-    public void fireApplicationStarted() {
-        synchronized (this) {
-            if (appStarted) {
-                return;
-            }
-            appStarted = true;
+    @Override
+    public void frameworkEvent(FrameworkEvent event) {
+        if (event.getType() != FrameworkEvent.STARTED) {
+            return;
         }
         try {
             persistence.loadPersistedComponents();
@@ -487,19 +459,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         // requirement
         // on this marker component
         deployFrameworkStartedComponent();
-        notifyComponentsOnStarted();
-        // print the startup message
+        resume();
         printStatusMessage();
-    }
-
-    /* --------------- FrameworkListener API ------------------ */
-
-    @Override
-    public void frameworkEvent(FrameworkEvent event) {
-        if (event.getType() != FrameworkEvent.STARTED) {
-            return;
-        }
-        ServicePassivator.proceed(Duration.ofSeconds(0), Duration.ofSeconds(0), false, this::fireApplicationStarted);
     }
 
     private void printStatusMessage() {

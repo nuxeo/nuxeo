@@ -44,4 +44,18 @@ public interface RuntimeExtension {
      */
     void stop();
 
+    /**
+     * Resumes the runtime extension.
+     *
+     * @since 9.2
+     */
+    void resume();
+
+    /**
+     * Put the extension in standby mode.
+     *
+     * @since 9.2
+     */
+    void standby();
+
 }

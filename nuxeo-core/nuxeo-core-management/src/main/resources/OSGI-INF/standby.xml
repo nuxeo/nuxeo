@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecmn.core.managemment.standby">
+
+  <require>org.nuxeo.runtime.EventService</require>
+  <require>org.nuxeo.runtime.management.ResourcePublisher</require>
+  <require>org.nuxeo.runtime.metrics.MetricsService</require>
+  
+
+  <implementation
+    class="org.nuxeo.ecm.core.management.standby.StandbyComponent" />
+
+
+</component>
+
