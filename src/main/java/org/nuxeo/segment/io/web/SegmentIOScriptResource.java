@@ -7,7 +7,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -19,6 +18,7 @@ import org.nuxeo.segment.io.SegmentIOUserFilter;
 
 @WebObject(type = "segmentIOScriptResource")
 @Path("/segmentIO")
+@Produces("application/javascript")
 public class SegmentIOScriptResource extends ModuleRoot {
 
     protected static final Log log = LogFactory.getLog(SegmentIOScriptResource.class);
