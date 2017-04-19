@@ -57,6 +57,8 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode {
 
     protected PublicationNode parent;
 
+    protected List<PublicationNode> childrenNodes;
+
     protected PublishedDocumentFactory factory;
 
     public CoreFolderPublicationNode(DocumentModel doc, PublicationTree tree, PublicationNode parent,
@@ -100,11 +102,12 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode {
     }
 
     public List<PublicationNode> getChildrenNodes() {
-        DocumentModelList children = getSortedChildren(false);
-
-        List<PublicationNode> childrenNodes = new ArrayList<PublicationNode>();
-        for (DocumentModel child : children) {
-            childrenNodes.add(new CoreFolderPublicationNode(child, tree, this, factory));
+        if (childrenNodes == null) {
+            DocumentModelList children = getSortedChildren(false);
+            childrenNodes = new ArrayList<>();
+            for (DocumentModel child : children) {
+                childrenNodes.add(new CoreFolderPublicationNode(child, tree, this, factory));
+            }
         }
         return childrenNodes;
     }
