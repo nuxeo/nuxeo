@@ -26,4 +26,23 @@
 
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      If true listener will recursive on children of document by paginate them.
+      <p />
+      Default behavior is to fetch all children once.
+
+      @since 8.10-HF05, 9.2
+    </documentation>
+    <property name="nuxeo.bulkLifeCycleChangeListener.paginate-get-children">false</property>
+
+    <documentation>
+      If "nuxeo.bulkLifeCycleChangeListener.paginate-get-children" is true, this property set the page size for get
+      children calls.
+
+      @since 8.10-HF05, 9.2
+    </documentation>
+    <property name="nuxeo.bulkLifeCycleChangeListener.get-children-page-size">500</property>
+  </extension>
+
 </component>
