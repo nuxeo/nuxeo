@@ -97,7 +97,7 @@ public class ComponentDeploymentTest extends NXRuntimeTestCase {
             assertFalse(runtime.getStatusMessage(builder));
             assertEquals(
                     "======================================================================\n"
-                            + "= Component Loading Status: Pending: 1 / Missing: 1 / Unstarted: 0 / Total: 9\n"
+                            + "= Component Loading Status: Pending: 1 / Missing: 1 / Unstarted: 0 / Total: 10\n"
                             + "  * service:CompA requires [service:CompC]\n"
                             + "  * service:CompB references missing [target=my.comp3;point=xp, target=my.comp4;point=xp]\n"
                             + "======================================================================",
