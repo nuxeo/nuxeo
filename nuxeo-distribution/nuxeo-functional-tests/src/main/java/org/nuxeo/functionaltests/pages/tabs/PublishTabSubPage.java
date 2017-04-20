@@ -76,6 +76,38 @@ public class PublishTabSubPage extends AbstractPage {
         return this;
     }
 
+    /**
+     * @since 9.2
+     */
+    public List<WebElement> getTreeNode() {
+        return findElementsWithTimeout(By.xpath(
+                "//div[@id='publishTreeForm:sectionTree'] //div[@class='rf-trn'] //span[@class='tipsyShow tipsyGravityS']"));
+    }
+
+    /**
+     * @since 9.2
+     */
+    public void expandAll() {
+        List<WebElement> expanders = getItemExpanderInPublishTreeForm();
+        if (expanders.isEmpty()) {
+            return;
+        } else {
+            for (WebElement expander : expanders) {
+                Locator.waitUntilEnabledAndClick(expander);
+            }
+        }
+    }
+
+    /**
+     * @since 9.2
+     */
+    public void refreshPublicationTree() {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
+        findElementWaitUntilEnabledAndClick(By.xpath("//a[contains(@id, 'publishTreeForm:j')]"));
+        arm.end();
+    }
+
     private boolean matchSectionName(WebElement publishRow, String sectionName) {
         String sectionNameXpath = String.format("./td/a[contains(text(),'%s')]", sectionName);
         try {
@@ -112,11 +144,6 @@ public class PublishTabSubPage extends AbstractPage {
             }
             return findTreeNodeIndex(itemName);
         }
-    }
-
-    private List<WebElement> getTreeNode() {
-        return findElementsWithTimeout(By.xpath(
-                "//div[@id='publishTreeForm:sectionTree'] //div[@class='rf-trn'] //span[@class='tipsyShow tipsyGravityS']"));
     }
 
     private List<WebElement> getItemExpanderInPublishTreeForm() {
