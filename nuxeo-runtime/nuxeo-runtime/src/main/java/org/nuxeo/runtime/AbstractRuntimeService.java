@@ -74,7 +74,8 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     public static final long LOG4J_WATCH_DELAY_DEFAULT = 10;
 
-    private static final Log log = LogFactory.getLog(RuntimeService.class);
+    // package-private for subclass access without synthetic accessor
+    static final Log log = LogFactory.getLog(RuntimeService.class);
 
     protected boolean isStarted = false;
 
@@ -389,6 +390,22 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         msg.append(hr);
         return (warnings.isEmpty() && pendingRegistrations.isEmpty() && missingRegistrations.isEmpty()
                 && unstartedRegistrations.isEmpty());
+    }
+
+    /**
+     * Error logger which does its logging from a separate thread, for thread isolation.
+     *
+     * @param message the message to log
+     * @return a thread that can be started to do the logging
+     * @since 9.2, 8.10-HF05
+     */
+    public static Thread getErrorLoggerThread(String message) {
+        return new Thread() {
+            @Override
+            public void run() {
+                log.error(message);
+            }
+        };
     }
 
 }

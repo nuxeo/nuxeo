@@ -29,6 +29,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 5.4.2.qualifier
 Eclipse-BuddyPolicy: registered
 Nuxeo-Component: OSGI-INF/EventService.xml,
+ OSGI-INF/RuntimeComponent.xml,
  OSGI-INF/ResourceService.xml,
  OSGI-INF/LoginComponent.xml,
  OSGI-INF/ContributionPersistence.xml,
