@@ -4,18 +4,21 @@
   analytics.page();
   }}();
 
-  function identifyIfNeeded(login, email) {
+  function identifyIfNeeded(login, email, traits) {
     var blackList = ${blackListedLogins};
     if (login) {
       if (blackList.indexOf(login)>=0) {
         return;
       }
       if (document.cookie.indexOf("_nxIdentified="+login)<0) {
+        // merge email and additional traits
+        if(!traits){
+        	traits = {};
+        }
+        traits.email = email;
         // do the identify
-         analytics.identify(login, {
-          email   : email
-         });
-         document.cookie = "_nxIdentified="+login;
+        analytics.identify(login, traits);
+        document.cookie = "_nxIdentified="+login;
       }
     }
   }
