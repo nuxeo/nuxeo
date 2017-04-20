@@ -40,12 +40,6 @@ public class SegmentIODataWrapper {
         if (!metadata.containsKey("email")) {
             metadata.put("email", principal.getEmail());
         }
-        if (!metadata.containsKey("firstName")) {
-            metadata.put("firstName", principal.getFirstName());
-        }
-        if (!metadata.containsKey("lastName")) {
-            metadata.put("lastName", principal.getLastName());
-        }
 
         // allow override
         if (metadata.containsKey(LOGIN_KEY)) {
