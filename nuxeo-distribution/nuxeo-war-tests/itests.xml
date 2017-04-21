@@ -29,9 +29,9 @@
   </target>
 
   <target name="start" depends="_init,_homes-switch,stop,start-unix,start-windows">
-    <!-- Sadly, Tomcat startup return too quickly -->
+    <!-- wait for effective start -->
     <waitfor maxwait="120" maxwaitunit="second">
-      <http url="http://localhost:8080/nuxeo" />
+      <http url="${nuxeoURL}" />
     </waitfor>
   </target>
 
