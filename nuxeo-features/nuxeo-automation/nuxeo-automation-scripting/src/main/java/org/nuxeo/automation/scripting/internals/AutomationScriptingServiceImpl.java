@@ -45,21 +45,15 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
-
 import jdk.nashorn.api.scripting.ClassFilter;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 public class AutomationScriptingServiceImpl implements AutomationScriptingService {
 
-    final Supplier<ScriptEngine> supplier = new Factory().supplier;
+    private final Supplier<ScriptEngine> supplier = new Factory().supplier;
 
-    final boolean inlinedContext = Framework.getService(ConfigurationService.class)
-            .isBooleanPropertyTrue("nuxeo.automation.scripting.inline-context-in-parms");
-
-    final AutomationScriptingParamsInjector parmsInjector = AutomationScriptingParamsInjector
-            .newInstance(inlinedContext);
+    protected AutomationScriptingParamsInjector parmsInjector;
 
     @Override
     public Session get(CoreSession session) {

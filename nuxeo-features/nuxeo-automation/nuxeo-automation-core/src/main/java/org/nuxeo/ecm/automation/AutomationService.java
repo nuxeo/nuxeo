@@ -55,6 +55,7 @@ public interface AutomationService {
 
     /**
      * Registers an operation given it's type.
+     * @throws OperationException
      *
      * @since 5.9.2
      */

@@ -16,24 +16,47 @@
  */
 package org.nuxeo.automation.scripting.internals;
 
-import java.util.stream.Stream;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
-/**
- *
- *
- * @since TODO
- */
+
 public class AutomationScriptingRegistry extends SimpleContributionRegistry<ScriptingOperationDescriptor> {
+
+    protected AutomationScriptingServiceImpl scripting;
+
+    protected AutomationService automation;
+
+    protected final Map<String,OperationType> registration = new HashMap<>();
 
     @Override
     public String getContributionId(ScriptingOperationDescriptor contrib) {
         return contrib.getId();
     }
 
-    public Stream<ScriptingOperationDescriptor> stream() {
-        return currentContribs.values().stream();
+    @Override
+    public void contributionRemoved(String id, ScriptingOperationDescriptor origContrib) {
+        automation.removeOperation(registration.remove(id));
     }
+
+    @Override
+    public void contributionUpdated(String id, ScriptingOperationDescriptor contrib,
+            ScriptingOperationDescriptor newOrigContrib) {
+        ScriptingOperationTypeImpl type = new ScriptingOperationTypeImpl(scripting,
+                automation, contrib);
+        try {
+            automation.putOperation(type, true);
+        } catch (OperationException cause) {
+            throw new NuxeoException("Cannot update scripting operation " + id, cause);
+        }
+        registration.put(id, type);
+    }
+
 
 }
