@@ -18,7 +18,6 @@ package org.nuxeo.automation.scripting.internals;
 
 import java.util.stream.Stream;
 
-import org.nuxeo.automation.scripting.internals.operation.ScriptingOperationDescriptor;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**

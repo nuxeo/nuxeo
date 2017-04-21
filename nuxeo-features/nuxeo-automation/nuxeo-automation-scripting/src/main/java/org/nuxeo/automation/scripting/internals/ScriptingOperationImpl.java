@@ -16,7 +16,7 @@
  * Contributors:
  *     Thierry Delprat <tdelprat@nuxeo.com>
  */
-package org.nuxeo.automation.scripting.internals.operation;
+package org.nuxeo.automation.scripting.internals;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;

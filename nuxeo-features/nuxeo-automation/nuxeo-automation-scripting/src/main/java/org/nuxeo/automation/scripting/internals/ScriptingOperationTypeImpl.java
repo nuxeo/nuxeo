@@ -16,21 +16,17 @@
  * Contributors:
  *     Thierry Delprat <tdelprat@nuxeo.com>
  */
-package org.nuxeo.automation.scripting.internals.operation;
+package org.nuxeo.automation.scripting.internals;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.api.ScriptingException;
-import org.nuxeo.automation.scripting.internals.AutomationScriptingServiceImpl;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
-import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
@@ -40,7 +36,7 @@ import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
  */
 public class ScriptingOperationTypeImpl implements OperationType {
 
-    protected final AutomationScriptingService scripting;
+    protected final AutomationScriptingServiceImpl scripting;
 
     protected final AutomationService automation;
 
@@ -84,10 +80,9 @@ public class ScriptingOperationTypeImpl implements OperationType {
 
     @Override
     public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException {
-        Map<String, Object> merged = new HashMap<>(args);
-        Arrays.stream(desc.params).map(Param::getName).filter(name -> ctx.containsKey(name))
-                .forEach(name -> merged.put(name, ctx.get(name)));
-        return new ScriptingOperationImpl(desc.source, ctx, merged);
+        Map<String, Object> parms = new HashMap<>(args);
+        scripting.parmsInjector.inject(parms, ctx, desc);
+        return new ScriptingOperationImpl(desc.source, ctx, parms);
     }
 
     @Override

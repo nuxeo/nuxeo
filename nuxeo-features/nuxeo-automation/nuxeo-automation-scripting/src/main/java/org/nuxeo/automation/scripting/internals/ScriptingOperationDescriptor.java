@@ -16,7 +16,7 @@
  * Contributors:
  *     Thierry Delprat <tdelprat@nuxeo.com>
  */
-package org.nuxeo.automation.scripting.internals.operation;
+package org.nuxeo.automation.scripting.internals;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;

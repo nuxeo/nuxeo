@@ -250,7 +250,7 @@ public class OperationContext extends AbstractMap<String,Object> implements  Aut
     }
 
     public Map<String, Object> getVars() {
-        return this;
+        return vars;
     }
 
     /** the map API */
