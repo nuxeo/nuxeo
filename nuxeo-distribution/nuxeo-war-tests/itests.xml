@@ -5,6 +5,8 @@
 
   <property name="out.dir" value="${maven.project.build.directory}" />
   <property name="nuxeo.war" value="${out.dir}/nuxeo-war.zip" />
+  <property name="tomcat.home" value="${out.dir}/tomcat" />
+
   <unzip dest="${out.dir}/" overwrite="false">
     <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
   </unzip>
@@ -13,9 +15,32 @@
   <target name="prepare-environment"
           depends="_init,prepare-db,prepare-tomcat,prepare-monitor"
           description="prepare all ressources for test">
+    <delete failonerror="false" file="${nuxeo.war}" />
+    <chmod dir="${nuxeo.home}/bin" perm="ug+x" includes="*.sh,*ctl" />
+    <exec executable="${nuxeo.ctl}" spawn="false" failonerror="true">
+      <arg value="pack" />
+      <arg value="--" />
+      <arg value="${nuxeo.war}" />
+    </exec>
 
-    <antcall target="create-pack" />
     <antcall target="deploy-war" />
+  </target>
+
+  <target name="deploy-war" depends="_homes-switch,tomcat-download">
+    <unzip src="${nuxeo.war}" dest="${tomcat.home}/" />
+  </target>
+
+  <target name="_homes-switch">
+    <echo message="HOME SWITCH ${nuxeo.home} -> ${tomcat.home}" />
+    <!-- Reset ${nuxeo.home} for using tomcat home instead -->
+    <var name="nuxeo.home" unset="true" />
+    <var name="nuxeo.home" value="${tomcat.home}" />
+
+    <!-- Reset ${nuxeo.ctl} for using `catalina.sh` instead -->
+    <var name="nuxeo.ctl" unset="true" />
+    <condition property="nuxeo.ctl" value="${tomcat.home}/bin/catalina.sh" else="${tomcat.home}/bin/catalina.bat">
+      <isset property="osfamily-unix" />
+    </condition>
   </target>
 
   <target name="tomcat-download">
@@ -43,34 +68,5 @@
       </then>
     </if>
   </target>
-
-  <target name="create-pack">
-    <delete failonerror="false" file="${nuxeo.war}" />
-    <chmod dir="${nuxeo.home}/bin" perm="ug+x" includes="*.sh,*ctl" />
-    <exec executable="${nuxeo.ctl}" spawn="false" failonerror="true">
-      <arg value="pack" />
-      <arg value="--" />
-      <arg value="${nuxeo.war}" />
-    </exec>
-  </target>
-
-  <target name="deploy-war" depends="_homes-switch,tomcat-download">
-    <unzip src="${nuxeo.war}" dest="${tomcat.home}/" />
-  </target>
-
-  <target name="_homes-switch">
-    <condition property="tomcat.home" value="${out.dir}/tomcat" else="${nuxeo.home}">
-      <isset property="env.NUXEO_HOME" />
-    </condition>
-
-    <!-- Reset ${nuxeo.home} for using tomcat home instead -->
-    <var name="nuxeo.home" unset="true" />
-    <var name="nuxeo.home" value="${tomcat.home}" />
-
-    <!-- Reset ${nuxeo.ctl} for using `catalina.sh` instead -->
-    <var name="nuxeo.ctl" unset="true" />
-    <condition property="nuxeo.ctl" value="${tomcat.home}/bin/catalina.sh" else="${tomcat.home}/bin/catalina.bat">
-      <isset property="osfamily-unix" />
-    </condition>
-  </target>
 </project>
+
