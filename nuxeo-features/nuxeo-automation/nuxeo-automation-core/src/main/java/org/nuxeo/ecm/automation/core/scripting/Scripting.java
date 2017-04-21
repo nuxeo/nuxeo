@@ -92,7 +92,7 @@ public class Scripting {
 
     public static Map<String, Object> initBindings(OperationContext ctx) {
         Object input = ctx.getInput(); // get last output
-        Map<String, Object> map = new HashMap<>(ctx);
+        Map<String, Object> map = new HashMap<>(ctx.getVars());
         map.put("CurrentDate", new DateWrapper());
         map.put("Context", ctx);
         map.put(Constants.VAR_RUNTIME_CHAIN, ctx);

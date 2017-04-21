@@ -22,6 +22,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +36,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,8 +49,10 @@ import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.scripting.MvelExpression;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.nuxeo.ecm.automation.core.util.DataModelProperties;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -550,5 +554,18 @@ public class TestScriptRunnerInfrastructure {
                     (Object[]) root.getProperty("dc:subjects").getValue());
         }
     }
+
+
+    @Test
+    public void testNotInlinedContext() throws OperationException {
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.put("today", new MvelExpression("CurrentDate.date"));
+            ctx.put("tomorrow", new MvelExpression("CurrentDate.days(1).date"));
+            DataModelProperties props = (DataModelProperties)automationService.run(ctx, "Scripting.TestParams");
+            Assertions.assertThat(props.getMap()).containsOnlyKeys("today");
+        }
+    }
+
+
 
 }

@@ -23,8 +23,6 @@ package org.nuxeo.automation.scripting.internals;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
-import org.nuxeo.automation.scripting.internals.operation.ScriptingOperationDescriptor;
-import org.nuxeo.automation.scripting.internals.operation.ScriptingOperationTypeImpl;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.runtime.RuntimeServiceEvent;

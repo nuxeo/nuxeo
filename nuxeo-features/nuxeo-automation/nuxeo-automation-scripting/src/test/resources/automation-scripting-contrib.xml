@@ -479,6 +479,18 @@
         }
       ]]></script>
     </scriptedOperation>
+    
+       <scriptedOperation id="Scripting.TestParams">
+      <inputType>void</inputType>
+      <outputType>void</outputType>
+      <param name="today" type="Object"/>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+          return params;
+        }
+      ]]></script>
+    </scriptedOperation>
 
   </extension>
 
