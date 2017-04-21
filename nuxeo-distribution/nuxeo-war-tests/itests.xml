@@ -1,78 +1,76 @@
-<project name="static-war-tests"
-         xmlns:artifact="urn:nuxeo-artifact">
-  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build"/>
-  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
-           uri="urn:nuxeo-artifact"/>
-  <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+<project name="static-war-tests" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
 
-  <property name="out.dir" value="${maven.project.build.directory}"/>
-  <property name="nuxeo.war" value="${out.dir}/nuxeo-war.zip"/>
+  <property name="out.dir" value="${maven.project.build.directory}" />
+  <property name="nuxeo.war" value="${out.dir}/nuxeo-war.zip" />
   <unzip dest="${out.dir}/" overwrite="false">
-    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip"/>
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
   </unzip>
-  <import file="${out.dir}/nuxeo-ftest.xml"/>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
 
   <target name="prepare-environment"
           depends="_init,prepare-db,prepare-tomcat,prepare-monitor"
           description="prepare all ressources for test">
 
-    <antcall target="create-pack"/>
-    <antcall target="deploy-war"/>
+    <antcall target="create-pack" />
+    <antcall target="deploy-war" />
   </target>
 
   <target name="tomcat-download">
-    <var name="tomcat.gav" value="org.apache.tomcat:tomcat::zip"/>
-    <echo level="info" message="Downloading ${tomcat.gav}"/>
-    <delete failonerror="false" dir="${tomcat.home}"/>
+    <var name="tomcat.gav" value="org.apache.tomcat:tomcat::zip" />
+    <echo level="info" message="Downloading ${tomcat.gav}" />
+    <delete failonerror="false" dir="${tomcat.home}" />
     <unzip dest="${tomcat.home}/">
-      <artifact:file key="${tomcat.gav}"/>
-      <cutdirsmapper dirs="1"/>
+      <artifact:file key="${tomcat.gav}" />
+      <cutdirsmapper dirs="1" />
     </unzip>
   </target>
 
   <target name="start" depends="_init,_homes-switch,stop,start-unix,start-windows">
     <!-- Sadly, Tomcat startup return too quickly -->
     <waitfor maxwait="120" maxwaitunit="second">
-      <http url="http://localhost:8080/nuxeo"/>
+      <http url="http://localhost:8080/nuxeo" />
     </waitfor>
   </target>
 
   <target name="stop" depends="_init,_homes-switch,stop-unix,stop-windows">
     <if>
-      <equals arg1="${env.KILL_TOMCAT}" arg2="true"/>
+      <equals arg1="${env.KILL_TOMCAT}" arg2="true" />
       <then>
-        <antcall target="kill-tomcat"/>
+        <antcall target="kill-tomcat" />
       </then>
     </if>
   </target>
 
   <target name="create-pack">
-    <delete failonerror="false" file="${nuxeo.war}"/>
-    <chmod dir="${nuxeo.home}/bin" perm="ug+x" includes="*.sh,*ctl"/>
+    <delete failonerror="false" file="${nuxeo.war}" />
+    <chmod dir="${nuxeo.home}/bin" perm="ug+x" includes="*.sh,*ctl" />
     <exec executable="${nuxeo.ctl}" spawn="false" failonerror="true">
-      <arg value="pack"/>
-      <arg value="--"/>
-      <arg value="${nuxeo.war}"/>
+      <arg value="pack" />
+      <arg value="--" />
+      <arg value="${nuxeo.war}" />
     </exec>
   </target>
 
   <target name="deploy-war" depends="_homes-switch,tomcat-download">
-    <unzip src="${nuxeo.war}" dest="${tomcat.home}/"/>
+    <unzip src="${nuxeo.war}" dest="${tomcat.home}/" />
   </target>
 
   <target name="_homes-switch">
     <condition property="tomcat.home" value="${out.dir}/tomcat" else="${nuxeo.home}">
-      <isset property="env.NUXEO_HOME"/>
+      <isset property="env.NUXEO_HOME" />
     </condition>
 
     <!-- Reset ${nuxeo.home} for using tomcat home instead -->
-    <var name="nuxeo.home" unset="true"/>
-    <var name="nuxeo.home" value="${tomcat.home}"/>
+    <var name="nuxeo.home" unset="true" />
+    <var name="nuxeo.home" value="${tomcat.home}" />
 
     <!-- Reset ${nuxeo.ctl} for using `catalina.sh` instead -->
-    <var name="nuxeo.ctl" unset="true"/>
+    <var name="nuxeo.ctl" unset="true" />
     <condition property="nuxeo.ctl" value="${tomcat.home}/bin/catalina.sh" else="${tomcat.home}/bin/catalina.bat">
-      <isset property="osfamily-unix"/>
+      <isset property="osfamily-unix" />
     </condition>
   </target>
 </project>
