@@ -38,11 +38,14 @@ public class SegmentIODataWrapper {
 
     public static final String PRINCIPAL_KEY = "principal";
 
+    public static final String EMAIL_KEY = "email";
+
     public static final String GROUP_KEY_PREFIX = "group_";
 
     protected static final Log log = LogFactory.getLog(SegmentIODataWrapper.class);
 
     protected String userId;
+
     protected Map<String, Serializable> metadata;
 
     public SegmentIODataWrapper(NuxeoPrincipal principal, Map<String, Serializable> metadata) {
@@ -50,13 +53,13 @@ public class SegmentIODataWrapper {
             metadata = new HashMap<>();
         }
 
-        if (metadata.containsKey(PRINCIPAL_KEY) && metadata.get(PRINCIPAL_KEY)!=null) {
+        if (metadata.containsKey(PRINCIPAL_KEY) && metadata.get(PRINCIPAL_KEY) != null) {
             principal = (NuxeoPrincipal) metadata.get(PRINCIPAL_KEY);
         }
 
         userId = principal.getName();
-        if (!metadata.containsKey("email")) {
-            metadata.put("email", principal.getEmail());
+        if (!metadata.containsKey(EMAIL_KEY)) {
+            metadata.put(EMAIL_KEY, principal.getEmail());
         }
 
         // allow override
@@ -72,7 +75,7 @@ public class SegmentIODataWrapper {
     }
 
     // code copied from com.github.segmentio.models.Props
-    private boolean isPrimitive (Object value) {
+    private boolean isPrimitive(Object value) {
         boolean primitive = false;
         if (value != null) {
             Class<?> clazz = value.getClass();
@@ -84,14 +87,9 @@ public class SegmentIODataWrapper {
 
     // code copied from com.github.segmentio.models.Props
     protected boolean isAllowed(Object value) {
-        if (isPrimitive(value) ||
-            value instanceof String ||
-            value instanceof Date ||
-            value instanceof Props ||
-            value instanceof BigDecimal ||
-            value instanceof Collection ||
-            value instanceof Map ||
-            value instanceof Object[]) {
+        if (isPrimitive(value) || value instanceof String || value instanceof Date || value instanceof Props
+                || value instanceof BigDecimal || value instanceof Collection || value instanceof Map
+                || value instanceof Object[]) {
             return true;
         } else {
             return false;
@@ -103,8 +101,8 @@ public class SegmentIODataWrapper {
         for (String key : metadata.keySet()) {
             if (!key.startsWith(GROUP_KEY_PREFIX)) {
                 Serializable value = metadata.get(key);
-                if (value!=null) {
-                    if ( isAllowed(value)) {
+                if (value != null) {
+                    if (isAllowed(value)) {
                         map.put(key, value);
                     } else {
                         map.put(key, value.toString());
@@ -123,8 +121,8 @@ public class SegmentIODataWrapper {
             if (key.startsWith(GROUP_KEY_PREFIX)) {
                 String gKey = key.substring(GROUP_KEY_PREFIX.length());
                 Serializable value = metadata.get(key);
-                if (value!=null) {
-                    if ( isAllowed(value)) {
+                if (value != null) {
+                    if (isAllowed(value)) {
                         map.put(gKey, value);
                     } else {
                         map.put(gKey, value.toString());
@@ -136,6 +134,5 @@ public class SegmentIODataWrapper {
         }
         return map;
     }
-
 
 }
