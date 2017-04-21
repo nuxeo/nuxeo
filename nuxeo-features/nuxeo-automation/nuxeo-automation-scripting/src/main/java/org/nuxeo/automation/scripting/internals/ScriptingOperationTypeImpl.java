@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.automation.scripting.api.ScriptingException;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
@@ -45,7 +44,7 @@ public class ScriptingOperationTypeImpl implements OperationType {
     protected final InvokableMethod method = runMethod();
 
     public ScriptingOperationTypeImpl(AutomationScriptingServiceImpl scripting, AutomationService automation,
-            ScriptingOperationDescriptor desc) throws ScriptingException {
+            ScriptingOperationDescriptor desc) {
         this.scripting = scripting;
         this.automation = automation;
         this.desc = desc;
