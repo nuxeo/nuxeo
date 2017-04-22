@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobProvider;
-import org.nuxeo.ecm.core.model.Document;
 
 /**
  * Adapter between the {@link BinaryManager} and a {@link BlobProvider} for the {@link BlobManager}.
@@ -105,7 +104,7 @@ public class BinaryBlobProvider implements BlobProvider {
     }
 
     @Override
-    public String writeBlob(Blob blob, Document doc) throws IOException {
+    public String writeBlob(Blob blob) throws IOException {
         // writes the blob and return its digest
         return binaryManager.getBinary(blob).getDigest();
     }

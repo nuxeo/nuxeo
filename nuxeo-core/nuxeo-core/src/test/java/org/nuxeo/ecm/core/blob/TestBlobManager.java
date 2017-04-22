@@ -57,6 +57,9 @@ public class TestBlobManager {
     @Inject
     protected BlobManager blobManager;
 
+    @Inject
+    protected DocumentBlobManager documentBlobManager;
+
     @Mock
     @RuntimeService
     RepositoryManager repositoryManager;
@@ -82,7 +85,7 @@ public class TestBlobManager {
         blobInfo.filename = "doc.ext";
         blobInfo.length = Long.valueOf(123);
         blobInfo.digest = "55667788";
-        ManagedBlob blob = (ManagedBlob) blobManager.readBlob(blobInfo, DUMMY);
+        ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, DUMMY);
         assertNotNull(blob);
         assertEquals("1234", blob.getKey());
         assertEquals("test/type", blob.getMimeType());
@@ -93,7 +96,7 @@ public class TestBlobManager {
 
         // read with prefix
         blobInfo.key = DUMMY + ":1234";
-        blob = (ManagedBlob) blobManager.readBlob(blobInfo, null);
+        blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, null);
         assertNotNull(blob);
         assertEquals("dummy:1234", blob.getKey());
         assertEquals("test/type", blob.getMimeType());
@@ -111,7 +114,7 @@ public class TestBlobManager {
 
             }
         });
-        String key = blobManager.writeBlob(blob, doc, "somexpath");
+        String key = documentBlobManager.writeBlob(blob, doc, "somexpath");
         assertEquals("dummy:1234", key);
     }
 
@@ -122,22 +125,22 @@ public class TestBlobManager {
         // blob that's not a video gets stored on the first dummy repo
         Blob blob = Blobs.createBlob("foo", "text/plain");
         Document doc = mockery.mock(Document.class, "doc1");
-        String key = blobManager.writeBlob(blob, doc, "somexpath");
+        String key = documentBlobManager.writeBlob(blob, doc, "somexpath");
         assertEquals("dummy:1", key);
         // videos get stored in the second one
         blob = Blobs.createBlob("bar", "video/mp4");
-        key = blobManager.writeBlob(blob, doc, "somexpath");
+        key = documentBlobManager.writeBlob(blob, doc, "somexpath");
         assertEquals("dummy2:1", key);
 
         // read first one
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.key = "dummy:1";
-        blob = blobManager.readBlob(blobInfo, null);
+        blob = documentBlobManager.readBlob(blobInfo, null);
         assertEquals("foo", IOUtils.toString(blob.getStream()));
 
         // read second one
         blobInfo.key = "dummy2:1";
-        blob = blobManager.readBlob(blobInfo, null);
+        blob = documentBlobManager.readBlob(blobInfo, null);
         assertEquals("bar", IOUtils.toString(blob.getStream()));
     }
 
@@ -147,12 +150,12 @@ public class TestBlobManager {
         DummyBlobProvider.resetAllCounters();
         Blob blob = Blobs.createBlob("foo", "text/plain");
         Document doc = mockery.mock(Document.class, "doc1");
-        String key = blobManager.writeBlob(blob, doc, "content");
+        String key = documentBlobManager.writeBlob(blob, doc, "content");
         assertEquals("dummy:1", key);
 
         // files/0/file gets stored in the second blob provider
         blob = Blobs.createBlob("bar", "text/plain");
-        key = blobManager.writeBlob(blob, doc, "files/0/file");
+        key = documentBlobManager.writeBlob(blob, doc, "files/0/file");
         assertEquals("dummy2:1", key);
     }
 

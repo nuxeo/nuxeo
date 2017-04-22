@@ -65,7 +65,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.ScrollResultImpl;
-import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
@@ -1241,7 +1241,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     @Override
     public void markReferencedBinaries() {
         log.debug("Starting binaries GC mark");
-        BlobManager blobManager = Framework.getService(BlobManager.class);
+        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         String repositoryName = getRepositoryName();
         try (Statement st = connection.createStatement()) {
             int i = -1;

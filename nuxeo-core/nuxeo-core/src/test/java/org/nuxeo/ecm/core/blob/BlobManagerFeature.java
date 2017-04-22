@@ -24,7 +24,8 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features(RuntimeFeature.class)
-@LocalDeploy("org.nuxeo.ecm.core:OSGI-INF/blobmanager-service.xml")
+@LocalDeploy({ "org.nuxeo.ecm.core:OSGI-INF/blobmanager-service.xml", //
+        "org.nuxeo.ecm.core:OSGI-INF/documentblobmanager-service.xml" })
 public class BlobManagerFeature extends SimpleFeature {
 
 }

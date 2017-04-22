@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
-import org.nuxeo.ecm.core.model.Document;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -196,9 +195,9 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
     }
 
     @Override
-    public String writeBlob(Blob blob, Document doc) throws IOException {
+    public String writeBlob(Blob blob) throws IOException {
         // just delegate to avoid copy/pasting code
-        return new BinaryBlobProvider(this).writeBlob(blob, doc);
+        return new BinaryBlobProvider(this).writeBlob(blob);
     }
 
     @Override

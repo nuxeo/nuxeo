@@ -95,7 +95,7 @@ public class TestBlobDispatcher {
     public void testAlreadyManagedBlob() throws Exception {
         // register blob in provider by hand
         Blob b = Blobs.createBlob("foo", "video/mp4");
-        String key = Framework.getService(BlobManager.class).getBlobProvider("dummy").writeBlob(b, null);
+        String key = Framework.getService(BlobManager.class).getBlobProvider("dummy").writeBlob(b);
         key = "dummy:" + key;
 
         // create a blob already managed and not corresponding to a dispatch target

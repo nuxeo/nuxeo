@@ -46,7 +46,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
-import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
@@ -483,7 +483,8 @@ public class DBSDocument extends BaseDocument<State> {
             throw new VersionNotModifiableException();
         } else {
             Document version = session.checkIn(id, label, checkinComment);
-            Framework.getService(BlobManager.class).freezeVersion(version);
+            DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
+            blobManager.freezeVersion(version);
             return version;
         }
     }
@@ -687,7 +688,7 @@ public class DBSDocument extends BaseDocument<State> {
     public void setCurrentLifeCycleState(String lifeCycleState) throws LifeCycleException {
         DBSDocumentState docState = getStateOrTarget();
         docState.put(KEY_LIFECYCLE_STATE, lifeCycleState);
-        BlobManager blobManager = Framework.getService(BlobManager.class);
+        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         blobManager.notifyChanges(this, Collections.singleton(KEY_LIFECYCLE_STATE));
     }
 
@@ -701,7 +702,7 @@ public class DBSDocument extends BaseDocument<State> {
     public void setLifeCyclePolicy(String policy) throws LifeCycleException {
         DBSDocumentState docState = getStateOrTarget();
         docState.put(KEY_LIFECYCLE_POLICY, policy);
-        BlobManager blobManager = Framework.getService(BlobManager.class);
+        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         blobManager.notifyChanges(this, Collections.singleton(KEY_LIFECYCLE_POLICY));
     }
 

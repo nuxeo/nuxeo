@@ -47,8 +47,8 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
-import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
@@ -458,7 +458,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
     protected Blob getValueBlob(T state) throws PropertyException {
         BlobInfo blobInfo = getBlobInfo(state);
-        BlobManager blobManager = Framework.getService(BlobManager.class);
+        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         try {
             return blobManager.readBlob(blobInfo, getRepositoryName());
         } catch (IOException e) {
@@ -620,7 +620,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     protected void setValueBlob(T state, Blob blob, String xpath) throws PropertyException {
         BlobInfo blobInfo = new BlobInfo();
         if (blob != null) {
-            BlobManager blobManager = Framework.getService(BlobManager.class);
+            DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
             try {
                 blobInfo.key = blobManager.writeBlob(blob, this, xpath);
             } catch (IOException e) {
@@ -738,7 +738,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 }
             }
             // then inform the blob manager about the changed xpaths
-            BlobManager blobManager = Framework.getService(BlobManager.class);
+            DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
             blobManager.notifyChanges(baseDoc, xpaths);
         }
     }

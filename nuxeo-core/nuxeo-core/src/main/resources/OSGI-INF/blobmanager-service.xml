@@ -2,7 +2,7 @@
 <component name="org.nuxeo.ecm.core.blob.BlobManager" version="1.0.0">
 
   <documentation>
-    Blob Manager, dispatching blobs and delegating logic to the appropriate Blob Provider.
+    Blob Manager, delegating logic to the appropriate Blob Provider.
   </documentation>
 
   <implementation class="org.nuxeo.ecm.core.blob.BlobManagerComponent" />
@@ -13,9 +13,8 @@
 
   <extension-point name="configuration">
     <documentation>
-      Extension points to register the blob dispatcher and blob providers.
+      Extension points to register the blob providers.
     </documentation>
-    <object class="org.nuxeo.ecm.core.blob.BlobDispatcherDescriptor" />
     <object class="org.nuxeo.ecm.core.blob.BlobProviderDescriptor" />
   </extension-point>
 
