@@ -20,7 +20,7 @@ package org.nuxeo.ecm.core.storage.sql.management;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
@@ -91,12 +91,12 @@ public class SQLRepositoryStatus implements SQLRepositoryStatusMBean {
 
     @Override
     public BinaryManagerStatus gcBinaries(boolean delete) {
-        return Framework.getService(BlobManager.class).garbageCollectBinaries(delete);
+        return Framework.getService(DocumentBlobManager.class).garbageCollectBinaries(delete);
     }
 
     @Override
     public boolean isBinariesGCInProgress() {
-        return Framework.getService(BlobManager.class).isBinariesGarbageCollectionInProgress();
+        return Framework.getService(DocumentBlobManager.class).isBinariesGarbageCollectionInProgress();
     }
 
 }

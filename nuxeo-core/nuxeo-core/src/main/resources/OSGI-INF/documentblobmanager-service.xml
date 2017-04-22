@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.blob.DocumentBlobManager" version="1.0.0">
+
+  <documentation>
+    Document Blob Manager, dispatching blobs and for methods associated to Documents or repositories.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.blob.DocumentBlobManagerComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.blob.DocumentBlobManager" />
+  </service>
+
+  <extension-point name="configuration">
+    <documentation>
+      Extension points to register the blob dispatcher.
+    </documentation>
+    <object class="org.nuxeo.ecm.core.blob.BlobDispatcherDescriptor" />
+  </extension-point>
+
+</component>

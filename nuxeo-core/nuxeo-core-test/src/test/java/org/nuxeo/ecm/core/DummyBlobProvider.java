@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.AbstractBlobProvider;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
-import org.nuxeo.ecm.core.model.Document;
 
 /**
  * Dummy storage in memory.
@@ -69,7 +68,7 @@ public class DummyBlobProvider extends AbstractBlobProvider {
     }
 
     @Override
-    public String writeBlob(Blob blob, Document doc) throws IOException {
+    public String writeBlob(Blob blob) throws IOException {
         byte[] bytes;
         try (InputStream in = blob.getStream()) {
             bytes = IOUtils.toByteArray(in);

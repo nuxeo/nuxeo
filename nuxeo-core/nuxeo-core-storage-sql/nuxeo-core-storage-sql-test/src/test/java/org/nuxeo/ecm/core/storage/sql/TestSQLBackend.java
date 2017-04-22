@@ -63,9 +63,6 @@ import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -83,7 +80,6 @@ import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -104,8 +100,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
     private static final int ITERATIONS = 5;
 
     private static final int THREADS = 5;
-
-    protected Mockery mockery = new JUnit4Mockery();
 
     protected boolean pathOptimizationsEnabled;
 
@@ -773,15 +767,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
     protected void addBinary(Session session, String binstr, String name) throws Exception {
         Blob blob = Blobs.createBlob(binstr);
         BlobManager blobManager = Framework.getService(BlobManager.class);
-        Document doc = mockery.mock(Document.class, "document" + UUID.randomUUID().toString());
-        mockery.checking(new Expectations() {
-            {
-                allowing(doc).getRepositoryName();
-                will(returnValue(repository.getName()));
-
-            }
-        });
-        String key = blobManager.writeBlob(blob, doc, "somexpath");
+        BlobProvider blobProvider = blobManager.getBlobProvider(session.getRepositoryName());
+        String key = blobProvider.writeBlob(blob);
         session.addChildNode(session.getRootNode(), name, null, "TestDoc", false).setSimpleProperty("tst:bin", key);
     }
 

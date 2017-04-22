@@ -66,7 +66,7 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
-import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -675,7 +675,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public void markReferencedBinaries() {
-        BlobManager blobManager = Framework.getService(BlobManager.class);
+        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         // TODO add a query to not scan all documents
         if (log.isTraceEnabled()) {
             logQuery(new BasicDBObject(), binaryKeys);
@@ -687,7 +687,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
     }
 
-    protected void markReferencedBinaries(DBObject ob, BlobManager blobManager) {
+    protected void markReferencedBinaries(DBObject ob, DocumentBlobManager blobManager) {
         for (String key : ob.keySet()) {
             Object value = ob.get(key);
             if (value instanceof List) {
@@ -712,7 +712,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
     }
 
-    protected void markReferencedBinary(Object value, BlobManager blobManager) {
+    protected void markReferencedBinary(Object value, DocumentBlobManager blobManager) {
         if (!(value instanceof String)) {
             return;
         }

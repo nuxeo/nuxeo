@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
-import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
@@ -350,7 +350,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     @Override
     public void setLifeCyclePolicy(String policy) {
         setPropertyValue(Model.MISC_LIFECYCLE_POLICY_PROP, policy);
-        BlobManager blobManager = Framework.getService(BlobManager.class);
+        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         blobManager.notifyChanges(this, Collections.singleton(Model.MISC_LIFECYCLE_POLICY_PROP));
     }
 
@@ -362,7 +362,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     @Override
     public void setCurrentLifeCycleState(String state) {
         setPropertyValue(Model.MISC_LIFECYCLE_STATE_PROP, state);
-        BlobManager blobManager = Framework.getService(BlobManager.class);
+        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         blobManager.notifyChanges(this, Collections.singleton(Model.MISC_LIFECYCLE_STATE_PROP));
     }
 
@@ -423,7 +423,8 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     @Override
     public Document checkIn(String label, String checkinComment) {
         Document version = session.checkIn(getNode(), label, checkinComment);
-        Framework.getService(BlobManager.class).freezeVersion(version);
+        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
+        blobManager.freezeVersion(version);
         return version;
     }
 

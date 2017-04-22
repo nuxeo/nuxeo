@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.blob.test-blob-dispatch-xpath" version="1.0.0">
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="dummy2">
+      <class>org.nuxeo.ecm.core.blob.DummyBlobProvider</class>
+    </blobprovider>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.blob.DocumentBlobManager" point="configuration">
     <blobdispatcher>
       <class>org.nuxeo.ecm.core.blob.DummyBlobDispatcherXpath</class>
       <property name="providers">dummy dummy2</property>
     </blobdispatcher>
-    <blobprovider name="dummy2">
-      <class>org.nuxeo.ecm.core.blob.DummyBlobProvider</class>
-    </blobprovider>
   </extension>
 </component>

@@ -31,7 +31,6 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
-import org.nuxeo.ecm.core.model.Document;
 
 /**
  * Blob provider that can reference files on the filesystem.
@@ -106,7 +105,7 @@ public class FilesystemBlobProvider extends AbstractBlobProvider {
     }
 
     @Override
-    public String writeBlob(Blob blob, Document doc) throws IOException {
+    public String writeBlob(Blob blob) throws IOException {
         throw new UnsupportedOperationException("Writing a blob is not supported");
     }
 

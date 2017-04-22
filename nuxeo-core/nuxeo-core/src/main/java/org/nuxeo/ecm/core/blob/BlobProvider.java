@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
-import org.nuxeo.ecm.core.model.Document;
 
 /**
  * Interface for a provider of {@link Blob}s, which knows how to read and write them.
@@ -75,10 +73,10 @@ public interface BlobProvider {
      * Called to store a user-created blob.
      *
      * @param blob the blob
-     * @param doc the document to which this blob belongs
      * @return the blob key
+     * @since 9.2
      */
-    String writeBlob(Blob blob, Document doc) throws IOException;
+    String writeBlob(Blob blob) throws IOException;
 
     /**
      * Checks if user update is supported.
@@ -140,34 +138,6 @@ public interface BlobProvider {
      */
     default Map<String, URI> getAvailableConversions(ManagedBlob blob, UsageHint hint) throws IOException {
         return Collections.emptyMap();
-    }
-
-    /**
-     * Gets an {@link InputStream} for a conversion to the given MIME type.
-     * <p>
-     * Like all {@link InputStream}, the result must be closed when done with it to avoid resource leaks.
-     *
-     * @param blob the managed blob
-     * @param mimeType the MIME type to convert to
-     * @param doc the document that holds the blob
-     * @return the stream, or {@code null} if no conversion is available for the given MIME type
-     * @since 7.3
-     */
-    default InputStream getConvertedStream(ManagedBlob blob, String mimeType, DocumentModel doc) throws IOException {
-        return null;
-    }
-
-    /**
-     * Returns a new managed blob pointing to a fixed version of the original blob.
-     * <p>
-     *
-     * @param blob the original managed blob
-     * @param doc the document that holds the blob
-     * @return a managed blob with fixed version, or {@code null} if no change is needed
-     * @since 7.3
-     */
-    default ManagedBlob freezeVersion(ManagedBlob blob, Document doc) throws IOException {
-        return null;
     }
 
     /**

@@ -59,7 +59,7 @@ import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.ScrollResultImpl;
 import org.nuxeo.ecm.core.api.model.Delta;
-import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
@@ -589,7 +589,7 @@ public class MemRepository extends DBSRepositoryBase {
 
     @Override
     public void markReferencedBinaries() {
-        BlobManager blobManager = Framework.getService(BlobManager.class);
+        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         for (State state : states.values()) {
             for (List<String> path : binaryPaths) {
                 markReferencedBinaries(state, path, 0, blobManager);
@@ -597,7 +597,7 @@ public class MemRepository extends DBSRepositoryBase {
         }
     }
 
-    protected void markReferencedBinaries(State state, List<String> path, int start, BlobManager blobManager) {
+    protected void markReferencedBinaries(State state, List<String> path, int start, DocumentBlobManager blobManager) {
         for (int i = start; i < path.size(); i++) {
             String name = path.get(i);
             Serializable value = state.get(name);
@@ -625,7 +625,7 @@ public class MemRepository extends DBSRepositoryBase {
         }
     }
 
-    protected void markReferencedBinary(Object value, BlobManager blobManager) {
+    protected void markReferencedBinary(Object value, DocumentBlobManager blobManager) {
         if (!(value instanceof String)) {
             return;
         }

@@ -79,6 +79,9 @@ public class TestFilesystemBlobProvider {
     @Inject
     protected BlobManager blobManager;
 
+    @Inject
+    protected DocumentBlobManager documentBlobManager;
+
     protected Path tmpFile;
 
     protected String tmpFilePath;
@@ -126,7 +129,7 @@ public class TestFilesystemBlobProvider {
 
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.key = key;
-        ManagedBlob blob = (ManagedBlob) blobManager.readBlob(blobInfo, null);
+        ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, null);
         assertNotNull(blob);
         assertEquals(key, blob.getKey());
         try (InputStream in = blob.getStream()) {
@@ -147,7 +150,7 @@ public class TestFilesystemBlobProvider {
         }
 
         // write it, it has a prefix so doesn't need a doc
-        String writtenKey = blobManager.writeBlob(blob, null, "somexpath");
+        String writtenKey = documentBlobManager.writeBlob(blob, null, "somexpath");
         assertEquals(key, writtenKey);
     }
 
@@ -159,7 +162,7 @@ public class TestFilesystemBlobProvider {
 
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.key = key;
-        ManagedBlob blob = (ManagedBlob) blobManager.readBlob(blobInfo, null);
+        ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, null);
         try {
             blob.getStream();
             fail("Should not be able to read non-existent file");
@@ -181,7 +184,7 @@ public class TestFilesystemBlobProvider {
             String key = PROVIDER_ID2 + ":" + tmpFile.getFileName().toString();
             BlobInfo blobInfo = new BlobInfo();
             blobInfo.key = key;
-            ManagedBlob blob = (ManagedBlob) blobManager.readBlob(blobInfo, null);
+            ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, null);
             assertNotNull(blob);
             assertEquals(key, blob.getKey());
             try (InputStream in = blob.getStream()) {
@@ -206,7 +209,7 @@ public class TestFilesystemBlobProvider {
             String key = PROVIDER_ID2 + ":" + illegalPath;
             BlobInfo blobInfo = new BlobInfo();
             blobInfo.key = key;
-            ManagedBlob blob = (ManagedBlob) blobManager.readBlob(blobInfo, null);
+            ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, null);
             assertNotNull(blob);
             assertEquals(key, blob.getKey());
             try {
