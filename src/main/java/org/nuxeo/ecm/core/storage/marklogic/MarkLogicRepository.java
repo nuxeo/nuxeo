@@ -59,7 +59,7 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
-import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.schema.TypeConstants;
@@ -587,7 +587,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public void markReferencedBinaries() {
-        BlobManager blobManager = Framework.getService(BlobManager.class);
+        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         // TODO add a query to not scan all documents
         String query = new MarkLogicQuerySimpleBuilder(rangeElementIndexes).build();
         try (Stream<State> states = findAll(query, binaryPaths.toArray(new String[0]))) {
@@ -595,7 +595,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         }
     }
 
-    protected void markReferencedBinaries(State state, BlobManager blobManager) {
+    protected void markReferencedBinaries(State state, DocumentBlobManager blobManager) {
         for (Entry<String, Serializable> entry : state.entrySet()) {
             Serializable value = entry.getValue();
             if (value instanceof List) {
@@ -619,7 +619,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         }
     }
 
-    protected void markReferencedBinary(Object value, BlobManager blobManager) {
+    protected void markReferencedBinary(Object value, DocumentBlobManager blobManager) {
         if (!(value instanceof String)) {
             return;
         }
