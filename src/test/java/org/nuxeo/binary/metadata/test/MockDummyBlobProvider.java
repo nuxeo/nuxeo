@@ -23,7 +23,7 @@ import java.io.InputStream;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.AbstractBlobProvider;
-import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 
 public class MockDummyBlobProvider extends AbstractBlobProvider {
@@ -34,7 +34,7 @@ public class MockDummyBlobProvider extends AbstractBlobProvider {
     }
 
     @Override
-    public Blob readBlob(BlobManager.BlobInfo blobInfo) throws IOException {
+    public Blob readBlob(BlobInfo blobInfo) throws IOException {
         return null;
     }
 
