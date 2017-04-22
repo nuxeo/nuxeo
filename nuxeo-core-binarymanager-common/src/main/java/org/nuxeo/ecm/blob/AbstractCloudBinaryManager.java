@@ -35,8 +35,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
@@ -128,7 +128,7 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
     }
 
     @Override
-    public Blob readBlob(BlobManager.BlobInfo blobInfo) throws IOException {
+    public Blob readBlob(BlobInfo blobInfo) throws IOException {
         // just delegate to avoid copy/pasting code
         return new BinaryBlobProvider(this).readBlob(blobInfo);
     }
