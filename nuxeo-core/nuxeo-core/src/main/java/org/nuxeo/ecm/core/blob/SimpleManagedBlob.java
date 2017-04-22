@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
-import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.runtime.api.Framework;
 
 /**

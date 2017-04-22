@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 
 /**
  * Dummy storage in memory.

@@ -35,7 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.binary.AbstractBinaryManager;
 import org.nuxeo.ecm.core.blob.binary.Binary;
@@ -189,7 +189,7 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
     }
 
     @Override
-    public Blob readBlob(BlobManager.BlobInfo blobInfo) throws IOException {
+    public Blob readBlob(BlobInfo blobInfo) throws IOException {
         // just delegate to avoid copy/pasting code
         return new BinaryBlobProvider(this).readBlob(blobInfo);
     }
