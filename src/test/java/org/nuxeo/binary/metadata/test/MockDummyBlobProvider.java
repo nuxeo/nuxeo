@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.AbstractBlobProvider;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
-import org.nuxeo.ecm.core.model.Document;
 
 public class MockDummyBlobProvider extends AbstractBlobProvider {
 
@@ -40,7 +39,7 @@ public class MockDummyBlobProvider extends AbstractBlobProvider {
     }
 
     @Override
-    public String writeBlob(Blob blob, Document doc) throws IOException {
+    public String writeBlob(Blob blob) throws IOException {
         return null;
     }
 
