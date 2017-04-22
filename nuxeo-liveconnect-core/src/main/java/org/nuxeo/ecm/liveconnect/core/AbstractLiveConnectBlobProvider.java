@@ -42,11 +42,11 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.blob.AbstractBlobProvider;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.DocumentBlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
-import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.liveconnect.update.BatchUpdateBlobProvider;
 import org.nuxeo.ecm.liveconnect.update.worker.BlobProviderDocumentsUpdateWork;
@@ -69,7 +69,7 @@ import com.google.common.base.Splitter;
  * @since 8.1
  */
 public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServiceProvider> extends AbstractBlobProvider
-        implements LiveConnectBlobProvider<O>, BatchUpdateBlobProvider {
+        implements LiveConnectBlobProvider<O>, BatchUpdateBlobProvider, DocumentBlobProvider {
 
     private static final Log log = LogFactory.getLog(AbstractLiveConnectBlobProvider.class);
 
@@ -103,7 +103,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
      * Should be overriden by subclasses needing something different.
      */
     @Override
-    public String writeBlob(Blob blob, Document doc) throws IOException {
+    public String writeBlob(Blob blob) throws IOException {
         throw new UnsupportedOperationException("Writing a blob to live connect service is not supported");
     }
 

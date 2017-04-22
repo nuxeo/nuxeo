@@ -24,7 +24,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 import java.net.URI;
 import java.util.Collections;
@@ -48,7 +47,6 @@ import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.cache.CacheService;
-import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.liveconnect.update.BatchUpdateBlobProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
@@ -102,7 +100,7 @@ public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
 
     @Test(expected = UnsupportedOperationException.class)
     public void testWriteBlob() throws Exception {
-        blobProvider.writeBlob(createBlob(FILE_1_ID), mock(Document.class));
+        blobProvider.writeBlob(createBlob(FILE_1_ID));
     }
 
     @Test

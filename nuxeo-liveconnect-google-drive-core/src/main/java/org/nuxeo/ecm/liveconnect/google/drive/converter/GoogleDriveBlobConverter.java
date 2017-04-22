@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
-import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -78,7 +78,7 @@ public class GoogleDriveBlobConverter implements Converter {
 
     protected Blob convert(Blob blob, DocumentModel doc) throws IOException {
         String mimetype = descriptor.getDestinationMimeType();
-        InputStream is = Framework.getService(BlobManager.class).getConvertedStream(blob, mimetype, doc);
+        InputStream is = Framework.getService(DocumentBlobManager.class).getConvertedStream(blob, mimetype, doc);
         return is == null ? null : Blobs.createBlob(is, mimetype);
     }
 }

@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
@@ -59,6 +60,9 @@ public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
 
     @Inject
     protected BlobManager blobManager;
+
+    @Inject
+    protected DocumentBlobManager documentBlobManager;
 
     @Inject
     protected CoreSession session;
@@ -205,7 +209,7 @@ public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
         assertTrue(blobManager.getAvailableConversions(blob, BlobManager.UsageHint.STREAM).isEmpty());
 
         // still we can get our stored conversion
-        assertNotNull(blobManager.getConvertedStream(blob, GoogleDriveBlobProvider.DEFAULT_EXPORT_MIMETYPE, version));
+        assertNotNull(documentBlobManager.getConvertedStream(blob, GoogleDriveBlobProvider.DEFAULT_EXPORT_MIMETYPE, version));
 
     }
 
