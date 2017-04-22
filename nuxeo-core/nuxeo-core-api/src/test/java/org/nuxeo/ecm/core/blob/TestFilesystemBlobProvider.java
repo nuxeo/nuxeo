@@ -23,7 +23,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -38,26 +37,20 @@ import java.util.Collections;
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.mockito.MockitoFeature;
-import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @RunWith(FeaturesRunner.class)
-@Features({ BlobManagerFeature.class, MockitoFeature.class })
-@LocalDeploy("org.nuxeo.ecm.core:OSGI-INF/test-fs-blobprovider.xml")
+@Features(BlobManagerFeature.class)
+@LocalDeploy("org.nuxeo.ecm.core.api:OSGI-INF/test-fs-blobprovider.xml")
 public class TestFilesystemBlobProvider {
 
     private static final String CONTENT = "hello";
@@ -66,29 +59,15 @@ public class TestFilesystemBlobProvider {
 
     private static final String PROVIDER_ID = "testfs";
 
-    protected Mockery mockery = new JUnit4Mockery();
-
-    @Mock
-    @RuntimeService
-    RepositoryManager repositoryManager;
-
     @Inject
     protected RuntimeHarness harness;
 
     @Inject
     protected BlobManager blobManager;
 
-    @Inject
-    protected DocumentBlobManager documentBlobManager;
-
     protected Path tmpFile;
 
     protected String tmpFilePath;
-
-    @Before
-    public void mockRepositoryManager() throws Exception {
-        when(repositoryManager.getRepositoryNames()).thenReturn(Collections.emptyList());
-    }
 
     @Before
     public void setUp() throws Exception {
@@ -113,12 +92,12 @@ public class TestFilesystemBlobProvider {
         assertFalse(blobProvider.supportsUserUpdate());
 
         // check that we can allow user updates of blobs by configuration
-        harness.deployContrib("org.nuxeo.ecm.core.tests", "OSGI-INF/test-fs-blobprovider-override.xml");
+        harness.deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-fs-blobprovider-override.xml");
         try {
             blobProvider = blobManager.getBlobProvider(PROVIDER_ID);
             assertTrue(blobProvider.supportsUserUpdate());
         } finally {
-            harness.undeployContrib("org.nuxeo.ecm.core.tests", "OSGI-INF/test-fs-blobprovider-override.xml");
+            harness.undeployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-fs-blobprovider-override.xml");
         }
     }
 
@@ -128,7 +107,8 @@ public class TestFilesystemBlobProvider {
 
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.key = key;
-        ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, null);
+        BlobProvider blobProvider = blobManager.getBlobProvider(PROVIDER_ID);
+        ManagedBlob blob = (ManagedBlob) blobProvider.readBlob(blobInfo);
         assertNotNull(blob);
         assertEquals(key, blob.getKey());
         try (InputStream in = blob.getStream()) {
@@ -138,7 +118,7 @@ public class TestFilesystemBlobProvider {
         // same with explicit blob
         blobInfo.key = tmpFilePath;
         blobInfo.mimeType = "text/plain";
-        blob = ((FilesystemBlobProvider) blobManager.getBlobProvider(PROVIDER_ID)).createBlob(blobInfo);
+        blob = ((FilesystemBlobProvider) blobProvider).createBlob(blobInfo);
         assertEquals(key, blob.getKey());
         assertEquals(tmpFile.getFileName().toString(), blob.getFilename());
         assertEquals("text/plain", blob.getMimeType());
@@ -147,10 +127,6 @@ public class TestFilesystemBlobProvider {
         try (InputStream in = blob.getStream()) {
             assertEquals(CONTENT, IOUtils.toString(in));
         }
-
-        // write it, it has a prefix so doesn't need a doc
-        String writtenKey = documentBlobManager.writeBlob(blob, null, "somexpath");
-        assertEquals(key, writtenKey);
     }
 
     @Test
@@ -161,7 +137,8 @@ public class TestFilesystemBlobProvider {
 
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.key = key;
-        ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, null);
+        BlobProvider blobProvider = blobManager.getBlobProvider(PROVIDER_ID);
+        ManagedBlob blob = (ManagedBlob) blobProvider.readBlob(blobInfo);
         try {
             blob.getStream();
             fail("Should not be able to read non-existent file");
@@ -183,7 +160,8 @@ public class TestFilesystemBlobProvider {
             String key = PROVIDER_ID2 + ":" + tmpFile.getFileName().toString();
             BlobInfo blobInfo = new BlobInfo();
             blobInfo.key = key;
-            ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, null);
+            BlobProvider blobProvider = blobManager.getBlobProvider(PROVIDER_ID);
+            ManagedBlob blob = (ManagedBlob) blobProvider.readBlob(blobInfo);
             assertNotNull(blob);
             assertEquals(key, blob.getKey());
             try (InputStream in = blob.getStream()) {
@@ -208,7 +186,8 @@ public class TestFilesystemBlobProvider {
             String key = PROVIDER_ID2 + ":" + illegalPath;
             BlobInfo blobInfo = new BlobInfo();
             blobInfo.key = key;
-            ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, null);
+            BlobProvider blobProvider = blobManager.getBlobProvider(PROVIDER_ID);
+            ManagedBlob blob = (ManagedBlob) blobProvider.readBlob(blobInfo);
             assertNotNull(blob);
             assertEquals(key, blob.getKey());
             try {
