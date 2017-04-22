@@ -50,13 +50,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.blob.AbstractBinaryGarbageCollector;
 import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
-import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
-import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.runtime.api.Framework;
 
 import com.amazonaws.AmazonClientException;
@@ -552,23 +548,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     }
 
     // ******************** BlobProvider ********************
-
-    @Override
-    public Blob readBlob(BlobInfo blobInfo) throws IOException {
-        // just delegate to avoid copy/pasting code
-        return new BinaryBlobProvider(this).readBlob(blobInfo);
-    }
-
-    @Override
-    public String writeBlob(Blob blob, Document doc) throws IOException {
-        // just delegate to avoid copy/pasting code
-        return new BinaryBlobProvider(this).writeBlob(blob, doc);
-    }
-
-    @Override
-    protected boolean isDirectDownload() {
-        return directDownload;
-    }
 
     @Override
     protected URI getRemoteUri(String digest, ManagedBlob blob, HttpServletRequest servletRequest) throws IOException {
