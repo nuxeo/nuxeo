@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,16 +45,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
-@Features({ BlobManagerFeature.class, MockitoFeature.class })
-@LocalDeploy("org.nuxeo.ecm.core:OSGI-INF/dummy-blob-provider.xml")
-public class TestBlobManager {
+@Features({ BlobManagerFeature.class, DocumentBlobManagerFeature.class, MockitoFeature.class })
+@LocalDeploy("org.nuxeo.ecm.core.api:OSGI-INF/dummy-blob-provider.xml")
+public class TestDocumentBlobManager {
 
     private static final String DUMMY = "dummy";
 
     protected Mockery mockery = new JUnit4Mockery();
-
-    @Inject
-    protected BlobManager blobManager;
 
     @Inject
     protected DocumentBlobManager documentBlobManager;
@@ -66,12 +63,6 @@ public class TestBlobManager {
     @Before
     public void mockRepositoryManager() throws Exception {
         when(repositoryManager.getRepositoryNames()).thenReturn(Collections.emptyList());
-    }
-
-    @Test
-    public void testDummyRegistration() throws Exception {
-        BlobProvider dummyBlobProvider = blobManager.getBlobProvider(DUMMY);
-        assertNotNull(dummyBlobProvider);
     }
 
     @Test

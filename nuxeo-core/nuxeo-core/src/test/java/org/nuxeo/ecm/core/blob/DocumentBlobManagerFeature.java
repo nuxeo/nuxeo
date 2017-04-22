@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features(RuntimeFeature.class)
-@LocalDeploy({ "org.nuxeo.ecm.core:OSGI-INF/blobmanager-service.xml", //
-        "org.nuxeo.ecm.core:OSGI-INF/documentblobmanager-service.xml" })
-public class BlobManagerFeature extends SimpleFeature {
+@LocalDeploy("org.nuxeo.ecm.core:OSGI-INF/documentblobmanager-service.xml")
+public class DocumentBlobManagerFeature extends SimpleFeature {
 
 }

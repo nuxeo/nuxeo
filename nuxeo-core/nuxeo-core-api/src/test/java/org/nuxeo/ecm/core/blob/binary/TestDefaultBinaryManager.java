@@ -45,8 +45,8 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
 
     @Test
     public void testDefaultBinaryManager() throws Exception {
-        deployBundle("org.nuxeo.ecm.core");
-        deployContrib("org.nuxeo.ecm.core.tests", "OSGI-INF/test-default-blob-provider.xml");
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-default-blob-provider.xml");
 
         DefaultBinaryManager binaryManager = new DefaultBinaryManager();
         binaryManager.initialize("repo", Collections.emptyMap());
