@@ -261,6 +261,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
 
         // an edition should create a version
         doc.setPropertyValue("dc:title", "B");
+        maybeSleepToNextSecond();
         doc = session.saveDocument(doc);
         // get last version (document before update)
         versions = session.getVersions(doc.getRef());
