@@ -39,6 +39,15 @@
         <ui:insert name="document_publish_before_tree" />
 
         <dl>
+          <div class="tree action" style="padding-right: 10px;">
+            <a4j:commandLink action="#{publishActions.reset()}" render="sectionTree">
+              <h:graphicImage
+                      value="/icons/refresh.png"
+                      alt="#{messages['label.refresh']}"
+                      title="#{messages['label.refresh']}"
+                      styleClass="tipsyShow tipsyGravitySW" />
+            </a4j:commandLink>
+          </div>
           <dd class="menuForm">
 
             <a4j:outputPanel id="sectionTree" layout="block"
