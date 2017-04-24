@@ -68,6 +68,8 @@ public class RestServiceTest extends BaseRestTest {
         String json = getFullDocumentAsJson(doc, null);
         json = json.replace(doc.getId(), "the-doc-id");
         json = json.replace(doc.getParentRef().toString(), "the-parent-id");
+        // if no change token enabled (null) do as if we had one
+        json = json.replace("\"changeToken\":null", "\"changeToken\":\"0\"");
         File file = FileUtils.getResourceFileFromContext("test-expected-document1.json");
         String expected = org.apache.commons.io.FileUtils.readFileToString(file);
         assertEqualsJson(expected, json);
