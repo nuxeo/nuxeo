@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -962,8 +962,8 @@ public class CMISQLtoNXQL {
                         // TODO constructing the DocumentModel (in
                         // NuxeoObjectData) is expensive, try to get value
                         // directly
-                        data = (NuxeoObjectData) service.getObject(service.getNuxeoRepository().getId(), id, null, null,
-                                null, null, null, null, null);
+                        data = service.getObject(service.getNuxeoRepository().getId(), id, null, null, null, null, null,
+                                null, null);
                     } catch (CmisRuntimeException e) {
                         log.error("Cannot get document: " + id, e);
                     }
@@ -974,7 +974,7 @@ public class CMISQLtoNXQL {
                     // could not fetch
                     v = null;
                 } else {
-                    NuxeoPropertyDataBase<?> pd = (NuxeoPropertyDataBase<?>) data.getProperty(col.getPropertyId());
+                    NuxeoPropertyDataBase<?> pd = data.getProperty(col.getPropertyId());
                     if (pd == null) {
                         v = null;
                     } else {

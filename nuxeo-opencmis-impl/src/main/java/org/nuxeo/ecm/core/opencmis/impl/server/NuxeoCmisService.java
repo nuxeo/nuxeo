@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -215,8 +215,7 @@ public class NuxeoCmisService extends AbstractCmisService
 
     public static final String ES_AUDIT_EVENT_ID = "eventId";
 
-    public static final String ERROR_ON_CANCEL_CHECK_OUT_OF_DRAFT_VERSION_PROP =
-            "org.nuxeo.cmis.errorOnCancelCheckOutOfDraftVersion";
+    public static final String ERROR_ON_CANCEL_CHECK_OUT_OF_DRAFT_VERSION_PROP = "org.nuxeo.cmis.errorOnCancelCheckOutOfDraftVersion";
 
     private static final Log log = LogFactory.getLog(NuxeoCmisService.class);
 
@@ -683,6 +682,7 @@ public class NuxeoCmisService extends AbstractCmisService
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> void setObjectProperty(NuxeoObjectData object, String key, PropertyData<T> d,
             List<TypeDefinition> types, boolean creation) {
         PropertyDefinition<T> pd = null;
@@ -874,7 +874,7 @@ public class NuxeoCmisService extends AbstractCmisService
     public ContentStream getContentStream(String repositoryId, String objectId, String streamId, BigInteger offset,
             BigInteger length, ExtensionsData extension) {
         // TODO offset, length
-        ContentStream cs = null;
+        ContentStream cs;
         HttpServletRequest request = (HttpServletRequest) callContext.get(CallContext.HTTP_SERVLET_REQUEST);
         if (streamId == null) {
             DocumentModel doc = getDocumentModel(objectId);
@@ -1666,7 +1666,7 @@ public class NuxeoCmisService extends AbstractCmisService
                                                                        .onlyElasticsearchResponse();
                     it = new EsIterableQueryResultImpl(ess, ess.scroll(qb, 1000));
                 } else {
-                    // distinct documents
+                    // distinct documents - new Object[0] is necessary for compilation
                     it = coreSession.queryAndFetch(nxql, NXQL.NXQL, true, new Object[0]);
                 }
             } catch (QueryParseException e) {
