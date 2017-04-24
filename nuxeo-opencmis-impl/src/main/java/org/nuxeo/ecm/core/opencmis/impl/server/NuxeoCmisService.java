@@ -117,6 +117,7 @@ import org.elasticsearch.index.query.AndFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -131,6 +132,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -163,6 +165,7 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
@@ -1493,59 +1496,44 @@ public class NuxeoCmisService extends AbstractCmisService
         if (max <= 0) {
             max = DEFAULT_QUERY_SIZE;
         }
-        long numItems;
-        List<ObjectData> list;
-        IterableQueryResult res = null;
-        try {
-            Map<String, PropertyDefinition<?>> typeInfo = new HashMap<String, PropertyDefinition<?>>();
-            // searchAllVersions defaults to false, spec 2.2.6.1.1
-            res = queryAndFetch(statement, Boolean.TRUE.equals(searchAllVersions), typeInfo);
+        Map<String, PropertyDefinition<?>> typeInfo = new HashMap<String, PropertyDefinition<?>>();
+        // searchAllVersions defaults to false, spec 2.2.6.1.1
+        PartialList<Map<String, Serializable>> res = queryProjection(statement, max, skip,
+                Boolean.TRUE.equals(searchAllVersions), typeInfo);
 
-            // convert from Nuxeo to CMIS format
-            list = new ArrayList<ObjectData>();
-            if (skip > 0) {
-                res.skipTo(skip);
-            }
-            for (Map<String, Serializable> map : res) {
-                ObjectDataImpl od = makeObjectData(map, typeInfo);
+        // convert from Nuxeo to CMIS format
+        List<ObjectData> list = new ArrayList<>(res.list.size());
+        for (Map<String, Serializable> map : res.list) {
+            ObjectDataImpl od = makeObjectData(map, typeInfo);
 
-                // optional stuff
-                String id = od.getId();
-                if (id != null) { // null if JOIN in original query
-                    DocumentModel doc = null;
-                    if (Boolean.TRUE.equals(includeAllowableActions)) {
+            // optional stuff
+            String id = od.getId();
+            if (id != null) { // null if JOIN in original query
+                DocumentModel doc = null;
+                if (Boolean.TRUE.equals(includeAllowableActions)) {
+                    doc = getDocumentModel(id);
+                    AllowableActions allowableActions = NuxeoObjectData.getAllowableActions(doc, false);
+                    od.setAllowableActions(allowableActions);
+                }
+                if (includeRelationships != null && includeRelationships != IncludeRelationships.NONE) {
+                    // TODO get relationships using a JOIN
+                    // added to the original query
+                    List<ObjectData> relationships = NuxeoObjectData.getRelationships(id, includeRelationships, this);
+                    od.setRelationships(relationships);
+                }
+                if (NuxeoObjectData.needsRenditions(renditionFilter)) {
+                    if (doc == null) {
                         doc = getDocumentModel(id);
-                        AllowableActions allowableActions = NuxeoObjectData.getAllowableActions(doc, false);
-                        od.setAllowableActions(allowableActions);
                     }
-                    if (includeRelationships != null && includeRelationships != IncludeRelationships.NONE) {
-                        // TODO get relationships using a JOIN
-                        // added to the original query
-                        List<ObjectData> relationships = NuxeoObjectData.getRelationships(id, includeRelationships,
-                                this);
-                        od.setRelationships(relationships);
-                    }
-                    if (NuxeoObjectData.needsRenditions(renditionFilter)) {
-                        if (doc == null) {
-                            doc = getDocumentModel(id);
-                        }
-                        List<RenditionData> renditions = NuxeoObjectData.getRenditions(doc, renditionFilter, null, null,
-                                callContext);
-                        od.setRenditions(renditions);
-                    }
+                    List<RenditionData> renditions = NuxeoObjectData.getRenditions(doc, renditionFilter, null, null,
+                            callContext);
+                    od.setRenditions(renditions);
                 }
+            }
 
-                list.add(od);
-                if (list.size() >= max) {
-                    break;
-                }
-            }
-            numItems = res.size();
-        } finally {
-            if (res != null) {
-                res.close();
-            }
+            list.add(od);
         }
+        long numItems = res.totalSize;
         ObjectListImpl objList = new ObjectListImpl();
         objList.setObjects(list);
         objList.setNumItems(BigInteger.valueOf(numItems));
@@ -1618,6 +1606,66 @@ public class NuxeoCmisService extends AbstractCmisService
      */
     public IterableQueryResult queryAndFetch(String query, boolean searchAllVersions) {
         return queryAndFetch(query, searchAllVersions, null);
+    }
+
+    /**
+     * Makes a CMISQL query to the repository and returns a {@link PartialList}.
+     *
+     * @param query the CMISQL query
+     * @param limit the maximum number of documents to retrieve, or 0 for all of them
+     * @param offset the offset (starting at 0) into the list of documents
+     * @param searchAllVersions whether to search all versions ({@code true}) or only the latest version ({@code false}
+     *            ), for versionable types
+     * @param typeInfo a map filled with type information for each returned property, or {@code null} if no such info is
+     *            needed
+     * @return a {@link PartialList}
+     * @throws CmisInvalidArgumentException if the query cannot be parsed or is invalid
+     * @since 7.10-HF25, 8.10-HF06, 9.2
+     */
+    public PartialList<Map<String, Serializable>> queryProjection(String query, long limit, long offset,
+            boolean searchAllVersions, Map<String, PropertyDefinition<?>> typeInfo) {
+        if (repository.supportsJoins()) {
+            if (repository.supportsProxies()) {
+                throw new CmisRuntimeException(
+                        "Server configuration error: cannot supports joins and proxies at the same time");
+            }
+            // straight to CoreSession as CMISQL, relies on proper QueryMaker
+            return coreSession.queryProjection(query, CMISQLQueryMaker.TYPE, false, limit, offset, -1, this, typeInfo,
+                    Boolean.valueOf(searchAllVersions));
+        } else {
+            // convert to NXQL for evaluation
+            CMISQLtoNXQL converter = new CMISQLtoNXQL(repository.supportsProxies());
+            String nxql;
+            try {
+                nxql = converter.getNXQL(query, this, typeInfo, searchAllVersions);
+            } catch (QueryParseException e) {
+                throw new CmisInvalidArgumentException(e.getMessage(), e);
+            }
+
+            PartialList<Map<String, Serializable>> pl;
+            try {
+                if (repository.useElasticsearch()) {
+                    ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
+                    NxQueryBuilder qb = new NxQueryBuilder(coreSession).nxql(nxql)
+                                                                       .limit((int) limit)
+                                                                       .offset((int) offset);
+                    EsResult esResult = ess.queryAndAggregate(qb);
+                    IterableQueryResult it = esResult.getRows();
+                    // Convert response
+                    List<Map<String, Serializable>> list = new ArrayList<>((int) it.size());
+                    it.forEach(list::add);
+                    pl = new PartialList<>(list, esResult.getElasticsearchResponse().getHits().getTotalHits());
+                } else {
+                    // distinct documents
+                    pl = coreSession.queryProjection(nxql, NXQL.NXQL, true, limit, offset, -1);
+                }
+            } catch (QueryParseException e) {
+                e.addInfo("Invalid query: CMISQL: " + query);
+                throw e;
+            }
+            // wrap result
+            return converter.convertToCMIS(pl, this);
+        }
     }
 
     protected ObjectDataImpl makeObjectData(Map<String, Serializable> map,
