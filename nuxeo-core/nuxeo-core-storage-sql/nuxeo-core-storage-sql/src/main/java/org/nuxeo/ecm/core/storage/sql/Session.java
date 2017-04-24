@@ -444,6 +444,24 @@ public interface Session extends Connection {
             boolean distinctDocuments, Object... params);
 
     /**
+     * Makes a query to the database.
+     *
+     * @param query the query
+     * @param queryType the query type
+     * @param queryFilter the query filter
+     * @param distinctDocuments if {@code true} then a maximum of one row per document will be returned
+     * @param countUpTo if {@code -1}, also count the total size without offset/limit.<br>
+     *            If {@code 0}, don't count the total size.<br>
+     *            If {@code n}, count the total number if there are less than n documents otherwise set the size to
+     *            {@code -1}.
+     * @param params optional query-type-dependent parameters
+     * @return a projection
+     * @since 7.10-HF-25, 8.10-HF06, 9.2
+     */
+    PartialList<Map<String,Serializable>> queryProjection(String query, String queryType, QueryFilter queryFilter, boolean distinctDocuments,
+            long countUpTo, Object[] params);
+
+    /**
      * Gets the lock manager for this session.
      *
      * @return the lock manager

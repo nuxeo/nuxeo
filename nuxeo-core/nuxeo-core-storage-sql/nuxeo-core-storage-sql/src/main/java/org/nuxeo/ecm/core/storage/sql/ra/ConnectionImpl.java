@@ -352,6 +352,12 @@ public class ConnectionImpl implements Session {
         return result;
     }
 
+    @Override
+    public PartialList<Map<String,Serializable>> queryProjection(String query, String queryType, QueryFilter queryFilter,
+            boolean distinctDocuments, long countUpTo, Object... params) {
+        return getSession().queryProjection(query, queryType, queryFilter, distinctDocuments, countUpTo, params);
+    }
+
     public static class QueryResultContextException extends Exception {
         private static final long serialVersionUID = 1L;
 

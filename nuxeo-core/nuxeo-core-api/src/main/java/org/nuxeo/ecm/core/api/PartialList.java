@@ -19,12 +19,13 @@
 
 package org.nuxeo.ecm.core.api;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * The bundling of a list and a total size.
  */
-public class PartialList<E> {
+public class PartialList<E> implements Iterable<E> {
 
     public final List<E> list;
 
@@ -39,6 +40,11 @@ public class PartialList<E> {
     public PartialList(List<E> list, long totalSize) {
         this.list = list;
         this.totalSize = totalSize;
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return list.iterator();
     }
 
 }

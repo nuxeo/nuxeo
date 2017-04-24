@@ -1286,6 +1286,26 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
+    public PartialList<Map<String, Serializable>> queryProjection(String query, String queryType,
+            QueryFilter queryFilter, boolean distinctDocuments, long countUpTo, Object... params) {
+        final Timer.Context timerContext = queryTimer.time();
+        try {
+            return mapper.queryProjection(query, queryType, queryFilter, distinctDocuments, countUpTo, params);
+        } finally {
+            long duration = timerContext.stop();
+            if ((LOG_MIN_DURATION_NS >= 0) && (duration > LOG_MIN_DURATION_NS)) {
+                String msg = String.format("duration_ms:\t%.2f\t%s\tqueryProjection\t%s", duration / 1000000.0,
+                        queryFilter, query);
+                if (log.isTraceEnabled()) {
+                    log.info(msg, new Throwable("Slow query stack trace"));
+                } else {
+                    log.info(msg);
+                }
+            }
+        }
+    }
+
+    @Override
     public LockManager getLockManager() {
         return repository.getLockManager();
     }
