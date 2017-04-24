@@ -61,8 +61,17 @@ public interface Session {
             boolean distinctDocuments, Object[] params);
 
     /**
-     * Executes the given query and returns the first batch of results of batchSize, next batch must be requested
-     * within the keepAliveSeconds delay.
+     * Does a query and fetch the individual results as maps.
+     *
+     * @since 7.10-HF25, 8.10-HF06, 9.2
+     */
+    PartialList<Map<String, Serializable>> queryProjection(String query, String queryType, QueryFilter queryFilter,
+            boolean distinctDocuments, long countUpTo, Object[] params);
+
+    /**
+     * Executes the given query and returns the first batch of results of batchSize, next batch must be requested within
+     * the keepAliveSeconds delay.
+     * 
      * @since 8.4
      */
     ScrollResult scroll(String query, int batchSize, int keepAliveSeconds);

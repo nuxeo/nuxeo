@@ -1694,6 +1694,27 @@ public class DBSSession implements Session {
     }
 
     @Override
+    public PartialList<Map<String, Serializable>> queryProjection(String query, String queryType,
+            QueryFilter queryFilter, boolean distinctDocuments, long countUpTo, Object[] params) {
+        final Timer.Context timerContext = queryTimer.time();
+        try {
+            return doQueryAndFetch(query, queryType, queryFilter, distinctDocuments, (int) countUpTo, null);
+        } finally {
+            long duration = timerContext.stop();
+            if (LOG_MIN_DURATION_NS >= 0 && duration > LOG_MIN_DURATION_NS) {
+                String msg = String.format("duration_ms:\t%.2f\t%s\tqueryProjection\t%s", duration / 1000000.0,
+                        queryFilter, query);
+                if (log.isTraceEnabled()) {
+                    log.info(msg, new Throwable("Slow query stack trace"));
+                } else {
+                    log.info(msg);
+                }
+            }
+
+        }
+    }
+
+    @Override
     public ScrollResult scroll(String query, int batchSize, int keepAliveSeconds) {
         SQLQuery sqlQuery = SQLQueryParser.parse(query);
         SelectClause selectClause = sqlQuery.select;
