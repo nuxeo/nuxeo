@@ -95,6 +95,8 @@ public class DialectOracle extends Dialect {
 
     protected String idSequenceName;
 
+    protected int majorVersion;
+
     protected XAErrorLogger xaErrorLogger;
 
     protected static class XAErrorLogger {
@@ -135,6 +137,11 @@ public class DialectOracle extends Dialect {
 
     public DialectOracle(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
         super(metadata, repositoryDescriptor);
+        try {
+            majorVersion = metadata.getDatabaseMajorVersion();
+        } catch (SQLException e) {
+            throw new NuxeoException(e);
+        }
         fulltextParameters = repositoryDescriptor == null ? null
                 : repositoryDescriptor.getFulltextAnalyzer() == null ? "" : repositoryDescriptor.getFulltextAnalyzer();
         pathOptimizationsEnabled = repositoryDescriptor != null && repositoryDescriptor.getPathOptimizationsEnabled();
@@ -1002,6 +1009,22 @@ public class DialectOracle extends Dialect {
             sql += ";";
         }
         return sql + "\n/";
+    }
+
+    @Override
+    public boolean supportsBatchUpdateCount() {
+        // Oracle 11
+        // https://docs.oracle.com/cd/E18283_01/java.112/e16548/oraperf.htm#i1057545
+        // For a prepared statement batch, it is not possible to know the number of rows affected in the database by
+        // each individual statement in the batch. Therefore, all array elements have a value of -2. According to the
+        // JDBC 2.0 specification, a value of -2 indicates that the operation was successful but the number of rows
+        // affected is unknown
+        //
+        // Oracle 12
+        // https://docs.oracle.com/database/121/JJDBC/oraperf.htm#JJDBC28773
+        // For a prepared statement batch, the array contains the actual update counts indicating the number of rows
+        // affected by each operation.
+        return majorVersion >= 12;
     }
 
 }

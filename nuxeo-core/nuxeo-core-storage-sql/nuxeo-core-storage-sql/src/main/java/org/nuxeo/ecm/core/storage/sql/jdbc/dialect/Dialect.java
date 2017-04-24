@@ -1325,4 +1325,13 @@ public abstract class Dialect {
         return sql + ";";
     }
 
+    /**
+     * Does the dialect report accurate update counts for batch updates.
+     *
+     * @since 9.2
+     */
+    public boolean supportsBatchUpdateCount() {
+        return true;
+    }
+
 }

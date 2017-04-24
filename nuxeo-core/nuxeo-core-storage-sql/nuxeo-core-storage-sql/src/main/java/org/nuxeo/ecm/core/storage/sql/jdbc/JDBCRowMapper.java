@@ -25,6 +25,7 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -598,7 +599,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             String sql = en.getKey();
             List<RowUpdate> rowUpdates = en.getValue();
             SQLInfoSelect update = sqlToInfo.get(sql);
-            boolean batched = supportsBatchUpdates && rowUpdates.size() > 1;
+            boolean changeTokenEnabled = model.getRepositoryDescriptor().isChangeTokenEnabled();
+            boolean batched = supportsBatchUpdates && rowUpdates.size() > 1
+                    && (dialect.supportsBatchUpdateCount() || !changeTokenEnabled);
             String loggedSql = batched ? update.sql + " -- BATCHED" : update.sql;
             try (PreparedStatement ps = connection.prepareStatement(update.sql)) {
                 int batch = 0;
@@ -632,22 +635,22 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         if (batch % UPDATE_BATCH_SIZE == 0 || !rowIt.hasNext()) {
                             int[] counts = ps.executeBatch();
                             countExecute();
-                            for (int j = 0; j < counts.length; j++) {
-                                if (counts[j] != 1) {
-                                    if (model.getRepositoryDescriptor().isChangeTokenEnabled()) {
+                            if (changeTokenEnabled) {
+                                for (int j = 0; j < counts.length; j++) {
+                                    int count = counts[j];
+                                    if (count != Statement.SUCCESS_NO_INFO && count != 1) {
                                         Serializable id = rowUpdates.get(j).row.id;
                                         logger.log("  -> CONCURRENT UPDATE: " + id);
                                         throw new ConcurrentUpdateException(id.toString());
                                     }
                                 }
-
                             }
                         }
                     } else {
                         int count = ps.executeUpdate();
                         countExecute();
-                        if (count != 1) {
-                            if (model.getRepositoryDescriptor().isChangeTokenEnabled()) {
+                        if (changeTokenEnabled) {
+                            if (count != Statement.SUCCESS_NO_INFO && count != 1) {
                                 Serializable id = rowu.row.id;
                                 logger.log("  -> CONCURRENT UPDATE: " + id);
                                 throw new ConcurrentUpdateException(id.toString());

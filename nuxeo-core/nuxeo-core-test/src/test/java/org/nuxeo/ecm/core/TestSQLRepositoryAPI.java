@@ -4361,6 +4361,34 @@ public class TestSQLRepositoryAPI {
         assertEquals(token2, doc.getChangeToken());
     }
 
+    @Test
+    public void testChangeTokenBatched() {
+        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
+        maybeCreateChangeToken(doc1);
+        maybeCreateChangeToken(doc2);
+        doc1 = session.createDocument(doc1);
+        doc2 = session.createDocument(doc2);
+        session.save();
+        String token1 = doc1.getChangeToken();
+        String token2 = doc2.getChangeToken();
+
+        // now change the docs
+        doc1.setPropertyValue("dc:title", "Doc 1 Changed");
+        doc2.setPropertyValue("dc:title", "Doc 2 Changed");
+        maybeUpdateChangeToken(doc1);
+        maybeUpdateChangeToken(doc2);
+        doc1 = session.saveDocument(doc1);
+        doc2 = session.saveDocument(doc2);
+        session.save();
+
+        // the change token has been updated
+        String token1b = doc1.getChangeToken();
+        String token2b = doc2.getChangeToken();
+        assertNotEquals(token1, token1b);
+        assertNotEquals(token2, token2b);
+    }
+
     // query providers create "search" doc types to collect results
     @Test
     public void testChangeTokenOnFakeDocument() {
