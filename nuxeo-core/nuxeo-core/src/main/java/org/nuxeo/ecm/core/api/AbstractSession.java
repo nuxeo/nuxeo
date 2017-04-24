@@ -153,12 +153,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     protected Counter updateDocumentCount;
 
     protected void createMetrics() {
-        createDocumentCount = registry.counter(MetricRegistry.name("nuxeo.repositories", getRepositoryName(),
-                "documents", "create"));
-        deleteDocumentCount = registry.counter(MetricRegistry.name("nuxeo.repositories", getRepositoryName(),
-                "documents", "delete"));
-        updateDocumentCount = registry.counter(MetricRegistry.name("nuxeo.repositories", getRepositoryName(),
-                "documents", "update"));
+        createDocumentCount = registry.counter(
+                MetricRegistry.name("nuxeo.repositories", getRepositoryName(), "documents", "create"));
+        deleteDocumentCount = registry.counter(
+                MetricRegistry.name("nuxeo.repositories", getRepositoryName(), "documents", "delete"));
+        updateDocumentCount = registry.counter(
+                MetricRegistry.name("nuxeo.repositories", getRepositoryName(), "documents", "update"));
     }
 
     /**
@@ -210,8 +210,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (!hasPermission(doc, permission)) {
             log.debug("Permission '" + permission + "' is not granted to '" + getPrincipal().getName()
                     + "' on document " + doc.getPath() + " (" + doc.getUUID() + " - " + doc.getType().getName() + ")");
-            throw new DocumentSecurityException("Privilege '" + permission + "' is not granted to '"
-                    + getPrincipal().getName() + "'");
+            throw new DocumentSecurityException(
+                    "Privilege '" + permission + "' is not granted to '" + getPrincipal().getName() + "'");
         }
     }
 
@@ -230,8 +230,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         return ctx;
     }
 
-    protected void notifyEvent(String eventId, DocumentModel source, Map<String, Serializable> options,
-            String category, String comment, boolean withLifeCycle, boolean inline) {
+    protected void notifyEvent(String eventId, DocumentModel source, Map<String, Serializable> options, String category,
+            String comment, boolean withLifeCycle, boolean inline) {
 
         DocumentEventContext ctx = new DocumentEventContext(this, getPrincipal(), source);
 
@@ -307,7 +307,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public Collection<String> filterGrantedPermissions(Principal principal, DocumentRef docRef, Collection<String> permissions) {
+    public Collection<String> filterGrantedPermissions(Principal principal, DocumentRef docRef,
+            Collection<String> permissions) {
         Document doc = resolveReference(docRef);
         return getSecurityService().filterGrantedPermissions(doc, principal, permissions);
     }
@@ -1100,6 +1101,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public DocumentModelList query(String query, String queryType, Filter filter, long limit, long offset,
             boolean countTotal) {
+        long countUpTo = computeCountUpTo(countTotal);
+        return query(query, queryType, filter, limit, offset, countUpTo);
+    }
+
+    /**
+     * @return the appropriate countUpTo value depending on input {@code countTotal} and configuration.
+     */
+    protected long computeCountUpTo(boolean countTotal) {
         long countUpTo;
         if (!countTotal) {
             countUpTo = 0;
@@ -1110,7 +1119,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 countUpTo = -1;
             }
         }
-        return query(query, queryType, filter, limit, offset, countUpTo);
+        return countUpTo;
     }
 
     protected long getMaxResults() {
@@ -1151,17 +1160,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             boolean postFilterPolicies = !securityService.arePoliciesExpressibleInQuery(repoName);
             boolean postFilterFilter = filter != null && !(filter instanceof FacetFilter);
             boolean postFilter = postFilterPolicies || postFilterFilter;
-            String[] principals;
-            if (isAdministrator()) {
-                principals = null; // means: no security check needed
-            } else {
-                principals = SecurityService.getPrincipalsToCheck(principal);
-            }
+            String[] principals = getPrincipalsToCheck();
             String[] permissions = securityService.getPermissionsToCheck(permission);
+            Collection<Transformer> transformers = getPoliciesQueryTransformers(queryType);
+
             QueryFilter queryFilter = new QueryFilter(principal, principals, permissions,
-                    filter instanceof FacetFilter ? (FacetFilter) filter : null,
-                    securityService.getPoliciesQueryTransformers(repoName), postFilter ? 0 : limit, postFilter ? 0
-                            : offset);
+                    filter instanceof FacetFilter ? (FacetFilter) filter : null, transformers, postFilter ? 0 : limit,
+                    postFilter ? 0 : offset);
 
             // get document list with total size
             PartialList<Document> pl = getSession().query(query, queryType, queryFilter, postFilter ? -1 : countUpTo);
@@ -1229,21 +1234,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         try {
             SecurityService securityService = getSecurityService();
             Principal principal = getPrincipal();
-            String[] principals;
-            if (isAdministrator()) {
-                principals = null; // means: no security check needed
-            } else {
-                principals = SecurityService.getPrincipalsToCheck(principal);
-            }
+            String[] principals = getPrincipalsToCheck();
             String permission = BROWSE;
             String[] permissions = securityService.getPermissionsToCheck(permission);
-            Collection<Transformer> transformers;
-            if (NXQL.NXQL.equals(queryType)) {
-                String repoName = getRepositoryName();
-                transformers = securityService.getPoliciesQueryTransformers(repoName);
-            } else {
-                transformers = Collections.emptyList();
-            }
+            Collection<Transformer> transformers = getPoliciesQueryTransformers(queryType);
+
             QueryFilter queryFilter = new QueryFilter(principal, principals, permissions, null, transformers, 0, 0);
             IterableQueryResult result = getSession().queryAndFetch(query, queryType, queryFilter, distinctDocuments,
                     params);
@@ -1252,6 +1247,53 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             e.addInfo("Failed to execute query: " + queryType + ": " + query);
             throw e;
         }
+    }
+
+    @Override
+    public PartialList<Map<String, Serializable>> queryProjection(String query, long limit, long offset) {
+        return queryProjection(query, limit, offset, false);
+    }
+
+    @Override
+    public PartialList<Map<String, Serializable>> queryProjection(String query, long limit, long offset,
+            boolean countTotal) {
+        long countUpTo = computeCountUpTo(countTotal);
+        return queryProjection(query, NXQL.NXQL, false, limit, offset, countUpTo);
+    }
+
+    @Override
+    public PartialList<Map<String, Serializable>> queryProjection(String query, String queryType,
+            boolean distinctDocuments, long limit, long offset, long countUpTo, Object... params) {
+        Principal principal = getPrincipal();
+        String[] principals = getPrincipalsToCheck();
+        String[] permissions = getPermissionsToCheck(BROWSE);
+        Collection<Transformer> transformers = getPoliciesQueryTransformers(queryType);
+
+        QueryFilter queryFilter = new QueryFilter(principal, principals, permissions, null, transformers, limit,
+                offset);
+        return getSession().queryProjection(query, queryType, queryFilter, distinctDocuments, countUpTo, params);
+    }
+
+    protected String[] getPrincipalsToCheck() {
+        Principal principal = getPrincipal();
+        String[] principals;
+        if (isAdministrator()) {
+            principals = null; // means: no security check needed
+        } else {
+            principals = SecurityService.getPrincipalsToCheck(principal);
+        }
+        return principals;
+    }
+
+    protected Collection<Transformer> getPoliciesQueryTransformers(String queryType) {
+        Collection<Transformer> transformers;
+        if (NXQL.NXQL.equals(queryType)) {
+            String repoName = getRepositoryName();
+            transformers = securityService.getPoliciesQueryTransformers(repoName);
+        } else {
+            transformers = Collections.emptyList();
+        }
+        return transformers;
     }
 
     @Override
@@ -1318,8 +1360,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 if (baseVersion != null && !baseVersion.isCheckedOut() && baseVersion.getUUID().equals(doc.getUUID())) {
                     return "Working copy " + working.getUUID() + " is checked in with base version " + doc.getUUID();
                 }
-                return hasPermission(working, WRITE_VERSION) ? null : "Missing permission '" + WRITE_VERSION
-                        + "' on working copy " + working.getUUID();
+                return hasPermission(working, WRITE_VERSION) ? null
+                        : "Missing permission '" + WRITE_VERSION + "' on working copy " + working.getUUID();
             } else {
                 // no working document, only admins can remove
                 return isAdministrator() ? null : "No working copy and not an Administrator";
@@ -1335,8 +1377,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             if (parent == null) {
                 return null; // ok
             }
-            return hasPermission(parent, REMOVE_CHILDREN) ? null : "Missing permission '" + REMOVE_CHILDREN
-                    + "' on parent document " + parent.getUUID();
+            return hasPermission(parent, REMOVE_CHILDREN) ? null
+                    : "Missing permission '" + REMOVE_CHILDREN + "' on parent document " + parent.getUUID();
         }
     }
 
@@ -1350,8 +1392,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         try {
             String reason = canRemoveDocument(doc);
             if (reason != null) {
-                throw new DocumentSecurityException("Permission denied: cannot remove document " + doc.getUUID() + ", "
-                        + reason);
+                throw new DocumentSecurityException(
+                        "Permission denied: cannot remove document " + doc.getUUID() + ", " + reason);
             }
             removeNotifyOneDoc(doc);
 
@@ -1446,9 +1488,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public DocumentModel saveDocument(DocumentModel docModel) {
         if (docModel.getRef() == null) {
-            throw new IllegalArgumentException(String.format("cannot save document '%s' with null reference: "
-                    + "document has probably not yet been created " + "in the repository with "
-                    + "'CoreSession.createDocument(docModel)'", docModel.getTitle()));
+            throw new IllegalArgumentException(String.format(
+                    "cannot save document '%s' with null reference: " + "document has probably not yet been created "
+                            + "in the repository with " + "'CoreSession.createDocument(docModel)'",
+                    docModel.getTitle()));
         }
 
         Document doc = resolveReference(docModel.getRef());
@@ -1492,7 +1535,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         options.put(CoreEventConstants.DOCUMENT_DIRTY, dirty);
 
         // recompute versioning option as it can be set by listeners
-        VersioningOption versioningOption = (VersioningOption) docModel.getContextData(VersioningService.VERSIONING_OPTION);
+        VersioningOption versioningOption = (VersioningOption) docModel.getContextData(
+                VersioningService.VERSIONING_OPTION);
         docModel.putContextData(VersioningService.VERSIONING_OPTION, null);
         String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
         docModel.putContextData(VersioningService.CHECKIN_COMMENT, null);
@@ -2000,8 +2044,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (!doc.isVersion() && !doc.isProxy() && !doc.isCheckedOut()) {
             boolean deleteOrUndelete = LifeCycleConstants.DELETE_TRANSITION.equals(transition)
                     || LifeCycleConstants.UNDELETE_TRANSITION.equals(transition);
-            if (!deleteOrUndelete || Framework.getService(ConfigurationService.class).isBooleanPropertyFalse(
-                    TRASH_KEEP_CHECKED_IN_PROPERTY)) {
+            if (!deleteOrUndelete || Framework.getService(ConfigurationService.class)
+                                              .isBooleanPropertyFalse(TRASH_KEEP_CHECKED_IN_PROPERTY)) {
                 checkOut(docRef);
                 doc = resolveReference(docRef);
             }
@@ -2184,7 +2228,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel publishDocument(DocumentModel docModel, DocumentModel section, boolean overwriteExistingProxy) {
+    public DocumentModel publishDocument(DocumentModel docModel, DocumentModel section,
+            boolean overwriteExistingProxy) {
         Document doc = resolveReference(docModel.getRef());
         Document sec = resolveReference(section.getRef());
         checkPermission(doc, READ);
@@ -2237,7 +2282,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                     // notify proxy updates
                     notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED, proxy, options, null, null, true, false);
                     notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED, proxy, options, null, null, true, false);
-                    notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED, section, options, null, null, true, false);
+                    notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED, section, options, null, null, true,
+                            false);
                 }
             }
         }
@@ -2340,7 +2386,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(ref);
 
         // permission checks
-        if ((refreshFlags & (DocumentModel.REFRESH_PREFETCH | DocumentModel.REFRESH_STATE | DocumentModel.REFRESH_CONTENT)) != 0) {
+        if ((refreshFlags & (DocumentModel.REFRESH_PREFETCH | DocumentModel.REFRESH_STATE
+                | DocumentModel.REFRESH_CONTENT)) != 0) {
             checkPermission(doc, READ);
         }
         if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {
