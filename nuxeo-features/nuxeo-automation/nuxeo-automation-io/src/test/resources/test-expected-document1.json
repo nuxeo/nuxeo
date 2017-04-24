@@ -4,7 +4,7 @@
    "uid" : "the-doc-id",
    "path" : "/folder1/doc0",
    "type" : "Note",
-   "changeToken" : null,
+   "changeToken" : "0",
    "isCheckedOut" : false,
    "isVersion": false,
    "isProxy": false,
