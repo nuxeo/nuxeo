@@ -713,6 +713,15 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
         publishingComment = null;
     }
 
+    /**
+     * @since 9.2
+     */
+    public void reset() {
+        navigationContext.invalidateCurrentDocument();
+        currentPublicationTreeNameForPublishing = null;
+        currentPublicationTree = null;
+    }
+
     class RejectWithoutRestrictionRunner extends UnrestrictedSessionRunner {
 
         PublishedDocument publishedDocument;
