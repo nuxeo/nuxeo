@@ -1151,6 +1151,50 @@ public interface CoreSession extends AutoCloseable {
      */
     IterableQueryResult queryAndFetch(String query, String queryType, boolean distinctDocuments, Object... params);
 
+    /**
+     * Executes the given NXQL query and returns the result that matches the filter.
+     *
+     * @param query the query to execute
+     * @param limit the maximum number of documents to retrieve, or 0 for all of them
+     * @param offset the offset (starting at 0) into the list of documents
+     * @return the query result
+     * @since 7.10-HF25, 8.10-HF06, 9.2
+     */
+    PartialList<Map<String, Serializable>> queryProjection(String query, long limit, long offset);
+
+    /**
+     * Executes the given NXQL query and returns the result that matches the filter.
+     *
+     * @param query the query to execute
+     * @param limit the maximum number of documents to retrieve, or 0 for all of them
+     * @param offset the offset (starting at 0) into the list of documents
+     * @param countTotal if {@code true}, return a {@link PartialList} that includes a total size of the underlying list
+     *            (size if there was no limit or offset)
+     * @return the query result
+     * @since 7.10-HF25, 8.10-HF06, 9.2
+     */
+    PartialList<Map<String, Serializable>> queryProjection(String query, long limit, long offset, boolean countTotal);
+
+    /**
+     * Executes the given NXQL query and returns the result that matches the filter.
+     *
+     * @param query the query to execute
+     * @param queryType the query type, like "NXQL"
+     * @param distinctDocuments if {@code true} then a maximum of one row per document will be returned
+     * @param limit the maximum number of documents to retrieve, or 0 for all of them
+     * @param offset the offset (starting at 0) into the list of documents
+     * @param countUpTo if {@code -1}, return a {@link PartialList} that includes a total size of the underlying list
+     *            (size if there was no limit or offset). <br>
+     *            If {@code 0}, don't return the total size of the underlying list. <br>
+     *            If {@code n}, return the total size of the underlying list when the size is smaller than {@code n}
+     *            else return a total size of {@code -1}.
+     * @param params optional query-type-dependent parameters
+     * @return the query result
+     * @since 7.10-HF25, 8.10-HF06, 9.2
+     */
+    PartialList<Map<String, Serializable>> queryProjection(String query, String queryType, boolean distinctDocuments,
+            long limit, long offset, long countUpTo, Object... params);
+
     /** -------------------------- Security API --------------------------- * */
 
     /**

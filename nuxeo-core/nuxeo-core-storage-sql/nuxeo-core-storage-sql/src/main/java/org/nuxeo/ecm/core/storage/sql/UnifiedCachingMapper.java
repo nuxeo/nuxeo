@@ -94,6 +94,12 @@ public class UnifiedCachingMapper extends UnifiedCachingRowMapper implements Cac
     }
 
     @Override
+    public PartialList<Map<String, Serializable>> queryProjection(String query, String queryType,
+            QueryFilter queryFilter, boolean distinctDocuments, long countUpTo, Object... params) {
+        return mapper.queryProjection(query, queryType, queryFilter, distinctDocuments, countUpTo, params);
+    }
+
+    @Override
     public Set<Serializable> getAncestorsIds(Collection<Serializable> ids) {
         return mapper.getAncestorsIds(ids);
     }

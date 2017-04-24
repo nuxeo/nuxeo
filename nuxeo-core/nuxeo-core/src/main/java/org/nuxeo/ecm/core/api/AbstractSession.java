@@ -1117,6 +1117,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public DocumentModelList query(String query, String queryType, Filter filter, long limit, long offset,
             boolean countTotal) {
+        long countUpTo = computeCountUpTo(countTotal);
+        return query(query, queryType, filter, limit, offset, countUpTo);
+    }
+
+    /**
+     * @return the appropriate countUpTo value depending on input {@code countTotal} and configuration.
+     */
+    protected long computeCountUpTo(boolean countTotal) {
         long countUpTo;
         if (!countTotal) {
             countUpTo = 0;
@@ -1127,7 +1135,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 countUpTo = -1;
             }
         }
-        return query(query, queryType, filter, limit, offset, countUpTo);
+        return countUpTo;
     }
 
     protected long getMaxResults() {
@@ -1168,16 +1176,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             boolean postFilterPolicies = !securityService.arePoliciesExpressibleInQuery(repoName);
             boolean postFilterFilter = filter != null && !(filter instanceof FacetFilter);
             boolean postFilter = postFilterPolicies || postFilterFilter;
-            String[] principals;
-            if (isAdministrator()) {
-                principals = null; // means: no security check needed
-            } else {
-                principals = SecurityService.getPrincipalsToCheck(principal);
-            }
+            String[] principals = getPrincipalsToCheck();
             String[] permissions = securityService.getPermissionsToCheck(permission);
+            Collection<Transformer> transformers = getPoliciesQueryTransformers(queryType);
+
             QueryFilter queryFilter = new QueryFilter(principal, principals, permissions,
-                    filter instanceof FacetFilter ? (FacetFilter) filter : null,
-                    securityService.getPoliciesQueryTransformers(repoName), postFilter ? 0 : limit,
+                    filter instanceof FacetFilter ? (FacetFilter) filter : null, transformers, postFilter ? 0 : limit,
                     postFilter ? 0 : offset);
 
             // get document list with total size
@@ -1246,21 +1250,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         try {
             SecurityService securityService = getSecurityService();
             Principal principal = getPrincipal();
-            String[] principals;
-            if (isAdministrator()) {
-                principals = null; // means: no security check needed
-            } else {
-                principals = SecurityService.getPrincipalsToCheck(principal);
-            }
+            String[] principals = getPrincipalsToCheck();
             String permission = BROWSE;
             String[] permissions = securityService.getPermissionsToCheck(permission);
-            Collection<Transformer> transformers;
-            if (NXQL.NXQL.equals(queryType)) {
-                String repoName = getRepositoryName();
-                transformers = securityService.getPoliciesQueryTransformers(repoName);
-            } else {
-                transformers = Collections.emptyList();
-            }
+            Collection<Transformer> transformers = getPoliciesQueryTransformers(queryType);
+
             QueryFilter queryFilter = new QueryFilter(principal, principals, permissions, null, transformers, 0, 0);
             IterableQueryResult result = getSession().queryAndFetch(query, queryType, queryFilter, distinctDocuments,
                     params);
@@ -1272,6 +1266,52 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
+    public PartialList<Map<String, Serializable>> queryProjection(String query, long limit, long offset) {
+        return queryProjection(query, limit, offset, false);
+    }
+
+    @Override
+    public PartialList<Map<String, Serializable>> queryProjection(String query, long limit, long offset,
+            boolean countTotal) {
+        long countUpTo = computeCountUpTo(countTotal);
+        return queryProjection(query, NXQL.NXQL, false, limit, offset, countUpTo);
+    }
+
+    @Override
+    public PartialList<Map<String, Serializable>> queryProjection(String query, String queryType,
+            boolean distinctDocuments, long limit, long offset, long countUpTo, Object... params) {
+        Principal principal = getPrincipal();
+        String[] principals = getPrincipalsToCheck();
+        String[] permissions = getPermissionsToCheck(BROWSE);
+        Collection<Transformer> transformers = getPoliciesQueryTransformers(queryType);
+
+        QueryFilter queryFilter = new QueryFilter(principal, principals, permissions, null, transformers, limit,
+                offset);
+        return getSession().queryProjection(query, queryType, queryFilter, distinctDocuments, countUpTo, params);
+    }
+
+    protected String[] getPrincipalsToCheck() {
+        Principal principal = getPrincipal();
+        String[] principals;
+        if (isAdministrator()) {
+            principals = null; // means: no security check needed
+        } else {
+            principals = SecurityService.getPrincipalsToCheck(principal);
+        }
+        return principals;
+    }
+
+    protected Collection<Transformer> getPoliciesQueryTransformers(String queryType) {
+        Collection<Transformer> transformers;
+        if (NXQL.NXQL.equals(queryType)) {
+            String repoName = getRepositoryName();
+            transformers = securityService.getPoliciesQueryTransformers(repoName);
+        } else {
+            transformers = Collections.emptyList();
+        }
+        return transformers;
+    }
+
     public void removeChildren(DocumentRef docRef) {
         // TODO: check req permissions with td
         Document doc = resolveReference(docRef);
@@ -2050,8 +2090,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (!doc.isVersion() && !doc.isProxy() && !doc.isCheckedOut()) {
             boolean deleteOrUndelete = LifeCycleConstants.DELETE_TRANSITION.equals(transition)
                     || LifeCycleConstants.UNDELETE_TRANSITION.equals(transition);
-            if (!deleteOrUndelete || Framework.getService(ConfigurationService.class).isBooleanPropertyFalse(
-                    TRASH_KEEP_CHECKED_IN_PROPERTY)) {
+            if (!deleteOrUndelete || Framework.getService(ConfigurationService.class)
+                                              .isBooleanPropertyFalse(TRASH_KEEP_CHECKED_IN_PROPERTY)) {
                 checkOut(docRef);
                 doc = resolveReference(docRef);
             }

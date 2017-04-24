@@ -436,6 +436,12 @@ public class SQLSession implements Session {
         return session.queryAndFetch(query, queryType, queryFilter, distinctDocuments, params);
     }
 
+    @Override
+    public PartialList<Map<String, Serializable>> queryProjection(String query, String queryType,
+            QueryFilter queryFilter, boolean distinctDocuments, long countUpTo, Object[] params) {
+        return session.queryProjection(query, queryType, queryFilter, distinctDocuments, countUpTo, params);
+    }
+
     /*
      * ----- called by SQLDocument -----
      */
