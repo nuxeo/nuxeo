@@ -431,6 +431,15 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
         this.publishingComment = publishingComment;
     }
 
+    /**
+     * @since 9.2
+     */
+    public void reset() {
+        navigationContext.invalidateCurrentDocument();
+        currentPublicationTreeNameForPublishing = null;
+        currentPublicationTree = null;
+    }
+        
     public class ApproverWithoutRestriction extends UnrestrictedSessionRunner {
 
         public DocumentModel sourceDocument;
