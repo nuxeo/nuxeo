@@ -555,7 +555,6 @@ public class TestScriptRunnerInfrastructure {
         }
     }
 
-
     @Test
     public void testNotInlinedContext() throws OperationException {
         try (OperationContext ctx = new OperationContext(session)) {
@@ -565,7 +564,5 @@ public class TestScriptRunnerInfrastructure {
             Assertions.assertThat(props.getMap()).containsOnlyKeys("today");
         }
     }
-
-
 
 }
