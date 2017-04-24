@@ -43,7 +43,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
-import org.nuxeo.ecm.platform.publisher.impl.service.AbstractRemotableNode;
 import org.nuxeo.ecm.platform.publisher.impl.service.ProxyTree;
 import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
 import org.nuxeo.ecm.platform.publisher.test.TestServiceWithCore.Populate;

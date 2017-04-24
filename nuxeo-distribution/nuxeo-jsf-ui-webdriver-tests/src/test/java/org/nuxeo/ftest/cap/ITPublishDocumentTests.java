@@ -66,6 +66,8 @@ public class ITPublishDocumentTests extends AbstractTest {
 
     protected final static String TEST_SECTION_TITLE = "Test Section " + new Date().getTime();
 
+    protected final static String OTHER_TEST_SECTION_TITLE = "Other Test Section " + new Date().getTime();
+
     protected final static String TEST_NOTE_TITLE = "Test note to be versionned";
 
     protected final static String TEST_SECTION_URL = String.format(Constants.NXPATH_URL_FORMAT,
@@ -112,6 +114,22 @@ public class ITPublishDocumentTests extends AbstractTest {
         RestHelper.removePermissions(SECTIONS_PATH, MANAGER_USERNAME);
         RestHelper.removePermissions(SECTIONS_PATH, WRITER_USERNAME);
         RestHelper.cleanup();
+    }
+
+    @Test
+    public void testRefreshAvailableSections() throws Exception {
+        login(MANAGER_USERNAME, MANAGER_USERNAME);
+        open(TEST_FOLDER_URL);
+        PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
+                null, null, null).getPublishTab();
+
+        publishTab.expandAll();
+        int nbSections = publishTab.getTreeNode().size();
+
+        RestHelper.createDocument(SECTIONS_PATH, SECTION_TYPE, OTHER_TEST_SECTION_TITLE, null);
+        publishTab.refreshPublicationTree();
+
+        assertEquals(nbSections + 1, publishTab.getTreeNode().size());
     }
 
     @Test
