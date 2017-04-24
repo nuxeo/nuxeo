@@ -733,6 +733,20 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo) {
+        PartialList<Serializable> result = queryProjection(query, queryType, queryFilter, countUpTo,
+                (info, rs) -> info.whatColumns.get(0).getFromResultSet(rs, 1));
+
+        if (logger.isLogEnabled()) {
+            logger.logIds(result.list, countUpTo != 0, result.totalSize);
+        }
+
+        return result;
+    }
+
+    // queryFilter used for principals and permissions
+    @Override
+    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
+            boolean distinctDocuments, Object... params) {
         if (dialect.needsPrepareUserReadAcls()) {
             prepareUserReadAcls(queryFilter);
         }
@@ -740,11 +754,53 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         if (queryMaker == null) {
             throw new NuxeoException("No QueryMaker accepts query: " + queryType + ": " + query);
         }
-        QueryMaker.Query q = queryMaker.buildQuery(sqlInfo, model, pathResolver, query, queryFilter);
+        if (distinctDocuments) {
+            String q = query.toLowerCase();
+            if (q.startsWith("select ") && !q.startsWith("select distinct ")) {
+                query = "SELECT DISTINCT " + query.substring("SELECT ".length());
+            }
+        }
+        try {
+            return new ResultSetQueryResult(queryMaker, query, queryFilter, pathResolver, this, params);
+        } catch (SQLException e) {
+            throw new NuxeoException("Invalid query: " + queryType + ": " + query, e);
+        }
+    }
+
+    @Override
+    public PartialList<Map<String, Serializable>> queryProjection(String query, String queryType,
+            QueryFilter queryFilter, boolean distinctDocuments, long countUpTo, Object... params) {
+        if (distinctDocuments) {
+            String q = query.toLowerCase();
+            if (q.startsWith("select ") && !q.startsWith("select distinct ")) {
+                // Replace "select" by "select distinct", split at "select ".length() index
+                query = "SELECT DISTINCT " + query.substring(7);
+            }
+        }
+        PartialList<Map<String, Serializable>> result = queryProjection(query, queryType, queryFilter, countUpTo,
+                (info, rs) -> info.mapMaker.makeMap(rs), params);
+
+        if (logger.isLogEnabled()) {
+            logger.logMaps(result.list, countUpTo != 0, result.totalSize);
+        }
+
+        return result;
+    }
+
+    protected <T> PartialList<T> queryProjection(String query, String queryType, QueryFilter queryFilter,
+            long countUpTo, BiFunctionSQLException<SQLInfoSelect, ResultSet, T> extractor, Object... params) {
+        if (dialect.needsPrepareUserReadAcls()) {
+            prepareUserReadAcls(queryFilter);
+        }
+        QueryMaker queryMaker = findQueryMaker(queryType);
+        if (queryMaker == null) {
+            throw new NuxeoException("No QueryMaker accepts query: " + queryType + ": " + query);
+        }
+        QueryMaker.Query q = queryMaker.buildQuery(sqlInfo, model, pathResolver, query, queryFilter, params);
 
         if (q == null) {
             logger.log("Query cannot return anything due to conflicting clauses");
-            return new PartialList<Serializable>(Collections.<Serializable> emptyList(), 0);
+            return new PartialList<>(Collections.emptyList(), 0);
         }
         long limit = queryFilter.getLimit();
         long offset = queryFilter.getOffset();
@@ -798,22 +854,19 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 available = rs.absolute((int) offset + 1);
             }
 
-            Column column = q.selectInfo.whatColumns.get(0);
-            List<Serializable> ids = new LinkedList<Serializable>();
+            List<T> projections = new LinkedList<>();
             int rowNum = 0;
             while (available && (limit != 0)) {
-                Serializable id;
                 try {
-                    id = column.getFromResultSet(rs, 1);
+                    T projection = extractor.apply(q.selectInfo, rs);
+                    projections.add(projection);
+                    rowNum = rs.getRow();
+                    available = rs.next();
+                    limit--;
                 } catch (SQLDataException e) {
                     // actually no data available, MariaDB Connector/J lied, stop now
                     available = false;
-                    break;
                 }
-                ids.add(id);
-                rowNum = rs.getRow();
-                available = rs.next();
-                limit--;
             }
 
             // total size
@@ -833,11 +886,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 }
             }
 
-            if (logger.isLogEnabled()) {
-                logger.logIds(ids, countUpTo != 0, totalSize);
-            }
-
-            return new PartialList<Serializable>(ids, totalSize);
+            return new PartialList<>(projections, totalSize);
         } catch (SQLException e) {
             throw new NuxeoException("Invalid query: " + query, e);
         } finally {
@@ -887,30 +936,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             ps.setObject(i, object);
         }
         return i;
-    }
-
-    // queryFilter used for principals and permissions
-    @Override
-    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
-            boolean distinctDocuments, Object... params) {
-        if (dialect.needsPrepareUserReadAcls()) {
-            prepareUserReadAcls(queryFilter);
-        }
-        QueryMaker queryMaker = findQueryMaker(queryType);
-        if (queryMaker == null) {
-            throw new NuxeoException("No QueryMaker accepts query: " + queryType + ": " + query);
-        }
-        if (distinctDocuments) {
-            String q = query.toLowerCase();
-            if (q.startsWith("select ") && !q.startsWith("select distinct ")) {
-                query = "SELECT DISTINCT " + query.substring("SELECT ".length());
-            }
-        }
-        try {
-            return new ResultSetQueryResult(queryMaker, query, queryFilter, pathResolver, this, params);
-        } catch (SQLException e) {
-            throw new NuxeoException("Invalid query: " + queryType + ": " + query, e);
-        }
     }
 
     @Override
@@ -1391,6 +1416,23 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     @Override
     public void disconnect() {
         closeConnections();
+    }
+
+    /**
+     * @since 7.10-HF25, 8.10-HF06, 9.2
+     */
+    @FunctionalInterface
+    private interface BiFunctionSQLException<T, U, R> {
+
+        /**
+         * Applies this function to the given arguments.
+         *
+         * @param t the first function argument
+         * @param u the second function argument
+         * @return the function result
+         */
+        R apply(T t, U u) throws SQLException;
+
     }
 
 }

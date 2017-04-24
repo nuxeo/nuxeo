@@ -53,6 +53,14 @@ public interface Session {
             boolean distinctDocuments, Object[] params);
 
     /**
+     * Does a query and fetch the individual results as maps.
+     *
+     * @since 7.10-HF25, 8.10-HF06, 9.2
+     */
+    PartialList<Map<String, Serializable>> queryProjection(String query, String queryType, QueryFilter queryFilter,
+            boolean distinctDocuments, long countUpTo, Object[] params);
+
+    /**
      * Gets the lock manager for this session.
      *
      * @return the lock manager
