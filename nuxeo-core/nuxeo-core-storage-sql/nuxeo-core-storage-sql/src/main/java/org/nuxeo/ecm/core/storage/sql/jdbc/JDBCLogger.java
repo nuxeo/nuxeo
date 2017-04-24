@@ -107,6 +107,33 @@ public class JDBCLogger {
         log("  -> " + result);
     }
 
+    public void logMaps(List<Map<String, Serializable>> maps, boolean countTotal, long totalSize) {
+        List<Map<String, Serializable>> debugMaps = maps;
+        String end = "";
+        if (maps.size() > DEBUG_MAX_ARRAY) {
+            debugMaps = new ArrayList<>(DEBUG_MAX_ARRAY);
+            int i = 0;
+            for (Map<String, Serializable> map : maps) {
+                debugMaps.add(map);
+                i++;
+                if (i == DEBUG_MAX_ARRAY) {
+                    break;
+                }
+            }
+            end = "...(" + maps.size() + " ids)...";
+        }
+        if (countTotal) {
+            end += " (total " + totalSize + ')';
+        }
+        String result = debugMaps.stream()
+                                 .map(map -> map.entrySet()
+                                                .stream()
+                                                .map(entry -> entry.getKey() + "=" + loggedValue(entry.getValue()))
+                                                .collect(Collectors.joining(", ")))
+                                 .collect(Collectors.joining(",", "{", "}"));
+        log("  -> " + result + end);
+    }
+
     public void logIds(List<Serializable> ids, boolean countTotal, long totalSize) {
         List<Serializable> debugIds = ids;
         String end = "";
