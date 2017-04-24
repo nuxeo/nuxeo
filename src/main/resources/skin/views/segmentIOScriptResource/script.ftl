@@ -10,7 +10,9 @@
       if (blackList.indexOf(login)>=0) {
         return;
       }
-      if (document.cookie.indexOf("_nxIdentified="+login)<0) {
+      // do identify only if the _nxIdentified cookie is not present for this login
+      // or there are traits to synchronize
+      if (document.cookie.indexOf("_nxIdentified="+login)<0 || traits) {
         // merge email and additional traits
         if(!traits){
         	traits = {};
