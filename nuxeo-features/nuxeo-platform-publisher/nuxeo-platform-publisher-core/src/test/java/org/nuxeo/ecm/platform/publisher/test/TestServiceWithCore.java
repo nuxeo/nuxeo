@@ -244,7 +244,9 @@ public class TestServiceWithCore extends PublisherTestCase {
 
         // "hack" to reset the RootSectionsFinder used by the tree
         // implementation
+        ((ProxyTree) tree).setChildrenNodes(null);
         tree.setCurrentDocument(Populate.self.doc2Publish);
+
         nodes = tree.getChildrenNodes();
         assertEquals(2, nodes.size());
 
