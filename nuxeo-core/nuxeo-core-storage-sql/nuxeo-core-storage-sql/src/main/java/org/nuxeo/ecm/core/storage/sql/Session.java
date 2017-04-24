@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
@@ -70,7 +69,6 @@ public interface Session extends Connection {
      * Saves the modifications to persistent storage.
      * <p>
      * Modifications will be actually written only upon transaction commit.
-     *
      */
     void save();
 
@@ -132,8 +130,8 @@ public interface Session extends Connection {
     boolean removeMixinType(Node node, String mixin);
 
     /**
-     * Executes the given query and returns the first batch of results, next batch must be requested
-     * within the {@code keepAliveSeconds} delay.
+     * Executes the given query and returns the first batch of results, next batch must be requested within the
+     * {@code keepAliveSeconds} delay.
      *
      * @since 8.4
      */
@@ -407,14 +405,14 @@ public interface Session extends Connection {
      * Makes a query to the database.
      *
      * @param query the query
-     * @param query the query type
+     * @param queryType the query type
      * @param queryFilter the query filter
      * @param countUpTo if {@code -1}, also count the total size without offset/limit.<br>
      *            If {@code 0}, don't count the total size.<br>
      *            If {@code n}, count the total number if there are less than n documents otherwise set the size to
      *            {@code -1}.
      * @return the resulting list with total size included
-     * @Since 5.6
+     * @since 5.6
      */
     PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo);
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,14 +61,16 @@ public interface Session {
             boolean distinctDocuments, Object[] params);
 
     /**
-     * Executes the given query and returns the first batch of results of batchSize, next batch must be requested
-     * within the keepAliveSeconds delay.
+     * Executes the given query and returns the first batch of results of batchSize, next batch must be requested within
+     * the keepAliveSeconds delay.
+     * 
      * @since 8.4
      */
     ScrollResult scroll(String query, int batchSize, int keepAliveSeconds);
 
     /**
      * Get the next batch of result.
+     * 
      * @since 8.4
      */
     ScrollResult scroll(String scrollId);
@@ -101,8 +103,6 @@ public interface Session {
     /**
      * Gets the document at the given path, if any.
      *
-     * @param path
-     * @return
      * @throws DocumentNotFoundException if the document doesn't exist
      */
     Document resolvePath(String path) throws DocumentNotFoundException;
@@ -134,10 +134,6 @@ public interface Session {
      * Copies the source document to the given folder.
      * <p>
      * If the destination document is not a folder, an exception is thrown.
-     *
-     * @param src
-     * @param dst
-     * @param name
      */
     Document copy(Document src, Document dst, String name);
 
