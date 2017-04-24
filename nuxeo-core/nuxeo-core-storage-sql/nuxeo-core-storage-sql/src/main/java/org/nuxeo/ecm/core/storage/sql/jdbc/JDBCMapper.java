@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,7 +131,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * @param pathResolver the path resolver (used for startswith queries)
      * @param sqlInfo the sql info
      * @param clusterInvalidator the cluster invalidator
-     * @param noSharing whether to use no-sharing mode for the connection
      * @param repository the repository
      */
     public JDBCMapper(Model model, PathResolver pathResolver, SQLInfo sqlInfo, ClusterInvalidator clusterInvalidator,
@@ -163,7 +162,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     public void createDatabase(String ddlMode) {
         // some databases (SQL Server) can't create tables/indexes/etc in a transaction, so suspend it
         try {
-            if (connection.getAutoCommit() == false) {
+            if (!connection.getAutoCommit()) {
                 throw new NuxeoException("connection should not run in transactional mode for DDL operations");
             }
             createTables(ddlMode);
@@ -890,7 +889,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     protected ScrollResult scrollSearch(String query, int batchSize, int keepAliveSeconds) {
         QueryMaker queryMaker = findQueryMaker("NXQL");
         QueryFilter queryFilter = new QueryFilter(null, null, null, null, Collections.emptyList(), 0, 0);
-        QueryMaker.Query q = queryMaker.buildQuery(sqlInfo, model, pathResolver, query, queryFilter, null);
+        QueryMaker.Query q = queryMaker.buildQuery(sqlInfo, model, pathResolver, query, queryFilter);
         if (q == null) {
             logger.log("Query cannot return anything due to conflicting clauses");
             throw new NuxeoException("Query cannot return anything due to conflicting clauses");
@@ -988,8 +987,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         QueryMaker queryMaker = findQueryMaker("NXQL");
         List<String> ids;
         QueryFilter queryFilter = new QueryFilter(null, null, null, null, Collections.emptyList(), 0, 0);
-        try (IterableQueryResult ret = new ResultSetQueryResult(queryMaker, query, queryFilter, pathResolver, this,
-                null)) {
+        try (IterableQueryResult ret = new ResultSetQueryResult(queryMaker, query, queryFilter, pathResolver, this)) {
             ids = new ArrayList<>((int) ret.size());
             for (Map<String, Serializable> map : ret) {
                 ids.add(map.get("ecm:uuid").toString());

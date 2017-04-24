@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -672,8 +672,8 @@ public class DBSSession implements Session {
         ancestorIds.add(parentId);
         if (oldParentId != null && !oldParentId.equals(parentId)) {
             if (ancestorIds.contains(sourceId)) {
-                throw new DocumentExistsException("Cannot copy a node under itself: " + parentId + " is under "
-                        + sourceId);
+                throw new DocumentExistsException(
+                        "Cannot copy a node under itself: " + parentId + " is under " + sourceId);
 
             }
             // checkNotUnder(parentId, sourceId, "copy");
@@ -748,8 +748,8 @@ public class DBSSession implements Session {
         String pid = parentId;
         do {
             if (pid.equals(id)) {
-                throw new DocumentExistsException("Cannot " + op + " a node under itself: " + parentId + " is under "
-                        + id);
+                throw new DocumentExistsException(
+                        "Cannot " + op + " a node under itself: " + parentId + " is under " + id);
             }
             State state = transaction.getStateForRead(pid);
             if (state == null) {
@@ -867,8 +867,8 @@ public class DBSSession implements Session {
             }
             for (Object proxyId : en.getValue()) {
                 if (!removedIds.contains(proxyId)) {
-                    throw new DocumentExistsException("Cannot remove " + id + ", subdocument " + targetId
-                            + " is the target of proxy " + proxyId);
+                    throw new DocumentExistsException(
+                            "Cannot remove " + id + ", subdocument " + targetId + " is the target of proxy " + proxyId);
                 }
             }
         }
@@ -1419,8 +1419,8 @@ public class DBSSession implements Session {
         final Timer.Context timerContext = queryTimer.time();
         try {
             Mutable<String> idKeyHolder = new MutableObject<>();
-            PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, false,
-                    countUpTo, idKeyHolder);
+            PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, false, countUpTo,
+                    idKeyHolder);
             String idKey = idKeyHolder.getValue();
             List<String> ids = new ArrayList<>(pl.list.size());
             for (Map<String, Serializable> map : pl.list) {
@@ -1678,8 +1678,8 @@ public class DBSSession implements Session {
         selectClause.add(new Reference(NXQL.ECM_UUID));
         QueryOptimizer optimizer = new QueryOptimizer();
         MultiExpression expression = optimizer.getOptimizedQuery(sqlQuery, null);
-        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, selectClause, expression, null,
-                null, fulltextSearchDisabled);
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, selectClause, expression, null, null,
+                fulltextSearchDisabled);
         return repository.scroll(evaluator, batchSize, keepAliveSeconds);
     }
 
