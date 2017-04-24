@@ -51,6 +51,8 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
 
     protected String treeTitle;
 
+    protected List<PublicationNode> childrenNodes;
+
     protected String getTargetTreeName() {
         return name;
     }
@@ -137,7 +139,18 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
      */
 
     public List<PublicationNode> getChildrenNodes() {
-        return rootNode.getChildrenNodes();
+        if (childrenNodes == null) {
+            childrenNodes = rootNode.getChildrenNodes();
+        }
+        return childrenNodes;
+    }
+
+    /**
+     * @since 8.10-HF06
+     */
+    public void setChildrenNodes(List<PublicationNode> childrenNodes) {
+        rootNode.setChildrenNodes(childrenNodes);
+        this.childrenNodes = childrenNodes;
     }
 
     @Override

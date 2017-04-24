@@ -41,6 +41,8 @@ public abstract class AbstractRemotableNode implements PublicationNode {
 
     protected RemotePublicationTreeManager service;
 
+    protected List<PublicationNode> childrenNodes;
+
     protected abstract String getTargetTreeName();
 
     /**
@@ -78,7 +80,17 @@ public abstract class AbstractRemotableNode implements PublicationNode {
     }
 
     public List<PublicationNode> getChildrenNodes() {
-        return switchToClientNodes((getPublisher().getChildrenNodes(switchToServerNode(this))));
+        if (childrenNodes == null) {
+            childrenNodes = switchToClientNodes((getPublisher().getChildrenNodes(switchToServerNode(this))));
+        }
+        return childrenNodes;
+    }
+
+    /**
+     * @since 8.10-HF06
+     */
+    public void setChildrenNodes(List<PublicationNode> childrenNodes) {
+        this.childrenNodes = childrenNodes;
     }
 
     public PublicationNode getParent() {
