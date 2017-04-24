@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.Tree;
@@ -68,6 +69,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -299,6 +301,12 @@ public class CMISQLtoNXQL {
 
     public IterableQueryResult getIterableQueryResult(IterableQueryResult it, NuxeoCmisService service) {
         return new NXQLtoCMISIterableQueryResult(it, realColumns, virtualColumns, service);
+    }
+
+    public PartialList<Map<String, Serializable>> convertToCMIS(PartialList<Map<String, Serializable>> pl,
+            NuxeoCmisService service) {
+        return pl.list.stream().map(map -> convertToCMISMap(map, realColumns, virtualColumns, service)).collect(
+                Collectors.collectingAndThen(Collectors.toList(), result -> new PartialList<>(result, pl.totalSize)));
     }
 
     protected boolean isFacetsColumn(String name) {
@@ -904,92 +912,98 @@ public class CMISQLtoNXQL {
         public Map<String, Serializable> next() {
             // map of NXQL to value
             Map<String, Serializable> nxqlMap = iter.next();
+            return convertToCMISMap(nxqlMap, realColumns, virtualColumns, service);
 
-            // find the CMIS keys and values
-            Map<String, Serializable> cmisMap = new HashMap<>();
-            for (Entry<String, String> en : realColumns.entrySet()) {
-                String cmisCol = en.getKey();
-                String nxqlCol = en.getValue();
-                Serializable value = nxqlMap.get(nxqlCol);
-                // type conversion to CMIS values
-                if (value instanceof Long) {
-                    value = BigInteger.valueOf(((Long) value).longValue());
-                } else if (value instanceof Integer) {
-                    value = BigInteger.valueOf(((Integer) value).intValue());
-                } else if (value instanceof Double) {
-                    value = BigDecimal.valueOf(((Double) value).doubleValue());
-                } else if (value == null) {
-                    // special handling of some columns where NULL means FALSE
-                    if (NULL_IS_FALSE_COLUMNS.contains(nxqlCol)) {
-                        value = Boolean.FALSE;
-                    }
+        }
+
+    }
+
+    protected static Map<String, Serializable> convertToCMISMap(Map<String, Serializable> nxqlMap,
+            Map<String, String> realColumns, Map<String, ColumnReference> virtualColumns, NuxeoCmisService service) {
+        // find the CMIS keys and values
+        Map<String, Serializable> cmisMap = new HashMap<>();
+        for (Entry<String, String> en : realColumns.entrySet()) {
+            String cmisCol = en.getKey();
+            String nxqlCol = en.getValue();
+            Serializable value = nxqlMap.get(nxqlCol);
+            // type conversion to CMIS values
+            if (value instanceof Long) {
+                value = BigInteger.valueOf(((Long) value).longValue());
+            } else if (value instanceof Integer) {
+                value = BigInteger.valueOf(((Integer) value).intValue());
+            } else if (value instanceof Double) {
+                value = BigDecimal.valueOf(((Double) value).doubleValue());
+            } else if (value == null) {
+                // special handling of some columns where NULL means FALSE
+                if (NULL_IS_FALSE_COLUMNS.contains(nxqlCol)) {
+                    value = Boolean.FALSE;
                 }
-                cmisMap.put(cmisCol, value);
             }
+            cmisMap.put(cmisCol, value);
+        }
 
-            // virtual values
-            // map to store actual data for each qualifier
-            Map<String, NuxeoObjectData> datas = null;
-            TypeManagerImpl typeManager = service.getTypeManager();
-            for (Entry<String, ColumnReference> vc : virtualColumns.entrySet()) {
-                String key = vc.getKey();
-                ColumnReference col = vc.getValue();
-                String qual = col.getQualifier();
-                if (col.getPropertyId().equals(PropertyIds.BASE_TYPE_ID)) {
-                    // special case, no need to get full Nuxeo Document
-                    String typeId = (String) cmisMap.get(PropertyIds.OBJECT_TYPE_ID);
-                    if (typeId == null) {
-                        throw new NullPointerException();
-                    }
-                    TypeDefinitionContainer type = typeManager.getTypeById(typeId);
-                    String baseTypeId = type.getTypeDefinition().getBaseTypeId().value();
-                    cmisMap.put(key, baseTypeId);
-                    continue;
+        // virtual values
+        // map to store actual data for each qualifier
+        Map<String, NuxeoObjectData> datas = null;
+        TypeManagerImpl typeManager = service.getTypeManager();
+        for (Entry<String, ColumnReference> vc : virtualColumns.entrySet()) {
+            String key = vc.getKey();
+            ColumnReference col = vc.getValue();
+            String qual = col.getQualifier();
+            if (col.getPropertyId().equals(PropertyIds.BASE_TYPE_ID)) {
+                // special case, no need to get full Nuxeo Document
+                String typeId = (String) cmisMap.get(PropertyIds.OBJECT_TYPE_ID);
+                if (typeId == null) {
+                    throw new NullPointerException();
                 }
-                if (datas == null) {
-                    datas = new HashMap<>(2);
+                TypeDefinitionContainer type = typeManager.getTypeById(typeId);
+                String baseTypeId = type.getTypeDefinition().getBaseTypeId().value();
+                cmisMap.put(key, baseTypeId);
+                continue;
+            }
+            if (datas == null) {
+                datas = new HashMap<>(2);
+            }
+            NuxeoObjectData data = datas.get(qual);
+            if (data == null) {
+                // find main id for this qualifier in the result set
+                // (main id always included in joins)
+                // TODO check what happens if cmis:objectId is aliased
+                String id = (String) cmisMap.get(PropertyIds.OBJECT_ID);
+                try {
+                    // reentrant call to the same session, but the MapMaker
+                    // is only called from the IterableQueryResult in
+                    // queryAndFetch which manipulates no session state
+                    // TODO constructing the DocumentModel (in
+                    // NuxeoObjectData) is expensive, try to get value
+                    // directly
+                    data = service.getObject(service.getNuxeoRepository().getId(), id, null, null, null, null, null,
+                            null, null);
+                } catch (CmisRuntimeException e) {
+                    log.error("Cannot get document: " + id, e);
                 }
-                NuxeoObjectData data = datas.get(qual);
-                if (data == null) {
-                    // find main id for this qualifier in the result set
-                    // (main id always included in joins)
-                    // TODO check what happens if cmis:objectId is aliased
-                    String id = (String) cmisMap.get(PropertyIds.OBJECT_ID);
-                    try {
-                        // reentrant call to the same session, but the MapMaker
-                        // is only called from the IterableQueryResult in
-                        // queryAndFetch which manipulates no session state
-                        // TODO constructing the DocumentModel (in
-                        // NuxeoObjectData) is expensive, try to get value
-                        // directly
-                        data = service.getObject(service.getNuxeoRepository().getId(), id, null, null, null, null, null,
-                                null, null);
-                    } catch (CmisRuntimeException e) {
-                        log.error("Cannot get document: " + id, e);
-                    }
-                    datas.put(qual, data);
-                }
-                Serializable v;
-                if (data == null) {
-                    // could not fetch
+                datas.put(qual, data);
+            }
+            Serializable v;
+            if (data == null) {
+                // could not fetch
+                v = null;
+            } else {
+                NuxeoPropertyDataBase<?> pd = data.getProperty(col.getPropertyId());
+                if (pd == null) {
                     v = null;
                 } else {
-                    NuxeoPropertyDataBase<?> pd = data.getProperty(col.getPropertyId());
-                    if (pd == null) {
-                        v = null;
+                    if (pd.getPropertyDefinition().getCardinality() == Cardinality.SINGLE) {
+                        v = (Serializable) pd.getFirstValue();
                     } else {
-                        if (pd.getPropertyDefinition().getCardinality() == Cardinality.SINGLE) {
-                            v = (Serializable) pd.getFirstValue();
-                        } else {
-                            v = (Serializable) pd.getValues();
-                        }
+                        v = (Serializable) pd.getValues();
                     }
                 }
-                cmisMap.put(key, v);
             }
-
-            return cmisMap;
+            cmisMap.put(key, v);
         }
+
+        return cmisMap;
     }
 
 }
