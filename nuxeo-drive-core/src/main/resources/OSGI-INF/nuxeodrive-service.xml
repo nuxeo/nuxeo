@@ -8,13 +8,6 @@
     <provide interface="org.nuxeo.drive.service.NuxeoDriveManager" />
   </service>
 
-  <extension target="org.nuxeo.runtime.EventService" point="listeners">
-    <listener
-      class="org.nuxeo.drive.service.impl.ChangeFinderReloadListener">
-      <topic>org.nuxeo.runtime.reload</topic>
-    </listener>
-  </extension>
-
   <documentation>
     The NuxeoDriveManager provides simple API to manage the
     list of folderish documents to be used as synchronization root with a

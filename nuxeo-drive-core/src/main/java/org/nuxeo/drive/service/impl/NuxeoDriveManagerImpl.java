@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CO
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -116,28 +117,19 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     protected FileSystemChangeFinder changeFinder;
 
     protected Cache getSyncRootCache() {
-        if (syncRootCache == null) {
-            syncRootCache = Framework.getService(CacheService.class).getCache(DRIVE_SYNC_ROOT_CACHE);
-        }
         return syncRootCache;
     }
 
     protected Cache getCollectionSyncRootMemberCache() {
-        if (collectionSyncRootMemberCache == null) {
-            collectionSyncRootMemberCache = Framework.getService(CacheService.class)
-                                                     .getCache(DRIVE_COLLECTION_SYNC_ROOT__MEMBER_CACHE);
-        }
         return collectionSyncRootMemberCache;
     }
 
     protected void clearCache() {
-        log.debug("Invalidating synchronization root cache and collection sync root member cache for all users");
-        if (getSyncRootCache() != null) {
-            syncRootCache.invalidateAll();
+        if (log.isDebugEnabled()) {
+            log.debug("Invalidating synchronization root cache and collection sync root member cache for all users");
         }
-        if (getCollectionSyncRootMemberCache() != null) {
-            collectionSyncRootMemberCache.invalidateAll();
-        }
+        syncRootCache.invalidateAll();
+        collectionSyncRootMemberCache.invalidateAll();
     }
 
     @Override
@@ -158,7 +150,9 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
 
     @Override
     public void invalidateCollectionSyncRootMemberCache() {
-        log.debug("Invalidating collection sync root member cache for all users");
+        if (log.isDebugEnabled()) {
+            log.debug("Invalidating collection sync root member cache for all users");
+        }
         getCollectionSyncRootMemberCache().invalidateAll();
     }
 
@@ -644,11 +638,17 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
      */
     @Override
     public void applicationStarted(ComponentContext context) {
-        initChangeFinder();
+        syncRootCache = Framework.getService(CacheService.class).getCache(DRIVE_SYNC_ROOT_CACHE);
+        collectionSyncRootMemberCache = Framework.getService(CacheService.class)
+                .getCache(DRIVE_COLLECTION_SYNC_ROOT__MEMBER_CACHE);
+        changeFinder = changeFinderRegistry.changeFinder;
     }
 
-    protected void initChangeFinder() {
-        changeFinder = changeFinderRegistry.changeFinder;
+    @Override
+    public void applicationStandby(ComponentContext context, Instant instant) {
+        syncRootCache = null;
+        collectionSyncRootMemberCache = null;
+        changeFinder = null;
     }
 
 }
