@@ -22,25 +22,18 @@ import java.util.Map;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 
+@FunctionalInterface
 public interface AutomationScriptingParamsInjector {
-    public void inject(Map<String,Object> params, OperationContext ctx, ScriptingOperationDescriptor desc);
 
-    static AutomationScriptingParamsInjector newInstance(boolean inlinedContext) {
+    public void inject(Map<String, Object> params, OperationContext ctx, ScriptingOperationDescriptor desc);
+
+    public static AutomationScriptingParamsInjector newInstance(boolean inlinedContext) {
         if (inlinedContext) {
-            return new AutomationScriptingParamsInjector() {
-                @Override
-                public void inject(Map<String,Object> parms, OperationContext ctx, ScriptingOperationDescriptor desc) {
-                    parms.putAll(ctx);
-                }
-            };
+            return (params, ctx, desc) -> params.putAll(ctx);
         }
-        return new AutomationScriptingParamsInjector() {
-
-            @Override
-            public void inject(Map<String,Object> parms, OperationContext ctx, ScriptingOperationDescriptor desc) {
-                Arrays.stream(desc.getParams()).map(Param::getName).filter(name -> ctx.containsKey(name))
-                        .forEach(name -> parms.put(name, ctx.get(name)));
-            }
-        };
+        return (params, ctx, desc) -> //
+        Arrays.stream(desc.getParams()).map(Param::getName).filter(ctx::containsKey)
+                .forEach(name -> params.put(name, ctx.get(name)));
     }
+
 }

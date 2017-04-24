@@ -23,9 +23,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
-
 
 public class AutomationScriptingRegistry extends SimpleContributionRegistry<ScriptingOperationDescriptor> {
 

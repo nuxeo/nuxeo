@@ -79,9 +79,9 @@ public class ScriptingOperationTypeImpl implements OperationType {
 
     @Override
     public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException {
-        Map<String, Object> parms = new HashMap<>(args);
-        scripting.parmsInjector.inject(parms, ctx, desc);
-        return new ScriptingOperationImpl(desc.source, ctx, parms);
+        Map<String, Object> params = new HashMap<>(args);
+        scripting.paramsInjector.inject(params, ctx, desc);
+        return new ScriptingOperationImpl(desc.source, ctx, params);
     }
 
     @Override

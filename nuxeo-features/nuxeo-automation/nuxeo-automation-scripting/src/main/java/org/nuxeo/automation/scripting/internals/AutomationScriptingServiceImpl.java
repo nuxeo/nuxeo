@@ -53,7 +53,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
 
     private final Supplier<ScriptEngine> supplier = new Factory().supplier;
 
-    protected AutomationScriptingParamsInjector parmsInjector;
+    protected AutomationScriptingParamsInjector paramsInjector;
 
     @Override
     public Session get(CoreSession session) {

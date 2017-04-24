@@ -52,7 +52,7 @@ public class AutomationScriptingComponent extends DefaultComponent {
         boolean inlinedContext = Framework.getService(ConfigurationService.class)
                 .isBooleanPropertyTrue("nuxeo.automation.scripting.inline-context-in-parms");
 
-        service.parmsInjector = AutomationScriptingParamsInjector
+        service.paramsInjector = AutomationScriptingParamsInjector
                 .newInstance(inlinedContext);
     }
 

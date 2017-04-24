@@ -479,8 +479,8 @@
         }
       ]]></script>
     </scriptedOperation>
-    
-       <scriptedOperation id="Scripting.TestParams">
+
+    <scriptedOperation id="Scripting.TestParams">
       <inputType>void</inputType>
       <outputType>void</outputType>
       <param name="today" type="Object"/>
