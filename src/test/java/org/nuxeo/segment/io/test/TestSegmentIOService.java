@@ -150,12 +150,8 @@ public class TestSegmentIOService {
         Assert.assertNotNull(sio);
 
         Map<String, Boolean> integrations = sio.getIntegrations();
-
         Assert.assertNotNull(integrations);
-
-        Assert.assertTrue(integrations.containsKey("Marketo"));
         Assert.assertTrue(integrations.get("Marketo"));
-
     }
 
     @Test
