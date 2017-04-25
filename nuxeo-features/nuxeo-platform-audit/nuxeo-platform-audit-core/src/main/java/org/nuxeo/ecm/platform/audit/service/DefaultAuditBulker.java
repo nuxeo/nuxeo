@@ -165,13 +165,9 @@ public class DefaultAuditBulker implements AuditBulkerMBean, AuditBulker {
                     if (queue.isEmpty()) {
                         continue;
                     }
-                    try {
-                        int count = drain();
-                        if (log.isDebugEnabled()) {
-                            log.debug("flushed " + count + " events");
-                        }
-                    } catch (RuntimeException cause) {
-                        log.error("caught error while draining audit queue", cause);
+                    int count = drain();
+                    if (log.isDebugEnabled()) {
+                        log.debug("flushed " + count + " events");
                     }
                 } catch (InterruptedException cause) {
                     Thread.currentThread().interrupt();
