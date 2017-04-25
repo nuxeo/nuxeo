@@ -18,13 +18,11 @@
  */
 package org.nuxeo.webengine.gwt.codeserver;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -43,19 +41,12 @@ public class CodeServerComponent extends DefaultComponent {
 
 	@Override
 	public void applicationStarted(ComponentContext context) {
-		Framework.addListener(new RuntimeServiceListener() {
-
-			@Override
-			public void handleEvent(RuntimeServiceEvent event) {
-				if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
-					return;
-				}
-				Framework.removeListener(this);
-				shutdown();
-			}
-
-		});
 		startup();
+	}
+
+	@Override
+	public void applicationStandby(ComponentContext context, Instant instant) {
+	    shutdown();
 	}
 
 	protected void startup()  {
