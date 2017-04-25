@@ -18,24 +18,29 @@
  */
 package org.nuxeo.segment.io;
 
-import groovy.lang.Binding;
-import groovy.lang.GroovyClassLoader;
-import groovy.lang.Script;
-
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
+import groovy.lang.Binding;
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.Script;
+
 @XObject("mapper")
 public class SegmentIOMapper {
+
+    private static Log log = LogFactory.getLog(SegmentIOMapper.class);
 
     @XNode("@name")
     String name;
@@ -55,7 +60,7 @@ public class SegmentIOMapper {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof SegmentIOMapper) {
-            return name.equals(((SegmentIOMapper)obj).name);
+            return name.equals(((SegmentIOMapper) obj).name);
         }
         return super.equals(obj);
     }
@@ -78,15 +83,18 @@ public class SegmentIOMapper {
             sb.append(");\n");
         }
 
-        if (groovyMapping!=null && !groovyMapping.isEmpty()) {
+        if (groovyMapping != null && !groovyMapping.isEmpty()) {
             sb.append(groovyMapping);
         }
 
         Binding binding = new Binding(context);
-        GroovyClassLoader loader = new GroovyClassLoader(this.getClass().getClassLoader());
-        Class<?> klass = loader.parseClass(sb.toString());
-        Script script = InvokerHelper.createScript(klass, binding);
-        script.run();
+        try (GroovyClassLoader loader = new GroovyClassLoader(this.getClass().getClassLoader())) {
+            Class<?> klass = loader.parseClass(sb.toString());
+            Script script = InvokerHelper.createScript(klass, binding);
+            script.run();
+        } catch (IOException e) {
+            log.error(String.format("Error during Groovy script execution for the '%s' segmentIO mapper", name), e);
+        }
         return mapping;
     }
 
