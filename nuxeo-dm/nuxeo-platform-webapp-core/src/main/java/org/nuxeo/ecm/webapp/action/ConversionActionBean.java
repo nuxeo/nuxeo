@@ -25,6 +25,7 @@ package org.nuxeo.ecm.webapp.action;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -53,6 +54,8 @@ import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
 import static org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry.PDF_MIMETYPE;
 import static org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry.PDF_EXTENSION;
+
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.cache.ThreadSafeCacheHolder;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -215,7 +218,9 @@ public class ConversionActionBean implements ConversionAction {
             log.error("No PDF converter was found.");
             return "pdf_generation_error";
         }
-        Blob result = Framework.getService(ConversionService.class).convertBlobToPDF(blob);
+        Blob result = Framework.getService(ConversionService.class)
+                               .convertToMimeType(MimetypeRegistry.PDF_MIMETYPE, bh, Collections.emptyMap())
+                               .getBlob();
         if (result == null) {
             log.error("Transform service didn't return any resulting documents which is not normal.");
             return "pdf_generation_error";
