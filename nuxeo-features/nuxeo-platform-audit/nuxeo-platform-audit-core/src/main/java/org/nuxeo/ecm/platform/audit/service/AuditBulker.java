@@ -29,7 +29,7 @@ public interface AuditBulker {
 
     void onApplicationStarted();
 
-    void onShutdown();
+    void onStandby();
 
     void offer(LogEntry entry);
 

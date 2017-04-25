@@ -31,6 +31,6 @@ public interface AuditBackend extends Logs {
 
     void onApplicationStarted();
 
-    void onShutdown();
+    void onStandby();
 
 }

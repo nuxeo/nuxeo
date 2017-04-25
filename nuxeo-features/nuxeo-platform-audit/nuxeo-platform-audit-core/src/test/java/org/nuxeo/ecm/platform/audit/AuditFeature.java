@@ -55,7 +55,7 @@ public class AuditFeature extends SimpleFeature {
                 });
     }
     @Override
-    public void stop(FeaturesRunner runner) throws Exception {
+    public void afterRun(FeaturesRunner runner) throws Exception {
         clear();
     }
 
