@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.automation.core;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,8 +54,6 @@ import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
-import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -236,30 +235,23 @@ public class AutomationComponent extends DefaultComponent {
 
     @Override
     public void applicationStarted(ComponentContext context) {
-        super.applicationStarted(context);
         if (!tracerFactory.getRecordingState()) {
             log.info("You can activate automation trace mode to get more informations on automation executions");
         }
         try {
             bindManagement();
         } catch (JMException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Cannot bind management", e);
         }
-        Framework.addListener(new RuntimeServiceListener() {
+    }
 
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
-                    return;
-                }
-                Framework.removeListener(this);
-                try {
-                    unBindManagement();
-                } catch (MalformedObjectNameException | NotCompliantMBeanException | InstanceAlreadyExistsException
-                        | MBeanRegistrationException | InstanceNotFoundException cause) {
-                    log.error("Cannot unbind management", cause);
-                }
-            }
-        });
+    @Override
+    public void applicationStandby(ComponentContext context, Instant instant) {
+        service.flushCompiledChains();
+        try {
+            unBindManagement();
+        } catch (JMException e) {
+            throw new RuntimeException("Cannot unbind management", e);
+        }
     }
 }
