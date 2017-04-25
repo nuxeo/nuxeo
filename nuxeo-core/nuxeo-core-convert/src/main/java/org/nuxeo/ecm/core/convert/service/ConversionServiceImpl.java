@@ -184,52 +184,65 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     }
 
     @Override
+    @Deprecated
     public Blob convertBlobToPDF(Blob blob) throws IOException {
+        return convertThroughHTML(new SimpleBlobHolder(blob), MimetypeRegistry.PDF_MIMETYPE).getBlob();
+    }
+
+    protected BlobHolder convertThroughHTML(BlobHolder blobHolder, String destMimeType) {
+        Blob blob = blobHolder.getBlob();
         String mimetype = blob.getMimeType();
         String filename = blob.getFilename();
-        if (MimetypeRegistry.PDF_MIMETYPE.equals(mimetype)) {
-            return blob;
+        if (destMimeType.equals(mimetype)) {
+            return blobHolder;
         }
-        Blob result;
-        if (MediaType.TEXT_PLAIN.equals(mimetype)) {
-            result = convertBlobToMimeType(blob, MimetypeRegistry.PDF_MIMETYPE);
-        } else {
-            // Convert the blob to HTML
-            if (!MediaType.TEXT_HTML.equals(mimetype)) {
-                blob = convertBlobToMimeType(blob, MediaType.TEXT_HTML);
-                blob.setFilename(filename);
-            }
-            Path tempDirectory = Files.createTempDirectory("blobs");
-            try {
-                // Replace the image URLs by absolute paths
-                DownloadService downloadService = Framework.getService(DownloadService.class);
-                blob = replaceURLsByAbsolutePaths(blob, tempDirectory, downloadService::resolveBlobFromDownloadUrl);
-                // Convert the blob to PDF
-                result = convertBlobToMimeType(blob, MimetypeRegistry.PDF_MIMETYPE);
-            } finally {
+        Path tempDirectory = null;
+        // Convert the blob to HTML
+        if (!MediaType.TEXT_HTML.equals(mimetype)) {
+            blobHolder = convertBlobToMimeType(blobHolder, MediaType.TEXT_HTML);
+        }
+        try {
+            tempDirectory = Files.createTempDirectory("blobs");
+            // Replace the image URLs by absolute paths
+            DownloadService downloadService = Framework.getService(DownloadService.class);
+            blobHolder.setBlob(
+                    replaceURLsByAbsolutePaths(blob, tempDirectory, downloadService::resolveBlobFromDownloadUrl));
+            // Convert the blob to the destination mimetype
+            blobHolder = convertBlobToMimeType(blobHolder, destMimeType);
+            adjustBlobName(filename, blobHolder, destMimeType);
+        } catch (IOException e) {
+            throw new ConversionException(e);
+        } finally {
+            if (tempDirectory != null) {
                 org.apache.commons.io.FileUtils.deleteQuietly(tempDirectory.toFile());
             }
         }
-        if (result != null) {
-            adjustPDFBlobName(filename, result);
-        }
-        return result;
+        return blobHolder;
     }
 
-    protected Blob convertBlobToMimeType(Blob blob, String destinationMimeType) {
-        BlobHolder bh = new SimpleBlobHolder(blob);
-        bh = convertToMimeType(destinationMimeType, bh, null);
-        return bh == null ? null : bh.getBlob();
+    protected BlobHolder convertBlobToMimeType(BlobHolder bh, String destinationMimeType) {
+        return convertToMimeType(destinationMimeType, bh, null);
     }
 
-    protected static void adjustPDFBlobName(String filename, Blob blob) {
+    protected void adjustBlobName(String filename, BlobHolder blobHolder, String mimeType) {
+        Blob blob = blobHolder.getBlob();
+        adjustBlobName(filename, blob, mimeType);
+        blobHolder.setBlob(blob);
+    }
+
+    protected void adjustBlobName(String filename, Blob blob, String mimeType) {
         if (StringUtils.isBlank(filename)) {
             filename = "file_" + System.currentTimeMillis();
         } else {
             filename = FilenameUtils.removeExtension(FilenameUtils.getName(filename));
         }
-        blob.setFilename(filename + MimetypeRegistry.PDF_EXTENSION);
-        blob.setMimeType(MimetypeRegistry.PDF_MIMETYPE);
+        String extension = Framework.getService(MimetypeRegistry.class)
+                                    .getExtensionsFromMimetypeName(mimeType)
+                                    .stream()
+                                    .findFirst()
+                                    .orElse("bin");
+        blob.setFilename(filename + "." + extension);
+        blob.setMimeType(mimeType);
     }
 
     /**
@@ -358,10 +371,12 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         String srcMt = blobHolder.getBlob().getMimeType();
         String converterName = translationHelper.getConverterName(srcMt, destinationMimeType);
         if (converterName == null) {
-            throw new ConversionException(
-                    "Cannot find converter from type " + srcMt + " to type " + destinationMimeType);
+            // Use a chain of 2 converters which will first try to go through HTML,
+            // then HTML to the destination mimetype
+            return convertThroughHTML(blobHolder, destinationMimeType);
+        } else {
+            return convert(converterName, blobHolder, parameters);
         }
-        return convert(converterName, blobHolder, parameters);
     }
 
     @Override
