@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.collections.core.versioning.policies" version="1.0">
+
+  <require>org.nuxeo.ecm.platform.el.service</require>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <!-- Range [1, 10] for order is reserved for Nuxeo System Policies-->
+    <!-- See https://doc.nuxeo.com/nxdoc/versioning/#-anchor-versioning-policies-versioning-policies-and-filters -->
+    <policy id="no-versioning-for-collection-before-update" beforeUpdate="true" increment="NONE" order="2">
+      <filter-id>collection-actions</filter-id>
+    </policy>
+    <policy id="no-versioning-for-collection-after-update" beforeUpdate="false" increment="NONE" order="2">
+      <filter-id>collection-actions</filter-id>
+    </policy>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+    <filter id="collection-actions" class="org.nuxeo.ecm.collections.core.versioning.NoVersioningCollectionPolicyFilter" />
+  </extension>
+
+</component>

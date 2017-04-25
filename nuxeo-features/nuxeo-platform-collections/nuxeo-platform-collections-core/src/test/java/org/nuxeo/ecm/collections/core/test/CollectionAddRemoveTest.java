@@ -311,4 +311,73 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
         assertFalse(collectionMemberAdapter.getCollectionIds().contains(newlyCreatedCollectionId));
     }
 
+    /*
+     * NXP-22085
+     */
+    @Test
+    public void testAddOneDocToNewCollectionAndRemoveDontTriggerAutomaticVersioning() throws Exception {
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+                "Workspace");
+        testWorkspace = session.createDocument(testWorkspace);
+        // use note as they are versioned after each update
+        DocumentModel testNote = session.createDocumentModel(testWorkspace.getPathAsString(), "Note 1", "Note");
+        testNote = session.createDocument(testNote);
+
+        List<DocumentModel> versions = session.getVersions(testNote.getRef());
+        // there should be one version created after document creation
+        assertEquals(1, versions.size());
+
+        // check out the note as collection manager disable auto checkout
+        testNote.checkOut();
+
+        collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, testNote, session);
+
+        versions = session.getVersions(testNote.getRef());
+        // there should be one version created after document creation
+        assertEquals(1, versions.size());
+
+        DocumentModel newlyCreatedCollection = session.getDocument(
+                new PathRef(COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME));
+
+        testNote = session.getDocument(testNote.getRef());
+
+        collectionManager.removeFromCollection(newlyCreatedCollection, testNote, session);
+
+        versions = session.getVersions(testNote.getRef());
+        // there should be one version created after document creation
+        assertEquals(1, versions.size());
+
+        // a real edition should version the note
+        testNote.setPropertyValue("note:note", "new content");
+        session.saveDocument(testNote);
+
+        versions = session.getVersions(testNote.getRef());
+        // there should be two versions
+        // - created after document creation
+        // - created after document edition
+        assertEquals(2, versions.size());
+    }
+
+    /*
+     * NXP-22085
+     */
+    @Test
+    public void testCopyDocumentInACollectionDontCreateAVersionOnClean() {
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+                "Workspace");
+        testWorkspace = session.createDocument(testWorkspace);
+        // use note as they are versioned after each update
+        DocumentModel testNote = session.createDocumentModel(testWorkspace.getPathAsString(), "Note 1", "Note");
+        testNote = session.createDocument(testNote);
+        collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, testNote, session);
+        DocumentModel copiedTestNote = session.copy(testNote.getRef(), testNote.getParentRef(),
+                TEST_FILE_NAME + "_BIS");
+
+        copiedTestNote = session.getDocument(copiedTestNote.getRef());
+
+        List<DocumentModel> versions = session.getVersions(copiedTestNote.getRef());
+        // there should be 0 version as copy doesn't trigger versioning service
+        assertEquals(0, versions.size());
+    }
+
 }

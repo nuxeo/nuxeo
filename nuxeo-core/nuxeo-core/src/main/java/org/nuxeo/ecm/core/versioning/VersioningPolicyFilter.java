@@ -33,6 +33,7 @@ public interface VersioningPolicyFilter extends BiPredicate<DocumentModel, Docum
     /**
      * @param previousDocument the document before modification, could be null if event is aboutToCreate
      * @param currentDocument the document after modification
+     * @return whether or not this filter matches the current context, if all policy's filters match, then apply policy
      */
     @Override
     boolean test(DocumentModel previousDocument, DocumentModel currentDocument);
