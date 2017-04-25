@@ -19,6 +19,7 @@
 
 package org.nuxeo.runtime.datasource;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -105,9 +106,6 @@ public class DataSourceComponent extends DefaultComponent {
 
     @Override
     public void applicationStarted(ComponentContext context) {
-        if (namingContext != null) {
-            return;
-        }
         namingContext = NuxeoContainer.getRootContext();
         // allocate datasource sub-contexts
         Name comp;
@@ -139,17 +137,17 @@ public class DataSourceComponent extends DefaultComponent {
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        super.deactivate(context);
-        for (DataSourceLinkDescriptor desc : links.values()) {
-            unbindDataSourceLink(desc);
+    public void applicationStandby(ComponentContext context, Instant instant) {
+        try {
+            for (DataSourceLinkDescriptor desc : links.values()) {
+                unbindDataSourceLink(desc);
+            }
+            for (DataSourceDescriptor desc : datasources.values()) {
+                unbindDataSource(desc);
+            }
+        } finally {
+            namingContext = null;
         }
-        links.clear();
-        for (DataSourceDescriptor desc : datasources.values()) {
-            unbindDataSource(desc);
-        }
-        datasources.clear();
-        namingContext = null;
     }
 
     protected void addDataSource(DataSourceDescriptor contrib) {
