@@ -18,6 +18,7 @@
  */
 package org.nuxeo.runtime.management;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,8 +36,6 @@ import javax.management.modelmbean.RequiredModelMBean;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.inspector.ModelMBeanInfoFactory;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -215,7 +214,6 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
         protected void doRegisterResource(Resource resource) {
             final ObjectName name = resource.getManagementName();
             if (registry.containsKey(name)) {
-                log.warn("Already registered " + name + ", skipping", new Throwable("Stack trace"));
                 return;
             }
             registry.put(name, resource);
@@ -364,17 +362,12 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
         started = true;
         factoriesRegistry.doRegisterResources();
         doBindResources();
-        Framework.addListener(new RuntimeServiceListener() {
+    }
 
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
-                    return;
-                }
-                Framework.removeListener(this);
-                doUnbindResources();
-            }
-        });
+    @Override
+    public void applicationStandby(ComponentContext context, Instant instant) {
+        started = false;
+        doUnbindResources();
     }
 
     @Override
