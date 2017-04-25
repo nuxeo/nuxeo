@@ -110,7 +110,7 @@ public class ESAuditMigrationWork extends AbstractWork {
             entry.setEventDate(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime());
             destBackend.addLogEntries(Collections.singletonList(entry));
         } finally {
-            sourceBackend.onShutdown();
+            sourceBackend.onStandby();
         }
     }
 

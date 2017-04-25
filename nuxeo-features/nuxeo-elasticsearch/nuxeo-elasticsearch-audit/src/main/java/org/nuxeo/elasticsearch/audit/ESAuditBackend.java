@@ -191,13 +191,14 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     }
 
     @Override
-    public void onShutdown() {
-        if (esClient != null) {
-            try {
-                esClient.close();
-            } finally {
-                esClient = null;
-            }
+    public void onStandby() {
+        if (esClient == null) {
+            return;
+        }
+        try {
+            esClient.close();
+        } finally {
+            esClient = null;
         }
     }
 
