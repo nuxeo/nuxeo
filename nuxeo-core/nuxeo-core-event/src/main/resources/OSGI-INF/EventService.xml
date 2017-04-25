@@ -107,14 +107,4 @@
     <object class="org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor"/>
   </extension-point>
 
-
-
-  <extension target="org.nuxeo.runtime.EventService" point="listeners">
-    <listener class="org.nuxeo.ecm.core.scheduler.ReloadListener">
-      <topic>org.nuxeo.runtime.reload</topic>
-    </listener>
-    <listener class="org.nuxeo.ecm.core.work.ReloadListener">
-      <topic>org.nuxeo.runtime.reload</topic>
-    </listener>
-  </extension>
 </component>
