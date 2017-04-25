@@ -58,6 +58,7 @@ import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -1682,6 +1683,24 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
+    public void testQueryProjectionPaging() throws Exception {
+        createDocs();
+        PartialList<Map<String, Serializable>> whole = session.queryProjection(
+                "SELECT * FROM Document ORDER BY dc:modified, ecm:uuid", 5, 0, true);
+        assertTrue(whole.totalSize >= 5);
+        PartialList<Map<String, Serializable>> firstPage = session.queryProjection(
+                "SELECT * from Document ORDER BY dc:modified, ecm:uuid", 1, 0);
+        assertEquals(1, firstPage.list.size());
+        assertEquals(-1, firstPage.totalSize);
+        assertEquals(whole.list.get(0).get(NXQL.ECM_UUID), firstPage.list.get(0).get(NXQL.ECM_UUID));
+        PartialList<Map<String, Serializable>> secondPage = session.queryProjection(
+                "SELECT * from Document ORDER BY dc:modified, ecm:uuid", 1, 1);
+        assertEquals(1, secondPage.list.size());
+        assertEquals(-1, secondPage.totalSize);
+        assertEquals(whole.list.get(1).get(NXQL.ECM_UUID), secondPage.list.get(0).get(NXQL.ECM_UUID));
+    }
+
+    @Test
     public void testQueryPrimaryTypeOptimization() throws Exception {
         // check these queries in the logs
 
@@ -2208,6 +2227,15 @@ public class TestSQLRepositoryQuery {
         IterableQueryResult res = session.queryAndFetch(query, "NXQL");
         assertEquals(1, res.size());
         res.close();
+    }
+
+    @Test
+    public void testQueryProjectionDistinctId() throws Exception {
+        makeComplexDoc();
+
+        String query = "SELECT DISTINCT ecm:uuid FROM TestDoc WHERE tst:friends/*/firstname = 'John'";
+        PartialList<Map<String, Serializable>> res = session.queryProjection(query, 0L, 10L);
+        assertEquals(1, res.list.size());
     }
 
     @Test
