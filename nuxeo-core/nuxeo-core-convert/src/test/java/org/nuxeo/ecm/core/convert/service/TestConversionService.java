@@ -33,12 +33,14 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.core.mimetype")
 public class TestConversionService {
 
     @Test
@@ -46,13 +48,15 @@ public class TestConversionService {
         String filename = null;
         Blob blob = new FileBlob("test Blob");
 
-        ConversionServiceImpl.adjustPDFBlobName(filename, blob);
+        ConversionServiceImpl service = new ConversionServiceImpl();
+
+        service.adjustBlobName(filename, blob, MimetypeRegistry.PDF_MIMETYPE);
         assertEquals(MimetypeRegistry.PDF_MIMETYPE, blob.getMimeType());
         assertTrue(blob.getFilename().startsWith("file_"));
         assertTrue(blob.getFilename().endsWith(".pdf"));
 
         filename = "testBlob.xml";
-        ConversionServiceImpl.adjustPDFBlobName(filename, blob);
+        service.adjustBlobName(filename, blob, MimetypeRegistry.PDF_MIMETYPE);
         assertEquals("testBlob.pdf", blob.getFilename());
     }
 
