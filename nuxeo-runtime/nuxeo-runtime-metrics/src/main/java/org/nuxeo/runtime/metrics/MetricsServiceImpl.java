@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.metrics;
 
+import java.time.Instant;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -55,18 +57,13 @@ public class MetricsServiceImpl extends DefaultComponent implements MetricsServi
     }
 
     @Override
+    public void activate(ComponentContext context) {
+        SharedMetricRegistries.getOrCreate(MetricsService.class.getName());;
+    }
+
+    @Override
     public void deactivate(ComponentContext context) {
-        try {
-            config.disable(registry);
-        } finally {
-            instanceUp.dec();
-            // cleanup registry
-            for (String name:registry.getNames()) {
-                registry.remove(name);
-            }
-            // should remove the reference also
-            SharedMetricRegistries.remove(MetricsService.class.getName());;
-        }
+        SharedMetricRegistries.remove(MetricsService.class.getName());;
         log.debug("Deactivate component.");
     }
 
@@ -79,6 +76,22 @@ public class MetricsServiceImpl extends DefaultComponent implements MetricsServi
         log.info("Setting up metrics configuration");
         config.enable(registry);
         instanceUp.inc();
+    }
+
+    @Override
+    public void applicationStandby(ComponentContext context, Instant instant) {
+        try {
+            config.disable(registry);
+        } finally {
+            instanceUp.dec();
+        }
+    }
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter.isAssignableFrom(MetricRegistry.class)) {
+            return adapter.cast(registry);
+        }
+        return super.getAdapter(adapter);
     }
 
 }
