@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.common.logging.Log4JHelper;
+import org.nuxeo.common.logging.LoggingConfigWatchdog;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -174,20 +175,62 @@ public abstract class AbstractRuntimeService implements RuntimeService {
             Level threshold = Level.parse(getProperty(REDIRECT_JUL_THRESHOLD, "INFO").toUpperCase());
             JavaUtilLoggingHelper.redirectToApacheCommons(threshold);
         }
-        if (!Boolean.parseBoolean(getProperty(LOG4J_WATCH_DISABLED, "false"))) {
-            long delay;
-            try {
-                delay = Long.parseLong(getProperty(LOG4J_WATCH_DELAY, Long.toString(LOG4J_WATCH_DELAY_DEFAULT)));
-            } catch (NumberFormatException e) {
-                delay = LOG4J_WATCH_DELAY_DEFAULT;
-            }
-            if (Log4JHelper.configureAndWatch(delay * 1000)) {
-                log.info("Configured log4j.xml change detection with a delay of " + delay + "s");
-            } else {
-                log.info("Failed to configure log4j.xml change detection");
-            }
-        } else {
+        if (Boolean.parseBoolean(getProperty(LOG4J_WATCH_DISABLED, "false"))) {
             log.info("Disabled log4j.xml change detection");
+        } else {
+            Framework.addListener(new RuntimeServiceListener() {
+
+                final long delay = loadDelay();
+
+                long loadDelay() {
+                    try {
+                        return Long.parseLong(getProperty(LOG4J_WATCH_DELAY, Long.toString(LOG4J_WATCH_DELAY_DEFAULT)));
+                    } catch (NumberFormatException e) {
+                        return LOG4J_WATCH_DELAY_DEFAULT;
+                    }
+                }
+
+                LoggingConfigWatchdog wdog;
+
+                @Override
+                public void handleEvent(RuntimeServiceEvent event) {
+                   if (event.id == RuntimeServiceEvent.RUNTIME_ABOUT_TO_START) {
+                       onStart();
+                   } else if (event.id == RuntimeServiceEvent.RUNTIME_ABOUT_TO_RESUME) {
+                       onResume();
+                   } else if (event.id == RuntimeServiceEvent.RUNTIME_ABOUT_TO_STANDBY) {
+                       onStandby();
+                   }
+                }
+
+                void onStart() {
+                    wdog = Log4JHelper.configureAndWatch(delay);
+                    if (wdog == null) {
+                        log.warn("Failed to configure log4j.xml change detection");
+                    } else {
+                        log.info("Configured log4j.xml change detection with a delay of " + delay + "s");
+                    }
+                }
+
+                void onResume() {
+                    if (wdog != null) {
+                        return;
+                    }
+                    wdog = Log4JHelper.configureAndWatch(delay);
+                }
+
+                void onStandby() {
+                    if (wdog == null) {
+                        return;
+                    }
+                    try {
+                        wdog.cancel();
+                    } finally {
+                        wdog = null;
+                    }
+                }
+            });
+
         }
         log.info("Starting Nuxeo Runtime service " + getName() + "; version: " + getVersion());
 
@@ -233,7 +276,6 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         return state.ordinal() >= State.STANDBY.ordinal();
     }
 
-
     @Override
     public void resume() {
         Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_RESUME, this));
@@ -242,7 +284,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
             resumeComponents();
             resumeExtensions();
         } finally {
-            state =  State.STARTED;
+            state = State.STARTED;
             Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_RESUME, this));
         }
     }
@@ -260,7 +302,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
             standbyExtensions();
             standbyComponents(limit);
         } finally {
-            state= State.STANDBY;
+            state = State.STANDBY;
             Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STANDBY, this));
         }
     }
@@ -422,7 +464,8 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     /**
      * @since 5.5
-     * @param msg summary message about all components loading status
+     * @param msg
+     *            summary message about all components loading status
      * @return true if there was no detected error, else return false
      */
     @Override
@@ -444,29 +487,19 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         Map<ComponentName, Set<Extension>> missingRegistrations = manager.getMissingRegistrations();
         Collection<ComponentName> unstartedRegistrations = manager.getActivatingRegistrations();
         unstartedRegistrations.addAll(manager.getStartFailureRegistrations());
-        msg.append(hr)
-           .append("\n= Component Loading Status: Pending: ")
-           .append(pendingRegistrations.size())
-           .append(" / Missing: ")
-           .append(missingRegistrations.size())
-           .append(" / Unstarted: ")
-           .append(unstartedRegistrations.size())
-           .append(" / Total: ")
-           .append(manager.getRegistrations().size())
-           .append('\n');
+        msg.append(hr).append("\n= Component Loading Status: Pending: ").append(pendingRegistrations.size())
+                .append(" / Missing: ").append(missingRegistrations.size()).append(" / Unstarted: ")
+                .append(unstartedRegistrations.size()).append(" / Total: ").append(manager.getRegistrations().size())
+                .append('\n');
         for (Entry<ComponentName, Set<ComponentName>> e : pendingRegistrations.entrySet()) {
             msg.append("  * ").append(e.getKey()).append(" requires ").append(e.getValue()).append('\n');
         }
         for (Entry<ComponentName, Set<Extension>> e : missingRegistrations.entrySet()) {
-            msg.append("  * ")
-               .append(e.getKey())
-               .append(" references missing ")
-               .append(e.getValue()
-                        .stream()
-                        .map(ext -> "target=" + ext.getTargetComponent().getName() + ";point="
-                                + ext.getExtensionPoint())
-                        .collect(Collectors.toList()))
-               .append('\n');
+            msg.append("  * ").append(e.getKey()).append(" references missing ")
+                    .append(e.getValue().stream().map(
+                            ext -> "target=" + ext.getTargetComponent().getName() + ";point=" + ext.getExtensionPoint())
+                            .collect(Collectors.toList()))
+                    .append('\n');
         }
         for (ComponentName componentName : unstartedRegistrations) {
             msg.append("  - ").append(componentName).append('\n');
@@ -479,7 +512,8 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     /**
      * Error logger which does its logging from a separate thread, for thread isolation.
      *
-     * @param message the message to log
+     * @param message
+     *            the message to log
      * @return a thread that can be started to do the logging
      * @since 9.2, 8.10-HF05
      */
