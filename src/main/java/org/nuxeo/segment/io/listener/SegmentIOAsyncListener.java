@@ -35,28 +35,27 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.segment.io.SegmentIO;
-import org.nuxeo.segment.io.SegmentIOComponent;
 import org.nuxeo.segment.io.SegmentIOMapper;
 
 public class SegmentIOAsyncListener implements PostCommitEventListener {
 
-    protected static Log log = LogFactory.getLog(SegmentIOAsyncListener.class);
+    private static Log log = LogFactory.getLog(SegmentIOAsyncListener.class);
 
     @Override
     public void handleEvent(EventBundle bundle) {
 
-        SegmentIOComponent component = (SegmentIOComponent) Framework.getService(SegmentIO.class);
+        SegmentIO service = Framework.getService(SegmentIO.class);
 
         List<String> eventToProcess = new ArrayList<String>();
 
-        for (String event : component.getMappedEvents()) {
+        for (String event : service.getMappedEvents()) {
             if (bundle.containsEventName(event)) {
                 eventToProcess.add(event);
             }
         }
 
-        if (eventToProcess.size()>0) {
-            Map<String, List<SegmentIOMapper>> event2Mappers = component.getMappers(eventToProcess);
+        if (eventToProcess.size() > 0) {
+            Map<String, List<SegmentIOMapper>> event2Mappers = service.getMappers(eventToProcess);
             processEvents(event2Mappers, bundle);
         }
 
@@ -66,7 +65,7 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
 
         for (Event event : bundle) {
             List<SegmentIOMapper> mappers = event2Mappers.get(event.getName());
-            if (mappers==null || mappers.size()==0) {
+            if (mappers == null || mappers.size() == 0) {
                 continue;
             }
 
@@ -75,7 +74,7 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
                 Map<String, Object> ctx = new HashMap<String, Object>();
 
                 Principal princ = event.getContext().getPrincipal();
-                NuxeoPrincipal principal=null;
+                NuxeoPrincipal principal = null;
                 if (princ instanceof NuxeoPrincipal) {
                     principal = (NuxeoPrincipal) princ;
                 } else {
@@ -92,12 +91,11 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
                     ctx.put("session", docCtx.getCoreSession());
                     ctx.put("dest", docCtx.getDestination());
                 }
-                Map<String, Serializable> mapped =  mapper.getMappedData(ctx);
+                Map<String, Serializable> mapped = mapper.getMappedData(ctx);
 
                 if (mapper.isIdentify()) {
                     Framework.getService(SegmentIO.class).identify(principal, mapped);
-                }
-                else {
+                } else {
                     Framework.getService(SegmentIO.class).track(principal, event.getName(), mapped);
                 }
 
