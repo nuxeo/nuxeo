@@ -14,6 +14,8 @@
 package org.nuxeo.ecm.automation.core.operations.blob;
 
 import java.io.IOException;
+import java.util.Collections;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -22,7 +24,9 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 
 /**
  * Save the input document
@@ -41,12 +45,13 @@ public class BlobToPDF {
         if (bh == null) {
             return null;
         }
-        return service.convertBlobToPDF(bh.getBlob());
+        return service.convertToMimeType(MimetypeRegistry.PDF_MIMETYPE, bh, Collections.emptyMap()).getBlob();
     }
 
     @OperationMethod
     public Blob run(Blob blob) throws IOException {
-        return service.convertBlobToPDF(blob);
+        return service.convertToMimeType(MimetypeRegistry.PDF_MIMETYPE, new SimpleBlobHolder(blob),
+                Collections.emptyMap()).getBlob();
     }
 
     @OperationMethod

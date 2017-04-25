@@ -47,14 +47,17 @@ public interface ConversionService {
     /**
      * Converts a Blob given a target destination MimeType.
      */
-    BlobHolder convertToMimeType(String destinationMimeType, BlobHolder blobHolder, Map<String, Serializable> parameters)
-            throws ConversionException;
+    BlobHolder convertToMimeType(String destinationMimeType, BlobHolder blobHolder,
+            Map<String, Serializable> parameters) throws ConversionException;
 
     /**
      * Converts a Blob to PDF. If the blob has inner blobs such as images, they will be correctly rendered in the PDF.
      *
      * @since 9.1
+     * @deprecated since 9.2, use {@link #convertToMimeType(String, BlobHolder, Map)} with the PDF mimetype as
+     *             destination instead
      */
+    @Deprecated
     Blob convertBlobToPDF(Blob blob) throws IOException;
 
     /**
@@ -109,7 +112,8 @@ public interface ConversionService {
      *
      * @since 7.10
      */
-    String scheduleConversionToMimeType(String destinationMimeType, BlobHolder blobHolder, Map<String, Serializable> parameters);
+    String scheduleConversionToMimeType(String destinationMimeType, BlobHolder blobHolder,
+            Map<String, Serializable> parameters);
 
     /**
      * Returns the status of a scheduled conversion given its {@code id}, or {@code null} if no conversion scheduled.
@@ -124,4 +128,5 @@ public interface ConversionService {
      * @since 7.4
      */
     BlobHolder getConversionResult(String id, boolean cleanTransientStoreEntry);
+
 }
