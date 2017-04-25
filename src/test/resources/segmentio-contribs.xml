@@ -1,57 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.segment.io.SegmentIOComponent.testContribs">
 
-  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
-    point="config">
-    <segmentio>
-      <writeKey>TestKey</writeKey>
-    </segmentio>
-  </extension>
+	<extension target="org.nuxeo.segment.io.SegmentIOComponent"
+		point="config">
+		<segmentio>
+			<writeKey>TestKey</writeKey>
+		</segmentio>
+	</extension>
 
-  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
-    point="mapper">
+	<extension target="org.nuxeo.segment.io.SegmentIOComponent"
+		point="mapper">
 
-    <mapper name="testIdentify" targetAPI="Identify">
-      <events>
-         <event>loginSuccess</event>
-      </events>
-      <parameters>
-        <parameter name="plugin">eventContext.getProperty("AuthenticationPlugin")</parameter>
-        <parameter name="company">principal.getCompany()</parameter>
-        <parameter name="group_id">"testGroup"</parameter>
-        <parameter name="group_name">"TestGroup"</parameter>
-      </parameters>
-    </mapper>
+		<mapper name="testIdentify" targetAPI="Identify">
+			<events>
+				<event>loginSuccess</event>
+			</events>
+			<parameters>
+				<parameter name="plugin">eventContext.getProperty("AuthenticationPlugin")
+				</parameter>
+				<parameter name="company">principal.getCompany()</parameter>
+				<parameter name="group_id">"testGroup"</parameter>
+				<parameter name="group_name">"TestGroup"</parameter>
+			</parameters>
+		</mapper>
 
-    <mapper name="testTrac" >
-      <events>
-         <event>documentCreated</event>
-      </events>
-      <parameters>
-        <parameter name="title">doc.getTitle()</parameter>
-      </parameters>
-      <groovy>
-      	mapping.put("type",doc.getType());
-      </groovy>
-    </mapper>
+		<mapper name="testTrac">
+			<events>
+				<event>documentCreated</event>
+			</events>
+			<parameters>
+				<parameter name="title">doc.getTitle()</parameter>
+			</parameters>
+			<groovy>
+				mapping.put("type", doc.getType());
+			</groovy>
+		</mapper>
 
-  </extension>
+	</extension>
 
-  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
-    point="integrations">
-    <integrationsConfig>
-      <integrations>
-        <integration name="Marketo">true</integration>
-      </integrations>
-    </integrationsConfig>
-  </extension>
+	<extension target="org.nuxeo.segment.io.SegmentIOComponent"
+		point="integrations">
+		<integrationsConfig>
+			<integrations>
+				<integration name="Marketo">true</integration>
+			</integrations>
+		</integrationsConfig>
+	</extension>
 
-  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
-    point="filters">
-    <userFilter>
-      <enableAnonymous>false</enableAnonymous>
-      <blackListedUser>RemoteConnectInstance</blackListedUser>
-    </userFilter>
-  </extension>
+	<extension target="org.nuxeo.segment.io.SegmentIOComponent"
+		point="filters">
+		<userFilter>
+			<enableAnonymous>false</enableAnonymous>
+			<blackListedUser>RemoteConnectInstance</blackListedUser>
+		</userFilter>
+	</extension>
 
 </component>

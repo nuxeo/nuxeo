@@ -188,6 +188,12 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return new HashMap<>();
     }
 
+    /**
+     * Build common options for identify and track calls. These options contains the configured integrations values and
+     * the current timestamp.
+     *
+     * @return the builded {@link Options} object
+     */
     protected Options buildOptions() {
         Options options = new Options();
         for (Entry<String, Boolean> integration : getIntegrations().entrySet()) {
@@ -202,14 +208,20 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal, metadata);
 
         if (!mustTrackprincipal(wrapper.getUserId())) {
-            log.debug("Skip user " + principal.getName());
+            if (log.isDebugEnabled()) {
+                log.debug("Skip user " + principal.getName());
+            }
             return;
         }
 
         if (debugMode) {
-            log.info("send identify for " + wrapper.getUserId() + " with meta : " + metadata.toString());
+            if (log.isInfoEnabled()) {
+                log.info("send identify for " + wrapper.getUserId() + " with meta : " + metadata.toString());
+            }
         } else {
-            log.debug("send identify with " + metadata.toString());
+            if (log.isDebugEnabled()) {
+                log.debug("send identify with " + metadata.toString());
+            }
             Traits traits = new Traits();
             traits.putAll(wrapper.getMetadata());
             Options options = buildOptions();
@@ -253,31 +265,25 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         }
     }
 
-    protected void pushForTest(String action, String userId, Traits traits, Options options) {
+    protected Map<String, Object> pushForTest(String action, String userId, Map<String, Object> metadata,
+            Options options) {
         Map<String, Object> data = new HashMap<>();
         data.put("action", action);
         data.put(SegmentIODataWrapper.PRINCIPAL_KEY, userId);
-        if (traits != null) {
-            data.putAll(traits);
+        if (metadata != null) {
+            data.putAll(metadata);
         }
         if (options != null) {
             data.put("options", options);
         }
         testData.add(data);
+        return data;
     }
 
-    protected void pushForTest(String action, String userId, String eventName, Props eventProperties, Options options) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("action", action);
-        data.put(SegmentIODataWrapper.PRINCIPAL_KEY, userId);
+    protected void pushForTest(String action, String userId, String eventName, Map<String, Object> metadata,
+            Options options) {
+        Map<String, Object> data = pushForTest(action, userId, metadata, options);
         data.put("eventName", eventName);
-        if (eventProperties != null) {
-            data.putAll(eventProperties);
-        }
-        if (options != null) {
-            data.put("options", options);
-        }
-        testData.add(data);
     }
 
     public List<Map<String, Object>> getTestData() {
@@ -303,15 +309,21 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal, metadata);
 
         if (!mustTrackprincipal(wrapper.getUserId())) {
-            log.debug("Skip user " + principal.getName());
+            if (log.isDebugEnabled()) {
+                log.debug("Skip user " + principal.getName());
+            }
             return;
         }
 
         if (debugMode) {
-            log.info("send track for " + eventName + " user : " + wrapper.getUserId() + " with meta : "
-                    + metadata.toString());
+            if (log.isInfoEnabled()) {
+                log.info("send track for " + eventName + " user : " + wrapper.getUserId() + " with meta : "
+                        + metadata.toString());
+            }
         } else {
-            log.debug("send track with " + metadata.toString());
+            if (log.isDebugEnabled()) {
+                log.debug("send track with " + metadata.toString());
+            }
             Props eventProperties = new Props();
             eventProperties.putAll(wrapper.getMetadata());
             if (Framework.isTestModeSet()) {
