@@ -30,6 +30,9 @@
       <parameters>
         <parameter name="title">doc.getTitle()</parameter>
       </parameters>
+      <groovy>
+      	mapping.put("type",doc.getType());
+      </groovy>
     </mapper>
 
   </extension>

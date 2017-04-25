@@ -160,6 +160,7 @@ public class TestSegmentIOService {
         // check metadata
         Assert.assertEquals("documentCreated", data.get("eventName"));
         Assert.assertEquals("Test Doc", data.get("title"));
+        Assert.assertEquals("File", data.get("type"));
         Assert.assertEquals(session.getPrincipal().getName(), data.get(SegmentIODataWrapper.PRINCIPAL_KEY));
         // check options
         Options options = (Options) data.get("options");
