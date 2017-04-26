@@ -8,5 +8,5 @@ nuxeo.db.name=nuxeo
 nuxeo.db.user=sa
 nuxeo.db.password=
 
-org.nuxeo.ecm.instance.name=Nuxeo 6.0-HF38-SNAPSHOT
+org.nuxeo.ecm.instance.name=Nuxeo 6.0-HF39-SNAPSHOT
 org.nuxeo.ecm.instance.description=Nuxeo Platform server
