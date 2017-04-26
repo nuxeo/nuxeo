@@ -39,4 +39,8 @@ public class TransactionRuntimeException extends RuntimeException {
         super(msg);
     }
 
+    public TransactionRuntimeException(Throwable cause) {
+        super(cause);
+    }
+
 }

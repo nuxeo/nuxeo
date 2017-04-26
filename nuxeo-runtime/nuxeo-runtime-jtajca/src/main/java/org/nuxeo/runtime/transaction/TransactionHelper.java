@@ -350,6 +350,9 @@ public class TransactionHelper {
         if (ut == null) {
             return;
         }
+        noteSuppressedExceptions();
+        RuntimeException thrown = null;
+        boolean isRollbackDuringCommit = false;
         try {
             int status = ut.getStatus();
             if (status == Status.STATUS_ACTIVE) {
@@ -365,6 +368,8 @@ public class TransactionHelper {
                     case "Unable to commit: transaction marked for rollback":
                         // don't log as error, this happens if there's a ConcurrentUpdateException
                         // at transaction end inside VCS
+                        isRollbackDuringCommit = true;
+                        // $FALL-THROUGH$
                     case "Unable to commit: Transaction timeout":
                         // don't log either
                         log.debug(msg, e);
@@ -384,10 +389,33 @@ public class TransactionHelper {
                     log.debug("Cannot commit transaction with unknown status: " + status);
                 }
             }
-        } catch (SystemException | IllegalStateException | SecurityException e) {
-            String msg = "Unable to commit/rollback";
-            log.error(msg, e);
-            throw new TransactionRuntimeException(msg + ": " + e.getMessage(), e);
+        } catch (SystemException e) {
+            thrown = new TransactionRuntimeException(e);
+            throw thrown;
+        } catch (RuntimeException e) {
+            thrown = e;
+            throw thrown;
+        } finally {
+            List<Exception> suppressed = getSuppressedExceptions();
+            if (!suppressed.isEmpty()) {
+                // add suppressed to thrown exception, or throw a new one
+                RuntimeException e;
+                if (thrown == null) {
+                    e = new TransactionRuntimeException("Exception during commit");
+                } else {
+                    if (isRollbackDuringCommit && suppressed.get(0) instanceof RuntimeException) {
+                        // use the suppressed one directly and throw it instead
+                        thrown = null; // force rethrow below
+                        e = (RuntimeException) suppressed.remove(0);
+                    } else {
+                        e = thrown;
+                    }
+                }
+                suppressed.forEach(s -> e.addSuppressed(s));
+                if (thrown == null) {
+                    throw e;
+                }
+            }
         }
     }
 
@@ -398,12 +426,13 @@ public class TransactionHelper {
      *
      * @since 5.9.4
      */
-    public static void noteSuppressedExceptions() {
-        suppressedExceptions.set(new ArrayList<Exception>(1));
+    protected static void noteSuppressedExceptions() {
+        suppressedExceptions.set(new ArrayList<>());
     }
 
     /**
-     * If activated by {@linked #noteSuppressedExceptions}, remembers the exception.
+     * Remembers the exception if it happens during the processing of a commit, so that it can be surfaced as a
+     * suppressed exception at the end of the commit.
      *
      * @since 5.9.4
      */
@@ -419,7 +448,7 @@ public class TransactionHelper {
      *
      * @since 5.9.4
      */
-    public static List<Exception> getSuppressedExceptions() {
+    protected static List<Exception> getSuppressedExceptions() {
         List<Exception> exceptions = suppressedExceptions.get();
         suppressedExceptions.remove();
         return exceptions == null ? Collections.<Exception> emptyList() : exceptions;
