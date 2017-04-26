@@ -39,7 +39,11 @@
     <appender-ref ref="REDIS"/>
   </category>
 
-  <category name="org.nuxeo.drive" additivity="false">
+<!--   <category name="org.nuxeo.drive" additivity="false">
+     <priority value="TRACE"/>
+     <appender-ref ref="FILE"/>
+  </category> -->
+  <category name="org.nuxeo" additivity="false">
      <priority value="TRACE"/>
      <appender-ref ref="FILE"/>
   </category>
