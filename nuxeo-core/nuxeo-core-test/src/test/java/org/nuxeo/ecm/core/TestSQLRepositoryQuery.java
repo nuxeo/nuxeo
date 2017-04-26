@@ -2282,7 +2282,7 @@ public class TestSQLRepositoryQuery {
         makeComplexDoc();
 
         String query = "SELECT DISTINCT ecm:uuid FROM TestDoc WHERE tst:friends/*/firstname = 'John'";
-        PartialList<Map<String, Serializable>> res = session.queryProjection(query, 0L, 10L);
+        PartialList<Map<String, Serializable>> res = session.queryProjection(query, 10, 0);
         assertEquals(1, res.list.size());
     }
 
