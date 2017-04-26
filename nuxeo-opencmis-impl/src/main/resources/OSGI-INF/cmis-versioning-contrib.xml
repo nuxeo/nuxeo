@@ -4,6 +4,8 @@
   <require>org.nuxeo.ecm.core.versioning.default-policies</require>
 
   <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <!-- Range [1, 10] for order is reserved for Nuxeo System Policies-->
+    <!-- See https://doc.nuxeo.com/nxdoc/versioning/#-anchor-versioning-policies-versioning-policies-and-filters -->
     <policy id="no-versioning-for-cmis-before-update" beforeUpdate="true" increment="NONE" order="2">
       <filter-id>cmis-document</filter-id>
     </policy>
