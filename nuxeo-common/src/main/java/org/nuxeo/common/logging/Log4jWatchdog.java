@@ -22,7 +22,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.helpers.FileWatchdog;
 import org.apache.log4j.xml.DOMConfigurator;
 
-class Log4jWatchdog extends FileWatchdog implements LoggingConfigWatchdog {
+class Log4jWatchdog extends FileWatchdog implements Log4jWatchdogHandle {
 
     protected Log4jWatchdog(String filename) {
         super(filename);
@@ -45,11 +45,11 @@ class Log4jWatchdog extends FileWatchdog implements LoggingConfigWatchdog {
             field.setAccessible(true);
             field.set(this, true);
         } catch (ReflectiveOperationException cause) {
-            throw new Error("Cannot cancel log4j watchdog", cause);
+            throw new RuntimeException("Cannot cancel log4j watchdog", cause);
         }
     }
 
-    public static Log4jWatchdog watch(String filename, long delay) {
+    public static Log4jWatchdogHandle watch(String filename, long delay) {
         Log4jWatchdog wdog = new Log4jWatchdog(filename);
         wdog.setDelay(delay);
         wdog.start();

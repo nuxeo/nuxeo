@@ -39,7 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.common.logging.Log4JHelper;
-import org.nuxeo.common.logging.LoggingConfigWatchdog;
+import org.nuxeo.common.logging.Log4jWatchdogHandle;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -190,7 +190,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
                     }
                 }
 
-                LoggingConfigWatchdog wdog;
+                Log4jWatchdogHandle wdog;
 
                 @Override
                 public void handleEvent(RuntimeServiceEvent event) {

@@ -17,9 +17,12 @@
 package org.nuxeo.common.logging;
 
 /**
+ * Exposes only the cancel method needed for canceling the watch dog without reference to
+ * the optional log4j implementation.
+ *
  * @since 9.2
  */
-public interface LoggingConfigWatchdog {
+public interface Log4jWatchdogHandle {
 
     public void cancel();
 }

@@ -39,8 +39,8 @@ public class Log4JHelper {
      *            the delay (in milliseconds)
      * @return {@code true} if log4j is available and the call succeeded
      */
-    public static LoggingConfigWatchdog configureAndWatch(long delay) {
-        final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+    public static Log4jWatchdogHandle configureAndWatch(long delay) {
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         URL url = contextClassLoader.getResource("log4j.xml");
         if (url == null) {
             return null;
