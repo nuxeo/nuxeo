@@ -764,15 +764,69 @@ public class DBSDocument extends BaseDocument<State> {
         return (T) value;
     }
 
+    public static final String CHANGE_TOKEN_PROXY_SEP = "/";
+
     @Override
     public String getChangeToken() {
-        DBSDocumentState docState = getStateOrTarget();
         if (session.changeTokenEnabled) {
-            return (String) docState.get(KEY_CHANGE_TOKEN);
+            String changeToken = docState.getChangeToken();
+            if (isProxy()) {
+                String targetToken = getTargetDocument().docState.getChangeToken();
+                return getProxyChangeToken(changeToken, targetToken);
+            } else {
+                return changeToken;
+            }
         } else {
+            DBSDocumentState docState = getStateOrTarget();
             Calendar modified = (Calendar) docState.get(KEY_DC_MODIFIED);
             return modified == null ? null : String.valueOf(modified.getTimeInMillis());
         }
+    }
+
+    protected static String getProxyChangeToken(String proxyToken, String targetToken) {
+        if (proxyToken == null && targetToken == null) {
+            return null;
+        } else {
+            if (proxyToken == null) {
+                proxyToken = "";
+            } else if (targetToken == null) {
+                targetToken = "";
+            }
+            return proxyToken + CHANGE_TOKEN_PROXY_SEP + targetToken;
+        }
+    }
+
+    @Override
+    public boolean validateChangeToken(String changeToken) {
+        if (changeToken == null) {
+            return true;
+        }
+        if (isProxy()) {
+            return validateProxyChangeToken(changeToken, docState, getTargetDocument().docState);
+        } else {
+            return docState.validateChangeToken(changeToken);
+        }
+    }
+
+    protected static boolean validateProxyChangeToken(String changeToken, DBSDocumentState proxyState,
+            DBSDocumentState targetState) {
+        String[] parts = changeToken.split(CHANGE_TOKEN_PROXY_SEP, 2);
+        if (parts.length != 2) {
+            // invalid format
+            return false;
+        }
+        String proxyToken = parts[0];
+        if (proxyToken.isEmpty()) {
+            proxyToken = null;
+        }
+        String targetToken = parts[1];
+        if (targetToken.isEmpty()) {
+            targetToken = null;
+        }
+        if (proxyToken == null && targetToken == null) {
+            return true;
+        }
+        return proxyState.validateChangeToken(proxyToken) && targetState.validateChangeToken(targetToken);
     }
 
     protected DBSDocumentState getStateOrTarget(Type type) throws PropertyException {

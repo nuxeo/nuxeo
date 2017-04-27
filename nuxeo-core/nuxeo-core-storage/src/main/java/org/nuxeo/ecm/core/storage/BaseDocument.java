@@ -1123,4 +1123,19 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
      */
     protected abstract Lock removeDocumentLock(String owner);
 
+    /**
+     * Validates that the passed change token is compatible with the current change token.
+     *
+     * @param changeToken the change token to check
+     * @param currentToken the current change token
+     * @return {@code false} if the change token is not valid
+     * @since 9.2
+     */
+    public static boolean validateChangeToken(String changeToken, String currentToken) {
+        if (currentToken == null) {
+            return true;
+        }
+        return currentToken.equals(changeToken);
+    }
+
 }
