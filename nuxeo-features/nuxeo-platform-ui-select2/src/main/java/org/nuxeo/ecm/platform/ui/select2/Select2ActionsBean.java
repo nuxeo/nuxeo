@@ -32,9 +32,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseId;
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -85,6 +82,9 @@ import org.nuxeo.ecm.platform.url.codec.DocumentIdCodec;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 /**
  * Initialization for Select2.
  *
@@ -125,8 +125,8 @@ public class Select2ActionsBean implements Serializable {
         }
     }
 
-    private static Map<String, String> getDefaultFormattersMap(
-            final String suggestionFormatterName, String selectionFormatterName) {
+    private static Map<String, String> getDefaultFormattersMap(final String suggestionFormatterName,
+            String selectionFormatterName) {
         Map<String, String> result = new HashMap<String, String>();
         result.put(Select2Common.SUGGESTION_FORMATTER, suggestionFormatterName);
         result.put(Select2Common.SELECTION_FORMATTER, selectionFormatterName);
@@ -139,57 +139,47 @@ public class Select2ActionsBean implements Serializable {
     protected static Map<String, String> getContextParameter(final DocumentModel doc) {
         DocumentIdCodec documentIdCodec = new DocumentIdCodec();
         Map<String, String> contextParameters = new HashMap<String, String>();
-        contextParameters.put(
-                "documentURL",
-                documentIdCodec.getUrlFromDocumentView(new DocumentViewImpl(
-                        doc)));
+        contextParameters.put("documentURL", documentIdCodec.getUrlFromDocumentView(new DocumentViewImpl(doc)));
         return contextParameters;
     }
 
-    public String encodeParametersForUserSuggestion(final Widget widget, final Map<String, Serializable> resolvedWidgetProperties) {
-        Map<String, String> params = getDefaultFormattersMap(
-                Select2Common.USER_DEFAULT_SUGGESTION_FORMATTER,
+    public String encodeParametersForUserSuggestion(final Widget widget,
+            final Map<String, Serializable> resolvedWidgetProperties) {
+        Map<String, String> params = getDefaultFormattersMap(Select2Common.USER_DEFAULT_SUGGESTION_FORMATTER,
                 Select2Common.USER_DEFAULT_SELECTION_FORMATTER);
         params.put(Select2Common.OPERATION_ID, SuggestUserEntries.ID);
         return encodeParameters(widget, params, resolvedWidgetProperties);
     }
 
-    public String encodeParametersForDirectory(final Widget widget, final Map<String, Serializable> resolvedWidgetProperties) {
-        Map<String, String> params = getDefaultFormattersMap(
-                Select2Common.DIR_DEFAULT_SUGGESTION_FORMATTER,
+    public String encodeParametersForDirectory(final Widget widget,
+            final Map<String, Serializable> resolvedWidgetProperties) {
+        Map<String, String> params = getDefaultFormattersMap(Select2Common.DIR_DEFAULT_SUGGESTION_FORMATTER,
                 Select2Common.DIR_DEFAULT_SELECTION_FORMATTER);
         params.put(Select2Common.OPERATION_ID, SuggestDirectoryEntries.ID);
-        return encodeParameters(
-                widget,
-                params, resolvedWidgetProperties);
+        return encodeParameters(widget, params, resolvedWidgetProperties);
     }
 
     public String encodeParameters(final Widget widget) {
-        return encodeParameters(
-                widget, null);
+        return encodeParameters(widget, null);
     }
 
     public String encodeParameters(final Widget widget, final Map<String, Serializable> resolvedWidgetProperties) {
-        Map<String, String> params = getDefaultFormattersMap(
-                Select2Common.DOC_DEFAULT_SUGGESTION_FORMATTER,
+        Map<String, String> params = getDefaultFormattersMap(Select2Common.DOC_DEFAULT_SUGGESTION_FORMATTER,
                 Select2Common.DOC_DEFAULT_SELECTION_FORMATTER);
         params.put(Select2Common.OPERATION_ID, DocumentPageProviderOperation.ID);
-        return encodeParameters(
-                widget,
-                params, resolvedWidgetProperties);
+        return encodeParameters(widget, params, resolvedWidgetProperties);
     }
 
     /**
-     * Encode widget properties and parameters that Select2 pick them up in a
-     * hidden input.
+     * Encode widget properties and parameters that Select2 pick them up in a hidden input.
      *
      * @param widget the widget
      * @return encoded
      * @throws Exception
      * @since 5.7.3
      */
-    public String encodeParameters(final Widget widget,
-            final Map<String, String> defaultParams, final Map<String, Serializable> resolvedWidgetProperties) {
+    public String encodeParameters(final Widget widget, final Map<String, String> defaultParams,
+            final Map<String, Serializable> resolvedWidgetProperties) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedOutputStream out = new BufferedOutputStream(baos);
 
@@ -206,10 +196,8 @@ public class Select2ActionsBean implements Serializable {
             final boolean isTranslated = widget.isTranslated();
 
             // Are we writing or reading
-            boolean readonly = !widget.getMode().equals("edit")
-                    && !widget.getMode().equals("create");
-            jg.writeStringField(Select2Common.READ_ONLY_PARAM,
-                    Boolean.toString(readonly));
+            boolean readonly = !widget.getMode().equals("edit") && !widget.getMode().equals("create");
+            jg.writeStringField(Select2Common.READ_ONLY_PARAM, Boolean.toString(readonly));
 
             Map<String, Serializable> propertySet = null;
             if (resolvedWidgetProperties != null) {
@@ -222,7 +210,6 @@ public class Select2ActionsBean implements Serializable {
             boolean hasAjaxReRender = false;
             boolean hasWidth = false;
             boolean hasMinChars = false;
-
 
             for (Entry<String, Serializable> entry : propertySet.entrySet()) {
 
@@ -240,8 +227,7 @@ public class Select2ActionsBean implements Serializable {
                 if (entry.getKey().equals(Select2Common.PLACEHOLDER)) {
                     hasPlaceholder = true;
                     // placeholder can be translated
-                    if (isTranslated
-                            || Boolean.parseBoolean((String) propertySet.get("translatePlaceholder"))) {
+                    if (isTranslated || Boolean.parseBoolean((String) propertySet.get("translatePlaceholder"))) {
                         value = messages.get(entry.getValue().toString());
                     }
                 } else if (entry.getKey().equals(Select2Common.AJAX_RERENDER)) {
@@ -267,23 +253,19 @@ public class Select2ActionsBean implements Serializable {
                 // No placeholder provider and Select2 requires one to enable
                 // the
                 // reset button.
-                jg.writeStringField(Select2Common.PLACEHOLDER,
-                        messages.get("label.vocabulary.selectValue"));
+                jg.writeStringField(Select2Common.PLACEHOLDER, messages.get("label.vocabulary.selectValue"));
             }
 
             if (!hasWidth) {
-                jg.writeStringField(Select2Common.WIDTH,
-                        Select2Common.DEFAULT_WIDTH);
+                jg.writeStringField(Select2Common.WIDTH, Select2Common.DEFAULT_WIDTH);
             }
 
             if (!hasMinChars) {
-                jg.writeNumberField(Select2Common.MIN_CHARS,
-                        Select2Common.DEFAULT_MIN_CHARS);
+                jg.writeNumberField(Select2Common.MIN_CHARS, Select2Common.DEFAULT_MIN_CHARS);
             }
 
             if (hasAjaxReRender) {
-                jg.writeStringField(Select2Common.RERENDER_JS_FUNCTION_NAME,
-                        widget.getId() + "_reRender");
+                jg.writeStringField(Select2Common.RERENDER_JS_FUNCTION_NAME, widget.getId() + "_reRender");
             }
 
             jg.writeEndObject();
@@ -310,10 +292,8 @@ public class Select2ActionsBean implements Serializable {
     }
 
     @SuppressWarnings("rawtypes")
-    protected JSONArray getMultipleDirectoryEntries(final Object value,
-            final String directoryName, final boolean localize,
-            String keySeparator, final boolean dbl10n,
-            final String labelFieldName) {
+    protected JSONArray getMultipleDirectoryEntries(final Object value, final String directoryName,
+            final boolean localize, String keySeparator, final boolean dbl10n, final String labelFieldName) {
         JSONArray result = new JSONArray();
         if (value == null) {
             return result;
@@ -344,20 +324,17 @@ public class Select2ActionsBean implements Serializable {
             SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
             Schema schema = schemaManager.getSchema(schemaName);
             final Locale locale = org.jboss.seam.core.Locale.instance();
-            final String label = Select2Common.getLabelFieldName(schema,
-                    dbl10n, labelFieldName, locale.getLanguage());
+            final String label = Select2Common.getLabelFieldName(schema, dbl10n, labelFieldName, locale.getLanguage());
 
             for (String ref : storedRefs) {
-                JSONObject obj = resolveDirectoryEntry(ref, keySeparator,
-                        session, schema, label, localize, dbl10n);
+                JSONObject obj = resolveDirectoryEntry(ref, keySeparator, session, schema, label, localize, dbl10n);
                 if (obj != null) {
                     result.add(obj);
                 }
             }
             return result;
         } catch (DirectoryException de) {
-            log.error("An error occured while obtaining directory "
-                    + directoryName, de);
+            log.error("An error occured while obtaining directory " + directoryName, de);
             return result;
         } finally {
             try {
@@ -372,11 +349,9 @@ public class Select2ActionsBean implements Serializable {
     }
 
     @SuppressWarnings("rawtypes")
-    protected JSONArray getMultipleUserReference(final Object value,
-            final boolean prefixed, final String firstLabelField,
-            final String secondLabelField, final String thirdLabelField,
-            final boolean hideFirstLabel, final boolean hideSecondLabel,
-            final boolean hideThirdLabel,
+    protected JSONArray getMultipleUserReference(final Object value, final boolean prefixed,
+            final String firstLabelField, final String secondLabelField, final String thirdLabelField,
+            final boolean hideFirstLabel, final boolean hideSecondLabel, final boolean hideThirdLabel,
             final boolean displayEmailInSuggestion, final boolean hideIcon) {
         if (value == null) {
             return null;
@@ -394,10 +369,9 @@ public class Select2ActionsBean implements Serializable {
         }
 
         for (String ref : storedRefs) {
-            JSONObject resolved = getSingleUserReference(ref, prefixed,
-                    firstLabelField, secondLabelField, thirdLabelField,
-                    hideFirstLabel, hideSecondLabel, hideThirdLabel,
-                    displayEmailInSuggestion, hideIcon);
+            JSONObject resolved = getSingleUserReference(ref, prefixed, firstLabelField, secondLabelField,
+                    thirdLabelField, hideFirstLabel, hideSecondLabel, hideThirdLabel, displayEmailInSuggestion,
+                    hideIcon);
             if (resolved != null && !resolved.isEmpty()) {
                 result.add(resolved);
             }
@@ -405,16 +379,14 @@ public class Select2ActionsBean implements Serializable {
         return result;
     }
 
-    protected CoreSession getRepositorySession(String repoName)
-            throws ClientException {
+    protected CoreSession getRepositorySession(String repoName) throws ClientException {
 
         if (repoName == null || repoName.isEmpty()) {
             RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
             repoName = rm.getDefaultRepositoryName();
         }
 
-        if (documentManager != null
-                && documentManager.getRepositoryName().equals(repoName)) {
+        if (documentManager != null && documentManager.getRepositoryName().equals(repoName)) {
             return documentManager;
         }
 
@@ -426,10 +398,8 @@ public class Select2ActionsBean implements Serializable {
         }
     }
 
-    protected JSONObject getSingleDirectoryEntry(final String storedReference,
-            final String directoryName, final boolean localize,
-            String keySeparator, final boolean dbl10n,
-            final String labelFieldName) {
+    protected JSONObject getSingleDirectoryEntry(final String storedReference, final String directoryName,
+            final boolean localize, String keySeparator, final boolean dbl10n, final String labelFieldName) {
 
         if (storedReference == null || storedReference.isEmpty()) {
             return null;
@@ -450,17 +420,14 @@ public class Select2ActionsBean implements Serializable {
             Schema schema = schemaManager.getSchema(schemaName);
 
             final Locale locale = org.jboss.seam.core.Locale.instance();
-            final String label = Select2Common.getLabelFieldName(schema,
-                    dbl10n, labelFieldName, locale.getLanguage());
+            final String label = Select2Common.getLabelFieldName(schema, dbl10n, labelFieldName, locale.getLanguage());
 
-            JSONObject obj = resolveDirectoryEntry(storedReference,
-                    keySeparator, session, schema, label, localize,
+            JSONObject obj = resolveDirectoryEntry(storedReference, keySeparator, session, schema, label, localize,
                     dbl10n);
 
             return obj;
         } catch (DirectoryException de) {
-            log.error("An error occured while obtaining directory "
-                    + directoryName, de);
+            log.error("An error occured while obtaining directory " + directoryName, de);
             return null;
         } finally {
             try {
@@ -474,11 +441,9 @@ public class Select2ActionsBean implements Serializable {
 
     }
 
-    protected JSONObject getSingleUserReference(final String storedReference,
-            final boolean prefixed, final String firstLabelField,
-            final String secondLabelField, final String thirdLabelField,
-            final boolean hideFirstLabel, final boolean hideSecondLabel,
-            final boolean hideThirdLabel,
+    protected JSONObject getSingleUserReference(final String storedReference, final boolean prefixed,
+            final String firstLabelField, final String secondLabelField, final String thirdLabelField,
+            final boolean hideFirstLabel, final boolean hideSecondLabel, final boolean hideThirdLabel,
             final boolean displayEmailInSuggestion, final boolean hideIcon) {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
@@ -497,8 +462,7 @@ public class Select2ActionsBean implements Serializable {
                 } else if (storedReference.startsWith(NuxeoGroup.PREFIX)) {
                     group = userManager.getGroupModel(storedReference.substring(NuxeoGroup.PREFIX.length()));
                 } else {
-                    log.warn("User reference is prefixed but prefix was not found on reference: "
-                            + storedReference);
+                    log.warn("User reference is prefixed but prefix was not found on reference: " + storedReference);
                     return createNotFoundEntry(storedReference);
                 }
             } else {
@@ -521,12 +485,9 @@ public class Select2ActionsBean implements Serializable {
                 String userId = user.getId();
                 obj.put(Select2Common.ID, userId);
                 obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.USER_TYPE);
-                obj.put(Select2Common.PREFIXED_ID_KEY_NAME,
-                        NuxeoPrincipal.PREFIX + userId);
-                Select2Common.computeUserLabel(obj, firstLabelField,
-                        secondLabelField, thirdLabelField, hideFirstLabel,
-                        hideSecondLabel, hideThirdLabel,
-                        displayEmailInSuggestion, userId);
+                obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + userId);
+                Select2Common.computeUserLabel(obj, firstLabelField, secondLabelField, thirdLabelField, hideFirstLabel,
+                        hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, userId);
                 Select2Common.computeUserGroupIcon(obj, hideIcon);
             } else if (group != null) {
                 Schema schema = schemaManager.getSchema(userManager.getGroupSchemaName());
@@ -538,21 +499,17 @@ public class Select2ActionsBean implements Serializable {
                 }
                 // If the group hasn't an label, let's put the groupid
                 String groupId = group.getId();
-                Select2Common.computeGroupLabel(obj, groupId,
-                        userManager.getGroupLabelField(), hideFirstLabel);
+                Select2Common.computeGroupLabel(obj, groupId, userManager.getGroupLabelField(), hideFirstLabel);
                 obj.put(Select2Common.ID, groupId);
                 obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.GROUP_TYPE);
-                obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX
-                        + groupId);
+                obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX + groupId);
                 Select2Common.computeUserGroupIcon(obj, hideIcon);
             } else {
-                log.warn("Could not resolve user or group reference: "
-                        + storedReference);
+                log.warn("Could not resolve user or group reference: " + storedReference);
                 return createNotFoundEntry(storedReference);
             }
         } catch (ClientException e) {
-            log.error("An error occured while retrieving user or group reference: "
-                    + storedReference);
+            log.error("An error occured while retrieving user or group reference: " + storedReference);
             return null;
         }
         return obj;
@@ -563,8 +520,7 @@ public class Select2ActionsBean implements Serializable {
         if (StringUtils.isBlank(wtCat)) {
             wtCat = "jsf";
         }
-        WidgetTypeDefinition wtDef = getLayoutStore().getWidgetTypeDefinition(
-                wtCat, widget.getType());
+        WidgetTypeDefinition wtDef = getLayoutStore().getWidgetTypeDefinition(wtCat, widget.getType());
         if (wtDef != null) {
             WidgetTypeConfiguration conf = wtDef.getConfiguration();
             if (conf != null) {
@@ -596,8 +552,7 @@ public class Select2ActionsBean implements Serializable {
         return createEntryWithWarnMessage(id, "entry not found");
     }
 
-    protected JSONObject createEntryWithWarnMessage(final String label,
-            final String warnMessage) {
+    protected JSONObject createEntryWithWarnMessage(final String label, final String warnMessage) {
         JSONObject obj = new JSONObject();
         obj.put(Select2Common.ID, label);
         obj.put(Select2Common.ABSOLUTE_LABEL, label);
@@ -606,10 +561,8 @@ public class Select2ActionsBean implements Serializable {
         return obj;
     }
 
-    protected JSONObject resolveDirectoryEntry(final String storedReference,
-            String keySeparator, final Session session, final Schema schema,
-            final String label, final boolean localize,
-            final boolean dbl10n) {
+    protected JSONObject resolveDirectoryEntry(final String storedReference, String keySeparator, final Session session,
+            final Schema schema, final String label, final boolean localize, final boolean dbl10n) {
         if (storedReference == null || storedReference.isEmpty()) {
             log.trace("No reference provided ");
             return null;
@@ -619,8 +572,7 @@ public class Select2ActionsBean implements Serializable {
             keySeparator = Select2Common.DEFAULT_KEY_SEPARATOR;
         }
 
-        String entryId = storedReference.substring(
-                storedReference.lastIndexOf(keySeparator) + 1,
+        String entryId = storedReference.substring(storedReference.lastIndexOf(keySeparator) + 1,
                 storedReference.length());
 
         try {
@@ -640,20 +592,16 @@ public class Select2ActionsBean implements Serializable {
                         value = messages.get(value);
                     }
                     obj.element(Select2Common.LABEL, value);
-                    obj.element(
-                            Select2Common.ABSOLUTE_LABEL,
-                            getParentAbsoluteLabel(storedReference, keySeparator,
-                                    session, fieldName, localize, dbl10n));
+                    obj.element(Select2Common.ABSOLUTE_LABEL, getParentAbsoluteLabel(storedReference, keySeparator,
+                            session, fieldName, localize, dbl10n));
                 } else {
                     obj.element(key, value);
                 }
             }
 
             // Add a warning message if the entity is obsolete
-            if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID)
-                    && obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0) {
-                obj.element(Select2Common.WARN_MESSAGE_LABEL,
-                        messages.get("label.vocabulary.entry.obsolete"));
+            if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID) && obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0) {
+                obj.element(Select2Common.WARN_MESSAGE_LABEL, messages.get("label.vocabulary.entry.obsolete"));
             }
 
             obj.element(Select2Common.COMPUTED_ID, storedReference);
@@ -667,10 +615,9 @@ public class Select2ActionsBean implements Serializable {
     /**
      * @since 5.9.3
      */
-    protected String getParentAbsoluteLabel(final String entryId,
-            final String keySeparator, final Session session,
-            final QName labelFieldName, final boolean localize,
-            final boolean dbl10n) throws PropertyException, ClientException {
+    protected String getParentAbsoluteLabel(final String entryId, final String keySeparator, final Session session,
+            final QName labelFieldName, final boolean localize, final boolean dbl10n)
+            throws PropertyException, ClientException {
         String[] split = entryId.split(keySeparator);
         String result = "";
         for (int i = 0; i < split.length; i++) {
@@ -687,12 +634,10 @@ public class Select2ActionsBean implements Serializable {
         return result;
     }
 
-    public String resolveMultipleDirectoryEntries(final Object value,
-            final String directoryName, final boolean localize,
-            String keySeparator, final boolean dbl10n,
-            final String labelFieldName) {
-        JSONArray result = getMultipleDirectoryEntries(value, directoryName,
-                localize, keySeparator, dbl10n, labelFieldName);
+    public String resolveMultipleDirectoryEntries(final Object value, final String directoryName,
+            final boolean localize, String keySeparator, final boolean dbl10n, final String labelFieldName) {
+        JSONArray result = getMultipleDirectoryEntries(value, directoryName, localize, keySeparator, dbl10n,
+                labelFieldName);
         if (result != null) {
             return result.toString();
         } else {
@@ -700,18 +645,15 @@ public class Select2ActionsBean implements Serializable {
         }
     }
 
-    public List<String> resolveMultipleDirectoryEntryLabels(final Object value,
-            final String directoryName, final boolean localize,
-            final String keySeparator, final boolean dbl10n,
-            final String labelFieldName) {
-        return formatList(getMultipleDirectoryEntries(value, directoryName,
-                localize, keySeparator, dbl10n, labelFieldName));
+    public List<String> resolveMultipleDirectoryEntryLabels(final Object value, final String directoryName,
+            final boolean localize, final String keySeparator, final boolean dbl10n, final String labelFieldName) {
+        return formatList(
+                getMultipleDirectoryEntries(value, directoryName, localize, keySeparator, dbl10n, labelFieldName));
     }
 
     @SuppressWarnings("rawtypes")
-    public List<String> resolveMultipleReferenceLabels(final Object value,
-            final String repo, final String operationName,
-            final String idProperty, final String label) throws Exception {
+    public List<String> resolveMultipleReferenceLabels(final Object value, final String repo,
+            final String operationName, final String idProperty, final String label) throws Exception {
 
         List<String> result = new ArrayList<>();
 
@@ -731,8 +673,7 @@ public class Select2ActionsBean implements Serializable {
         }
 
         for (String ref : storedRefs) {
-            DocumentModel doc = resolveReference(repo, ref, operationName,
-                    idProperty);
+            DocumentModel doc = resolveReference(repo, ref, operationName, idProperty);
             if (doc != null) {
                 if (label != null && !label.isEmpty()) {
                     Object val = doc.getPropertyValue(label);
@@ -745,16 +686,14 @@ public class Select2ActionsBean implements Serializable {
                     result.add(doc.getTitle());
                 }
             } else {
-                result.add(messages.get("label.documentSuggestion.docNotFoundOrNotVisible")
-                        + "(" + ref + ")");
+                result.add(messages.get("label.documentSuggestion.docNotFoundOrNotVisible") + "(" + ref + ")");
             }
         }
         return result;
     }
 
     @SuppressWarnings("rawtypes")
-    public String resolveMultipleReferences(final Object value,
-            final String repo, final String operationName,
+    public String resolveMultipleReferences(final Object value, final String repo, final String operationName,
             final String idProperty, final String schemaNames) throws Exception {
 
         if (value == null) {
@@ -782,13 +721,14 @@ public class Select2ActionsBean implements Serializable {
         jg.writeStartArray();
 
         for (String ref : storedRefs) {
-            DocumentModel doc = resolveReference(repo, ref, operationName,
-                    idProperty);
+            DocumentModel doc = resolveReference(repo, ref, operationName, idProperty);
             if (doc == null) {
                 processDocumentNotFound(ref, jg);
             } else {
                 Map<String, String> contextParameters = getContextParameter(doc);
-                HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+                HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
+                                                                              .getExternalContext()
+                                                                              .getRequest();
                 JsonDocumentWriter.writeDocument(jg, doc, schemas, contextParameters, request);
             }
         }
@@ -810,12 +750,10 @@ public class Select2ActionsBean implements Serializable {
     }
 
     @SuppressWarnings("rawtypes")
-    public String resolveMultipleUserReference(final Object value,
-            final boolean prefixed, final String firstLabelField,
-            final String secondLabelField, final String thirdLabelField,
-            final boolean hideFirstLabel, final boolean hideSecondLabel,
-            final boolean hideThirdLabel,
-            final boolean displayEmailInSuggestion, final boolean hideIcon) {
+    public String resolveMultipleUserReference(final Object value, final boolean prefixed, final String firstLabelField,
+            final String secondLabelField, final String thirdLabelField, final boolean hideFirstLabel,
+            final boolean hideSecondLabel, final boolean hideThirdLabel, final boolean displayEmailInSuggestion,
+            final boolean hideIcon) {
         if (value == null) {
             return "[]";
         }
@@ -832,10 +770,9 @@ public class Select2ActionsBean implements Serializable {
         }
 
         for (String ref : storedRefs) {
-            String resolved = resolveSingleUserReference(ref, prefixed,
-                    firstLabelField, secondLabelField, thirdLabelField,
-                    hideFirstLabel, hideSecondLabel, hideThirdLabel,
-                    displayEmailInSuggestion, hideIcon);
+            String resolved = resolveSingleUserReference(ref, prefixed, firstLabelField, secondLabelField,
+                    thirdLabelField, hideFirstLabel, hideSecondLabel, hideThirdLabel, displayEmailInSuggestion,
+                    hideIcon);
             if (resolved != null && !resolved.isEmpty()) {
                 result.add(resolved);
             }
@@ -843,21 +780,16 @@ public class Select2ActionsBean implements Serializable {
         return result.toString();
     }
 
-    public List<String> resolveMultipleUserReferenceLabels(final Object value,
-            final boolean prefixed, final String firstLabelField,
-            final String secondLabelField, final String thirdLabelField,
-            final boolean hideFirstLabel, final boolean hideSecondLabel,
-            final boolean hideThirdLabel,
+    public List<String> resolveMultipleUserReferenceLabels(final Object value, final boolean prefixed,
+            final String firstLabelField, final String secondLabelField, final String thirdLabelField,
+            final boolean hideFirstLabel, final boolean hideSecondLabel, final boolean hideThirdLabel,
             final boolean displayEmailInSuggestion, final boolean hideIcon) {
-        return formatList(getMultipleUserReference(value, prefixed,
-                firstLabelField, secondLabelField, thirdLabelField,
-                hideFirstLabel, hideSecondLabel, hideThirdLabel,
-                displayEmailInSuggestion, hideIcon));
+        return formatList(getMultipleUserReference(value, prefixed, firstLabelField, secondLabelField, thirdLabelField,
+                hideFirstLabel, hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, hideIcon));
     }
 
-    protected DocumentModel resolveReference(final String repo,
-            final String storedReference, final String operationName,
-            final String idProperty) throws Exception {
+    protected DocumentModel resolveReference(final String repo, final String storedReference,
+            final String operationName, final String idProperty) throws Exception {
 
         if (storedReference == null || storedReference.isEmpty()) {
             log.trace("No reference provided ");
@@ -875,14 +807,13 @@ public class Select2ActionsBean implements Serializable {
                 DocumentRef ref = null;
 
                 if (idProperty != null && !idProperty.isEmpty()) {
-                    String query = " select * from Document where "
-                            + idProperty + "='" + storedReference + "'";
+                    String query = " select * from Document where " + idProperty + "='" + storedReference + "'";
                     DocumentModelList docs = session.query(query);
                     if (docs.size() > 0) {
                         return docs.get(0);
                     } else {
-                        log.warn("Unable to resolve doc using property "
-                                + idProperty + " and value " + storedReference);
+                        log.warn(
+                                "Unable to resolve doc using property " + idProperty + " and value " + storedReference);
                         return null;
                     }
                 } else {
@@ -904,13 +835,11 @@ public class Select2ActionsBean implements Serializable {
 
                 params.put("value", storedReference);
                 params.put("xpath", idProperty);
-                params.put("lang",
-                        org.jboss.seam.core.Locale.instance().getLanguage());
+                params.put("lang", org.jboss.seam.core.Locale.instance().getLanguage());
                 Object result = as.run(ctx, operationName, params);
 
                 if (result == null) {
-                    log.warn("Unable to resolve reference " + storedReference
-                            + " using property " + idProperty
+                    log.warn("Unable to resolve reference " + storedReference + " using property " + idProperty
                             + " and operation" + operationName);
                     doc = null;
                 } else if (result instanceof DocumentModel) {
@@ -935,17 +864,14 @@ public class Select2ActionsBean implements Serializable {
         return doc;
     }
 
-    protected void processDocumentNotFound(String id, JsonGenerator jg)
-            throws ClientException {
+    protected void processDocumentNotFound(String id, JsonGenerator jg) throws ClientException {
         if (StringUtils.isEmpty(id)) {
             return;
         }
         try {
             jg.writeStartObject();
             jg.writeStringField(Select2Common.ID, id);
-            jg.writeStringField(
-                    Select2Common.TITLE,
-                    messages.get("label.documentSuggestion.docNotFoundOrNotVisible"));
+            jg.writeStringField(Select2Common.TITLE, messages.get("label.documentSuggestion.docNotFoundOrNotVisible"));
             jg.writeStringField(Select2Common.WARN_MESSAGE_LABEL, id);
             jg.writeEndObject();
             jg.flush();
@@ -955,12 +881,9 @@ public class Select2ActionsBean implements Serializable {
 
     }
 
-    public String resolveSingleDirectoryEntry(final String storedReference,
-            final String directoryName, final boolean localize,
-            String keySeparator, final boolean dbl10n,
-            final String labelFieldName) {
-        JSONObject result = getSingleDirectoryEntry(storedReference,
-                directoryName, localize, keySeparator, dbl10n,
+    public String resolveSingleDirectoryEntry(final String storedReference, final String directoryName,
+            final boolean localize, String keySeparator, final boolean dbl10n, final String labelFieldName) {
+        JSONObject result = getSingleDirectoryEntry(storedReference, directoryName, localize, keySeparator, dbl10n,
                 labelFieldName);
         if (result != null) {
             return result.toString();
@@ -969,12 +892,9 @@ public class Select2ActionsBean implements Serializable {
         }
     }
 
-    public String resolveSingleDirectoryEntryLabel(
-            final String storedReference, final String directoryName,
-            final boolean localize, String keySeparator,
-            final boolean dbl10n, final String labelFieldName) {
-        JSONObject obj = getSingleDirectoryEntry(storedReference,
-                directoryName, localize, keySeparator, dbl10n,
+    public String resolveSingleDirectoryEntryLabel(final String storedReference, final String directoryName,
+            final boolean localize, String keySeparator, final boolean dbl10n, final String labelFieldName) {
+        JSONObject obj = getSingleDirectoryEntry(storedReference, directoryName, localize, keySeparator, dbl10n,
                 labelFieldName);
         if (obj == null) {
             return "";
@@ -982,8 +902,7 @@ public class Select2ActionsBean implements Serializable {
         return obj.optString(Select2Common.LABEL);
     }
 
-    public String resolveSingleReference(final String storedReference,
-            final String repo, final String operationName,
+    public String resolveSingleReference(final String storedReference, final String repo, final String operationName,
             final String idProperty, final String schemaNames) throws Exception {
 
         DocumentModel doc;
@@ -997,23 +916,21 @@ public class Select2ActionsBean implements Serializable {
             String[] schemas = Select2Common.getSchemas(schemaNames);
 
             Map<String, String> contextParameters = getContextParameter(doc);
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            JsonDocumentWriter.writeDocument(jg, doc, schemas,
-                    contextParameters, request);
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
+                                                                          .getExternalContext()
+                                                                          .getRequest();
+            JsonDocumentWriter.writeDocument(jg, doc, schemas, contextParameters, request);
         }
         jg.flush();
         return new String(baos.toByteArray(), "UTF-8");
 
     }
 
-    public String resolveSingleReferenceLabel(final String storedReference,
-            final String repo, final String operationName,
-            final String idProperty, final String label) throws Exception {
-        DocumentModel doc = resolveReference(repo, storedReference,
-                operationName, idProperty);
+    public String resolveSingleReferenceLabel(final String storedReference, final String repo,
+            final String operationName, final String idProperty, final String label) throws Exception {
+        DocumentModel doc = resolveReference(repo, storedReference, operationName, idProperty);
         if (doc == null) {
-            return messages.get("label.documentSuggestion.docNotFoundOrNotVisible")
-                    + "(" + doc + ")";
+            return messages.get("label.documentSuggestion.docNotFoundOrNotVisible") + "(" + doc + ")";
         }
 
         if (label != null && !label.isEmpty()) {
@@ -1027,16 +944,12 @@ public class Select2ActionsBean implements Serializable {
         return doc.getTitle();
     }
 
-    public String resolveSingleUserReference(final String storedReference,
-            final boolean prefixed, final String firstLabelField,
-            final String secondLabelField, final String thirdLabelField,
-            final boolean hideFirstLabel, final boolean hideSecondLabel,
-            final boolean hideThirdLabel,
+    public String resolveSingleUserReference(final String storedReference, final boolean prefixed,
+            final String firstLabelField, final String secondLabelField, final String thirdLabelField,
+            final boolean hideFirstLabel, final boolean hideSecondLabel, final boolean hideThirdLabel,
             final boolean displayEmailInSuggestion, final boolean hideIcon) {
-        JSONObject result = getSingleUserReference(storedReference, prefixed,
-                firstLabelField, secondLabelField, thirdLabelField,
-                hideFirstLabel, hideSecondLabel, hideThirdLabel,
-                displayEmailInSuggestion, hideIcon);
+        JSONObject result = getSingleUserReference(storedReference, prefixed, firstLabelField, secondLabelField,
+                thirdLabelField, hideFirstLabel, hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, hideIcon);
         if (result != null) {
             return result.toString();
         } else {
@@ -1044,16 +957,12 @@ public class Select2ActionsBean implements Serializable {
         }
     }
 
-    public String resolveUserReferenceLabel(final String storedReference,
-            final boolean prefixed, final String firstLabelField,
-            final String secondLabelField, final String thirdLabelField,
-            final boolean hideFirstLabel, final boolean hideSecondLabel,
-            final boolean hideThirdLabel,
+    public String resolveUserReferenceLabel(final String storedReference, final boolean prefixed,
+            final String firstLabelField, final String secondLabelField, final String thirdLabelField,
+            final boolean hideFirstLabel, final boolean hideSecondLabel, final boolean hideThirdLabel,
             final boolean displayEmailInSuggestion, final boolean hideIcon) {
-        JSONObject obj = getSingleUserReference(storedReference, prefixed,
-                firstLabelField, secondLabelField, thirdLabelField,
-                hideFirstLabel, hideSecondLabel, hideThirdLabel,
-                displayEmailInSuggestion, hideIcon);
+        JSONObject obj = getSingleUserReference(storedReference, prefixed, firstLabelField, secondLabelField,
+                thirdLabelField, hideFirstLabel, hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, hideIcon);
         if (obj == null) {
             return "";
         }
