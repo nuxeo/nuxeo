@@ -23,6 +23,13 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -351,6 +358,35 @@ public class Select2Common {
             }
             return result.toString();
         }
+    }
+
+    /**
+     * Finds a document by the given property and value. If the property is null or empty the value is considered as a
+     * {@link DocumentRef}.
+     *
+     * @since 9.2
+     */
+    public static DocumentModel resolveReference(String property, String value, CoreSession session) {
+        if (property != null && !property.isEmpty()) {
+            String query = "select * from Document where " + property + "=" + NXQL.escapeString(value);
+            DocumentModelList docs = session.query(query);
+            if (docs.size() > 0) {
+                return docs.get(0);
+            }
+            log.warn("Unable to resolve doc using property " + property + " and value " + value);
+            return null;
+        }
+        DocumentRef ref = null;
+        if (value.startsWith("/")) {
+            ref = new PathRef(value);
+        } else {
+            ref = new IdRef(value);
+        }
+        if (session.exists(ref)) {
+            return session.getDocument(ref);
+        }
+        log.warn("Unable to resolve reference on " + ref);
+        return null;
     }
 
 }
