@@ -338,6 +338,15 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
         }
     }
 
+    @Override
+    public boolean validateChangeToken(String changeToken) {
+        if (changeToken == null) {
+            return true;
+        }
+        String currentToken = getChangeToken();
+        return validateChangeToken(changeToken, currentToken);
+    }
+
     /*
      * ----- LifeCycle -----
      */

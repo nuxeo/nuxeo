@@ -217,9 +217,54 @@ public class SQLDocumentProxy implements SQLDocument {
         return target.getSystemProp(name, type);
     }
 
+    public static final String CHANGE_TOKEN_PROXY_SEP = "/";
+
+    /*
+     * The change token for a proxy must reflect the fact that either the proxy (name, parent, acls, etc.) or its target
+     * may be changed.
+     */
     @Override
     public String getChangeToken() {
-        return target.getChangeToken(); // TODO take into account proxy changes as well
+        String proxyToken = proxy.getChangeToken();
+        String targetToken = target.getChangeToken();
+        return getProxyChangeToken(proxyToken, targetToken);
+    }
+
+    protected static String getProxyChangeToken(String proxyToken, String targetToken) {
+        if (proxyToken == null && targetToken == null) {
+            return null;
+        } else {
+            if (proxyToken == null) {
+                proxyToken = "";
+            } else if (targetToken == null) {
+                targetToken = "";
+            }
+            return proxyToken + CHANGE_TOKEN_PROXY_SEP + targetToken;
+        }
+    }
+
+    @Override
+    public boolean validateChangeToken(String changeToken) {
+        if (changeToken == null) {
+            return true;
+        }
+        String[] parts = changeToken.split(CHANGE_TOKEN_PROXY_SEP, 2);
+        if (parts.length != 2) {
+            // invalid format
+            return false;
+        }
+        String proxyToken = parts[0];
+        if (proxyToken.isEmpty()) {
+            proxyToken = null;
+        }
+        String targetToken = parts[1];
+        if (targetToken.isEmpty()) {
+            targetToken = null;
+        }
+        if (proxyToken == null && targetToken == null) {
+            return true;
+        }
+        return proxy.validateChangeToken(proxyToken) && target.validateChangeToken(targetToken);
     }
 
     @Override

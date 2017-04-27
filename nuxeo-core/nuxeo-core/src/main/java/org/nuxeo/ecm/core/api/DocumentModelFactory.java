@@ -221,9 +221,8 @@ public class DocumentModelFactory {
         boolean changed = false;
 
         // change token
-        String token = (String) docModel.getContextData(CoreSession.CHANGE_TOKEN);
-        String currentToken;
-        if (token != null && (currentToken = doc.getChangeToken()) != null && !currentToken.equals(token)) {
+        String changeToken = (String) docModel.getContextData(CoreSession.CHANGE_TOKEN);
+        if (!doc.validateChangeToken(changeToken)) {
             throw new ConcurrentUpdateException(doc.getUUID());
         }
 
@@ -290,6 +289,7 @@ public class DocumentModelFactory {
             refresh.isVersionSeriesCheckedOut = doc.isVersionSeriesCheckedOut();
             refresh.versionSeriesId = doc.getVersionSeriesId();
             refresh.checkinComment = doc.getCheckinComment();
+            // TODO change token
         }
 
         if ((flags & DocumentModel.REFRESH_CONTENT) != 0) {

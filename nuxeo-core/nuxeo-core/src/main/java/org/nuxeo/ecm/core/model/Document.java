@@ -263,6 +263,14 @@ public interface Document {
     String getChangeToken();
 
     /**
+     * Validates that the passed change token is compatible with the one for this document.
+     *
+     * @return {@code false} if the change token is not valid
+     * @since 9.2
+     */
+    boolean validateChangeToken(String changeToken);
+
+    /**
      * Loads a {@link DocumentPart} from storage.
      * <p>
      * Reading data is done by {@link DocumentPart} because of per-proxy schemas.

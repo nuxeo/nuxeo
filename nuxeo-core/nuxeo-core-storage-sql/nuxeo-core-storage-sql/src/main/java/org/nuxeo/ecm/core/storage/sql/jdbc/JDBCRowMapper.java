@@ -619,6 +619,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         }
                         column.setToPreparedStatement(ps, i++, value);
                     }
+                    boolean hasConditions = false;
                     for (Column column : update.whereColumns) {
                         // id or condition
                         String key = column.getKey();
@@ -626,6 +627,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         if (key.equals(Model.MAIN_KEY)) {
                             value = rowu.row.get(key);
                         } else {
+                            hasConditions = true;
                             value = rowu.conditions.get(key);
                         }
                         column.setToPreparedStatement(ps, i++, value);
@@ -636,7 +638,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         if (batch % UPDATE_BATCH_SIZE == 0 || !rowIt.hasNext()) {
                             int[] counts = ps.executeBatch();
                             countExecute();
-                            if (changeTokenEnabled) {
+                            if (changeTokenEnabled && hasConditions) {
                                 for (int j = 0; j < counts.length; j++) {
                                     int count = counts[j];
                                     if (count != Statement.SUCCESS_NO_INFO && count != 1) {
@@ -650,7 +652,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     } else {
                         int count = ps.executeUpdate();
                         countExecute();
-                        if (changeTokenEnabled) {
+                        if (changeTokenEnabled && hasConditions) {
                             if (count != Statement.SUCCESS_NO_INFO && count != 1) {
                                 Serializable id = rowu.row.id;
                                 logger.log("  -> CONCURRENT UPDATE: " + id);

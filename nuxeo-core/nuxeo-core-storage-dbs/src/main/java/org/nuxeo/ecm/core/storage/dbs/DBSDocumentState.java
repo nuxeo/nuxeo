@@ -31,6 +31,7 @@ import java.io.Serializable;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.StateHelper;
+import org.nuxeo.ecm.core.storage.BaseDocument;
 import org.nuxeo.ecm.core.storage.State;
 
 /**
@@ -177,6 +178,15 @@ public class DBSDocumentState {
 
     public String getVersionSeriesId() {
         return (String) get(KEY_VERSION_SERIES_ID);
+    }
+
+    public String getChangeToken() {
+        return (String) get(KEY_CHANGE_TOKEN);
+    }
+
+    public boolean validateChangeToken(String changeToken) {
+        String currentToken = getChangeToken();
+        return BaseDocument.validateChangeToken(changeToken, currentToken);
     }
 
     @Override
