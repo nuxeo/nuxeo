@@ -22,7 +22,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.features.SuggestConstants;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -33,6 +42,8 @@ import net.sf.json.JSONObject;
  * @since 5.7.3
  */
 public class Select2Common extends SuggestConstants {
+
+    private static final Log log = LogFactory.getLog(Select2Common.class);
 
     // no instantiation
     private Select2Common() {
@@ -132,6 +143,35 @@ public class Select2Common extends SuggestConstants {
             }
             return result.toString();
         }
+    }
+
+    /**
+     * Finds a document by the given property and value. If the property is null or empty the value is considered as a
+     * {@link DocumentRef}.
+     *
+     * @since 9.2
+     */
+    public static DocumentModel resolveReference(String property, String value, CoreSession session) {
+        if (property != null && !property.isEmpty()) {
+            String query = "select * from Document where " + property + "=" + NXQL.escapeString(value);
+            DocumentModelList docs = session.query(query);
+            if (docs.size() > 0) {
+                return docs.get(0);
+            }
+            log.warn("Unable to resolve doc using property " + property + " and value " + value);
+            return null;
+        }
+        DocumentRef ref = null;
+        if (value.startsWith("/")) {
+            ref = new PathRef(value);
+        } else {
+            ref = new IdRef(value);
+        }
+        if (session.exists(ref)) {
+            return session.getDocument(ref);
+        }
+        log.warn("Unable to resolve reference on " + ref);
+        return null;
     }
 
 }
