@@ -47,9 +47,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
-@Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.persistence",
-        "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.seqgen",
-        "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml", "org.nuxeo.elasticsearch.audit" })
+@Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.runtime.datasource",
+        "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core",
+        "org.nuxeo.elasticsearch.seqgen",
+        "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml",
+        "org.nuxeo.elasticsearch.audit" })
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy({ "org.nuxeo.elasticsearch.audit:nxaudit-ds.xml", "org.nuxeo.elasticsearch.audit:nxuidsequencer-ds.xml",
@@ -80,12 +82,12 @@ public class TestAuditMigration {
     @Test
     public void shouldMigrate() throws Exception {
 
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime().getComponent(
-                NXAuditEventsService.NAME);
+        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
+                                                                     .getComponent(NXAuditEventsService.NAME);
         Assert.assertNotNull(audit);
 
         // start with JPA based Audit
-        DefaultAuditBackend jpaBackend = (DefaultAuditBackend)new AuditBackendDescriptor().newInstance(audit);
+        DefaultAuditBackend jpaBackend = (DefaultAuditBackend) new AuditBackendDescriptor().newInstance(audit);
 
         // generate some entries
         List<LogEntry> entries = new ArrayList<>();
