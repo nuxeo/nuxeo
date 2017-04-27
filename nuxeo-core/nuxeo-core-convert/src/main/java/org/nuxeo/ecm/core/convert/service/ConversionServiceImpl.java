@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -264,7 +265,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     }
 
     protected BlobHolder convertBlobToMimeType(BlobHolder bh, String destinationMimeType) {
-        return convertToMimeType(destinationMimeType, bh, null);
+        return convertToMimeType(destinationMimeType, bh, Collections.emptyMap());
     }
 
     protected void adjustBlobName(String filename, BlobHolder blobHolder, String mimeType) {
@@ -411,8 +412,8 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     @Override
     public BlobHolder convertToMimeType(String destinationMimeType, BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
-        String srcMt = blobHolder.getBlob().getMimeType();
-        String converterName = translationHelper.getConverterName(srcMt, destinationMimeType);
+        String srcMimeType = blobHolder.getBlob().getMimeType();
+        String converterName = translationHelper.getConverterName(srcMimeType, destinationMimeType);
         if (converterName == null) {
             // Use a chain of 2 converters which will first try to go through HTML,
             // then HTML to the destination mimetype
