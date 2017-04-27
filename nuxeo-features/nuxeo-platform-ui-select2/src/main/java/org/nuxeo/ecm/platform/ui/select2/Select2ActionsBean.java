@@ -32,9 +32,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseId;
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -86,6 +83,9 @@ import org.nuxeo.ecm.platform.url.codec.DocumentIdCodec;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.RenderingContextWebUtils;
 import org.nuxeo.runtime.api.Framework;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Initialization for Select2.
@@ -399,7 +399,8 @@ public class Select2ActionsBean implements Serializable {
                 Schema schema = schemaManager.getSchema(schemaName);
 
                 final Locale locale = org.jboss.seam.core.Locale.instance();
-                final String label = Select2Common.getLabelFieldName(schema, dbl10n, labelFieldName, locale.getLanguage());
+                final String label = Select2Common.getLabelFieldName(schema, dbl10n, labelFieldName,
+                        locale.getLanguage());
 
                 JSONObject obj = resolveDirectoryEntry(storedReference, keySeparator, session, schema, label, localize,
                         dbl10n);
@@ -499,6 +500,7 @@ public class Select2ActionsBean implements Serializable {
     /**
      * @deprecated since 7.10: JSF resources mechanism allows to detect resources already included in the page natively.
      */
+    @Deprecated
     public boolean mustIncludeResources() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         if (facesContext != null) {
@@ -530,8 +532,8 @@ public class Select2ActionsBean implements Serializable {
         return obj;
     }
 
-    protected JSONObject resolveDirectoryEntry(final String storedReference, String keySeparator,
-            final Session session, final Schema schema, final String label, final boolean localize, final boolean dbl10n) {
+    protected JSONObject resolveDirectoryEntry(final String storedReference, String keySeparator, final Session session,
+            final Schema schema, final String label, final boolean localize, final boolean dbl10n) {
         if (storedReference == null || storedReference.isEmpty()) {
             log.trace("No reference provided ");
             return null;
@@ -610,8 +612,8 @@ public class Select2ActionsBean implements Serializable {
 
     public List<String> resolveMultipleDirectoryEntryLabels(final Object value, final String directoryName,
             final boolean localize, final String keySeparator, final boolean dbl10n, final String labelFieldName) {
-        return formatList(getMultipleDirectoryEntries(value, directoryName, localize, keySeparator, dbl10n,
-                labelFieldName));
+        return formatList(
+                getMultipleDirectoryEntries(value, directoryName, localize, keySeparator, dbl10n, labelFieldName));
     }
 
     @SuppressWarnings("rawtypes")
@@ -711,10 +713,10 @@ public class Select2ActionsBean implements Serializable {
     }
 
     @SuppressWarnings("rawtypes")
-    public String resolveMultipleUserReference(final Object value, final boolean prefixed,
-            final String firstLabelField, final String secondLabelField, final String thirdLabelField,
-            final boolean hideFirstLabel, final boolean hideSecondLabel, final boolean hideThirdLabel,
-            final boolean displayEmailInSuggestion, final boolean hideIcon) {
+    public String resolveMultipleUserReference(final Object value, final boolean prefixed, final String firstLabelField,
+            final String secondLabelField, final String thirdLabelField, final boolean hideFirstLabel,
+            final boolean hideSecondLabel, final boolean hideThirdLabel, final boolean displayEmailInSuggestion,
+            final boolean hideIcon) {
         if (value == null) {
             return "[]";
         }
@@ -773,7 +775,8 @@ public class Select2ActionsBean implements Serializable {
                     if (docs.size() > 0) {
                         return docs.get(0);
                     } else {
-                        log.warn("Unable to resolve doc using property " + idProperty + " and value " + storedReference);
+                        log.warn(
+                                "Unable to resolve doc using property " + idProperty + " and value " + storedReference);
                         return null;
                     }
                 } else {
@@ -925,12 +928,12 @@ public class Select2ActionsBean implements Serializable {
         MarshallerRegistry registry = Framework.getService(MarshallerRegistry.class);
         String[] schemas = Select2Common.getSchemas(schemaNames);
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
-                .getExternalContext()
-                .getRequest();
+                                                                      .getExternalContext()
+                                                                      .getRequest();
         RenderingContext ctx = RenderingContextWebUtils.getBuilder(request)
-                .properties(schemas)
-                .enrichDoc("documentURL")
-                .get();
+                                                       .properties(schemas)
+                                                       .enrichDoc("documentURL")
+                                                       .get();
         return registry.getInstance(ctx, DocumentModelJsonWriter.class);
     }
 
