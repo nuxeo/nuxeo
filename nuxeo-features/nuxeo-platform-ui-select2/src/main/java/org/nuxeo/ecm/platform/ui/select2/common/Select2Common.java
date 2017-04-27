@@ -33,20 +33,20 @@ import net.sf.json.JSONObject;
  * @since 5.7.3
  */
 public class Select2Common extends SuggestConstants {
-    
+
     // no instantiation
     private Select2Common() {
     }
-    
+
     public static final String LOCKED = "locked";
 
     public static final String PLACEHOLDER = "placeholder";
 
-    public static final List<String> SELECT2_USER_WIDGET_TYPE_LIST = new ArrayList<String>(Arrays.asList(
-            "singleUserSuggestion", "multipleUsersSuggestion"));
+    public static final List<String> SELECT2_USER_WIDGET_TYPE_LIST = new ArrayList<String>(
+            Arrays.asList("singleUserSuggestion", "multipleUsersSuggestion"));
 
-    public static final List<String> SELECT2_DOC_WIDGET_TYPE_LIST = new ArrayList<String>(Arrays.asList(
-            "singleDocumentSuggestion", "multipleDocumentsSuggestion"));
+    public static final List<String> SELECT2_DOC_WIDGET_TYPE_LIST = new ArrayList<String>(
+            Arrays.asList("singleDocumentSuggestion", "multipleDocumentsSuggestion"));
 
     public static final String SUGGESTION_FORMATTER = "suggestionFormatter";
 
@@ -56,11 +56,11 @@ public class Select2Common extends SuggestConstants {
 
     public static final String DOC_DEFAULT_SUGGESTION_FORMATTER = "docEntryDefaultFormatter";
 
-    public static final List<String> SELECT2_DIR_WIDGET_TYPE_LIST = new ArrayList<String>(Arrays.asList(
-            "suggestOneDirectory", "suggestManyDirectory"));
+    public static final List<String> SELECT2_DIR_WIDGET_TYPE_LIST = new ArrayList<String>(
+            Arrays.asList("suggestOneDirectory", "suggestManyDirectory"));
 
-    public static final List<String> SELECT2_DEFAULT_DOCUMENT_SCHEMAS = new ArrayList<String>(Arrays.asList(
-            "dublincore", "common"));
+    public static final List<String> SELECT2_DEFAULT_DOCUMENT_SCHEMAS = new ArrayList<String>(
+            Arrays.asList("dublincore", "common"));
 
     public static final String DIR_DEFAULT_SUGGESTION_FORMATTER = "dirEntryDefaultFormatter";
 
