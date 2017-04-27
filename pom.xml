@@ -3,10 +3,11 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>6.0-HF39-SNAPSHOT</version>
+    <version>6.0-HF38</version>
   </parent>
   <artifactId>nuxeo-segmentio-connector</artifactId>
   <name>nuxeo-segmentio-connector</name>
+  <version>6.0-HF38-patch-NXP-22212-SNAPSHOT</version>
   <dependencyManagement>
     <dependencies>
       <dependency>
