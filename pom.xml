@@ -7,7 +7,7 @@
   </parent>
   <artifactId>nuxeo-segmentio-connector</artifactId>
   <name>nuxeo-segmentio-connector</name>
-  <version>6.0-HF38-patch-NXP-22212-SNAPSHOT</version>
+  <version>6.0-HF38-patch-NXP-22212</version>
   <dependencyManagement>
     <dependencies>
       <dependency>
