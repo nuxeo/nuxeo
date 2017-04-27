@@ -34,11 +34,11 @@ import org.nuxeo.runtime.api.Framework;
 
 public class NuxeoStandbyFilter implements Filter {
 
-    final Lock lock = new ReentrantLock();
+    protected final Lock lock = new ReentrantLock();
 
-    final Condition resumed = lock.newCondition();
+    protected final Condition resumed = lock.newCondition();
 
-    final Filter passthrough = new Filter() {
+    protected final Filter passthrough = new Filter() {
 
         @Override
         public void init(FilterConfig filterConfig) throws ServletException {
@@ -56,11 +56,10 @@ public class NuxeoStandbyFilter implements Filter {
 
     };
 
-    final Filter locker = new Filter() {
+    protected final Filter locker = new Filter() {
 
         @Override
         public void init(FilterConfig filterConfig) throws ServletException {
-            ;
         }
 
         @Override
@@ -79,11 +78,10 @@ public class NuxeoStandbyFilter implements Filter {
 
         @Override
         public void destroy() {
-
         }
     };
 
-    volatile Filter delegate = passthrough;
+    protected volatile Filter delegate = passthrough;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

@@ -32,24 +32,22 @@ import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
 
 /**
- *
- *
  * @since 9.2
  */
 public class StandbyComponent extends DefaultComponent {
 
-    final StandbyCommand command = new StandbyCommand();
+    protected final StandbyCommand command = new StandbyCommand();
 
-    final Counter active = Framework.getService(MetricRegistry.class)
+    protected final Counter active = Framework.getService(MetricRegistry.class)
             .counter(MetricRegistry.name(StandbyComponent.class, "active"));
 
-    final Meter meter = Framework.getService(MetricRegistry.class)
+    protected final Meter meter = Framework.getService(MetricRegistry.class)
             .meter(MetricRegistry.name(StandbyComponent.class, "meter"));
 
-    final Timer timer = Framework.getService(MetricRegistry.class)
+    protected final Timer timer = Framework.getService(MetricRegistry.class)
             .timer(MetricRegistry.name(StandbyComponent.class, "timer"));
 
-    final ThreadLocal<Context> holder = new ThreadLocal<>();
+    protected final ThreadLocal<Context> holder = new ThreadLocal<>();
 
     protected final ThreadEventListener threadsListener = new ThreadEventListener(new ThreadEventHandler() {
 

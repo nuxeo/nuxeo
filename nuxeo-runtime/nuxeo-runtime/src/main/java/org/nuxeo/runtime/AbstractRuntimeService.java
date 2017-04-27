@@ -90,11 +90,11 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     // package-private for subclass access without synthetic accessor
     static final Log log = LogFactory.getLog(RuntimeService.class);
 
-    enum State {
+    protected enum State {
         STOPPED, LOADING, UNLOADING, STANDBY, STARTING, STOPPING, STARTED
     };
 
-    State state = State.STOPPED;
+    protected State state = State.STOPPED;
 
     protected File workingDir;
 

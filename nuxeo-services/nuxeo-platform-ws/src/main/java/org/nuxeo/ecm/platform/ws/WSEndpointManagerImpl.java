@@ -69,13 +69,6 @@ public class WSEndpointManagerImpl extends DefaultComponent implements WSEndpoin
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        super.deactivate(context);
-
-
-    }
-
-    @Override
     public void applicationStarted(ComponentContext context) {
         if (Framework.isTestModeSet()) {
             return;

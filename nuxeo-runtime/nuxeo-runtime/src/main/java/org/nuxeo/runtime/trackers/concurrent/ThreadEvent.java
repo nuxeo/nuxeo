@@ -69,18 +69,10 @@ public abstract class ThreadEvent extends Event {
         Framework.getService(EventService.class).sendEvent(this);
     }
 
-    /**
-     * Thread enter event
-     *
-     */
     public static ThreadEvent onEnter(Object source, boolean isLongRunning) {
         return new EnterEvent(source, isLongRunning);
     }
 
-    /**
-     * Thread leave event
-     *
-     */
     public static ThreadEvent onLeave(Object source) {
         return new LeaveEvent(source);
     }
@@ -89,7 +81,7 @@ public abstract class ThreadEvent extends Event {
         Framework.getService(EventService.class).addListener(ThreadEvent.class.getName(), aListener);
     }
 
-    public static void forget(ThreadEventListener aListener) {
+    public static void ignore(ThreadEventListener aListener) {
         Framework.getService(EventService.class).removeListener(ThreadEvent.class.getName(), aListener);
     }
 }

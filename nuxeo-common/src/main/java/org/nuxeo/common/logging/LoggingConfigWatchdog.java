@@ -17,8 +17,6 @@
 package org.nuxeo.common.logging;
 
 /**
- *
- *
  * @since 9.2
  */
 public interface LoggingConfigWatchdog {

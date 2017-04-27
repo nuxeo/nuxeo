@@ -31,6 +31,20 @@ public interface AuditBackend extends Logs {
 
     void onApplicationStarted();
 
-    void onStandby();
+    /**
+     * @since 9.2 with default backward compatibility by delegating to deprecated API {@link #onShutdown()}
+     */
+    default void onStandby() {
+        onShutdown();
+    }
+
+    /**
+     * @deprecated since 9.2 replaced with {@link #onStandby()}
+     */
+    @Deprecated
+    default void onShutdown() {
+        throw new AssertionError("deprecated API, should not be invoked");
+    }
+
 
 }

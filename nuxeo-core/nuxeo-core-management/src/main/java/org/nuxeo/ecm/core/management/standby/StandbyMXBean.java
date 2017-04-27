@@ -19,7 +19,6 @@ package org.nuxeo.ecm.core.management.standby;
 import javax.management.MXBean;
 
 /**
- *
  * Allow administrators to toggle runtime standby mode.
  *
  * @since 9.2

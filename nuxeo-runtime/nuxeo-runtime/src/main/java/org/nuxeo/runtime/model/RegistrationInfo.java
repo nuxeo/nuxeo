@@ -229,6 +229,8 @@ public interface RegistrationInfo extends Serializable {
 
     /**
      * Notify the component instance that the Nuxeo is about to shutdown
+     *
+     * @since 9.2
      */
     void notifyApplicationStandby(Instant instant);
 }

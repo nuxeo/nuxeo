@@ -40,24 +40,25 @@ public class StandbyCommand  implements StandbyMXBean {
         return Framework.getRuntime().isStandby();
     }
 
-    final Registration registration = new Registration();
+    protected final Registration registration = new Registration();
 
-    class Registration {
-        MBeanServer server;
+    protected class Registration {
 
-        ObjectInstance instance;
+        protected MBeanServer server;
 
-        Registration with(MBeanServer server) {
+        protected ObjectInstance instance;
+
+        protected Registration with(MBeanServer server) {
             this.server = server;
             return this;
         }
 
-        Registration register() throws JMException {
+        protected Registration register() throws JMException {
             instance = server.registerMBean(StandbyCommand.this, ObjectNameFactory.getObjectName(StandbyCommand.class.getName()));
             return this;
         }
 
-        void unregister() throws JMException {
+        protected void unregister() throws JMException {
             try {
                 server.unregisterMBean(instance.getObjectName());
             } finally {

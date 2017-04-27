@@ -86,6 +86,7 @@ public class MetricsServiceImpl extends DefaultComponent implements MetricsServi
             instanceUp.dec();
         }
     }
+
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter.isAssignableFrom(MetricRegistry.class)) {
