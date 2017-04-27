@@ -200,6 +200,8 @@ public abstract class AbstractRuntimeService implements RuntimeService {
                        onResume();
                    } else if (event.id == RuntimeServiceEvent.RUNTIME_ABOUT_TO_STANDBY) {
                        onStandby();
+                   } else if (event.id == RuntimeServiceEvent.RUNTIME_STOPPED) {
+                       Framework.removeListener(this);
                    }
                 }
 
