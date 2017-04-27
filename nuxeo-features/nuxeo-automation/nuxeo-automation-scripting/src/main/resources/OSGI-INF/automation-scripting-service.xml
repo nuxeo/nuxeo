@@ -4,11 +4,11 @@
    <documentation>
     Automation Scripting is a Nuxeo module which provides ability to create and contribute Automation chain/operation in JavaScript.
     
-    For backward compatibility with version prior to 9.1, you may want to inline the context in the scripting parms by contributing the
+    For backward compatibility with version prior to 9.1, you may want to inline the context in the scripting parameters by contributing the
     extension 
     <code>
       <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
-        <property name="nuxeo.automation.scripting.inline-context-in-parms">true</property>
+        <property name="nuxeo.automation.scripting.inline-context-in-params">true</property>
       </extension>
     </code>
   </documentation>
@@ -26,7 +26,7 @@
        Configuration property for enabling backward compatibility with scripting parameters where
        context variables were inlined.
      </documentation>
-     <property name="nuxeo.automation.scripting.inline-context-in-parms">false</property>
+     <property name="nuxeo.automation.scripting.inline-context-in-params">false</property>
    </extension>
    
   <extension-point name="operation">
