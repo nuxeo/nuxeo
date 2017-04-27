@@ -15,29 +15,79 @@
       <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
     </cache>
 
-    <cache name="sql-user-entry-cache" class="${className}">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
+    <#if "${nuxeo.mongodb.server}" == "">
+        <cache name="sql-user-entry-cache" class="${className}">
+          <option name="maxSize">${nuxeo.cache.maxsize}</option>
+          <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+          <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+        </cache>
 
-    <cache name="sql-user-entry-cache-without-references" class="${className}">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
+        <cache name="sql-user-entry-cache-without-references" class="${className}">
+          <option name="maxSize">${nuxeo.cache.maxsize}</option>
+          <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+          <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+        </cache>
 
-    <cache name="sql-group-entry-cache" class="${className}">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
+        <cache name="sql-group-entry-cache" class="${className}">
+          <option name="maxSize">${nuxeo.cache.maxsize}</option>
+          <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+          <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+        </cache>
 
-    <cache name="sql-group-entry-cache-without-references" class="${className}">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
+        <cache name="sql-group-entry-cache-without-references" class="${className}">
+          <option name="maxSize">${nuxeo.cache.maxsize}</option>
+          <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+          <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+        </cache>
+
+        <cache name="sql-digestauth-entry-cache" class="${className}">
+          <option name="maxSize">${nuxeo.cache.maxsize}</option>
+          <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+          <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+        </cache>
+
+        <cache name="sql-digestauth-entry-cache-without-references" class="${className}">
+          <option name="maxSize">${nuxeo.cache.maxsize}</option>
+          <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+          <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+        </cache>
+    <#else>
+    <cache name="mongodb-user-entry-cache" class="${className}">
+          <option name="maxSize">${nuxeo.cache.maxsize}</option>
+          <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+          <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+        </cache>
+
+        <cache name="mongodb-user-entry-cache-without-references" class="${className}">
+          <option name="maxSize">${nuxeo.cache.maxsize}</option>
+          <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+          <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+        </cache>
+
+        <cache name="mongodb-group-entry-cache" class="${className}">
+          <option name="maxSize">${nuxeo.cache.maxsize}</option>
+          <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+          <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+        </cache>
+
+        <cache name="mongodb-group-entry-cache-without-references" class="${className}">
+          <option name="maxSize">${nuxeo.cache.maxsize}</option>
+          <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+          <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+        </cache>
+
+        <cache name="mongodb-digestauth-entry-cache" class="${className}">
+          <option name="maxSize">${nuxeo.cache.maxsize}</option>
+          <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+          <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+        </cache>
+
+        <cache name="mongodb-digestauth-entry-cache-without-references" class="${className}">
+          <option name="maxSize">${nuxeo.cache.maxsize}</option>
+          <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+          <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+        </cache>
+    </#if>
 
     <cache name="ldap-user-entry-cache" class="${className}">
       <option name="maxSize">${nuxeo.cache.maxsize}</option>
@@ -62,19 +112,6 @@
       <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
       <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
     </cache>
-
-    <cache name="sql-digestauth-entry-cache" class="${className}">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
-
-    <cache name="sql-digestauth-entry-cache-without-references" class="${className}">
-      <option name="maxSize">${nuxeo.cache.maxsize}</option>
-      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
-      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
-    </cache>
-
 
   </extension>
 

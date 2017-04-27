@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.directories.mongodb">
+
+  <implementation class="org.nuxeo.directory.mongodb.MongoDBDirectoryDescriptor"/>
+
+  <require>org.nuxeo.ecm.directories</require>
+  <require>org.nuxeo.ecm.platform.digestauth.config</require>
+
+  <extension target="org.nuxeo.directory.mongodb.MongoDBDirectoryFactory"
+             point="directories">
+
+    <directory name="template-directory" template="true">
+      <serverUrl>${nuxeo.mongodb.server}</serverUrl>
+      <databaseName>${nuxeo.mongodb.dbname}</databaseName>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="userDirectory">
+      <schema>user</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <serverUrl>${nuxeo.mongodb.server}</serverUrl>
+      <databaseName>${nuxeo.mongodb.dbname}</databaseName>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
+      <autoincrementIdField>false</autoincrementIdField>
+      <computeMultiTenantId>false</computeMultiTenantId>
+      <dataFile>users.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <querySizeLimit>50</querySizeLimit>
+      <cacheEntryName>mongodb-user-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>mongodb-user-entry-cache-without-references</cacheEntryWithoutReferencesName>
+      <references>
+        <reference field="groups" directory="groupDirectory"
+                   collection="user2group" sourceField="userId"
+                   targetField="groupId" dataFile="user2group.csv"/>
+      </references>
+    </directory>
+
+    <directory name="groupDirectory">
+      <schema>group</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <serverUrl>${nuxeo.mongodb.server}</serverUrl>
+      <databaseName>${nuxeo.mongodb.dbname}</databaseName>
+      <idField>groupname</idField>
+      <dataFile>groups.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <autoincrementIdField>false</autoincrementIdField>
+      <cacheEntryName>mongodb-group-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>mongodb-group-entry-cache-without-references</cacheEntryWithoutReferencesName>
+
+      <references>
+        <inverseReference field="members" directory="userDirectory"
+                          dualReferenceField="groups"/>
+        <reference field="subGroups" directory="groupDirectory"
+                   collection="group2group" sourceField="childGroupId"
+                   targetField="parentGroupId"/>
+        <inverseReference field="parentGroups"
+                          directory="groupDirectory" dualReferenceField="subGroups"/>
+      </references>
+
+    </directory>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="digestauth" extends="template-directory">
+      <schema>digestauth</schema>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <types>
+        <type>system</type>
+      </types>
+      <cacheEntryName>mongodb-digestauth-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>mongodb-digestauth-entry-cache-without-references
+      </cacheEntryWithoutReferencesName>
+    </directory>
+
+  </extension>
+
+</component>

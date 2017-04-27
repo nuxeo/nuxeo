@@ -20,6 +20,7 @@
     <module>nuxeo-platform-directory-types-contrib</module>
     <module>nuxeo-platform-directory-ldap</module>
     <module>nuxeo-platform-directory-multi</module>
+    <module>nuxeo-platform-directory-mongodb</module>
   </modules>
 
 </project>
