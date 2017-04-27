@@ -20,9 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,9 +27,11 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.runtime.api.Framework;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 /**
- * Group fields and methods used at initialization and runtime for select2
- * feature.
+ * Group fields and methods used at initialization and runtime for select2 feature.
  *
  * @since 5.7.3
  */
@@ -66,8 +65,7 @@ public class Select2Common {
             Arrays.asList("singleUserSuggestion", "multipleUsersSuggestion"));
 
     public static final List<String> SELECT2_DOC_WIDGET_TYPE_LIST = new ArrayList<String>(
-            Arrays.asList("singleDocumentSuggestion",
-                    "multipleDocumentsSuggestion"));
+            Arrays.asList("singleDocumentSuggestion", "multipleDocumentsSuggestion"));
 
     public static final String USER_TYPE = "USER_TYPE";
 
@@ -144,8 +142,7 @@ public class Select2Common {
     }
 
     /**
-     * Compute the field name of the directory that holds the value that we want
-     * to display.
+     * Compute the field name of the directory that holds the value that we want to display.
      *
      * @param schema the directory schema
      * @param dbl10n are translations carried by directory fields
@@ -155,8 +152,8 @@ public class Select2Common {
      * @return the final field name where we pick up the value
      * @since 5.7.3
      */
-    public static String getLabelFieldName(final Schema schema, boolean dbl10n,
-            String labelFieldName, final String lang) {
+    public static String getLabelFieldName(final Schema schema, boolean dbl10n, String labelFieldName,
+            final String lang) {
         if (labelFieldName == null || labelFieldName.isEmpty()) {
             // No labelFieldName provided, we assume it is 'label'
             labelFieldName = DIRECTORY_DEFAULT_LABEL_COL_NAME;
@@ -212,27 +209,23 @@ public class Select2Common {
                     return labelFieldName;
                 }
 
-                throw new IllegalArgumentException(String.format(
-                        "Unable to find field %s in directory schema %s",
+                throw new IllegalArgumentException(String.format("Unable to find field %s in directory schema %s",
                         labelFieldName, schema.getName()));
             }
         } else {
             if (schema.getField(labelFieldName) != null) {
                 return labelFieldName;
             } else {
-                throw new IllegalArgumentException(String.format(
-                        "Unable to find field %s in directory schema %s",
+                throw new IllegalArgumentException(String.format("Unable to find field %s in directory schema %s",
                         labelFieldName, schema.getName()));
             }
         }
     }
 
     /**
-     * Returns an array containing the given schema names plus the default ones
-     * if not included
+     * Returns an array containing the given schema names plus the default ones if not included
      *
      * @param schemaNames
-     *
      * @since 5.8
      */
     public static String[] getSchemas(final String schemaNames) {
@@ -250,11 +243,10 @@ public class Select2Common {
         return result.toArray(new String[result.size()]);
     }
 
-    public static void computeUserLabel(final JSONObject obj,
-            final String firstLabelField, final String secondLabelField,
-            final String thirdLabelField, final boolean hideFirstLabel,
-            final boolean hideSecondLabel, final boolean hideThirdLabel,
-            boolean displayEmailInSuggestion, final String userId) {
+    public static void computeUserLabel(final JSONObject obj, final String firstLabelField,
+            final String secondLabelField, final String thirdLabelField, final boolean hideFirstLabel,
+            final boolean hideSecondLabel, final boolean hideThirdLabel, boolean displayEmailInSuggestion,
+            final String userId) {
         String result = "";
         if (obj != null) {
 
@@ -292,8 +284,7 @@ public class Select2Common {
                 result += StringUtils.isNotBlank(userId) ? userId : "";
             }
 
-            if (isForceDisplayEmailInSuggestion()
-                    || (displayEmailInSuggestion && !hideThirdLabel)) {
+            if (isForceDisplayEmailInSuggestion() || (displayEmailInSuggestion && !hideThirdLabel)) {
                 if (StringUtils.isNotBlank(thirdLabelField)) {
                     final String thirdLabel = obj.optString(thirdLabelField);
                     if (StringUtils.isNotBlank(thirdLabel)) {
@@ -318,8 +309,7 @@ public class Select2Common {
         }
     }
 
-    public static void computeGroupLabel(final JSONObject obj,
-            final String groupId, final String groupLabelField,
+    public static void computeGroupLabel(final JSONObject obj, final String groupId, final String groupLabelField,
             final boolean hideFirstLabel) {
         String label = null;
         if (hideFirstLabel) {
@@ -335,15 +325,12 @@ public class Select2Common {
         obj.put(LABEL, label);
     }
 
-    public static void computeUserGroupIcon(final JSONObject obj,
-            final boolean hideIcon) {
+    public static void computeUserGroupIcon(final JSONObject obj, final boolean hideIcon) {
         if (obj != null) {
             if (!hideIcon) {
                 String userGroupType = obj.optString(TYPE_KEY_NAME);
-                obj.element(
-                        DISPLAY_ICON,
-                        StringUtils.isNotBlank(userGroupType)
-                                && (userGroupType.equals(USER_TYPE) || userGroupType.equals(GROUP_TYPE)));
+                obj.element(DISPLAY_ICON, StringUtils.isNotBlank(userGroupType)
+                        && (userGroupType.equals(USER_TYPE) || userGroupType.equals(GROUP_TYPE)));
             }
         }
     }
