@@ -6442,6 +6442,12 @@
       </properties>
     </profile>
     <profile>
+      <id>dbsmem</id>
+       <properties>
+        <nuxeo.test.core>mem</nuxeo.test.core>
+      </properties>
+    </profile>
+    <profile>
       <id>mongodb</id>
        <properties>
         <nuxeo.test.core>mongodb</nuxeo.test.core>
