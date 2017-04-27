@@ -769,30 +769,7 @@ public class Select2ActionsBean implements Serializable {
                 return null;
             }
             if (operationName == null || operationName.isEmpty()) {
-                DocumentRef ref = null;
-
-                if (idProperty != null && !idProperty.isEmpty()) {
-                    String query = " select * from Document where " + idProperty + "='" + storedReference + "'";
-                    DocumentModelList docs = session.query(query);
-                    if (docs.size() > 0) {
-                        return docs.get(0);
-                    } else {
-                        log.warn(
-                                "Unable to resolve doc using property " + idProperty + " and value " + storedReference);
-                        return null;
-                    }
-                } else {
-                    if (storedReference.startsWith("/")) {
-                        ref = new PathRef(storedReference);
-                    } else {
-                        ref = new IdRef(storedReference);
-                    }
-                    if (session.exists(ref)) {
-                        doc = session.getDocument(ref);
-                    } else {
-                        log.warn("Unable to resolve reference on " + ref);
-                    }
-                }
+                doc = Select2Common.resolveReference(idProperty, storedReference, session);
             } else {
                 AutomationService as = Framework.getLocalService(AutomationService.class);
                 OperationContext ctx = new OperationContext(session);
