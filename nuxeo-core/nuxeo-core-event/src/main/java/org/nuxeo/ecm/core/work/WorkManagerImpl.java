@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.core.work;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -329,12 +330,13 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     @Override
-    public void applicationStandby(ComponentContext context, Instant instant) {
+    public void applicationStandby(ComponentContext context, Instant deadline) {
         for (String id : workQueueConfig.getQueueIds()) {
             deactivateQueue(workQueueConfig.get(id));
         }
+        Duration delay = Duration.between(Instant.now(), deadline);
         try {
-            if (!shutdown(10, TimeUnit.SECONDS)) {
+            if (!shutdown(delay.toMillis(), TimeUnit.MILLISECONDS)) {
                 log.error("Some processors are still active");
             }
         } catch (InterruptedException cause) {
