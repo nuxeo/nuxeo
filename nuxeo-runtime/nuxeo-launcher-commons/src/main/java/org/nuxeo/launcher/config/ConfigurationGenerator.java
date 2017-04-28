@@ -290,6 +290,8 @@ public class ConfigurationGenerator {
 
     private ServerConfigurator serverConfigurator;
 
+    private BackingServiceConfigurator backingServicesConfigurator;
+
     private boolean forceGeneration;
 
     private Properties defaultConfig;
@@ -326,6 +328,7 @@ public class ConfigurationGenerator {
     private Properties storedConfig;
 
     private String currentConfigurationDigest;
+
 
     /**
      * @since 5.7
@@ -408,6 +411,7 @@ public class ConfigurationGenerator {
         if (Logger.getRootLogger().getAllAppenders() instanceof NullEnumeration) {
             serverConfigurator.initLogs();
         }
+        backingServicesConfigurator = new BackingServiceConfigurator(this);
         String homeInfo = "Nuxeo home:          " + nuxeoHome.getPath();
         String confInfo = "Nuxeo configuration: " + nuxeoConf.getPath();
         if (quiet) {
@@ -1261,25 +1265,8 @@ public class ConfigurationGenerator {
         ifNotExistsAndIsDirectoryThenCreate(getPackagesDir());
         checkAddressesAndPorts();
         serverConfigurator.verifyInstallation();
-        if (!DB_EXCLUDE_CHECK_LIST.contains(userConfig.getProperty(PARAM_TEMPLATE_DBTYPE))) {
-            try {
-                checkDatabaseConnection(userConfig.getProperty(PARAM_TEMPLATE_DBNAME),
-                        userConfig.getProperty(PARAM_DB_NAME), userConfig.getProperty(PARAM_DB_USER),
-                        userConfig.getProperty(PARAM_DB_PWD), userConfig.getProperty(PARAM_DB_HOST),
-                        userConfig.getProperty(PARAM_DB_PORT));
-            } catch (IOException e) {
-                throw new ConfigurationException(e);
-            } catch (DatabaseDriverException e) {
-                log.debug(e, e);
-                log.error(e.getMessage());
-                throw new ConfigurationException("Could not find database driver: " + e.getMessage());
-            } catch (SQLException e) {
-                log.debug(e, e);
-                log.error(e.getMessage());
-                throw new ConfigurationException("Failed to connect on database: " + e.getMessage());
-            }
-        }
-        // TODO NXP-18773: check NoSQL database
+        backingServicesConfigurator.verifyInstallation();
+
     }
 
     /**
@@ -1643,9 +1630,7 @@ public class ConfigurationGenerator {
      * @since 5.5
      */
     public void addTemplate(String templatesToAdd) throws ConfigurationException {
-        String currentTemplatesStr = userConfig.getProperty(PARAM_TEMPLATES_NAME);
-        List<String> templatesList = new ArrayList<>();
-        templatesList.addAll(Arrays.asList(currentTemplatesStr.split(TEMPLATE_SEPARATOR)));
+        List<String> templatesList = getTemplateList();
         List<String> templatesToAddList = Arrays.asList(templatesToAdd.split(TEMPLATE_SEPARATOR));
         if (templatesList.addAll(templatesToAddList)) {
             String newTemplatesStr = StringUtils.join(templatesList, TEMPLATE_SEPARATOR);
@@ -1657,6 +1642,18 @@ public class ConfigurationGenerator {
     }
 
     /**
+     * Return the list of templates.
+     * @return
+     * @since 9.2
+     */
+    public List<String> getTemplateList() {
+        String currentTemplatesStr = userConfig.getProperty(PARAM_TEMPLATES_NAME);
+        List<String> templatesList = new ArrayList<>();
+        templatesList.addAll(Arrays.asList(currentTemplatesStr.split(TEMPLATE_SEPARATOR)));
+        return templatesList;
+    }
+
+    /**
      * Remove template(s) from the {@link #PARAM_TEMPLATES_NAME} list
      *
      * @param templatesToRm Comma separated templates to remove
@@ -1664,9 +1661,7 @@ public class ConfigurationGenerator {
      * @since 5.5
      */
     public void rmTemplate(String templatesToRm) throws ConfigurationException {
-        String currentTemplatesStr = userConfig.getProperty(PARAM_TEMPLATES_NAME);
-        List<String> templatesList = new ArrayList<>();
-        templatesList.addAll(Arrays.asList(currentTemplatesStr.split(TEMPLATE_SEPARATOR)));
+        List<String> templatesList = getTemplateList();
         List<String> templatesToRmList = Arrays.asList(templatesToRm.split(TEMPLATE_SEPARATOR));
         if (templatesList.removeAll(templatesToRmList)) {
             String newTemplatesStr = StringUtils.join(templatesList, TEMPLATE_SEPARATOR);

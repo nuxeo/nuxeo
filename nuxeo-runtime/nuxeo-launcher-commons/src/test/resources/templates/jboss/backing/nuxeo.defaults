@@ -1,0 +1,2 @@
+backing.check.classpath=${nuxeo.home}/nxserver/bundles/versioned-*.jar
+backing.check.class=org.nuxeo.launcher.config.FakeCheck
