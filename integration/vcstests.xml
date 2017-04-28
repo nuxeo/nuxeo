@@ -13,10 +13,11 @@
   <property name="vcsprops" value="${user.home}/nuxeo-test-vcs.properties" />
 
   <target name="vcs-tests-setup" depends="vcs-tests-teardown,_initdb">
-    <nx:profile name="default">
-      <!-- create empty file -->
-      <echo file="${vcsprops}" append="false" />
-    </nx:profile>
+    <!-- create default empty file -->
+    <echo file="${vcsprops}" append="false" />
+    <propertyfile file="${vcsprops}">
+      <entry key="nuxeo.test.core" value="${nuxeo.test.core}" />
+    </propertyfile>
     <nx:profile name="pgsql">
       <propertyfile file="${vcsprops}">
         <entry key="nuxeo.test.vcs.db" value="PostgreSQL" />
@@ -65,14 +66,12 @@
     </nx:profile>
     <nx:profile name="mongodb">
       <propertyfile file="${vcsprops}">
-        <entry key="nuxeo.test.core" value="mongodb" />
         <entry key="nuxeo.test.mongodb.server" value="${nuxeo.mongodb.server}" />
         <entry key="nuxeo.test.mongodb.dbname" value="${nuxeo.mongodb.dbname}" />
       </propertyfile>
     </nx:profile>
     <nx:profile name="marklogic">
       <propertyfile file="${vcsprops}">
-        <entry key="nuxeo.test.core" value="marklogic" />
         <entry key="nuxeo.test.marklogic.host" value="${nuxeo.marklogic.host}" />
         <entry key="nuxeo.test.marklogic.port" value="${nuxeo.marklogic.port}" />
         <entry key="nuxeo.test.marklogic.dbname" value="${nuxeo.marklogic.dbname}" />
