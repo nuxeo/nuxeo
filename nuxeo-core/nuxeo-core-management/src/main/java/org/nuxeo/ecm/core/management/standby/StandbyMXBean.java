@@ -28,7 +28,9 @@ public interface StandbyMXBean {
 
     public static final String NAME = "org.nuxeo:name=org.nuxeo.ecm.core.management.standby,type=service";
 
-    void toggle();
+    void standby(int delayInSeconds) throws InterruptedException;
+
+    void resume();
 
     boolean isStandby();
 

@@ -191,7 +191,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     }
 
     @Override
-    public void onStandby() {
+    public void onApplicationStopped() {
         if (esClient == null) {
             return;
         }

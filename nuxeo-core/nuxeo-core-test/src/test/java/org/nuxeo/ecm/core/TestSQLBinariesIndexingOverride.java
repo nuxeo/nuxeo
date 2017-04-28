@@ -99,7 +99,7 @@ public class TestSQLBinariesIndexingOverride {
         }
     }
 
-    protected void newRepository() {
+    protected void newRepository() throws InterruptedException {
         waitForAsyncCompletion();
         coreFeature.releaseCoreSession();
         // reload repo with new config

@@ -144,7 +144,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
     }
 
     @Override
-    public void applicationStandby(ComponentContext context, Instant instant) {
+    public void applicationStopped(ComponentContext context, Instant deadline) {
         try {
             scheduler.standby();
         } catch (SchedulerException cause) {

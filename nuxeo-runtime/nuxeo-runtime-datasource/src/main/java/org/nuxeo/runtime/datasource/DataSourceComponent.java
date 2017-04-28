@@ -137,7 +137,7 @@ public class DataSourceComponent extends DefaultComponent {
     }
 
     @Override
-    public void applicationStandby(ComponentContext context, Instant instant) {
+    public void applicationStopped(ComponentContext context, Instant deadline) {
         try {
             for (DataSourceLinkDescriptor desc : links.values()) {
                 unbindDataSourceLink(desc);

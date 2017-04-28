@@ -21,6 +21,7 @@ package org.nuxeo.runtime;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -248,17 +249,17 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     }
 
     @Override
-    public void stop() {
+    public void stop() throws InterruptedException {
         if (state.ordinal() < State.STANDBY.ordinal()) {
             return;
-        }
-        if (state == State.STARTED) {
-            standby(Instant.now());
         }
         try {
             log.info("Stopping Nuxeo Runtime service " + getName() + "; version: " + getVersion());
             Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP, this));
             try {
+                if (state == State.STARTED) {
+                    standby(Instant.now().plus(Duration.ofMinutes(1)));
+                }
                 state = State.UNLOADING;
                 stopExtensions();
                 doStop();
@@ -283,11 +284,11 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_RESUME, this));
         try {
             state = State.STARTING;
-            resumeComponents();
+            startComponents();
             resumeExtensions();
         } finally {
             state = State.STARTED;
-            Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_RESUME, this));
+            Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_RESUMED, this));
         }
     }
 
@@ -297,15 +298,15 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     }
 
     @Override
-    public void standby(Instant limit) {
+    public void standby(Instant deadline) throws InterruptedException {
         Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_STANDBY, this));
         try {
             state = State.STOPPING;
             standbyExtensions();
-            standbyComponents(limit);
+            stopComponents(deadline);
         } finally {
             state = State.STANDBY;
-            Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STANDBY, this));
+            Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_IS_STANDBY, this));
         }
     }
 
@@ -331,15 +332,16 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     /**
      * @since 9.2
      */
-    protected void resumeComponents() {
+    protected void startComponents() {
         notifyComponentsOnStarted();
     }
 
     /**
+     * @throws InterruptedException
      * @since 9.2
      */
-    protected void standbyComponents(Instant limit) {
-        notifyComponentsOnStandby(limit);
+    protected void stopComponents(Instant deadline) throws InterruptedException {
+        notifyComponentsOnStopped(deadline);
     }
 
     @Override
@@ -540,12 +542,12 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         }
     }
 
-    protected void notifyComponentsOnStandby(Instant instant) {
+    protected void notifyComponentsOnStopped(Instant deadline) throws InterruptedException {
         List<RegistrationInfo> ris = new ArrayList<>(manager.getRegistrations());
         Collections.sort(ris, Collections.reverseOrder(new RIApplicationStartedComparator()));
         for (RegistrationInfo ri : ris) {
             try {
-                ri.notifyApplicationStandby(instant);
+                ri.notifyApplicationStopped(deadline);
             } catch (RuntimeException e) {
                 log.error("Failed to notify component '" + ri.getName() + "' on application stand by", e);
             }

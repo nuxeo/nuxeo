@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.jar.Manifest;
@@ -79,7 +80,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void reload() {
+    public void reload() throws InterruptedException {
         if (log.isDebugEnabled()) {
             log.debug("Starting reload");
         }
@@ -98,7 +99,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void reloadRepository() {
+    public void reloadRepository() throws InterruptedException {
         log.info("Reload repository");
         triggerReloadWithNewTransaction(RELOAD_REPOSITORIES_ID);
     }
@@ -292,7 +293,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         return msg.toString();
     }
 
-    protected void triggerReloadWithNewTransaction(String id) {
+    protected void triggerReloadWithNewTransaction(String id) throws InterruptedException {
         if (TransactionHelper.isTransactionMarkedRollback()) {
             throw new AssertionError("The calling transaction is marked rollback");
         }
@@ -314,11 +315,11 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
     }
 
-    protected void triggerReload(String id) {
+    protected void triggerReload(String id) throws InterruptedException {
         log.info("about to reload for " + id);
         Framework.getLocalService(EventService.class).sendEvent(
                 new Event(RELOAD_TOPIC, BEFORE_RELOAD_EVENT_ID, this, null));
-        Framework.getRuntime().standby(Instant.now());
+        Framework.getRuntime().standby(Instant.now().plus(Duration.ofSeconds(30)));
         try {
             Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, id, this, null));
             Framework.getRuntime().resume();

@@ -341,7 +341,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
 
     @Override
-    public void notifyApplicationStandby(Instant instant) {
+    public void notifyApplicationStopped(Instant deadline) throws InterruptedException {
         if (component == null) {
             return;
         }
@@ -350,7 +350,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             return;
         }
         try {
-            ((Component) ci).applicationStandby(component, instant);
+            ((Component) ci).applicationStopped(component, deadline);
         } catch (RuntimeException e) {
             log.error(String.format("Component %s notification of application end of life failed: %s", component.getName(),
                     e.getMessage()), e);

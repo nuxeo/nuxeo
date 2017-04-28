@@ -77,7 +77,7 @@ public class WSEndpointManagerImpl extends DefaultComponent implements WSEndpoin
     }
 
     @Override
-    public void applicationStandby(ComponentContext context, Instant instant) {
+    public void applicationStopped(ComponentContext context, Instant deadline) {
         for (Endpoint ep : endpoints.values()) {
             ep.stop();
         }

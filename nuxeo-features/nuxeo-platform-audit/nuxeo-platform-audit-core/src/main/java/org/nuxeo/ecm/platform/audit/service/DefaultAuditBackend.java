@@ -66,7 +66,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
     }
 
     @Override
-    public void onStandby() {
+    public void onShutdown() {
         try {
             persistenceProvider.closePersistenceUnit();
         } finally {

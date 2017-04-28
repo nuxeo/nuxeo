@@ -105,6 +105,9 @@ public class NuxeoRestart {
 
         try {
             Framework.shutdown();
+        } catch (InterruptedException cause) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted during shutdown, still proceeding", cause);
         } finally {
             System.exit(100); // signal for restart
         }

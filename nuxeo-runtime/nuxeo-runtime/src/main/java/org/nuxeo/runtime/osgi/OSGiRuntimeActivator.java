@@ -96,10 +96,16 @@ public class OSGiRuntimeActivator implements BundleActivator {
         componentLoader.uninstall();
         componentLoader = null;
         // unregister
-        Framework.shutdown();
-        uninitialize(runtime);
-        runtime = null;
-        context = null;
+        try {
+            Framework.shutdown();
+            uninitialize(runtime);
+        } catch (InterruptedException cause) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted during shutdown", cause);
+        } finally {
+            runtime = null;
+            context = null;
+        }
     }
 
     public Bundle getBundle(String name) {

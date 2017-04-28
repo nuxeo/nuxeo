@@ -515,7 +515,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     }
 
     @Override
-    public void applicationStandby(ComponentContext context, Instant instant) {
+    public void applicationStopped(ComponentContext context, Instant deadline) {
         endGC();
     }
 

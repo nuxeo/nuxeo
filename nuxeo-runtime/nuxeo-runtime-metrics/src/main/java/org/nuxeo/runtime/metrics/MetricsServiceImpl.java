@@ -79,7 +79,7 @@ public class MetricsServiceImpl extends DefaultComponent implements MetricsServi
     }
 
     @Override
-    public void applicationStandby(ComponentContext context, Instant instant) {
+    public void applicationStopped(ComponentContext context, Instant deadline) {
         try {
             config.disable(registry);
         } finally {

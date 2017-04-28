@@ -32,29 +32,16 @@ import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * Blocks incoming requests when runtime is in standby mode.
+ *
+ * @since 9.2
+ */
 public class NuxeoStandbyFilter implements Filter {
 
     protected final Lock lock = new ReentrantLock();
 
     protected final Condition resumed = lock.newCondition();
-
-    protected final Filter passthrough = new Filter() {
-
-        @Override
-        public void init(FilterConfig filterConfig) throws ServletException {
-        }
-
-        @Override
-        public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-                throws IOException, ServletException {
-            chain.doFilter(request, response);
-        }
-
-        @Override
-        public void destroy() {
-        }
-
-    };
 
     protected final Filter locker = new Filter() {
 
@@ -81,25 +68,19 @@ public class NuxeoStandbyFilter implements Filter {
         }
     };
 
-    protected volatile Filter delegate = passthrough;
+    protected volatile boolean isStandby = false;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        isStandby = Framework.getRuntime().isStandby();
         Framework.addListener(new RuntimeServiceListener() {
 
             @Override
             public void handleEvent(RuntimeServiceEvent event) {
-                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STANDBY) {
-                    delegate = locker;
-                }
-            }
-        });
-        Framework.addListener(new RuntimeServiceListener() {
-
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (event.id != RuntimeServiceEvent.RUNTIME_RESUME) {
-                    delegate = passthrough;
+                if (event.id == RuntimeServiceEvent.RUNTIME_ABOUT_TO_STANDBY) {
+                    isStandby = true;
+                } else if (event.id == RuntimeServiceEvent.RUNTIME_RESUMED) {
+                    isStandby = false;
                     lock.lock();
                     try {
                         resumed.signalAll();
@@ -114,7 +95,25 @@ public class NuxeoStandbyFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        delegate.doFilter(request, response, chain);
+        if (isStandby) {
+            awaitOnResume();
+        }
+        chain.doFilter(request, response);
+    }
+
+    protected void awaitOnResume()  {
+        lock.lock();
+        if (!isStandby) {
+            return;
+        }
+        try {
+            resumed.await();
+        } catch (InterruptedException cause) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while locking incoming requests", cause);
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override

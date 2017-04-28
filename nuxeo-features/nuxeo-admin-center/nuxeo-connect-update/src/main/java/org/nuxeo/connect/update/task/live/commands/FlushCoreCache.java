@@ -38,7 +38,12 @@ public class FlushCoreCache extends FlushCoreCachePlaceholder {
 
     @Override
     protected Command doRun(Task task, Map<String, String> prefs) throws PackageException {
-        Framework.getService(ReloadService.class).reloadRepository();
+        try {
+            Framework.getService(ReloadService.class).reloadRepository();
+        } catch (InterruptedException cause) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while reloading", cause);
+        }
         return new FlushCoreCache();
     }
 

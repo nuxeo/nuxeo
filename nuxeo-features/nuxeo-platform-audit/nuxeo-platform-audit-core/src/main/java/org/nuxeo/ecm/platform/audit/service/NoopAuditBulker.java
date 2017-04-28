@@ -41,7 +41,7 @@ public class NoopAuditBulker implements AuditBulker{
     }
 
     @Override
-    public void onStandby() {
+    public void onApplicationStopped() {
 
     }
 

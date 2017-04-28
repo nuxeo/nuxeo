@@ -73,7 +73,7 @@ public class PubSubServiceImpl extends DefaultComponent implements PubSubService
     }
 
     @Override
-    public void applicationStandby(ComponentContext context, Instant instant) {
+    public void applicationStopped(ComponentContext context, Instant deadline) {
         if (provider == null) {
             return;
         }

@@ -44,14 +44,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class CanStandbyAndResumeTest {
 
     @Test
-    public void canCommand() {
+    public void canCommand() throws InterruptedException {
         MBeanServer server = Framework.getService(ServerLocator.class).lookupServer();
         StandbyMXBean bean = JMX.newMBeanProxy(server, ObjectNameFactory.getObjectName(StandbyCommand.class.getName()),
                 StandbyMXBean.class);
         Assertions.assertThat(bean.isStandby()).isFalse();
-        bean.toggle();
+        bean.standby(10);
         Assertions.assertThat(bean.isStandby()).isTrue();
-        bean.toggle();
+        bean.resume();
         Assertions.assertThat(bean.isStandby()).isFalse();
     }
 

@@ -73,7 +73,7 @@ public class TestSQLRepositoryFulltextConfig {
         assumeTrue(!coreFeature.getStorageConfiguration().isVCSMySQL());
     }
 
-    protected void newRepository() {
+    protected void newRepository() throws InterruptedException {
         waitForAsyncCompletion();
         coreFeature.releaseCoreSession();
         // reload repo with new config

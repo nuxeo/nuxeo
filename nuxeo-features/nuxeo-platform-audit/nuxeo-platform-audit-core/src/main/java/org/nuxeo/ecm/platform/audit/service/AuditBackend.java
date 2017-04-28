@@ -34,7 +34,7 @@ public interface AuditBackend extends Logs {
     /**
      * @since 9.2 with default backward compatibility by delegating to deprecated API {@link #onShutdown()}
      */
-    default void onStandby() {
+    default void onApplicationStopped() {
         onShutdown();
     }
 
@@ -43,7 +43,7 @@ public interface AuditBackend extends Logs {
      */
     @Deprecated
     default void onShutdown() {
-        throw new AssertionError("deprecated API, should not be invoked");
+        throw new UnsupportedOperationException("deprecated API, should not be invoked");
     }
 
 

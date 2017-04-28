@@ -94,7 +94,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
 
     @Override
-    public void applicationStandby(ComponentContext context, Instant instant) {
+    public void applicationStopped(ComponentContext context, Instant deadline) {
         cacheRegistry.stop();
     }
 

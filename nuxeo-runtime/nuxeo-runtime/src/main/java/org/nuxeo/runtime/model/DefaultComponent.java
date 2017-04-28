@@ -93,10 +93,12 @@ public class DefaultComponent implements Component, Adaptable {
 
     /**
      * Enables components to stop processing before the application termination.
+     * @throws InterruptedException
      *
      * @since 9.2
      */
-    public void applicationStandby(ComponentContext context, Instant instant) {
+    @Override
+    public void applicationStopped(ComponentContext context, Instant deadline) throws InterruptedException {
         // do nothing by default
     }
 

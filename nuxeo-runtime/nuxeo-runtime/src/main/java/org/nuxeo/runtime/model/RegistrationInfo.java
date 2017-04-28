@@ -232,5 +232,5 @@ public interface RegistrationInfo extends Serializable {
      *
      * @since 9.2
      */
-    void notifyApplicationStandby(Instant instant);
+    void notifyApplicationStopped(Instant deadline) throws InterruptedException;
 }

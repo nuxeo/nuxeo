@@ -72,11 +72,11 @@ public interface Component extends Extensible, TimestampedService {
      * Notify the component that Nuxeo Framework is about to shutdown
      *
      * @param context
-     * @param instant
+     * @param deadline
      *            The instant at which the runtime will be shutdown
      *
      * @since 9.2
      */
-    void applicationStandby(ComponentContext context, Instant instant);
+    void applicationStopped(ComponentContext context, Instant deadline) throws InterruptedException;
 
 }

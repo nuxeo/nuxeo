@@ -16,8 +16,8 @@
  */
 package org.nuxeo.ecm.core.management.standby;
 
+import java.time.Duration;
 import java.time.Instant;
-
 import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectInstance;
@@ -27,11 +27,30 @@ import org.nuxeo.runtime.management.ObjectNameFactory;
 public class StandbyCommand  implements StandbyMXBean {
 
     @Override
-    public void toggle() {
+    public void standby(int delay) throws InterruptedException {
         if (Framework.getRuntime().isStandby()) {
+            return;
+        }
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(Framework.class.getClassLoader());
+        try {
+            Framework.getRuntime().standby(Instant.now().plus(Duration.ofSeconds(delay)));
+        } finally {
+            Thread.currentThread().setContextClassLoader(loader);
+        }
+    }
+
+    @Override
+    public void resume() {
+        if (!Framework.getRuntime().isStandby()) {
+            return;
+        }
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(Framework.class.getClassLoader());
+        try {
             Framework.getRuntime().resume();
-        } else {
-            Framework.getRuntime().standby(Instant.now());
+        } finally {
+            Thread.currentThread().setContextClassLoader(loader);
         }
     }
 

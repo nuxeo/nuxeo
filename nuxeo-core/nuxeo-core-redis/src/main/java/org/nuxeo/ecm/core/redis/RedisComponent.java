@@ -122,7 +122,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
     }
 
     @Override
-    public void applicationStandby(ComponentContext context, Instant instant) {
+    public void applicationStopped(ComponentContext context, Instant deadline) {
         if (executor == null) {
             return;
         }

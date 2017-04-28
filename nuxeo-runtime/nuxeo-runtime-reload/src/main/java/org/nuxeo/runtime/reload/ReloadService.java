@@ -54,16 +54,18 @@ public interface ReloadService extends TimestampedService {
      * <p>
      * Also calls {@link #reloadProperties()} by default, but not other reload methods as they could alter the running
      * application behaviour.
+     * @throws InterruptedException
      *
      * @since 5.5
      * @see #reloadProperties()
      */
-    void reload();
+    void reload() throws InterruptedException;
 
     /**
      * Reloads the Nuxeo repository configuration
+     * @throws InterruptedException
      */
-    void reloadRepository();
+    void reloadRepository() throws InterruptedException;
 
     /**
      * Reloads runtime framework properties

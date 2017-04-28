@@ -365,7 +365,7 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
     }
 
     @Override
-    public void applicationStandby(ComponentContext context, Instant instant) {
+    public void applicationStopped(ComponentContext context, Instant deadline) {
         started = false;
         doUnbindResources();
     }

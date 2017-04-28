@@ -330,7 +330,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     @Override
-    public void applicationStandby(ComponentContext context, Instant deadline) {
+    public void applicationStopped(ComponentContext context, Instant deadline) {
         for (String id : workQueueConfig.getQueueIds()) {
             deactivateQueue(workQueueConfig.get(id));
         }
@@ -341,7 +341,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             }
         } catch (InterruptedException cause) {
             Thread.currentThread().interrupt();
-            log.error("Interrupted during works manager shutdown, continuing runtime shutdown", cause);
+            throw new RuntimeException("Interrupted during works manager shutdown", cause);
         }
     }
 

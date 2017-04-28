@@ -102,11 +102,11 @@ public class NXAuditEventsService extends DefaultComponent {
     }
 
     @Override
-    public void applicationStandby(ComponentContext context, Instant instant) {
+    public void applicationStopped(ComponentContext context, Instant deadline) {
         try {
-            bulker.onStandby();
+            bulker.onApplicationStopped();
         } finally {
-            backend.onStandby();
+            backend.onApplicationStopped();
         }
     }
 

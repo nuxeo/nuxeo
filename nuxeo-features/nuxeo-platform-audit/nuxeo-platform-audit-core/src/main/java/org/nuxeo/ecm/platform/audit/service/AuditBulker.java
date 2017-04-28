@@ -32,7 +32,7 @@ public interface AuditBulker {
     /**
      * @since 9.2 with default backward compatibility by delegating to deprecated API {@link #onShutdown()}
      */
-    default void onStandby() {
+    default void onApplicationStopped() {
         onShutdown();
     }
 
@@ -41,14 +41,11 @@ public interface AuditBulker {
     boolean await(long delay, TimeUnit unit) throws InterruptedException;
 
     /**
-     *
-     *
-     *
-     * @deprecated since 9.2, replaced with {@link #onStandby()}
+     * @deprecated since 9.2, replaced with {@link #onApplicationStopped()}
      */
     @Deprecated
     default void onShutdown() {
-        throw new AssertionError("deprecated API, should not be invoked");
+        throw new UnsupportedOperationException("deprecated API, should not be invoked");
     }
 
 }

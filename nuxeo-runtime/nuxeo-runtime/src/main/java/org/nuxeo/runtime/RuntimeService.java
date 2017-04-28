@@ -54,9 +54,10 @@ public interface RuntimeService {
 
     /**
      * put runtime in standby mode
+     * @throws InterruptedException
      * @since 9.2
      */
-    void standby(Instant limit);
+    void standby(Instant deadline) throws InterruptedException;
 
     /**
      * resume from standby mode
@@ -67,8 +68,9 @@ public interface RuntimeService {
 
     /**
      * Stops the runtime.
+     * @throws InterruptedException
      */
-    void stop();
+    void stop() throws InterruptedException;
 
     /**
      * Returns true if the runtime is started.

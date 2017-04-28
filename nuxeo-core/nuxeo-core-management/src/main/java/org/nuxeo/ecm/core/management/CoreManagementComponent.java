@@ -130,7 +130,7 @@ public class CoreManagementComponent extends DefaultComponent {
     }
 
     @Override
-    public void applicationStandby(ComponentContext context, Instant instant) {
+    public void applicationStopped(ComponentContext context, Instant deadline) {
         getLocalManager().onNuxeoServerShutdown();
     }
 
