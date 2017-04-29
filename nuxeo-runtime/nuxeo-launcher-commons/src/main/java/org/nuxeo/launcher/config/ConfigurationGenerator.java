@@ -329,7 +329,6 @@ public class ConfigurationGenerator {
 
     private String currentConfigurationDigest;
 
-
     /**
      * @since 5.7
      */

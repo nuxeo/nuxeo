@@ -24,7 +24,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,22 +55,27 @@ import net.jodah.failsafe.RetryPolicy;
  */
 public class BackingServiceConfigurator {
 
-    /**
-     *
-     */
-    private static final String JAR_EXTENSION = ".jar";
+    protected static final Log log = LogFactory.getLog(BackingServiceConfigurator.class);
 
-    private static final String PARAM_RETRY_POLICY_ENABLED = "nuxeo.backing.check.retry.enabled";
+    public static final String PARAM_RETRY_POLICY_ENABLED = "nuxeo.backing.check.retry.enabled";
 
-    private static final String PARAM_RETRY_POLICY_MAX_RETRIES = "nuxeo.backing.check.retry.maxRetries";
+    public static final String PARAM_RETRY_POLICY_MAX_RETRIES = "nuxeo.backing.check.retry.maxRetries";
 
-    private static final String PARAM_RETRY_POLICY_DELAY_IN_MS = "nuxeo.backing.check.retry.delayInMs";
+    public static final String PARAM_RETRY_POLICY_DELAY_IN_MS = "nuxeo.backing.check.retry.delayInMs";
 
-    private static final Log log = LogFactory.getLog(BackingServiceConfigurator.class);
+    public static final String PARAM_POLICY_DEFAULT_DELAY_IN_MS = "5000";
 
-    Set<BackingChecker> checkers;
+    public static final String PARAM_RETRY_POLICY_DEFAULT_RETRIES = "20";
 
-    private ConfigurationGenerator configurationGenerator;
+    public static final String PARAM_CHECK_CLASSPATH_SUFFIX = ".check.classpath";
+
+    public static final String PARAM_CHECK_SUFFIX = ".check.class";
+
+    protected static final String JAR_EXTENSION = ".jar";
+
+    protected Set<BackingChecker> checkers;
+
+    protected ConfigurationGenerator configurationGenerator;
 
     public BackingServiceConfigurator(ConfigurationGenerator configurationGenerator) {
         this.configurationGenerator = configurationGenerator;
@@ -85,7 +92,7 @@ public class BackingServiceConfigurator {
 
         // Get all checkers
         for (BackingChecker checker : getCheckers()) {
-            if (checker.acceptConfiguration(configurationGenerator)) {
+            if (checker.accepts(configurationGenerator)) {
                 try {
                     Failsafe.with(retryPolicy)
                             .onFailedAttempt(failure -> log.error(failure.getMessage())) //
@@ -103,14 +110,16 @@ public class BackingServiceConfigurator {
         }
     }
 
-    private RetryPolicy buildRetryPolicy() {
+    protected RetryPolicy buildRetryPolicy() {
         RetryPolicy retryPolicy = new RetryPolicy().withMaxRetries(0);
 
         Properties userConfig = configurationGenerator.getUserConfig();
-        if ("true".equals((userConfig.getProperty(PARAM_RETRY_POLICY_ENABLED,"false")))) {
+        if (Boolean.parseBoolean((userConfig.getProperty(PARAM_RETRY_POLICY_ENABLED, "false")))) {
 
-            int maxRetries = Integer.parseInt(userConfig.getProperty(PARAM_RETRY_POLICY_MAX_RETRIES, "20"));
-            int delay = Integer.parseInt(userConfig.getProperty(PARAM_RETRY_POLICY_DELAY_IN_MS, "5000"));
+            int maxRetries = Integer.parseInt(
+                    userConfig.getProperty(PARAM_RETRY_POLICY_MAX_RETRIES, PARAM_RETRY_POLICY_DEFAULT_RETRIES));
+            int delay = Integer.parseInt(
+                    userConfig.getProperty(PARAM_RETRY_POLICY_DELAY_IN_MS, PARAM_POLICY_DEFAULT_DELAY_IN_MS));
 
             retryPolicy = retryPolicy.retryOn(ConfigurationException.class).withMaxRetries(maxRetries).withDelay(delay,
                     TimeUnit.MILLISECONDS);
@@ -127,7 +136,7 @@ public class BackingServiceConfigurator {
                 try {
                     File templateDir = configurationGenerator.getTemplateConf(template).getParentFile();
                     String classPath = getClasspathForTemplate(template);
-                    String checkClass = configurationGenerator.getUserConfig().getProperty(template + ".check.class");
+                    String checkClass = configurationGenerator.getUserConfig().getProperty(template + PARAM_CHECK_SUFFIX);
 
                     Optional<URLClassLoader> ucl = getClassLoaderForTemplate(templateDir, classPath);
                     if (ucl.isPresent()) {
@@ -137,7 +146,7 @@ public class BackingServiceConfigurator {
 
                 } catch (IOException e) {
                     log.warn("Unable to read check configuration for template : " + template, e);
-                } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                } catch (ReflectiveOperationException | ClassCastException e) {
                     throw new ConfigurationException("Unable to check configuration for backing service " + template,
                             e);
                 }
@@ -149,26 +158,21 @@ public class BackingServiceConfigurator {
 
     /**
      * Read the classpath parameter from the template and expand parameters with their value. It allow classpath of the
-     * form ${nuxeo.home}/nxserver/bundles/... VisibleForTesting
+     * form ${nuxeo.home}/nxserver/bundles/...
      *
      * @param template The name of the template
      * @return
      */
+    //VisibleForTesting
     String getClasspathForTemplate(String template) {
-        String classPath = configurationGenerator.getUserConfig().getProperty(template + ".check.classpath");
-        final TextTemplate templateParser = new TextTemplate(configurationGenerator.getUserConfig());
-        classPath = templateParser.processText(classPath);
-        return classPath;
+        String classPath = configurationGenerator.getUserConfig().getProperty(template + PARAM_CHECK_CLASSPATH_SUFFIX);
+        TextTemplate templateParser = new TextTemplate(configurationGenerator.getUserConfig());
+        return templateParser.processText(classPath);
     }
 
     /**
      * Build a ClassLoader based on the classpath definition of a template.
      *
-     * @param templateDir
-     * @param classPath
-     * @return
-     * @throws ConfigurationException
-     * @throws IOException
      * @since 9.2
      */
     protected Optional<URLClassLoader> getClassLoaderForTemplate(File templateDir, String classPath)
@@ -183,7 +187,7 @@ public class BackingServiceConfigurator {
 
         List<File> files = new ArrayList<>();
         for (String entry : classpathEntries) {
-            files.addAll(getJarsFromClasspathEntry(templateDir, entry));
+            files.addAll(getJarsFromClasspathEntry(templateDir.toPath(), entry));
         }
 
         if (!files.isEmpty()) {
@@ -208,19 +212,18 @@ public class BackingServiceConfigurator {
      * For instance :
      * <ul>
      * <li>nxserver/lib -> ${templatePath}/nxserver/lib</li>
-     * <li>/somePath/someLib-*.jar</li></li> VisibleForTesting
+     * <li>/somePath/someLib-*.jar</li>
+     * </ul>
      *
-     * @param templatePath
-     * @param entry
-     * @return
      */
-    Collection<File> getJarsFromClasspathEntry(File templatePath, String entry) {
+    // VisibleForTesting
+    Collection<File> getJarsFromClasspathEntry(Path templatePath, String entry) {
 
         Collection<File> jars = new ArrayList<>();
 
         // Add templatePath if relative classPath
-        File target = entry.startsWith("/") ? new File(entry) : new File(templatePath, entry);
-        String path = target.getAbsolutePath();
+        Path target = entry.startsWith("/") ? Paths.get(entry) : Paths.get(templatePath.toString(), entry);
+        String path = target.toString();
 
         int slashIndex = path.lastIndexOf("/");
         String dirName = path.substring(0, slashIndex);
@@ -228,7 +231,7 @@ public class BackingServiceConfigurator {
 
         File parentDir = new File(dirName);
         File[] realMatchingFiles = parentDir.listFiles(
-                f -> matcher.matches(f.toPath()) && isInSubDirectory(configurationGenerator.getNuxeoHome(), f));
+                f -> matcher.matches(f.toPath()) && f.toPath().startsWith(configurationGenerator.getNuxeoHome().toPath()));
 
         if (realMatchingFiles != null) {
             for (File file : realMatchingFiles) {
@@ -243,23 +246,4 @@ public class BackingServiceConfigurator {
         }
         return jars;
     }
-
-    /**
-     * Checks if file is included under a directory.
-     *
-     * @param dir
-     * @param file
-     * @return
-     */
-    private static boolean isInSubDirectory(File dir, File file) {
-
-        if (file == null)
-            return false;
-
-        if (file.equals(dir))
-            return true;
-
-        return isInSubDirectory(dir, file.getParentFile());
-    }
-
 }

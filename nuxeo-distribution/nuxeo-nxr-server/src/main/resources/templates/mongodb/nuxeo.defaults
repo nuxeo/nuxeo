@@ -15,4 +15,4 @@ nuxeo.dbs.cache.ttl=10
 
 ## Startup checks configuration
 mongodb.check.classpath=nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-core-storage-mongodb-*.jar
-mongodb.check.class=org.nuxeo.ecm.core.storage.mongodb.MongoDBCheck
+mongodb.check.class=org.nuxeo.ecm.core.storage.mongodb.MongoDBChecker

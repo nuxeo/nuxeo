@@ -22,13 +22,23 @@ import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
+ * A backing checker checks for the availability of a backing service.
  *
  * @since 9.2
  */
 public interface BackingChecker {
 
-    boolean acceptConfiguration(ConfigurationGenerator cg);
+    /**
+     * Test if the check has to be done for the given configuration.
+     * @param cg The current configuration
+     * @return true if {@link BackingChecker#check(ConfigurationGenerator)} has to be called.
+     */
+    boolean accepts(ConfigurationGenerator cg);
 
-
+    /**
+     * Test the availbilty of the backing service.
+     * @param cg The current configuration
+     * @throws ConfigurationException if backing service is not available.
+     */
     void check(ConfigurationGenerator cg) throws ConfigurationException;
 }

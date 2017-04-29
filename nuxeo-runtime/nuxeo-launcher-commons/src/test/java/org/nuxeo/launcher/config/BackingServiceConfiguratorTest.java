@@ -21,6 +21,7 @@ package org.nuxeo.launcher.config;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
@@ -52,25 +53,23 @@ public class BackingServiceConfiguratorTest extends AbstractConfigurationTest {
         assertThat(configGenerator.init()).isTrue();
         configGenerator.setProperty("nuxeo.home", nuxeoHome.getAbsolutePath());
 
-        configGenerator.setProperty("nuxeo.backing.check.retry.maxRetries","5");
-        configGenerator.setProperty("nuxeo.backing.check.retry.delayInMs","20");
+        configGenerator.setProperty(BackingServiceConfigurator.PARAM_RETRY_POLICY_MAX_RETRIES,"5");
+        configGenerator.setProperty(BackingServiceConfigurator.PARAM_RETRY_POLICY_DELAY_IN_MS,"20");
 
     }
 
     @Test
     public void canReferenceRelativePathInClasspathEntry() throws Exception {
-        File conf = configGenerator.getTemplateConf("backing");
-        Collection<? extends File> jars = bsc.getJarsFromClasspathEntry(conf.getParentFile(), "lib");
+        Collection<? extends File> jars = bsc.getJarsFromClasspathEntry(getTemplateParentPath("backing"), "lib");
         assertThat(jars).hasSize(2);
 
-        jars = bsc.getJarsFromClasspathEntry(conf.getParentFile(), "lib/fake.jar");
+        jars = bsc.getJarsFromClasspathEntry(getTemplateParentPath("backing"), "lib/fake.jar");
         assertThat(jars).hasSize(1);
     }
 
     @Test
     public void canReferenceAbsolutePathInClassPathEntry() throws Exception {
-        File conf = configGenerator.getTemplateConf("backing");
-        Collection<? extends File> jars = bsc.getJarsFromClasspathEntry(conf.getParentFile(), bundles.getAbsolutePath());
+        Collection<? extends File> jars = bsc.getJarsFromClasspathEntry(getTemplateParentPath("backing"), bundles.getAbsolutePath());
         assertThat(jars).hasSize(1);
 
 
@@ -78,18 +77,16 @@ public class BackingServiceConfiguratorTest extends AbstractConfigurationTest {
 
     @Test
     public void cannotReferenceAbsolutPathOutsideOfNuxeoHome() throws Exception {
-        File conf = configGenerator.getTemplateConf("backing");
-        Collection<? extends File> jars = bsc.getJarsFromClasspathEntry(conf.getParentFile(), getResourceFile("versioned-1.0.jar").getParent());
+        Collection<? extends File> jars = bsc.getJarsFromClasspathEntry(getTemplateParentPath("backing"), getResourceFile("versioned-1.0.jar").getParent());
         assertThat(jars).isEmpty();
     }
 
     @Test
     public void canReferenceGlobPatternInClasspathEntry() throws Exception {
-        File conf = configGenerator.getTemplateConf("backing");
-        Collection<? extends File> jars = bsc.getJarsFromClasspathEntry(conf.getParentFile(), bundles.getAbsolutePath() + "/versioned-*.jar");
+        Collection<? extends File> jars = bsc.getJarsFromClasspathEntry(getTemplateParentPath("backing"), bundles.getAbsolutePath() + "/versioned-*.jar");
         assertThat(jars).hasSize(1);
 
-        jars = bsc.getJarsFromClasspathEntry(conf.getParentFile(), bundles.getAbsolutePath() + "/other-*.jar");
+        jars = bsc.getJarsFromClasspathEntry(getTemplateParentPath("backing"), bundles.getAbsolutePath() + "/other-*.jar");
         assertThat(jars).hasSize(0);
     }
 
@@ -106,12 +103,11 @@ public class BackingServiceConfiguratorTest extends AbstractConfigurationTest {
         assertThat(FakeCheck.getCallCount()).isEqualTo(0);
         configGenerator.verifyInstallation();
         assertThat(FakeCheck.getCallCount()).isEqualTo(1);
-
     }
 
     @Test
     public void checksAreRetried() throws Exception {
-        configGenerator.setProperty("nuxeo.backing.check.retry.enabled","true");
+        configGenerator.setProperty(BackingServiceConfigurator.PARAM_RETRY_POLICY_ENABLED,"true");
         FakeCheck.setReady(false);
         try {
             configGenerator.verifyInstallation();
@@ -120,8 +116,7 @@ public class BackingServiceConfiguratorTest extends AbstractConfigurationTest {
 
         assertThat(FakeCheck.getCallCount()).isEqualTo(6);
 
-
-        configGenerator.setProperty("nuxeo.backing.check.retry.enabled","false");
+        configGenerator.setProperty(BackingServiceConfigurator.PARAM_RETRY_POLICY_ENABLED,"false");
         FakeCheck.reset();
         try {
             configGenerator.verifyInstallation();
@@ -129,12 +124,10 @@ public class BackingServiceConfiguratorTest extends AbstractConfigurationTest {
         }
 
         assertThat(FakeCheck.getCallCount()).isEqualTo(1);
-
-
-
     }
 
-
-
-
+    protected Path getTemplateParentPath(String templateName) throws ConfigurationException {
+        File conf = configGenerator.getTemplateConf("backing");
+        return conf.getParentFile().toPath();
+    }
 }
