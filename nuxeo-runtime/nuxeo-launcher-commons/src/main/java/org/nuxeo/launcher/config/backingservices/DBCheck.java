@@ -52,7 +52,7 @@ import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
- * @since 9.1
+ * @since 9.2
  */
 public class DBCheck implements BackingChecker {
 
@@ -61,7 +61,7 @@ public class DBCheck implements BackingChecker {
     public static final List<String> DB_EXCLUDE_CHECK_LIST = Arrays.asList("default", "none");
 
     @Override
-    public boolean acceptConfiguration(ConfigurationGenerator cg) {
+    public boolean accepts(ConfigurationGenerator cg) {
         return !DB_EXCLUDE_CHECK_LIST.contains(
                 cg.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBTYPE));
 
