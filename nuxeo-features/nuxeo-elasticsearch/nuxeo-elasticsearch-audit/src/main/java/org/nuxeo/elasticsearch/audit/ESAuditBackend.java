@@ -157,10 +157,13 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public int getApplicationStartedOrder() {
-        return ((DefaultComponent) Framework.getRuntime()
+        int elasticOrder = ((DefaultComponent) Framework.getRuntime()
                                             .getComponent("org.nuxeo.elasticsearch.ElasticSearchComponent"))
-                                                                                                            .getApplicationStartedOrder()
-                + 1;
+                                                                                                            .getApplicationStartedOrder();
+        int uidgenOrder = ((DefaultComponent) Framework.getRuntime()
+                .getComponent("org.nuxeo.ecm.core.uidgen.UIDGeneratorService"))
+                .getApplicationStartedOrder();
+        return Integer.max(elasticOrder, uidgenOrder) + 1;
     }
 
     @Override
@@ -621,6 +624,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         // Get next sequence id
         UIDGeneratorService uidGeneratorService = Framework.getService(UIDGeneratorService.class);
         UIDSequencer seq = uidGeneratorService.getSequencer();
+        seq.init();
         int nextSequenceId = seq.getNext(SEQ_NAME);
 
         // Increment sequence to max log entry id if needed
