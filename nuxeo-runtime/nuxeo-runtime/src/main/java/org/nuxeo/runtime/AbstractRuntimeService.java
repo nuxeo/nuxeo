@@ -32,6 +32,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -300,14 +306,11 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     @Override
     public void standby(Instant deadline) throws InterruptedException {
         Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_STANDBY, this));
-        try {
-            state = State.STOPPING;
-            standbyExtensions();
-            stopComponents(deadline);
-        } finally {
-            state = State.STANDBY;
-            Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_IS_STANDBY, this));
-        }
+        state = State.STOPPING;
+        standbyExtensions();
+        stopComponents(deadline);
+        state = State.STANDBY;
+        Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_IS_STANDBY, this));
     }
 
     @Override
@@ -341,7 +344,30 @@ public abstract class AbstractRuntimeService implements RuntimeService {
      * @since 9.2
      */
     protected void stopComponents(Instant deadline) throws InterruptedException {
-        notifyComponentsOnStopped(deadline);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            Future<?> future = executor.submit(() -> {
+                try {
+                    notifyComponentsOnStopped(deadline);
+                } catch (InterruptedException cause) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Interrupted while stopping components", cause);
+                }
+            });
+            executor.shutdown();
+            try {
+                try {
+                    future.get(Duration.between(Instant.now(), deadline).toMillis(), TimeUnit.MILLISECONDS);
+                } catch (TimeoutException cause) {
+                    log.warn("Timed out on standby, blocking");
+                    future.get();
+                }
+            } catch (ExecutionException cause) {
+                throw new RuntimeException("Errors caught while stopping components, giving up", cause);
+            }
+        } finally {
+            executor.shutdownNow();
+        }
     }
 
     @Override
@@ -548,6 +574,9 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         for (RegistrationInfo ri : ris) {
             try {
                 ri.notifyApplicationStopped(deadline);
+            } catch (InterruptedException cause) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Interrupted while stopping " + ri.getName() + ", giving up", cause);
             } catch (RuntimeException e) {
                 log.error("Failed to notify component '" + ri.getName() + "' on application stand by", e);
             }
