@@ -631,7 +631,7 @@ public class TestFileSystemItemAdapterService {
         reload();
     }
 
-    void reload() {
+    void reload() throws InterruptedException {
         Properties lastProps = Framework.getProperties();
         try {
             Framework.getLocalService(ReloadService.class).reload();

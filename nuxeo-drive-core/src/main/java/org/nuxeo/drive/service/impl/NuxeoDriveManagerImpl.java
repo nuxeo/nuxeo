@@ -645,7 +645,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     @Override
-    public void applicationStandby(ComponentContext context, Instant instant) {
+    public void applicationStopped(ComponentContext context, Instant instant) {
         syncRootCache = null;
         collectionSyncRootMemberCache = null;
         changeFinder = null;
