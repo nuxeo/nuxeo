@@ -92,3 +92,11 @@ UPDATE locks SET
   owner = SUBSTRING(lock, 1, POSITION(':', lock) - 1),
   created = PARSEDATETIME(SUBSTRING(lock, POSITION(':', lock) + 1), 'MMM d, yyyy', 'en_US')
   WHERE owner IS NULL;
+
+
+############################################################
+
+
+#CATEGORY: upgradeSysVersion
+
+UPDATE hierarchy SET sysversion = 0 WHERE sysversion IS NULL AND isproperty = 0

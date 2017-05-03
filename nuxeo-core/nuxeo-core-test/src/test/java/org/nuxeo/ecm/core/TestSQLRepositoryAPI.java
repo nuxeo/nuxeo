@@ -4400,6 +4400,9 @@ public class TestSQLRepositoryAPI {
         doc = session.createDocument(doc);
         session.save();
         String token = doc.getChangeToken();
+        if (isChangeTokenEnabled()) {
+            assertEquals("0-0", token);
+        }
 
         // now change the doc
         doc.setPropertyValue("dc:title", "Doc Changed");
@@ -4410,10 +4413,27 @@ public class TestSQLRepositoryAPI {
         // the change token has been updated
         String token2 = doc.getChangeToken();
         assertNotEquals(token, token2);
+        if (isChangeTokenEnabled()) {
+            assertEquals("1-1", token2);
+        }
+
+        // change the doc again
+        doc.setPropertyValue("dc:title", "Doc Changed Again");
+        maybeUpdateChangeToken(doc);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // the change token has been updated again
+        String token3 = doc.getChangeToken();
+        assertNotEquals(token, token2);
+        assertNotEquals(token2, token3);
+        if (isChangeTokenEnabled()) {
+            assertEquals("2-2", token3);
+        }
 
         // change token is available on a detached document
         doc.detach(true);
-        assertEquals(token2, doc.getChangeToken());
+        assertEquals(token3, doc.getChangeToken());
     }
 
     @Test

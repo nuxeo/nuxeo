@@ -1251,3 +1251,11 @@ UPDATE locks SET
   owner = SUBSTRING(lock FROM 1 FOR POSITION(':' in lock) - 1),
   created = SUBSTRING(lock FROM POSITION(':' in lock) + 1)::timestamp
   WHERE owner IS NULL;
+
+
+############################################################
+
+
+#CATEGORY: upgradeSysVersion
+
+UPDATE hierarchy SET sysversion = 0 WHERE sysversion IS NULL AND NOT isproperty

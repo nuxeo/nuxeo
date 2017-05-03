@@ -1322,3 +1322,11 @@ UPDATE locks SET
   owner = SUBSTRING(lock, 1, CHARINDEX(':', lock) - 1),
   created = CONVERT(DATETIME, SUBSTRING(lock, CHARINDEX(':', lock) + 1, 9999), 107)
   WHERE owner IS NULL
+
+
+############################################################
+
+
+#CATEGORY: upgradeSysVersion
+
+UPDATE hierarchy SET sysversion = 0 WHERE sysversion IS NULL AND isproperty = 0

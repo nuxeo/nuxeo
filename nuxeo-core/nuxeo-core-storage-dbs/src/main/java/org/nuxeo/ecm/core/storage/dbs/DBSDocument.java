@@ -167,6 +167,8 @@ public class DBSDocument extends BaseDocument<State> {
 
     public static final String KEY_LOCK_CREATED = "ecm:lockCreated";
 
+    public static final String KEY_SYS_VERSION = "ecm:sysVersion";
+
     public static final String KEY_CHANGE_TOKEN = "ecm:changeToken";
 
     // used instead of ecm:changeToken when change tokens are disabled
@@ -194,7 +196,7 @@ public class DBSDocument extends BaseDocument<State> {
 
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 
-    public static final String INITIAL_CHANGE_TOKEN = "0";
+    public static final Long INITIAL_CHANGE_TOKEN = Long.valueOf(0);
 
     protected final String id;
 
@@ -769,12 +771,15 @@ public class DBSDocument extends BaseDocument<State> {
     @Override
     public String getChangeToken() {
         if (session.changeTokenEnabled) {
-            String changeToken = docState.getChangeToken();
+            Long sysVersion = docState.getSysVersion();
+            Long changeToken = docState.getChangeToken();
+            String userChangeToken = buildUserChangeToken(sysVersion, changeToken);
             if (isProxy()) {
-                String targetToken = getTargetDocument().docState.getChangeToken();
-                return getProxyChangeToken(changeToken, targetToken);
+                Long targetChangeToken = getTargetDocument().docState.getChangeToken();
+                String targetUserChangeToken = targetChangeToken == null ? null : targetChangeToken.toString();
+                return getProxyChangeToken(userChangeToken, targetUserChangeToken);
             } else {
-                return changeToken;
+                return userChangeToken;
             }
         } else {
             DBSDocumentState docState = getStateOrTarget();
@@ -797,14 +802,14 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public boolean validateChangeToken(String changeToken) {
-        if (changeToken == null) {
+    public boolean validateChangeToken(String userChangeToken) {
+        if (userChangeToken == null) {
             return true;
         }
         if (isProxy()) {
-            return validateProxyChangeToken(changeToken, docState, getTargetDocument().docState);
+            return validateProxyChangeToken(userChangeToken, docState, getTargetDocument().docState);
         } else {
-            return docState.validateChangeToken(changeToken);
+            return docState.validateChangeToken(userChangeToken);
         }
     }
 

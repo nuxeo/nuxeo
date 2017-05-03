@@ -42,7 +42,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.storage.BaseDocument;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.CopyResult;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.IdWithTypes;
@@ -267,10 +269,23 @@ public class PersistenceContext {
         // update change tokens
         Map<Serializable, Map<String, Serializable>> rowUpdateConditions = new HashMap<>();
         if (session.changeTokenEnabled) {
-            // find which docs are modified and therefore need a change token check
+            // find which docs are created
+            for (Serializable id : createdIds) {
+                SimpleFragment hier = getHier(id, false);
+                if (hier == null) {
+                    // was created and deleted before save
+                    continue;
+                }
+                hier.put(Model.MAIN_CHANGE_TOKEN_KEY, Model.INITIAL_CHANGE_TOKEN);
+            }
+            // find which docs are modified
             Set<Serializable> modifiedDocIds = findModifiedDocuments();
             for (Serializable id : modifiedDocIds) {
                 SimpleFragment hier = getHier(id, false);
+                // increment system version
+                Long base = (Long) hier.get(Model.MAIN_SYS_VERSION_KEY);
+                hier.put(Model.MAIN_SYS_VERSION_KEY, DeltaLong.valueOf(base, 1));
+                // update change token
                 Map<String, Serializable> conditions = updateChangeToken(hier);
                 rowUpdateConditions.put(id, conditions);
             }
@@ -351,21 +366,16 @@ public class PersistenceContext {
 
     /** Updates a change token in the main fragment, and returns the condition to check. */
     protected Map<String, Serializable> updateChangeToken(SimpleFragment hier) {
-        String oldToken = (String) hier.get(Model.MAIN_CHANGE_TOKEN_KEY);
-        String newToken;
+        Long oldToken = (Long) hier.get(Model.MAIN_CHANGE_TOKEN_KEY);
+        Long newToken;
         if (oldToken == null) {
             // document without change token, just created
             newToken = Model.INITIAL_CHANGE_TOKEN;
         } else {
-            newToken = updateChangeToken(oldToken);
+            newToken = BaseDocument.updateChangeToken(oldToken);
         }
         hier.put(Model.MAIN_CHANGE_TOKEN_KEY, newToken);
         return Collections.singletonMap(Model.MAIN_CHANGE_TOKEN_KEY, oldToken);
-    }
-
-    /** Updates a change token to its new value. */
-    protected String updateChangeToken(String token) {
-        return Long.toString(Long.parseLong(token) + 1);
     }
 
     private boolean complexProp(SimpleFragment fragment) {
