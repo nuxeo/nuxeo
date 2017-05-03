@@ -45,6 +45,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_VERSION_SERIES_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_READ_ACL;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_SYS_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
 import java.io.Serializable;
@@ -64,10 +65,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
+import org.nuxeo.ecm.core.storage.BaseDocument;
 import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.FulltextParser;
@@ -335,6 +338,9 @@ public class DBSTransactionState {
         docState.put(KEY_NAME, name);
         docState.put(KEY_POS, pos);
         docState.put(KEY_PRIMARY_TYPE, typeName);
+        if (session.changeTokenEnabled) {
+            docState.put(KEY_SYS_VERSION, Long.valueOf(0));
+        }
         // update read acls for new doc
         updateDocumentReadAcls(id);
         return docState;
@@ -599,6 +605,10 @@ public class DBSTransactionState {
                 }
                 ChangeTokenUpdater changeTokenUpdater;
                 if (session.changeTokenEnabled) {
+                    // increment system version
+                    Long base = (Long) docState.get(KEY_SYS_VERSION);
+                    docState.put(KEY_SYS_VERSION, DeltaLong.valueOf(base, 1));
+                    // update change token
                     changeTokenUpdater = new ChangeTokenUpdater(docState);
                 } else {
                     changeTokenUpdater = null;
@@ -623,11 +633,11 @@ public class DBSTransactionState {
 
         protected final DBSDocumentState docState;
 
-        protected String oldToken;
+        protected Long oldToken;
 
         public ChangeTokenUpdater(DBSDocumentState docState) {
             this.docState = docState;
-            oldToken = (String) docState.getOriginalState().get(KEY_CHANGE_TOKEN);
+            oldToken = (Long) docState.getOriginalState().get(KEY_CHANGE_TOKEN);
         }
 
         /**
@@ -641,22 +651,17 @@ public class DBSTransactionState {
          * Gets the updates to make to write the updated change token.
          */
         public Map<String, Serializable> getUpdates() {
-            String newToken;
+            Long newToken;
             if (oldToken == null) {
                 // document without change token, just created
                 newToken = INITIAL_CHANGE_TOKEN;
             } else {
-                newToken = updateChangeToken(oldToken);
+                newToken = BaseDocument.updateChangeToken(oldToken);
             }
             // also store the new token in the state (without marking dirty), for the next update
             docState.getState().put(KEY_CHANGE_TOKEN, newToken);
             oldToken = newToken;
             return Collections.singletonMap(KEY_CHANGE_TOKEN, newToken);
-        }
-
-        /** Updates a change token to its new value. */
-        protected String updateChangeToken(String token) {
-            return Long.toString(Long.parseLong(token) + 1);
         }
     }
 

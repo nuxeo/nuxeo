@@ -1282,3 +1282,11 @@ UPDATE locks SET
   owner = SUBSTR("LOCK", 1, INSTR("LOCK", ':') - 1),
   created = TO_TIMESTAMP(SUBSTR("LOCK", INSTR("LOCK", ':') + 1), 'MON DD, YYYY')
   WHERE owner IS NULL
+
+
+############################################################
+
+
+#CATEGORY: upgradeSysVersion
+
+UPDATE hierarchy SET sysversion = 0 WHERE sysversion IS NULL AND isproperty = 0

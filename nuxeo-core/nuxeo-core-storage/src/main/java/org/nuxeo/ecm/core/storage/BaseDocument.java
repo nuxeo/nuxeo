@@ -1124,18 +1124,45 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     protected abstract Lock removeDocumentLock(String owner);
 
     /**
-     * Validates that the passed change token is compatible with the current change token.
+     * Builds the user-visible change token from low-level system version and change token information.
      *
-     * @param changeToken the change token to check
-     * @param currentToken the current change token
+     * @param sysVersion the system version
+     * @param changeToken the change token
+     * @return the user-visible change token
+     * @since 9.2
+     */
+    public static String buildUserChangeToken(Long sysVersion, Long changeToken) {
+        if (sysVersion == null || changeToken == null) {
+            return null;
+        }
+        return sysVersion.toString() + '-' + changeToken.toString();
+    }
+
+    /**
+     * Validates that the passed user-visible change token is compatible with the current change token.
+     *
+     * @param sysVersion the system version
+     * @param changeToken the change token
+     * @param userChangeToken the user-visible change token
      * @return {@code false} if the change token is not valid
      * @since 9.2
      */
-    public static boolean validateChangeToken(String changeToken, String currentToken) {
-        if (currentToken == null) {
+    public static boolean validateUserChangeToken(Long sysVersion, Long changeToken, String userChangeToken) {
+        if (sysVersion == null || changeToken == null) {
             return true;
         }
-        return currentToken.equals(changeToken);
+        return userChangeToken.equals(sysVersion.toString() + '-' + changeToken.toString());
+    }
+
+    /**
+     * Updates a change token to its new value.
+     *
+     * @param changeToken the change token (not {@code null})
+     * @return the updated change token
+     * @since 9.2
+     */
+    public static Long updateChangeToken(Long changeToken) {
+        return Long.valueOf(changeToken.longValue() + 1);
     }
 
 }
