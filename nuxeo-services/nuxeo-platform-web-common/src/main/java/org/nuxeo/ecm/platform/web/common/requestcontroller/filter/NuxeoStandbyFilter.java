@@ -39,85 +39,117 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoStandbyFilter implements Filter {
 
-    protected final Lock lock = new ReentrantLock();
-
-    protected final Condition resumed = lock.newCondition();
-
-    protected final Filter locker = new Filter() {
-
-        @Override
-        public void init(FilterConfig filterConfig) throws ServletException {
-        }
-
-        @Override
-        public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-                throws IOException, ServletException {
-            lock.lock();
-            try {
-                resumed.await();
-            } catch (InterruptedException cause) {
-                throw new ServletException("Interrupted while waiting for resume", cause);
-            } finally {
-                lock.unlock();
-            }
-            chain.doFilter(request, response);
-        }
-
-        @Override
-        public void destroy() {
-        }
-    };
-
-    protected volatile boolean isStandby = false;
+    protected Controller controller;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        isStandby = Framework.getRuntime().isStandby();
+        controller = new Controller();
         Framework.addListener(new RuntimeServiceListener() {
 
             @Override
             public void handleEvent(RuntimeServiceEvent event) {
                 if (event.id == RuntimeServiceEvent.RUNTIME_ABOUT_TO_STANDBY) {
-                    isStandby = true;
+                    controller.onStandby();
                 } else if (event.id == RuntimeServiceEvent.RUNTIME_RESUMED) {
-                    isStandby = false;
-                    lock.lock();
-                    try {
-                        resumed.signalAll();
-                    } finally {
-                        lock.unlock();
-                    }
+                    controller.onResumed();
                 }
             }
+
         });
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        if (isStandby) {
-            awaitOnResume();
-        }
-        chain.doFilter(request, response);
-    }
-
-    protected void awaitOnResume()  {
-        lock.lock();
-        if (!isStandby) {
-            return;
-        }
+        controller.onNewRequest();
         try {
-            resumed.await();
-        } catch (InterruptedException cause) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Interrupted while locking incoming requests", cause);
+            chain.doFilter(request, response);
         } finally {
-            lock.unlock();
+            controller.onRequestEnd();
         }
     }
 
     @Override
     public void destroy() {
+
+    }
+
+    protected class Controller {
+        protected final Lock lock = new ReentrantLock();
+
+        protected final Condition canStandby = lock.newCondition();
+
+        protected final Condition canProceed = lock.newCondition();
+
+        protected volatile boolean isStandby = Framework.getRuntime().isStandby();
+
+        protected volatile int inprogress = 0;
+
+        public void onNewRequest() {
+            if (!isStandby) {
+                inprogress += 1;
+                return;
+            }
+            awaitCanProceed();
+        }
+
+        public void onRequestEnd() {
+            inprogress -= 1;
+            if (inprogress > 0) {
+                return;
+            }
+            lock.lock();
+            try {
+                canStandby.signal();
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        public void onStandby() throws RuntimeException {
+            isStandby = true;
+            if (inprogress > 0) {
+                awaitCanStandby();
+            }
+        }
+
+        public void onResumed() {
+            isStandby = false;
+            signalBlocked();
+        }
+
+        protected void awaitCanProceed() throws RuntimeException {
+            lock.lock();
+            try {
+                canProceed.await();
+            } catch (InterruptedException cause) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Interrupted while locking incoming requests", cause);
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        protected void awaitCanStandby() throws RuntimeException {
+            lock.lock();
+            try {
+                canStandby.await();
+            } catch (InterruptedException cause) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Interrupted while waiting for web requests being drained", cause);
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        protected void signalBlocked() {
+            lock.lock();
+            try {
+                canProceed.signalAll();
+            } finally {
+                lock.unlock();
+            }
+        }
 
     }
 
