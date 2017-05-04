@@ -21,6 +21,7 @@
     <module>nuxeo-platform-directory-ldap</module>
     <module>nuxeo-platform-directory-multi</module>
     <module>nuxeo-platform-directory-mongodb</module>
+    <module>nuxeo-platform-directory-test</module>
   </modules>
 
 </project>
