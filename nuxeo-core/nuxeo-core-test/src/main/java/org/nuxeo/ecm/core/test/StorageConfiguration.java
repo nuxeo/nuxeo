@@ -76,9 +76,9 @@ public class StorageConfiguration {
 
     private static final String MONGODB_DBNAME_PROPERTY = "nuxeo.test.mongodb.dbname";
 
-    private static final String DEFAULT_MONGODB_SERVER = "localhost:27017";
+    public static final String DEFAULT_MONGODB_SERVER = "localhost:27017";
 
-    private static final String DEFAULT_MONGODB_DBNAME = "unittests";
+    public static final String DEFAULT_MONGODB_DBNAME = "unittests";
 
     private static final String CHANGE_TOKEN_ENABLED_PROPERTY = "nuxeo.test.changetoken.enabled";
 
@@ -98,12 +98,16 @@ public class StorageConfiguration {
 
     private boolean changeTokenEnabled;
 
+    protected String mongoDBServer;
+
+    protected String mongoDBDbName;
+
     public StorageConfiguration(CoreFeature feature) {
         coreType = defaultSystemProperty(CORE_PROPERTY, DEFAULT_CORE);
         this.feature = feature;
     }
 
-    protected static String defaultSystemProperty(String name, String def) {
+    public static String defaultSystemProperty(String name, String def) {
         String value = System.getProperty(name);
         if (value == null || value.equals("") || value.equals("${" + name + "}")) {
             System.setProperty(name, value = def);
@@ -141,7 +145,7 @@ public class StorageConfiguration {
         }
     }
 
-    protected void initJDBC() {
+    public void initJDBC() {
         databaseHelper = DatabaseHelper.DATABASE;
 
         String msg = "Deploying JDBC using " + databaseHelper.getClass().getSimpleName();
@@ -160,12 +164,12 @@ public class StorageConfiguration {
     }
 
     protected void initMongoDB() {
-        String server = defaultProperty(MONGODB_SERVER_PROPERTY, DEFAULT_MONGODB_SERVER);
-        String dbname = defaultProperty(MONGODB_DBNAME_PROPERTY, DEFAULT_MONGODB_DBNAME);
+        mongoDBServer = defaultProperty(MONGODB_SERVER_PROPERTY, DEFAULT_MONGODB_SERVER);
+        mongoDBDbName = defaultProperty(MONGODB_DBNAME_PROPERTY, DEFAULT_MONGODB_DBNAME);
         MongoDBRepositoryDescriptor descriptor = new MongoDBRepositoryDescriptor();
         descriptor.name = getRepositoryName();
-        descriptor.server = server;
-        descriptor.dbname = dbname;
+        descriptor.server = mongoDBServer;
+        descriptor.dbname = mongoDBDbName;
         try {
             clearMongoDB(descriptor);
         } catch (UnknownHostException e) {
@@ -355,6 +359,27 @@ public class StorageConfiguration {
 
     public boolean isChangeTokenEnabled() {
         return changeTokenEnabled;
+    }
+
+    /**
+     * @since 9.2
+     */
+    public String getCoreType() {
+        return coreType;
+    }
+
+    /**
+     * @since 9.2
+     */
+    public String getMongoDBServer() {
+        return mongoDBServer;
+    }
+
+    /**
+     * @since 9.2
+     */
+    public String getMongoDBDbName() {
+        return mongoDBDbName;
     }
 
 }

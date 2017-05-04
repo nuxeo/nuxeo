@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.directory.sql.tests
+Nuxeo-Component: nxdirectory-ds.xml

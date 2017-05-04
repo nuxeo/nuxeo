@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Directory Tests
+Bundle-SymbolicName: org.nuxeo.directory.test;singleton:=true
+Bundle-Version: 1.0.0
