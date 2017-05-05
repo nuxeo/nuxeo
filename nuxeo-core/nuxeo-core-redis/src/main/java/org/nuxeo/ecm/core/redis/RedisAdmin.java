@@ -19,6 +19,8 @@ import java.io.IOException;
 
 public interface RedisAdmin {
 
+    RedisPoolDescriptor getConfig();
+
     String namespace(String... names);
 
     /**

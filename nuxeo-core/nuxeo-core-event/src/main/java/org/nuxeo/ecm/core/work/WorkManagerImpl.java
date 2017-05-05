@@ -56,6 +56,8 @@ import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.ecm.core.work.api.WorkQueuingDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -330,18 +332,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     @Override
-    public void applicationStopped(ComponentContext context, Instant deadline) {
-        for (String id : workQueueConfig.getQueueIds()) {
-            deactivateQueue(workQueueConfig.get(id));
-        }
+    public void applicationStopped(ComponentContext context, Instant deadline) throws InterruptedException {
         Duration delay = Duration.between(Instant.now(), deadline);
-        try {
-            if (!shutdown(delay.toMillis(), TimeUnit.MILLISECONDS)) {
-                log.error("Some processors are still active");
-            }
-        } catch (InterruptedException cause) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Interrupted during works manager shutdown", cause);
+        if (!shutdown(delay.toMillis(), TimeUnit.MILLISECONDS)) {
+            log.error("Some processors are still active");
         }
     }
 
@@ -365,9 +359,23 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             for (String id : workQueueConfig.getQueueIds()) {
                 initializeQueue(workQueueConfig.get(id));
             }
-            for (String id : workQueueConfig.getQueueIds()) {
-                activateQueue(workQueueConfig.get(id));
-            }
+            Framework.addListener(new RuntimeServiceListener() {
+
+                @Override
+                public void handleEvent(RuntimeServiceEvent event) {
+                    if (event.id == RuntimeServiceEvent.RUNTIME_RESUMED) {
+                        for (String id : workQueueConfig.getQueueIds()) {
+                            activateQueue(workQueueConfig.get(id));
+                        }
+                    } else if (event.id == RuntimeServiceEvent.RUNTIME_ABOUT_TO_STANDBY) {
+                        for (String id : workQueueConfig.getQueueIds()) {
+                            deactivateQueue(workQueueConfig.get(id));
+                        }
+                    } else if (event.id == RuntimeServiceEvent.RUNTIME_IS_STANDBY) {
+                        Framework.removeListener(this);
+                    }
+                }
+            });
         }
     }
 

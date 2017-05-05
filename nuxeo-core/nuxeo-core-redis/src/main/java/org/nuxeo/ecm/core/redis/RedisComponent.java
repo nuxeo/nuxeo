@@ -108,6 +108,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         registry.removeContribution(contrib);
     }
 
+    @Override
     public RedisPoolDescriptor getConfig() {
         return registry.getConfig();
     }
