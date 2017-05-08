@@ -94,7 +94,7 @@ public class Distribution extends ModuleRoot {
 
     protected static final Log log = LogFactory.getLog(Distribution.class);
 
-    protected static final Pattern VERSION_REGEX = Pattern.compile("^(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?(?:-.*)?",
+    protected static final Pattern VERSION_REGEX = Pattern.compile("^(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?(?:-.*)?$",
             Pattern.CASE_INSENSITIVE);
 
     // handle errors
@@ -180,12 +180,25 @@ public class Distribution extends ModuleRoot {
         if (distributionId == null || "".equals(distributionId)) {
             return this;
         }
+
+        List<DistributionSnapshot> snaps = getSnapshotManager().listPersistentSnapshots((ctx.getCoreSession()));
+        if (distributionId.matches(VERSION_REGEX.toString())) {
+            String finalDistributionId = distributionId;
+            String distribution = snaps.stream()
+                                       .filter(s -> s.getVersion().equals(finalDistributionId))
+                                       .findFirst()
+                                       .map(DistributionSnapshot::getKey)
+                                       .orElse("current");
+
+            return ctx.newObject("redirectWO", finalDistributionId, distribution);
+        }
+
         String orgDistributionId = distributionId;
         Boolean embeddedMode = Boolean.FALSE;
         if ("adm".equals(distributionId)) {
             embeddedMode = Boolean.TRUE;
         } else {
-            List<DistributionSnapshot> snaps = getSnapshotManager().listPersistentSnapshots((ctx.getCoreSession()));
+
             snaps.add(getSnapshotManager().getRuntimeSnapshot());
             distributionId = SnapshotResolverHelper.findBestMatch(snaps, distributionId);
         }
