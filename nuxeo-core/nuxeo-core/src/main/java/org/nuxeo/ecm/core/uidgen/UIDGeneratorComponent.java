@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.uidgen;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,8 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.uidgen.UIDGenerator;
-import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -60,19 +59,17 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
     protected String defaultSequencer;
 
     @Override
-    public void activate(ComponentContext context) {
+    public void applicationStarted(ComponentContext context) {
         for (String name : sequencers.keySet()) {
             sequencers.get(name).init();
         }
-        super.activate(context);
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
+    public void applicationStopped(ComponentContext context, Instant deadline) {
         for (String name : sequencers.keySet()) {
             sequencers.get(name).dispose();
         }
-        super.deactivate(context);
     }
 
     @Override

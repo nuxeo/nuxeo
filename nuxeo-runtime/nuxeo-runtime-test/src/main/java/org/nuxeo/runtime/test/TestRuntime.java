@@ -83,10 +83,13 @@ public class TestRuntime extends AbstractRuntimeService {
     }
 
     @Override
-    public synchronized void stop() {
-        super.stop();
-        if (workingDir != null) {
-            FileUtils.deleteQuietly(workingDir);
+    public void stop() throws InterruptedException {
+        try {
+            super.stop();
+        } finally {
+            if (workingDir != null) {
+                FileUtils.deleteQuietly(workingDir);
+            }
         }
     }
 

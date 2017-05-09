@@ -29,20 +29,6 @@ import redis.clients.util.Pool;
  */
 public interface RedisExecutor {
 
-    public static final RedisExecutor NOOP = new RedisAbstractExecutor() {
-
-        @Override
-        public <T> T execute(RedisCallable<T> call) throws JedisException {
-            throw new UnsupportedOperationException("No redis executor available");
-        }
-
-        @Override
-        public Pool<Jedis> getPool() {
-            throw new UnsupportedOperationException("No pool available");
-        }
-
-    };
-
     /**
      * Loads the script into Redis.
      *

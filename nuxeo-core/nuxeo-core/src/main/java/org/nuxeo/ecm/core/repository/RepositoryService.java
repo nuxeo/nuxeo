@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.core.repository;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +31,6 @@ import org.nuxeo.ecm.core.api.local.LocalException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
-import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
@@ -68,23 +67,13 @@ public class RepositoryService extends DefaultComponent {
     }
 
     @Override
-    public void activate(ComponentContext context) {
-        Framework.addListener(new RuntimeServiceListener() {
-
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
-                    return;
-                }
-                Framework.removeListener(this);
-                shutdown();
-            }
-        });
+    public void applicationStarted(ComponentContext context) {
+        TransactionHelper.runInTransaction(this::initRepositories);
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
-        TransactionHelper.runInTransaction(this::initRepositories);
+    public void applicationStopped(ComponentContext context, Instant deadline) {
+        TransactionHelper.runInTransaction(this::shutdown);
     }
 
     /**

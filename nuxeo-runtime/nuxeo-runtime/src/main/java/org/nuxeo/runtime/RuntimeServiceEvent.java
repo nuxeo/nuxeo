@@ -46,6 +46,14 @@ public class RuntimeServiceEvent {
 
     public static final int RUNTIME_STOPPED = 3;
 
+    public static final int RUNTIME_ABOUT_TO_RESUME = 4;
+
+    public static final int RUNTIME_RESUMED = 5;
+
+    public static final int RUNTIME_ABOUT_TO_STANDBY = 6;
+
+    public static final int RUNTIME_IS_STANDBY = 7;
+
     /** The event id. */
     public final int id;
 
@@ -80,16 +88,34 @@ public class RuntimeServiceEvent {
         return getEventName();
     }
 
-    // FIXME: review this, this looks suspicious (doesn't check on this.id).
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + id;
+        result = prime * result + runtime.hashCode();
+        return result;
+    }
+
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) {
+        if (this == obj) {
             return true;
         }
         if (obj == null) {
             return false;
         }
-        return obj.getClass().equals(this.getClass());
+        if (!(obj instanceof RuntimeServiceEvent)) {
+            return false;
+        }
+        RuntimeServiceEvent other = (RuntimeServiceEvent) obj;
+        if (id != other.id) {
+            return false;
+        }
+        if (!runtime.equals(other.runtime)) {
+            return false;
+        }
+        return true;
     }
 
 }

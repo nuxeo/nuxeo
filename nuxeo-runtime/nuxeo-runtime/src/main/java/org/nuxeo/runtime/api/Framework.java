@@ -182,7 +182,7 @@ public final class Framework {
         }
     }
 
-    public static void shutdown() {
+    public static void shutdown() throws InterruptedException {
         if (runtime == null) {
             throw new IllegalStateException("runtime not exist");
         }

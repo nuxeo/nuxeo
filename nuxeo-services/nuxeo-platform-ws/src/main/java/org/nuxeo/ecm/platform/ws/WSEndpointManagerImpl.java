@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.ws;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,20 +69,19 @@ public class WSEndpointManagerImpl extends DefaultComponent implements WSEndpoin
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        super.deactivate(context);
+    public void applicationStarted(ComponentContext context) {
+        if (Framework.isTestModeSet()) {
+            return;
+        }
+        publishEndpoints();
+    }
 
+    @Override
+    public void applicationStopped(ComponentContext context, Instant deadline) {
         for (Endpoint ep : endpoints.values()) {
             ep.stop();
         }
         endpoints.clear();
-    }
-
-    @Override
-    public void applicationStarted(ComponentContext context) {
-        if (!Framework.isTestModeSet()) {
-            publishEndpoints();
-        }
     }
 
     @Override

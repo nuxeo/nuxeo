@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.pubsub;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,9 +27,6 @@ import java.util.function.BiConsumer;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.EventServiceComponent;
-import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -68,21 +66,18 @@ public class PubSubServiceImpl extends DefaultComponent implements PubSubService
 
     @Override
     public void applicationStarted(ComponentContext context) {
-        if (provider != null) {
-            provider.initialize(subscribers);
+        if (provider == null) {
+            return;
         }
-        Framework.addListener(new RuntimeServiceListener() {
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
-                    return;
-                }
-                Framework.removeListener(this);
-                if (provider != null) {
-                    provider.close();
-                }
-            }
-        });
+        provider.initialize(subscribers);
+    }
+
+    @Override
+    public void applicationStopped(ComponentContext context, Instant deadline) {
+        if (provider == null) {
+            return;
+        }
+        provider.close();
     }
 
     @Override

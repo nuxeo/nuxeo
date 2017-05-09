@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.core.work;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -133,10 +135,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected WorkCompletionSynchronizer completionSynchronizer;
 
-    @Override
-    public void activate(ComponentContext context) {
-        Framework.addListener(new ShutdownListener());
-    }
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
@@ -333,6 +331,14 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         init();
     }
 
+    @Override
+    public void applicationStopped(ComponentContext context, Instant deadline) throws InterruptedException {
+        Duration delay = Duration.between(Instant.now(), deadline);
+        if (!shutdown(delay.toMillis(), TimeUnit.MILLISECONDS)) {
+            log.error("Some processors are still active");
+        }
+    }
+
     protected volatile boolean started = false;
 
     protected volatile boolean shutdownInProgress = false;
@@ -353,9 +359,23 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             for (String id : workQueueConfig.getQueueIds()) {
                 initializeQueue(workQueueConfig.get(id));
             }
-            for (String id : workQueueConfig.getQueueIds()) {
-                activateQueue(workQueueConfig.get(id));
-            }
+            Framework.addListener(new RuntimeServiceListener() {
+
+                @Override
+                public void handleEvent(RuntimeServiceEvent event) {
+                    if (event.id == RuntimeServiceEvent.RUNTIME_RESUMED) {
+                        for (String id : workQueueConfig.getQueueIds()) {
+                            activateQueue(workQueueConfig.get(id));
+                        }
+                    } else if (event.id == RuntimeServiceEvent.RUNTIME_ABOUT_TO_STANDBY) {
+                        for (String id : workQueueConfig.getQueueIds()) {
+                            deactivateQueue(workQueueConfig.get(id));
+                        }
+                    } else if (event.id == RuntimeServiceEvent.RUNTIME_IS_STANDBY) {
+                        Framework.removeListener(this);
+                    }
+                }
+            });
         }
     }
 
@@ -426,23 +446,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
     }
 
-    protected class ShutdownListener implements RuntimeServiceListener {
-        @Override
-        public void handleEvent(RuntimeServiceEvent event) {
-            if (RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP != event.id) {
-                return;
-            }
-            Framework.removeListener(this);
-            try {
-                if (!shutdown(10, TimeUnit.SECONDS)) {
-                    log.error("Some processors are still active");
-                }
-            } catch (InterruptedException cause) {
-                Thread.currentThread().interrupt();
-                log.error("Interrupted during works manager shutdown, continuing runtime shutdown", cause);
-            }
-        }
-    }
 
     /**
      * A work instance and how to schedule it, for schedule-after-commit.
@@ -498,8 +501,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             Thread thread = new Thread(group, r, name);
             // do not set daemon
             thread.setPriority(Thread.NORM_PRIORITY);
-            thread.setUncaughtExceptionHandler((t,
-                    e) -> LogFactory.getLog(WorkManagerImpl.class).error("Uncaught error on thread " + t.getName(), e));
+            thread.setUncaughtExceptionHandler((t, e) -> LogFactory.getLog(WorkManagerImpl.class)
+                    .error("Uncaught error on thread " + t.getName(), e));
             return thread;
         }
     }
@@ -564,7 +567,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         /**
          * Executes the given task sometime in the future.
          *
-         * @param work the work to execute
+         * @param work
+         *            the work to execute
          * @see #execute(Runnable)
          */
         public void execute(Work work) {
@@ -761,7 +765,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     /**
-     * @param state SCHEDULED, RUNNING or null for both
+     * @param state
+     *            SCHEDULED, RUNNING or null for both
      */
     protected boolean hasWorkInState(String workId, State state) {
         return queuing.isWorkInState(workId, state);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,29 +12,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
-package org.nuxeo.ecm.core.redis;
+package org.nuxeo.ecm.core.management.standby;
 
-import java.io.IOException;
+import javax.management.MXBean;
 
-public interface RedisAdmin {
+/**
+ * Allow administrators to toggle runtime standby mode.
+ *
+ * @since 9.2
+ */
+@MXBean
+public interface StandbyMXBean {
 
-    RedisPoolDescriptor getConfig();
+    public static final String NAME = "org.nuxeo:name=org.nuxeo.ecm.core.management.standby,type=service";
 
-    String namespace(String... names);
+    void standby(int delayInSeconds) throws InterruptedException;
 
-    /**
-     * Load script in redis
-     *
-     * @since 6.0
-     */
-    String load(String bundle, String name) throws IOException;
+    void resume();
 
-    /**
-     * Clear keys in redis
-     *
-     * @since 6.0
-     */
-    public Long clear(String prefix);
+    boolean isStandby();
 
 }

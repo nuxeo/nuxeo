@@ -18,7 +18,8 @@ Nuxeo-Component: OSGI-INF/core-management-types-contrib.xml,
  OSGI-INF/core-management-framework.xml,
  OSGI-INF/core-management-contribs.xml,
  OSGI-INF/listener-contrib.xml,
- OSGI-INF/runtime-management-contrib.xml
+ OSGI-INF/runtime-management-contrib.xml,
+ OSGI-INF/standby.xml
 Import-Package: javax.annotation,
  javax.servlet.http;resolution:=optional,
  org.apache.commons.lang,

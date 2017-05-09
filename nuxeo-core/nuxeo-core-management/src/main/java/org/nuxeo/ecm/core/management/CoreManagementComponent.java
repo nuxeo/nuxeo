@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.management;
 
+import java.time.Instant;
+
 import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
@@ -124,8 +126,12 @@ public class CoreManagementComponent extends DefaultComponent {
     public void deactivate(ComponentContext context) {
         defaultComponent = null;
         storageManager.uninstall();
-        getLocalManager().onNuxeoServerShutdown();
         EventStatsHolder.clearStats();
+    }
+
+    @Override
+    public void applicationStopped(ComponentContext context, Instant deadline) {
+        getLocalManager().onNuxeoServerShutdown();
     }
 
     public void onNuxeoServerStartup() {

@@ -23,6 +23,7 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_ENABLED_PROPERTY
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEXING_QUEUE_ID;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_ON_STARTUP_PROPERTY;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -201,6 +202,21 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         reindexOnStartup();
     }
 
+    @Override
+    public void applicationStopped(ComponentContext context, Instant deadline) {
+        try {
+            shutdownListenerThreadPool();
+        } finally {
+            try {
+                esa.disconnect();
+            } finally {
+                esa = null;
+                esi = null;
+                ess = null;
+            }
+        }
+    }
+
     private void reindexOnStartup() {
         boolean reindexOnStartup = Boolean.parseBoolean(Framework.getProperty(REINDEX_ON_STARTUP_PROPERTY, "false"));
         if (!reindexOnStartup) {
@@ -226,12 +242,6 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         return Boolean.parseBoolean(Framework.getProperty(ES_ENABLED_PROPERTY, "true"));
     }
 
-    @Override
-    public void deactivate(ComponentContext context) {
-        if (esa != null) {
-            esa.disconnect();
-        }
-    }
 
     @Override
     public int getApplicationStartedOrder() {
@@ -343,7 +353,6 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     private static class NamedThreadFactory implements ThreadFactory {
-        @SuppressWarnings("NullableProblems")
         @Override
         public Thread newThread(Runnable r) {
             return new Thread(r, "waitForEsIndexing");
@@ -353,6 +362,14 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     protected void initListenerThreadPool() {
         waiterExecutorService = MoreExecutors.listeningDecorator(
                 Executors.newCachedThreadPool(new NamedThreadFactory()));
+    }
+
+    protected void shutdownListenerThreadPool() {
+        try {
+            waiterExecutorService.shutdown();
+        } finally {
+            waiterExecutorService = null;
+        }
     }
 
     @Override

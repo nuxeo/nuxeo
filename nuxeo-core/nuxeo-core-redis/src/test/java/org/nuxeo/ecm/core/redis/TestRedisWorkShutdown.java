@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.UnsupportedEncodingException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -106,7 +108,7 @@ public class TestRedisWorkShutdown {
             canShutdown.await(10, TimeUnit.SECONDS);
             assertMetrics(0, 2, 0, 0);
             // when I shutdown
-            works.shutdown(10, TimeUnit.SECONDS);
+            Framework.getRuntime().standby(Instant.now().plus(Duration.ofSeconds(10)));
         } finally {
             // then works are suspending
             canProceed.countDown();
@@ -118,7 +120,7 @@ public class TestRedisWorkShutdown {
             canProceed = new CountDownLatch(1);
         } finally {
             // when I reboot
-            works.init();
+            Framework.getRuntime().resume();
         }
         Assert.assertTrue(works.awaitCompletion(10, TimeUnit.SECONDS));
         // works are completed
@@ -147,7 +149,8 @@ public class TestRedisWorkShutdown {
         }
 
         List<Work> listScheduled() {
-            return Framework.getService(RedisExecutor.class)
+            RedisPoolDescriptor config = Framework.getService(RedisAdmin.class).getConfig();
+            return config.newExecutor()
                     .execute(new RedisCallable<List<Work>>() {
                         @Override
                         public List<Work> call(Jedis jedis) {

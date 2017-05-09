@@ -21,14 +21,13 @@ package org.nuxeo.ecm.core.redis;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.time.Instant;
 import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -45,7 +44,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
 
     private static final String DEFAULT_PREFIX = "nuxeo:";
 
-    protected volatile RedisExecutor executor = RedisExecutor.NOOP;
+    protected volatile RedisExecutor executor;
 
     protected RedisPoolDescriptorRegistry registry = new RedisPoolDescriptorRegistry();
 
@@ -109,6 +108,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         registry.removeContribution(contrib);
     }
 
+    @Override
     public RedisPoolDescriptor getConfig() {
         return registry.getConfig();
     }
@@ -119,22 +119,19 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         if (config == null || config.disabled) {
             return;
         }
-        Framework.addListener(new RuntimeServiceListener() {
-
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
-                    return;
-                }
-                Framework.removeListener(this);
-                try {
-                    executor.getPool().destroy();
-                } finally {
-                    executor = null;
-                }
-            }
-        });
         handleNewExecutor(config.newExecutor());
+    }
+
+    @Override
+    public void applicationStopped(ComponentContext context, Instant deadline) {
+        if (executor == null) {
+            return;
+        }
+        try {
+            executor.getPool().destroy();
+        } finally {
+            executor = null;
+        }
     }
 
     @Override

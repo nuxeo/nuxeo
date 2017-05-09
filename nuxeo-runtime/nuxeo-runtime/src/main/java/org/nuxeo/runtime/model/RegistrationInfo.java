@@ -23,6 +23,7 @@ package org.nuxeo.runtime.model;
 
 import java.io.Serializable;
 import java.net.URL;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 
@@ -224,4 +225,12 @@ public interface RegistrationInfo extends Serializable {
      * Notify the component instance that the Nuxeo application started
      */
     void notifyApplicationStarted();
+
+
+    /**
+     * Notify the component instance that the Nuxeo is about to shutdown
+     *
+     * @since 9.2
+     */
+    void notifyApplicationStopped(Instant deadline) throws InterruptedException;
 }

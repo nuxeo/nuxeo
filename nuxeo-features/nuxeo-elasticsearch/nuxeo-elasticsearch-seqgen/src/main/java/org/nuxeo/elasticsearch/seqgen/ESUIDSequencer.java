@@ -43,31 +43,43 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
 
     protected Client esClient = null;
 
-    protected Client getClient() {
-        if (esClient == null) {
-            ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-            esClient = esa.getClient();
-            try {
-                ensureESIndex(esClient);
-            } catch (NoSuchElementException | NuxeoException e) {
-                esClient = null;
-                throw e;
-            }
+    protected String indexName;
+
+    @Override
+    public void init() {
+        if (esClient != null) {
+            return;
         }
-        return esClient;
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+        esClient = esa.getClient();
+        indexName = esa.getIndexNameForType(ElasticSearchConstants.SEQ_ID_TYPE);
+        try {
+            boolean indexExists = esClient.admin().indices().prepareExists(indexName).execute().actionGet()
+                    .isExists();
+            if (!indexExists) {
+                throw new NuxeoException(
+                        String.format("Sequencer %s needs an elasticSearchIndex contribution with type %s", getName(),
+                                ElasticSearchConstants.SEQ_ID_TYPE));
+            }
+        } catch (NoSuchElementException | NuxeoException e) {
+            dispose();
+            throw e;
+        }
     }
 
     @Override
     public void dispose() {
-        if (esClient != null) {
-            esClient.close();
+        if (esClient == null) {
+            return;
         }
+        esClient = null;
+        indexName = null;
     }
 
     @Override
     public long getNextLong(String sequenceName) {
         String source = "{ \"ts\" : " + System.currentTimeMillis() + "}";
-        IndexResponse res = getClient().prepareIndex(getESIndexName(), ElasticSearchConstants.SEQ_ID_TYPE, sequenceName).setSource(
+        IndexResponse res = esClient.prepareIndex(indexName, ElasticSearchConstants.SEQ_ID_TYPE, sequenceName).setSource(
                 source).execute().actionGet();
         return res.getVersion();
     }
@@ -75,25 +87,6 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
     @Override
     public int getNext(String sequenceName) {
         return (int) getNextLong(sequenceName);
-    }
-
-    @Override
-    public void init() {
-        getClient();
-    }
-
-    protected void ensureESIndex(Client esClient) {
-        boolean indexExists = esClient.admin().indices().prepareExists(getESIndexName()).execute().actionGet().isExists();
-        if (!indexExists) {
-            throw new NuxeoException(String.format(
-                    "Sequencer %s needs an elasticSearchIndex contribution with type %s", getName(),
-                    ElasticSearchConstants.SEQ_ID_TYPE));
-        }
-    }
-
-    protected String getESIndexName() {
-        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-        return esa.getIndexNameForType(ElasticSearchConstants.SEQ_ID_TYPE);
     }
 
 }

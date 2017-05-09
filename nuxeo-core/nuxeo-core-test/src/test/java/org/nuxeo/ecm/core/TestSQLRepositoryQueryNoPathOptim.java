@@ -97,7 +97,7 @@ public class TestSQLRepositoryQueryNoPathOptim {
                 "OSGI-INF/test-repo-no-pathoptimizations-contrib.xml");
     }
 
-    protected void newRepository() {
+    protected void newRepository() throws InterruptedException {
         waitForAsyncCompletion();
         coreFeature.releaseCoreSession();
         // reload repo with new config

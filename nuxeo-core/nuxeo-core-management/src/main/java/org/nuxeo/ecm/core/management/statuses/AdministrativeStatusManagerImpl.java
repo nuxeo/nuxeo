@@ -50,12 +50,7 @@ public class AdministrativeStatusManagerImpl implements AdministrativeStatusMana
 
     protected final String serverInstanceName;
 
-    protected final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1, new ThreadFactory() {
-        @Override
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "Nuxeo-Administrative-Statuses-Notify-Scheduler");
-        }
-    });
+    protected ScheduledExecutorService scheduler;
 
     protected final Notifier[] notifiers = { new CoreEventNotifier(), new RuntimeEventNotifier() };
 
@@ -107,6 +102,13 @@ public class AdministrativeStatusManagerImpl implements AdministrativeStatusMana
 
         doNotifyAllStatuses();
 
+        scheduler = Executors.newScheduledThreadPool(1, new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread(r, "Nuxeo-Administrative-Statuses-Notify-Scheduler");
+            }
+        });
+
         scheduler.scheduleAtFixedRate(new NotifyStatusesHandler(), 5, 5, TimeUnit.MINUTES);
     }
 
@@ -134,7 +136,14 @@ public class AdministrativeStatusManagerImpl implements AdministrativeStatusMana
     }
 
     public void onNuxeoServerShutdown() {
-        scheduler.shutdown();
+        if (scheduler == null) {
+            return;
+        }
+        try {
+            scheduler.shutdown();
+        } finally {
+            scheduler = null;
+        }
     }
 
     protected void notifyOnStatus(AdministrativeStatus status) {

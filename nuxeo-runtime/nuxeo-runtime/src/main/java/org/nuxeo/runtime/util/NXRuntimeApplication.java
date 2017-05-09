@@ -48,11 +48,11 @@ public abstract class NXRuntimeApplication {
         this(null);
     }
 
-    public void start() {
+    public void start() throws InterruptedException {
         start(new String[0]);
     }
 
-    public void start(String[] args) {
+    public void start(String[] args) throws InterruptedException {
         initialize(args);
         run();
         shutdown();
@@ -64,7 +64,7 @@ public abstract class NXRuntimeApplication {
         deployAll();
     }
 
-    public void shutdown() {
+    public void shutdown() throws InterruptedException {
         Framework.shutdown();
     }
 

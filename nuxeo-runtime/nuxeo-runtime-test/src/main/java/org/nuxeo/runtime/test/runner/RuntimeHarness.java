@@ -22,6 +22,7 @@ package org.nuxeo.runtime.test.runner;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -43,9 +44,14 @@ public interface RuntimeHarness {
     File getWorkingDir();
 
     /**
-     * Fires the event {@code FrameworkEvent.STARTED}.
+     * Resume the runtime
      */
     void fireFrameworkStarted() throws Exception;
+
+    /**
+     * Put the runtime in standby mode in the specified delay
+     */
+    void standby(Duration delay) throws Exception;
 
     /**
      * Deploys a whole OSGI bundle.
@@ -107,7 +113,7 @@ public interface RuntimeHarness {
 
     /**
      * Deploys a subset of a Bundle defined per the targetExtensions parameter
-     * 
+     *
      * @param bundle the name of the component
      * @param targetExtensions Set of allowed TargetExtensions in the final contribution
      * @since 9.1

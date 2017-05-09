@@ -50,10 +50,4 @@
 
   </extension-point>
 
-  <extension target="org.nuxeo.runtime.EventService" point="listeners">
-    <listener class="org.nuxeo.ecm.core.cache.CacheReloadListener">
-      <topic>org.nuxeo.runtime.reload</topic>
-    </listener>
-  </extension>
-
 </component>

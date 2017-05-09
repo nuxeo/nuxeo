@@ -21,6 +21,8 @@
 
 package org.nuxeo.runtime.model;
 
+import java.time.Instant;
+
 /**
  * Empty implementation for a component.
  *
@@ -85,6 +87,18 @@ public class DefaultComponent implements Component, Adaptable {
 
     @Override
     public void applicationStarted(ComponentContext context) {
+        // do nothing by default
+    }
+
+
+    /**
+     * Enables components to stop processing before the application termination.
+     * @throws InterruptedException
+     *
+     * @since 9.2
+     */
+    @Override
+    public void applicationStopped(ComponentContext context, Instant deadline) throws InterruptedException {
         // do nothing by default
     }
 

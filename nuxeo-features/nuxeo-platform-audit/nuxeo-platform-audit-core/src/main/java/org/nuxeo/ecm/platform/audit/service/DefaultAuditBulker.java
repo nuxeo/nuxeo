@@ -86,7 +86,7 @@ public class DefaultAuditBulker implements AuditBulkerMBean, AuditBulker {
     }
 
     @Override
-    public void onShutdown() {
+    public void onApplicationStopped() {
         registry.remove(MetricRegistry.name("nuxeo", "audit", "size"));
         ResourcePublisher publisher = Framework.getService(ResourcePublisher.class);
         if (publisher != null) {

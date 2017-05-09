@@ -141,8 +141,7 @@ public class TestValidateConnection {
 
     protected void checkPooledConnection(PooledDataSource ds) throws ReportException, InterruptedException {
         TransactionHelper.startTransaction();
-        try {
-            Connection connection = ds.getConnection();
+        try (Connection connection = ds.getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.execute("SELECT 1");
             } catch (SQLException cause) {

@@ -53,7 +53,12 @@ public class LiveInstallTask extends InstallTask {
 
     @Override
     protected void taskDone() throws PackageException {
-        Framework.getService(ReloadService.class).reload();
+        try {
+            Framework.getService(ReloadService.class).reload();
+        } catch (InterruptedException cause) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while reloading runtime", cause);
+        }
         if (isRestartRequired()) {
             service.setPackageState(pkg, PackageState.INSTALLED);
         } else {

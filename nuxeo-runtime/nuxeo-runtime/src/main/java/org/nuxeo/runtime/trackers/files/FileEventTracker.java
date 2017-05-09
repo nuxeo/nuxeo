@@ -26,8 +26,6 @@ import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -181,22 +179,10 @@ public class FileEventTracker extends DefaultComponent {
     @Override
     public void applicationStarted(ComponentContext context) {
         resetThreadDelegate();
-        Framework.addListener(new RuntimeServiceListener() {
-
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
-                    return;
-                }
-                Framework.removeListener(this);
-                setThreadDelegate(false);
-            }
-        });
     }
 
     @Override
     public void deactivate(ComponentContext context) {
-        resetThreadDelegate();
         if (Framework.getService(EventService.class) != null) {
             if (threadsListener.isInstalled()) {
                 threadsListener.uninstall();
@@ -235,7 +221,7 @@ public class FileEventTracker extends DefaultComponent {
     protected void resetThreadDelegate() throws IllegalStateException {
         ThreadDelegate actual = threads.get();
         if (actual == null) {
-            throw new IllegalStateException("Thread delegate not installed");
+            return;
         }
         try {
             for (File file : actual.files) {

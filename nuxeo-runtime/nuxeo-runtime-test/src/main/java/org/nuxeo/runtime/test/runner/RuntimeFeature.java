@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -151,6 +153,14 @@ public class RuntimeFeature extends SimpleFeature {
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
         harness.fireFrameworkStarted();
+    }
+
+    @Override
+    public void afterRun(FeaturesRunner runner) throws Exception {
+        if (Framework.getRuntime() == null) {
+            return;
+        }
+        Framework.getRuntime().standby(Instant.now().plus(Duration.ofSeconds(1)));
     }
 
 }
