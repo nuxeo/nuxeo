@@ -30,7 +30,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,7 +39,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Tests where a field has several references bound to it.
@@ -50,6 +49,8 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @RunWith(FeaturesRunner.class)
 @Features(DirectoryFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
+@LocalDeploy({ "org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml",
+        "org.nuxeo.ecm.directory.tests:test-directories-multi-refs.xml" })
 public class TestDirectoryMultipleReferences {
 
     protected static final String USER_DIR = "userDirectory";
@@ -57,20 +58,7 @@ public class TestDirectoryMultipleReferences {
     protected static final String SCHEMA = "user";
 
     @Inject
-    protected RuntimeHarness harness;
-
-    @Inject
-    protected DirectoryFeature feature;
-
-    @Inject
     protected DirectoryService directoryService;
-
-    @Before
-    public void setUp() throws Exception {
-        harness.deployContrib(feature.getTestBundleName(), "test-sql-directories-schema-override.xml");
-        harness.deployContrib(feature.getTestBundleName(), "test-sql-directories-bundle.xml");
-        harness.deployContrib(feature.getTestBundleName(), "test-sql-directories-multi-refs.xml");
-    }
 
     public Session getSession() throws Exception {
         return directoryService.open(USER_DIR);
@@ -93,7 +81,7 @@ public class TestDirectoryMultipleReferences {
     @Test
     public void testCreateEntry() throws Exception {
         try (Session session = getSession()) {
-            Map<String, Object> map = new HashMap<String, Object>();
+            Map<String, Object> map = new HashMap<>();
             map.put("username", "user_0");
             // writing to groups, which has several references is ignored and a WARN logged
             map.put("groups", Arrays.asList("members", "administrators"));

@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.directory.test.sql">
+
+  <extension target="org.nuxeo.runtime.datasource" point="datasources">
+    <datasource name="jdbc/nxsqldirectory" driverClassName="${nuxeo.test.vcs.driver}"
+                url="${nuxeo.test.vcs.url}" username="${nuxeo.test.vcs.user}" password="${nuxeo.test.vcs.password}"
+                maxPoolSize="20" minPoolSize="5"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
+
+    <directory name="template-directory" template="true">
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="template-simpledir" template="true" extends="template-directory">
+      <table>users</table>
+    </directory>
+
+    <directory name="template-user" template="true" extends="template-simpledir">
+      <references>
+        <tableReference field="groups" directory="groupDirectory"
+                        table="user2group" sourceColumn="userId"
+                        targetColumn="groupId" dataFile="test-user2group.csv"/>
+      </references>
+    </directory>
+
+    <directory name="template-user-multirefs" template="true" extends="template-simpledir">
+      <references>
+        <tableReference field="groups" directory="groupDirectory"
+                        table="user2group" sourceColumn="userId"
+                        targetColumn="groupId" dataFile="test-user2group.csv"/>
+        <tableReference field="groups" directory="otherGroupDirectory"
+                        table="user2othergroup" sourceColumn="userId" targetColumn="groupId"
+                        dataFile="test-user2othergroup.csv"/>
+      </references>
+    </directory>
+
+    <directory name="template-group" template="true" extends="template-directory">
+      <table>groups</table>
+      <references>
+        <inverseReference field="members" directory="userDirectory"
+                          dualReferenceField="groups"/>
+        <tableReference field="subGroups" directory="groupDirectory"
+                        table="group2group" sourceColumn="childGroupId"
+                        targetColumn="parentGroupId"/>
+        <inverseReference field="parentGroups"
+                          directory="groupDirectory" dualReferenceField="subGroups"/>
+      </references>
+    </directory>
+
+    <directory name="template-othergroup" template="true" extends="template-directory">
+      <table>othergroups</table>
+      <references>
+        <inverseReference field="members" directory="userDirectory"
+                          dualReferenceField="groups"/>
+        <tableReference field="subGroups" directory="groupDirectory"
+                        table="group2group" sourceColumn="childGroupId"
+                        targetColumn="parentGroupId"/>
+        <inverseReference field="parentGroups"
+                          directory="groupDirectory" dualReferenceField="subGroups"/>
+      </references>
+    </directory>
+
+    <directory name="template-country" template="true" extends="template-directory">
+      <table>country</table>
+    </directory>
+
+    <directory name="template-continent" template="true" extends="template-directory">
+      <table>continent</table>
+    </directory>
+
+    <directory name="template-refdir1" template="true" extends="template-directory">
+      <table>referencedDirectory1</table>
+    </directory>
+
+    <directory name="template-refdir2" template="true" extends="template-directory">
+      <table>referencedDirectory2</table>
+    </directory>
+
+    <directory name="template-hierarchicaldir" template="true" extends="template-directory">
+      <table>hierarchicalDirectory</table>
+    </directory>
+
+    <directory name="template-oauth2token" template="true" extends="template-directory">
+      <table>oauth2Tokens</table>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+    </directory>
+
+  </extension>
+
+</component>

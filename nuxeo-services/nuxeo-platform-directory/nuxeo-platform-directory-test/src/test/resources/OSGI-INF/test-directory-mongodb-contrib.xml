@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.directory.test.mongodb">
+
+  <extension target="org.nuxeo.directory.mongodb.MongoDBDirectoryFactory" point="directories">
+
+    <directory name="template-directory" template="true">
+      <serverUrl>${nuxeo.test.mongodb.server}</serverUrl>
+      <databaseName>${nuxeo.test.mongodb.dbname}</databaseName>
+    </directory>
+
+    <directory name="template-simpledir" template="true" extends="template-directory" />
+
+    <directory name="template-user" template="true" extends="template-directory">
+      <references>
+        <reference field="groups" directory="groupDirectory"
+                   collection="user2group" sourceField="userId"
+                   targetField="groupId" dataFile="test-user2group.csv"/>
+      </references>
+    </directory>
+
+    <directory name="template-user-multirefs" template="true" extends="template-directory">
+      <references>
+        <reference field="groups" directory="groupDirectory"
+                   collection="user2group" sourceField="userId" targetField="groupId"
+                   dataFile="test-user2group.csv"/>
+        <reference field="groups" directory="otherGroupDirectory"
+                   collection="user2othergroup" sourceField="userId" targetField="groupId"
+                   dataFile="test-user2othergroup.csv"/>
+      </references>
+    </directory>
+
+    <directory name="template-group" template="true" extends="template-directory">
+      <references>
+        <inverseReference field="members" directory="userDirectory"
+                          dualReferenceField="groups"/>
+        <reference field="subGroups" directory="groupDirectory"
+                   collection="group2group" sourceField="childGroupId"
+                   targetField="parentGroupId"/>
+        <inverseReference field="parentGroups"
+                          directory="groupDirectory" dualReferenceField="subGroups"/>
+      </references>
+    </directory>
+
+    <directory name="template-othergroup" template="true" extends="template-group" />
+
+    <directory name="template-country" template="true" extends="template-directory"/>
+
+    <directory name="template-continent" template="true" extends="template-directory"/>
+
+    <directory name="template-refdir1" template="true" extends="template-directory"/>
+
+    <directory name="template-refdir2" template="true" extends="template-directory"/>
+
+    <directory name="template-hierarchicaldir" template="true" extends="template-directory"/>
+
+    <directory name="template-oauth2token" template="true" extends="template-directory">
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+    </directory>
+
+  </extension>
+
+</component>

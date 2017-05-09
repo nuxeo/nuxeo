@@ -75,17 +75,11 @@ public class TestExternalLDAPSessionSecurity {
     @Inject
     ExternalLDAPDirectoryFeature ldapFeature;
 
-    @Inject
-    @Named(SQLDirectoryFeature.USER_DIRECTORY_NAME)
-    Directory userDir;
-
-    @Inject
-    @Named(SQLDirectoryFeature.GROUP_DIRECTORY_NAME)
-    Directory groupDir;
 
     @Before
     public void setUp() {
-        try (LDAPSession session = (LDAPSession) ((LDAPDirectory) userDir).getSession()) {
+        Directory userDir = dirService.getDirectory("userDirectory");
+        try (LDAPSession session = (LDAPSession) userDir.getSession()) {
             DirContext ctx = session.getContext();
             for (String ldifFile : ldapFeature.getLdifFiles()) {
                 ldapFeature.loadDataFromLdif(ldifFile, ctx);
@@ -93,6 +87,8 @@ public class TestExternalLDAPSessionSecurity {
         }
 
         userDirSession = userDir.getSession();
+
+        Directory groupDir = dirService.getDirectory("groupDirectory");
         groupDirSession = groupDir.getSession();
     }
 

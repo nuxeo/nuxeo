@@ -22,6 +22,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -43,7 +44,7 @@ import static org.junit.Assert.assertTrue;
  * @since 8.4
  */
 @RunWith(FeaturesRunner.class)
-@Features({RestServerFeature.class, CoreFeature.class})
+@Features({RestServerFeature.class, CoreFeature.class, DirectoryFeature.class})
 @Jetty(port = 18090)
 @Deploy({ "org.nuxeo.ecm.platform.oauth",
           "org.nuxeo.ecm.directory.api",

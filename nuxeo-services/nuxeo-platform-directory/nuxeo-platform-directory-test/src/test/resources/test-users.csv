@@ -1,0 +1,4 @@
+username, password, firstName, lastName, company, email, intField, longField, doubleField, dateField, booleanField
+"Administrator","Administrator",__NULL__,"","blabla","devnull@nuxeo.com",10,1,1.1,1982-03-25 16:30:47.123,__NULL__
+"user_1","pass_1","f","l","__NULL__","e@m",3,3,3.3,2007-09-07 14:36:28.000,true
+"user_3","{SSHA}yxHMXSzRujkYZ7bX+BdHUXORDM+QPxr4I7z2gA==","f3","l3","__NULL__","e3@m",4,4,4.4,2008-01-01 14:36:28.000,false

@@ -78,19 +78,15 @@ public class TestInternalLDAPSessionSecurity {
     @Inject
     MockLdapServer embeddedLDAPserver;
 
-    @Inject
-    @Named(SQLDirectoryFeature.USER_DIRECTORY_NAME)
-    Directory userDir;
-
-    @Inject
-    @Named(SQLDirectoryFeature.GROUP_DIRECTORY_NAME)
-    Directory groupDir;
-
     @Before
     public void setUp() {
+
+        Directory userDir = dirService.getDirectory("userDirectory");
+        Directory groupDir = dirService.getDirectory("groupDirectory");
+
         ((LDAPDirectory) userDir).setTestServer(embeddedLDAPserver);
         ((LDAPDirectory) groupDir).setTestServer(embeddedLDAPserver);
-        try (LDAPSession session = (LDAPSession) ((LDAPDirectory) userDir).getSession()) {
+        try (LDAPSession session = (LDAPSession) userDir.getSession()) {
             DirContext ctx = session.getContext();
             for (String ldifFile : ldapFeature.getLdifFiles()) {
                 ldapFeature.loadDataFromLdif(ldifFile, ctx);

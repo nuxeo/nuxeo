@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.autoincrementid">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+             point="schema">
+    <schema name="intIdSchema" src="directoryschema/intIdSchema.xsd"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory"
+             point="directories">
+
+    <directory name="testAutoIncrement" extends="template-simpledir">
+      <schema>intIdSchema</schema>
+      <idField>id</idField>
+      <autoincrementIdField>true</autoincrementIdField> <!-- what we test -->
+      <createTablePolicy>always</createTablePolicy>
+    </directory>
+
+  </extension>
+
+</component>

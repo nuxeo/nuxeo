@@ -1,18 +1,14 @@
 <?xml version="1.0"?>
 <component name="test-directory-contrib">
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory"
     point="directories">
 
     <directory name="oauth2Tokens" remove="true">
     </directory>
 
-    <directory name="oauth2Tokens">
+    <directory name="oauth2Tokens" extends="template-oauth2token">
       <schema>oauth2Token</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>oauth2Tokens</table>
       <createTablePolicy>always</createTablePolicy>
       <dataFile>oauth2token.csv</dataFile>
       <idField>id</idField>

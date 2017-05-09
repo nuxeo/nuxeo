@@ -1,4 +1,0 @@
-username, password, firstName, lastName, company, email
-"Administrator","Administrator",__NULL__,"","blabla","devnull@nuxeo.com"
-"user_1","pass_1","f","l","__NULL__","e@m"
-"user_3","{SSHA}yxHMXSzRujkYZ7bX+BdHUXORDM+QPxr4I7z2gA==","f3","l3","__NULL__","e3@m"

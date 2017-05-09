@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="test-directory-delete-contrib">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory"
+    point="directories">
+
+    <directory name="country" extends="template-country">
+      <schema>xvocabulary</schema>
+      <parentDirectory>continent</parentDirectory>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>country.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="continent" extends="template-continent">
+      <schema>vocabulary</schema>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>continent.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <deleteConstraint
+        class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
+        <property name="targetDirectory">country</property>
+        <property name="targetDirectoryField">parent</property>
+      </deleteConstraint>
+    </directory>
+
+  </extension>
+</component>

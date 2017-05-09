@@ -20,12 +20,11 @@
 
 package org.nuxeo.directory.test;
 
-import com.mongodb.MongoClient;
-import org.nuxeo.directory.mongodb.MongoDBConnectionHelper;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+
 
 /**
  * Description of the specific capabilities of a directory for tests, and helper methods.
@@ -42,8 +41,6 @@ public class DirectoryConfiguration {
 
     public static final String DIRECTORY_LDAP = "ldap";
 
-    public static final String DIRECTORY_MULTI = "multi";
-
     protected String directoryType;
 
     protected StorageConfiguration storageConfiguration;
@@ -54,31 +51,25 @@ public class DirectoryConfiguration {
                 storageConfiguration.getCoreType());
     }
 
-    public String deployBundles(FeaturesRunner runner) throws Exception {
-        String bundleName = null;
+    public void deployContrib(FeaturesRunner runner) throws Exception {
+        String contribName = null;
         switch (directoryType) {
         case DIRECTORY_VCS:
-            bundleName = "org.nuxeo.ecm.directory.sql";
+            contribName = "OSGI-INF/test-directory-sql-contrib.xml";
             break;
         case DIRECTORY_MONGODB:
-            bundleName = "org.nuxeo.directory.mongodb";
+            contribName = "OSGI-INF/test-directory-mongodb-contrib.xml";
             break;
         case DIRECTORY_LDAP:
-            bundleName = "org.nuxeo.ecm.directory.ldap";
-            break;
-        case DIRECTORY_MULTI:
-            bundleName = "org.nuxeo.ecm.directory.multi";
+            contribName = "OSGI-INF/test-directory-ldap-contrib.xml";
             break;
         default:
             break;
         }
-        String testBundleName = bundleName + ".tests";
 
         RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
-        harness.deployBundle(bundleName);
-        harness.deployBundle(testBundleName);
+        harness.deployContrib("org.nuxeo.ecm.directory.tests",contribName);
 
-        return testBundleName;
     }
 
     public void init() {
@@ -88,27 +79,11 @@ public class DirectoryConfiguration {
                 storageConfiguration.initJDBC();
             }
             break;
-        case DIRECTORY_MONGODB:
-            initMongoDB();
-            break;
-        // TODO
         case DIRECTORY_LDAP:
-        case DIRECTORY_MULTI:
+            // TODO Init mock LDAP server ?
+        case DIRECTORY_MONGODB:
         default:
             break;
         }
     }
-
-    protected void initMongoDB() {
-        String server = storageConfiguration.getMongoDBServer();
-        String dbname = storageConfiguration.getMongoDBDbName();
-        MongoClient mongoClient = MongoDBConnectionHelper.newMongoClient(server);
-        try {
-            MongoDBConnectionHelper.getCollection(mongoClient, dbname, "userDirectory").drop();
-            MongoDBConnectionHelper.getCollection(mongoClient, dbname, "groupDirectory").drop();
-        } finally {
-            mongoClient.close();
-        }
-    }
-
 }

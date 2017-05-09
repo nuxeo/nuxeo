@@ -62,17 +62,6 @@ public class InternalLDAPDirectoryFeature extends SimpleFeature {
     // http://www.ldap.org.br/modules/ldap/files/files///dyngroup.schema
     public static final boolean HAS_DYNGROUP_SCHEMA = false;
 
-    @Inject
-    @Named(SQLDirectoryFeature.USER_DIRECTORY_NAME)
-    Directory userDir;
-
-    @Inject
-    @Named(SQLDirectoryFeature.GROUP_DIRECTORY_NAME)
-    Directory groupDir;
-
-    @Inject
-    DirectoryService dirService;
-
     public List<String> getLdifFiles() {
         List<String> ldifFiles = new ArrayList<String>();
         ldifFiles.add("sample-users.ldif");

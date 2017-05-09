@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.multirefs">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory"
+    point="directories">
+
+    <directory name="userDirectory" extends="template-user-multirefs">
+      <schema>user</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
+      <substringMatchType>subany</substringMatchType>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>test-users.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+    </directory>
+
+    <directory name="groupDirectory" extends="template-group">
+      <schema>group</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>groupname</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>always</createTablePolicy>
+      <dataFile>test-groups.csv</dataFile>
+    </directory>
+
+    <directory name="otherGroupDirectory" extends="template-othergroup">
+      <schema>group</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>groupname</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>test-othergroups.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+    </directory>
+
+  </extension>
+</component>

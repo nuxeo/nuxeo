@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<component name="org.nuxeo.ecm.directory.types.override.prefix">
-  <extension target="org.nuxeo.ecm.core.schema.TypeService"
-    point="schema">
-    <schema name="user" src="sqldirectoryschema/user.xsd"
-      override="true" prefix="usr" />
-  </extension>
-</component>
