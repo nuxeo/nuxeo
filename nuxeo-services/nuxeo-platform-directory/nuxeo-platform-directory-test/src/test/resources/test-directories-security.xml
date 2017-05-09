@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.test.security">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory"
+    point="directories">
+
+    <directory name="userDirectory" extends="template-user">
+
+      <schema>user</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
+      <substringMatchType>subany</substringMatchType>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>test-users.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+      <permissions>
+        <permission name="Read">
+          <user>readerUser</user>
+        </permission>
+        <permission name="Write">
+          <user>superUser</user>
+        </permission>
+      </permissions>
+    </directory>
+
+
+    <directory name="groupDirectory" extends="template-group">
+
+      <schema>group</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>groupname</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>test-groups.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+      <permissions>
+        <permission name="Write">
+          <group>Everyone</group>
+        </permission>
+      </permissions>
+    </directory>
+
+  </extension>
+</component>

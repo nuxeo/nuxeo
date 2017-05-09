@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!-- overridden user.xsd with additional fields for tests -->
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/user"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/user">
+
+  <xs:include schemaLocation="base.xsd" />
+
+  <xs:element name="username" type="xs:string" />
+  <xs:element name="password" type="xs:string" />
+  <xs:element name="firstName" type="xs:string" default="defaultFirstName" />
+  <xs:element name="lastName" type="xs:string" />
+  <xs:element name="company" type="xs:string" />
+  <xs:element name="email">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:pattern value="[^@]+@[^\.]+\..+" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="groups" type="nxs:stringList" />
+
+  <!-- overridden -->
+
+  <xs:element name="intField" type="xs:integer" default="1" />
+  <xs:element name="longField" type="xs:long" default="1L"/>
+  <xs:element name="doubleField" type="xs:double" default="1.1" />
+  <xs:element name="dateField" type="xs:date" />
+  <xs:element name="booleanField" type="xs:boolean" default="true" />
+
+  <!-- length restriction -->
+
+  <xs:simpleType name="shortString">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="50" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="shortstring" type="nxs:shortString" />
+
+</xs:schema>

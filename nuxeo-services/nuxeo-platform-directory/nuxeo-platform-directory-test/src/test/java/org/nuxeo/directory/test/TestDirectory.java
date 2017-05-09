@@ -30,5 +30,5 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(DirectoryFeature.class)
-public class TestDirectory extends DirectoryTestSuite {
+public class TestDirectory extends AbstractDirectoryTest {
 }

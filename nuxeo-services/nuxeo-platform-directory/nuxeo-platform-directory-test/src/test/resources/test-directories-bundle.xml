@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.directory.storage">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory"
+    point="directories">
+
+    <directory name="userDirectory" extends="template-user">
+
+      <schema>user</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
+      <substringMatchType>subany</substringMatchType>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>always</createTablePolicy>
+      <dataFile>test-users.csv</dataFile>
+    </directory>
+
+
+    <directory name="groupDirectory" extends="template-group">
+      <schema>group</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>groupname</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>always</createTablePolicy>
+      <dataFile>test-groups.csv</dataFile>
+    </directory>
+
+  </extension>
+</component>

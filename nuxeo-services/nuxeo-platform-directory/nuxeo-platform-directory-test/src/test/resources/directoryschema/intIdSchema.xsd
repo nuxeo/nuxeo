@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<xs:schema
+    targetNamespace="http://www.nuxeo.org/ecm/schemas/intIdSchema"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    >
+
+    <!--
+    The schema field names and their order is designed so that
+    (at least in Java 7) the map holding them doesn't have
+    the field "id" first. Cf NXP-11030.
+    -->
+    <xs:element name="f" type="xs:string"/>
+    <xs:element name="id" type="xs:integer"/>
+    <xs:element name="label" type="xs:string"/>
+
+</xs:schema>

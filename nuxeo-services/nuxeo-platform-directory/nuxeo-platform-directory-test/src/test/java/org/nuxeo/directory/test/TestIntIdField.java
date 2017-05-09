@@ -37,26 +37,20 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
+/**
+ * @since 9.2
+ */
 @RunWith(FeaturesRunner.class)
 @Features(DirectoryFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
+@LocalDeploy("org.nuxeo.ecm.directory.tests:intIdDirectory-contrib.xml")
 public class TestIntIdField {
 
     @Inject
-    protected RuntimeHarness harness;
-
-    @Inject
-    protected DirectoryFeature feature;
-
-    @Inject
     protected DirectoryService directoryService;
-
-    @Before
-    public void setUp() throws Exception {
-        harness.deployContrib(feature.getTestBundleName(), "intIdDirectory-contrib.xml");
-    }
 
     @SuppressWarnings("boxing")
     @Test

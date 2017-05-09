@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.storage.tests">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory"
+             point="directories">
+
+    <directory name="userDirectory" extends="template-user">
+      <schema>user</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
+      <substringMatchType>subany</substringMatchType>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>test-users.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1</cacheMaxSize>
+    </directory>
+
+  </extension>
+</component>

@@ -28,7 +28,6 @@ import java.util.Calendar;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -36,32 +35,21 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.sql.TestSQLDirectory;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(DirectoryFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
+@LocalDeploy({ "org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml",
+        "org.nuxeo.ecm.directory.tests:test-directories-tsv-bundle.xml" })
 public class TestDirectoryWithTSVInit {
 
     private static final String SCHEMA = "user";
 
     @Inject
-    protected RuntimeHarness harness;
-
-    @Inject
-    protected DirectoryFeature feature;
-
-    @Inject
     protected DirectoryService directoryService;
-
-    @Before
-    public void setUp() throws Exception {
-        harness.deployContrib(feature.getTestBundleName(), "test-sql-directories-schema-override.xml");
-        harness.deployContrib(feature.getTestBundleName(), "test-sql-directories-tsv-bundle.xml");
-    }
 
     @Test
     public void testGetEntry() throws Exception {
@@ -71,7 +59,7 @@ public class TestDirectoryWithTSVInit {
             assertEquals("AdministratorTSV", dm.getProperty(SCHEMA, "username"));
             assertTrue(session.authenticate("AdministratorTSV", "AdministratorTSV"));
             assertEquals(10L, dm.getProperty(SCHEMA, "intField"));
-            TestSQLDirectory.assertCalendarEquals(TestSQLDirectory.getCalendar(1982, 3, 25, 16, 30, 47, 123),
+            TestDirectory.assertCalendarEquals(TestDirectory.getCalendar(1982, 3, 25, 16, 30, 47, 123),
                     (Calendar) dm.getProperty(SCHEMA, "dateField"));
         }
     }

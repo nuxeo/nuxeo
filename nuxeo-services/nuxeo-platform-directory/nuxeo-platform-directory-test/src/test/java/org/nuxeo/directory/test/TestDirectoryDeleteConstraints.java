@@ -28,35 +28,28 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.DirectoryDeleteConstraintException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.ecm.platform.login.test.DummyNuxeoLoginModule;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * @since 9.2
  */
 @RunWith(FeaturesRunner.class)
 @Features({ DirectoryFeature.class, ClientLoginFeature.class })
+@LocalDeploy({ "org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml",
+        "org.nuxeo.ecm.directory.tests:test-directories-bundle.xml",
+        "org.nuxeo.ecm.directory.tests:test-directory-delete-contrib.xml" })
 public class TestDirectoryDeleteConstraints {
-
-    @Inject
-    protected RuntimeHarness harness;
-
-    @Inject
-    protected DirectoryFeature feature;
 
     @Inject
     protected ClientLoginFeature dummyLogin;
@@ -67,13 +60,6 @@ public class TestDirectoryDeleteConstraints {
 
     @Inject
     protected DirectoryService directoryService;
-
-    @Before
-    public void setUp() throws Exception {
-        harness.deployContrib(feature.getTestBundleName(), "test-sql-directories-schema-override.xml");
-        harness.deployContrib(feature.getTestBundleName(), "test-sql-directories-bundle.xml");
-        harness.deployContrib(feature.getTestBundleName(), "test-directory-delete-contrib.xml");
-    }
 
     @Test
     public void testDeleteEntryWithConstraints() throws Exception {

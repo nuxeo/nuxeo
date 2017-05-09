@@ -31,7 +31,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -43,32 +42,22 @@ import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.ecm.platform.login.test.DummyNuxeoLoginModule;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 9.2
  */
 @RunWith(FeaturesRunner.class)
 @Features({ DirectoryFeature.class, ClientLoginFeature.class })
+@LocalDeploy({ "org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml",
+        "org.nuxeo.ecm.directory.tests:test-directories-bundle.xml" })
 public class TestDirectorySecurityDefault {
-
-    @Inject
-    protected RuntimeHarness harness;
-
-    @Inject
-    protected DirectoryFeature feature;
 
     @Inject
     protected DirectoryService directoryService;
 
     @Inject
-    ClientLoginFeature dummyLogin;
-
-    @Before
-    public void setUp() throws Exception {
-        harness.deployContrib(feature.getTestBundleName(), "test-sql-directories-schema-override.xml");
-        harness.deployContrib(feature.getTestBundleName(), "test-sql-directories-bundle.xml");
-    }
+    protected ClientLoginFeature dummyLogin;
 
     public Session getSession() throws Exception {
         return directoryService.open(DirectoryFeature.USER_DIRECTORY_NAME);
@@ -77,10 +66,9 @@ public class TestDirectorySecurityDefault {
     // Default admin tests
     @Test
     public void adminCanCreateEntry() throws Exception {
+        // Given the admin user
+        dummyLogin.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
         try (Session session = getSession()) {
-            // Given the admin user
-            dummyLogin.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
-
             Map<String, Object> map = new HashMap<>();
             map.put("username", "user_0");
             map.put("password", "pass_0");
@@ -93,23 +81,23 @@ public class TestDirectorySecurityDefault {
             entry = session.getEntry(entry.getId());
             Assert.assertNotNull(entry);
 
+        } finally {
             dummyLogin.logout();
         }
     }
 
     @Test
     public void adminCanDeleteEntry() throws Exception {
+        // Given the admin user
+        dummyLogin.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
         try (Session session = getSession()) {
-            // Given the admin user
-            dummyLogin.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
-
             // I can delete entry
             DocumentModel entry = session.getEntry("user_1");
             Assert.assertNotNull(entry);
             session.deleteEntry("user_1");
             entry = session.getEntry("user_1");
             Assert.assertNull(entry);
-
+        } finally {
             dummyLogin.logout();
         }
     }
@@ -117,11 +105,11 @@ public class TestDirectorySecurityDefault {
     // Everyone tests
     @Test
     public void everyoneCantCreateEntry() throws Exception {
+        dummyLogin.login("aUser");
         try (Session session = getSession()) {
             // Given a user
-            dummyLogin.login("aUser");
 
-            Map<String, Object> map = new HashMap<String, Object>();
+            Map<String, Object> map = new HashMap<>();
             map.put("username", "should-not-create");
             map.put("password", "should-not-create");
             map.put("groups", Arrays.asList("members", "administrators"));
@@ -130,30 +118,31 @@ public class TestDirectorySecurityDefault {
             session.createEntry(map);
             fail("Should not be able to create entry");
 
-            dummyLogin.logout();
         } catch (DirectorySecurityException e) {
             // ok
+        } finally {
+            dummyLogin.logout();
         }
     }
 
     @Test
     public void everyoneCanGetEntry() throws Exception {
+        dummyLogin.login("aUser");
         try (Session session = getSession()) {
             // Given a user
-            dummyLogin.login("aUser");
 
             // When I call get entry
             DocumentModel entry = session.getEntry("user_3");
             Assert.assertNotNull(entry);
-
+        } finally {
             dummyLogin.logout();
         }
     }
 
     @Test
     public void everyoneCantDeleteEntry() throws Exception {
+        dummyLogin.login("aUser");
         try (Session session = getSession()) {
-            dummyLogin.login("aUser");
 
             // When I call delete entry
             DocumentModel entry = session.getEntry("user_3");
@@ -164,16 +153,17 @@ public class TestDirectorySecurityDefault {
             entry = session.getEntry("user_3");
             Assert.assertNotNull(entry);
 
-            dummyLogin.logout();
         } catch (DirectorySecurityException e) {
             // ok
+        } finally {
+            dummyLogin.logout();
         }
     }
 
     @Test
     public void everyoneCanSearch() throws Exception {
+        dummyLogin.login("aUser");
         try (Session session = getSession()) {
-            dummyLogin.login("aUser");
 
             // When I query entry
             Map<String, Serializable> map = new HashMap<>();
@@ -182,6 +172,7 @@ public class TestDirectorySecurityDefault {
             Assert.assertNotNull(results);
             Assert.assertEquals(1, results.size());
 
+        } finally {
             dummyLogin.logout();
         }
     }

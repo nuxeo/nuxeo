@@ -19,11 +19,11 @@
 
 package org.nuxeo.ecm.platform.rendition.service;
 
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -33,7 +33,7 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 /**
  * @since 7.3
  */
-@Features({ CoreFeature.class, SQLDirectoryFeature.class, TransientStoreFeature.class })
+@Features({ CoreFeature.class, DirectoryFeature.class, TransientStoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.convert", //
         "org.nuxeo.ecm.platform.login", //
         "org.nuxeo.ecm.platform.web.common", //

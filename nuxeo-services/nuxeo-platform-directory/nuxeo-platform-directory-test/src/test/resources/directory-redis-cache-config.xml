@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.storage.cache">
+
+  <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
+
+    <cache name="entry-cache" class="org.nuxeo.ecm.core.redis.contribs.RedisCache">
+      <ttl>1</ttl><!-- minutes -->
+    </cache>
+
+    <cache name="entry-cache-without-references" class="org.nuxeo.ecm.core.redis.contribs.RedisCache">
+      <ttl>1</ttl><!-- minutes -->
+    </cache>
+
+
+  </extension>
+
+</component>

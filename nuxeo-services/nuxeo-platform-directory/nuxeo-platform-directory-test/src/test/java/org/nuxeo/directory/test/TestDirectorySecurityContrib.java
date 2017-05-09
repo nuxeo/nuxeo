@@ -31,7 +31,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,13 +41,15 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 9.2
  */
 @RunWith(FeaturesRunner.class)
 @Features({ DirectoryFeature.class, ClientLoginFeature.class })
+@LocalDeploy({ "org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml",
+        "org.nuxeo.ecm.directory.tests:test-directories-security.xml" })
 public class TestDirectorySecurityContrib {
 
     public static final String SUPER_USER = "superUser";
@@ -59,19 +60,7 @@ public class TestDirectorySecurityContrib {
     protected ClientLoginFeature dummyLogin;
 
     @Inject
-    protected RuntimeHarness harness;
-
-    @Inject
-    protected DirectoryFeature feature;
-
-    @Inject
     protected DirectoryService directoryService;
-
-    @Before
-    public void setUp() throws Exception {
-        harness.deployContrib(feature.getTestBundleName(), "test-sql-directories-schema-override.xml");
-        harness.deployContrib(feature.getTestBundleName(), "test-sql-directories-security.xml");
-    }
 
     public Session getSession(String directory) throws Exception {
         return directoryService.open(directory);
@@ -120,68 +109,64 @@ public class TestDirectorySecurityContrib {
     @Test
     public void cantGetEntry() throws Exception {
         // Given a user without right
+        dummyLogin.login("aUser");
         try (Session userDirSession = getSession(DirectoryFeature.USER_DIRECTORY_NAME)) {
-            dummyLogin.login("aUser");
-
             DocumentModel entry = userDirSession.getEntry("user_1");
             // no DirectorySecurityException here, just null
             Assert.assertNull(entry);
-
+        } finally {
             dummyLogin.logout();
         }
     }
 
     @Test
     public void canGetEntry() throws Exception {
+        // Given a user without right
+        dummyLogin.login(READER_USER);
         try (Session userDirSession = getSession(DirectoryFeature.USER_DIRECTORY_NAME)) {
-            // Given a user without right
-            dummyLogin.login(READER_USER);
-
             DocumentModel entry = userDirSession.getEntry("user_1");
             Assert.assertNotNull(entry);
-
+        } finally {
             dummyLogin.logout();
         }
     }
 
     @Test
     public void cantSearch() throws Exception {
+        // Given a user without right
+        dummyLogin.login("aUser");
         try (Session userDirSession = getSession(DirectoryFeature.USER_DIRECTORY_NAME)) {
-            // Given a user without right
-            dummyLogin.login("aUser");
-
             // When I query entry
             Map<String, Serializable> map = new HashMap<>();
             map.put("username", "user_3");
             DocumentModelList results = userDirSession.query(map);
             // no DirectorySecurityException here, just an empty list
             Assert.assertEquals(0, results.size());
-
+        } finally {
             dummyLogin.logout();
         }
     }
 
     @Test
     public void canSearch() throws Exception {
+        // Given a user without right
+        dummyLogin.login(SUPER_USER);
         try (Session userDirSession = getSession(DirectoryFeature.USER_DIRECTORY_NAME)) {
-            // Given a user without right
-            dummyLogin.login(SUPER_USER);
-
             // When I query entry
             Map<String, Serializable> map = new HashMap<>();
             map.put("username", "user_3");
             DocumentModelList results = userDirSession.query(map);
             Assert.assertEquals(1, results.size());
-
+        } finally {
             dummyLogin.logout();
         }
     }
 
     @Test
     public void groupCanCreateAndGetEntry() throws Exception {
+        // Given a user member of everyone group
+        dummyLogin.login("aUserEveryone");
         try (Session groupDirSession = getSession(DirectoryFeature.GROUP_DIRECTORY_NAME)) {
-            // Given a user member of everyone group
-            dummyLogin.login("aUserEveryone");
 
             Map<String, Object> map = new HashMap<>();
             map.put("groupname", "newGroup");
@@ -192,7 +177,7 @@ public class TestDirectorySecurityContrib {
             // I can read it too
             entry = groupDirSession.getEntry("newGroup");
             Assert.assertNotNull(entry);
-
+        } finally {
             dummyLogin.logout();
         }
     }
