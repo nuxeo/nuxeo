@@ -81,7 +81,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     public int getApplicationStartedOrder() {
         ComponentInstance repositoryComponent = Framework.getRuntime().getComponentInstance(
                 "org.nuxeo.ecm.core.repository.RepositoryServiceComponent");
-        if (repositoryComponent == null) {
+        if (repositoryComponent == null || repositoryComponent.getInstance() == null) {
             return super.getApplicationStartedOrder();
         }
         return ((DefaultComponent) repositoryComponent.getInstance()).getApplicationStartedOrder() - 5;
