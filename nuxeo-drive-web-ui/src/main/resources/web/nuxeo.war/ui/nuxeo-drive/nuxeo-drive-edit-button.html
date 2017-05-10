@@ -30,8 +30,6 @@ Contributors:
       }
     </style>
 
-    <nuxeo-connection id="nx"></nuxeo-connection>
-
     <nuxeo-resource id="token" path="/token" params='{"application": "Nuxeo Drive"}'></nuxeo-resource>
 
     <template is="dom-if" if="[[_isAvailable(blob)]]">
@@ -52,6 +50,7 @@ Contributors:
       is: 'nuxeo-drive-edit-button',
       behaviors: [Nuxeo.I18nBehavior],
       properties: {
+        user: Object,
         document: Object,
         blob: Object
       },
@@ -91,7 +90,7 @@ Contributors:
         return [
           'nxdrive://edit',
           baseUrl.replace('://', '/'), // XXX replaceFirst
-          'user', this.$.nx.client.user.id, // XXX
+          'user', this.user.id,
           'repo', this.document.repository,
           'nxdocid', this.document.uid,
           'filename', encodeURIComponent(this.blob.name),
