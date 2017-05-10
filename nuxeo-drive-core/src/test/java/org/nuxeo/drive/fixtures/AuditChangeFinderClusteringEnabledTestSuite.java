@@ -68,9 +68,8 @@ public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeF
         }
 
         try {
-            // Check changes, expecting none as clustering delay is not expired
-            changes = getChanges();
-            assertTrue(changes.isEmpty());
+            // NXP-22284: Cannot expect to have no changes if the clustering delay is not expired since waiting for
+            // async completion has an unknown duration
 
             // Wait for (2 * clustering delay + 1 second) then check changes, expecting at least 2:
             // - documentCreated for file1
@@ -99,9 +98,8 @@ public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeF
             commitAndWaitForAsyncCompletion();
         }
 
-        // Check changes, expecting none as clustering delay is not expired
-        changes = getChanges();
-        assertTrue(changes.isEmpty());
+        // NXP-22284: Cannot expect to have no changes if the clustering delay is not expired since waiting for
+        // async completion has an unknown duration
 
         // Wait for (2 * clustering delay + 1 second) then check changes, expecting 2:
         // - documentCreated for file2
