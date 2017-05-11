@@ -151,6 +151,12 @@ public class CoreFeature extends SimpleFeature {
     }
 
     @Override
+    public void stop(FeaturesRunner runner) throws Exception {
+        super.stop(runner);
+        storageConfiguration = null;
+    }
+
+    @Override
     public void beforeRun(FeaturesRunner runner) {
         // wait for async tasks that may have been triggered by
         // RuntimeFeature (typically repo initialization)
