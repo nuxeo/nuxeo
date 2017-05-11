@@ -4,7 +4,7 @@
   <parent>
     <artifactId>nuxeo-features-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>6.0-HF39-SNAPSHOT</version>
+    <version>6.0-HF39</version>
   </parent>
 
   <artifactId>nuxeo-platform-tag-parent</artifactId>
