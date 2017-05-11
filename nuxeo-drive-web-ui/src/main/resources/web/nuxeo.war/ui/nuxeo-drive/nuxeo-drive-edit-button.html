@@ -28,23 +28,18 @@ Contributors:
       :host {
         display: inline-block;
       }
-      paper-icon-button {
-        height: 32px;
-        width: 32px;
-        @apply(--nuxeo-drive-edit-button-layout);
-      }
     </style>
 
     <nuxeo-resource id="token" path="/token" params='{"application": "Nuxeo Drive"}'></nuxeo-resource>
 
     <template is="dom-if" if="[[_isAvailable(blob)]]">
-      <paper-icon-button icon="editor:mode-edit" id="driveBtn" on-tap="_go"></paper-icon-button>
-      <paper-tooltip for="driveBtn">[[i18n('driveEditButton.tooltip','Open with Drive')]]</paper-tooltip>
+      <paper-icon-button noink icon="editor:mode-edit" id="driveBtn" on-tap="_go"></paper-icon-button>
+      <paper-tooltip for="driveBtn">[[i18n('driveEditButton.tooltip')]]</paper-tooltip>
     </template>
 
     <paper-dialog id="dialog" with-backdrop>
       <div class="vertical layout">
-        <h1>[[i18n('driveEditButton.dialog.heading','Download Nuxeo Drive Client')]]</h1>
+        <h1>[[i18n('driveEditButton.dialog.heading')]]</h1>
         <nuxeo-drive-desktop-packages></nuxeo-drive-desktop-packages>
       </div>
     </paper-dialog>
@@ -53,11 +48,12 @@ Contributors:
   <script>
     Polymer({
       is: 'nuxeo-drive-edit-button',
+      behaviors: [Nuxeo.I18nBehavior],
       properties: {
+        user: Object,
         document: Object,
         blob: Object
       },
-      behaviors: [Nuxeo.I18nBehavior],
 
       _isAvailable: function(blob) {
         if (!blob) {
@@ -94,10 +90,10 @@ Contributors:
         return [
           'nxdrive://edit',
           baseUrl.replace('://', '/'), // XXX replaceFirst
-          //'user', this.$.nx.client.user.id, // XXX
+          //'user', this.user.id, // NXP-22302: keep compatibility with both drive versions
           'repo', this.document.repository,
           'nxdocid', this.document.uid,
-          'filename', this.blob.name,
+          'filename', encodeURIComponent(this.blob.name),
           'downloadUrl', downloadUrl].join('/');
       }
 
