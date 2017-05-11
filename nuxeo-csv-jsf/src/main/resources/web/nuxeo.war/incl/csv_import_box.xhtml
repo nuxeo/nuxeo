@@ -8,16 +8,14 @@
       xmlns:c="http://java.sun.com/jstl/core"
       xmlns:nxh="http://nuxeo.org/nxweb/html"
       xmlns:nxl="http://nuxeo.org/nxforms/layout"
-      xmlns:nxd="http://nuxeo.org/nxweb/document"
-      xmlns:jsp="http://java.sun.com/JSP/Page">
+      xmlns:nxd="http://nuxeo.org/nxweb/document">
 
   <a4j:region>
 
     <h3><h:outputText value="#{messages['label.csv.import.title']}" /></h3>
 
     <div class="content">
-      <jsp:useBean id="csv" scope="application" type="org.nuxeo.ecm.csv.core.CSVImporterImpl"/>
-      <nxu:set var="importStatus" value="#{csv.importStatus}">
+      <nxu:set var="importStatus" value="#{csvImportActions.importStatus}">
         <nxu:set var="importScheduled" value="#{not empty importStatus and importStatus.isScheduled()}">
           <nxu:set var="importRunning" value="#{not empty importStatus and importStatus.isRunning()}">
             <nxu:set var="importComplete" value="#{not empty importStatus and importStatus.isComplete()}">
@@ -28,8 +26,6 @@
                     <p class="popUpDescription">
                       <h:outputText value="#{messages['label.csv.import.launch.description']}" />
                     </p>
-                    <jsp:useBean id="csvImportActions" scope="application" type="org.nuxeo.ecm.csv.jsf.CSVImportActions"/>
-                    <jsp:useBean id="localeSelector" scope="application" type="org.jboss.seam.international.LocaleSelector"/>
 
                     <rich:fileUpload fileUploadListener="#{csvImportActions.uploadListener}"
                       maxFilesQuantity="1" immediateUpload="true"
