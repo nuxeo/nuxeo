@@ -132,6 +132,25 @@ public class Selection {
         softMap.put(selId, this);
     }
 
+    /**
+     * Gets the ids in that fragment, if complete (otherwise returns {@code null}).
+     *
+     * @since 9.2
+     */
+    public Set<Serializable> getIds() {
+        if (!complete) {
+            return null;
+        }
+        Set<Serializable> ids = new HashSet<>();
+        if (existing != null) {
+            ids.addAll(existing);
+        }
+        if (created != null) {
+            ids.addAll(created);
+        }
+        return ids;
+    }
+
     protected Serializable fragmentValue(SimpleFragment fragment) {
         return fragment.get(filterKey);
     }

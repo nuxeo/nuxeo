@@ -1122,6 +1122,37 @@ public class SQLInfo {
             this.selectAll = selectAll;
             this.selectFiltered = selectFiltered;
         }
+
+        /**
+         * Select selection ids for multiple values.
+         */
+        public SQLInfoSelect getSelectSelectionIds(int nids) {
+            Table table = database.getTable(type.tableName);
+            String from = table.getQuotedName();
+            Table hierTable = database.getTable(Model.HIER_TABLE_NAME);
+            Join join = new Join(Join.INNER, hierTable.getQuotedName(), null, null,
+                    hierTable.getColumn(Model.MAIN_KEY), table.getColumn(Model.MAIN_KEY));
+            from += join.toSql(dialect);
+
+            Column whatColumn = table.getColumn(Model.MAIN_KEY);
+            Column whereColumn = table.getColumn(type.selKey);
+            StringBuilder wherebuf = new StringBuilder(whereColumn.getQuotedName());
+            wherebuf.append(" IN (");
+            for (int i = 0; i < nids; i++) {
+                if (i != 0) {
+                    wherebuf.append(", ");
+                }
+                wherebuf.append('?');
+            }
+            wherebuf.append(')');
+            wherebuf.append(getSoftDeleteClause(Model.HIER_TABLE_NAME));
+            Select select = new Select(table);
+            select.setWhat(whatColumn.getFullQuotedName());
+            select.setFrom(from);
+            select.setWhere(wherebuf.toString());
+            return new SQLInfoSelect(select.getStatement(), Collections.singletonList(whatColumn),
+                    Collections.singletonList(whereColumn), null);
+        }
     }
 
     /**
