@@ -912,14 +912,13 @@ public class PersistenceContext {
     }
 
     /**
-     * Removes a document node and its children.
-     * <p>
-     * Assumes a full flush was done.
+     * Gets descendants infos from a given root node. This includes information about the root node itself.
+     *
+     * @since 9.2
      */
-    public void removeNode(SimpleFragment hierFragment) {
+    public List<NodeInfo> getNodeAndDescendantsInfo(SimpleFragment hierFragment) {
+        // get root info
         Serializable rootId = hierFragment.getId();
-
-        // get root info before deletion. may be a version or proxy
         SimpleFragment versionFragment;
         SimpleFragment proxyFragment;
         if (Model.PROXY_TYPE.equals(hierFragment.getString(Model.MAIN_PRIMARY_TYPE_KEY))) {
@@ -933,12 +932,34 @@ public class PersistenceContext {
             proxyFragment = null;
         }
         NodeInfo rootInfo = new NodeInfo(hierFragment, versionFragment, proxyFragment);
+        List<NodeInfo> infos = mapper.getDescendantsInfo(rootId);
+        infos.add(rootInfo);
+        return infos;
+    }
+
+    /**
+     * Removes a document node and its children.
+     * <p>
+     * Assumes a full flush was done.
+     */
+    public void removeNode(SimpleFragment hierFragment, List<NodeInfo> nodeInfos) {
+        Serializable rootId = hierFragment.getId();
+
+        // get root info before deletion. may be a version or proxy
+        SimpleFragment versionFragment;
+        if (Model.PROXY_TYPE.equals(hierFragment.getString(Model.MAIN_PRIMARY_TYPE_KEY))) {
+            versionFragment = null;
+        } else if (Boolean.TRUE.equals(hierFragment.get(Model.MAIN_IS_VERSION_KEY))) {
+            versionFragment = (SimpleFragment) get(new RowId(Model.VERSION_TABLE_NAME, rootId), true);
+        } else {
+            versionFragment = null;
+        }
 
         // remove with descendants, and generate cache invalidations
-        List<NodeInfo> infos = mapper.remove(rootInfo);
+        mapper.remove(rootId, nodeInfos);
 
         // remove from context and selections
-        for (NodeInfo info : infos) {
+        for (NodeInfo info : nodeInfos) {
             Serializable id = info.id;
             for (String fragmentName : model.getTypeFragments(new IdWithTypes(id, info.primaryType, null))) {
                 RowId rowId = new RowId(fragmentName, id);
@@ -1103,6 +1124,29 @@ public class PersistenceContext {
 
     private List<Serializable> fragmentsIds(List<? extends Fragment> fragments) {
         return fragments.stream().map(Fragment::getId).collect(Collectors.toList());
+    }
+
+    // called only when proxies enabled
+    public Set<Serializable> getTargetProxies(Set<Serializable> ids) {
+        // we don't read and create full selections to avoid trashing the selection cache
+        // and because we're only interested in their ids
+        Set<Serializable> proxyIds = new HashSet<>();
+        // find what selections we already know about and for which ones we will have to ask the database
+        List<Serializable> todo = new ArrayList<>();
+        for (Serializable id : ids) {
+            Selection selection = targetProxies.getSelectionOrNull(id);
+            Set<Serializable> selectionProxyIds = selection == null ? null : selection.getIds();
+            if (selectionProxyIds == null) {
+                todo.add(id);
+            } else {
+                proxyIds.addAll(selectionProxyIds);
+            }
+        }
+        if (!todo.isEmpty()) {
+            // ask the database
+            proxyIds.addAll(targetProxies.getSelectionIds(todo));
+        }
+        return proxyIds;
     }
 
     /*
