@@ -1337,7 +1337,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * Checks if a document can be removed, and returns a failure reason if not.
      */
     protected String canRemoveDocument(Document doc) {
-        // TODO must also check for proxies on live docs
+        // TODO must also check for proxies on live docs (NXP-22312)
         if (doc.isVersion()) {
             // TODO a hasProxies method would be more efficient
             Collection<Document> proxies = getSession().getProxies(doc, null);

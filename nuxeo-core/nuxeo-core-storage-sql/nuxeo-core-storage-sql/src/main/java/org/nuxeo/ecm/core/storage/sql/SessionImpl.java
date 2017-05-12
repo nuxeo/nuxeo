@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 
 import javax.resource.ResourceException;
@@ -47,6 +48,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
@@ -64,6 +66,7 @@ import org.nuxeo.ecm.core.storage.FulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.storage.sql.PersistenceContext.PathAndId;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.NodeInfo;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLFulltextExtractorWork;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -1094,8 +1097,28 @@ public class SessionImpl implements Session, XAResource {
         flush();
         // remove the lock using the lock manager
         // TODO children locks?
-        getLockManager().removeLock(model.idToString(node.getId()), null);
-        context.removeNode(node.getHierFragment());
+        Serializable id = node.getId();
+        getLockManager().removeLock(model.idToString(id), null);
+        // find all descendants
+        List<NodeInfo> nodeInfos = context.getNodeAndDescendantsInfo(node.getHierFragment());
+
+        if (repository.getRepositoryDescriptor().getProxiesEnabled()) {
+            // if a proxy target is removed, check that all proxies to it are removed
+            Set<Serializable> removedIds = nodeInfos.stream().map(info -> info.id).collect(Collectors.toSet());
+            // find proxies pointing to any removed document
+            Set<Serializable> proxyIds = context.getTargetProxies(removedIds);
+            for (Serializable proxyId : proxyIds) {
+                if (!removedIds.contains(proxyId)) {
+                    Node proxy = getNodeById(proxyId);
+                    Serializable targetId = (Serializable) proxy.getSingle(Model.PROXY_TARGET_PROP);
+                    throw new DocumentExistsException(
+                            "Cannot remove " + id + ", subdocument " + targetId + " is the target of proxy " + proxyId);
+                }
+            }
+        }
+
+        // remove all nodes
+        context.removeNode(node.getHierFragment(), nodeInfos);
     }
 
     @Override
