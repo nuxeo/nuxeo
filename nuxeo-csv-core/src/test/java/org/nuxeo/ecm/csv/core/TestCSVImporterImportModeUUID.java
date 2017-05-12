@@ -20,13 +20,13 @@ package org.nuxeo.ecm.csv.core;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -44,7 +44,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, SQLDirectoryFeature.class, TransientStoreFeature.class })
+@Features({ CoreFeature.class, DirectoryFeature.class, TransientStoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.login", //
         "org.nuxeo.ecm.platform.web.common", //
         "org.nuxeo.ecm.platform.usermanager.api", //
