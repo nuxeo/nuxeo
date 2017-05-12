@@ -96,6 +96,19 @@ public class SelectionContext {
 
     /** Gets the proper selection cache. Creates one if missing. */
     private Selection getSelection(Serializable selId) {
+        Selection selection = getSelectionOrNull(selId);
+        if (selection != null) {
+            return selection;
+        }
+        return new Selection(selId, selType.tableName, false, selType.filterKey, context, softMap, hardMap);
+    }
+
+    /**
+     * Gets the proper selection cache, if it exists, otherwise returns {@code null}.
+     *
+     * @since 9.2
+     */
+    protected Selection getSelectionOrNull(Serializable selId) {
         final Timer.Context timerContext = cacheGetTimer.time();
         try {
             Selection selection = softMap.get(selId);
@@ -111,8 +124,7 @@ public class SelectionContext {
         } finally {
             timerContext.stop();
         }
-
-        return new Selection(selId, selType.tableName, false, selType.filterKey, context, softMap, hardMap);
+        return null;
     }
 
     public boolean applicable(SimpleFragment fragment) {
@@ -238,6 +250,15 @@ public class SelectionContext {
             fragments = selection.getFragmentsByValue(filter);
         }
         return fragments;
+    }
+
+    /**
+     * Gets all the selection fragment ids for a given list of values.
+     *
+     * @since 9.2
+     */
+    public Set<Serializable> getSelectionIds(List<Serializable> values) {
+        return mapper.readSelectionsIds(selType, values);
     }
 
     public void postSave() {

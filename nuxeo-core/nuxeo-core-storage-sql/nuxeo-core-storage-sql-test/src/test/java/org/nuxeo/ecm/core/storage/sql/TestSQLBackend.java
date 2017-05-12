@@ -65,6 +65,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -2331,7 +2332,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // create proxy2 in folder2
         session.addProxy(ver.getId(), node.getId(), folder2, "proxy2", null);
         // create proxy3 in folder3
-        session.addProxy(ver.getId(), node.getId(), folder3, "proxy3", null);
+        Node proxy3 = session.addProxy(ver.getId(), node.getId(), folder3, "proxy3", null);
 
         List<Node> list;
         list = session.getProxies(ver, null); // by target
@@ -2348,8 +2349,18 @@ public class TestSQLBackend extends SQLBackendTestCase {
         list = session.getProxies(node, null); // by series
         assertEquals(1, list.size());
 
-        // remove target, should remove proxies as well
-        session.removeNode(ver);
+        // remove target is forbidden while proxy still exists
+        try {
+            session.removeNode(ver);
+        } catch (DocumentExistsException e) {
+            String msg = e.getMessage();
+            assertTrue(msg, msg.contains("is the target of proxy"));
+        }
+
+        // remove last proxy
+        session.removeNode(proxy3);
+
+        // check selections are correct
         list = session.getProxies(ver, null); // by target
         assertEquals(0, list.size());
     }

@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -521,6 +522,11 @@ public class UnifiedCachingRowMapper implements RowMapper {
         return rows;
     }
 
+    @Override
+    public Set<Serializable> readSelectionsIds(SelectionType selType, List<Serializable> values) {
+        return rowMapper.readSelectionsIds(selType, values);
+    }
+
     /*
      * ----- Copy -----
      */
@@ -545,9 +551,14 @@ public class UnifiedCachingRowMapper implements RowMapper {
     }
 
     @Override
-    public List<NodeInfo> remove(NodeInfo rootInfo) {
-        List<NodeInfo> infos = rowMapper.remove(rootInfo);
-        for (NodeInfo info : infos) {
+    public List<NodeInfo> getDescendantsInfo(Serializable rootId) {
+        return rowMapper.getDescendantsInfo(rootId);
+    }
+
+    @Override
+    public void remove(Serializable rootId, List<NodeInfo> nodeInfos) {
+        rowMapper.remove(rootId, nodeInfos);
+        for (NodeInfo info : nodeInfos) {
             for (String fragmentName : model.getTypeFragments(new IdWithTypes(info.id, info.primaryType, null))) {
                 RowId rowId = new RowId(fragmentName, info.id);
                 cacheRemove(rowId);
@@ -556,8 +567,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
         }
         // we only put as absent the root fragment, to avoid polluting the cache
         // with lots of absent info. the rest is removed entirely
-        cachePutAbsent(new RowId(Model.HIER_TABLE_NAME, rootInfo.id));
-        return infos;
+        cachePutAbsent(new RowId(Model.HIER_TABLE_NAME, rootId));
     }
 
     @Override
