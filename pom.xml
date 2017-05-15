@@ -60,6 +60,7 @@
     <nuxeo.threed.version>9.2-SNAPSHOT</nuxeo.threed.version>
     <nuxeo.mqueues.version>9.2-SNAPSHOT</nuxeo.mqueues.version>
     <nuxeo.mongodb.ext.version>9.2-SNAPSHOT</nuxeo.mongodb.ext.version>
+    <nuxeo.target.platforms.version>9.2-SNAPSHOT</nuxeo.target.platforms.version>
     
     <!-- optional addons -->
     <nuxeo.sync.version>9.2-SNAPSHOT</nuxeo.sync.version>
@@ -125,6 +126,7 @@
     <module>nuxeo-mqueues</module>
     <module>nuxeo-agenda</module>
     <module>nuxeo-mongodb-ext</module>
+    <module>nuxeo-target-platforms</module>
   </modules>
 
   <dependencyManagement>
@@ -1080,6 +1082,45 @@
         <version>${nuxeo.mongodb.ext.version}</version>
         <type>test-jar</type>
         <scope>test</scope>
+      </dependency>
+
+      <!-- Target platforms -->
+      <dependency>
+        <groupId>org.nuxeo.utils</groupId>
+        <artifactId>nuxeo-target-platforms-api</artifactId>
+        <version>${nuxeo.target.platforms.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.utils</groupId>
+        <artifactId>nuxeo-target-platforms-core</artifactId>
+        <version>${nuxeo.target.platforms.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.utils</groupId>
+        <artifactId>nuxeo-target-platforms-core</artifactId>
+        <version>${nuxeo.target.platforms.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.utils</groupId>
+        <artifactId>nuxeo-target-platforms-io</artifactId>
+        <version>${nuxeo.target.platforms.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.utils</groupId>
+        <artifactId>nuxeo-target-platforms-jaxrs</artifactId>
+        <version>${nuxeo.target.platforms.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.utils</groupId>
+        <artifactId>nuxeo-target-platforms-jsf</artifactId>
+        <version>${nuxeo.target.platforms.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.utils</groupId>
+        <artifactId>nuxeo-target-platforms-sample</artifactId>
+        <version>${nuxeo.target.platforms.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
