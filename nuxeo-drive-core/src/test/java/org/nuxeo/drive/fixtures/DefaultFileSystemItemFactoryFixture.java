@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -960,6 +961,8 @@ public class DefaultFileSystemItemFactoryFixture {
 
     @Test
     public void testFolderItemChildrenPageProviderOverride() throws Exception {
+        assumeFalse("Cannot test reload for in-memory repository", coreFeature.getStorageConfiguration().isDBSMem());
+
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), syncRootFolder, session);
         FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
                 "defaultSyncRootFolderItemFactory");

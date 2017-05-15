@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
 
 import java.io.Serializable;
 import java.util.List;
@@ -58,6 +59,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService.Forcing;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
@@ -75,6 +77,9 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @Features(NuxeoDriveFeature.class)
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-adapter-service-contrib.xml")
 public class TestFileSystemItemAdapterService {
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -421,6 +426,7 @@ public class TestFileSystemItemAdapterService {
 
     @Test
     public void testContribOverride() throws Exception {
+        assumeFalse("Cannot test reload for in-memory repository", coreFeature.getStorageConfiguration().isDBSMem());
 
         harness.deployContrib("org.nuxeo.drive.core.test",
                 "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
