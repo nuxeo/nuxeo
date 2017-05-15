@@ -19,7 +19,6 @@
     <module>nuxeo-target-platforms-jsf</module>
     <module>nuxeo-target-platforms-jaxrs</module>
     <module>nuxeo-target-platforms-sample</module>
-    <module>nuxeo-target-platforms-mp</module>
   </modules>
 
   <scm>
