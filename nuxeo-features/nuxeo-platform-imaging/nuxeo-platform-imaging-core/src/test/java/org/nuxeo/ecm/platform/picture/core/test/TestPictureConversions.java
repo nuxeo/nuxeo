@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +32,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -38,7 +41,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.PictureConversion;
@@ -79,6 +84,12 @@ public class TestPictureConversions {
 
     @Inject
     protected RuntimeHarness runtimeHarness;
+
+    @Inject
+    protected EventService eventService;
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     protected List<String> getPictureConversionIds() {
         List<String> ids = new ArrayList<>();
@@ -210,6 +221,28 @@ public class TestPictureConversions {
         assertNull(multiviewPicture.getView("anotherSmallConversion"));
 
         undeployContrib(PICTURE_CONVERSIONS_FILTERS_COMPONENT_LOCATION);
+    }
+
+    @Test
+    public void pictureConversionsAlwaysHaveExtensions() throws IOException {
+        DocumentModel picture = session.createDocumentModel("/", "picture", "Picture");
+        // Use a small image so the biggest conversions will have the same result and it will be fetched from the cache
+        Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/cat.gif"));
+        blob.setFilename("Cat.gif");
+        blob.setMimeType("image/gif");
+        picture.setPropertyValue("file:content", (Serializable) blob);
+        picture = session.createDocument(picture);
+        txFeature.nextTransaction();
+
+        // Wait for the end of all the async works
+        eventService.waitForAsyncCompletion();
+
+        // Fetch the picture views
+        MultiviewPicture multiviewPicture = picture.getAdapter(MultiviewPicture.class);
+        for (PictureView pictureView : multiviewPicture.getViews()) {
+            assertEquals("jpg", FilenameUtils.getExtension(pictureView.getFilename()));
+            assertTrue(StringUtils.containsIgnoreCase(pictureView.getFilename(), "cat"));
+        }
     }
 
     private void deployContrib(String component) throws Exception {
