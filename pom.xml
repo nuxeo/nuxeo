@@ -20,7 +20,6 @@
     <module>nuxeo-target-platforms-jsf</module>
     <module>nuxeo-target-platforms-jaxrs</module>
     <module>nuxeo-target-platforms-sample</module>
-    <module>nuxeo-target-platforms-mp</module>
     <module>nuxeo-target-platforms-compat</module>
   </modules>
 
