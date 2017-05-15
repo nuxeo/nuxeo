@@ -5640,7 +5640,10 @@
                 |BSD licence
                 |BSD style
                 |BSD-style license
-                |The BSD License</licenseMerge>
+                |The BSD License
+                |http://jaxen.codehaus.org/license.html</licenseMerge>
+              <licenseMerge>BSD 4
+                |Indiana University Extreme! Lab Software License, vesion 1.1.1</licenseMerge>
               <licenseMerge>CDDL 1.0
                 |CDDL
                 |CDDL license
@@ -5727,6 +5730,8 @@
                 |Public domain
                 |Public domain, Sun Microsoystems
                 |The SAX License</licenseMerge>
+              <licenseMerge>Unicode
+                |ICU License</licenseMerge>
               <licenseMerge>W3C
                 |The W3C Software License
                 |The W3C License
