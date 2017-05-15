@@ -509,19 +509,20 @@ DropZoneUIHandler.prototype.removeDropPanel = function (dropId, batchId) {
   $.fn.nxDropZone = function (options) {
 
     this.each(function () {
-      var dropZone = jQuery(this);
-      var dropId = dropZone.attr("id");
-      // only get the ids
-      // real underlying object will be initialized when needed
-      // to avoid any clash with other DnD features ...
-      dropZones.push({
+      var dropZoneEle = jQuery(this);
+      var dropId = dropZoneEle.attr("id");
+      var dropZone = {
         id: dropId,
         initDone: false,
         options: options
-      });
+      };
+      // only get the ids
+      // real underlying object will be initialized when needed
+      // to avoid any clash with other DnD features ...
+      dropZones.push(dropZone);
 
-      if (dropZone.data("loadalreadyuploadedfiles")) {
-        highlightDropZones(null, dropZones, dropId);
+      if (dropZoneEle.data("loadalreadyuploadedfiles")) {
+        highlightDropZones(null, dropZones, dropZone);
       }
     });
 
