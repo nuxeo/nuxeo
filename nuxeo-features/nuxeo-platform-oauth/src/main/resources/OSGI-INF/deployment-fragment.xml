@@ -35,14 +35,20 @@
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
-    <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter
-      </filter-name>
-      <url-pattern>/oauth2/*</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
+  </extension>
 
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>OAuth2 Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Servlet
+      </servlet-class>
+      <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>OAuth2 Servlet</servlet-name>
+      <url-pattern>/oauth2/*</url-pattern>
+    </servlet-mapping>
   </extension>
 
 </fragment>
