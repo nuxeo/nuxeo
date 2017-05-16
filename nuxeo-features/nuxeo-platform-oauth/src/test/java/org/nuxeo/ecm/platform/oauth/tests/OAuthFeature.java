@@ -28,7 +28,8 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy({ "org.nuxeo.ecm.platform.forms.layout.api", "org.nuxeo.ecm.platform.forms.layout.core",
         "org.nuxeo.ecm.platform.forms.layout.client", "org.nuxeo.ecm.platform.web.common",
         "org.nuxeo.ecm.platform.oauth" })
-@LocalDeploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/directory-test-config.xml")
+@LocalDeploy({ "org.nuxeo.ecm.platform.oauth:OSGI-INF/directory-test-config.xml",
+        "org.nuxeo.ecm.platform.oauth:OSGI-INF/jetty-test-config.xml" })
 public class OAuthFeature extends SimpleFeature {
 
 }

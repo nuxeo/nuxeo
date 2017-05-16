@@ -19,10 +19,6 @@
 package org.nuxeo.ecm.platform.oauth2.request;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS.invalid_request;
-import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS.server_error;
-import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS.unauthorized_client;
-import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS.unsupported_response_type;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -36,6 +32,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.platform.oauth2.OAuth2Error;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.runtime.api.Framework;
 
@@ -85,26 +82,26 @@ public class AuthorizationRequest extends Oauth2Request {
         authorizationKey = RandomStringUtils.random(6, true, false);
     }
 
-    public String checkError() {
+    public OAuth2Error checkError() {
         // Check mandatory fields
         if (isBlank(responseType) || isBlank(clientId) || isBlank(redirectUri)) {
-            return invalid_request.toString();
+            return OAuth2Error.INVALID_REQUEST;
         }
 
         // Check if client exists
         try {
             ClientRegistry registry = Framework.getLocalService(ClientRegistry.class);
             if (!registry.hasClient(clientId)) {
-                return unauthorized_client.toString();
+                return OAuth2Error.UNAUTHORIZED_CLIENT;
             }
         } catch (DirectoryException e) {
             log.warn(e, e);
-            return server_error.toString();
+            return OAuth2Error.SERVER_ERROR;
         }
 
         // Check request type
         if (!"code".equals(responseType)) {
-            return unsupported_response_type.toString();
+            return OAuth2Error.UNSUPPORTED_RESPONSE_TYPE;
         }
         return null;
     }

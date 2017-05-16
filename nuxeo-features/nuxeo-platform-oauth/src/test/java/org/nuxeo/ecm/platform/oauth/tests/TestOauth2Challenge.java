@@ -18,8 +18,10 @@
  */
 package org.nuxeo.ecm.platform.oauth.tests;
 
-import static org.junit.Assert.*;
-import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Date;
@@ -33,6 +35,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.platform.oauth2.OAuth2Error;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
@@ -118,7 +121,7 @@ public class TestOauth2Challenge {
         ClientResponse cr = responseFromAuthorizationWith(params);
         assertEquals(302, cr.getStatus());
         String redirect = cr.getHeaders().get("Location").get(0);
-        assertTrue(redirect.contains("error=" + ERRORS.unauthorized_client));
+        assertTrue(redirect.contains("error=" + OAuth2Error.UNAUTHORIZED_CLIENT.toString().toLowerCase()));
     }
 
     @Test
