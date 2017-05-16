@@ -32,6 +32,8 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
+import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -93,7 +95,14 @@ public class AnnotationScanner {
         }
         visitedClasses.add(clazz);
         List<Annotation> result = new ArrayList<Annotation>(); // collect only the annotation on this class
-        result.addAll(Arrays.asList(clazz.getAnnotations()));
+        try {
+            Annotation[] data = clazz.getAnnotations();
+            result.addAll(Arrays.asList(data));
+        } catch (ArrayStoreException cause) {
+            throw new AssertionError(
+                    "Cannot load annotations of " + clazz.getName() + ", check your classpath for missing classes\n" + new FastClasspathScanner().getUniqueClasspathElements(),
+                    cause);
+        }
         // first scan interfaces
         for (Class<?> itf : clazz.getInterfaces()) {
             result.addAll(collectAnnotations(itf));
