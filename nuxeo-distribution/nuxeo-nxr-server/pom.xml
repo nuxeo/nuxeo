@@ -568,6 +568,16 @@
       <artifactId>nuxeo-rest-api-server</artifactId>
     </dependency>
 
+    <!-- hot reload -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-connect-update</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-connect-client-wrapper</artifactId>
+    </dependency>
+
     <!-- Connect Tools Report -->
     <dependency>
       <groupId>org.nuxeo.connect.tools</groupId>
