@@ -57,6 +57,8 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     protected static final String ENDPOINT_TOKEN = "token";
 
+    protected static final String ENDPOINT_AUTH_SUBMIT = "authorization_submit";
+
     public static final String USERNAME_KEY = "nuxeo_user";
 
     public static final String AUTHORIZATION_KEY = "authorization_key";
@@ -69,11 +71,15 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     public static final String CLIENT_NAME = "client_name";
 
-    public static final String GRANT_JSP_PAGE = "oauth2grant.jsp";
+    public static final String GRANT_JSP_PAGE = "oauth2Grant.jsp";
 
     public static final String AUTHORIZATION_CODE_GRANT_TYPE = "authorization_code";
 
     public static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
+
+    public static final String GRANT_ACCESS_PARAM = "grant_access";
+
+    public static final String DENY_ACCESS_PARAM = "deny_access";
 
     public static final int ACCESS_TOKEN_EXPIRATION_TIME = 3600 * 1000;
 
@@ -96,8 +102,8 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
-        if (pathInfo.endsWith(ENDPOINT_AUTH)) {
-            doPostAuthorization(request, response);
+        if (pathInfo.endsWith(ENDPOINT_AUTH_SUBMIT)) {
+            doPostAuthorizationSubmit(request, response);
         } else {
             response.sendError(SC_NOT_FOUND);
         }
@@ -153,9 +159,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
             // Store token
             NuxeoOAuth2Token token = new NuxeoOAuth2Token(ACCESS_TOKEN_EXPIRATION_TIME, authRequest.getClientId());
-            TransactionHelper.runInTransaction(() -> {
-                tokenStore.store(authRequest.getUsername(), token);
-            });
+            TransactionHelper.runInTransaction(() -> tokenStore.store(authRequest.getUsername(), token));
 
             handleTokenResponse(token, response);
         } else if (REFRESH_TOKEN_GRANT_TYPE.equals(tokRequest.getGrantType())) {
@@ -184,7 +188,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         }
     }
 
-    protected void doPostAuthorization(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPostAuthorizationSubmit(HttpServletRequest request, HttpServletResponse response) throws IOException {
         AuthorizationRequest authRequest = AuthorizationRequest.from(request);
         OAuth2Error error = authRequest.checkError();
         if (error != null) {
@@ -192,9 +196,12 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             return;
         }
 
-        // Ensure that authorization key is the correct one
+        String grantAccess = request.getParameter(GRANT_ACCESS_PARAM);
+        String denyAccess = request.getParameter(DENY_ACCESS_PARAM);
+
+        // Ensure that the user actually grant access and the authorization key is the correct one
         String authKeyForm = request.getParameter(AUTHORIZATION_KEY);
-        if (!authRequest.getAuthorizationKey().equals(authKeyForm)) {
+        if ((denyAccess != null || grantAccess == null) || !authRequest.getAuthorizationKey().equals(authKeyForm)) {
             handleError(OAuth2Error.ACCESS_DENIED, request, response, authRequest.getRedirectUri());
             return;
         }
@@ -210,7 +217,6 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
         request.getSession().invalidate();
         sendRedirect(response, authRequest.getRedirectUri(), params);
-
     }
 
     protected void handleTokenResponse(NuxeoOAuth2Token token, HttpServletResponse response) throws IOException {
