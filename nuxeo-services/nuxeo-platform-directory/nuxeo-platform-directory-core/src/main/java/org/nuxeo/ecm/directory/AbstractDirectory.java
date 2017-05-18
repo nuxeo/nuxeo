@@ -25,13 +25,18 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
@@ -56,7 +61,9 @@ public abstract class AbstractDirectory implements Directory {
 
     protected final Counter sessionMaxCount;
 
-    private List<String> types = new ArrayList<String>();
+    protected Map<String, Field> schemaFieldMap;
+
+    protected List<String> types = new ArrayList<>();
 
     protected AbstractDirectory(BaseDirectoryDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -72,17 +79,21 @@ public abstract class AbstractDirectory implements Directory {
                 throw new DirectoryException("schema configuration is missing for directory " + getName());
             }
         }
-        cache = new DirectoryCache(getName());
+
         sessionCount = registry.counter(MetricRegistry.name("nuxeo", "directories", getName(), "sessions", "active"));
         sessionMaxCount = registry.counter(MetricRegistry.name("nuxeo", "directories", getName(), "sessions", "max"));
+
+        // cache parameterization
+        cache = new DirectoryCache(getName());
+        cache.setEntryCacheName(descriptor.cacheEntryName);
+        cache.setEntryCacheWithoutReferencesName(descriptor.cacheEntryWithoutReferencesName);
+        cache.setNegativeCaching(descriptor.negativeCaching);
+
     }
 
     protected boolean doSanityChecks() {
         return true;
     }
-
-    /** To be implemented with a more specific return type. */
-    public abstract BaseDirectoryDescriptor getDescriptor();
 
     @Override
     public String getName() {
@@ -118,9 +129,7 @@ public abstract class AbstractDirectory implements Directory {
         descriptor.setReadOnly(readOnly);
     }
 
-    /**
-     * Invalidate my cache and the caches of linked directories by references.
-     */
+    @Override
     public void invalidateCaches() throws DirectoryException {
         cache.invalidateAll();
         for (Reference ref : getReferences()) {
@@ -246,4 +255,8 @@ public abstract class AbstractDirectory implements Directory {
         return descriptor.getDeleteConstraints();
     }
 
+    @Override
+    public Map<String, Field> getSchemaFieldMap() {
+        return schemaFieldMap;
+    }
 }

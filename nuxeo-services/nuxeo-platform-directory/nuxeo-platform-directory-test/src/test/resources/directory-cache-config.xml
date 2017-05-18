@@ -15,7 +15,6 @@
       <concurrencyLevel>1</concurrencyLevel>
     </cache>
 
-
   </extension>
 
 </component>

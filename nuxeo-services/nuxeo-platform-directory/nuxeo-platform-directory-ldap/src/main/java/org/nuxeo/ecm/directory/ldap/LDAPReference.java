@@ -1187,6 +1187,12 @@ public class LDAPReference extends AbstractReference {
         addLinks(sourceIds, targetId);
     }
 
+    @Override
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session)
+            throws DirectoryException {
+        setSourceIdsForTarget(targetId, sourceIds);
+    }
+
     /**
      * Set the list of statically defined references for a given source (dynamic references remain unaltered)
      *
@@ -1196,6 +1202,22 @@ public class LDAPReference extends AbstractReference {
     public void setTargetIdsForSource(String sourceId, List<String> targetIds) throws DirectoryException {
         removeLinksForSource(sourceId);
         addLinks(sourceId, targetIds);
+    }
+
+    @Override
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session)
+            throws DirectoryException {
+        setTargetIdsForSource(sourceId, targetIds);
+    }
+
+    @Override
+    public void removeLinksForTarget(String targetId, Session session) throws DirectoryException {
+        removeLinksForTarget(targetId);
+    }
+
+    @Override
+    public void removeLinksForSource(String sourceId, Session session) throws DirectoryException {
+        removeLinksForSource(sourceId);
     }
 
     @Override
@@ -1214,6 +1236,18 @@ public class LDAPReference extends AbstractReference {
         LDAPReference clone = (LDAPReference) super.clone();
         // basic fields are already copied by super.clone()
         return clone;
+    }
+
+    @Override
+    public void addLinks(String sourceId, List<String> targetIds, Session session) throws DirectoryException {
+        // TODO to use for optimization
+        addLinks(sourceId, targetIds);
+    }
+
+    @Override
+    public void addLinks(List<String> sourceIds, String targetId, Session session) throws DirectoryException {
+        // TODO to use for optimization
+        addLinks(sourceIds, targetId);
     }
 
 }

@@ -62,7 +62,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
-import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntrySource;
@@ -74,32 +73,14 @@ import org.nuxeo.ecm.directory.sql.filter.SQLComplexFilter;
 /**
  * This class represents a session against an SQLDirectory.
  */
-public class SQLSession extends BaseSession implements EntrySource {
+public class SQLSession extends BaseSession {
 
     private static final Log log = LogFactory.getLog(SQLSession.class);
 
     // set to false for debugging
     private static final boolean HIDE_PASSWORD_IN_LOGS = true;
 
-    protected final Map<String, Field> schemaFieldMap;
-
-    protected final Set<String> emptySet = Collections.emptySet();
-
-    final String schemaName;
-
     final Table table;
-
-    private final SubstringMatchType substringMatchType;
-
-    String dataSourceName;
-
-    final String idField;
-
-    final String passwordField;
-
-    final String passwordHashAlgorithm;
-
-    private final boolean autoincrementIdField;
 
     private final boolean computeMultiTenantId;
 
@@ -114,344 +95,18 @@ public class SQLSession extends BaseSession implements EntrySource {
     protected JDBCLogger logger = new JDBCLogger("SQLDirectory");
 
     public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config) throws DirectoryException {
-        super(directory);
-        schemaName = config.schemaName;
+        super(directory, TableReference.class);
         table = directory.getTable();
-        idField = config.idField;
-        passwordField = config.passwordField;
-        passwordHashAlgorithm = config.passwordHashAlgorithm;
-        schemaFieldMap = directory.getSchemaFieldMap();
         dialect = directory.getDialect();
         sid = String.valueOf(SIDGenerator.next());
-        substringMatchType = config.getSubstringMatchType();
-        autoincrementIdField = config.isAutoincrementIdField();
         staticFilters = config.getStaticFilters();
         computeMultiTenantId = config.isComputeMultiTenantId();
-        permissions = config.permissions;
         acquireConnection();
     }
 
     @Override
     public SQLDirectory getDirectory() {
         return (SQLDirectory) directory;
-    }
-
-    protected List<Column> getReadColumns() {
-        return readAllColumns ? getDirectory().readColumnsAll : getDirectory().readColumns;
-    }
-
-    protected String getReadColumnsSQL() {
-        return readAllColumns ? getDirectory().readColumnsAllSQL : getDirectory().readColumnsSQL;
-    }
-
-    protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
-        String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
-        // If the prefixed id is not here, try to get without prefix
-        // It may happen when we gentry from sql
-        if (!fieldMap.containsKey(idFieldName)) {
-            idFieldName = getIdField();
-        }
-
-        String id = String.valueOf(fieldMap.get(idFieldName));
-        try {
-            DocumentModel docModel = BaseSession.createEntryModel(sid, schemaName, id, fieldMap, isReadOnly());
-            return docModel;
-        } catch (PropertyException e) {
-            log.error(e, e);
-            return null;
-        }
-    }
-
-    private void acquireConnection() throws DirectoryException {
-        try {
-            if (sqlConnection == null || sqlConnection.isClosed()) {
-                sqlConnection = getDirectory().getConnection();
-            }
-        } catch (SQLException e) {
-            throw new DirectoryException("Cannot connect to SQL directory '" + directory.getName() + "': "
-                    + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Checks the SQL error we got and determine if a concurrent update happened. Throws if that's the case.
-     *
-     * @param e the exception
-     * @since 7.10-HF04, 8.2
-     */
-    protected void checkConcurrentUpdate(Throwable e) throws ConcurrentUpdateException {
-        if (dialect.isConcurrentUpdateException(e)) {
-            throw new ConcurrentUpdateException(e);
-        }
-    }
-
-    @Override
-    public DocumentModel createEntry(Map<String, Object> fieldMap) {
-        checkPermission(SecurityConstants.WRITE);
-
-        Field schemaIdField = schemaFieldMap.get(idField);
-
-        String idFieldName = schemaIdField.getName().getPrefixedName();
-
-        acquireConnection();
-        if (autoincrementIdField) {
-            fieldMap.remove(idFieldName);
-        } else {
-            // check id that was given
-            Object rawId = fieldMap.get(idFieldName);
-            if (rawId == null) {
-                throw new DirectoryException("Missing id");
-            }
-            String id = String.valueOf(rawId);
-            if (hasEntry(id)) {
-                throw new DirectoryException(String.format("Entry with id %s already exists", id));
-            }
-
-            if (isMultiTenant()) {
-                String tenantId = getCurrentTenantId();
-                if (!StringUtils.isBlank(tenantId)) {
-                    fieldMap.put(TENANT_ID_FIELD, tenantId);
-                    if (computeMultiTenantId) {
-                        fieldMap.put(idFieldName, computeMultiTenantDirectoryId(tenantId, id));
-                    }
-                }
-            }
-        }
-
-        List<Column> columnList = new ArrayList<>(table.getColumns());
-        Column idColumn = null;
-        for (Iterator<Column> i = columnList.iterator(); i.hasNext();) {
-            Column column = i.next();
-            if (column.isIdentity()) {
-                idColumn = column;
-            }
-            String prefixedName = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
-
-            if (!fieldMap.containsKey(prefixedName)) {
-                Field prefixedField = schemaFieldMap.get(prefixedName);
-                if (prefixedField != null && prefixedField.getDefaultValue() != null) {
-                    fieldMap.put(prefixedName, prefixedField.getDefaultValue());
-                } else {
-                    i.remove();
-                }
-            }
-        }
-        Insert insert = new Insert(table);
-        for (Column column : columnList) {
-            insert.addColumn(column);
-        }
-        // needed for Oracle for empty map insert
-        insert.addIdentityColumn(idColumn);
-        String sql = insert.getStatement();
-
-        if (logger.isLogEnabled()) {
-            List<Serializable> values = new ArrayList<>(columnList.size());
-            for (Column column : columnList) {
-                String prefixField = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
-                Object value = fieldMap.get(prefixField);
-                Serializable v;
-                if (HIDE_PASSWORD_IN_LOGS && column.getKey().equals(passwordField)) {
-                    v = "********"; // hide password in logs
-                } else {
-                    v = fieldValueForWrite(value, column);
-                }
-                values.add(v);
-            }
-            logger.logSQL(sql, values);
-        }
-
-        DocumentModel entry;
-        PreparedStatement ps = null;
-        Statement st = null;
-        try {
-            if (autoincrementIdField && dialect.hasIdentityGeneratedKey()) {
-                ps = sqlConnection.prepareStatement(sql, new String[] { idField });
-            } else {
-                ps = sqlConnection.prepareStatement(sql);
-            }
-            int index = 1;
-            for (Column column : columnList) {
-                String prefixField = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
-                Object value = fieldMap.get(prefixField);
-                setFieldValue(ps, index, column, value);
-                index++;
-            }
-            ps.execute();
-            if (autoincrementIdField) {
-                Column column = table.getColumn(idField);
-                ResultSet rs;
-                if (dialect.hasIdentityGeneratedKey()) {
-                    rs = ps.getGeneratedKeys();
-                } else {
-                    // needs specific statements
-                    sql = dialect.getIdentityGeneratedKeySql(column);
-                    st = sqlConnection.createStatement();
-                    rs = st.executeQuery(sql);
-                }
-                if (!rs.next()) {
-                    throw new DirectoryException("Cannot get generated key");
-                }
-                if (logger.isLogEnabled()) {
-                    logger.logResultSet(rs, Collections.singletonList(column));
-                }
-                Serializable rawId = column.getFromResultSet(rs, 1);
-                fieldMap.put(idFieldName, rawId);
-                rs.close();
-            }
-            entry = fieldMapToDocumentModel(fieldMap);
-        } catch (SQLException e) {
-            checkConcurrentUpdate(e);
-            throw new DirectoryException("createEntry failed", e);
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (st != null) {
-                    st.close();
-                }
-            } catch (SQLException sqle) {
-                throw new DirectoryException(sqle);
-            }
-        }
-
-        // second step: add references fields
-        String sourceId = entry.getId();
-        for (Reference reference : getDirectory().getReferences()) {
-            String referenceFieldName = schemaFieldMap.get(reference.getFieldName()).getName().getPrefixedName();
-            if (getDirectory().getReferences(reference.getFieldName()).size() > 1) {
-                log.warn("Directory " + getDirectory().getName() + " cannot create field " + reference.getFieldName()
-                        + " for entry " + fieldMap.get(idFieldName)
-                        + ": this field is associated with more than one reference");
-                continue;
-            }
-            @SuppressWarnings("unchecked")
-            List<String> targetIds = (List<String>) fieldMap.get(referenceFieldName);
-            if (reference instanceof TableReference) {
-                // optim: reuse the current session
-                // but still initialize the reference if not yet done
-                TableReference tableReference = (TableReference) reference;
-                tableReference.maybeInitialize(this);
-                tableReference.addLinks(sourceId, targetIds, this);
-            } else {
-                reference.addLinks(sourceId, targetIds);
-            }
-        }
-        getDirectory().invalidateCaches();
-        return entry;
-    }
-
-    @Override
-    public DocumentModel getEntry(String id) throws DirectoryException {
-        return getEntry(id, true);
-    }
-
-    @Override
-    public DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException {
-        if (!hasPermission(SecurityConstants.READ)) {
-            return null;
-        }
-        if (readAllColumns) {
-            // bypass cache when reading all columns
-            return getEntryFromSource(id, fetchReferences);
-        }
-        return directory.getCache().getEntry(id, this, fetchReferences);
-    }
-
-    protected String addFilterWhereClause(String whereClause) throws DirectoryException {
-        if (staticFilters.length == 0) {
-            return whereClause;
-        }
-        if (whereClause != null && whereClause.trim().length() > 0) {
-            whereClause = whereClause + " AND ";
-        } else {
-            whereClause = "";
-        }
-        for (int i = 0; i < staticFilters.length; i++) {
-            SQLStaticFilter filter = staticFilters[i];
-            whereClause += filter.getDirectoryColumn(table, getDirectory().useNativeCase()).getQuotedName();
-            whereClause += " " + filter.getOperator() + " ";
-            whereClause += "? ";
-
-            if (i < staticFilters.length - 1) {
-                whereClause = whereClause + " AND ";
-            }
-        }
-        return whereClause;
-    }
-
-    protected void addFilterValues(PreparedStatement ps, int startIdx) throws DirectoryException {
-        for (int i = 0; i < staticFilters.length; i++) {
-            SQLStaticFilter filter = staticFilters[i];
-            setFieldValue(ps, startIdx + i, filter.getDirectoryColumn(table, getDirectory().useNativeCase()),
-                    filter.getValue());
-        }
-    }
-
-    protected void addFilterValuesForLog(List<Serializable> values) {
-        for (int i = 0; i < staticFilters.length; i++) {
-            values.add(staticFilters[i].getValue());
-        }
-    }
-
-    /**
-     * Internal method to read the hashed password for authentication.
-     *
-     * @since 9.1
-     */
-    protected String getPassword(String id) {
-        acquireConnection();
-
-        Select select = new Select(table);
-        select.setFrom(table.getQuotedName());
-        List<Column> whatColumns = new ArrayList<>(2);
-        whatColumns.add(table.getColumn(passwordField));
-        if (isMultiTenant()) {
-            whatColumns.add(table.getColumn(TENANT_ID_FIELD));
-        }
-        String what = whatColumns.stream().map(Column::getQuotedName).collect(Collectors.joining(", "));
-        select.setWhat(what);
-        String whereClause = table.getPrimaryColumn().getQuotedName() + " = ?";
-        whereClause = addFilterWhereClause(whereClause);
-        select.setWhere(whereClause);
-        String sql = select.getStatement();
-
-        if (logger.isLogEnabled()) {
-            List<Serializable> values = new ArrayList<>();
-            values.add(id);
-            addFilterValuesForLog(values);
-            logger.logSQL(sql, values);
-        }
-
-        try (PreparedStatement ps = sqlConnection.prepareStatement(sql)) {
-            setFieldValue(ps, 1, table.getPrimaryColumn(), id);
-            addFilterValues(ps, 2);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) {
-                    return null;
-                }
-                if (isMultiTenant()) {
-                    // check that the entry is from the current tenant, or no tenant at all
-                    String tenantId = getCurrentTenantId();
-                    if (!StringUtils.isBlank(tenantId)) {
-                        String entryTenantId = (String) getFieldValue(rs, table.getColumn(TENANT_ID_FIELD));
-                        if (!StringUtils.isBlank(entryTenantId)) {
-                            if (!entryTenantId.equals(tenantId)) {
-                                return null;
-                            }
-                        }
-                    }
-                }
-                String password = (String) getFieldValue(rs, table.getColumn(passwordField));
-                if (logger.isLogEnabled()) {
-                    String value = HIDE_PASSWORD_IN_LOGS ? "********" : password;
-                    logger.logMap(Collections.singletonMap(passwordField, value));
-                }
-                return password;
-            }
-        } catch (SQLException e) {
-            throw new DirectoryException("getPassword failed", e);
-        }
     }
 
     @Override
@@ -550,186 +205,159 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
     }
 
-    @Override
-    public DocumentModelList getEntries() {
-        Map<String, Serializable> emptyMap = Collections.emptyMap();
-        return query(emptyMap);
+    protected List<Column> getReadColumns() {
+        return readAllColumns ? getDirectory().readColumnsAll : getDirectory().readColumns;
     }
 
-    @Override
-    public void updateEntry(DocumentModel docModel) {
-        checkPermission(SecurityConstants.WRITE);
+    protected String getReadColumnsSQL() {
+        return readAllColumns ? getDirectory().readColumnsAllSQL : getDirectory().readColumnsSQL;
+    }
+
+    protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
+        String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
+        // If the prefixed id is not here, try to get without prefix
+        // It may happen when we gentry from sql
+        if (!fieldMap.containsKey(idFieldName)) {
+            idFieldName = getIdField();
+        }
+
+        String id = String.valueOf(fieldMap.get(idFieldName));
+        try {
+            DocumentModel docModel = BaseSession.createEntryModel(sid, schemaName, id, fieldMap, isReadOnly());
+            return docModel;
+        } catch (PropertyException e) {
+            log.error(e, e);
+            return null;
+        }
+    }
+
+    private void acquireConnection() throws DirectoryException {
+        try {
+            if (sqlConnection == null || sqlConnection.isClosed()) {
+                sqlConnection = getDirectory().getConnection();
+            }
+        } catch (SQLException e) {
+            throw new DirectoryException("Cannot connect to SQL directory '" + directory.getName() + "': "
+                    + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Checks the SQL error we got and determine if a concurrent update happened. Throws if that's the case.
+     *
+     * @param e the exception
+     * @since 7.10-HF04, 8.2
+     */
+    protected void checkConcurrentUpdate(Throwable e) throws ConcurrentUpdateException {
+        if (dialect.isConcurrentUpdateException(e)) {
+            throw new ConcurrentUpdateException(e);
+        }
+    }
+
+    protected String addFilterWhereClause(String whereClause) throws DirectoryException {
+        if (staticFilters.length == 0) {
+            return whereClause;
+        }
+        if (whereClause != null && whereClause.trim().length() > 0) {
+            whereClause = whereClause + " AND ";
+        } else {
+            whereClause = "";
+        }
+        for (int i = 0; i < staticFilters.length; i++) {
+            SQLStaticFilter filter = staticFilters[i];
+            whereClause += filter.getDirectoryColumn(table, getDirectory().useNativeCase()).getQuotedName();
+            whereClause += " " + filter.getOperator() + " ";
+            whereClause += "? ";
+
+            if (i < staticFilters.length - 1) {
+                whereClause = whereClause + " AND ";
+            }
+        }
+        return whereClause;
+    }
+
+    protected void addFilterValues(PreparedStatement ps, int startIdx) throws DirectoryException {
+        for (int i = 0; i < staticFilters.length; i++) {
+            SQLStaticFilter filter = staticFilters[i];
+            setFieldValue(ps, startIdx + i, filter.getDirectoryColumn(table, getDirectory().useNativeCase()),
+                    filter.getValue());
+        }
+    }
+
+    protected void addFilterValuesForLog(List<Serializable> values) {
+        for (int i = 0; i < staticFilters.length; i++) {
+            values.add(staticFilters[i].getValue());
+        }
+    }
+
+    /**
+     * Internal method to read the hashed password for authentication.
+     *
+     * @since 9.1
+     */
+    protected String getPassword(String id) {
         acquireConnection();
-        List<Column> storedColumnList = new LinkedList<>();
-        List<String> referenceFieldList = new LinkedList<>();
 
+        Select select = new Select(table);
+        select.setFrom(table.getQuotedName());
+        List<Column> whatColumns = new ArrayList<>(2);
+        whatColumns.add(table.getColumn(getPasswordField()));
         if (isMultiTenant()) {
-            // can only update entry from the current tenant
-            String tenantId = getCurrentTenantId();
-            if (!StringUtils.isBlank(tenantId)) {
-                String entryTenantId = (String) docModel.getProperty(schemaName, TENANT_ID_FIELD);
-                if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Trying to update entry '%s' not part of current tenant '%s'",
-                                docModel.getId(), tenantId));
+            whatColumns.add(table.getColumn(TENANT_ID_FIELD));
+        }
+        String what = whatColumns.stream().map(Column::getQuotedName).collect(Collectors.joining(", "));
+        select.setWhat(what);
+        String whereClause = table.getPrimaryColumn().getQuotedName() + " = ?";
+        whereClause = addFilterWhereClause(whereClause);
+        select.setWhere(whereClause);
+        String sql = select.getStatement();
+
+        if (logger.isLogEnabled()) {
+            List<Serializable> values = new ArrayList<>();
+            values.add(id);
+            addFilterValuesForLog(values);
+            logger.logSQL(sql, values);
+        }
+
+        try (PreparedStatement ps = sqlConnection.prepareStatement(sql)) {
+            setFieldValue(ps, 1, table.getPrimaryColumn(), id);
+            addFilterValues(ps, 2);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                if (isMultiTenant()) {
+                    // check that the entry is from the current tenant, or no tenant at all
+                    String tenantId = getCurrentTenantId();
+                    if (!StringUtils.isBlank(tenantId)) {
+                        String entryTenantId = (String) getFieldValue(rs, table.getColumn(TENANT_ID_FIELD));
+                        if (!StringUtils.isBlank(entryTenantId)) {
+                            if (!entryTenantId.equals(tenantId)) {
+                                return null;
+                            }
+                        }
                     }
-                    throw new OperationNotAllowedException("Operation not allowed in the current tenant context",
-                            "label.directory.error.multi.tenant.operationNotAllowed", null);
                 }
+                String password = (String) getFieldValue(rs, table.getColumn(getPasswordField()));
+                if (logger.isLogEnabled()) {
+                    String value = HIDE_PASSWORD_IN_LOGS ? "********" : password;
+                    logger.logMap(Collections.singletonMap(getPasswordField(), value));
+                }
+                return password;
             }
+        } catch (SQLException e) {
+            throw new DirectoryException("getPassword failed", e);
         }
-
-        // collect fields to update
-        for (String fieldName : schemaFieldMap.keySet()) {
-            if (fieldName.equals(idField)) {
-                continue;
-            }
-            Property prop = docModel.getPropertyObject(schemaName, fieldName);
-            if (!prop.isDirty()) {
-                continue;
-            }
-            if (fieldName.equals(passwordField) && StringUtils.isEmpty((String) prop.getValue())) {
-                // null/empty password means unchanged
-                continue;
-            }
-            if (getDirectory().isReference(fieldName)) {
-                referenceFieldList.add(fieldName);
-            } else {
-                storedColumnList.add(table.getColumn(fieldName));
-            }
-        }
-
-        if (!storedColumnList.isEmpty()) {
-            // update stored fields
-            // String whereString = StringUtils.join(
-            // storedFieldPredicateList.iterator(), ", ");
-            // String sql = String.format("UPDATE %s SET %s WHERE %s = ?",
-            // tableName, whereString,
-            // primaryColumn);
-
-            Update update = new Update(table);
-            update.setUpdatedColumns(storedColumnList);
-            String whereString = table.getPrimaryColumn().getQuotedName() + " = ?";
-            update.setWhere(whereString);
-            String sql = update.getStatement();
-
-            if (logger.isLogEnabled()) {
-                List<Serializable> values = new ArrayList<>(storedColumnList.size());
-                for (Column column : storedColumnList) {
-                    Object value = docModel.getProperty(schemaName, column.getKey());
-                    if (HIDE_PASSWORD_IN_LOGS && column.getKey().equals(passwordField)) {
-                        value = "********"; // hide password in logs
-                    }
-                    values.add((Serializable) value);
-                }
-                values.add(docModel.getId());
-                logger.logSQL(sql, values);
-            }
-
-            PreparedStatement ps = null;
-            try {
-                ps = sqlConnection.prepareStatement(sql);
-
-                int index = 1;
-                // TODO: how can I reset dirty fields?
-                for (Column column : storedColumnList) {
-                    Object value = docModel.getProperty(schemaName, column.getKey());
-                    setFieldValue(ps, index, column, value);
-                    index++;
-                }
-                setFieldValue(ps, index, table.getPrimaryColumn(), docModel.getId());
-                ps.execute();
-            } catch (SQLException e) {
-                checkConcurrentUpdate(e);
-                throw new DirectoryException("updateEntry failed for " + docModel.getId(), e);
-            } finally {
-                try {
-                    if (ps != null) {
-                        ps.close();
-                    }
-                } catch (SQLException sqle) {
-                    throw new DirectoryException(sqle);
-                }
-            }
-        }
-
-        // update reference fields
-        for (String referenceFieldName : referenceFieldList) {
-            List<Reference> references = directory.getReferences(referenceFieldName);
-            if (references.size() > 1) {
-                // not supported
-                log.warn("Directory " + getDirectory().getName() + " cannot update field " + referenceFieldName
-                        + " for entry " + docModel.getId() + ": this field is associated with more than one reference");
-            } else {
-                Reference reference = references.get(0);
-                @SuppressWarnings("unchecked")
-                List<String> targetIds = (List<String>) docModel.getProperty(schemaName, referenceFieldName);
-                if (reference instanceof TableReference) {
-                    // optim: reuse current session
-                    TableReference tableReference = (TableReference) reference;
-                    tableReference.setTargetIdsForSource(docModel.getId(), targetIds, this);
-                } else {
-                    reference.setTargetIdsForSource(docModel.getId(), targetIds);
-                }
-            }
-        }
-        getDirectory().invalidateCaches();
-    }
-
-    @Override
-    public void deleteEntry(DocumentModel docModel) {
-        deleteEntry(docModel.getId());
     }
 
     @Override
     public void deleteEntry(String id) {
-        checkPermission(SecurityConstants.WRITE);
-        checkDeleteConstraints(id);
-
         acquireConnection();
-
         if (!canDeleteMultiTenantEntry(id)) {
             throw new OperationNotAllowedException("Operation not allowed in the current tenant context",
                     "label.directory.error.multi.tenant.operationNotAllowed", null);
         }
-
-        // first step: remove references for this entry
-        for (Reference reference : getDirectory().getReferences()) {
-            if (reference instanceof TableReference) {
-                // optim: reuse current session
-                TableReference tableReference = (TableReference) reference;
-                tableReference.removeLinksForSource(id, this);
-            } else {
-                reference.removeLinksForSource(id);
-            }
-        }
-
-        // second step: clean stored fields
-        PreparedStatement ps = null;
-        try {
-            Delete delete = new Delete(table);
-            String whereString = table.getPrimaryColumn().getQuotedName() + " = ?";
-            delete.setWhere(whereString);
-            String sql = delete.getStatement();
-            if (logger.isLogEnabled()) {
-                logger.logSQL(sql, Collections.<Serializable> singleton(id));
-            }
-            ps = sqlConnection.prepareStatement(sql);
-            setFieldValue(ps, 1, table.getPrimaryColumn(), id);
-            ps.execute();
-        } catch (SQLException e) {
-            checkConcurrentUpdate(e);
-            throw new DirectoryException("deleteEntry failed", e);
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException sqle) {
-                throw new DirectoryException(sqle);
-            }
-        }
-        getDirectory().invalidateCaches();
+        super.deleteEntry(id);
     }
 
     protected boolean canDeleteMultiTenantEntry(String entryId) throws DirectoryException {
@@ -818,12 +446,6 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy) {
-        // XXX not fetch references by default: breaks current behavior
-        return query(filter, fulltext, orderBy, false);
-    }
-
-    @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) {
         return query(filter, fulltext, orderBy, fetchReferences, -1, -1);
@@ -837,7 +459,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
         acquireConnection();
         Map<String, Object> filterMap = new LinkedHashMap<>(filter);
-        filterMap.remove(passwordField); // cannot filter on password
+        filterMap.remove(getPasswordField()); // cannot filter on password
 
         if (isMultiTenant()) {
             // filter entries on the tenantId field also
@@ -1087,6 +709,265 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
     }
 
+    @Override
+    protected DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
+        Field schemaIdField = schemaFieldMap.get(getIdField());
+
+        String idFieldName = schemaIdField.getName().getPrefixedName();
+
+        acquireConnection();
+        if (autoincrementId) {
+            fieldMap.remove(idFieldName);
+        } else {
+            // check id that was given
+            Object rawId = fieldMap.get(idFieldName);
+            if (rawId == null) {
+                throw new DirectoryException("Missing id");
+            }
+            String id = String.valueOf(rawId);
+            if (hasEntry(id)) {
+                throw new DirectoryException(String.format("Entry with id %s already exists", id));
+            }
+
+            if (isMultiTenant()) {
+                String tenantId = getCurrentTenantId();
+                if (!StringUtils.isBlank(tenantId)) {
+                    fieldMap.put(TENANT_ID_FIELD, tenantId);
+                    if (computeMultiTenantId) {
+                        fieldMap.put(idFieldName, computeMultiTenantDirectoryId(tenantId, id));
+                    }
+                }
+            }
+        }
+
+        List<Column> columnList = new ArrayList<>(table.getColumns());
+        Column idColumn = null;
+        for (Iterator<Column> i = columnList.iterator(); i.hasNext();) {
+            Column column = i.next();
+            if (column.isIdentity()) {
+                idColumn = column;
+            }
+            String prefixedName = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
+
+            if (!fieldMap.containsKey(prefixedName)) {
+                Field prefixedField = schemaFieldMap.get(prefixedName);
+                if (prefixedField != null && prefixedField.getDefaultValue() != null) {
+                    fieldMap.put(prefixedName, prefixedField.getDefaultValue());
+                } else {
+                    i.remove();
+                }
+            }
+        }
+        Insert insert = new Insert(table);
+        for (Column column : columnList) {
+            insert.addColumn(column);
+        }
+        // needed for Oracle for empty map insert
+        insert.addIdentityColumn(idColumn);
+        String sql = insert.getStatement();
+
+        if (logger.isLogEnabled()) {
+            List<Serializable> values = new ArrayList<>(columnList.size());
+            for (Column column : columnList) {
+                String prefixField = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
+                Object value = fieldMap.get(prefixField);
+                Serializable v;
+                if (HIDE_PASSWORD_IN_LOGS && column.getKey().equals(getPasswordField())) {
+                    v = "********"; // hide password in logs
+                } else {
+                    v = fieldValueForWrite(value, column);
+                }
+                values.add(v);
+            }
+            logger.logSQL(sql, values);
+        }
+
+        DocumentModel entry;
+        PreparedStatement ps = null;
+        Statement st = null;
+        try {
+            if (autoincrementId && dialect.hasIdentityGeneratedKey()) {
+                ps = sqlConnection.prepareStatement(sql, new String[] { getIdField() });
+            } else {
+                ps = sqlConnection.prepareStatement(sql);
+            }
+            int index = 1;
+            for (Column column : columnList) {
+                String prefixField = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
+                Object value = fieldMap.get(prefixField);
+                setFieldValue(ps, index, column, value);
+                index++;
+            }
+            ps.execute();
+            if (autoincrementId) {
+                Column column = table.getColumn(getIdField());
+                ResultSet rs;
+                if (dialect.hasIdentityGeneratedKey()) {
+                    rs = ps.getGeneratedKeys();
+                } else {
+                    // needs specific statements
+                    sql = dialect.getIdentityGeneratedKeySql(column);
+                    st = sqlConnection.createStatement();
+                    rs = st.executeQuery(sql);
+                }
+                if (!rs.next()) {
+                    throw new DirectoryException("Cannot get generated key");
+                }
+                if (logger.isLogEnabled()) {
+                    logger.logResultSet(rs, Collections.singletonList(column));
+                }
+                Serializable rawId = column.getFromResultSet(rs, 1);
+                fieldMap.put(idFieldName, rawId);
+                rs.close();
+            }
+            entry = fieldMapToDocumentModel(fieldMap);
+        } catch (SQLException e) {
+            checkConcurrentUpdate(e);
+            throw new DirectoryException("createEntry failed", e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (st != null) {
+                    st.close();
+                }
+            } catch (SQLException sqle) {
+                throw new DirectoryException(sqle);
+            }
+        }
+
+        return entry;
+    }
+
+    @Override
+    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) throws DirectoryException {
+        acquireConnection();
+        List<Column> storedColumnList = new LinkedList<>();
+        List<String> referenceFieldList = new LinkedList<>();
+
+        if (isMultiTenant()) {
+            // can only update entry from the current tenant
+            String tenantId = getCurrentTenantId();
+            if (!StringUtils.isBlank(tenantId)) {
+                String entryTenantId = (String) docModel.getProperty(schemaName, TENANT_ID_FIELD);
+                if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Trying to update entry '%s' not part of current tenant '%s'",
+                                docModel.getId(), tenantId));
+                    }
+                    throw new OperationNotAllowedException("Operation not allowed in the current tenant context",
+                            "label.directory.error.multi.tenant.operationNotAllowed", null);
+                }
+            }
+        }
+
+        // collect fields to update
+        for (String fieldName : schemaFieldMap.keySet()) {
+            if (fieldName.equals(getIdField())) {
+                continue;
+            }
+            Property prop = docModel.getPropertyObject(schemaName, fieldName);
+            if (!prop.isDirty()) {
+                continue;
+            }
+            if (fieldName.equals(getPasswordField()) && StringUtils.isEmpty((String) prop.getValue())) {
+                // null/empty password means unchanged
+                continue;
+            }
+            if (getDirectory().isReference(fieldName)) {
+                referenceFieldList.add(fieldName);
+            } else {
+                storedColumnList.add(table.getColumn(fieldName));
+            }
+        }
+
+        if (!storedColumnList.isEmpty()) {
+            // update stored fields
+            // String whereString = StringUtils.join(
+            // storedFieldPredicateList.iterator(), ", ");
+            // String sql = String.format("UPDATE %s SET %s WHERE %s = ?",
+            // tableName, whereString,
+            // primaryColumn);
+
+            Update update = new Update(table);
+            update.setUpdatedColumns(storedColumnList);
+            String whereString = table.getPrimaryColumn().getQuotedName() + " = ?";
+            update.setWhere(whereString);
+            String sql = update.getStatement();
+
+            if (logger.isLogEnabled()) {
+                List<Serializable> values = new ArrayList<>(storedColumnList.size());
+                for (Column column : storedColumnList) {
+                    Object value = docModel.getProperty(schemaName, column.getKey());
+                    if (HIDE_PASSWORD_IN_LOGS && column.getKey().equals(getPasswordField())) {
+                        value = "********"; // hide password in logs
+                    }
+                    values.add((Serializable) value);
+                }
+                values.add(docModel.getId());
+                logger.logSQL(sql, values);
+            }
+
+            PreparedStatement ps = null;
+            try {
+                ps = sqlConnection.prepareStatement(sql);
+
+                int index = 1;
+                // TODO: how can I reset dirty fields?
+                for (Column column : storedColumnList) {
+                    Object value = docModel.getProperty(schemaName, column.getKey());
+                    setFieldValue(ps, index, column, value);
+                    index++;
+                }
+                setFieldValue(ps, index, table.getPrimaryColumn(), docModel.getId());
+                ps.execute();
+            } catch (SQLException e) {
+                checkConcurrentUpdate(e);
+                throw new DirectoryException("updateEntry failed for " + docModel.getId(), e);
+            } finally {
+                try {
+                    if (ps != null) {
+                        ps.close();
+                    }
+                } catch (SQLException sqle) {
+                    throw new DirectoryException(sqle);
+                }
+            }
+        }
+
+        return referenceFieldList;
+    }
+
+    @Override
+    public void deleteEntryWithoutReferences(String id) throws DirectoryException {
+        // second step: clean stored fields
+        PreparedStatement ps = null;
+        try {
+            Delete delete = new Delete(table);
+            String whereString = table.getPrimaryColumn().getQuotedName() + " = ?";
+            delete.setWhere(whereString);
+            String sql = delete.getStatement();
+            if (logger.isLogEnabled()) {
+                logger.logSQL(sql, Collections.singleton(id));
+            }
+            ps = sqlConnection.prepareStatement(sql);
+            setFieldValue(ps, 1, table.getPrimaryColumn(), id);
+            ps.execute();
+        } catch (SQLException e) {
+            checkConcurrentUpdate(e);
+            throw new DirectoryException("deleteEntry failed", e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException sqle) {
+                throw new DirectoryException(sqle);
+            }
+        }
+    }
+
     protected void fillPreparedStatementFields(Map<String, Object> filterMap, List<Column> orderedColumns,
             PreparedStatement ps) throws DirectoryException {
         int index = 1;
@@ -1101,11 +982,6 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
         }
         addFilterValues(ps, index);
-    }
-
-    @Override
-    public DocumentModelList query(Map<String, Serializable> filter) {
-        return query(filter, emptySet);
     }
 
     private Object getFieldValue(ResultSet rs, Column column) throws DirectoryException {
@@ -1132,7 +1008,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 // allow storing string into integer/long key
                 return Long.valueOf((String) value);
             }
-            if (column.getKey().equals(passwordField)) {
+            if (column.getKey().equals(getPasswordField())) {
                 // hash password if not already hashed
                 String password = (String) value;
                 if (!PasswordHelper.isHashed(password)) {
@@ -1181,28 +1057,6 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName) {
-        DocumentModelList docList = query(filter, fulltext);
-        List<String> result = new ArrayList<>();
-        for (DocumentModel docModel : docList) {
-            Object obj = docModel.getProperty(schemaName, columnName);
-            String propValue;
-            if (obj instanceof String) {
-                propValue = (String) obj;
-            } else {
-                propValue = String.valueOf(obj);
-            }
-            result.add(propValue);
-        }
-        return result;
-    }
-
-    @Override
-    public List<String> getProjection(Map<String, Serializable> filter, String columnName) {
-        return getProjection(filter, emptySet, columnName);
-    }
-
-    @Override
     public boolean authenticate(String username, String password) {
         String storedPassword = getPassword(username);
         return PasswordHelper.verifyPassword(password, storedPassword);
@@ -1211,17 +1065,6 @@ public class SQLSession extends BaseSession implements EntrySource {
     @Override
     public boolean isAuthenticating() {
         return schemaFieldMap.containsKey(getPasswordField());
-    }
-
-    @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) {
-        return query(filter, fulltext, new HashMap<String, String>());
-    }
-
-    @Override
-    public DocumentModel createEntry(DocumentModel entry) {
-        Map<String, Object> fieldMap = entry.getProperties(schemaName);
-        return createEntry(fieldMap);
     }
 
     @Override
@@ -1234,7 +1077,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         String sql = select.getStatement();
 
         if (logger.isLogEnabled()) {
-            logger.logSQL(sql, Collections.<Serializable> singleton(id));
+            logger.logSQL(sql, Collections.singleton(id));
         }
 
         PreparedStatement ps = null;
@@ -1262,16 +1105,6 @@ public class SQLSession extends BaseSession implements EntrySource {
                 throw new DirectoryException(sqle);
             }
         }
-    }
-
-    /**
-     * Public getter to allow custom {@link Reference} implementation to access the current connection even if it lives
-     * in a separate java package, typically: com.company.custom.nuxeo.project.MyCustomReference
-     *
-     * @return the current {@link Connection} instance
-     */
-    public Connection getSqlConnection() {
-        return sqlConnection;
     }
 
     /**

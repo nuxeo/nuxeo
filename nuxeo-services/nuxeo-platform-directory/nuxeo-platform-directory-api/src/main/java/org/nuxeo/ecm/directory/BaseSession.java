@@ -41,8 +41,10 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
@@ -52,7 +54,7 @@ import org.nuxeo.runtime.api.login.LoginComponent;
  * @author Anahide Tchertchian
  * @since 5.2M4
  */
-public abstract class BaseSession implements Session {
+public abstract class BaseSession implements Session, EntrySource {
 
     protected static final String POWER_USERS_GROUP = "powerusers";
 
@@ -69,8 +71,32 @@ public abstract class BaseSession implements Session {
     // needed for test framework to be able to do a full backup of a directory including password
     protected boolean readAllColumns;
 
-    protected BaseSession(Directory directory) {
+    protected String schemaName;
+
+    protected Map<String, Field> schemaFieldMap;
+
+    protected String directoryName;
+
+    protected SubstringMatchType substringMatchType;
+
+    protected Class<? extends Reference> referenceClass;
+
+    protected String passwordHashAlgorithm;
+
+    protected boolean autoincrementId;
+
+    protected BaseSession(Directory directory, Class<? extends Reference> referenceClass) {
         this.directory = directory;
+        schemaFieldMap = directory.getSchemaFieldMap();
+        schemaName = directory.getSchema();
+        directoryName = directory.getName();
+
+        BaseDirectoryDescriptor desc = directory.getDescriptor();
+        substringMatchType = desc.getSubstringMatchType();
+        autoincrementId = desc.isAutoincrementIdField();
+        permissions = desc.permissions;
+        passwordHashAlgorithm = desc.passwordHashAlgorithm;
+        this.referenceClass = referenceClass;
     }
 
     /** To be implemented with a more specific return type. */
@@ -228,7 +254,7 @@ public abstract class BaseSession implements Session {
     public static DocumentModel createEntryModel(String sessionId, String schema, String id, Map<String, Object> values)
             throws PropertyException {
         DocumentModelImpl entry = new DocumentModelImpl(sessionId, schema, id, null, null, null, null,
-                new String[] { schema }, new HashSet<String>(), null, null);
+                new String[] { schema }, new HashSet<>(), null, null);
         DataModel dataModel;
         if (values == null) {
             values = Collections.emptyMap();
@@ -252,28 +278,6 @@ public abstract class BaseSession implements Session {
             setReadOnlyEntry(entry);
         }
         return entry;
-    }
-
-    protected static Map<String, Serializable> mkSerializableMap(Map<String, Object> map) {
-        Map<String, Serializable> serializableMap = null;
-        if (map != null) {
-            serializableMap = new HashMap<String, Serializable>();
-            for (String key : map.keySet()) {
-                serializableMap.put(key, (Serializable) map.get(key));
-            }
-        }
-        return serializableMap;
-    }
-
-    protected static Map<String, Object> mkObjectMap(Map<String, Serializable> map) {
-        Map<String, Object> objectMap = null;
-        if (map != null) {
-            objectMap = new HashMap<String, Object>();
-            for (String key : map.keySet()) {
-                objectMap.put(key, map.get(key));
-            }
-        }
-        return objectMap;
     }
 
     /**
@@ -314,6 +318,158 @@ public abstract class BaseSession implements Session {
     }
 
     @Override
+    public DocumentModel getEntry(String id) throws DirectoryException {
+        return getEntry(id, true);
+    }
+
+    @Override
+    public DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException {
+        if (!hasPermission(SecurityConstants.READ)) {
+            return null;
+        }
+        if (readAllColumns) {
+            // bypass cache when reading all columns
+            return getEntryFromSource(id, fetchReferences);
+        }
+        return directory.getCache().getEntry(id, this, fetchReferences);
+    }
+
+    @Override
+    public DocumentModelList getEntries() throws DirectoryException {
+        if (!hasPermission(SecurityConstants.READ)) {
+            return new DocumentModelListImpl();
+        }
+        return query(Collections.emptyMap());
+    }
+
+    @Override
+    public DocumentModel getEntryFromSource(String id, boolean fetchReferences) throws DirectoryException {
+        String idFieldName = schemaFieldMap != null ? schemaFieldMap.get(getIdField()).getName().getPrefixedName()
+                : getIdField();
+        DocumentModelList result = query(Collections.singletonMap(idFieldName, id), Collections.emptySet(),
+                Collections.emptyMap(), true);
+        return result.isEmpty() ? null : result.get(0);
+    }
+
+    @Override
+    public DocumentModel createEntry(DocumentModel documentModel) {
+        return createEntry(documentModel.getProperties(schemaName));
+    }
+
+    @Override
+    public DocumentModel createEntry(Map<String, Object> fieldMap) throws DirectoryException {
+        checkPermission(SecurityConstants.WRITE);
+        DocumentModel docModel = createEntryWithoutReferences(fieldMap);
+
+        // Add references fields
+        String idFieldName = schemaFieldMap != null ? schemaFieldMap.get(getIdField()).getName().getPrefixedName()
+                : getIdField();
+        Object entry = fieldMap.get(idFieldName);
+        String sourceId = docModel.getId();
+        for (Reference reference : getDirectory().getReferences()) {
+            String referenceFieldName = schemaFieldMap.get(reference.getFieldName()).getName().getPrefixedName();
+            if (getDirectory().getReferences(reference.getFieldName()).size() > 1) {
+                if (log.isWarnEnabled()) {
+                    log.warn("Directory " + directoryName + " cannot create field " + reference.getFieldName()
+                            + " for entry " + entry + ": this field is associated with more than one reference");
+                }
+                continue;
+            }
+
+            @SuppressWarnings("unchecked")
+            List<String> targetIds = (List<String>) fieldMap.get(referenceFieldName);
+            if (reference.getClass() == referenceClass) {
+                reference.addLinks(sourceId, targetIds, this);
+            } else {
+                reference.addLinks(sourceId, targetIds);
+            }
+        }
+
+        getDirectory().invalidateCaches();
+        return docModel;
+    }
+
+    @Override
+    public void updateEntry(DocumentModel docModel) throws DirectoryException {
+        checkPermission(SecurityConstants.WRITE);
+
+        // Retrieve the references to update in the document model, and update the rest
+        List<String> referenceFieldList = updateEntryWithoutReferences(docModel);
+
+        // update reference fields
+        for (String referenceFieldName : referenceFieldList) {
+            List<Reference> references = directory.getReferences(referenceFieldName);
+            if (references.size() > 1) {
+                // not supported
+                if (log.isWarnEnabled()) {
+                    log.warn("Directory " + getDirectory().getName() + " cannot update field " + referenceFieldName
+                            + " for entry " + docModel.getId()
+                            + ": this field is associated with more than one reference");
+                }
+            } else {
+                Reference reference = references.get(0);
+                @SuppressWarnings("unchecked")
+                List<String> targetIds = (List<String>) docModel.getProperty(schemaName, referenceFieldName);
+                if (reference.getClass() == referenceClass) {
+                    reference.setTargetIdsForSource(docModel.getId(), targetIds, this);
+                } else {
+                    reference.setTargetIdsForSource(docModel.getId(), targetIds);
+                }
+            }
+        }
+        getDirectory().invalidateCaches();
+    }
+
+    @Override
+    public void deleteEntry(DocumentModel docModel) throws DirectoryException {
+        deleteEntry(docModel.getId());
+    }
+
+    @Override
+    @Deprecated
+    public void deleteEntry(String id, Map<String, String> map) throws DirectoryException {
+        deleteEntry(id);
+    }
+
+    @Override
+    public void deleteEntry(String id) throws DirectoryException {
+        checkPermission(SecurityConstants.WRITE);
+        checkDeleteConstraints(id);
+
+        for (Reference reference : getDirectory().getReferences()) {
+            if (reference.getClass() == referenceClass) {
+                reference.removeLinksForSource(id, this);
+            } else {
+                reference.removeLinksForSource(id);
+            }
+        }
+        deleteEntryWithoutReferences(id);
+        getDirectory().invalidateCaches();
+    }
+
+    @Override
+    public DocumentModelList query(Map<String, Serializable> filter) throws DirectoryException {
+        return query(filter, Collections.emptySet());
+    }
+
+    @Override
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) throws DirectoryException {
+        return query(filter, fulltext, new HashMap<>());
+    }
+
+    @Override
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy)
+            throws DirectoryException {
+        return query(filter, fulltext, orderBy, false);
+    }
+
+    @Override
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws DirectoryException {
+        return query(filter, fulltext, orderBy, fetchReferences, 0, 0);
+    }
+
+    @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences, int limit, int offset) throws DirectoryException {
         log.info("Call an unoverrided query with offset and limit.");
@@ -325,5 +481,32 @@ public abstract class BaseSession implements Session {
 
         return new DocumentModelListImpl(entries.subList(offset, toIndex));
     }
+
+    @Override
+    public List<String> getProjection(Map<String, Serializable> filter, String columnName) throws DirectoryException {
+        return getProjection(filter, Collections.emptySet(), columnName);
+    }
+
+    @Override
+    public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName)
+            throws DirectoryException {
+        DocumentModelList docList = query(filter, fulltext);
+        List<String> result = new ArrayList<>();
+        for (DocumentModel docModel : docList) {
+            Object obj = docModel.getProperty(schemaName, columnName);
+            String propValue = String.valueOf(obj);
+            result.add(propValue);
+        }
+        return result;
+    }
+
+    /** To be implemented for specific creation. */
+    protected abstract DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap);
+
+    /** To be implemented for specific update. */
+    protected abstract List<String> updateEntryWithoutReferences(DocumentModel docModel) throws DirectoryException;
+
+    /** To be implemented for specific deletion. */
+    protected abstract void deleteEntryWithoutReferences(String id) throws DirectoryException;
 
 }

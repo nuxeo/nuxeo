@@ -8,21 +8,21 @@
 
   <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
 
-    <directory name="referencedDirectory1" extends="template-refdir1">
+    <directory name="referencedDirectory1" extends="template-directory">
       <schema>directoryResolverSchema</schema>
       <idField>id</idField>
       <createTablePolicy>always</createTablePolicy>
       <dataFile>test-directory-resolver.csv</dataFile>
     </directory>
 
-    <directory name="referencedDirectory2" extends="template-refdir2">
+    <directory name="referencedDirectory2" extends="template-directory">
       <schema>directoryResolverSchema</schema>
       <idField>id</idField>
       <createTablePolicy>always</createTablePolicy>
       <dataFile>test-directory-resolver.csv</dataFile>
     </directory>
 
-    <directory name="hierarchicalDirectory" extends="template-hierarchicaldir">
+    <directory name="hierarchicalDirectory" extends="template-directory">
       <schema>hierarchicalDirectorySchema</schema>
       <parentDirectory>hierarchicalDirectory</parentDirectory>
       <idField>id</idField>
@@ -41,6 +41,5 @@
       <schema name="directoryResolver" />
     </doctype>
   </extension>
-
 
 </component>

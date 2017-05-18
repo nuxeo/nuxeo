@@ -49,6 +49,7 @@ import com.mongodb.MongoWriteException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
+import org.nuxeo.ecm.directory.Session;
 
 /**
  * MongoDB implementation of a {@link Reference}
@@ -90,18 +91,12 @@ public class MongoDBReference extends AbstractReference implements Cloneable {
         }
     }
 
-    /**
-     * Adds the links between the source id and the target ids
-     * 
-     * @param sourceId the source id
-     * @param targetIds the target ids
-     * @param session the mongoDB session
-     * @throws DirectoryException
-     */
-    public void addLinks(String sourceId, List<String> targetIds, MongoDBSession session) throws DirectoryException {
+    @Override
+    public void addLinks(String sourceId, List<String> targetIds, Session session) throws DirectoryException {
+        MongoDBSession mongoSession = (MongoDBSession) session;
         if (!initialized) {
             if (dataFileName != null) {
-                initializeSession(session);
+                initializeSession(mongoSession);
             }
             initialized = true;
         }
@@ -109,7 +104,7 @@ public class MongoDBReference extends AbstractReference implements Cloneable {
             return;
         }
         try {
-            MongoCollection<Document> coll = session.getCollection(collection);
+            MongoCollection<Document> coll = mongoSession.getCollection(collection);
             List<Document> newDocs = targetIds.stream()
                                               .map(targetId -> buildDoc(sourceId, targetId))
                                               .filter(doc -> coll.count(doc) == 0)
@@ -121,19 +116,25 @@ public class MongoDBReference extends AbstractReference implements Cloneable {
     }
 
     @Override
+    public void addLinks(List<String> sourceIds, String targetId, Session session) throws DirectoryException {
+        MongoDBSession mongodbSession = (MongoDBSession) session;
+        MongoCollection<Document> coll = mongodbSession.getCollection(collection);
+        List<Document> newDocs = sourceIds.stream()
+                                          .map(sourceId -> buildDoc(sourceId, targetId))
+                                          .filter(doc -> coll.count(doc) == 0)
+                                          .collect(Collectors.toList());
+        if (!newDocs.isEmpty()) {
+            coll.insertMany(newDocs);
+        }
+    }
+
+    @Override
     public void addLinks(List<String> sourceIds, String targetId) throws DirectoryException {
         if (sourceIds == null || sourceIds.isEmpty()) {
             return;
         }
         try (MongoDBSession session = getMongoDBSession()) {
-            MongoCollection<Document> coll = session.getCollection(collection);
-            List<Document> newDocs = sourceIds.stream()
-                                              .map(sourceId -> buildDoc(sourceId, targetId))
-                                              .filter(doc -> coll.count(doc) == 0)
-                                              .collect(Collectors.toList());
-            if(!newDocs.isEmpty()) {
-                coll.insertMany(newDocs);
-            }
+            addLinks(sourceIds, targetId, session);
         } catch (MongoWriteException e) {
             throw new DirectoryException(e);
         }
@@ -146,14 +147,9 @@ public class MongoDBReference extends AbstractReference implements Cloneable {
         }
     }
 
-    /**
-     * Removes all the links for a given source id
-     * 
-     * @param sourceId the source id
-     * @param session the mongoDB session
-     */
-    public void removeLinksForSource(String sourceId, MongoDBSession session) {
-        removeLinksFor(sourceField, sourceId, session);
+    @Override
+    public void removeLinksForSource(String sourceId, Session session) {
+        removeLinksFor(sourceField, sourceId, (MongoDBSession) session);
     }
 
     @Override
@@ -161,6 +157,11 @@ public class MongoDBReference extends AbstractReference implements Cloneable {
         try (MongoDBSession session = getMongoDBSession()) {
             removeLinksFor(targetField, targetId, session);
         }
+    }
+
+    @Override
+    public void removeLinksForTarget(String targetId, Session session) throws DirectoryException {
+        removeLinksFor(targetField, targetId, (MongoDBSession) session);
     }
 
     private void removeLinksFor(String field, String value, MongoDBSession session) {
@@ -217,17 +218,10 @@ public class MongoDBReference extends AbstractReference implements Cloneable {
         }
     }
 
-    /**
-     * Sets all target ids to be associated to the given source id
-     * 
-     * @param sourceId the source id
-     * @param targetIds the target ids
-     * @param session the mongoDB session
-     * @throws DirectoryException
-     */
-    public void setTargetIdsForSource(String sourceId, List<String> targetIds, MongoDBSession session)
+    @Override
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session)
             throws DirectoryException {
-        setIdsFor(sourceField, sourceId, targetField, targetIds, session);
+        setIdsFor(sourceField, sourceId, targetField, targetIds, (MongoDBSession) session);
     }
 
     @Override
@@ -235,6 +229,12 @@ public class MongoDBReference extends AbstractReference implements Cloneable {
         try (MongoDBSession session = getMongoDBSession()) {
             setIdsFor(targetField, targetId, sourceField, sourceIds, session);
         }
+    }
+
+    @Override
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session)
+            throws DirectoryException {
+        setIdsFor(targetField, targetId, sourceField, sourceIds, (MongoDBSession) session);
     }
 
     private void setIdsFor(String field, String value, String fieldToUpdate, List<String> ids, MongoDBSession session) {

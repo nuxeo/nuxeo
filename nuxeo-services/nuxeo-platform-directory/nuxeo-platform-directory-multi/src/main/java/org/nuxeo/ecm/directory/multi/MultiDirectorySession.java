@@ -63,17 +63,14 @@ public class MultiDirectorySession extends BaseSession {
 
     private final DirectoryService directoryService;
 
-    private final String schemaName;
-
     private final String schemaIdField;
 
     private List<SourceInfo> sourceInfos;
 
     public MultiDirectorySession(MultiDirectory directory) {
-        super(directory);
+        super(directory, null);
         directoryService = Framework.getService(DirectoryService.class);
         MultiDirectoryDescriptor descriptor = directory.getDescriptor();
-        schemaName = descriptor.schemaName;
         schemaIdField = descriptor.idField;
         permissions = descriptor.permissions;
     }
@@ -144,8 +141,8 @@ public class MultiDirectorySession extends BaseSession {
         SourceInfo(SourceDescriptor source, List<SubDirectoryInfo> subDirectoryInfos, SubDirectoryInfo authDirectoryInfo) {
             this.source = source;
             this.subDirectoryInfos = subDirectoryInfos;
-            requiredSubDirectoryInfos = new ArrayList<SubDirectoryInfo>();
-            optionalSubDirectoryInfos = new ArrayList<SubDirectoryInfo>();
+            requiredSubDirectoryInfos = new ArrayList<>();
+            optionalSubDirectoryInfos = new ArrayList<>();
             for (SubDirectoryInfo subDirInfo : subDirectoryInfos) {
                 if (subDirInfo.isOptional) {
                     optionalSubDirectoryInfos.add(subDirInfo);
@@ -178,7 +175,7 @@ public class MultiDirectorySession extends BaseSession {
             throw new DirectoryException(String.format("Directory '%s' has unknown schema '%s'", getName(),
                     schemaName));
         }
-        final Set<String> sourceFields = new HashSet<String>();
+        final Set<String> sourceFields = new HashSet<>();
         for (Field f : schema.getFields()) {
             sourceFields.add(f.getName().getLocalName());
         }
@@ -187,7 +184,7 @@ public class MultiDirectorySession extends BaseSession {
                     getName(), schemaName, schemaIdField));
         }
 
-        List<SourceInfo> newSourceInfos = new ArrayList<SourceInfo>(2);
+        List<SourceInfo> newSourceInfos = new ArrayList<>(2);
         for (SourceDescriptor source : getDirectory().getDescriptor().sources) {
             int ndirs = source.subDirectories.length;
             if (ndirs == 0) {
@@ -195,7 +192,7 @@ public class MultiDirectorySession extends BaseSession {
                         getName(), source.name));
             }
 
-            final List<SubDirectoryInfo> subDirectoryInfos = new ArrayList<SubDirectoryInfo>(ndirs);
+            final List<SubDirectoryInfo> subDirectoryInfos = new ArrayList<>(ndirs);
 
             SubDirectoryInfo authDirectoryInfo = null;
             boolean hasRequiredDir = false;
@@ -204,9 +201,9 @@ public class MultiDirectorySession extends BaseSession {
                 final String dirSchemaName = directoryService.getDirectorySchema(dirName);
                 final String dirIdField = directoryService.getDirectoryIdField(dirName);
                 final boolean dirIsAuth = directoryService.getDirectoryPasswordField(dirName) != null;
-                final Map<String, String> fromSource = new HashMap<String, String>();
-                final Map<String, String> toSource = new HashMap<String, String>();
-                final Map<String, Serializable> defaultEntry = new HashMap<String, Serializable>();
+                final Map<String, String> fromSource = new HashMap<>();
+                final Map<String, String> toSource = new HashMap<>();
+                final Map<String, Serializable> defaultEntry = new HashMap<>();
                 final boolean dirIsOptional = subDir.isOptional;
 
                 // XXX check authenticating
@@ -217,7 +214,7 @@ public class MultiDirectorySession extends BaseSession {
                 }
                 // record default field mappings if same name and record default
                 // values
-                final Set<String> dirSchemaFields = new HashSet<String>();
+                final Set<String> dirSchemaFields = new HashSet<>();
                 for (Field f : dirSchema.getFields()) {
                     final String fieldName = f.getName().getLocalName();
                     dirSchemaFields.add(fieldName);
@@ -341,11 +338,6 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModel getEntry(String id) throws DirectoryException {
-        return getEntry(id, true);
-    }
-
-    @Override
     public DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException {
         if (!hasPermission(SecurityConstants.READ)) {
             return null;
@@ -354,7 +346,7 @@ public class MultiDirectorySession extends BaseSession {
         String entryId = id;
         source_loop: for (SourceInfo sourceInfo : sourceInfos) {
             boolean isReadOnlyEntry = true;
-            final Map<String, Object> map = new HashMap<String, Object>();
+            final Map<String, Object> map = new HashMap<>();
 
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
                 final DocumentModel entry = dirInfo.getSession().getEntry(id, fetchReferences);
@@ -414,14 +406,14 @@ public class MultiDirectorySession extends BaseSession {
         // list of entries
         final DocumentModelList results = new DocumentModelListImpl();
         // entry ids already seen (mapped to the source name)
-        final Map<String, String> seen = new HashMap<String, String>();
-        Set<String> readOnlyEntries = new HashSet<String>();
+        final Map<String, String> seen = new HashMap<>();
+        Set<String> readOnlyEntries = new HashSet<>();
 
         for (SourceInfo sourceInfo : sourceInfos) {
             // accumulated map for each entry
-            final Map<String, Map<String, Object>> maps = new HashMap<String, Map<String, Object>>();
+            final Map<String, Map<String, Object>> maps = new HashMap<>();
             // number of dirs seen for each entry
-            final Map<String, Integer> counts = new HashMap<String, Integer>();
+            final Map<String, Integer> counts = new HashMap<>();
             for (SubDirectoryInfo dirInfo : sourceInfo.requiredSubDirectoryInfos) {
                 final DocumentModelList entries = dirInfo.getSession().getEntries();
                 for (DocumentModel entry : entries) {
@@ -429,7 +421,7 @@ public class MultiDirectorySession extends BaseSession {
                     // find or create map for this entry
                     Map<String, Object> map = maps.get(id);
                     if (map == null) {
-                        map = new HashMap<String, Object>();
+                        map = new HashMap<>();
                         maps.put(id, map);
                         counts.put(id, 1);
                     } else {
@@ -446,7 +438,7 @@ public class MultiDirectorySession extends BaseSession {
             }
             for (SubDirectoryInfo dirInfo : sourceInfo.optionalSubDirectoryInfos) {
                 final DocumentModelList entries = dirInfo.getSession().getEntries();
-                Set<String> existingIds = new HashSet<String>();
+                Set<String> existingIds = new HashSet<>();
                 for (DocumentModel entry : entries) {
                     final String id = entry.getId();
                     final Map<String, Object> map = maps.get(id);
@@ -501,8 +493,7 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModel createEntry(Map<String, Object> fieldMap) {
-        checkPermission(SecurityConstants.WRITE);
+    public DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) throws DirectoryException {
         init();
         final Object rawid = fieldMap.get(schemaIdField);
         if (rawid == null) {
@@ -514,7 +505,7 @@ public class MultiDirectorySession extends BaseSession {
                 continue;
             }
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
-                Map<String, Object> map = new HashMap<String, Object>();
+                Map<String, Object> map = new HashMap<>();
                 map.put(dirInfo.idField, id);
                 for (Entry<String, String> e : dirInfo.fromSource.entrySet()) {
                     map.put(e.getValue(), fieldMap.get(e.getKey()));
@@ -523,8 +514,16 @@ public class MultiDirectorySession extends BaseSession {
             }
             return getEntry(id);
         }
-        throw new DirectoryException(String.format("Directory '%s' has no source allowing creation",
-                getName()));
+        throw new DirectoryException(String.format("Directory '%s' has no source allowing creation", getName()));
+    }
+
+    @Override
+    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) throws DirectoryException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override protected void deleteEntryWithoutReferences(String id) throws DirectoryException {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -576,7 +575,7 @@ public class MultiDirectorySession extends BaseSession {
             // entry to update doesn't belong to this directory
             return;
         }
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put(dirInfo.idField, id);
         for (Entry<String, String> e : dirInfo.fromSource.entrySet()) {
             map.put(e.getValue(), fieldMap.get(e.getKey()));
@@ -619,23 +618,6 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter) {
-        return query(filter, Collections.<String> emptySet());
-    }
-
-    @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) {
-        return query(filter, fulltext, Collections.<String, String> emptyMap());
-    }
-
-    @Override
-    @SuppressWarnings("boxing")
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy)
-            {
-        return query(filter, fulltext, orderBy, false);
-    }
-
-    @Override
     @SuppressWarnings("boxing")
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) {
@@ -645,24 +627,25 @@ public class MultiDirectorySession extends BaseSession {
         init();
 
         // entry ids already seen (mapped to the source name)
-        final Map<String, String> seen = new HashMap<String, String>();
+        final Map<String, String> seen = new HashMap<>();
         if (fulltext == null) {
             fulltext = Collections.emptySet();
         }
-        Set<String> readOnlyEntries = new HashSet<String>();
+        Set<String> readOnlyEntries = new HashSet<>();
 
         DocumentModelList results = new DocumentModelListImpl();
         for (SourceInfo sourceInfo : sourceInfos) {
             // accumulated map for each entry
-            final Map<String, Map<String, Object>> maps = new HashMap<String, Map<String, Object>>();
+            final Map<String, Map<String, Object>> maps = new HashMap<>();
             // number of dirs seen for each entry
-            final Map<String, Integer> counts = new HashMap<String, Integer>();
+            final Map<String, Integer> counts;
+            counts = new HashMap<>();
 
             // list of optional dirs where filter matches default values
-            List<SubDirectoryInfo> optionalDirsMatching = new ArrayList<SubDirectoryInfo>();
+            List<SubDirectoryInfo> optionalDirsMatching = new ArrayList<>();
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
                 // compute filter
-                final Map<String, Serializable> dirFilter = new HashMap<String, Serializable>();
+                final Map<String, Serializable> dirFilter = new HashMap<>();
                 for (Entry<String, Serializable> e : filter.entrySet()) {
                     final String fieldName = dirInfo.fromSource.get(e.getKey());
                     if (fieldName == null) {
@@ -687,7 +670,7 @@ public class MultiDirectorySession extends BaseSession {
                     }
                 }
                 // compute fulltext
-                Set<String> dirFulltext = new HashSet<String>();
+                Set<String> dirFulltext = new HashSet<>();
                 for (String sourceFieldName : fulltext) {
                     final String fieldName = dirInfo.fromSource.get(sourceFieldName);
                     if (fieldName != null) {
@@ -700,7 +683,7 @@ public class MultiDirectorySession extends BaseSession {
                     final String id = entry.getId();
                     Map<String, Object> map = maps.get(id);
                     if (map == null) {
-                        map = new HashMap<String, Object>();
+                        map = new HashMap<>();
                         maps.put(id, map);
                         counts.put(id, 1);
                     } else {
@@ -717,8 +700,8 @@ public class MultiDirectorySession extends BaseSession {
             // add default entry values for optional dirs
             for (SubDirectoryInfo dirInfo : optionalDirsMatching) {
                 // add entry for every data found in other dirs
-                Set<String> existingIds = new HashSet<String>(dirInfo.getSession().getProjection(
-                        Collections.<String, Serializable> emptyMap(), dirInfo.idField));
+                Set<String> existingIds = new HashSet<>(
+                        dirInfo.getSession().getProjection(Collections.emptyMap(), dirInfo.idField));
                 for (Entry<String, Map<String, Object>> result : maps.entrySet()) {
                     final String id = result.getKey();
                     if (!existingIds.contains(id)) {
@@ -764,11 +747,6 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public List<String> getProjection(Map<String, Serializable> filter, String columnName) {
-        return getProjection(filter, Collections.<String> emptySet(), columnName);
-    }
-
-    @Override
     public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName)
             {
 
@@ -778,7 +756,7 @@ public class MultiDirectorySession extends BaseSession {
         // So just do a non-optimal implementation for now.
 
         final DocumentModelList entries = query(filter, fulltext);
-        final List<String> results = new ArrayList<String>(entries.size());
+        final List<String> results = new ArrayList<>(entries.size());
         for (DocumentModel entry : entries) {
             final Object value = entry.getProperty(schemaName, columnName);
             if (value == null) {

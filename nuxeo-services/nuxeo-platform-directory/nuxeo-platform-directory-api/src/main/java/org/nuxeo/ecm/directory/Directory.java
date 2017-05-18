@@ -22,7 +22,9 @@ package org.nuxeo.ecm.directory;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
+import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 
 /**
@@ -154,5 +156,26 @@ public interface Directory {
      * @since 8.4
      */
     List<DirectoryDeleteConstraint> getDirectoryDeleteConstraints();
+
+    /**
+     * Invalidate caches
+     *
+     * @since 9.2
+     */
+    void invalidateCaches() throws DirectoryException;
+
+    /**
+     * Get schema field map
+     *
+     * @since 9.2
+     */
+    Map<String, Field> getSchemaFieldMap();
+
+    /**
+     * Get descriptor
+     *
+     * @since 9.2
+     */
+    BaseDirectoryDescriptor getDescriptor();
 
 }

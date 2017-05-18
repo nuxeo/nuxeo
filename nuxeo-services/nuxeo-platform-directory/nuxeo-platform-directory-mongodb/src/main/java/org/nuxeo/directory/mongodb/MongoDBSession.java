@@ -36,8 +36,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -53,7 +51,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.PasswordHelper;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
@@ -73,41 +70,20 @@ import com.mongodb.client.result.UpdateResult;
  *
  * @since 9.1
  */
-public class MongoDBSession extends BaseSession implements EntrySource {
-
-    private static final Log log = LogFactory.getLog(MongoDBSession.class);
+public class MongoDBSession extends BaseSession {
 
     protected MongoClient client;
 
     protected String dbName;
 
-    protected String schemaName;
-
-    protected String directoryName;
-
-    protected SubstringMatchType substringMatchType;
-
     protected String countersCollectionName;
 
-    protected final Map<String, Field> schemaFieldMap;
-
-    protected final String passwordHashAlgorithm;
-
-    protected final boolean autoincrementId;
-
     public MongoDBSession(MongoDBDirectory directory) {
-        super(directory);
+        super(directory, MongoDBReference.class);
         MongoDBDirectoryDescriptor desc = directory.getDescriptor();
         client = MongoDBConnectionHelper.newMongoClient(desc.getServerUrl());
         dbName = desc.getDatabaseName();
-        directoryName = directory.getName();
         countersCollectionName = directory.getCountersCollectionName();
-        schemaName = directory.getSchema();
-        substringMatchType = desc.getSubstringMatchType();
-        schemaFieldMap = directory.getSchemaFieldMap();
-        autoincrementId = desc.isAutoincrementIdField();
-        permissions = desc.permissions;
-        passwordHashAlgorithm = desc.passwordHashAlgorithm;
     }
 
     @Override
@@ -116,33 +92,7 @@ public class MongoDBSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModel getEntry(String id) throws DirectoryException {
-        return getEntry(id, true);
-    }
-
-    @Override
-    public DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException {
-        if (!hasPermission(SecurityConstants.READ)) {
-            return null;
-        }
-        if (readAllColumns) {
-            // bypass cache when reading all columns
-            return getEntryFromSource(id, fetchReferences);
-        }
-        return directory.getCache().getEntry(id, this, fetchReferences);
-    }
-
-    @Override
-    public DocumentModelList getEntries() throws DirectoryException {
-        if (!hasPermission(SecurityConstants.READ)) {
-            return new DocumentModelListImpl();
-        }
-        return query(Collections.emptyMap());
-    }
-
-    @Override
-    public DocumentModel createEntry(Map<String, Object> fieldMap) throws DirectoryException {
-
+    protected DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
         // Filter out reference fields for creation as we keep it in a different collection
         Map<String, Object> newDocMap = fieldMap.entrySet()
                                                 .stream()
@@ -150,7 +100,6 @@ public class MongoDBSession extends BaseSession implements EntrySource {
                                                 .collect(HashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()),
                                                         HashMap::putAll);
 
-        checkPermission(SecurityConstants.WRITE);
         String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
         String id;
         if (autoincrementId) {
@@ -176,40 +125,14 @@ public class MongoDBSession extends BaseSession implements EntrySource {
                 bson.append(getPasswordField(), password);
             }
             getCollection().insertOne(bson);
-
-            DocumentModel docModel = BaseSession.createEntryModel(null, schemaName, id, fieldMap, isReadOnly());
-
-            // Add references fields
-            String sourceId = docModel.getId();
-            for (Reference reference : getDirectory().getReferences()) {
-                String referenceFieldName = schemaFieldMap.get(reference.getFieldName()).getName().getPrefixedName();
-                if (getDirectory().getReferences(reference.getFieldName()).size() > 1) {
-                    log.warn("Directory " + getDirectory().getName() + " cannot create field "
-                            + reference.getFieldName() + " for entry " + fieldMap.get(idFieldName)
-                            + ": this field is associated with more than one reference");
-                    continue;
-                }
-
-                @SuppressWarnings("unchecked")
-                List<String> targetIds = (List<String>) fieldMap.get(referenceFieldName);
-                if (reference instanceof MongoDBReference) {
-                    MongoDBReference mongodbReference = (MongoDBReference) reference;
-                    mongodbReference.addLinks(sourceId, targetIds, this);
-                } else {
-                    reference.addLinks(sourceId, targetIds);
-                }
-            }
-
-            getDirectory().invalidateCaches();
-            return docModel;
         } catch (MongoWriteException e) {
             throw new DirectoryException(e);
         }
+        return createEntryModel(null, schemaName, id, fieldMap, isReadOnly());
     }
 
     @Override
-    public void updateEntry(DocumentModel docModel) throws DirectoryException {
-        checkPermission(SecurityConstants.WRITE);
+    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) throws DirectoryException {
         Map<String, Object> fieldMap = new HashMap<>();
         List<String> referenceFieldList = new LinkedList<>();
 
@@ -257,49 +180,11 @@ public class MongoDBSession extends BaseSession implements EntrySource {
         } catch (MongoWriteException e) {
             throw new DirectoryException(e);
         }
-
-        // update reference fields
-        for (String referenceFieldName : referenceFieldList) {
-            List<Reference> references = directory.getReferences(referenceFieldName);
-            if (references.size() > 1) {
-                // not supported
-                log.warn("Directory " + getDirectory().getName() + " cannot update field " + referenceFieldName
-                        + " for entry " + docModel.getId() + ": this field is associated with more than one reference");
-            } else {
-                Reference reference = references.get(0);
-                @SuppressWarnings("unchecked")
-                List<String> targetIds = (List<String>) docModel.getProperty(schemaName, referenceFieldName);
-                if (reference instanceof MongoDBReference) {
-                    MongoDBReference mongoReference = (MongoDBReference) reference;
-                    mongoReference.setTargetIdsForSource(docModel.getId(), targetIds, this);
-                } else {
-                    reference.setTargetIdsForSource(docModel.getId(), targetIds);
-                }
-            }
-        }
-        getDirectory().invalidateCaches();
-
+        return referenceFieldList;
     }
 
     @Override
-    public void deleteEntry(DocumentModel docModel) throws DirectoryException {
-        deleteEntry(docModel.getId());
-    }
-
-    @Override
-    public void deleteEntry(String id) throws DirectoryException {
-        checkPermission(SecurityConstants.WRITE);
-        checkDeleteConstraints(id);
-
-        for (Reference reference : getDirectory().getReferences()) {
-            if (reference instanceof MongoDBReference) {
-                MongoDBReference mongoDBReference = (MongoDBReference) reference;
-                mongoDBReference.removeLinksForSource(id, this);
-            } else {
-                reference.removeLinksForSource(id);
-            }
-        }
-
+    public void deleteEntryWithoutReferences(String id) throws DirectoryException {
         try {
             String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
             DeleteResult result = getCollection().deleteOne(
@@ -311,29 +196,6 @@ public class MongoDBSession extends BaseSession implements EntrySource {
         } catch (MongoWriteException e) {
             throw new DirectoryException(e);
         }
-        getDirectory().invalidateCaches();
-    }
-
-    @Override
-    public void deleteEntry(String id, Map<String, String> map) throws DirectoryException {
-        // TODO deprecate this as it's unused
-        deleteEntry(id);
-    }
-
-    @Override
-    public DocumentModelList query(Map<String, Serializable> filter) throws DirectoryException {
-        return query(filter, Collections.emptySet());
-    }
-
-    @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) throws DirectoryException {
-        return query(filter, fulltext, new HashMap<>());
-    }
-
-    @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy)
-            throws DirectoryException {
-        return query(filter, fulltext, orderBy, false);
     }
 
     @Override
@@ -468,24 +330,6 @@ public class MongoDBSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public List<String> getProjection(Map<String, Serializable> filter, String columnName) throws DirectoryException {
-        return getProjection(filter, Collections.emptySet(), columnName);
-    }
-
-    @Override
-    public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName)
-            throws DirectoryException {
-        DocumentModelList docList = query(filter, fulltext);
-        List<String> result = new ArrayList<>();
-        for (DocumentModel docModel : docList) {
-            Object obj = docModel.getProperty(schemaName, columnName);
-            String propValue = String.valueOf(obj);
-            result.add(propValue);
-        }
-        return result;
-    }
-
-    @Override
     public boolean authenticate(String username, String password) throws DirectoryException {
         Document user = getCollection().find(MongoDBSerializationHelper.fieldMapToBson(getIdField(), username)).first();
         if (user == null) {
@@ -503,19 +347,6 @@ public class MongoDBSession extends BaseSession implements EntrySource {
     @Override
     public boolean hasEntry(String id) {
         return getCollection().count(MongoDBSerializationHelper.fieldMapToBson(getIdField(), id)) > 0;
-    }
-
-    @Override
-    public DocumentModel createEntry(DocumentModel documentModel) {
-        return createEntry(documentModel.getProperties(schemaName));
-    }
-
-    @Override
-    public DocumentModel getEntryFromSource(String id, boolean fetchReferences) throws DirectoryException {
-        String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
-        DocumentModelList result = query(Collections.singletonMap(idFieldName, id), Collections.emptySet(),
-                Collections.emptyMap(), fetchReferences, 1, 0);
-        return result.isEmpty() ? null : result.get(0);
     }
 
     /**
