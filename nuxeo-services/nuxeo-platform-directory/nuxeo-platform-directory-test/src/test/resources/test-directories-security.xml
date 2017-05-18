@@ -5,7 +5,6 @@
     point="directories">
 
     <directory name="userDirectory" extends="template-user">
-
       <schema>user</schema>
       <types>
         <type>system</type>
@@ -27,9 +26,7 @@
       </permissions>
     </directory>
 
-
     <directory name="groupDirectory" extends="template-group">
-
       <schema>group</schema>
       <types>
         <type>system</type>

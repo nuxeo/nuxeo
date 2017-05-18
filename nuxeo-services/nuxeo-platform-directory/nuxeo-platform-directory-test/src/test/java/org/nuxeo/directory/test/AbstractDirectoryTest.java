@@ -268,8 +268,10 @@ public abstract class AbstractDirectoryTest {
             groups = (List<String>) dm.getProperty(SCHEMA, "groups");
             assertEquals(1, groups.size());
             assertTrue(groups.contains("administrators"));
-            // assertTrue(groups.contains("members"));
 
+            // Test that the document model is null when entry is null
+            dm = session.getEntry(null);
+            assertNull(dm);
         }
     }
 

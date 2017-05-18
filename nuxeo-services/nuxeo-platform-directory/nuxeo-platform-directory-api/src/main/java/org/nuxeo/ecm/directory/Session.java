@@ -20,7 +20,6 @@
 
 package org.nuxeo.ecm.directory;
 
-import java.io.Closeable;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -121,9 +120,11 @@ public interface Session extends AutoCloseable {
      * This is used for hierarchical vocabularies, where the actual unique key is the couple (parent, id).
      *
      * @param id the id of the entry to delete.
-     * @param map a map of seconday key values.
+     * @param map a map of secondary key values.
      * @throws DirectoryException if a communication error occurs.
+     * @deprecated since 9.2 (unused), use {@link #deleteEntry(String)} instead.
      */
+    @Deprecated
     void deleteEntry(String id, Map<String, String> map) throws DirectoryException;
 
     /*

@@ -20,6 +20,7 @@
 
 package org.nuxeo.directory.test;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
@@ -35,11 +36,9 @@ public class DirectoryConfiguration {
 
     public static final String DIRECTORY_PROPERTY = "nuxeo.test.directory";
 
-    public static final String DIRECTORY_VCS = "vcs";
+    public static final String DIRECTORY_SQL = "sql";
 
     public static final String DIRECTORY_MONGODB = "mongodb";
-
-    public static final String DIRECTORY_LDAP = "ldap";
 
     protected String directoryType;
 
@@ -48,40 +47,33 @@ public class DirectoryConfiguration {
     public DirectoryConfiguration(StorageConfiguration storageConfiguration) {
         this.storageConfiguration = storageConfiguration;
         directoryType = StorageConfiguration.defaultSystemProperty(DIRECTORY_PROPERTY,
-                storageConfiguration.getCoreType());
+                storageConfiguration.isVCS() ? DIRECTORY_SQL : storageConfiguration.getCoreType());
     }
 
     public void deployContrib(FeaturesRunner runner) throws Exception {
-        String contribName = null;
+        String contribName;
         switch (directoryType) {
-        case DIRECTORY_VCS:
+        case DIRECTORY_SQL:
             contribName = "OSGI-INF/test-directory-sql-contrib.xml";
             break;
         case DIRECTORY_MONGODB:
             contribName = "OSGI-INF/test-directory-mongodb-contrib.xml";
             break;
-        case DIRECTORY_LDAP:
-            contribName = "OSGI-INF/test-directory-ldap-contrib.xml";
-            break;
         default:
-            break;
+            throw new NuxeoException("Contribution for testing directories cannot be null");
         }
 
         RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
-        harness.deployContrib("org.nuxeo.ecm.directory.tests",contribName);
-
+        harness.deployContrib("org.nuxeo.ecm.directory.tests", contribName);
     }
 
     public void init() {
         switch (directoryType) {
-        case DIRECTORY_VCS:
+        case DIRECTORY_SQL:
             if (!storageConfiguration.isVCS()) {
                 storageConfiguration.initJDBC();
             }
             break;
-        case DIRECTORY_LDAP:
-            // TODO Init mock LDAP server ?
-        case DIRECTORY_MONGODB:
         default:
             break;
         }

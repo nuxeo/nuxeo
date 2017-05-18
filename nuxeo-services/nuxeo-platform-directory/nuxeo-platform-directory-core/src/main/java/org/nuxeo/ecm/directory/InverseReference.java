@@ -126,12 +126,30 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
+    public void removeLinksForTarget(String targetId, Session session) throws DirectoryException {
+        if (readOnly) {
+            return;
+        }
+        checkDualReference();
+        dualReference.removeLinksForSource(targetId, session);
+    }
+
+    @Override
     public void removeLinksForSource(String sourceId) throws DirectoryException {
         if (readOnly) {
             return;
         }
         checkDualReference();
         dualReference.removeLinksForTarget(sourceId);
+    }
+
+    @Override
+    public void removeLinksForSource(String sourceId, Session session) throws DirectoryException {
+        if (readOnly) {
+            return;
+        }
+        checkDualReference();
+        dualReference.removeLinksForTarget(sourceId, session);
     }
 
     @Override
@@ -156,6 +174,16 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session)
+            throws DirectoryException {
+        if (readOnly) {
+            return;
+        }
+        checkDualReference();
+        dualReference.setSourceIdsForTarget(sourceId, targetIds, session);
+    }
+
+    @Override
     public void setSourceIdsForTarget(String targetId, List<String> sourceIds) throws DirectoryException {
         if (readOnly) {
             return;
@@ -165,9 +193,36 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session)
+            throws DirectoryException {
+        if (readOnly) {
+            return;
+        }
+        checkDualReference();
+        dualReference.setTargetIdsForSource(targetId, sourceIds, session);
+    }
+
+    @Override
     public InverseReference clone() {
-        InverseReference clone = (InverseReference) super.clone();
         // basic fields are already copied by super.clone()
-        return clone;
+        return (InverseReference) super.clone();
+    }
+
+    @Override
+    public void addLinks(String sourceId, List<String> targetIds, Session session) throws DirectoryException {
+        if (readOnly) {
+            return;
+        }
+        checkDualReference();
+        dualReference.addLinks(targetIds, sourceId, session);
+    }
+
+    @Override
+    public void addLinks(List<String> sourceIds, String targetId, Session session) throws DirectoryException {
+        if (readOnly) {
+            return;
+        }
+        checkDualReference();
+        dualReference.addLinks(targetId, sourceIds, session);
     }
 }

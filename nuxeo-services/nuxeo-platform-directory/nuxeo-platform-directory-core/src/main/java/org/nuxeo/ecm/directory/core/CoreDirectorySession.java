@@ -53,8 +53,6 @@ import com.google.common.collect.Collections2;
  */
 public class CoreDirectorySession extends BaseSession {
 
-    protected final String schemaName;
-
     protected final String schemaIdField;
 
     protected final String schemaPasswordField;
@@ -70,8 +68,7 @@ public class CoreDirectorySession extends BaseSession {
     private final static Log log = LogFactory.getLog(CoreDirectorySession.class);
 
     public CoreDirectorySession(CoreDirectory directory) {
-        super(directory);
-        schemaName = directory.getSchema();
+        super(directory, null);
         CoreDirectoryDescriptor descriptor = directory.getDescriptor();
         coreSession = CoreInstance.openCoreSession(descriptor.getRepositoryName());
         schemaIdField = directory.getFieldMapper().getBackendField(getIdField());
@@ -83,11 +80,6 @@ public class CoreDirectorySession extends BaseSession {
     @Override
     public CoreDirectory getDirectory() {
         return (CoreDirectory) directory;
-    }
-
-    @Override
-    public DocumentModel getEntry(String id) throws DirectoryException {
-        return getEntry(id, false);
     }
 
     @Override
@@ -143,6 +135,24 @@ public class CoreDirectorySession extends BaseSession {
     }
 
     @Override
+    public DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) throws DirectoryException {
+        // TODO once references are implemented
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected List<String> updateEntryWithoutReferences(DocumentModel docModel) throws DirectoryException {
+        // TODO once references are implemented
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void deleteEntryWithoutReferences(String id) throws DirectoryException {
+        // TODO once references are implemented
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public DocumentModel createEntry(Map<String, Object> fieldMap) throws DirectoryException {
         if (isReadOnly()) {
             log.warn(String.format("The directory '%s' is in read-only mode, could not create entry.",
@@ -152,8 +162,8 @@ public class CoreDirectorySession extends BaseSession {
         // TODO : deal with auto-versionning
         // TODO : deal with encrypted password
         // TODO : deal with references
-        Map<String, Object> properties = new HashMap<String, Object>();
-        List<String> createdRefs = new LinkedList<String>();
+        Map<String, Object> properties = new HashMap<>();
+        List<String> createdRefs = new LinkedList<>();
         for (String fieldId : fieldMap.keySet()) {
             if (getDirectory().isReference(fieldId)) {
                 createdRefs.add(fieldId);
@@ -264,7 +274,7 @@ public class CoreDirectorySession extends BaseSession {
                     directory.getName()));
         }
 
-        Map<String, Serializable> props = new HashMap<String, Serializable>(map);
+        Map<String, Serializable> props = new HashMap<>(map);
         props.put(schemaIdField, id);
 
         DocumentModelList docList = query(props);
@@ -278,25 +288,6 @@ public class CoreDirectorySession extends BaseSession {
             throw new DirectoryException(String.format("Delete entry failed : Entry with id '%s' not found !", id));
         }
 
-    }
-
-    @Override
-    public DocumentModelList query(Map<String, Serializable> filter) {
-        Set<String> emptySet = Collections.emptySet();
-        return query(filter, emptySet);
-    }
-
-    @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext,
-            Map<String, String> orderBy) {
-        // XXX not fetch references by default: breaks current behavior
-        return query(filter, fulltext, orderBy, false);
-    }
-
-    @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences) {
-        return query(filter, fulltext, orderBy, fetchReferences, 0, 0);
     }
 
     protected String getMappedPrefixedFieldName(String fieldName) {
@@ -373,11 +364,6 @@ public class CoreDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) throws DirectoryException {
-        return query(filter, fulltext, new HashMap<String, String>());
-    }
-
-    @Override
     public void close() throws DirectoryException {
         coreSession.close();
         getDirectory().removeSession(this);
@@ -385,16 +371,12 @@ public class CoreDirectorySession extends BaseSession {
 
     @Override
     public List<String> getProjection(Map<String, Serializable> filter, String columnName) throws DirectoryException {
-        // TODO Auto-generated method stub
-        // return null;
         throw new UnsupportedOperationException();
     }
 
     @Override
     public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName)
             throws DirectoryException {
-        // TODO Auto-generated method stub
-        // return null;
         throw new UnsupportedOperationException();
     }
 
@@ -417,11 +399,4 @@ public class CoreDirectorySession extends BaseSession {
     public boolean hasEntry(String id) {
         return getEntry(id) != null;
     }
-
-    @Override
-    public DocumentModel createEntry(DocumentModel entry) {
-        Map<String, Object> fieldMap = entry.getProperties(schemaName);
-        return createEntry(fieldMap);
-    }
-
 }

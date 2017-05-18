@@ -7,7 +7,7 @@
     <directory name="oauth2Tokens" remove="true">
     </directory>
 
-    <directory name="oauth2Tokens" extends="template-oauth2token">
+    <directory name="oauth2Tokens" extends="template-directory">
       <schema>oauth2Token</schema>
       <createTablePolicy>always</createTablePolicy>
       <dataFile>oauth2token.csv</dataFile>

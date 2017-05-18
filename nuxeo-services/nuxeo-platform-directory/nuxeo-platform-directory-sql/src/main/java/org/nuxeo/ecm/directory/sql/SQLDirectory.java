@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.transaction.Synchronization;
@@ -108,8 +107,6 @@ public class SQLDirectory extends AbstractDirectory {
 
     private Schema schema;
 
-    private Map<String, Field> schemaFieldMap;
-
     // columns to fetch when an entry is read (with the password)
     protected List<Column> readColumnsAll;
 
@@ -131,11 +128,6 @@ public class SQLDirectory extends AbstractDirectory {
         // register the references to other directories
         addReferences(descriptor.getInverseReferences());
         addReferences(descriptor.getTableReferences());
-
-        // cache parameterization
-        cache.setEntryCacheName(descriptor.cacheEntryName);
-        cache.setEntryCacheWithoutReferencesName(descriptor.cacheEntryWithoutReferencesName);
-        cache.setNegativeCaching(descriptor.negativeCaching);
 
         // Cache fallback
         CacheService cacheService = Framework.getLocalService(CacheService.class);
@@ -236,8 +228,7 @@ public class SQLDirectory extends AbstractDirectory {
             }
 
             SQLHelper helper = new SQLHelper(sqlConnection, table, descriptor.getCreateTablePolicy());
-            boolean loadData = helper.setupTable();
-            return loadData;
+            return helper.setupTable();
         } catch (SQLException e) {
             // exception on close
             throw new DirectoryException(e);
@@ -279,10 +270,6 @@ public class SQLDirectory extends AbstractDirectory {
             return;
         }
         TransactionHelper.registerSynchronization(new TxSessionCleaner(session));
-    }
-
-    public Map<String, Field> getSchemaFieldMap() {
-        return schemaFieldMap;
     }
 
     public Table getTable() {

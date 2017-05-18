@@ -29,7 +29,7 @@
       <dataFile>test-groups.csv</dataFile>
     </directory>
 
-    <directory name="otherGroupDirectory" extends="template-othergroup">
+    <directory name="otherGroupDirectory" extends="template-group">
       <schema>group</schema>
       <types>
         <type>system</type>

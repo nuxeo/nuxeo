@@ -44,6 +44,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.AbstractReference;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.Session;
 
 /**
  * Implementation of the directory Reference interface that makes it possible to retrieve children of a node in the LDAP
@@ -142,6 +143,21 @@ public class LDAPTreeReference extends AbstractReference {
      */
     @Override
     public void addLinks(String sourceId, List<String> targetIds) throws DirectoryException {
+        // TODO: not yet implemented
+    }
+
+    /**
+     * NOT IMPLEMENTED: Store new links
+     *
+     * @see org.nuxeo.ecm.directory.Reference#addLinks(String, List, Session)
+     */
+    @Override
+    public void addLinks(String sourceId, List<String> targetIds, Session session) throws DirectoryException {
+        // TODO: not yet implemented
+    }
+
+    @Override
+    public void addLinks(List<String> sourceIds, String targetId, Session session) throws DirectoryException {
         // TODO: not yet implemented
     }
 
@@ -360,6 +376,12 @@ public class LDAPTreeReference extends AbstractReference {
         // TODO: not yet implemented
     }
 
+    @Override
+    public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session)
+            throws DirectoryException {
+        // TODO: not yet implemented
+    }
+
     /**
      * NOT IMPLEMENTED: Set the list of statically defined references for a given source
      *
@@ -367,6 +389,22 @@ public class LDAPTreeReference extends AbstractReference {
      */
     @Override
     public void setTargetIdsForSource(String sourceId, List<String> targetIds) throws DirectoryException {
+        // TODO: not yet implemented
+    }
+
+    @Override
+    public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session)
+            throws DirectoryException {
+        // TODO: not yet implemented
+    }
+
+    @Override
+    public void removeLinksForTarget(String targetId, Session session) throws DirectoryException {
+        // TODO: not yet implemented
+    }
+
+    @Override
+    public void removeLinksForSource(String sourceId, Session session) throws DirectoryException {
         // TODO: not yet implemented
     }
 

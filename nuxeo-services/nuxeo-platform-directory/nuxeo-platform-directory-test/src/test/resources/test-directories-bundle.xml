@@ -6,7 +6,6 @@
     point="directories">
 
     <directory name="userDirectory" extends="template-user">
-
       <schema>user</schema>
       <types>
         <type>system</type>

@@ -31,7 +31,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.Directory;
@@ -50,8 +49,6 @@ import com.mongodb.client.model.Filters;
  */
 public class MongoDBDirectory extends AbstractDirectory {
 
-    protected Map<String, Field> schemaFieldMap;
-
     protected String countersCollectionName;
 
     protected boolean initialized;
@@ -66,10 +63,6 @@ public class MongoDBDirectory extends AbstractDirectory {
         // cache parameterization
         String cacheEntryName = descriptor.cacheEntryName;
         String cacheEntryNameWithoutReferencesName = descriptor.cacheEntryWithoutReferencesName;
-
-        cache.setEntryCacheName(cacheEntryName);
-        cache.setEntryCacheWithoutReferencesName(cacheEntryNameWithoutReferencesName);
-        cache.setNegativeCaching(descriptor.negativeCaching);
 
         // cache fallback
         CacheService cacheService = Framework.getService(CacheService.class);
@@ -163,10 +156,6 @@ public class MongoDBDirectory extends AbstractDirectory {
             DirectoryCSVLoader.loadData(descriptor.getDataFileName(), descriptor.getDataFileCharacterSeparator(),
                     schema, session::createEntry);
         }
-    }
-
-    public Map<String, Field> getSchemaFieldMap() {
-        return schemaFieldMap;
     }
 
     public String getCountersCollectionName() {

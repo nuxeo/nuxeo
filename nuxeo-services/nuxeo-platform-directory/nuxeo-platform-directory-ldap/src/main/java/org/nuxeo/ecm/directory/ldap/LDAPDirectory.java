@@ -78,8 +78,6 @@ public class LDAPDirectory extends AbstractDirectory {
 
     protected SearchControls searchControls;
 
-    protected Map<String, Field> schemaFieldMap;
-
     protected final LDAPDirectoryFactory factory;
 
     protected String baseFilter;
@@ -139,11 +137,6 @@ public class LDAPDirectory extends AbstractDirectory {
         // since the list of attributes to fetch my depend on registered
         // LDAPReferences
         searchControls = computeSearchControls();
-
-        // cache parameterization
-        cache.setEntryCacheName(ldapDirectoryDesc.cacheEntryName);
-        cache.setEntryCacheWithoutReferencesName(ldapDirectoryDesc.cacheEntryWithoutReferencesName);
-        cache.setNegativeCaching(ldapDirectoryDesc.negativeCaching);
 
         log.debug(String.format("initialized LDAP directory %s with fields [%s] and references [%s]", getName(),
                 StringUtils.join(schemaFieldMap.keySet().toArray(), ", "),
@@ -350,10 +343,6 @@ public class LDAPDirectory extends AbstractDirectory {
         } else {
             return idFilter;
         }
-    }
-
-    public Map<String, Field> getSchemaFieldMap() {
-        return schemaFieldMap;
     }
 
     public void setTestServer(ContextProvider testServer) {
