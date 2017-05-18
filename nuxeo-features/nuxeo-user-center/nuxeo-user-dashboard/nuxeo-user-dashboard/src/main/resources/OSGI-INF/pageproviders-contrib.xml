@@ -14,19 +14,6 @@
       <pageSize>0</pageSize>
     </coreQueryPageProvider>
 
-    <coreQueryPageProvider name="domain_documents">
-      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
-      <pattern>
-        SELECT * FROM Document WHERE ecm:path STARTSWITH ?
-        AND ecm:mixinType != 'Folderish' AND ecm:mixinType !=
-        'SystemDocument' AND ecm:mixinType !=
-        'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0
-        AND ecm:currentLifeCycleState != 'deleted'
-      </pattern>
-      <sort column="dc:modified" ascending="false" />
-      <pageSize>5</pageSize>
-    </coreQueryPageProvider>
-
     <coreQueryPageProvider name="domain_published_documents">
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
