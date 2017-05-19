@@ -315,7 +315,7 @@ public class MongoDBSession extends BaseSession implements EntrySource {
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) throws DirectoryException {
-        return query(filter, fulltext, orderBy, fetchReferences, -1, -1);
+        return query(filter, fulltext, orderBy, fetchReferences, -1, 0);
     }
 
     @Override
@@ -447,7 +447,7 @@ public class MongoDBSession extends BaseSession implements EntrySource {
     @Override
     public DocumentModel getEntryFromSource(String id, boolean fetchReferences) throws DirectoryException {
         DocumentModelList result = query(Collections.singletonMap(getIdField(), id), Collections.emptySet(),
-                Collections.emptyMap(), fetchReferences, 1, -1);
+                Collections.emptyMap(), fetchReferences, 1, 0);
         return result.isEmpty() ? null : result.get(0);
     }
 
