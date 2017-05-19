@@ -430,6 +430,9 @@ public class MongoDBSession extends BaseSession implements EntrySource {
     @Override
     public boolean authenticate(String username, String password) throws DirectoryException {
         Document user = getCollection().find(MongoDBSerializationHelper.fieldMapToBson(getIdField(), username)).first();
+        if (user == null) {
+            return false;
+        }
         String storedPassword = user.getString(getPasswordField());
         return PasswordHelper.verifyPassword(password, storedPassword);
     }

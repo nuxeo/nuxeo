@@ -183,4 +183,12 @@ public class TestMongoDBDirectory extends MongoDBDirectoryTestCase {
         }
     }
 
+    @Test
+    public void testAuthenticateFailure() throws Exception {
+        try (Session session = openSession(CONTINENT_DIR)) {
+            // failed authentication: not existing user
+            assertFalse(session.authenticate("NonExistingUser", "whatever"));
+        }
+    }
+
 }
