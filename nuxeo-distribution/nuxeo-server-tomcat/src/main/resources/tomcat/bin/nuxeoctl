@@ -39,11 +39,11 @@ set -- "${cmdargs[@]}"
 
 ## Helper functions
 warn() {
-  echo "WARNING: $*"
+  echo "WARNING: $*" 1>&2
 }
 
 die() {
-  echo "ERROR: $*"
+  echo "ERROR: $*" 1>&2
   exit 1
 }
 
