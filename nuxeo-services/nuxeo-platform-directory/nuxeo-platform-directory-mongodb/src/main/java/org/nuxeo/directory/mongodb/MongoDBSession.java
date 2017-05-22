@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.mongodb.client.model.Updates;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,13 +46,13 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.PasswordHelper;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoWriteException;
@@ -61,6 +60,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
+import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 
@@ -376,24 +376,22 @@ public class MongoDBSession extends BaseSession implements EntrySource {
         Document bson = new Document();
         for (Map.Entry<String, Serializable> entry : fieldMap.entrySet()) {
             Object value = MongoDBSerializationHelper.valueToBson(entry.getValue());
-            if (value != null) {
-                String key = entry.getKey();
-                if (fulltext.contains(key)) {
-                    String val = String.valueOf(value);
-                    switch (substringMatchType) {
-                    case subany:
-                        addField(bson, key, Pattern.compile(val, Pattern.CASE_INSENSITIVE));
-                        break;
-                    case subinitial:
-                        addField(bson, key, Pattern.compile('^' + val, Pattern.CASE_INSENSITIVE));
-                        break;
-                    case subfinal:
-                        addField(bson, key, Pattern.compile(val + '$', Pattern.CASE_INSENSITIVE));
-                        break;
-                    }
-                } else {
-                    addField(bson, key, value);
+            String key = entry.getKey();
+            if (fulltext.contains(key)) {
+                String val = String.valueOf(value);
+                switch (substringMatchType) {
+                case subany:
+                    addField(bson, key, Pattern.compile(val, Pattern.CASE_INSENSITIVE));
+                    break;
+                case subinitial:
+                    addField(bson, key, Pattern.compile('^' + val, Pattern.CASE_INSENSITIVE));
+                    break;
+                case subfinal:
+                    addField(bson, key, Pattern.compile(val + '$', Pattern.CASE_INSENSITIVE));
+                    break;
                 }
+            } else {
+                addField(bson, key, value);
             }
         }
         return bson;
