@@ -69,6 +69,17 @@ public class TestMarkLogicStateSerializer extends AbstractSerializerTest {
         assertXMLFileAgainstString("serializer/state-with-simple-calendar-value.xml", xml);
     }
 
+    /*
+     * NXP-22382
+     */
+    @Test
+    public void testStateWithUnderscoreKey() throws Exception {
+        State state = createStateWithUnderscoreKey();
+        String xml = MarkLogicStateSerializer.serialize(state);
+        assertNotNull(xml);
+        assertXMLFileAgainstString("serializer/state-with-underscore-key.xml", xml);
+    }
+
     @Test
     public void testStateWithSubState() throws Exception {
         State state = createStateWithSubState();

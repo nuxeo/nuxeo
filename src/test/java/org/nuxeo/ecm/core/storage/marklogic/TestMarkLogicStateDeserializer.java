@@ -73,6 +73,18 @@ public class TestMarkLogicStateDeserializer extends AbstractSerializerTest {
         assertEquals(expectedState, state);
     }
 
+    /*
+     * NXP-22382
+     */
+    @Test
+    public void testStateWithUnderscoreKey() throws Exception {
+        String xml = readFile("serializer/state-with-underscore-key.xml");
+        State state = MarkLogicStateDeserializer.deserialize(xml);
+        assertNotNull(state);
+        State expectedState = createStateWithUnderscoreKey();
+        assertEquals(expectedState, state);
+    }
+
     @Test
     public void testStateWithSubState() throws Exception {
         String xml = readFile("serializer/state-with-sub-state.xml");

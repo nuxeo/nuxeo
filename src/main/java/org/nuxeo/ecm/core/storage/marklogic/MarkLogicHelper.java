@@ -85,6 +85,9 @@ final class MarkLogicHelper {
                     underscoreNext = true;
                 }
             } else {
+                if (underscore) {
+                    nxKey.append('_');
+                }
                 nxKey.append(c);
             }
             underscore = underscoreNext;

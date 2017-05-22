@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ecm__id xsi:type="xs:string">ID</ecm__id>
+  <status__administrative_status xsi:type="xs:string">active</status__administrative_status>
+</document>
