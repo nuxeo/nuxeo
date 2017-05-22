@@ -63,6 +63,13 @@ public abstract class AbstractSerializerTest extends AbstractTest {
         return state;
     }
 
+    protected State createStateWithUnderscoreKey() {
+        State state = new State();
+        state.put(KEY_ID, "ID");
+        state.put("status:administrative_status", "active");
+        return state;
+    }
+
     protected State createStateWithSubState() {
         State state = new State();
         state.put(KEY_ID, "ID");
