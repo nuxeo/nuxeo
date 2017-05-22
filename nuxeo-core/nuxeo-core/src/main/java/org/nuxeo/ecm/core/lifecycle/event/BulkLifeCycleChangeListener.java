@@ -167,7 +167,7 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
             changeDocumentsState(session, pageSize, transition, targetState, docs);
         } else {
             // execute a first query to know total size
-            String query = String.format("SELECT * FROM Document where parentId ='%s'", doc.getId());
+            String query = String.format("SELECT * FROM Document where ecm:parentId ='%s'", doc.getId());
             DocumentModelList docs = session.query(query, null, pageSize, 0, true);
             changeDocumentsState(session, pageSize, transition, targetState, docs);
             // loop on other children
