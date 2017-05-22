@@ -57,15 +57,15 @@ public class TestSQLBackendSoftDelete extends TestSQLBackend {
         Node folder2 = session.addChildNode(root, "folder2", null, "TestDoc", false);
         Node folder3 = session.addChildNode(root, "folder3", null, "TestDoc", false);
         Node folder4 = session.addChildNode(folder1, "folder4", null, "TestDoc", false);
-        session.addChildNode(folder4, "folder5", null, "TestDoc", false);
+        Node folder5 = session.addChildNode(folder4, "folder5", null, "TestDoc", false);
         // create node in folder1
         Node node = session.addChildNode(folder1, "node", null, "TestDoc", false);
         // create version
         Node ver = session.checkIn(node, "foolab1", "desc1");
         // create proxy2 in folder2
         session.addProxy(ver.getId(), node.getId(), folder2, "proxy2", null);
-        // create proxy3 in folder3
-        session.addProxy(ver.getId(), node.getId(), folder3, "proxy3", null);
+        // create proxy3 in folder1
+        session.addProxy(folder1.getId(), node.getId(), folder3, "proxy3", null);
 
         // remove folder2 and contained proxy
         session.removeNode(folder2);
