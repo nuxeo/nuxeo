@@ -22,26 +22,19 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 
 import org.apache.commons.io.IOUtils;
-import org.hsqldb.jdbcDriver;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -62,9 +55,10 @@ import org.skyscreamer.jsonassert.JSONAssert;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.schema",
-        "org.nuxeo.ecm.core", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.targetplatforms.core", "org.nuxeo.targetplatforms.io" })
+@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core",
+        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.event",
+        "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.platform.el",
+        "org.nuxeo.targetplatforms.core", "org.nuxeo.targetplatforms.io", })
 @LocalDeploy({ "org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml",
         "org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml" })
 public class TestJsonExporter {
@@ -122,7 +116,7 @@ public class TestJsonExporter {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JSONExporter.exportToJson(tpi, out, true);
         checkJsonEquals("target-platform-instance-export.json", out);
-        tpi = service.getTargetPlatformInstance("cap-5.8", Arrays.asList(new String[] { "nuxeo-dm-5.8" }));
+        tpi = service.getTargetPlatformInstance("cap-5.8", Arrays.asList("nuxeo-dm-5.8"));
         assertNotNull(tpi);
         out = new ByteArrayOutputStream();
         JSONExporter.exportToJson(tpi, out, true);

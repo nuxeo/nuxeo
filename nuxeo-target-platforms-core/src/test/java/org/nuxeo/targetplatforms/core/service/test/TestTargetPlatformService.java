@@ -58,9 +58,10 @@ import org.nuxeo.targetplatforms.core.service.DirectoryUpdater;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core",
-        "org.nuxeo.ecm.core.schema", "org.nuxeo.targetplatforms.core", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.sql" })
+@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.schema",
+        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.event",
+        "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.platform.el",
+        "org.nuxeo.targetplatforms.core" })
 @LocalDeploy({ "org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml",
         "org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml" })
 public class TestTargetPlatformService {
@@ -550,8 +551,8 @@ public class TestTargetPlatformService {
     @Test
     public void testGetAvailableTargetPlatforms() {
         // filter all
-        List<TargetPlatform> tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(true, true, true,
-                false, null));
+        List<TargetPlatform> tps = service.getAvailableTargetPlatforms(
+                new TargetPlatformFilterImpl(true, true, true, false, null));
         assertEquals(4, tps.size());
         // order is registration order
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -607,8 +608,8 @@ public class TestTargetPlatformService {
 
     @Test
     public void testGetAvailableTargetPlatformsOverride() {
-        List<TargetPlatform> tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(true, true, true,
-                false, null));
+        List<TargetPlatform> tps = service.getAvailableTargetPlatforms(
+                new TargetPlatformFilterImpl(true, true, true, false, null));
         assertEquals(4, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
@@ -652,8 +653,8 @@ public class TestTargetPlatformService {
     @Test
     public void testGetAvailableTargetPlatformsInfo() {
         // filter all
-        List<TargetPlatformInfo> tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(true, true,
-                true, false, null));
+        List<TargetPlatformInfo> tps = service.getAvailableTargetPlatformsInfo(
+                new TargetPlatformFilterImpl(true, true, true, false, null));
         assertEquals(4, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
