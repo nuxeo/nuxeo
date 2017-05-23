@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.platform.video.convert;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.nuxeo.ecm.platform.video.convert.Constants.INPUT_FILE_PATH_PARAMETER;
 import static org.nuxeo.ecm.platform.video.convert.Constants.OUTPUT_FILE_NAME_PARAMETER;
 import static org.nuxeo.ecm.platform.video.convert.Constants.OUTPUT_FILE_PATH_PARAMETER;
@@ -24,6 +25,8 @@ import static org.nuxeo.ecm.platform.video.convert.Constants.OUTPUT_FILE_PATH_PA
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,8 +39,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.convert.plugins.CommandLineBasedConverter;
@@ -121,12 +126,17 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
             outFileName = unquoteValue(outFileName);
         }
 
+        String ext = "." + FilenameUtils.getExtension(outputPath);
+        Blob blob;
         try {
-            Blob blob = Blobs.createBlob(outputFile, getVideoMimeType(), null, outFileName);
-            blobs.add(blob);
+            blob = Blobs.createBlobWithExtension(ext); // automatically tracked for removal
+            Files.move(Paths.get(outputPath), blob.getFile().toPath(), REPLACE_EXISTING);
         } catch (IOException e) {
             throw new ConversionException("Cannot create blob", e);
         }
+        blob.setMimeType(getVideoMimeType());
+        blob.setFilename(outFileName);
+        blobs.add(blob);
 
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("cmdOutput", (Serializable) cmdOutput);
