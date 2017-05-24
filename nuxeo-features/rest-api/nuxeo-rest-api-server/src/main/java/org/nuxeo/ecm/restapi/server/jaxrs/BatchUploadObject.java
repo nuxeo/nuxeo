@@ -154,7 +154,10 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
                     if (!UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
                         fileName = blob.getFilename();
                     }
-                    mimeType = blob.getMimeType();
+                    // Don't change the mime-type if it was forced via the X-File-Type header
+                    if (mimeType == null || mimeType.isEmpty()) {
+                        mimeType = blob.getMimeType();
+                    }
                     uploadedSize = String.valueOf(blob.getLength());
                 }
             } else {
