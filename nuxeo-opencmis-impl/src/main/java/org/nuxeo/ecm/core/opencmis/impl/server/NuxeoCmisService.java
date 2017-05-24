@@ -2142,10 +2142,13 @@ public class NuxeoCmisService extends AbstractCmisService
         List<DocumentRef> versions = coreSession.getVersionsRefs(doc.getRef());
         List<ObjectData> list = new ArrayList<>(versions.size());
         for (DocumentRef verRef : versions) {
-            String verId = getIdFromDocumentRef(verRef);
-            ObjectData od = getObject(repositoryId, verId, filter, includeAllowableActions, IncludeRelationships.NONE,
-                    null, Boolean.FALSE, Boolean.FALSE, null);
-            list.add(od);
+            // First check if we have enough permission on versions
+            if (coreSession.hasPermission(verRef, SecurityConstants.READ)) {
+                String verId = getIdFromDocumentRef(verRef);
+                ObjectData od = getObject(repositoryId, verId, filter, includeAllowableActions,
+                        IncludeRelationships.NONE, null, Boolean.FALSE, Boolean.FALSE, null);
+                list.add(od);
+            }
         }
         // PWC last
         DocumentModel pwc = doc.isVersion() ? coreSession.getWorkingCopy(doc.getRef()) : doc;
