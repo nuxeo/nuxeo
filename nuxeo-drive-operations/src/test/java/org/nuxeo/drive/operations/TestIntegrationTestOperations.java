@@ -42,7 +42,6 @@ import org.nuxeo.drive.operations.test.NuxeoDriveTearDownIntegrationTests;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
-import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -50,11 +49,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -66,10 +62,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features(EmbeddedAutomationServerFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.user.center.profile", "org.nuxeo.drive.operations" })
-@RepositoryConfig(cleanup = Granularity.METHOD)
+@Features(NuxeoDriveAutomationFeature.class)
 @Jetty(port = 18080)
 public class TestIntegrationTestOperations {
 

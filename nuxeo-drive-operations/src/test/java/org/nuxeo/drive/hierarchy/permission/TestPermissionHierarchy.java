@@ -55,6 +55,7 @@ import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.hierarchy.permission.adapter.PermissionTopLevelFolderItem;
 import org.nuxeo.drive.hierarchy.permission.adapter.SharedSyncRootParentFolderItem;
 import org.nuxeo.drive.hierarchy.permission.adapter.UserSyncRootParentFolderItem;
+import org.nuxeo.drive.operations.NuxeoDriveAutomationFeature;
 import org.nuxeo.drive.operations.NuxeoDriveGetChildren;
 import org.nuxeo.drive.operations.NuxeoDriveGetFileSystemItem;
 import org.nuxeo.drive.operations.NuxeoDriveGetTopLevelFolder;
@@ -65,7 +66,6 @@ import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
-import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -74,9 +74,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -91,16 +88,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features(EmbeddedAutomationServerFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.filemanager.core",
-        "org.nuxeo.ecm.platform.types.core", "org.nuxeo.drive.core", "org.nuxeo.drive.operations",
-        "org.nuxeo.ecm.core.cache", "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml",
-        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml",
-        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-descendants-scrolling-cache-contrib.xml" })
+@Features(NuxeoDriveAutomationFeature.class)
+@Deploy("org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml")
 @Jetty(port = 18080)
-@RepositoryConfig(cleanup = Granularity.METHOD)
-@TransactionalConfig(autoStart = true)
 public class TestPermissionHierarchy {
 
     private static final String TOP_LEVEL_ID = "org.nuxeo.drive.hierarchy.permission.factory.PermissionTopLevelFactory#";

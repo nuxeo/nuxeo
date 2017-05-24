@@ -38,11 +38,11 @@ import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
+import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
@@ -58,10 +58,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 8.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, RepositoryElasticSearchFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.io", "org.nuxeo.drive.core",
-        "org.nuxeo.drive.elasticsearch:OSGI-INF/nuxeodrive-elasticsearch-adapter-contrib.xml",
-        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
+@Features({ NuxeoDriveFeature.class, RepositoryElasticSearchFeature.class })
+@Deploy("org.nuxeo.drive.elasticsearch:OSGI-INF/nuxeodrive-elasticsearch-adapter-contrib.xml")
 @LocalDeploy("org.nuxeo.drive.elasticsearch:OSGI-INF/test-nuxeodrive-elasticsearch-contrib.xml")
 public class TestESSyncRootFolderItem {
 

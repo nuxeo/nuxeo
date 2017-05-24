@@ -22,6 +22,7 @@ import javax.persistence.EntityManager;
 
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
+import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.runtime.api.Framework;
@@ -43,7 +44,11 @@ public class SQLAuditFeature extends AuditFeature {
 
         NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime()
                                                                             .getComponent(NXAuditEventsService.NAME);
-        ((DefaultAuditBackend) auditService.getBackend()).getOrCreatePersistenceProvider().run(true, new RunVoid() {
+        AuditBackend auditBackend = auditService.getBackend();
+        if (!(auditBackend instanceof DefaultAuditBackend)) {
+            return;
+        }
+        ((DefaultAuditBackend) auditBackend).getOrCreatePersistenceProvider().run(true, new RunVoid() {
             @Override
             public void runWith(EntityManager em) {
                 em.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();

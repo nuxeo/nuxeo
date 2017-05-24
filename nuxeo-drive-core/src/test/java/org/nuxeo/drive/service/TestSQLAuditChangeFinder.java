@@ -25,9 +25,7 @@ import org.nuxeo.drive.fixtures.AuditChangeFinderClusteringEnabledTestSuite;
 import org.nuxeo.drive.fixtures.AuditChangeFinderTestSuite;
 import org.nuxeo.drive.fixtures.GroupChangesTestSuite;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
-import org.nuxeo.drive.test.SQLAuditFeature;
 import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
-import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * Runs the {@link AbstractChangeFinderTestCase} implementations using the {@link AuditChangeFinder}.
@@ -35,7 +33,6 @@ import org.nuxeo.runtime.test.runner.Features;
  * @since 8.2
  */
 @RunWith(ContributableFeaturesRunner.class)
-@Features(SQLAuditFeature.class)
 @SuiteClasses({ AuditChangeFinderTestSuite.class, AuditChangeFinderClusteringEnabledTestSuite.class,
         GroupChangesTestSuite.class })
 public class TestSQLAuditChangeFinder {

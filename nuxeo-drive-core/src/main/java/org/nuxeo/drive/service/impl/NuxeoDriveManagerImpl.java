@@ -633,6 +633,16 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         changeFinderRegistry = null;
     }
 
+    @Override
+    public int getApplicationStartedOrder() {
+        ComponentInstance cacheComponent = Framework.getRuntime().getComponentInstance(
+                "org.nuxeo.ecm.core.cache.CacheService");
+        if (cacheComponent == null || cacheComponent.getInstance() == null) {
+            return super.getApplicationStartedOrder();
+        }
+        return ((DefaultComponent) cacheComponent.getInstance()).getApplicationStartedOrder() + 1;
+    }
+
     /**
      * Sorts the contributed factories according to their order.
      */

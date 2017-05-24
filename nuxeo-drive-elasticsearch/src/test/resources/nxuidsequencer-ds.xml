@@ -1,11 +1,8 @@
 <?xml version="1.0"?>
-<component name="drive_repository_datasource">
-
+<component name="ds:nxuidsequencer-test">
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
-    <datasource name="jdbc/repository_test" driverClassName="org.h2.Driver">
+    <datasource name="jdbc/nxuidsequencer" driverClassName="org.h2.Driver" maxPoolSize="20" minPoolSize="5">
       <property name="url">jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</property>
-      <property name="test">pfouh</property> 
     </datasource>
   </extension>
-  
 </component>

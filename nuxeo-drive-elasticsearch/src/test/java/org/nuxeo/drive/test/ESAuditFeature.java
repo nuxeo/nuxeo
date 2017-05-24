@@ -24,6 +24,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature.Waiter;
+import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
@@ -41,13 +42,13 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  *
  * @since 8.2
  */
-@Features({ PlatformFeature.class, RepositoryElasticSearchFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.seqgen",
+@Features({ PlatformFeature.class, AuditFeature.class, RepositoryElasticSearchFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.seqgen",
         "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit",
         "org.nuxeo.elasticsearch.audit.test:elasticsearch-audit-index-test-contrib.xml",
         "org.nuxeo.drive.elasticsearch" })
-@LocalDeploy("org.nuxeo.drive.elasticsearch:OSGI-INF/test-nuxeodrive-elasticsearch-contrib.xml")
+@LocalDeploy({"org.nuxeo.drive.elasticsearch:OSGI-INF/test-nuxeodrive-elasticsearch-contrib.xml","org.nuxeo.drive.elasticsearch:nxuidsequencer-ds.xml"})
 public class ESAuditFeature extends SimpleFeature {
 
     @Override

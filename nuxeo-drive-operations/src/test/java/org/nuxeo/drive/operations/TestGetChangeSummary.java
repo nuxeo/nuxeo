@@ -38,13 +38,9 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.FileSystemChangeSummaryImpl;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.model.Blob;
-import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -57,10 +53,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features(EmbeddedAutomationServerFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations", "org.nuxeo.ecm.core.cache",
-        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
+@Features(NuxeoDriveAutomationFeature.class)
 @LocalDeploy("org.nuxeo.drive.operations:OSGI-INF/test-nuxeodrive-change-finder-contrib.xml")
 @Jetty(port = 18080)
 public class TestGetChangeSummary {

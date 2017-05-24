@@ -48,6 +48,7 @@ import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
+import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -63,11 +64,8 @@ import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
@@ -85,15 +83,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @see AuditChangeFinder#getFileSystemChanges
  */
 @RunWith(FeaturesRunner.class)
-@Features(AuditFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
-// We handle transaction start and commit manually to make it possible to have
-// several consecutive transactions in a test method
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.runtime.reload", "org.nuxeo.drive.core",
-        "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.core.cache",
-        "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml",
-        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
+@Features(NuxeoDriveFeature.class)
+@Deploy("org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml")
 public class TestPermissionHierarchyFileSystemChanges {
 
     private static final String USER_SYNC_ROOT_PARENT_ID_PREFIX = "userSyncRootParentFactory#test#";
