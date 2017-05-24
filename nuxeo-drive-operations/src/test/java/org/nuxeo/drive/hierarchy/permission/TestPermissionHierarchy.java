@@ -171,7 +171,6 @@ public class TestPermissionHierarchy {
      *   |-- user2File2
      *   |-- user2Folder3       (registered as a synchronization root with ReadWrite permission for user1)
      *   |     |-- user2File3
-     *
      * </pre>
      */
     @Before
@@ -306,7 +305,6 @@ public class TestPermissionHierarchy {
          *   |     |     |-- user2Folder2
          *   |     |-- user2Folder3
          *   |     |     |-- user2File3
-         *
          * </pre>
          */
         TransactionHelper.commitOrRollbackTransaction();
@@ -374,17 +372,18 @@ public class TestPermissionHierarchy {
         // --------------------------------------------
         // Check descendants
         assertTrue(userSyncRootParent.getCanScrollDescendants());
-        assertTrue(CollectionUtils.isEqualCollection(
-                Arrays.asList(user1File2, user1Folder1, user1File1, user1Folder2, user1Folder3, user1File3,
-                        user1Folder4)
-                      .stream()
-                      .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
-                      .collect(Collectors.toList()),
-                mapper.readValue(
-                        ((Blob) clientSession1.newRequest(NuxeoDriveScrollDescendants.ID)
-                                              .set("id", userSyncRootParent.getId())
-                                              .set("batchSize", 10)
-                                              .execute()).getStream(), JsonNode.class).findValuesAsText("id")));
+        assertTrue(
+                CollectionUtils.isEqualCollection(Arrays.asList(user1File2, user1Folder1, user1File1, user1Folder2,
+                        user1Folder3, user1File3, user1Folder4)
+                                                        .stream()
+                                                        .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
+                                                        .collect(Collectors.toList()),
+                        mapper.readValue(((Blob) clientSession1.newRequest(NuxeoDriveScrollDescendants.ID)
+                                                               .set("id", userSyncRootParent.getId())
+                                                               .set("batchSize", 10)
+                                                               .execute()).getStream(),
+                                JsonNode.class)
+                              .findValuesAsText("id")));
 
         // Get children
         Blob userSyncRootsJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
@@ -538,7 +537,6 @@ public class TestPermissionHierarchy {
          *   |     |     |-- user2Folder2
          *   |     |-- user2Folder3
          *   |     |     |-- user2File3
-         *
          * </pre>
          */
         TransactionHelper.commitOrRollbackTransaction();
@@ -613,7 +611,6 @@ public class TestPermissionHierarchy {
          *   |     |     |-- user2Folder2
          *   |     |-- user2Folder3
          *   |     |     |-- user2File3
-         *
          * </pre>
          */
         TransactionHelper.commitOrRollbackTransaction();
@@ -669,7 +666,6 @@ public class TestPermissionHierarchy {
          *   |-- Other Docs
          *   |     |-- user2Folder3
          *   |     |     |-- user2File3
-         *
          * </pre>
          */
         TransactionHelper.commitOrRollbackTransaction();
@@ -722,7 +718,6 @@ public class TestPermissionHierarchy {
          *   |     |-- user1Folder4
          *   |
          *   |-- Other Docs
-         *
          * </pre>
          */
         resetPermissions(user2Folder3.getRef(), "user1");
@@ -777,8 +772,8 @@ public class TestPermissionHierarchy {
                 fileItem.getDigest());
     }
 
-    protected void checkFolderItem(FolderItem folderItem, String folderItemIdPrefix, DocumentModel doc,
-            String parentId, String parentPath, String name, String creator, String lastContributor) {
+    protected void checkFolderItem(FolderItem folderItem, String folderItemIdPrefix, DocumentModel doc, String parentId,
+            String parentPath, String name, String creator, String lastContributor) {
 
         String expectedFolderItemId = folderItemIdPrefix + doc.getId();
         assertEquals(expectedFolderItemId, folderItem.getId());

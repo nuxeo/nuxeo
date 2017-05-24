@@ -155,8 +155,10 @@ public class TestGetChangeSummary {
     protected FileSystemChangeSummary getChangeSummary() throws Exception {
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000);
-        Blob changeSummaryJSON = (Blob) clientSession.newRequest(NuxeoDriveGetChangeSummary.ID).set("lastSyncDate",
-                lastSyncDate).set("lastSyncActiveRootDefinitions", lastSyncActiveRoots).execute();
+        Blob changeSummaryJSON = (Blob) clientSession.newRequest(NuxeoDriveGetChangeSummary.ID)
+                                                     .set("lastSyncDate", lastSyncDate)
+                                                     .set("lastSyncActiveRootDefinitions", lastSyncActiveRoots)
+                                                     .execute();
         assertNotNull(changeSummaryJSON);
 
         FileSystemChangeSummary changeSummary = mapper.readValue(changeSummaryJSON.getStream(),

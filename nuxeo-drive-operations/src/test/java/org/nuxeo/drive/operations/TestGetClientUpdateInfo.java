@@ -27,7 +27,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.drive.NuxeoDriveConstants;
 import org.nuxeo.ecm.automation.client.Session;

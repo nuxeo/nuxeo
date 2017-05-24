@@ -635,8 +635,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
 
     @Override
     public int getApplicationStartedOrder() {
-        ComponentInstance cacheComponent = Framework.getRuntime().getComponentInstance(
-                "org.nuxeo.ecm.core.cache.CacheService");
+        ComponentInstance cacheComponent = Framework.getRuntime()
+                                                    .getComponentInstance("org.nuxeo.ecm.core.cache.CacheService");
         if (cacheComponent == null || cacheComponent.getInstance() == null) {
             return super.getApplicationStartedOrder();
         }
@@ -650,7 +650,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     public void applicationStarted(ComponentContext context) {
         syncRootCache = Framework.getService(CacheService.class).getCache(DRIVE_SYNC_ROOT_CACHE);
         collectionSyncRootMemberCache = Framework.getService(CacheService.class)
-                .getCache(DRIVE_COLLECTION_SYNC_ROOT__MEMBER_CACHE);
+                                                 .getCache(DRIVE_COLLECTION_SYNC_ROOT__MEMBER_CACHE);
         changeFinder = changeFinderRegistry.changeFinder;
     }
 

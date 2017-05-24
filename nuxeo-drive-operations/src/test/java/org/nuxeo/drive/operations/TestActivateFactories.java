@@ -67,8 +67,10 @@ public class TestActivateFactories {
         checkUserworkspaceProfile();
 
         // Deactivate userworkspace factories
-        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set("profile", "userworkspace").set(
-                "enable", false).execute();
+        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID)
+                              .set("profile", "userworkspace")
+                              .set("enable", false)
+                              .execute();
         assertTrue((Boolean) result);
         checkDefaultProfile();
 
@@ -78,16 +80,19 @@ public class TestActivateFactories {
         checkPermissionProfile();
 
         // Deactivate permission factories
-        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set("profile", "permission").set("enable",
-                false).execute();
+        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID)
+                              .set("profile", "permission")
+                              .set("enable", false)
+                              .execute();
         assertTrue((Boolean) result);
         checkDefaultProfile();
 
     }
 
     protected void checkDefaultProfile() {
-        assertTrue(fileSystemItemAdapterService.getTopLevelFolderItemFactory().getName().endsWith(
-                "DefaultTopLevelFolderItemFactory"));
+        assertTrue(fileSystemItemAdapterService.getTopLevelFolderItemFactory()
+                                               .getName()
+                                               .endsWith("DefaultTopLevelFolderItemFactory"));
         Set<String> activeFSItemFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
         assertEquals(3, activeFSItemFactories.size());
         assertTrue(activeFSItemFactories.contains("collectionSyncRootFolderItemFactory"));
@@ -96,8 +101,9 @@ public class TestActivateFactories {
     }
 
     protected void checkUserworkspaceProfile() {
-        assertTrue(fileSystemItemAdapterService.getTopLevelFolderItemFactory().getName().endsWith(
-                "UserWorkspaceTopLevelFactory"));
+        assertTrue(fileSystemItemAdapterService.getTopLevelFolderItemFactory()
+                                               .getName()
+                                               .endsWith("UserWorkspaceTopLevelFactory"));
         Set<String> activeFSItemFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
         assertEquals(4, activeFSItemFactories.size());
         assertTrue(activeFSItemFactories.contains("collectionSyncRootFolderItemFactory"));
@@ -107,8 +113,9 @@ public class TestActivateFactories {
     }
 
     protected void checkPermissionProfile() {
-        assertTrue(fileSystemItemAdapterService.getTopLevelFolderItemFactory().getName().endsWith(
-                "PermissionTopLevelFactory"));
+        assertTrue(fileSystemItemAdapterService.getTopLevelFolderItemFactory()
+                                               .getName()
+                                               .endsWith("PermissionTopLevelFactory"));
         Set<String> activeFSItemFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
         assertEquals(5, activeFSItemFactories.size());
         assertTrue(activeFSItemFactories.contains("collectionSyncRootFolderItemFactory"));

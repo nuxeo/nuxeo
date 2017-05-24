@@ -57,8 +57,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ H2OnlyFeature.class, NuxeoDriveAutomationFeature.class })
-@LocalDeploy({
-    "org.nuxeo.drive.operations:test-other-repository-config.xml",
+@LocalDeploy({ "org.nuxeo.drive.operations:test-other-repository-config.xml",
         "org.nuxeo.drive.operations:OSGI-INF/test-nuxeodrive-change-finder-contrib.xml" })
 @Jetty(port = 18080)
 public class TestGetChangeSummaryMultiRepo {
@@ -183,8 +182,10 @@ public class TestGetChangeSummaryMultiRepo {
     protected FileSystemChangeSummary getChangeSummary() throws Exception {
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000);
-        Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(NuxeoDriveGetChangeSummary.ID).set("lastSyncDate",
-                lastSyncDate).set("lastSyncActiveRootDefinitions", lastSyncActiveRoots).execute();
+        Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(NuxeoDriveGetChangeSummary.ID)
+                                                        .set("lastSyncDate", lastSyncDate)
+                                                        .set("lastSyncActiveRootDefinitions", lastSyncActiveRoots)
+                                                        .execute();
         assertNotNull(docChangeSummaryJSON);
 
         FileSystemChangeSummary changeSummary = mapper.readValue(docChangeSummaryJSON.getStream(),

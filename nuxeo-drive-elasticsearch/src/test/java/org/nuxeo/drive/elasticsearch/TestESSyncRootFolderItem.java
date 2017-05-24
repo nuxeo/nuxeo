@@ -102,7 +102,8 @@ public class TestESSyncRootFolderItem {
         // => 105 documents
         buildAndIndexTree(syncRootFolder.getPathAsString(), 4, 5, 2);
 
-        esSyncRootFolderItemFactory = (ESSyncRootFolderItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultSyncRootFolderItemFactory");
+        esSyncRootFolderItemFactory = (ESSyncRootFolderItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                "defaultSyncRootFolderItemFactory");
     }
 
     protected void buildAndIndexTree(String parentPath, int maxLevel, int fileCount, int folderCount) throws Exception {
@@ -167,7 +168,8 @@ public class TestESSyncRootFolderItem {
                                                 .stream()
                                                 .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
                                                 .collect(Collectors.toList());
-        assertEquals(expectedFSItemIds, descendants.stream().map(fsItem -> fsItem.getId()).collect(Collectors.toList()));
+        assertEquals(expectedFSItemIds,
+                descendants.stream().map(fsItem -> fsItem.getId()).collect(Collectors.toList()));
 
         // Scroll through descendants in several steps
         descendants.clear();
@@ -181,7 +183,8 @@ public class TestESSyncRootFolderItem {
         }
         assertEquals(105, descendants.size());
         // Check that descendants are ordered by path
-        assertEquals(expectedFSItemIds, descendants.stream().map(fsItem -> fsItem.getId()).collect(Collectors.toList()));
+        assertEquals(expectedFSItemIds,
+                descendants.stream().map(fsItem -> fsItem.getId()).collect(Collectors.toList()));
     }
 
 }

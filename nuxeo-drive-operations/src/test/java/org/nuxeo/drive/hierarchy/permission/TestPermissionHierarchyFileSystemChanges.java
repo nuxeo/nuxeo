@@ -149,7 +149,8 @@ public class TestPermissionHierarchyFileSystemChanges {
         eventService.waitForAsyncCompletion();
 
         // Make sure to set ordered active factories
-        FileSystemItemAdapterServiceImpl fileSystemItemAdapterService = (FileSystemItemAdapterServiceImpl) Framework.getService(FileSystemItemAdapterService.class);
+        FileSystemItemAdapterServiceImpl fileSystemItemAdapterService = (FileSystemItemAdapterServiceImpl) Framework.getService(
+                FileSystemItemAdapterService.class);
         fileSystemItemAdapterService.setActiveFactories();
     }
 
@@ -215,8 +216,8 @@ public class TestPermissionHierarchyFileSystemChanges {
         // Register FolderA as a synchronization root for user2
         try {
             nuxeoDriveManager.registerSynchronizationRoot(session2.getPrincipal(), folderA, session2);
-            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2)
-                                        .contains(new IdRef(folderA.getId())));
+            assertTrue(
+                    nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(new IdRef(folderA.getId())));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -254,10 +255,10 @@ public class TestPermissionHierarchyFileSystemChanges {
         // Register Folder C as a synchronization root for user2
         try {
             nuxeoDriveManager.registerSynchronizationRoot(session2.getPrincipal(), folderC, session2);
-            assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(
-                    new IdRef(folderA.getId())));
-            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2)
-                                        .contains(new IdRef(folderC.getId())));
+            assertFalse(
+                    nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(new IdRef(folderA.getId())));
+            assertTrue(
+                    nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(new IdRef(folderC.getId())));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -293,8 +294,8 @@ public class TestPermissionHierarchyFileSystemChanges {
         // user1
         try {
             nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(), userWorkspace1, session1);
-            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session1).contains(
-                    new IdRef(userWorkspace1.getId())));
+            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session1)
+                                        .contains(new IdRef(userWorkspace1.getId())));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -315,7 +316,8 @@ public class TestPermissionHierarchyFileSystemChanges {
         // user1
         try {
             nuxeoDriveManager.unregisterSynchronizationRoot(session1.getPrincipal(), userWorkspace1, session1);
-            assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(session1).contains(new IdRef(userWorkspace1.getId())));
+            assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(session1)
+                                         .contains(new IdRef(userWorkspace1.getId())));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -341,7 +343,8 @@ public class TestPermissionHierarchyFileSystemChanges {
      * {@link PermissionSyncRootFactory#isFileSystemItem(DocumentModel, boolean)} returns {@code false} because of the
      * missing required permission.</li>
      * <li>A file created in such a folder.</li>
-     * <li>A file created in a folder registered as a synchronization root on which the user doesn't have Read access.</li>
+     * <li>A file created in a folder registered as a synchronization root on which the user doesn't have Read
+     * access.</li>
      * </ul>
      * For the test, the required permission for a folder to be adapted by the {@link PermissionSyncRootFactory} is
      * Everything.
@@ -355,7 +358,6 @@ public class TestPermissionHierarchyFileSystemChanges {
      *   |-- user1Folder2       (registered as a synchronization root with ReadWrite permission only for user2)
      *   |     |-- user1File1
      *   |     |-- user1File2
-     *
      * </pre>
      */
     @Test
@@ -384,8 +386,8 @@ public class TestPermissionHierarchyFileSystemChanges {
         // so appears in the file system changes
         try {
             nuxeoDriveManager.registerSynchronizationRoot(session2.getPrincipal(), user1Folder1, session2);
-            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(
-                    new IdRef(user1Folder1.getId())));
+            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2)
+                                        .contains(new IdRef(user1Folder1.getId())));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -405,8 +407,8 @@ public class TestPermissionHierarchyFileSystemChanges {
         // adaptable so doesn't appear in the file system changes
         try {
             nuxeoDriveManager.registerSynchronizationRoot(session2.getPrincipal(), user1Folder2, session2);
-            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(
-                    new IdRef(user1Folder2.getId())));
+            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2)
+                                        .contains(new IdRef(user1Folder2.getId())));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -422,8 +424,8 @@ public class TestPermissionHierarchyFileSystemChanges {
         // user1File1 => non adaptable parent user1Folder2 so doesn't appear in
         // the file system changes
         try {
-            createFile(session1, user1Folder2.getPathAsString(), "user1File1", "File", "user1File1.txt", CONTENT_PREFIX
-                    + "user1File1");
+            createFile(session1, user1Folder2.getPathAsString(), "user1File1", "File", "user1File1.txt",
+                    CONTENT_PREFIX + "user1File1");
             session1.save();
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -540,8 +542,8 @@ public class TestPermissionHierarchyFileSystemChanges {
     }
 
     protected void cleanUpAuditLog() {
-        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime().getComponent(
-                NXAuditEventsService.NAME);
+        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime()
+                                                                            .getComponent(NXAuditEventsService.NAME);
         ((DefaultAuditBackend) auditService.getBackend()).getOrCreatePersistenceProvider().run(true, new RunVoid() {
             @Override
             public void runWith(EntityManager em) {

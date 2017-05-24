@@ -57,7 +57,8 @@ public class TestSetVersioningOptions {
     @Before
     public void init() throws Exception {
 
-        defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
+        defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                "defaultFileSystemItemFactory");
         assertNotNull(defaultFileSystemItemFactory);
     }
 
