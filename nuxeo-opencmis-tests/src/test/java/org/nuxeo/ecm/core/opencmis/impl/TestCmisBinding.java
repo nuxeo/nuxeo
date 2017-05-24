@@ -3058,6 +3058,57 @@ public class TestCmisBinding extends TestCmisBindingBase {
         checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob);
     }
 
+    /*
+     * NXP-22253
+     */
+    @Test
+    public void testProxyOnNonReadableWorkingCopy() throws Exception {
+        assumeSupportsProxies();
+
+        // create a proxy to testfile6 version
+        Helper.sleepForAuditGranularity();
+        DocumentModel proxy = coreSession.createProxy(new PathRef("/testfolder2/testfolder3/testfile6"),
+                new PathRef("/testfolder2/testfolder4"));
+
+        // Grant read right on root for john
+        ACP acp = new ACPImpl();
+        acp.addACE(ACL.LOCAL_ACL, new ACE("john", SecurityConstants.READ, true));
+        coreSession.setACP(new PathRef("/"), acp,  false);
+
+        // Deny read right on testfolder3 for john
+        PathRef folder3Ref = new PathRef("/testfolder2/testfolder3");
+        acp = coreSession.getACP(folder3Ref);
+        acp.blockInheritance(ACL.LOCAL_ACL, "Administrator");
+        coreSession.setACP(folder3Ref, acp,  true);
+
+        coreSession.save();
+        nextTransaction();
+        waitForIndexing();
+
+        reSetUp("john");
+
+        // Try to access the proxy
+        ObjectData ob = getObjectByPath("/testfolder2/testfolder4/testfile6");
+        checkValue("dc:title", "title6", ob);
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ob);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_LABEL, "0.1", ob);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ob);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob);
+
+        // Check we can not access the target
+        try {
+            getObjectByPath("/testfolder2/testfolder3/testfile6");
+            fail("We shouldn't have access to this document with the user 'john'");
+        } catch (CmisObjectNotFoundException confe) {
+            assertEquals("/testfolder2/testfolder3/testfile6", confe.getMessage());
+        }
+    }
+
     @Test
     public void testGetContentChanges() throws Exception {
         doTestGetContentChanges(false);
