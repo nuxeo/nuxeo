@@ -172,6 +172,8 @@ public class BatchUploadFixture extends BaseTest {
         String fileSize2 = String.valueOf(data2.getBytes().length);
         headers = new HashMap<String, String>();
         headers.put("X-File-Size", fileSize2);
+        headers.put("X-File-Type", mimeType);
+
 
         FormDataMultiPart form = new FormDataMultiPart();
         BodyPart fdp = new StreamDataBodyPart(fileName2, new ByteArrayInputStream(data2.getBytes()));
@@ -267,12 +269,87 @@ public class BatchUploadFixture extends BaseTest {
         blob = (Blob) doc.getPropertyValue("mb:blobs/1/content");
         assertNotNull(blob);
         assertEquals("Fichier accentué 2.txt", blob.getFilename());
-        assertEquals("application/octet-stream", blob.getMimeType());
+        assertEquals(mimeType, blob.getMimeType());
         assertEquals(data2, blob.getString());
 
         if (noDrop) {
             assertBatchExists(batchId);
         }
+    }
+
+    /**
+     * tests if the X-File-Type header is obeyed on multipart file upload
+     * (NXP-22408)
+     */
+    @Test
+    public void testObeyFileTypeHeader() throws IOException {
+        // Get batch id, used as a session id
+        ClientResponse response = getResponse(RequestType.POST, "upload");
+        assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        String batchId = node.get("batchId").getValueAsText();
+        assertNotNull(batchId);
+
+        String mimeType = "text/plain";
+
+        // Upload a file in multipart, first without the X-File-Type header, the second with
+        String fileName1 = "No header.txt";
+        String data1 = "File without explicit file type";
+        String fileSize1 = String.valueOf(data1.getBytes().length);
+        Map<String, String> headers = new HashMap<String, String>();
+        headers = new HashMap<String, String>();
+        headers.put("X-File-Size", fileSize1);
+
+        FormDataMultiPart form = new FormDataMultiPart();
+        BodyPart fdp = new StreamDataBodyPart(fileName1, new ByteArrayInputStream(data1.getBytes()));
+        form.bodyPart(fdp);
+        response = getResponse(RequestType.POST, "upload/" + batchId + "/0", form, headers);
+        form.close();
+        assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+
+        String fileName2 = "With header.txt";
+        String data2 = "File with explicit X-File-Type header";
+        String fileSize2 = String.valueOf(data2.getBytes().length);
+        headers = new HashMap<String, String>();
+        headers.put("X-File-Size", fileSize2);
+        headers.put("X-File-Type", mimeType);
+
+        form = new FormDataMultiPart();
+        fdp = new StreamDataBodyPart(fileName2, new ByteArrayInputStream(data2.getBytes()));
+        form.bodyPart(fdp);
+        response = getResponse(RequestType.POST, "upload/" + batchId + "/1", form, headers);
+        form.close();
+        assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+
+        // Create a doc which references the uploaded blobs using the Document path endpoint
+        String json = "{";
+        json += "\"entity-type\":\"document\" ,";
+        json += "\"name\":\"testBatchUploadDoc\" ,";
+        json += "\"type\":\"MultiBlobDoc\" ,";
+        json += "\"properties\" : {";
+        json += "\"mb:blobs\" : [ ";
+        json += "{ \"content\" : { \"upload-batch\": \"" + batchId + "\", \"upload-fileId\": \"0\" } },";
+        json += "{ \"content\" : { \"upload-batch\": \"" + batchId + "\", \"upload-fileId\": \"1\" } }";
+        json += "]}}";
+
+        response = getResponse(RequestType.POST, "path/", json);
+        assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+
+        // verify the created document
+        DocumentModel doc = session.getDocument(new PathRef("/testBatchUploadDoc"));
+        Blob blob = (Blob) doc.getPropertyValue("mb:blobs/0/content");
+        assertNotNull(blob);
+        assertEquals("No header.txt", blob.getFilename());
+        // Default multipart mime type must be set
+        assertEquals("application/octet-stream", blob.getMimeType());
+        assertEquals(data1, blob.getString());
+        blob = (Blob) doc.getPropertyValue("mb:blobs/1/content");
+        assertNotNull(blob);
+        assertEquals("With header.txt", blob.getFilename());
+        // X-File-Type header mime type must be set
+        assertEquals(mimeType, blob.getMimeType());
+        assertEquals(data2, blob.getString());
+
     }
 
     /**
