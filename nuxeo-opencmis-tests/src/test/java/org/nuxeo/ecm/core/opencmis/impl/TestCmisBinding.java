@@ -3134,6 +3134,51 @@ public class TestCmisBinding extends TestCmisBindingBase {
         }
     }
 
+    /*
+     * NXP-22252
+     */
+    @Test
+    public void testProxyOnNonReadableCheckedOutWorkingCopy() throws Exception {
+        assumeSupportsProxies();
+
+        // create a proxy to testfile4 which is a regular document (checked out)
+        Helper.sleepForAuditGranularity();
+        DocumentModel proxy = coreSession.createProxy(new PathRef("/testfolder2/testfolder3/testfile4"),
+                new PathRef("/testfolder2/testfolder4"));
+
+        // Grant read right on root for john
+        ACP acp = new ACPImpl();
+        acp.addACE(ACL.LOCAL_ACL, new ACE("john", SecurityConstants.READ, true));
+        coreSession.setACP(new PathRef("/"), acp,  false);
+
+        // Deny read right on testfolder3 for john
+        PathRef folder3Ref = new PathRef("/testfolder2/testfolder3");
+        acp = coreSession.getACP(folder3Ref);
+        acp.blockInheritance(ACL.LOCAL_ACL, "Administrator");
+        coreSession.setACP(folder3Ref, acp,  true);
+
+        coreSession.save();
+        nextTransaction();
+        waitForIndexing();
+
+        reSetUp("john");
+
+        // Try to access the proxy
+        ObjectData ob = getObjectByPath("/testfolder2/testfolder4/testfile4");
+        checkValue("dc:title", "testfile4_Title", ob);
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_LABEL, null, ob);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, ob);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob);
+        // NXP-22252 check unavailable properties due to permission
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, "john", ob);
+        checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+    }
+
     @Test
     public void testGetContentChanges() throws Exception {
         doTestGetContentChanges(false);

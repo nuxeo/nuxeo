@@ -1004,8 +1004,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             if (!doc.isVersionSeriesCheckedOut()) {
                 return null;
             }
-            DocumentModel pwc = doc.getCoreSession().getWorkingCopy(doc.getRef());
-            return pwc == null ? null : pwc.getId();
+            return doc.getCoreSession().getVersionSeriesId(doc.getRef());
         }
     }
 
@@ -1028,9 +1027,9 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             if (!doc.isVersionSeriesCheckedOut()) {
                 return null;
             }
-            DocumentModel pwc = doc.getCoreSession().getWorkingCopy(doc.getRef());
+            String versionSeriesId = doc.getCoreSession().getVersionSeriesId(doc.getRef());
             // TODO not implemented
-            return pwc == null ? null : callContext.getUsername();
+            return versionSeriesId == null ? null : callContext.getUsername();
         }
     }
 
