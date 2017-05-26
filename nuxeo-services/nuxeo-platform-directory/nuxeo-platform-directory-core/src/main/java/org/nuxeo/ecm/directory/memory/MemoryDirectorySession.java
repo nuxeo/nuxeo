@@ -141,6 +141,21 @@ public class MemoryDirectorySession extends BaseSession {
     }
 
     @Override
+    public DocumentModel createEntry(Map<String, Object> fieldMap) throws DirectoryException {
+        return createEntryWithoutReferences(fieldMap);
+    }
+
+    @Override
+    public void updateEntry(DocumentModel docModel) throws DirectoryException {
+        updateEntryWithoutReferences(docModel);
+    }
+
+    @Override
+    public void deleteEntry(String id) throws DirectoryException {
+        deleteEntryWithoutReferences(id);
+    }
+
+    @Override
     public DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException {
         // XXX no references here
         Map<String, Object> map = data.get(id);

@@ -72,7 +72,6 @@ public class MultiDirectorySession extends BaseSession {
         directoryService = Framework.getService(DirectoryService.class);
         MultiDirectoryDescriptor descriptor = directory.getDescriptor();
         schemaIdField = descriptor.idField;
-        permissions = descriptor.permissions;
     }
 
     @Override
