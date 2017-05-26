@@ -53,6 +53,7 @@ public class MemoryDirectorySession extends BaseSession {
     public MemoryDirectorySession(MemoryDirectory directory) {
         super(directory);
         data = Collections.synchronizedMap(new LinkedHashMap<String, Map<String, Object>>());
+        permissions = directory.getDescriptor().permissions;
     }
 
     /** To be implemented with a more specific type. */
