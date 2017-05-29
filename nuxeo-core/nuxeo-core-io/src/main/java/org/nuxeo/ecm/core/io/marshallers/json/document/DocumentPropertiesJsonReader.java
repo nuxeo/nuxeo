@@ -102,7 +102,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
                 if (field == null) {
                     continue;
                 }
-                parent = new DocumentPartImpl(field.getType().getSchema());
+                parent = new DocumentPartImpl(field.getDeclaringType().getSchema());
             } else {
                 String shemaName = ctx.getParameter(DEFAULT_SCHEMA_NAME);
                 Schema schema = schemaManager.getSchema(shemaName);
