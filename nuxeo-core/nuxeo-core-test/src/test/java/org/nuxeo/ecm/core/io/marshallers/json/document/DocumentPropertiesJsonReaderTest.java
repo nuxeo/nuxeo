@@ -46,7 +46,29 @@ public class DocumentPropertiesJsonReaderTest
     public DocumentPropertiesJsonReaderTest() {
         super(DocumentPropertyJsonWriter.class, List.class, TypeUtils.parameterize(List.class, Property.class));
     }
-    
+
+    /*
+     * NXP-22436
+     */
+    @Test
+    public void testReadSchemaWithoutPrefix() throws IOException {
+        String propertiesJson = "{ \"dc:title\": \"A note\",\n" + //
+                "  \"note:note\": \"note content\" }";
+
+        DocumentPropertiesJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentPropertiesJsonReader.class);
+        JsonParser jp = JsonFactoryProvider.get().createJsonParser(propertiesJson);
+        JsonNode jn = jp.readValueAsTree();
+        List<Property> properties = reader.read(jn);
+        assertNotNull(properties);
+        assertEquals(2, properties.size());
+        Schema titleSchema = properties.get(0).getSchema();
+        assertNotNull(titleSchema);
+        assertEquals("dublincore", titleSchema.getName());
+        Schema noteSchema = properties.get(1).getSchema();
+        assertNotNull(noteSchema);
+        assertEquals("note", noteSchema.getName());
+    }
+
     @Test
     public void testMultiValueDate() throws IOException {
         String propertiesJson = "{ \"dc:title\": \"A title\"," + //
@@ -65,4 +87,5 @@ public class DocumentPropertiesJsonReaderTest
         assertEquals(DateType.ID, listType.getName());
         assertEquals(DateType.ID, properties.get(2).getType().getName());
     }
+
 }
