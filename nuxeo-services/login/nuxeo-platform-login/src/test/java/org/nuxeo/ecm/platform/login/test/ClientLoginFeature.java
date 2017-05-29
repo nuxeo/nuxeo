@@ -23,10 +23,12 @@ import java.security.Principal;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
@@ -50,7 +52,16 @@ public class ClientLoginFeature extends SimpleFeature {
     }
 
     public void logout() throws LoginException {
-        logContext.logout();
+        if (logContext != null) {
+            logContext.logout();
+            logContext = null;
+        }
+    }
+
+    @Override
+    public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+        super.afterMethodRun(runner, method, test);
+        logout();
     }
 
 }
