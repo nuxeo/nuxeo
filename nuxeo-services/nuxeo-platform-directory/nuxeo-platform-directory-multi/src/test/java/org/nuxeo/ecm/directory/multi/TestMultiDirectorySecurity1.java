@@ -187,6 +187,7 @@ public class TestMultiDirectorySecurity1 {
     public void superUserHasWritePermissionOnSubDirectory() throws Exception {
         dummyLogin.login(SUPER_USER);
         assertTrue(((MultiDirectorySession) multiDir.getSession()).hasPermission("Write"));
+        dummyLogin.logout();
     }
 
     @Test
