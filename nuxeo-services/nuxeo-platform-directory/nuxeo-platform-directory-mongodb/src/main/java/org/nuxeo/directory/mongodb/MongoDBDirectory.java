@@ -122,22 +122,11 @@ public class MongoDBDirectory extends AbstractDirectory {
                 loadData = true;
                 break;
             case CREATE_TABLE_POLICY_ON_MISSING_COLUMNS:
-                if (session.hasCollection(getName())) {
-                    long totalEntries = collection.count();
-                    boolean missingColumns = schema.getFields().stream().map(f -> f.getName().getLocalName()).anyMatch(
-                            fname -> collection.count(Filters.exists(fname, false)) == totalEntries);
-                    if (missingColumns) {
-                        dropCollection = true;
-                        loadData = true;
-                    }
-                } else {
-                    loadData = true;
-                }
-                break;
-            default:
+                // As MongoDB does not have the notion of columns, only load data if collection doesn't exist
                 if (!session.hasCollection(getName())) {
                     loadData = true;
                 }
+            default:
                 break;
             }
             if (dropCollection) {
