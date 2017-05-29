@@ -20,7 +20,6 @@
 
 package org.nuxeo.directory.test;
 
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
@@ -40,6 +39,10 @@ public class DirectoryConfiguration {
 
     public static final String DIRECTORY_MONGODB = "mongodb";
 
+    public static final String SQL_TEMPLATE_CONTRIB = "OSGI-INF/test-directory-sql-contrib.xml";
+
+    public static final String MONGODB_TEMPLATE_CONTRIB = "OSGI-INF/test-directory-mongodb-contrib.xml";
+
     protected String directoryType;
 
     protected StorageConfiguration storageConfiguration;
@@ -54,13 +57,15 @@ public class DirectoryConfiguration {
         String contribName;
         switch (directoryType) {
         case DIRECTORY_SQL:
-            contribName = "OSGI-INF/test-directory-sql-contrib.xml";
+            contribName = SQL_TEMPLATE_CONTRIB;
             break;
         case DIRECTORY_MONGODB:
-            contribName = "OSGI-INF/test-directory-mongodb-contrib.xml";
+            contribName = MONGODB_TEMPLATE_CONTRIB;
             break;
         default:
-            throw new NuxeoException("Contribution for testing directories cannot be null");
+            // Fallback on SQL template directory by default if directoryType unknown
+            contribName = SQL_TEMPLATE_CONTRIB;
+            break;
         }
 
         RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
@@ -68,14 +73,7 @@ public class DirectoryConfiguration {
     }
 
     public void init() {
-        switch (directoryType) {
-        case DIRECTORY_SQL:
-            if (!storageConfiguration.isVCS()) {
-                storageConfiguration.initJDBC();
-            }
-            break;
-        default:
-            break;
-        }
+        // nothing for now as the storage configuration always initialize necessary properties for JDBC tests,
+        // use this method for specific initialization (for example a mock LDAP server)
     }
 }
