@@ -3,14 +3,13 @@
 <component name="org.nuxeo.ecm.directory.ldap.storage.users">
 
 <#if "${nuxeo.directory.type}" == "default">
-  <!-- Using default configuration from default-sql-directory-bundle.xml -->
+<!-- Using default configuration from default-sql-directory-bundle.xml or mongodb-directories-config.xml -->
 <#else>
-  <implementation class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor" />
-  <implementation class="org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor" />
-  <require>org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory</require>
 
+  <#if "${nuxeo.mongodb.server}" == "">
   <!-- the groups SQL directories are required to make this bundle work -->
   <require>org.nuxeo.ecm.directory.sql.storage</require>
+  </#if>
   <require>org.nuxeo.ecm.platform.usermanager.UserManagerImpl</require>
 
   <extension target="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"
@@ -114,16 +113,18 @@
 
       <references>
 <#if "${nuxeo.user.group.storage}" == "default">
-        <inverseReference field="groups" directory="ldapGroupDirectory"
-          dualReferenceField="members" />
+        <inverseReference field="groups" directory="ldapGroupDirectory" dualReferenceField="members" />
 </#if>
 <#if "${nuxeo.user.group.storage}" == "userLdapOnly" ||  "${nuxeo.user.group.storage}" == "multiUserSqlGroup">
+        <#if "${nuxeo.mongodb.server}" == "">
         <inverseReference field="groups" directory="sqlGroupDirectory"
-          dualReferenceField="members" />
+        <#else>
+        <inverseReference field="groups" directory="mongoGroupDirectory"
+        </#if>
+            dualReferenceField="members" />
 </#if>
 <#if "${nuxeo.user.group.storage}" == "ldapUserMultiGroup" ||  "${nuxeo.user.group.storage}" == "multiUserGroup">
-        <inverseReference field="groups" directory="multiGroupDirectory"
-          dualReferenceField="members" />
+        <inverseReference field="groups" directory="multiGroupDirectory" dualReferenceField="members" />
 </#if>
       </references>
 
@@ -213,20 +214,27 @@
   </extension>
 
 <#if "${nuxeo.user.group.storage}" == "userLdapOnly" || "${nuxeo.directory.type}" == "multi">
-  <implementation class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor" />
-  <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
-
+  <#if "${nuxeo.mongodb.server}" == "">
   <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
-    point="directories">
+  <#else>
+  <extension target="org.nuxeo.directory.mongodb.MongoDBDirectoryFactory"
+  </#if>
+      point="directories">
 
 <#if "${nuxeo.user.group.storage}" == "multiUserGroup" || "${nuxeo.user.group.storage}" == "multiUserSqlGroup">
+    <#if "${nuxeo.mongodb.server}" == "">
     <directory name="sqlUserDirectory">
-
-      <schema>user</schema>
-
       <dataSource>jdbc/nxsqldirectory</dataSource>
-
       <table>users</table>
+    <#else>
+    <directory name="mongoUserDirectory">
+      <serverUrl>${nuxeo.mongodb.server}</serverUrl>
+      <databaseName>${nuxeo.mongodb.dbname}</databaseName>
+    </#if>
+      <schema>user</schema>
+      <types>
+        <type>system</type>
+      </types>
       <idField>username</idField>
       <passwordField>password</passwordField>
       <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
@@ -236,46 +244,88 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <querySizeLimit>50</querySizeLimit>
 
+      <#if "${nuxeo.mongodb.server}" == "">
       <cacheEntryName>sql-user-entry-cache</cacheEntryName>
       <cacheEntryWithoutReferencesName>sql-user-entry-cache-without-references</cacheEntryWithoutReferencesName>
-
       <references>
-        <inverseReference field="groups" directory="sqlGroupDirectory"
-          dualReferenceField="members" />
+        <inverseReference field="groups" directory="sqlGroupDirectory" dualReferenceField="members" />
+      <#else>
+      <cacheEntryName>mongodb-user-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>mongodb-user-entry-cache-without-references</cacheEntryWithoutReferencesName>
+      <references>
+        <inverseReference field="groups" directory="mongoGroupDirectory" dualReferenceField="members" />
+      </#if>
       </references>
-
     </directory>
+
 </#if>
 <#if "${nuxeo.directory.type}" == "multi" || "${nuxeo.user.group.storage}" == "userLdapOnly">
+    <#if "${nuxeo.mongodb.server}" == "">
     <directory name="sqlGroupDirectory">
-
-      <schema>group</schema>
       <dataSource>jdbc/nxsqldirectory</dataSource>
       <table>groups</table>
+    <#else>
+    <directory name="mongoGroupDirectory">
+      <serverUrl>${nuxeo.mongodb.server}</serverUrl>
+      <databaseName>${nuxeo.mongodb.dbname}</databaseName>
+    </#if>
+      <schema>group</schema>
+      <types>
+        <type>system</type>
+      </types>
       <idField>groupname</idField>
       <dataFile>groups.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <autoincrementIdField>false</autoincrementIdField>
 
+      <#if "${nuxeo.mongodb.server}" == "">
       <cacheEntryName>sql-group-entry-cache</cacheEntryName>
       <cacheEntryWithoutReferencesName>sql-group-entry-cache-without-references</cacheEntryWithoutReferencesName>
-
+      <#else>
+      <cacheEntryName>mongodb-group-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>mongodb-group-entry-cache-without-references</cacheEntryWithoutReferencesName>
+      </#if>
       <references>
 <#if "${nuxeo.user.group.storage}" == "userLdapOnly" || "${nuxeo.user.group.storage}" == "ldapUserMultiGroup">
+        <#if "${nuxeo.mongodb.server}" == "">
         <tableReference field="members" directory="ldapUserDirectory"
+        <#else>
+        <reference field="members" directory="ldapUserDirectory"
+        </#if>
 <#else>
+        <#if "${nuxeo.mongodb.server}" == "">
         <tableReference field="members" directory="multiUserDirectory"
+        <#else>
+        <reference field="members" directory="multiUserDirectory"
+        </#if>
 </#if>
+          <#if "${nuxeo.mongodb.server}" == "">
           table="user2group" sourceColumn="groupId" targetColumn="userId" schema="user2group" 
           dataFile="user2group.csv" />
+          <#else>
+          collection="user2group" sourceField="groupId" targetField="userId" dataFile="user2group.csv"/>
+          </#if>
 <#if "${nuxeo.user.group.storage}" == "multiUserGroup" || "${nuxeo.user.group.storage}" == "ldapUserMultiGroup">
+        <#if "${nuxeo.mongodb.server}" == "">
         <tableReference field="subGroups" directory="multiGroupDirectory"
+        <#else>
+        <reference field="subGroups" directory="multiGroupDirectory"
+        </#if>
 <#else>
+        <#if "${nuxeo.mongodb.server}" == "">
         <tableReference field="subGroups" directory="sqlGroupDirectory"
+        <#else>
+        <reference field="subGroups" directory="mongoGroupDirectory"
+        </#if>
 </#if>
-          table="group2group" sourceColumn="parentGroupId" 
-          targetColumn="childGroupId" schema="group2group" />
+        <#if "${nuxeo.mongodb.server}" == "">
+            table="group2group" sourceColumn="parentGroupId"
+            targetColumn="childGroupId" schema="group2group" />
         <inverseReference field="parentGroups" directory="sqlGroupDirectory"
+        <#else>
+           collection="group2group" sourceField="childGroupId" targetField="parentGroupId"/>
+        <inverseReference field="parentGroups" directory="mongoGroupDirectory"
+        </#if>
           dualReferenceField="subGroups" />
       </references>
 
@@ -294,8 +344,13 @@
       <idField>username</idField>
       <passwordField>password</passwordField>
 
+      <#if "${nuxeo.mongodb.server}" == "">
       <source name="userSQLsource" creation="true">
         <subDirectory name="sqlUserDirectory" />
+      <#else>
+      <source name="userMongoDBsource" creation="true">
+        <subDirectory name="mongoUserDirectory" />
+      </#if>
       </source>
 
       <source name="userLDAPsource">
@@ -307,8 +362,13 @@
       <schema>group</schema>
       <idField>groupname</idField>
 
+      <#if "${nuxeo.mongodb.server}" == "">
       <source name="groupSQLsource" creation="true">
         <subDirectory name="sqlGroupDirectory" />
+      <#else>
+      <source name="groupMongoDBsource" creation="true">
+        <subDirectory name="mongoGroupDirectory" />
+      </#if>
       </source>
 
       <source name="groupLDAPsource">
@@ -354,7 +414,11 @@
 <#if "${nuxeo.user.group.storage}" == "default">
         <directory>ldapGroupDirectory</directory>
 <#elseif "${nuxeo.user.group.storage}" == "userLdapOnly" || "${nuxeo.user.group.storage}" == "multiUserSqlGroup">
+        <#if "${nuxeo.mongodb.server}" == "">
         <directory>sqlGroupDirectory</directory>
+        <#else>
+        <directory>mongoGroupDirectory</directory>
+        </#if>
 <#else>
         <directory>multiGroupDirectory</directory>
 </#if>
