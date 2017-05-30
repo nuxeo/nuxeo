@@ -27,6 +27,7 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -425,12 +426,19 @@ public class TestFileSystemItemAdapterService {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml")
     public void testContribOverride() throws Exception {
         assumeFalse("Cannot test reload for in-memory repository", coreFeature.getStorageConfiguration().isDBSMem());
 
-        harness.deployContrib("org.nuxeo.drive.core.test",
-                "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
-        reload();
+        Framework.getRuntime().standby(Instant.now());
+        try {
+            harness.deployContrib("org.nuxeo.drive.core.test",
+                    "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
+        } finally {
+            Framework.getRuntime().resume();
+        }
+
+        registerRootAndCreateSomeDocs();
 
         // Re-adapt the sync root to take the override into account
         syncRootItem = (FolderItem) fileSystemItemAdapterService.getFileSystemItem(syncRootFolder);
@@ -632,9 +640,13 @@ public class TestFileSystemItemAdapterService {
         assertTrue(activeFactories.contains("dummyVirtualFolderItemFactory"));
         assertTrue(activeFactories.contains("nullMergeTestFactory"));
 
-        harness.undeployContrib("org.nuxeo.drive.core.test",
-                "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
-        reload();
+        Framework.getRuntime().standby(Instant.now());
+        try {
+            harness.undeployContrib("org.nuxeo.drive.core.test",
+                    "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
+        } finally {
+            Framework.getRuntime().resume();
+        }
     }
 
     void reload() throws InterruptedException {
