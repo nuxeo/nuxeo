@@ -44,7 +44,7 @@ public class WorksQueueMonitoring implements WorksQueueMonitoringMBean {
     }
 
     @Override
-    public boolean toggleProcessing() throws InterruptedException {
+    public boolean toggleProcessing() {
         WorkManager manager = manager();
         boolean enabled = !manager.isProcessingEnabled(queueId);
         manager.enableProcessing(queueId, enabled);

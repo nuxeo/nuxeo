@@ -175,7 +175,7 @@ public interface WorkManager {
      *
      * @since 8.3
      */
-    void enableProcessing(String queueId, boolean value) throws InterruptedException;
+    void enableProcessing(String queueId, boolean value);
 
     /**
      * Is queuing enabled for a given queue id.
