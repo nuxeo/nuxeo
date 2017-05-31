@@ -51,7 +51,7 @@ public class CoreDirectory extends AbstractDirectory {
     protected final Schema schema;
 
     public CoreDirectory(CoreDirectoryDescriptor descriptor) {
-        super(descriptor);
+        super(descriptor, null);
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         schema = schemaManager.getSchema(descriptor.schemaName);
         fieldMapper = new DirectoryFieldMapper(descriptor.fieldMapping);

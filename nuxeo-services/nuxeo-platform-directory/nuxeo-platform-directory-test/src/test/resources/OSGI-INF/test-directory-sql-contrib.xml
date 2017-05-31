@@ -14,37 +14,6 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
-    <directory name="template-user" template="true" extends="template-directory">
-      <references>
-        <tableReference field="groups" directory="groupDirectory"
-                        table="user2group" sourceColumn="userId"
-                        targetColumn="groupId" dataFile="test-user2group.csv"/>
-      </references>
-    </directory>
-
-    <directory name="template-user-multirefs" template="true" extends="template-directory">
-      <references>
-        <tableReference field="groups" directory="groupDirectory"
-                        table="user2group" sourceColumn="userId"
-                        targetColumn="groupId" dataFile="test-user2group.csv"/>
-        <tableReference field="groups" directory="otherGroupDirectory"
-                        table="user2othergroup" sourceColumn="userId" targetColumn="groupId"
-                        dataFile="test-user2othergroup.csv"/>
-      </references>
-    </directory>
-
-    <directory name="template-group" template="true" extends="template-directory">
-      <references>
-        <inverseReference field="members" directory="userDirectory"
-                          dualReferenceField="groups"/>
-        <tableReference field="subGroups" directory="groupDirectory"
-                        table="group2group" sourceColumn="childGroupId"
-                        targetColumn="parentGroupId"/>
-        <inverseReference field="parentGroups"
-                          directory="groupDirectory" dualReferenceField="subGroups"/>
-      </references>
-    </directory>
-
   </extension>
 
 </component>

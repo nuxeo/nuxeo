@@ -167,6 +167,18 @@ public class BaseDirectoryDescriptor implements Cloneable {
     @XNodeList(value = "deleteConstraint", type = ArrayList.class, componentType = DirectoryDeleteConstraintDescriptor.class)
     List<DirectoryDeleteConstraintDescriptor> deleteConstraints;
 
+    /**
+     * @since 9.2
+     */
+    @XNodeList(value = "references/reference", type = ReferenceDescriptor[].class, componentType = ReferenceDescriptor.class)
+    ReferenceDescriptor[] references;
+
+    /**
+     * @since 9.2
+     */
+    @XNodeList(value = "references/inverseReference", type = InverseReferenceDescriptor[].class, componentType = InverseReferenceDescriptor.class)
+    InverseReferenceDescriptor[] inverseReferences;
+
     @XNode("dataFile")
     public String dataFileName;
 
@@ -257,6 +269,16 @@ public class BaseDirectoryDescriptor implements Cloneable {
                 clone.permissions[i] = permissions[i].clone();
             }
         }
+        if (references != null) {
+            clone.references = Arrays.stream(references)
+                                     .map(ReferenceDescriptor::clone)
+                                     .toArray(ReferenceDescriptor[]::new);
+        }
+        if (inverseReferences != null) {
+            clone.inverseReferences = Arrays.stream(inverseReferences)
+                                     .map(InverseReferenceDescriptor::clone)
+                                     .toArray(InverseReferenceDescriptor[]::new);
+        }
         return clone;
     }
 
@@ -323,10 +345,16 @@ public class BaseDirectoryDescriptor implements Cloneable {
         if (other.createTablePolicy != null) {
             createTablePolicy = other.createTablePolicy;
         }
+        if (other.references != null && other.references.length != 0) {
+            references = other.references;
+        }
+        if (other.inverseReferences != null && other.inverseReferences.length != 0) {
+            inverseReferences = other.inverseReferences;
+        }
     }
 
     /**
-     * Creates a new {@link Directory} instance from this {@link DirectoryDescriptor).
+     * Creates a new {@link Directory} instance from this {@link BaseDirectoryDescriptor).
      */
     public Directory newDirectory() {
         throw new UnsupportedOperationException("Cannot be instantiated as Directory: " + getClass().getName());
@@ -336,13 +364,27 @@ public class BaseDirectoryDescriptor implements Cloneable {
      * @since 8.4
      */
     public List<DirectoryDeleteConstraint> getDeleteConstraints() throws DirectoryException {
-        List<DirectoryDeleteConstraint> res = new ArrayList<DirectoryDeleteConstraint>();
+        List<DirectoryDeleteConstraint> res = new ArrayList<>();
         if (deleteConstraints != null) {
             for (DirectoryDeleteConstraintDescriptor deleteConstraintDescriptor : deleteConstraints) {
                 res.add(deleteConstraintDescriptor.getDeleteConstraint());
             }
         }
         return res;
+    }
+
+    /**
+     * @since 9.2
+     */
+    public ReferenceDescriptor[] getReferences() {
+        return references;
+    }
+
+    /**
+     * @since 9.2
+     */
+    public InverseReferenceDescriptor[] getInverseReferences() {
+        return inverseReferences;
     }
 
 }

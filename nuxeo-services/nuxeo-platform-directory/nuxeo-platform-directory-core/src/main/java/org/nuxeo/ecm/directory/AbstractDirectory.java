@@ -20,6 +20,7 @@
 
 package org.nuxeo.ecm.directory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -61,7 +62,10 @@ public abstract class AbstractDirectory implements Directory {
 
     protected List<String> types = new ArrayList<>();
 
-    protected AbstractDirectory(BaseDirectoryDescriptor descriptor) {
+    protected Class<? extends Reference> referenceClass;
+
+    protected AbstractDirectory(BaseDirectoryDescriptor descriptor, Class<? extends Reference> referenceClass) {
+        this.referenceClass = referenceClass;
         this.descriptor = descriptor;
         // is the directory visible in the ui
         if (descriptor.types != null) {
@@ -78,6 +82,10 @@ public abstract class AbstractDirectory implements Directory {
 
         sessionCount = registry.counter(MetricRegistry.name("nuxeo", "directories", getName(), "sessions", "active"));
         sessionMaxCount = registry.counter(MetricRegistry.name("nuxeo", "directories", getName(), "sessions", "max"));
+
+        // add references
+        addInverseReferences(descriptor.getInverseReferences());
+        addReferences(descriptor.getReferences());
 
         // cache parameterization
         cache = new DirectoryCache(getName());
@@ -181,6 +189,31 @@ public abstract class AbstractDirectory implements Directory {
     public void addReferences(Reference[] refs) {
         for (Reference reference : refs) {
             addReference(reference);
+        }
+    }
+
+    protected void addInverseReferences(InverseReferenceDescriptor[] references) {
+        for (InverseReferenceDescriptor desc : references) {
+            try {
+                addReference(InverseReference.class.getDeclaredConstructor(InverseReferenceDescriptor.class)
+                                                   .newInstance(desc));
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException
+                    | InstantiationException e) {
+                throw new DirectoryException(
+                        "An error occurred while instantiating inverse reference ", e);
+            }
+        }
+    }
+
+    protected void addReferences(ReferenceDescriptor[] references) {
+        for (ReferenceDescriptor desc : references) {
+            try {
+                addReference(referenceClass.getDeclaredConstructor(ReferenceDescriptor.class).newInstance(desc));
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException
+                    | InstantiationException e) {
+                throw new DirectoryException(
+                        "An error occurred while instantiating reference class " + referenceClass.getName(), e);
+            }
         }
     }
 

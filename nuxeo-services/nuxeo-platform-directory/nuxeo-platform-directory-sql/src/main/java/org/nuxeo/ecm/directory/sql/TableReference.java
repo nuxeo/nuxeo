@@ -33,8 +33,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.schema.types.SchemaImpl;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
@@ -50,32 +48,17 @@ import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryCSVLoader;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.ReferenceDescriptor;
 import org.nuxeo.ecm.directory.Session;
 
-@XObject(value = "tableReference")
 public class TableReference extends AbstractReference implements Cloneable {
 
-    @XNode("@field")
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
-    }
-
-    @Override
-    @XNode("@directory")
-    public void setTargetDirectoryName(String targetDirectoryName) {
-        this.targetDirectoryName = targetDirectoryName;
-    }
-
-    @XNode("@table")
     protected String tableName;
 
-    @XNode("@sourceColumn")
     protected String sourceColumn;
 
-    @XNode("@targetColumn")
     protected String targetColumn;
 
-    @XNode("@dataFile")
     protected String dataFileName;
 
     private Table table;
@@ -83,6 +66,14 @@ public class TableReference extends AbstractReference implements Cloneable {
     private Dialect dialect;
 
     private boolean initialized = false;
+
+    public TableReference(ReferenceDescriptor referenceDescriptor) {
+        super(referenceDescriptor.getFieldName(), referenceDescriptor.getDirectory());
+        tableName = referenceDescriptor.getReferenceName();
+        sourceColumn = referenceDescriptor.getSource();
+        targetColumn = referenceDescriptor.getTarget();
+        dataFileName = referenceDescriptor.getDataFileName();
+    }
 
     private SQLDirectory getSQLSourceDirectory() throws DirectoryException {
         Directory dir = getSourceDirectory();

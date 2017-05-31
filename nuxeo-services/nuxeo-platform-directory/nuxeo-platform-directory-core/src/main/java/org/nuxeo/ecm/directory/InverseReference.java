@@ -23,15 +23,11 @@ package org.nuxeo.ecm.directory;
 
 import java.util.List;
 
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
-
 /**
  * Reference that uses the matching reference of the target directory to actually do the job.
  *
  * @author ogrisel
  */
-@XObject(value = "inverseReference")
 public class InverseReference extends AbstractReference {
 
     /**
@@ -41,23 +37,16 @@ public class InverseReference extends AbstractReference {
      */
     protected boolean readOnly = false;
 
-    @XNode("@dualReferenceField")
     protected String dualReferenceName;
 
     protected Reference dualReference;
 
-    @XNode("@field")
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
+    public InverseReference(InverseReferenceDescriptor referenceDescriptor) {
+        super(referenceDescriptor.getFieldName(), referenceDescriptor.getDirectory());
+        dualReferenceName = referenceDescriptor.getDualReferenceName();
+        readOnly = referenceDescriptor.isReadOnly();
     }
 
-    @Override
-    @XNode("@directory")
-    public void setTargetDirectoryName(String targetDirectoryName) {
-        this.targetDirectoryName = targetDirectoryName;
-    }
-
-    @XNode("@readOnly")
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
     }

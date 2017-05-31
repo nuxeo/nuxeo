@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
 public class MultiDirectory extends AbstractDirectory {
 
     public MultiDirectory(MultiDirectoryDescriptor descriptor) {
-        super(descriptor);
+        super(descriptor, MultiReference.class);
     }
 
     @Override

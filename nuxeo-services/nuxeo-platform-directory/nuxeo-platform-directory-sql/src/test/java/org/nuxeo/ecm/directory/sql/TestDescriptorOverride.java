@@ -78,7 +78,7 @@ public class TestDescriptorOverride {
 
             // inherit
             assertEquals("test-users.csv", config.getDataFileName());
-            assertEquals(1, config.getTableReferences().length);
+            assertEquals(1, config.getReferences().length);
         } finally {
             harness.undeployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-override-bundle.xml");
         }
