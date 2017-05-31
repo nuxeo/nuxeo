@@ -85,7 +85,7 @@ public class CreateDirectoryEntries extends AbstractDirectoryOperation {
 
         StringWriter writer = new StringWriter();
         mapper.writeValue(writer, ids);
-        return Blobs.createBlob(writer.toString(), "application/json");
+        return Blobs.createJSONBlob(writer.toString());
     }
 
 }

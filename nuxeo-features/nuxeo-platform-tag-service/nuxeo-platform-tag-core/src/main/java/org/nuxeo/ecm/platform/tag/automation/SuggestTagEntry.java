@@ -100,7 +100,7 @@ public class SuggestTagEntry {
                 }
             }
         }
-        return Blobs.createBlob(result.toString(), "application/json");
+        return Blobs.createJSONBlob(result.toString());
     }
 
 }

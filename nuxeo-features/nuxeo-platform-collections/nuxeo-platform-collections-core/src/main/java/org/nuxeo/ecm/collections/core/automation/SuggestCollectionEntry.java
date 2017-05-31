@@ -127,7 +127,7 @@ public class SuggestCollectionEntry {
             result.add(0, obj);
         }
 
-        return Blobs.createBlob(result.toString(), "application/json");
+        return Blobs.createJSONBlob(result.toString());
     }
 
     protected Locale getLocale() {

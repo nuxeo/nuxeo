@@ -98,7 +98,7 @@ public class DeleteDirectoryEntries extends AbstractDirectoryOperation {
 
         StringWriter writer = new StringWriter();
         mapper.writeValue(writer, ids);
-        return Blobs.createBlob(writer.toString(), "application/json");
+        return Blobs.createJSONBlob(writer.toString());
     }
 
     protected void markObsoleteOrDelete(Session session, String id) {

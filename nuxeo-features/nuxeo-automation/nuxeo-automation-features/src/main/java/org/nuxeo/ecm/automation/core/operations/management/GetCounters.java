@@ -133,7 +133,7 @@ public class GetCounters {
             }
         }
 
-        return Blobs.createBlob(collection.toString(), "application/json");
+        return Blobs.createJSONBlob(collection.toString());
     }
 
 }

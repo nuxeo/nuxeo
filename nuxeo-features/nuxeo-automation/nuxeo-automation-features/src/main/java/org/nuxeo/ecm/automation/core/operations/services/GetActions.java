@@ -149,6 +149,6 @@ public class GetActions {
             obj.element("properties", properties);
             rows.add(obj);
         }
-        return Blobs.createBlob(rows.toString(), "application/json");
+        return Blobs.createJSONBlob(rows.toString());
     }
 }

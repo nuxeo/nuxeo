@@ -62,7 +62,7 @@ public class SuggestRenditionDefinitionEntry {
                 result.add(obj);
             }
         }
-        return Blobs.createBlob(result.toString(), "application/json");
+        return Blobs.createJSONBlob(result.toString());
     }
 
     protected List<RenditionDefinition> getSuggestions(String searchTerm) {

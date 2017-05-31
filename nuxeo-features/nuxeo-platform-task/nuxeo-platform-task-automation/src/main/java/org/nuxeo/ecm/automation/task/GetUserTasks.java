@@ -83,7 +83,7 @@ public class GetUserTasks {
             JSONObject obj = item.asJSON();
             rows.add(obj);
         }
-        return Blobs.createBlob(rows.toString(), "application/json");
+        return Blobs.createJSONBlob(rows.toString());
     }
 
     protected NuxeoPrincipal principal() {
