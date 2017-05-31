@@ -79,6 +79,6 @@ public class SuggestOperation {
             result.add(suggestionJSON);
         }
 
-        return Blobs.createBlob(result.toString(), "application/json");
+        return Blobs.createJSONBlob(result.toString());
     }
 }
