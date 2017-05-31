@@ -58,6 +58,7 @@ import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
+import org.nuxeo.runtime.metrics.NuxeoMetricSet;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -225,11 +226,25 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
         queuing.setActive(config.id, config.isProcessingEnabled());
         log.info("Activated work queue " + config.id + " " + config.toEffectiveString());
+        // Enable metrics
+        if (config.isProcessingEnabled()) {
+            NuxeoMetricSet queueMetrics = new NuxeoMetricSet("nuxeo", "works", "total", config.id);
+            queueMetrics.putGauge(() -> getMetrics(config.id).scheduled, "scheduled", "count");
+            queueMetrics.putGauge(() -> getMetrics(config.id).running, "running");
+            queueMetrics.putGauge(() -> getMetrics(config.id).completed, "completed");
+            queueMetrics.putGauge(() -> getMetrics(config.id).canceled, "canceled");
+            registry.registerAll(queueMetrics);
+        }
     }
 
     void deactivateQueue(WorkQueueDescriptor config) {
         if (WorkQueueDescriptor.ALL_QUEUES.equals(config.id)) {
             throw new IllegalArgumentException("cannot deactivate all queues");
+        }
+        // Disable metrics
+        if (config.isProcessingEnabled()) {
+            String queueMetricsName = MetricRegistry.name("nuxeo", "works", "total", config.id);
+            registry.removeMatching((name, metric) -> name.startsWith(queueMetricsName));
         }
         queuing.setActive(config.id, false);
         log.info("Deactivated work queue " + config.id);
@@ -259,13 +274,11 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public void enableProcessing(boolean value) {
-        for (String queueId : workQueueConfig.getQueueIds()) {
-            queuing.getQueue(queueId).setActive(value);
-        }
+        workQueueConfig.getQueueIds().forEach(id -> enableProcessing(id, value));
     }
 
     @Override
-    public void enableProcessing(String queueId, boolean value) throws InterruptedException {
+    public void enableProcessing(String queueId, boolean value) {
         WorkQueueDescriptor config = workQueueConfig.get(queueId);
         if (config == null) {
             throw new IllegalArgumentException("no such queue " + queueId);

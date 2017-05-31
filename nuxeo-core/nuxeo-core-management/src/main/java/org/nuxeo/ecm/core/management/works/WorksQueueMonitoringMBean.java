@@ -36,9 +36,9 @@ public interface WorksQueueMonitoringMBean {
 
     /**
      * Toogles processing for all queues
-     * @throws InterruptedException
      *
      * @since 8.3
      */
-    boolean toggleProcessing() throws InterruptedException;
+    boolean toggleProcessing();
+
 }
