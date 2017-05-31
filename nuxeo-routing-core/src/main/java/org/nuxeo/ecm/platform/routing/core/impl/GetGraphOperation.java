@@ -60,7 +60,7 @@ public class GetGraphOperation {
         Locale locale = language != null && !language.isEmpty() ? new Locale(language) : Locale.ENGLISH;
         JsonGraphRoute unrestrictedRunner = new JsonGraphRoute(session, routeDocId, locale);
         String json = unrestrictedRunner.getJSON();
-        return Blobs.createBlob(json.toString(), "application/json");
+        return Blobs.createJSONBlob(json);
     }
 
 }
