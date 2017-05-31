@@ -41,6 +41,21 @@ public abstract class AbstractReference implements Reference, Cloneable {
 
     protected String fieldName;
 
+    /**
+     * @since 9.2
+     */
+    public AbstractReference(String fieldName) {
+        this.fieldName = fieldName;
+    }
+
+    /**
+     * @since 9.2
+     */
+    public AbstractReference(String fieldName, String targetDirectoryName) {
+        this.fieldName = fieldName;
+        this.targetDirectoryName = targetDirectoryName;
+    }
+
     @Override
     public String getFieldName() {
         return fieldName;

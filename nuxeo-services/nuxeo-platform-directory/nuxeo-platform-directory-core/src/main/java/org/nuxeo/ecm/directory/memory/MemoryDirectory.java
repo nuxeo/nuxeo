@@ -45,7 +45,7 @@ public class MemoryDirectory extends AbstractDirectory {
     public MemoryDirectorySession session;
 
     public MemoryDirectory(MemoryDirectoryDescriptor descriptor) {
-        super(descriptor);
+        super(descriptor, null);
         Set<String> schemaSet = descriptor.schemaSet;
         if (schemaSet == null) {
             Schema schema = Framework.getService(SchemaManager.class).getSchema(getSchema());

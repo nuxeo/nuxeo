@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.directory.GenericDirectory"
     point="directories">
 
-    <directory name="userDirectory" extends="template-user-multirefs">
+    <directory name="userDirectory" extends="template-directory">
       <schema>user</schema>
       <types>
         <type>system</type>
@@ -16,9 +16,17 @@
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>test-users.csv</dataFile>
       <createTablePolicy>always</createTablePolicy>
+      <references>
+        <reference field="groups" directory="groupDirectory"
+                   name="user2group" source="userId" target="groupId"
+                   dataFile="test-user2group.csv"/>
+        <reference field="groups" directory="otherGroupDirectory"
+                   name="user2othergroup" source="userId" target="groupId"
+                   dataFile="test-user2othergroup.csv"/>
+      </references>
     </directory>
 
-    <directory name="groupDirectory" extends="template-group">
+    <directory name="groupDirectory" extends="template-directory">
       <schema>group</schema>
       <types>
         <type>system</type>
@@ -27,9 +35,18 @@
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>always</createTablePolicy>
       <dataFile>test-groups.csv</dataFile>
+      <references>
+        <inverseReference field="members" directory="userDirectory"
+                          dualReferenceField="groups"/>
+        <reference field="subGroups" directory="groupDirectory"
+                        name="group2group" source="childGroupId"
+                        target="parentGroupId"/>
+        <inverseReference field="parentGroups"
+                          directory="groupDirectory" dualReferenceField="subGroups"/>
+      </references>
     </directory>
 
-    <directory name="otherGroupDirectory" extends="template-group">
+    <directory name="otherGroupDirectory" extends="template-directory">
       <schema>group</schema>
       <types>
         <type>system</type>
@@ -38,6 +55,15 @@
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>test-othergroups.csv</dataFile>
       <createTablePolicy>always</createTablePolicy>
+      <references>
+        <inverseReference field="members" directory="userDirectory"
+                          dualReferenceField="groups"/>
+        <reference field="subGroups" directory="groupDirectory"
+                        name="group2group" source="childGroupId"
+                        target="parentGroupId"/>
+        <inverseReference field="parentGroups"
+                          directory="groupDirectory" dualReferenceField="subGroups"/>
+      </references>
     </directory>
 
   </extension>

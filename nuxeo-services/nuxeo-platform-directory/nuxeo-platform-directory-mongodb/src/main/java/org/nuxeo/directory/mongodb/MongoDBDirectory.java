@@ -54,25 +54,17 @@ public class MongoDBDirectory extends AbstractDirectory {
     protected boolean initialized;
 
     public MongoDBDirectory(MongoDBDirectoryDescriptor descriptor) {
-        super(descriptor);
-
-        // register the references to other directories
-        addReferences(descriptor.getInverseReferences());
-        addReferences(descriptor.getMongoDBReferences());
-
-        // cache parameterization
-        String cacheEntryName = descriptor.cacheEntryName;
-        String cacheEntryNameWithoutReferencesName = descriptor.cacheEntryWithoutReferencesName;
+        super(descriptor, MongoDBReference.class);
 
         // cache fallback
         CacheService cacheService = Framework.getService(CacheService.class);
         if (cacheService != null) {
-            if (cacheEntryName == null && descriptor.getCacheMaxSize() != 0) {
+            if (descriptor.cacheEntryName == null && descriptor.getCacheMaxSize() != 0) {
                 cache.setEntryCacheName("cache-" + getName());
                 cacheService.registerCache("cache-" + getName(), descriptor.getCacheMaxSize(),
                         descriptor.getCacheTimeout() / 60);
             }
-            if (cacheEntryNameWithoutReferencesName == null && descriptor.getCacheMaxSize() != 0) {
+            if (descriptor.cacheEntryWithoutReferencesName == null && descriptor.getCacheMaxSize() != 0) {
                 cache.setEntryCacheWithoutReferencesName("cacheWithoutReference-" + getName());
                 cacheService.registerCache("cacheWithoutReference-" + getName(), descriptor.getCacheMaxSize(),
                         descriptor.getCacheTimeout() / 60);

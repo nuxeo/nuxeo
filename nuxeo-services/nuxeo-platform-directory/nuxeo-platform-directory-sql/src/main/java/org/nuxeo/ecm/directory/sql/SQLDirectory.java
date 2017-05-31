@@ -122,12 +122,8 @@ public class SQLDirectory extends AbstractDirectory {
     private volatile Dialect dialect;
 
     public SQLDirectory(SQLDirectoryDescriptor descriptor) {
-        super(descriptor);
+        super(descriptor, TableReference.class);
         nativeCase = Boolean.TRUE.equals(descriptor.nativeCase);
-
-        // register the references to other directories
-        addReferences(descriptor.getInverseReferences());
-        addReferences(descriptor.getTableReferences());
 
         // Cache fallback
         CacheService cacheService = Framework.getLocalService(CacheService.class);

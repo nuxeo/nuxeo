@@ -44,6 +44,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.AbstractReference;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.ReferenceDescriptor;
 import org.nuxeo.ecm.directory.Session;
 
 /**
@@ -62,6 +63,10 @@ public class LDAPTreeReference extends AbstractReference {
     protected LDAPDirectoryDescriptor targetDirectoryDescriptor;
 
     protected int scope;
+
+    public LDAPTreeReference(ReferenceDescriptor referenceDescriptor) {
+        super(referenceDescriptor.getFieldName());
+    }
 
     @XNode("@field")
     public void setFieldName(String fieldName) {

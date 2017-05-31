@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.directory.GenericDirectory"
     point="directories">
 
-    <directory name="userDirectory" extends="template-user">
+    <directory name="userDirectory" extends="template-directory">
       <schema>user</schema>
       <types>
         <type>system</type>
@@ -16,6 +16,11 @@
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>test-users.csv</dataFile>
       <createTablePolicy>always</createTablePolicy>
+      <references>
+        <reference field="groups" directory="groupDirectory"
+                   name="user2group" source="userId"
+                   target="groupId" dataFile="test-user2group.csv"/>
+      </references>
       <permissions>
         <permission name="Read">
           <user>readerUser</user>
@@ -26,7 +31,7 @@
       </permissions>
     </directory>
 
-    <directory name="groupDirectory" extends="template-group">
+    <directory name="groupDirectory" extends="template-directory">
       <schema>group</schema>
       <types>
         <type>system</type>
@@ -35,6 +40,15 @@
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>test-groups.csv</dataFile>
       <createTablePolicy>always</createTablePolicy>
+      <references>
+        <inverseReference field="members" directory="userDirectory"
+                          dualReferenceField="groups"/>
+        <reference field="subGroups" directory="groupDirectory"
+                        name="group2group" source="childGroupId"
+                        target="parentGroupId"/>
+        <inverseReference field="parentGroups"
+                          directory="groupDirectory" dualReferenceField="subGroups"/>
+      </references>
       <permissions>
         <permission name="Write">
           <group>Everyone</group>

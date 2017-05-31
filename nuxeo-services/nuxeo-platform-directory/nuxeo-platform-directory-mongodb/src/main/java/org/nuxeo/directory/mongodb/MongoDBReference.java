@@ -33,8 +33,6 @@ import java.util.stream.StreamSupport;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.schema.types.SchemaImpl;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.directory.AbstractReference;
@@ -49,6 +47,7 @@ import com.mongodb.MongoWriteException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
+import org.nuxeo.ecm.directory.ReferenceDescriptor;
 import org.nuxeo.ecm.directory.Session;
 
 /**
@@ -56,32 +55,24 @@ import org.nuxeo.ecm.directory.Session;
  * 
  * @since 9.1
  */
-@XObject("reference")
 public class MongoDBReference extends AbstractReference implements Cloneable {
 
-    @XNode("@collection")
     protected String collection;
 
-    @XNode("@sourceField")
     protected String sourceField;
 
-    @XNode("@targetField")
     protected String targetField;
 
-    @XNode("@dataFile")
     protected String dataFileName;
 
     private boolean initialized;
 
-    @XNode("@field")
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
-    }
-
-    @Override
-    @XNode("@directory")
-    public void setTargetDirectoryName(String targetDirectoryName) {
-        this.targetDirectoryName = targetDirectoryName;
+    public MongoDBReference(ReferenceDescriptor referenceDescriptor) {
+        super(referenceDescriptor.getFieldName(), referenceDescriptor.getDirectory());
+        collection = referenceDescriptor.getReferenceName();
+        sourceField = referenceDescriptor.getSource();
+        targetField = referenceDescriptor.getTarget();
+        dataFileName = referenceDescriptor.getDataFileName();
     }
 
     @Override

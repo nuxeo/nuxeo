@@ -8,37 +8,6 @@
       <databaseName>${nuxeo.test.mongodb.dbname}</databaseName>
     </directory>
 
-    <directory name="template-user" template="true" extends="template-directory">
-      <references>
-        <reference field="groups" directory="groupDirectory"
-                   collection="user2group" sourceField="userId"
-                   targetField="groupId" dataFile="test-user2group.csv"/>
-      </references>
-    </directory>
-
-    <directory name="template-user-multirefs" template="true" extends="template-directory">
-      <references>
-        <reference field="groups" directory="groupDirectory"
-                   collection="user2group" sourceField="userId" targetField="groupId"
-                   dataFile="test-user2group.csv"/>
-        <reference field="groups" directory="otherGroupDirectory"
-                   collection="user2othergroup" sourceField="userId" targetField="groupId"
-                   dataFile="test-user2othergroup.csv"/>
-      </references>
-    </directory>
-
-    <directory name="template-group" template="true" extends="template-directory">
-      <references>
-        <inverseReference field="members" directory="userDirectory"
-                          dualReferenceField="groups"/>
-        <reference field="subGroups" directory="groupDirectory"
-                   collection="group2group" sourceField="childGroupId"
-                   targetField="parentGroupId"/>
-        <inverseReference field="parentGroups"
-                          directory="groupDirectory" dualReferenceField="subGroups"/>
-      </references>
-    </directory>
-
   </extension>
 
 </component>

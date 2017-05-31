@@ -43,11 +43,9 @@ public class MultiReference extends AbstractReference {
 
     final MultiDirectory dir;
 
-    final String fieldName;
-
     MultiReference(MultiDirectory dir, String fieldName) {
+        super(fieldName);
         this.dir = dir;
-        this.fieldName = fieldName;
     }
 
     @Override

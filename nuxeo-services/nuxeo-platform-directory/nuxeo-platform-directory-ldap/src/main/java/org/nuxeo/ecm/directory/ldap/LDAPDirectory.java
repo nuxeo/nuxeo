@@ -85,7 +85,7 @@ public class LDAPDirectory extends AbstractDirectory {
     protected ContextProvider testServer;
 
     public LDAPDirectory(LDAPDirectoryDescriptor descriptor) {
-        super(descriptor);
+        super(descriptor, LDAPReference.class);
         if (StringUtils.isEmpty(descriptor.getSearchBaseDn())) {
             throw new DirectoryException("searchBaseDn configuration is missing for directory " + getName());
         }

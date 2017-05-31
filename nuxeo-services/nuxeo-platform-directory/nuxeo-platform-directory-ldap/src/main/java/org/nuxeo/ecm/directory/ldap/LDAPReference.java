@@ -57,6 +57,7 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryEntryNotFoundException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
+import org.nuxeo.ecm.directory.ReferenceDescriptor;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.ldap.filter.FilterExpressionCorrector;
 import org.nuxeo.ecm.directory.ldap.filter.FilterExpressionCorrector.FilterJobs;
@@ -106,6 +107,10 @@ public class LDAPReference extends AbstractReference {
 
     @XNode("@dynamicAttributeId")
     protected String dynamicAttributeId;
+
+    public LDAPReference(ReferenceDescriptor referenceDescriptor) {
+        super(referenceDescriptor.getFieldName());
+    }
 
     @XNode("@field")
     public void setFieldName(String fieldName) {

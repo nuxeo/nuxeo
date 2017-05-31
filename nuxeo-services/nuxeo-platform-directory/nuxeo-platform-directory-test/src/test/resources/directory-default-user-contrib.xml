@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.directory.GenericDirectory"
              point="directories">
 
-    <directory name="userDirectory" extends="template-user">
+    <directory name="userDirectory" extends="template-directory">
       <schema>user</schema>
       <types>
         <type>system</type>
@@ -18,6 +18,11 @@
       <createTablePolicy>always</createTablePolicy>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1</cacheMaxSize>
+      <references>
+        <reference field="groups" directory="groupDirectory"
+                   name="user2group" source="userId"
+                   target="groupId" dataFile="test-user2group.csv"/>
+      </references>
     </directory>
 
   </extension>

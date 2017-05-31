@@ -264,10 +264,6 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
         this.fieldMapping = fieldMapping;
     }
 
-    public Reference[] getInverseReferences() {
-        return inverseReferences;
-    }
-
     public Reference[] getLdapReferences() {
         List<Reference> refs = new ArrayList<Reference>();
         if (ldapReferences != null) {

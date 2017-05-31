@@ -23,8 +23,6 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
-import org.nuxeo.ecm.directory.InverseReference;
-import org.nuxeo.ecm.directory.Reference;
 
 @XObject(value = "directory")
 public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
@@ -36,12 +34,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     @XNode("querySizeLimit")
     private Integer querySizeLimit;
-
-    @XNodeList(value = "references/tableReference", type = TableReference[].class, componentType = TableReference.class)
-    private TableReference[] tableReferences;
-
-    @XNodeList(value = "references/inverseReference", type = InverseReference[].class, componentType = InverseReference.class)
-    private InverseReference[] inverseReferences;
 
     @XNodeList(value = "filters/staticFilter", type = SQLStaticFilter[].class, componentType = SQLStaticFilter.class)
     private SQLStaticFilter[] staticFilters;
@@ -58,22 +50,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     public void setDataSourceName(String dataSourceName) {
         this.dataSourceName = dataSourceName;
-    }
-
-    public Reference[] getInverseReferences() {
-        return inverseReferences;
-    }
-
-    public Reference[] getTableReferences() {
-        return tableReferences;
-    }
-
-    public void setInverseReferences(InverseReference[] inverseReferences) {
-        this.inverseReferences = inverseReferences;
-    }
-
-    public void setTableReferences(TableReference[] tableReferences) {
-        this.tableReferences = tableReferences;
     }
 
     public int getQuerySizeLimit() {
@@ -116,12 +92,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
         if (other.querySizeLimit != null) {
             querySizeLimit = other.querySizeLimit;
         }
-        if (other.inverseReferences != null && other.inverseReferences.length != 0) {
-            inverseReferences = other.inverseReferences;
-        }
-        if (other.tableReferences != null && other.tableReferences.length != 0) {
-            tableReferences = other.tableReferences;
-        }
         if (other.staticFilters != null && other.staticFilters.length != 0) {
             staticFilters = other.staticFilters;
         }
@@ -135,18 +105,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
     public SQLDirectoryDescriptor clone() {
         SQLDirectoryDescriptor clone = (SQLDirectoryDescriptor) super.clone();
         // basic fields are already copied by super.clone()
-        if (tableReferences != null) {
-            clone.tableReferences = new TableReference[tableReferences.length];
-            for (int i = 0; i < tableReferences.length; i++) {
-                clone.tableReferences[i] = tableReferences[i].clone();
-            }
-        }
-        if (inverseReferences != null) {
-            clone.inverseReferences = new InverseReference[inverseReferences.length];
-            for (int i = 0; i < inverseReferences.length; i++) {
-                clone.inverseReferences[i] = inverseReferences[i].clone();
-            }
-        }
         if (staticFilters != null) {
             clone.staticFilters = new SQLStaticFilter[staticFilters.length];
             for (int i = 0; i < staticFilters.length; i++) {
