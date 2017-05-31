@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,7 +134,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     protected WorkCompletionSynchronizer completionSynchronizer;
-
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
@@ -446,7 +445,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
     }
 
-
     /**
      * A work instance and how to schedule it, for schedule-after-commit.
      *
@@ -501,8 +499,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             Thread thread = new Thread(group, r, name);
             // do not set daemon
             thread.setPriority(Thread.NORM_PRIORITY);
-            thread.setUncaughtExceptionHandler((t, e) -> LogFactory.getLog(WorkManagerImpl.class)
-                    .error("Uncaught error on thread " + t.getName(), e));
+            thread.setUncaughtExceptionHandler((t,
+                    e) -> LogFactory.getLog(WorkManagerImpl.class).error("Uncaught error on thread " + t.getName(), e));
             return thread;
         }
     }
@@ -567,8 +565,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         /**
          * Executes the given task sometime in the future.
          *
-         * @param work
-         *            the work to execute
+         * @param work the work to execute
          * @see #execute(Runnable)
          */
         public void execute(Work work) {
@@ -765,8 +762,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     /**
-     * @param state
-     *            SCHEDULED, RUNNING or null for both
+     * @param state SCHEDULED, RUNNING or null for both
      */
     protected boolean hasWorkInState(String workId, State state) {
         return queuing.isWorkInState(workId, state);
