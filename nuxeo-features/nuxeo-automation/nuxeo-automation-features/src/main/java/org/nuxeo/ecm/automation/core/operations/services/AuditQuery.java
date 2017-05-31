@@ -89,7 +89,7 @@ public class AuditQuery {
             // }
             rows.add(obj);
         }
-        return Blobs.createBlob(rows.toString(), "application/json");
+        return Blobs.createJSONBlob(rows.toString());
     }
 
     public List<LogEntry> query() {

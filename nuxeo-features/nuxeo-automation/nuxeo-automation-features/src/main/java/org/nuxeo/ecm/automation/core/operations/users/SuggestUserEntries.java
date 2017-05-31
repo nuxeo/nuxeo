@@ -239,7 +239,7 @@ public class SuggestUserEntries {
             return searchOverflowMessage();
         }
 
-        return Blobs.createBlob(result.toString(), "application/json");
+        return Blobs.createJSONBlob(result.toString());
     }
 
     /**
@@ -252,7 +252,7 @@ public class SuggestUserEntries {
         obj.put(SuggestConstants.LABEL,
                 I18NUtils.getMessageString("messages", "label.security.searchOverFlow", new Object[0], getLocale()));
         result.add(obj);
-        return Blobs.createBlob(result.toString(), "application/json");
+        return Blobs.createJSONBlob(result.toString());
     }
 
     protected String getLang() {

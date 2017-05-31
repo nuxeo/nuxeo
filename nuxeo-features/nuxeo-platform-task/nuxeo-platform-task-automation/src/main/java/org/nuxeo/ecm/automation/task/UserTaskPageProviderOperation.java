@@ -104,7 +104,7 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
         json.put("pageCount", Long.valueOf(pageProvider.getNumberOfPages()));
 
         json.put("entries", processes);
-        return Blobs.createBlob(json.toString(), "application/json");
+        return Blobs.createJSONBlob(json.toString());
     }
 
 }

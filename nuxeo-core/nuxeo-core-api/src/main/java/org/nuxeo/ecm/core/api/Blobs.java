@@ -24,7 +24,10 @@ import java.io.InputStream;
 
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.impl.blob.JSONBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class consists exclusively of static methods that operate on {@link Blob}s.
@@ -205,6 +208,42 @@ public class Blobs {
      */
     public static Blob createBlob(String string, String mimeType, String encoding, String filename) {
         return new StringBlob(string, mimeType, encoding, filename);
+    }
+
+    /**
+     * Create a {@link Blob} backed by the given JSON string.
+     *
+     * @param json the JSON string
+     * @since 9.2
+     */
+    public static Blob createJSONBlob(String json) {
+        return new JSONBlob(json);
+    }
+
+    /**
+     * Create a {@link Blob} backed by the JSON for an arbitrary value.
+     * <p>
+     * The value's internal classes may be annotated with Jackson 2 annotations.
+     *
+     * @param value the value
+     * @since 9.2
+     */
+    public static Blob createJSONBlobFromValue(Object value) throws IOException {
+        String json = new ObjectMapper().writeValueAsString(value);
+        return new JSONBlob(json);
+    }
+
+    /**
+     * Create a {@link Blob} backed by the JSON for an arbitrary value.
+     * <p>
+     * The value's internal classes may be annotated with Jackson 1 annotations.
+     *
+     * @param value the value
+     * @since 9.2
+     */
+    public static Blob createJSONBlobFromValueJackson1(Object value) throws IOException {
+        String json = new org.codehaus.jackson.map.ObjectMapper().writeValueAsString(value);
+        return new JSONBlob(json);
     }
 
 }

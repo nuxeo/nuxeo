@@ -526,7 +526,7 @@ public class SuggestDirectoryEntries {
                 jsonAdapter.push(adapter);
 
             }
-            return Blobs.createBlob(jsonAdapter.getChildrenJSONArray().toString(), "application/json");
+            return Blobs.createJSONBlob(jsonAdapter.getChildrenJSONArray().toString());
         }
     }
 

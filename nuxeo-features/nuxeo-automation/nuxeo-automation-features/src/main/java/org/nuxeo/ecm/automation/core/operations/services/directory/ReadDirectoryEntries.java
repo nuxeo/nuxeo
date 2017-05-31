@@ -116,7 +116,7 @@ public class ReadDirectoryEntries extends AbstractDirectoryOperation {
 
         StringWriter writer = new StringWriter();
         mapper.writeValue(writer, entries);
-        return Blobs.createBlob(writer.toString(), "application/json");
+        return Blobs.createJSONBlob(writer.toString());
     }
 
     protected Locale getLocale() {
