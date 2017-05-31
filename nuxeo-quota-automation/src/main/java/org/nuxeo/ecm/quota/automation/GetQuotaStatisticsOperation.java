@@ -68,7 +68,7 @@ public class GetQuotaStatisticsOperation {
             throw new NuxeoException("Quota not activated on doc");
         }
         String string = toJSON(qa.getQuotaInfo(), locale);
-        return Blobs.createBlob(string, "application/json");
+        return Blobs.createJSONBlob(string);
     }
 
     public String toJSON(QuotaInfo quotaInfo, Locale locale) {
