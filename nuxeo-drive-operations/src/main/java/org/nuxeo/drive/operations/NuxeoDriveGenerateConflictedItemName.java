@@ -32,6 +32,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
@@ -76,7 +77,7 @@ public class NuxeoDriveGenerateConflictedItemName {
         String formatedDate = dateFormat.format(userDate.getTime());
         String contextSection = String.format(" (%s - %s)", userName, formatedDate);
         String conflictedName = name + contextSection + extension;
-        return NuxeoDriveOperationHelper.asJSONBlob(conflictedName);
+        return Blobs.createJSONBlobFromValue(conflictedName);
     }
 
 }

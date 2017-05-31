@@ -32,6 +32,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
 
@@ -70,7 +71,7 @@ public class NuxeoDriveGetChangeSummary {
             docChangeSummary = driveManager.getChangeSummaryIntegerBounds(ctx.getPrincipal(), lastActiveRootRefs,
                     lowerBound);
         }
-        return NuxeoDriveOperationHelper.asJSONBlob(docChangeSummary);
+        return Blobs.createJSONBlobFromValueJackson1(docChangeSummary);
     }
 
 }

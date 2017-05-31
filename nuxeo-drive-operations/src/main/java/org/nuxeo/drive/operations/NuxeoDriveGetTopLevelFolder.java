@@ -28,6 +28,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -48,7 +49,7 @@ public class NuxeoDriveGetTopLevelFolder {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         FolderItem topLevelFolder = fileSystemItemManager.getTopLevelFolder(ctx.getPrincipal());
-        return NuxeoDriveOperationHelper.asJSONBlob(topLevelFolder);
+        return Blobs.createJSONBlobFromValueJackson1(topLevelFolder);
     }
 
 }

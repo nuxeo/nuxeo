@@ -26,6 +26,7 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -50,7 +51,7 @@ public class NuxeoDriveGetClientUpdateInfo {
         String betaUpdateSiteURL = Framework.getProperty(NuxeoDriveConstants.BETA_UPDATE_SITE_URL_PROP_KEY);
         NuxeoDriveClientUpdateInfo info = new NuxeoDriveClientUpdateInfo(serverVersion, updateSiteURL,
                 betaUpdateSiteURL);
-        return NuxeoDriveOperationHelper.asJSONBlob(info);
+        return Blobs.createJSONBlobFromValueJackson1(info);
     }
 
 }
