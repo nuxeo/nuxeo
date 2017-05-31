@@ -18,12 +18,8 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.nuxeo.runtime.metrics.NuxeoMetricSet;
 
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.Metric;
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.MetricSet;
 import com.google.common.cache.Cache;
 
@@ -32,39 +28,27 @@ import com.google.common.cache.Cache;
  *
  * @since 8.10
  */
-public class GuavaCacheMetric implements MetricSet {
+public class GuavaCacheMetric extends NuxeoMetricSet {
 
-    private Map<String, Metric> metrics = new HashMap<>();
-
-    private GuavaCacheMetric() {
-    }
-
-    @Override
-    public Map<String, Metric> getMetrics() {
-        return metrics;
-    }
-
-    private <T> void putMetrics(Gauge<T> gauge, String name, String... names) {
-        metrics.put(MetricRegistry.name(name, names), gauge);
+    private GuavaCacheMetric(String name, String... names) {
+        super(name, names);
     }
 
     public static MetricSet of(Cache cache, String name, String... names) {
-        String basicName = MetricRegistry.name(name, names);
-
-        GuavaCacheMetric metrics = new GuavaCacheMetric();
-        metrics.putMetrics(() -> cache.size(), basicName, "size");
-        metrics.putMetrics(() -> cache.stats().averageLoadPenalty(), basicName, "average", "load", "penalty");
-        metrics.putMetrics(() -> cache.stats().evictionCount(), basicName, "eviction", "count");
-        metrics.putMetrics(() -> cache.stats().hitCount(), basicName, "hit", "count");
-        metrics.putMetrics(() -> cache.stats().hitRate(), basicName, "hit", "rate");
-        metrics.putMetrics(() -> cache.stats().loadCount(), basicName, "load", "count");
-        metrics.putMetrics(() -> cache.stats().loadExceptionCount(), basicName, "load", "exception", "count");
-        metrics.putMetrics(() -> cache.stats().loadExceptionRate(), basicName, "load", "exception", "rate");
-        metrics.putMetrics(() -> cache.stats().loadSuccessCount(), basicName, "load", "success", "count");
-        metrics.putMetrics(() -> cache.stats().missCount(), basicName, "miss", "count");
-        metrics.putMetrics(() -> cache.stats().missRate(), basicName, "miss", "rate");
-        metrics.putMetrics(() -> cache.stats().requestCount(), basicName, "request", "count");
-        metrics.putMetrics(() -> cache.stats().totalLoadTime(), basicName, "total", "load", "time");
+        GuavaCacheMetric metrics = new GuavaCacheMetric(name, names);
+        metrics.putGauge(() -> cache.size(), "size");
+        metrics.putGauge(() -> cache.stats().averageLoadPenalty(), "average", "load", "penalty");
+        metrics.putGauge(() -> cache.stats().evictionCount(), "eviction", "count");
+        metrics.putGauge(() -> cache.stats().hitCount(), "hit", "count");
+        metrics.putGauge(() -> cache.stats().hitRate(), "hit", "rate");
+        metrics.putGauge(() -> cache.stats().loadCount(), "load", "count");
+        metrics.putGauge(() -> cache.stats().loadExceptionCount(), "load", "exception", "count");
+        metrics.putGauge(() -> cache.stats().loadExceptionRate(), "load", "exception", "rate");
+        metrics.putGauge(() -> cache.stats().loadSuccessCount(), "load", "success", "count");
+        metrics.putGauge(() -> cache.stats().missCount(), "miss", "count");
+        metrics.putGauge(() -> cache.stats().missRate(), "miss", "rate");
+        metrics.putGauge(() -> cache.stats().requestCount(), "request", "count");
+        metrics.putGauge(() -> cache.stats().totalLoadTime(), "total", "load", "time");
         return metrics;
     }
 
