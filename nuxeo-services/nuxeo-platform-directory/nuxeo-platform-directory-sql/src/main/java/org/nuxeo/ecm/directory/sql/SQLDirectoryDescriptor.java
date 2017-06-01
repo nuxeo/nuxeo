@@ -35,6 +35,9 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
     @XNode("querySizeLimit")
     private Integer querySizeLimit;
 
+    @XNodeList(value = "references/tableReference", type = TableReferenceDescriptor[].class, componentType = TableReferenceDescriptor.class)
+    private TableReferenceDescriptor[] tableReferences;
+
     @XNodeList(value = "filters/staticFilter", type = SQLStaticFilter[].class, componentType = SQLStaticFilter.class)
     private SQLStaticFilter[] staticFilters;
 
@@ -50,6 +53,10 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     public void setDataSourceName(String dataSourceName) {
         this.dataSourceName = dataSourceName;
+    }
+
+    public TableReferenceDescriptor[] getTableReferences() {
+        return tableReferences;
     }
 
     public int getQuerySizeLimit() {
@@ -92,6 +99,9 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
         if (other.querySizeLimit != null) {
             querySizeLimit = other.querySizeLimit;
         }
+        if (other.tableReferences != null && other.tableReferences.length != 0) {
+            tableReferences = other.tableReferences;
+        }
         if (other.staticFilters != null && other.staticFilters.length != 0) {
             staticFilters = other.staticFilters;
         }
@@ -105,6 +115,12 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
     public SQLDirectoryDescriptor clone() {
         SQLDirectoryDescriptor clone = (SQLDirectoryDescriptor) super.clone();
         // basic fields are already copied by super.clone()
+        if (tableReferences != null) {
+            clone.tableReferences = new TableReferenceDescriptor[tableReferences.length];
+            for (int i = 0; i < tableReferences.length; i++) {
+                clone.tableReferences[i] = tableReferences[i].clone();
+            }
+        }
         if (staticFilters != null) {
             clone.staticFilters = new SQLStaticFilter[staticFilters.length];
             for (int i = 0; i < staticFilters.length; i++) {

@@ -129,7 +129,6 @@ public class LDAPDirectory extends AbstractDirectory {
         baseFilter = ldapDirectoryDesc.getAggregatedSearchFilter();
 
         // register the references
-        addReferences(ldapDirectoryDesc.getInverseReferences());
         addReferences(ldapDirectoryDesc.getLdapReferences());
 
         // register the search controls after having registered the references

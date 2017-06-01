@@ -55,7 +55,7 @@ import org.nuxeo.ecm.directory.Session;
  * 
  * @since 9.1
  */
-public class MongoDBReference extends AbstractReference implements Cloneable {
+public class MongoDBReference extends AbstractReference {
 
     protected String collection;
 
@@ -67,12 +67,32 @@ public class MongoDBReference extends AbstractReference implements Cloneable {
 
     private boolean initialized;
 
-    public MongoDBReference(ReferenceDescriptor referenceDescriptor) {
-        super(referenceDescriptor.getFieldName(), referenceDescriptor.getDirectory());
-        collection = referenceDescriptor.getReferenceName();
-        sourceField = referenceDescriptor.getSource();
-        targetField = referenceDescriptor.getTarget();
-        dataFileName = referenceDescriptor.getDataFileName();
+    /**
+     * @since 9.2
+     */
+    public MongoDBReference(String field, String directory, String collection, String sourceField, String targetField,
+            String dataFileName) {
+        super(field, directory);
+        this.collection = collection;
+        this.sourceField = sourceField;
+        this.targetField = targetField;
+        this.dataFileName = dataFileName;
+    }
+
+    /**
+     * @since 9.2
+     */
+    public MongoDBReference(MongoDBReferenceDescriptor descriptor) {
+        this(descriptor.getFieldName(), descriptor.getTargetDirectoryName(), descriptor.getCollection(),
+                descriptor.getSourceField(), descriptor.getTargetField(), descriptor.getDataFileName());
+    }
+
+    /**
+     * @since 9.2
+     */
+    public MongoDBReference(ReferenceDescriptor descriptor) {
+        this(descriptor.getFieldName(), descriptor.getDirectory(), descriptor.getReferenceName(),
+                descriptor.getSource(), descriptor.getTarget(), descriptor.getDataFileName());
     }
 
     @Override
@@ -269,12 +289,6 @@ public class MongoDBReference extends AbstractReference implements Cloneable {
         fieldMap.put(sourceField, sourceId);
         fieldMap.put(targetField, targetId);
         return MongoDBSerializationHelper.fieldMapToBson(fieldMap);
-    }
-
-    @Override
-    public MongoDBReference clone() {
-        MongoDBReference clone = (MongoDBReference) super.clone();
-        return clone;
     }
 
     protected void initializeSession(MongoDBSession session) {

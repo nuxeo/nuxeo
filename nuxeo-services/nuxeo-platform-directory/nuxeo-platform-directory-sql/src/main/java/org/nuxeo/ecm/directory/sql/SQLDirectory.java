@@ -21,6 +21,7 @@ package org.nuxeo.ecm.directory.sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -123,6 +124,10 @@ public class SQLDirectory extends AbstractDirectory {
 
     public SQLDirectory(SQLDirectoryDescriptor descriptor) {
         super(descriptor, TableReference.class);
+
+        // Add specific references
+        addTableReferences(descriptor.getTableReferences());
+
         nativeCase = Boolean.TRUE.equals(descriptor.nativeCase);
 
         // Cache fallback
@@ -288,6 +293,12 @@ public class SQLDirectory extends AbstractDirectory {
     @Override
     public String toString() {
         return "SQLDirectory [name=" + descriptor.name + "]";
+    }
+
+    protected void addTableReferences(TableReferenceDescriptor[] tableReferences) {
+        if (tableReferences != null) {
+            Arrays.stream(tableReferences).map(TableReference::new).forEach(this::addReference);
+        }
     }
 
 }

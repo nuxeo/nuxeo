@@ -193,26 +193,20 @@ public abstract class AbstractDirectory implements Directory {
     }
 
     protected void addInverseReferences(InverseReferenceDescriptor[] references) {
-        for (InverseReferenceDescriptor desc : references) {
-            try {
-                addReference(InverseReference.class.getDeclaredConstructor(InverseReferenceDescriptor.class)
-                                                   .newInstance(desc));
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException
-                    | InstantiationException e) {
-                throw new DirectoryException(
-                        "An error occurred while instantiating inverse reference ", e);
-            }
+        if (references != null) {
+            Arrays.stream(references).map(InverseReference::new).forEach(this::addReference);
         }
     }
 
     protected void addReferences(ReferenceDescriptor[] references) {
-        for (ReferenceDescriptor desc : references) {
-            try {
-                addReference(referenceClass.getDeclaredConstructor(ReferenceDescriptor.class).newInstance(desc));
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException
-                    | InstantiationException e) {
-                throw new DirectoryException(
-                        "An error occurred while instantiating reference class " + referenceClass.getName(), e);
+        if (references != null) {
+            for (ReferenceDescriptor desc : references) {
+                try {
+                    addReference(referenceClass.getDeclaredConstructor(ReferenceDescriptor.class).newInstance(desc));
+                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+                    throw new DirectoryException(
+                            "An error occurred while instantiating reference class " + referenceClass.getName(), e);
+                }
             }
         }
     }

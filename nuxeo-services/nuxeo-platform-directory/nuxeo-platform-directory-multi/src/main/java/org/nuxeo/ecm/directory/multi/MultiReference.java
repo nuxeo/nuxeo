@@ -37,14 +37,14 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
-public class MultiReference extends AbstractReference {
+public class MultiReference extends AbstractReference implements Cloneable {
 
     private static final Log log = LogFactory.getLog(MultiReference.class);
 
     final MultiDirectory dir;
 
     MultiReference(MultiDirectory dir, String fieldName) {
-        super(fieldName);
+        super(fieldName, null);
         this.dir = dir;
     }
 
@@ -167,7 +167,10 @@ public class MultiReference extends AbstractReference {
     @Override
     public MultiReference clone() {
         // basic fields are already copied by super.clone()
-        return (MultiReference) super.clone();
+        try {
+            return (MultiReference) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
     }
-
 }

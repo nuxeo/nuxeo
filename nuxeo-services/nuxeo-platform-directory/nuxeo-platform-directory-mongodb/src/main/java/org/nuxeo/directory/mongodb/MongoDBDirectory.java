@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.CREATE_TABLE_POLIC
 import static org.nuxeo.directory.mongodb.MongoDBSerializationHelper.MONGODB_ID;
 import static org.nuxeo.directory.mongodb.MongoDBSerializationHelper.MONGODB_SEQ;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -55,6 +56,9 @@ public class MongoDBDirectory extends AbstractDirectory {
 
     public MongoDBDirectory(MongoDBDirectoryDescriptor descriptor) {
         super(descriptor, MongoDBReference.class);
+
+        // Add specific references
+        addMongoDBReferences(descriptor.getMongoDBReferences());
 
         // cache fallback
         CacheService cacheService = Framework.getService(CacheService.class);
@@ -136,6 +140,12 @@ public class MongoDBDirectory extends AbstractDirectory {
         if (descriptor.getDataFileName() != null) {
             DirectoryCSVLoader.loadData(descriptor.getDataFileName(), descriptor.getDataFileCharacterSeparator(),
                     schema, session::createEntry);
+        }
+    }
+
+    protected void addMongoDBReferences(MongoDBReferenceDescriptor[] mongodbReferences) {
+        if (mongodbReferences != null) {
+            Arrays.stream(mongodbReferences).map(MongoDBReference::new).forEach(this::addReference);
         }
     }
 
