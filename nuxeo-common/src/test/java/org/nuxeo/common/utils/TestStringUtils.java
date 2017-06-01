@@ -156,6 +156,18 @@ public class TestStringUtils {
         str = "";
         li = StringUtils.split(str, ',', '\\', false);
         assertTrue(Arrays.equals(new String[] { "" }, li.toArray(new String[li.size()])));
+
+        str = "\\,";
+        li = StringUtils.split(str, ',', '\\', true);
+        assertTrue(Arrays.equals(new String[] { "," }, li.toArray(new String[li.size()])));
+
+        str = "\\,a";
+        li = StringUtils.split(str, ',', '\\', true);
+        assertTrue(Arrays.equals(new String[] { ",a" }, li.toArray(new String[li.size()])));
+
+        str = "a\\,";
+        li = StringUtils.split(str, ',', '\\', true);
+        assertTrue(Arrays.equals(new String[] { "a," }, li.toArray(new String[li.size()])));
     }
 
     @Test
