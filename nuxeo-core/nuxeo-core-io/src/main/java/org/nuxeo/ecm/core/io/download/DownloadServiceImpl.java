@@ -706,6 +706,10 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     @Override
     public void logDownload(DocumentModel doc, String xpath, String filename, String reason,
             Map<String, Serializable> extendedInfos) {
+        if ("webengine".equals(reason)) {
+            // don't log JSON operation results as downloads
+            return;
+        }
         EventService eventService = Framework.getService(EventService.class);
         if (eventService == null) {
             return;
