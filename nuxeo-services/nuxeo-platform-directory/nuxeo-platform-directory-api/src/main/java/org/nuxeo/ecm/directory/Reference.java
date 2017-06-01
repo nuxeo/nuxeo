@@ -66,13 +66,6 @@ public interface Reference {
     void setSourceIdsForTarget(String targetId, List<String> sourceIds) throws DirectoryException;
 
     /**
-     * Returns a clone, added for hot reload support.
-     *
-     * @since 5.6
-     */
-    Reference clone();
-
-    /**
      * Adds the links between the source id and the target ids
      *
      * @param sourceId the source id

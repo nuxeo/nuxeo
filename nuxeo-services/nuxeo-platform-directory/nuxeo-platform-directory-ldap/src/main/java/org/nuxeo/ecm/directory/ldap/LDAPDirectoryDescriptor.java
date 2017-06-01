@@ -90,9 +90,6 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
     @XNodeList(value = "references/ldapReference", type = LDAPReference[].class, componentType = LDAPReference.class)
     private LDAPReference[] ldapReferences;
 
-    @XNodeList(value = "references/inverseReference", type = InverseReference[].class, componentType = InverseReference.class)
-    private InverseReference[] inverseReferences;
-
     @XNodeList(value = "references/ldapTreeReference", type = LDAPTreeReference[].class, componentType = LDAPTreeReference.class)
     private LDAPTreeReference[] ldapTreeReferences;
 
@@ -361,9 +358,6 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
         if (other.ldapReferences != null && other.ldapReferences.length > 0) {
             ldapReferences = other.ldapReferences;
         }
-        if (other.inverseReferences != null && other.inverseReferences.length > 0) {
-            inverseReferences = other.inverseReferences;
-        }
         if (other.ldapTreeReferences != null && other.ldapTreeReferences.length > 0) {
             ldapTreeReferences = other.ldapTreeReferences;
         }
@@ -411,12 +405,6 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
             clone.ldapReferences = new LDAPReference[ldapReferences.length];
             for (int i = 0; i < ldapReferences.length; i++) {
                 clone.ldapReferences[i] = ldapReferences[i].clone();
-            }
-        }
-        if (inverseReferences != null) {
-            clone.inverseReferences = new InverseReference[inverseReferences.length];
-            for (int i = 0; i < inverseReferences.length; i++) {
-                clone.inverseReferences[i] = inverseReferences[i].clone();
             }
         }
         if (ldapTreeReferences != null) {

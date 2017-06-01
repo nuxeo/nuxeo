@@ -83,7 +83,7 @@ import com.sun.jndi.ldap.LdapURL;
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
 @XObject(value = "ldapReference")
-public class LDAPReference extends AbstractReference {
+public class LDAPReference extends AbstractReference implements Cloneable {
 
     private static final Log log = LogFactory.getLog(LDAPReference.class);
 
@@ -108,8 +108,12 @@ public class LDAPReference extends AbstractReference {
     @XNode("@dynamicAttributeId")
     protected String dynamicAttributeId;
 
+    public LDAPReference() {
+        super(null, null);
+    }
+
     public LDAPReference(ReferenceDescriptor referenceDescriptor) {
-        super(referenceDescriptor.getFieldName());
+        super(referenceDescriptor.getFieldName(), referenceDescriptor.getDirectory());
     }
 
     @XNode("@field")
@@ -1238,9 +1242,12 @@ public class LDAPReference extends AbstractReference {
      */
     @Override
     public LDAPReference clone() {
-        LDAPReference clone = (LDAPReference) super.clone();
-        // basic fields are already copied by super.clone()
-        return clone;
+        try {
+            // basic fields are already copied by super.clone()
+            return (LDAPReference) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override

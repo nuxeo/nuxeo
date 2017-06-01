@@ -54,7 +54,7 @@ import org.nuxeo.ecm.directory.Session;
  * @author Anahide Tchertchian
  */
 @XObject(value = "ldapTreeReference")
-public class LDAPTreeReference extends AbstractReference {
+public class LDAPTreeReference extends AbstractReference implements Cloneable {
 
     private static final Log log = LogFactory.getLog(LDAPTreeReference.class);
 
@@ -64,8 +64,12 @@ public class LDAPTreeReference extends AbstractReference {
 
     protected int scope;
 
+    public LDAPTreeReference() {
+        super(null, null);
+    }
+
     public LDAPTreeReference(ReferenceDescriptor referenceDescriptor) {
-        super(referenceDescriptor.getFieldName());
+        super(referenceDescriptor.getFieldName(), referenceDescriptor.getDirectory());
     }
 
     @XNode("@field")
@@ -425,9 +429,12 @@ public class LDAPTreeReference extends AbstractReference {
      */
     @Override
     public LDAPTreeReference clone() {
-        LDAPTreeReference clone = (LDAPTreeReference) super.clone();
-        // basic fields are already copied by super.clone()
-        return clone;
+        try {
+            // basic fields are already copied by super.clone()
+            return (LDAPTreeReference) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
     }
 
 }

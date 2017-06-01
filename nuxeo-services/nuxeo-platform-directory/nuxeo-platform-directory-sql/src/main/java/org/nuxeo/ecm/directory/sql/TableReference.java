@@ -51,7 +51,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.ReferenceDescriptor;
 import org.nuxeo.ecm.directory.Session;
 
-public class TableReference extends AbstractReference implements Cloneable {
+public class TableReference extends AbstractReference {
 
     protected String tableName;
 
@@ -67,12 +67,32 @@ public class TableReference extends AbstractReference implements Cloneable {
 
     private boolean initialized = false;
 
-    public TableReference(ReferenceDescriptor referenceDescriptor) {
-        super(referenceDescriptor.getFieldName(), referenceDescriptor.getDirectory());
-        tableName = referenceDescriptor.getReferenceName();
-        sourceColumn = referenceDescriptor.getSource();
-        targetColumn = referenceDescriptor.getTarget();
-        dataFileName = referenceDescriptor.getDataFileName();
+    /**
+     * @since 9.2
+     */
+    public TableReference(String fieldName, String directory, String tableName, String sourceColumn,
+            String targetColumn, String dataFileName) {
+        super(fieldName, directory);
+        this.tableName = tableName;
+        this.sourceColumn = sourceColumn;
+        this.targetColumn = targetColumn;
+        this.dataFileName = dataFileName;
+    }
+
+    /**
+     * @since 9.2
+     */
+    public TableReference(TableReferenceDescriptor descriptor) {
+        this(descriptor.getFieldName(), descriptor.getTargetDirectoryName(), descriptor.getTableName(),
+                descriptor.getSourceColumn(), descriptor.getTargetColumn(), descriptor.getDataFileName());
+    }
+
+    /**
+     * @since 9.2
+     */
+    public TableReference(ReferenceDescriptor descriptor) {
+        this(descriptor.getFieldName(), descriptor.getDirectory(), descriptor.getReferenceName(),
+                descriptor.getSource(), descriptor.getTarget(), descriptor.getDataFileName());
     }
 
     private SQLDirectory getSQLSourceDirectory() throws DirectoryException {
@@ -539,16 +559,6 @@ public class TableReference extends AbstractReference implements Cloneable {
 
     public String getDataFileName() {
         return dataFileName;
-    }
-
-    /**
-     * @since 5.6
-     */
-    @Override
-    public TableReference clone() {
-        TableReference clone = (TableReference) super.clone();
-        // basic fields are already copied by super.clone()
-        return clone;
     }
 
 }

@@ -192,12 +192,6 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
-    public InverseReference clone() {
-        // basic fields are already copied by super.clone()
-        return (InverseReference) super.clone();
-    }
-
-    @Override
     public void addLinks(String sourceId, List<String> targetIds, Session session) throws DirectoryException {
         if (readOnly) {
             return;
