@@ -231,11 +231,11 @@ public class NuxeoAuthenticationFilter implements Filter {
         String comment;
         if (success) {
             eventId = "loginSuccess";
-            comment = userName + " successfully logged in using " + userInfo.getAuthPluginName() + "Authentication";
+            comment = userName + " successfully logged in using " + userInfo.getAuthPluginName() + " authentication";
             loginCount.inc();
         } else {
             eventId = "loginFailed";
-            comment = userName + " failed to authenticate using " + userInfo.getAuthPluginName() + "Authentication";
+            comment = userName + " failed to authenticate using " + userInfo.getAuthPluginName() + " authentication";
         }
 
         return sendAuthenticationEvent(userInfo, eventId, comment);
