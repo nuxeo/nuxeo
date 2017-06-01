@@ -3,13 +3,10 @@
 <component name="org.nuxeo.ecm.directory.ldap.storage.users">
 
 <#if "${nuxeo.directory.type}" == "default">
-<!-- Using default configuration from default-sql-directory-bundle.xml or mongodb-directories-config.xml -->
+<!-- Using default configuration from default-directory-bundle.xml -->
 <#else>
 
-  <#if "${nuxeo.mongodb.server}" == "">
-  <!-- the groups SQL directories are required to make this bundle work -->
-  <require>org.nuxeo.ecm.directory.sql.storage</require>
-  </#if>
+  <require>org.nuxeo.ecm.directory.storage</require>
   <require>org.nuxeo.ecm.platform.usermanager.UserManagerImpl</require>
 
   <extension target="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"
@@ -214,22 +211,13 @@
   </extension>
 
 <#if "${nuxeo.user.group.storage}" == "userLdapOnly" || "${nuxeo.directory.type}" == "multi">
-  <#if "${nuxeo.mongodb.server}" == "">
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
-  <#else>
-  <extension target="org.nuxeo.directory.mongodb.MongoDBDirectoryFactory"
-  </#if>
-      point="directories">
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
 
 <#if "${nuxeo.user.group.storage}" == "multiUserGroup" || "${nuxeo.user.group.storage}" == "multiUserSqlGroup">
     <#if "${nuxeo.mongodb.server}" == "">
-    <directory name="sqlUserDirectory">
-      <dataSource>jdbc/nxsqldirectory</dataSource>
-      <table>users</table>
+    <directory name="sqlUserDirectory" extends="template-user">
     <#else>
-    <directory name="mongoUserDirectory">
-      <serverUrl>${nuxeo.mongodb.server}</serverUrl>
-      <databaseName>${nuxeo.mongodb.dbname}</databaseName>
+    <directory name="mongoUserDirectory" extends="template-user">
     </#if>
       <schema>user</schema>
       <types>
@@ -243,31 +231,23 @@
       <dataFile>users.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <querySizeLimit>50</querySizeLimit>
-
-      <#if "${nuxeo.mongodb.server}" == "">
-      <cacheEntryName>sql-user-entry-cache</cacheEntryName>
-      <cacheEntryWithoutReferencesName>sql-user-entry-cache-without-references</cacheEntryWithoutReferencesName>
+      <cacheEntryName>user-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>user-entry-cache-without-references</cacheEntryWithoutReferencesName>
       <references>
+        <#if "${nuxeo.mongodb.server}" == "">
         <inverseReference field="groups" directory="sqlGroupDirectory" dualReferenceField="members" />
-      <#else>
-      <cacheEntryName>mongodb-user-entry-cache</cacheEntryName>
-      <cacheEntryWithoutReferencesName>mongodb-user-entry-cache-without-references</cacheEntryWithoutReferencesName>
-      <references>
+        <#else>
         <inverseReference field="groups" directory="mongoGroupDirectory" dualReferenceField="members" />
-      </#if>
+        </#if>
       </references>
     </directory>
 
 </#if>
 <#if "${nuxeo.directory.type}" == "multi" || "${nuxeo.user.group.storage}" == "userLdapOnly">
     <#if "${nuxeo.mongodb.server}" == "">
-    <directory name="sqlGroupDirectory">
-      <dataSource>jdbc/nxsqldirectory</dataSource>
-      <table>groups</table>
+    <directory name="sqlGroupDirectory" extends="template-group">
     <#else>
-    <directory name="mongoGroupDirectory">
-      <serverUrl>${nuxeo.mongodb.server}</serverUrl>
-      <databaseName>${nuxeo.mongodb.dbname}</databaseName>
+    <directory name="mongoGroupDirectory" extends="template-group">
     </#if>
       <schema>group</schema>
       <types>
@@ -277,56 +257,31 @@
       <dataFile>groups.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <autoincrementIdField>false</autoincrementIdField>
-
-      <#if "${nuxeo.mongodb.server}" == "">
-      <cacheEntryName>sql-group-entry-cache</cacheEntryName>
-      <cacheEntryWithoutReferencesName>sql-group-entry-cache-without-references</cacheEntryWithoutReferencesName>
-      <#else>
-      <cacheEntryName>mongodb-group-entry-cache</cacheEntryName>
-      <cacheEntryWithoutReferencesName>mongodb-group-entry-cache-without-references</cacheEntryWithoutReferencesName>
-      </#if>
+      <cacheEntryName>group-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>group-entry-cache-without-references</cacheEntryWithoutReferencesName>
       <references>
 <#if "${nuxeo.user.group.storage}" == "userLdapOnly" || "${nuxeo.user.group.storage}" == "ldapUserMultiGroup">
-        <#if "${nuxeo.mongodb.server}" == "">
-        <tableReference field="members" directory="ldapUserDirectory"
-        <#else>
         <reference field="members" directory="ldapUserDirectory"
-        </#if>
 <#else>
-        <#if "${nuxeo.mongodb.server}" == "">
-        <tableReference field="members" directory="multiUserDirectory"
-        <#else>
         <reference field="members" directory="multiUserDirectory"
-        </#if>
 </#if>
-          <#if "${nuxeo.mongodb.server}" == "">
-          table="user2group" sourceColumn="groupId" targetColumn="userId" schema="user2group" 
-          dataFile="user2group.csv" />
-          <#else>
-          collection="user2group" sourceField="groupId" targetField="userId" dataFile="user2group.csv"/>
-          </#if>
+            name="user2group" source="groupId" target="userId" dataFile="user2group.csv" />
 <#if "${nuxeo.user.group.storage}" == "multiUserGroup" || "${nuxeo.user.group.storage}" == "ldapUserMultiGroup">
-        <#if "${nuxeo.mongodb.server}" == "">
-        <tableReference field="subGroups" directory="multiGroupDirectory"
-        <#else>
         <reference field="subGroups" directory="multiGroupDirectory"
-        </#if>
 <#else>
         <#if "${nuxeo.mongodb.server}" == "">
-        <tableReference field="subGroups" directory="sqlGroupDirectory"
+        <reference field="subGroups" directory="sqlGroupDirectory"
         <#else>
         <reference field="subGroups" directory="mongoGroupDirectory"
         </#if>
 </#if>
+            name="group2group" source="parentGroupId" target="childGroupId" />
         <#if "${nuxeo.mongodb.server}" == "">
-            table="group2group" sourceColumn="parentGroupId"
-            targetColumn="childGroupId" schema="group2group" />
         <inverseReference field="parentGroups" directory="sqlGroupDirectory"
         <#else>
-           collection="group2group" sourceField="childGroupId" targetField="parentGroupId"/>
         <inverseReference field="parentGroups" directory="mongoGroupDirectory"
         </#if>
-          dualReferenceField="subGroups" />
+            dualReferenceField="subGroups" />
       </references>
 
     </directory>

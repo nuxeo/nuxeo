@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.template.directory.mongodb">
+
+  <require>org.nuxeo.ecm.directories</require>
+  <extension target="org.nuxeo.directory.mongodb.MongoDBDirectoryFactory"
+             point="directories">
+
+    <directory name="template-directory" template="true">
+      <serverUrl>${nuxeo.mongodb.server}</serverUrl>
+      <databaseName>${nuxeo.mongodb.dbname}</databaseName>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="template-user" template="true" extends="template-directory" />
+
+    <directory name="template-group" template="true" extends="template-directory" />
+
+  </extension>
+
+</component>
