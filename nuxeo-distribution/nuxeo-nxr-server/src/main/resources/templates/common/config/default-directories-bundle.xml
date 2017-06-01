@@ -1,13 +1,12 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.directory.sql.storage">
+<component name="org.nuxeo.ecm.directory.storage">
 
   <require>org.nuxeo.ecm.platform.digestauth.config</require>
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
-    point="directories">
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
 
-    <directory name="userDirectory">
+    <directory name="userDirectory" extends="template-user">
 
       <schema>user</schema>
 
@@ -15,9 +14,6 @@
         <type>system</type>
       </types>
 
-      <dataSource>jdbc/nxsqldirectory</dataSource>
-
-      <table>users</table>
       <idField>username</idField>
       <passwordField>password</passwordField>
       <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
@@ -28,52 +24,46 @@
       <querySizeLimit>50</querySizeLimit>
 
       <!-- comment <cache* /> tags to disable the cache -->
-      <cacheEntryName>sql-user-entry-cache</cacheEntryName>
-      <cacheEntryWithoutReferencesName>sql-user-entry-cache-without-references</cacheEntryWithoutReferencesName>
+      <cacheEntryName>user-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>user-entry-cache-without-references</cacheEntryWithoutReferencesName>
 
       <references>
         <inverseReference field="groups" directory="groupDirectory"
-          dualReferenceField="members" />
+                          dualReferenceField="members"/>
       </references>
 
     </directory>
 
-    <directory name="groupDirectory">
+    <directory name="groupDirectory" extends="template-group">
 
       <schema>group</schema>
       <types>
         <type>system</type>
       </types>
-      <dataSource>jdbc/nxsqldirectory</dataSource>
-      <table>groups</table>
       <idField>groupname</idField>
       <dataFile>groups.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <autoincrementIdField>false</autoincrementIdField>
 
       <!-- comment <cache* /> tags to disable the cache -->
-      <cacheEntryName>sql-group-entry-cache</cacheEntryName>
-      <cacheEntryWithoutReferencesName>sql-group-entry-cache-without-references</cacheEntryWithoutReferencesName>
+      <cacheEntryName>group-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>group-entry-cache-without-references</cacheEntryWithoutReferencesName>
 
       <references>
-        <tableReference field="members" directory="userDirectory"
-          table="user2group" sourceColumn="groupId" targetColumn="userId" schema="user2group"
-          dataFile="user2group.csv" />
+        <reference field="members" directory="userDirectory"
+                   name="user2group" source="groupId" target="userId"
+                   dataFile="user2group.csv"/>
         <!-- Warning ! From Nuxeo 5.3.1, a wrong setting has been fixed. See
         http://jira.nuxeo.org/browse/NXP-4401 . Nuxeo upgrades would need a fix in the
         database (inverting parentGroupId and childGroupId in the group2group)  -->
-        <tableReference field="subGroups" directory="groupDirectory"
-          table="group2group" sourceColumn="parentGroupId"
-          targetColumn="childGroupId" schema="group2group" />
+        <reference field="subGroups" directory="groupDirectory"
+                   name="group2group" source="parentGroupId"
+                   target="childGroupId"/>
         <inverseReference field="parentGroups" directory="groupDirectory"
-          dualReferenceField="subGroups" />
+                          dualReferenceField="subGroups"/>
       </references>
 
     </directory>
-
-  </extension>
-
-  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
 
     <directory name="digestauth" extends="template-directory">
       <schema>digestauth</schema>
@@ -82,9 +72,10 @@
       <types>
         <type>system</type>
       </types>
-      <cacheEntryName>sql-digestauth-entry-cache</cacheEntryName>
-      <cacheEntryWithoutReferencesName>sql-digestauth-entry-cache-without-references</cacheEntryWithoutReferencesName>
+      <cacheEntryName>digestauth-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>digestauth-entry-cache-without-references</cacheEntryWithoutReferencesName>
     </directory>
 
   </extension>
+
 </component>

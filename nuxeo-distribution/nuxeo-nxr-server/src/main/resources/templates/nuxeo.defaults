@@ -8,7 +8,7 @@ nuxeo.server.dir=nxserver
 jndi.base=java:comp/env
 
 # Default template to use if not defined in nuxeo.conf
-nuxeo.templates=default
+nuxeo.templates=default,sql
 
 # Default IP address binding
 nuxeo.bind.address=0.0.0.0

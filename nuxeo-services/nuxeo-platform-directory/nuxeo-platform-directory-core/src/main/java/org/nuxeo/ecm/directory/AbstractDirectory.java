@@ -20,7 +20,6 @@
 
 package org.nuxeo.ecm.directory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -203,7 +202,7 @@ public abstract class AbstractDirectory implements Directory {
             for (ReferenceDescriptor desc : references) {
                 try {
                     addReference(referenceClass.getDeclaredConstructor(ReferenceDescriptor.class).newInstance(desc));
-                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+                } catch (ReflectiveOperationException e) {
                     throw new DirectoryException(
                             "An error occurred while instantiating reference class " + referenceClass.getName(), e);
                 }

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.template.directory.sql">
+
+  <require>org.nuxeo.ecm.directories</require>
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
+
+    <directory name="template-directory" template="true">
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="template-user" template="true" extends="template-directory">
+      <table>users</table>
+    </directory>
+
+    <directory name="template-group" template="true" extends="template-directory">
+      <table>groups</table>
+    </directory>
+
+  </extension>
+
+</component>
