@@ -181,7 +181,7 @@ public abstract class BaseSession implements Session, EntrySource {
         }
         NuxeoPrincipal user = ClientLoginModule.getCurrentPrincipal();
         if (user == null) {
-            return true;
+            return false;
         }
         String username = user.getName();
         if (username.equals(LoginComponent.SYSTEM_USERNAME)) {
