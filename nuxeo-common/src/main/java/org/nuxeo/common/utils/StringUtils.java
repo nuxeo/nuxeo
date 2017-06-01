@@ -182,7 +182,7 @@ public final class StringUtils {
         while (i < length) {
             char c = str.charAt(i);
             if (c == escape) {
-                if (i < length - 2) {
+                if (i < length - 1) {
                     char nextC = str.charAt(i + 1);
                     if (nextC == delimiter || nextC == escape) {
                         segment.append(nextC);
