@@ -48,6 +48,7 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.impl.jdbcjobstore.LockException;
 import org.quartz.impl.matchers.GroupMatcher;
 
 /**
@@ -108,9 +109,13 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
         // https://jira.nuxeo.com/browse/NXP-7303
         GroupMatcher<JobKey> matcher = GroupMatcher.jobGroupEquals("nuxeo");
         Set<JobKey> jobs = scheduler.getJobKeys(matcher);
-        scheduler.deleteJobs(new ArrayList<JobKey>(jobs));
-        for (Schedule each : registry.getSchedules()) {
-            registerSchedule(each);
+        try {
+            scheduler.deleteJobs(new ArrayList<JobKey>(jobs));
+            for (Schedule each : registry.getSchedules()) {
+                registerSchedule(each);
+            }
+        } catch (LockException cause) {
+            log.warn("scheduler already re-initializing, another cluster node concurrent startup ?", cause);
         }
         log.info("scheduler started");
     }
