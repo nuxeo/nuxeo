@@ -29,6 +29,7 @@ import static org.junit.Assume.assumeFalse;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -969,13 +970,27 @@ public class DefaultFileSystemItemFactoryFixture {
         FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
         assertEquals(5, syncRootFolderItem.getChildren().size());
 
-        harness.deployContrib("org.nuxeo.drive.core.test",
-                "OSGI-INF/test-nuxeodrive-pageproviders-contrib-override.xml");
-        reload();
+        TransactionHelper.commitOrRollbackTransaction(); // should save documents before runtime reset
+        try {
+            Framework.getRuntime().standby(Instant.now());
+            try {
+                harness.deployContrib("org.nuxeo.drive.core.test",
+                        "OSGI-INF/test-nuxeodrive-pageproviders-contrib-override.xml");
+            } finally {
+                Framework.getRuntime().resume();
+            }
+        } finally {
+            TransactionHelper.startTransaction();
+        }
+
         assertEquals(2, syncRootFolderItem.getChildren().size());
-        harness.undeployContrib("org.nuxeo.drive.core.test",
-                "OSGI-INF/test-nuxeodrive-pageproviders-contrib-override.xml");
-        reload();
+        Framework.getRuntime().standby(Instant.now());
+        try {
+            harness.undeployContrib("org.nuxeo.drive.core.test",
+                    "OSGI-INF/test-nuxeodrive-pageproviders-contrib-override.xml");
+        } finally {
+            Framework.getRuntime().resume();
+        }
     }
 
     @Test
