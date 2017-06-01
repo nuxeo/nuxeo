@@ -228,12 +228,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         log.info("Activated work queue " + config.id + " " + config.toEffectiveString());
         // Enable metrics
         if (config.isProcessingEnabled()) {
-            NuxeoMetricSet queueMetrics = new NuxeoMetricSet("nuxeo", "works", "total", config.id);
-            queueMetrics.putGauge(() -> getMetrics(config.id).scheduled, "scheduled", "count");
-            queueMetrics.putGauge(() -> getMetrics(config.id).running, "running");
-            queueMetrics.putGauge(() -> getMetrics(config.id).completed, "completed");
-            queueMetrics.putGauge(() -> getMetrics(config.id).canceled, "canceled");
-            registry.registerAll(queueMetrics);
+            activateQueueMetrics(config.id);
         }
     }
 
@@ -243,11 +238,24 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
         // Disable metrics
         if (config.isProcessingEnabled()) {
-            String queueMetricsName = MetricRegistry.name("nuxeo", "works", "total", config.id);
-            registry.removeMatching((name, metric) -> name.startsWith(queueMetricsName));
+            deactivateQueueMetrics(config.id);
         }
         queuing.setActive(config.id, false);
         log.info("Deactivated work queue " + config.id);
+    }
+
+    void activateQueueMetrics(String queueId) {
+        NuxeoMetricSet queueMetrics = new NuxeoMetricSet("nuxeo", "works", "total", queueId);
+        queueMetrics.putGauge(() -> getMetrics(queueId).scheduled, "scheduled", "count");
+        queueMetrics.putGauge(() -> getMetrics(queueId).running, "running");
+        queueMetrics.putGauge(() -> getMetrics(queueId).completed, "completed");
+        queueMetrics.putGauge(() -> getMetrics(queueId).canceled, "canceled");
+        registry.registerAll(queueMetrics);
+    }
+
+    void deactivateQueueMetrics(String queueId) {
+        String queueMetricsName = MetricRegistry.name("nuxeo", "works", "total", queueId);
+        registry.removeMatching((name, metric) -> name.startsWith(queueMetricsName));
     }
 
     void registerWorkQueuingDescriptor(WorkQueuingDescriptor descr) {
@@ -653,6 +661,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         public void shutdownAndSuspend() throws InterruptedException {
             try {
                 // don't consume the queue anymore
+                deactivateQueueMetrics(queueId);
                 queuing.setActive(queueId, false);
                 // suspend all running work
                 for (Work work : running) {
