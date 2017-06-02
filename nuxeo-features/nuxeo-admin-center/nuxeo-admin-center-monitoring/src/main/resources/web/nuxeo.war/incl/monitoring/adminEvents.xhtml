@@ -5,6 +5,8 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
+
  <a4j:outputPanel id="eventStatsPanel" layout="block">
 
   <h:outputText value="#{messages['label.monitoring.eventStats']}" />
@@ -156,4 +158,7 @@
     <h:outputText value="#{messages['label.monitoring.eventStats.noStats']}" /><br/>
   </h:panelGroup>
  </a4j:outputPanel>
+
+</c:if>
+
 </div>

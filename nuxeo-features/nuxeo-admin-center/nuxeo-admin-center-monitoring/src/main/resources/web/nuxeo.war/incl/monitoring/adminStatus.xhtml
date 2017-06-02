@@ -5,6 +5,8 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
+
 <a4j:outputPanel id="admStatusPanel" layout="block">
 
  <h:panelGroup rendered="#{isMultiServerInstallation}">
@@ -117,5 +119,7 @@
     </h:form>
   </h:panelGroup>
 </a4j:outputPanel>
+
+</c:if>
 
 </div>

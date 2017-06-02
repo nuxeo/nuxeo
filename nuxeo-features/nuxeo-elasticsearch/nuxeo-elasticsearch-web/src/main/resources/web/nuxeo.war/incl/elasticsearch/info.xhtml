@@ -3,6 +3,8 @@
      xmlns:c="http://java.sun.com/jstl/core"
      class="hostInfos">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
+
   <script src="#{baseURL}scripts/json2html.js" type='text/javascript'></script>
   <script src="#{baseURL}scripts/jquery.json2html.js"
           type='text/javascript'></script>
@@ -108,4 +110,7 @@ jQuery(document).ready(function(){
       </a4j:outputPanel>
     </c:when>
   </c:choose>
+
+</c:if>
+
 </div>

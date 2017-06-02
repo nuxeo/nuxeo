@@ -2,6 +2,8 @@
   xmlns:f="http://java.sun.com/jsf/core"
   class="hostInfos">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
+
   <h3>Indexing operations</h3>
 
   <div class="detail">Indexing operations are done asynchronously.
@@ -74,5 +76,7 @@
     </div>
 
   </h:form>
+
+</c:if>
 
 </div>

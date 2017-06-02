@@ -7,6 +7,8 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   class="setupPanel">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
+
 <a4j:outputPanel id="setupPanel" layout="block">
 
   <c:if test="false">
@@ -155,4 +157,7 @@
   </nxu:set>
 
 </a4j:outputPanel>
+
+</c:if>
+
 </div>
