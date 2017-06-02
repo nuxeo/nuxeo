@@ -7,6 +7,7 @@
   xmlns:f="http://java.sun.com/jsf/core"
   class="repoInfos">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
 
  <c:if test="#{!systemInfo.isMultiRepo()}">
   <nxu:set var="repo" value="#{systemInfo.listAvailableRepositories().get(0)}">
@@ -124,5 +125,7 @@
   </div>
 
 </a4j:outputPanel>
+
+</c:if>
 
 </div>

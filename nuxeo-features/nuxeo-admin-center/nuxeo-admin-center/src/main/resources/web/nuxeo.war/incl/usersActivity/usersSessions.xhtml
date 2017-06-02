@@ -7,6 +7,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
 
 <a4j:outputPanel layout="block" id="userSessionsMessages">
   <h:messages />
@@ -91,5 +92,7 @@
 
   </h:form>
 </a4j:outputPanel>
+
+</c:if>
 
 </h:panelGroup>
