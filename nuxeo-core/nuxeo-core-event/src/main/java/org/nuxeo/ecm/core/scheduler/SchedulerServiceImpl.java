@@ -110,7 +110,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
         GroupMatcher<JobKey> matcher = GroupMatcher.jobGroupEquals("nuxeo");
         Set<JobKey> jobs = scheduler.getJobKeys(matcher);
         try {
-            scheduler.deleteJobs(new ArrayList<JobKey>(jobs));
+            scheduler.deleteJobs(new ArrayList<JobKey>(jobs)); // raise a lock error in case of concurrencies
             for (Schedule each : registry.getSchedules()) {
                 registerSchedule(each);
             }
