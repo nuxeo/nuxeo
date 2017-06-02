@@ -7,6 +7,8 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:c="http://java.sun.com/jstl/core">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
+
   <a4j:outputPanel id="connectAppListing" layout="block">
     <div class="actionBar">
       <h:form>
@@ -78,5 +80,7 @@
     </c:if>
 
   </a4j:outputPanel>
+
+</c:if>
 
 </h:panelGroup>

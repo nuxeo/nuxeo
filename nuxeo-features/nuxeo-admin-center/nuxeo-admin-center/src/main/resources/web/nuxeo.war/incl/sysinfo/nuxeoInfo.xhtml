@@ -5,6 +5,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
 
  <table class="dataTable">
  <tr>
@@ -68,5 +69,7 @@
       </td>
  </tr>
  </table>
+
+</c:if>
 
 </div>
