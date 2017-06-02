@@ -1,5 +1,8 @@
 <div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
 
   <nxu:set var="contentViewName" value="PERMISSIONS_SEARCH">
     <ui:decorate template="/incl/content_view.xhtml">
@@ -7,5 +10,7 @@
       <ui:define name="content_view_syndication_buttons" />
     </ui:decorate>
   </nxu:set>
+
+</c:if>
 
 </div>

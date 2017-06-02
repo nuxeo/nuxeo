@@ -5,6 +5,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
 
 <a4j:outputPanel id="probesTable" layout="block">
 
@@ -85,4 +86,7 @@
 </h:dataTable>
 
 </a4j:outputPanel>
+
+</c:if>
+
 </div>

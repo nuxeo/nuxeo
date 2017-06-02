@@ -6,6 +6,8 @@
   xmlns:nxr="http://nuxeo.org/nxweb/resources"
   styleClass="hostInfos">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
+
   <h:outputScript src="/scripts/json2html.js" target="#{pageJsTarget}" />
   <h:outputScript src="/scripts/jquery.json2html.js" target="#{pageJsTarget}" />
   <h:outputScript src="/scripts/displayESJSON.js" target="#{pageJsTarget}" />
@@ -107,5 +109,7 @@ jQuery(document).ready(function(){
 
     </c:when>
   </c:choose>
+
+</c:if>
 
 </h:panelGroup>

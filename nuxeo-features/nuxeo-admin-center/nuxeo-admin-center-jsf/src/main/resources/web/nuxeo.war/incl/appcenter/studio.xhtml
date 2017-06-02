@@ -6,6 +6,8 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
+
   <a4j:outputPanel id="connectAppListing" layout="block">
 
     <div class="actionBar marketplace">
@@ -269,5 +271,7 @@
     </c:if>
 
   </a4j:outputPanel>
+
+</c:if>
 
 </div>
