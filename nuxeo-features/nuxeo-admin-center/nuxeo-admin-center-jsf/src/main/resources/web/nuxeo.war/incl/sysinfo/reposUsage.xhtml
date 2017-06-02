@@ -4,11 +4,14 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:c="http://java.sun.com/jstl/core">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
 
  <h2>Informations about repositories usage</h2>
 
  <pre>
  <h:outputText value="#{systemInfo.repoUsage}"/>
  </pre>
+
+</c:if>
 
 </div>
