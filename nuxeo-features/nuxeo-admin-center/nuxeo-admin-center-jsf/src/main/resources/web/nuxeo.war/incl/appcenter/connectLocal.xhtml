@@ -4,7 +4,10 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
 
   <div style="display: none" id="uploadForm">
     <h:form enctype="multipart/form-data" class="packageUploadBlock">
@@ -67,5 +70,7 @@
       <img src="#{contextPath}/img/big_loading.gif" />
     </div>
   </a4j:outputPanel>
+
+</c:if>
 
 </h:panelGroup>

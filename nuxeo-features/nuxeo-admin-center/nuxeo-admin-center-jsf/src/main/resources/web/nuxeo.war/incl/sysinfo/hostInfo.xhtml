@@ -6,6 +6,8 @@
   xmlns:c="http://java.sun.com/jstl/core"
   class="hostInfos">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
+
   <pre class="bubbleBox">
     <h:outputText value="#{systemInfo.hostInfo}" />
   </pre>
@@ -20,5 +22,7 @@
         styleClass="button" />
     </p>
   </h:form>
+
+</c:if>
 
 </div>

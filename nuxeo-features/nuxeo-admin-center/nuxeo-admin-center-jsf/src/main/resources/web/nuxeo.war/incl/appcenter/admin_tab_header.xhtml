@@ -2,6 +2,8 @@
      xmlns:a4j="http://richfaces.org/a4j"
      xmlns:c="http://java.sun.com/jstl/core">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
+
   <c:if test="#{adminViews.productionServer}">
     <div class="processMessage completeWarning">
       #{messages['label.admin.productionWarning']}
@@ -23,4 +25,7 @@
       </div>
     </c:if>
   </a4j:outputPanel>
+
+</c:if>
+
 </div>
