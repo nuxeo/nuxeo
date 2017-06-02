@@ -117,7 +117,7 @@ public final class StringUtils {
             if (c == escape) {
                 if (i < length - 1) {
                     char nextC = str.charAt(i + 1);
-                    if (i < length - 1 && (nextC == delimiter || nextC == escape)) {
+                    if (nextC == delimiter || nextC == escape) {
                         segment.append(nextC);
                         i = i + 2;
                     } else {

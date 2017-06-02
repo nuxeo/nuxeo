@@ -140,7 +140,7 @@
       // custom operation, pass at least the query term
       temp.searchTerm = query.term;
     }
-    temp.searchTerm = temp.searchTerm.replace(',', '\\,');
+    temp.searchTerm = temp.searchTerm.split(',').join('\\,');
     // append custom operation parameters if needed
     if (params.additionalOperationParameters && params.additionalOperationParameters.length > 0){
       additionalParamsFunction = eval(params.additionalOperationParameters);
