@@ -4,6 +4,8 @@
   xmlns:a4j="http://richfaces.org/a4j"
   class="hostInfos">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
+
   <h3>Indexing operations</h3>
 
    <a4j:outputPanel id="statePolledPanel">
@@ -92,5 +94,7 @@
         <h:commandButton action="#{esAdmin.optimize}" value="Optimize"/>
       </h:form>
     </div>
+
+</c:if>
 
 </div>

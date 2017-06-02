@@ -1,6 +1,9 @@
 <div xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
 
 <a4j:outputPanel id="usersEventsListing" layout="block">
 
@@ -12,5 +15,7 @@
   </nxu:set>
 
 </a4j:outputPanel>
+
+</c:if>
 
 </div>

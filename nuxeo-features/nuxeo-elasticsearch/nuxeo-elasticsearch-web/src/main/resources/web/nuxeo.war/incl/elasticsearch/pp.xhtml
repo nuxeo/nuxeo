@@ -6,6 +6,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   class="hostInfos">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
 
   <h3> PageProviders </h3>
   <table class="dataOutput">
@@ -24,5 +25,7 @@
         </c:forEach>
         </tbody>
   </table>
+
+</c:if>
 
 </div>

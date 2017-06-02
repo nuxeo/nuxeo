@@ -6,6 +6,7 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core" class="binariesInfos">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
 
 <a4j:outputPanel id="binariesInfos" layout="block">
 
@@ -86,4 +87,8 @@
     </table>
   </h:panelGroup></div>
 
-</a4j:outputPanel></div>
+</a4j:outputPanel>
+
+</c:if>
+
+</div>

@@ -5,6 +5,8 @@
     xmlns:c="http://java.sun.com/jstl/core"
     xmlns:a4j="http://richfaces.org/a4j">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
+
   <h:outputScript target="#{pageJsTarget}">
     function confirmPurgePermissions() {
       return confirm("#{messages['label.permissions.purge.confirmPurgePermissions']}");
@@ -98,5 +100,7 @@
     </a4j:outputPanel>
 
   </a4j:region>
+
+</c:if>
 
 </div>
