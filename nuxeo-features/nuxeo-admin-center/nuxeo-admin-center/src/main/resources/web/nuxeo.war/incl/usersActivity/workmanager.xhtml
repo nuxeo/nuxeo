@@ -3,6 +3,8 @@
   xmlns:a4j="http://richfaces.org/a4j" xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
+<c:if test="#{webActions.checkFilter('only_for_manager')}">
+
   <script type="text/javascript" src="#{baseURL}scripts/jquery/jquery.tablesorter.js"></script>
   <script type="text/javascript" src="#{baseURL}scripts/jquery/jquery.tablesorter_filter.js"></script>
   <style>
@@ -112,4 +114,7 @@
     </script>
 
   </a4j:outputPanel>
+
+</c:if>
+
 </div>
