@@ -6,6 +6,7 @@
     <listener name="pictureChangedListener" async="false" postCommit="false"
       class="org.nuxeo.ecm.platform.picture.listener.PictureChangedListener" priority="20">
       <event>aboutToCreate</event>
+      <event>documentImported</event>
       <event>beforeDocumentModification</event>
     </listener>
 
@@ -19,6 +20,7 @@
     <listener name="pictureViewsGenerationListener" async="false" postCommit="false"
       class="org.nuxeo.ecm.platform.picture.listener.PictureViewsGenerationListener" priority="20">
       <event>documentCreated</event>
+      <event>documentImported</event>
       <event>documentModified</event>
     </listener>
 
