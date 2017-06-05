@@ -31,7 +31,14 @@
     <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter
       </filter-name>
-      <url-pattern>/oauth2Grant.jsp</url-pattern>
+      <url-pattern>/oauth2/authorization</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter
+      </filter-name>
+      <url-pattern>/oauth2/authorization_submit</url-pattern>
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>

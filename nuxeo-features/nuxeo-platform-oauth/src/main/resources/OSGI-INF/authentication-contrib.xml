@@ -16,7 +16,7 @@
 
     <startURLPattern>
       <patterns>
-        <pattern>oauth2Grant.jsp</pattern>
+        <pattern>oauth2/authorization</pattern>
       </patterns>
     </startURLPattern>
 
