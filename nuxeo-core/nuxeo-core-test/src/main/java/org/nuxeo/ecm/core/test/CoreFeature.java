@@ -265,41 +265,39 @@ public class CoreFeature extends SimpleFeature {
 
     protected void cleanupSession(FeaturesRunner runner) {
         waitForAsyncCompletion();
-        if (TransactionHelper.isTransactionMarkedRollback()) { // ensure tx is
-                                                               // active
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
         if (session == null) {
             createCoreSession();
         }
-        try {
-            log.trace("remove everything except root");
-            // remove proxies first, as we cannot remove a target if there's a proxy pointing to it
-            try (IterableQueryResult results = session.queryAndFetch(
-                    "SELECT ecm:uuid FROM Document WHERE ecm:isProxy = 1", NXQL.NXQL)) {
-                batchRemoveDocuments(results);
-            } catch (QueryParseException e) {
-                // ignore, proxies disabled
+        TransactionHelper.runInNewTransaction(() -> {
+            try {
+                log.trace("remove everything except root");
+                // remove proxies first, as we cannot remove a target if there's a proxy pointing to it
+                try (IterableQueryResult results = session
+                        .queryAndFetch("SELECT ecm:uuid FROM Document WHERE ecm:isProxy = 1", NXQL.NXQL)) {
+                    batchRemoveDocuments(results);
+                } catch (QueryParseException e) {
+                    // ignore, proxies disabled
+                }
+                // remove non-proxies
+                session.removeChildren(new PathRef("/"));
+                log.trace(
+                        "remove orphan versions as OrphanVersionRemoverListener is not triggered by CoreSession#removeChildren");
+                // remove remaining placeless documents
+                try (IterableQueryResult results = session.queryAndFetch("SELECT ecm:uuid FROM Document, Relation",
+                        NXQL.NXQL)) {
+                    batchRemoveDocuments(results);
+                }
+                session.save();
+                waitForAsyncCompletion();
+                if (!session.query("SELECT * FROM Document, Relation").isEmpty()) {
+                    log.error("Fail to cleanupSession, repository will not be empty for the next test.");
+                }
+            } catch (NuxeoException e) {
+                log.error("Unable to reset repository", e);
+            } finally {
+                CoreScope.INSTANCE.exit();
             }
-            // remove non-proxies
-            session.removeChildren(new PathRef("/"));
-            log.trace("remove orphan versions as OrphanVersionRemoverListener is not triggered by CoreSession#removeChildren");
-            // remove remaining placeless documents
-            try (IterableQueryResult results = session.queryAndFetch("SELECT ecm:uuid FROM Document, Relation",
-                    NXQL.NXQL)) {
-                batchRemoveDocuments(results);
-            }
-            session.save();
-            waitForAsyncCompletion();
-            if (!session.query("SELECT * FROM Document, Relation").isEmpty()) {
-                log.error("Fail to cleanupSession, repository will not be empty for the next test.");
-            }
-        } catch (NuxeoException e) {
-            log.error("Unable to reset repository", e);
-        } finally {
-            CoreScope.INSTANCE.exit();
-        }
+        });
         releaseCoreSession();
         cleaned = true;
     }
