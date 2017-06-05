@@ -22,8 +22,6 @@
     <exec executable="${cmd.npm}" failonerror="true">
       <arg value="install" />
     </exec>
-    <bower-fetch artifact="polymerelements:iron-elements:1.0.4" />
-    <bower-fetch artifact="polymerelements:paper-elements:1.0.5" />
     <exec executable="${cmd.bower}" failonerror="true">
       <arg value="install" />
     </exec>
@@ -32,18 +30,5 @@
   <target name="build" depends="init">
     <exec executable="${cmd.grunt}" failonerror="true" />
   </target>
-
-  <macrodef name="bower-fetch">
-    <attribute name="artifact"/>
-    <attribute name="dir" default="target/classes/web/nuxeo.war/bower_components"/>
-    <sequential>
-      <echo message="Fetching @{artifact}" />
-      <exec executable="${cmd.mvn}" failonerror="true">
-        <arg value="dependency:unpack" />
-        <arg value="-Dartifact=@{artifact}:zip" />
-        <arg value="-DoutputDirectory=@{dir}" />
-      </exec>
-    </sequential>
-  </macrodef>
 
 </project>
