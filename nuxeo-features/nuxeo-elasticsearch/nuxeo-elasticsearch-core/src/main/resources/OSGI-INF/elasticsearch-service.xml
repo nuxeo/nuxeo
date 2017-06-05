@@ -143,10 +143,17 @@
     <documentation>
       Extension point to define which class should be used for Elasticsearch client initialization.
       A username and password can be set if authentication is required.
+
+      @since 8.10-HF09, 9.2
+      If SSL is enabled for authentication and encrypted communications, the keystore path and password
+      can be set with the properties sslKeystorePath and sslKeystorePassword.
+
       <code>
         <clientInitialization class="org.nuxeo.elasticsearch.core.ESClientInitializationServiceImpl">
           <username>Administrator</username>
           <password>Administrator</password>
+          <sslKeystorePath>/path/to/keystore</sslKeystorePath>
+          <sslKeystorePassword>changeme</sslKeystorePassword>
         </clientInitialization>
       </code>
 
