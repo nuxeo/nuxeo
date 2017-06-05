@@ -1,0 +1,13 @@
+{
+  "name": "nuxeo-admin-center-analytics",
+  "version": "1.0.0",
+  "dependencies": {
+    "polymer": "Polymer/polymer#1.5.0",
+    "iron-elements": "PolymerElements/iron-elements#^1.0.4",
+    "paper-elements": "PolymerElements/paper-elements#^1.0.5",
+    "chart-elements": "nuxeo/chart-elements#nuxeo-chart-elements",
+    "nuxeo-elements": "nuxeo/nuxeo-elements#0.2.4",
+    "nuxeo-dataviz-elements": "nuxeo/nuxeo-dataviz-elements#0.2.4",
+    "better-dateinput-polyfill": "1.5.2"
+  }
+}
