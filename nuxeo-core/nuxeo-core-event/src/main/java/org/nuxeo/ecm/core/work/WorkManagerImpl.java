@@ -19,8 +19,6 @@
  */
 package org.nuxeo.ecm.core.work;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,6 +45,7 @@ import javax.transaction.TransactionManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.logging.SequenceTracer;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.EventServiceComponent;
 import org.nuxeo.ecm.core.work.WorkQueuing.Listener;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -351,14 +350,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         init();
     }
 
-    @Override
-    public void applicationStopped(ComponentContext context, Instant deadline) throws InterruptedException {
-        Duration delay = Duration.between(Instant.now(), deadline);
-        if (!shutdown(delay.toMillis(), TimeUnit.MILLISECONDS)) {
-            log.error("Some processors are still active");
-        }
-    }
-
     protected volatile boolean started = false;
 
     protected volatile boolean shutdownInProgress = false;
@@ -390,6 +381,14 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                     } else if (event.id == RuntimeServiceEvent.RUNTIME_ABOUT_TO_STANDBY) {
                         for (String id : workQueueConfig.getQueueIds()) {
                             deactivateQueue(workQueueConfig.get(id));
+                        }
+                        try {
+                            if (!shutdown(1, TimeUnit.MINUTES)) {
+                                log.error("Some processors are still active");
+                            }
+                        } catch (InterruptedException cause) {
+                            Thread.currentThread().interrupt();
+                            throw new NuxeoException("Interrupted while stopping", cause);
                         }
                     } else if (event.id == RuntimeServiceEvent.RUNTIME_IS_STANDBY) {
                         Framework.removeListener(this);
@@ -431,24 +430,22 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         for (WorkThreadPoolExecutor executor : list) {
             executor.shutdownAndSuspend();
         }
-        timeout = TimeUnit.MILLISECONDS.convert(timeout, unit);
+        timeout = TimeUnit.MILLISECONDS.convert(timeout, unit) / list.size();
+        if (timeout == 0) {
+            timeout = 1000;
+        }
         // wait until threads termination
+        boolean paused = true;
         for (WorkThreadPoolExecutor executor : list) {
-            long t0 = System.currentTimeMillis();
             if (!executor.awaitTermination(timeout, TimeUnit.MILLISECONDS)) {
-                return false;
+                paused = false;
             }
-            timeout -= unit.convert(System.currentTimeMillis() - t0, TimeUnit.MILLISECONDS);
         }
-        return true;
-    }
-
-    protected long remainingMillis(long t0, long delay) {
-        long d = System.currentTimeMillis() - t0;
-        if (d > delay) {
-            return 0;
+        // try interrupts remainings
+        for (WorkThreadPoolExecutor executor : list) {
+            executor.shutdownNow();
         }
-        return delay - d;
+        return paused;
     }
 
     protected synchronized void removeExecutor(String queueId) {
@@ -457,11 +454,17 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public boolean shutdown(long timeout, TimeUnit unit) throws InterruptedException {
-        shutdownInProgress = true;
+        if (!started) {
+            return true;
+        }
         try {
-            return shutdownExecutors(new ArrayList<>(executors.values()), timeout, unit);
+            shutdownInProgress = true;
+            try {
+                return executors.isEmpty() || shutdownExecutors(new ArrayList<>(executors.values()), timeout, unit);
+            } finally {
+                shutdownInProgress = false;
+            }
         } finally {
-            shutdownInProgress = false;
             started = false;
         }
     }
