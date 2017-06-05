@@ -42,6 +42,12 @@ public class ESClientInitializationDescriptor implements Serializable {
     @XNode("password")
     protected String password;
 
+    @XNode("sslKeystorePath")
+    protected String sslKeystorePath;
+
+    @XNode("sslKeystorePassword")
+    protected String sslKeystorePassword;
+
     public Class<ESClientInitializationService> getKlass() {
         return klass;
     }
@@ -52,6 +58,20 @@ public class ESClientInitializationDescriptor implements Serializable {
 
     public String getPassword() {
         return password;
+    }
+
+    /**
+     * @since 8.10-HF08, 9.2
+     */
+    public String getSslKeystorePath() {
+        return sslKeystorePath;
+    }
+
+    /**
+     * @since 8.10-HF08, 9.2
+     */
+    public String getSslKeystorePassword() {
+        return sslKeystorePassword;
     }
 
 }

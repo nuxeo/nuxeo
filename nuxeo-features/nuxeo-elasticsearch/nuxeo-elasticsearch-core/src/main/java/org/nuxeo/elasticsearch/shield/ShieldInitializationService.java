@@ -37,6 +37,14 @@ public class ShieldInitializationService extends ESClientInitializationServiceIm
 
         builder.put("shield.user", getUsername() + ":" + getPassword());
 
+        String sslKeystorePath = getSslKeystorePath();
+        String sslKeystorePassword = getSslKeystorePassword();
+        if (sslKeystorePath != null && sslKeystorePassword != null) {
+            builder.put("shield.ssl.keystore.path", sslKeystorePath)
+                   .put("shield.ssl.keystore.password", sslKeystorePassword)
+                   .put("shield.transport.ssl", "true");
+        }
+
         return builder;
     }
 
