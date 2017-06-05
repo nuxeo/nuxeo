@@ -33,6 +33,10 @@ public class ESClientInitializationServiceImpl implements ESClientInitialization
 
     protected String password;
 
+    protected String sslKeystorePath;
+
+    protected String sslKeystorePassword;
+
     @Override
     public Settings initializeSettings(ElasticSearchRemoteConfig config) {
         return initializeSettingsBuilder(config).build();
@@ -61,6 +65,26 @@ public class ESClientInitializationServiceImpl implements ESClientInitialization
     @Override
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String getSslKeystorePath() {
+        return sslKeystorePath;
+    }
+
+    @Override
+    public void setSslKeystorePath(String sslKeystorePath) {
+        this.sslKeystorePath = sslKeystorePath;
+    }
+
+    @Override
+    public String getSslKeystorePassword() {
+        return sslKeystorePassword;
+    }
+
+    @Override
+    public void setSslKeystorePassword(String sslKeystorePassword) {
+        this.sslKeystorePassword = sslKeystorePassword;
     }
 
     protected Settings.Builder initializeSettingsBuilder(ElasticSearchRemoteConfig config) {
