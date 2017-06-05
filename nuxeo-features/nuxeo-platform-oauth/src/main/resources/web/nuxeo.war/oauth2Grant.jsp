@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page language="java" %>
-<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Servlet" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -99,21 +98,17 @@
 
   <tr>
     <td align="center">
-      <%
-        request.getSession().setAttribute(NuxeoOAuth2Servlet.USERNAME_KEY, request.getUserPrincipal().getName());
-      %>
-
-      <form action="oauth2/authorization_submit" method="POST">
+      <form action="<%=context%>/oauth2/authorization_submit" method="POST">
         <h2>
           <fmt:message bundle="${messages}" key="label.oauth2.grantConfirmation">
-            <fmt:param value="<%= request.getSession().getAttribute(\"client_name\") %>"/>
+            <fmt:param value="${client_name}"/>
           </fmt:message>
         </h2>
 
         <br/>
         <input name="authorization_key" type="hidden"
-            value="<%= request.getSession().getAttribute("authorization_key")%>"/>
-        <input name="state" type="hidden" value="<%= request.getSession().getAttribute("state") %>"/>
+          value="${authorization_key}"/>
+        <input name="state" type="hidden" value="${state}"/>
         <button name="grant_access" value="1">yes</button>
         <button name="deny_access" value="1">no</button>
       </form>

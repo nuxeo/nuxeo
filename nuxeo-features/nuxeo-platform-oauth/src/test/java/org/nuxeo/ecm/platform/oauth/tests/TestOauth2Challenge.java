@@ -39,11 +39,9 @@ import org.nuxeo.ecm.platform.oauth2.OAuth2Error;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
-import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.jersey.api.client.Client;
@@ -56,8 +54,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 5.9.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ OAuthFeature.class, WebEngineFeature.class })
-@LocalDeploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/jetty-test-config.xml")
+@Features({ OAuthFeature.class, OAuth2JettyFeature.class })
 @Jetty(port = 18090)
 public class TestOauth2Challenge {
 
@@ -94,8 +91,7 @@ public class TestOauth2Challenge {
         TestAuthorizationRequest.getRequests().clear();
     }
 
-    @Test
-    public void authorizationShouldRedirectToJSP() {
+    public void authorizationShouldReturn200() {
         Map<String, String> params = new HashMap<>();
         params.put("redirect_uri", REDIRECT_URI);
         params.put("client_id", CLIENT_ID);
@@ -103,9 +99,7 @@ public class TestOauth2Challenge {
         params.put("state", STATE);
 
         ClientResponse cr = responseFromAuthorizationWith(params);
-        assertEquals(302, cr.getStatus());
-        String redirect = cr.getHeaders().get("Location").get(0);
-        assertTrue(redirect.contains(".jsp"));
+        assertEquals(200, cr.getStatus());
     }
 
     @Test
@@ -176,9 +170,7 @@ public class TestOauth2Challenge {
         params.put("redirect_uri", "nuxeo://authorize");
 
         cr = responseFromAuthorizationWith(params);
-        assertEquals(302, cr.getStatus());
-        redirect = cr.getHeaders().get("Location").get(0);
-        assertTrue(redirect.contains(".jsp"));
+        assertEquals(200, cr.getStatus());
 
         // Valid: starting with http://localhost with localhost not part of the domain name
         registerClient("Localhost", "localhost", "", "http://localhost:8080/nuxeo");
@@ -186,9 +178,7 @@ public class TestOauth2Challenge {
         params.put("redirect_uri", "http://localhost:8080/nuxeo");
 
         cr = responseFromAuthorizationWith(params);
-        assertEquals(302, cr.getStatus());
-        redirect = cr.getHeaders().get("Location").get(0);
-        assertTrue(redirect.contains(".jsp"));
+        assertEquals(200, cr.getStatus());
 
         // Valid: starting with https
         registerClient("Secure", "secure", "", REDIRECT_URI);
@@ -196,9 +186,7 @@ public class TestOauth2Challenge {
         params.put("redirect_uri", REDIRECT_URI);
 
         cr = responseFromAuthorizationWith(params);
-        assertEquals(302, cr.getStatus());
-        redirect = cr.getHeaders().get("Location").get(0);
-        assertTrue(redirect.contains(".jsp"));
+        assertEquals(200, cr.getStatus());
     }
 
     @Test

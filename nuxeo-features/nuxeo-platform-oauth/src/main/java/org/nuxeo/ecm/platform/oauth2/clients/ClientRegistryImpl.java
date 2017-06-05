@@ -87,19 +87,13 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
     @Override
     public boolean hasClient(String clientId) {
         OAuth2Client client = getClient(clientId);
-        if (client == null) {
-            return false;
-        }
-        return client.isEnabled();
+        return client != null && client.isEnabled();
     }
 
     @Override
     public boolean isValidClient(String clientId, String clientSecret) {
         OAuth2Client client = getClient(clientId);
-        if (client == null) {
-            return false;
-        }
-        return client.isValidWith(clientId, clientSecret);
+        return client != null && client.isValidWith(clientId, clientSecret);
     }
 
     @Override
@@ -114,34 +108,40 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
             return false;
         }
 
-        DirectoryService service = getService();
-        try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
-            if (session.hasEntry(clientID)) {
-                log.error(String.format("An OAuth2 client with clientId=%s is already registered", clientID));
-                return false;
+        DirectoryService service = Framework.getService(DirectoryService.class);
+        return Framework.doPrivileged(() -> {
+            try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
+                if (session.hasEntry(client.getId())) {
+                    log.debug(String.format("ClientId is already registered: %s", client.getId()));
+                    return false;
+                }
+                session.createEntry(client.toMap());
+                return true;
             }
-            session.createEntry(client.toMap());
-        }
-        return true;
+        });
     }
 
     @Override
     public boolean deleteClient(String clientId) {
-        DirectoryService service = getService();
-        try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
-            session.deleteEntry(clientId);
-            return true;
-        } catch (DirectoryException e) {
-            return false;
-        }
+        DirectoryService service = Framework.getService(DirectoryService.class);
+        return Framework.doPrivileged(() -> {
+            try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
+                session.deleteEntry(clientId);
+                return true;
+            } catch (DirectoryException e) {
+                return false;
+            }
+        });
     }
 
     @Override
     public List<DocumentModel> listClients() {
-        DirectoryService service = getService();
-        try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
-            return session.query(Collections.emptyMap());
-        }
+        DirectoryService service = Framework.getService(DirectoryService.class);
+        return Framework.doPrivileged(() -> {
+            try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
+                return session.query(Collections.emptyMap());
+            }
+        });
     }
 
     @Override
@@ -154,19 +154,17 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
     }
 
     protected DocumentModel getClientModel(String clientId) {
-        DirectoryService service = getService();
-        try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
-            Map<String, Serializable> filter = new HashMap<>();
-            filter.put("clientId", clientId);
-            DocumentModelList docs = session.query(filter);
-            if (docs.size() > 0) {
-                return docs.get(0);
+        DirectoryService service = Framework.getService(DirectoryService.class);
+        return Framework.doPrivileged(() -> {
+            try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
+                Map<String, Serializable> filter = new HashMap<>();
+                filter.put("clientId", clientId);
+                DocumentModelList docs = session.query(filter);
+                if (docs.size() > 0) {
+                    return docs.get(0);
+                }
             }
-        }
-        return null;
-    }
-
-    protected DirectoryService getService() {
-        return Framework.getService(DirectoryService.class);
+            return null;
+        });
     }
 }

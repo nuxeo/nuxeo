@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +45,6 @@ import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
 import org.nuxeo.ecm.platform.oauth2.request.TokenRequest;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
-import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -61,8 +61,6 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     protected static final String ENDPOINT_AUTH_SUBMIT = "authorization_submit";
 
-    public static final String USERNAME_KEY = "nuxeo_user";
-
     public static final String AUTHORIZATION_KEY = "authorization_key";
 
     public static final String STATE_KEY = "state";
@@ -73,7 +71,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     public static final String CLIENT_NAME = "client_name";
 
-    public static final String GRANT_JSP_PAGE = "oauth2Grant.jsp";
+    public static final String GRANT_JSP_PAGE_PATH = "/oauth2Grant.jsp";
 
     public static final String AUTHORIZATION_CODE_GRANT_TYPE = "authorization_code";
 
@@ -111,7 +109,8 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         }
     }
 
-    protected void doGetAuthorization(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doGetAuthorization(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
         AuthorizationRequest authRequest = AuthorizationRequest.from(request);
         OAuth2Error error = authRequest.checkError();
         if (error != null) {
@@ -120,11 +119,12 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         }
 
         ClientRegistry clientRegistry = Framework.getService(ClientRegistry.class);
-        request.getSession().setAttribute(AUTHORIZATION_KEY, authRequest.getAuthorizationKey());
-        request.getSession().setAttribute(STATE_KEY, authRequest.getState());
-        request.getSession().setAttribute(CLIENT_NAME, clientRegistry.getClient(authRequest.getClientId()).getName());
-        String base = VirtualHostHelper.getBaseURL(request);
-        sendRedirect(response, base + GRANT_JSP_PAGE, null);
+        request.setAttribute(AUTHORIZATION_KEY, authRequest.getAuthorizationKey());
+        request.setAttribute(STATE_KEY, authRequest.getState());
+        request.setAttribute(CLIENT_NAME, clientRegistry.getClient(authRequest.getClientId()).getName());
+
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher(GRANT_JSP_PAGE_PATH);
+        requestDispatcher.forward(request, response);
     }
 
     protected void doGetToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -214,7 +214,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         }
 
         // Save username in request object
-        authRequest.setUsername((String) request.getSession().getAttribute(USERNAME_KEY));
+        authRequest.setUsername(request.getUserPrincipal().getName());
 
         Map<String, String> params = new HashMap<>();
         params.put(AUTHORIZATION_CODE_PARAM, authRequest.getAuthorizationCode());
