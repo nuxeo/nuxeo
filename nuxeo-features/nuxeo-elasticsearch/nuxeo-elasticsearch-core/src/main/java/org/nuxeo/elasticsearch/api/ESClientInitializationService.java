@@ -74,4 +74,35 @@ public interface ESClientInitializationService {
      */
     void setPassword(String password);
 
+    /**
+     * Get ssl keystore path
+     * 
+     * @return the keystore path
+     * @since 8.10-HF09, 9.2
+     */
+    String getSslKeystorePath();
+
+    /**
+     * Set ssl keystore path
+     * 
+     * @param sslKeystorePath the keystore path
+     * @since 8.10-HF09, 9.2
+     */
+    void setSslKeystorePath(String sslKeystorePath);
+
+    /**
+     * Get ssl keystore password
+     *
+     * @return the keystore password
+     * @since 8.10-HF09, 9.2
+     */
+    String getSslKeystorePassword();
+
+    /**
+     * Set ssl keystore password
+     *
+     * @param sslKeystorePassword the keystore password
+     * @since 8.10-HF09, 9.2
+     */
+    void setSslKeystorePassword(String sslKeystorePassword);
 }

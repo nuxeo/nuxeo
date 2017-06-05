@@ -31,6 +31,12 @@
     <clientInitialization class="org.nuxeo.elasticsearch.shield.ShieldInitializationService">
       <username>${elasticsearch.shield.username}</username>
       <password>${elasticsearch.shield.password}</password>
+      <#if elasticsearch.shield.keystore.path??>
+      <sslKeystorePath>${elasticsearch.shield.keystore.path}</sslKeystorePath>
+      </#if>
+      <#if elasticsearch.shield.keystore.password??>
+      <sslKeystorePassword>${elasticsearch.shield.keystore.password}</sslKeystorePassword>
+      </#if>
     </clientInitialization>
 </extension>
 <#else>
