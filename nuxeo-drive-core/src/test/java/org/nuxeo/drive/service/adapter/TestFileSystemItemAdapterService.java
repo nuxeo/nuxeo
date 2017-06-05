@@ -27,6 +27,7 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,8 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService.Forcing;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
@@ -68,6 +71,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Tests the {@link FileSystemItemAdapterService}.
@@ -77,6 +81,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveFeature.class)
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-adapter-service-contrib.xml")
+@RepositoryConfig(cleanup=Granularity.METHOD)
 public class TestFileSystemItemAdapterService {
 
     @Inject
@@ -429,14 +434,18 @@ public class TestFileSystemItemAdapterService {
     public void testContribOverride() throws Exception {
         assumeFalse("Cannot test reload for in-memory repository", coreFeature.getStorageConfiguration().isDBSMem());
 
-        Framework.getRuntime().standby(Instant.now());
+        TransactionHelper.commitOrRollbackTransaction();
         try {
-            harness.deployContrib("org.nuxeo.drive.core.test",
-                    "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
+            Framework.getRuntime().standby(Instant.now().plus(Duration.ofSeconds(30)));
+            try {
+                harness.deployContrib("org.nuxeo.drive.core.test",
+                        "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
+            } finally {
+                Framework.getRuntime().resume();
+            }
         } finally {
-            Framework.getRuntime().resume();
+            TransactionHelper.startTransaction();
         }
-
         registerRootAndCreateSomeDocs();
 
         // Re-adapt the sync root to take the override into account
@@ -638,14 +647,6 @@ public class TestFileSystemItemAdapterService {
         assertTrue(activeFactories.contains("dummyFacetFactory"));
         assertTrue(activeFactories.contains("dummyVirtualFolderItemFactory"));
         assertTrue(activeFactories.contains("nullMergeTestFactory"));
-
-        Framework.getRuntime().standby(Instant.now());
-        try {
-            harness.undeployContrib("org.nuxeo.drive.core.test",
-                    "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
-        } finally {
-            Framework.getRuntime().resume();
-        }
     }
 
     void reload() throws InterruptedException {
