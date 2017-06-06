@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.Transaction;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -235,47 +237,48 @@ public class CoreFeature extends SimpleFeature {
 
     protected void cleanupSession(FeaturesRunner runner) {
         waitForAsyncCompletion();
-        if (TransactionHelper.isTransactionMarkedRollback()) { // ensure tx is
-                                                               // active
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
-        if (session == null) {
-            createCoreSession();
-        }
+        Transaction last = TransactionHelper.requireNewTransaction();
         try {
-            log.trace("remove everything except root");
-            // remove proxies first, as we cannot remove a target if there's a proxy pointing to it
-            IterableQueryResult results = session.queryAndFetch("SELECT ecm:uuid FROM Document WHERE ecm:isProxy = 1",
-                    NXQL.NXQL);
+            if (session == null) {
+                createCoreSession();
+            }
             try {
-                batchRemoveDocuments(results);
-            } catch (QueryParseException e) {
-                // ignore, proxies disabled
+                log.trace("remove everything except root");
+                // remove proxies first, as we cannot remove a target if there's a proxy pointing to it
+                IterableQueryResult results = session
+                        .queryAndFetch("SELECT ecm:uuid FROM Document WHERE ecm:isProxy = 1", NXQL.NXQL);
+                try {
+                    batchRemoveDocuments(results);
+                } catch (QueryParseException e) {
+                    // ignore, proxies disabled
+                } finally {
+                    results.close();
+                }
+                // remove non-proxies
+                session.removeChildren(new PathRef("/"));
+                log.trace(
+                        "remove orphan versions as OrphanVersionRemoverListener is not triggered by CoreSession#removeChildren");
+                // remove remaining placeless documents
+                results = session.queryAndFetch("SELECT ecm:uuid FROM Document, Relation", NXQL.NXQL);
+                try {
+                    batchRemoveDocuments(results);
+                } finally {
+                    results.close();
+                }
+                session.save();
+                waitForAsyncCompletion();
+                if (!session.query("SELECT * FROM Document, Relation").isEmpty()) {
+                    log.error("Fail to cleanupSession, repository will not be empty for the next test.");
+                }
+            } catch (NuxeoException e) {
+                log.error("Unable to reset repository", e);
             } finally {
-                results.close();
+                CoreScope.INSTANCE.exit();
             }
-            // remove non-proxies
-            session.removeChildren(new PathRef("/"));
-            log.trace("remove orphan versions as OrphanVersionRemoverListener is not triggered by CoreSession#removeChildren");
-            // remove remaining placeless documents
-            results = session.queryAndFetch("SELECT ecm:uuid FROM Document, Relation", NXQL.NXQL);
-            try {
-                batchRemoveDocuments(results);
-            } finally {
-                results.close();
-            }
-            session.save();
-            waitForAsyncCompletion();
-            if (!session.query("SELECT * FROM Document, Relation").isEmpty()) {
-                log.error("Fail to cleanupSession, repository will not be empty for the next test.");
-            }
-        } catch (NuxeoException e) {
-            log.error("Unable to reset repository", e);
+            releaseCoreSession();
         } finally {
-            CoreScope.INSTANCE.exit();
+            TransactionHelper.resumeTransaction(last);
         }
-        releaseCoreSession();
         cleaned = true;
         CoreInstance.getInstance().cleanupThisThread();
     }
