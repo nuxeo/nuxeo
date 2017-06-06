@@ -18,24 +18,18 @@
  */
 package org.nuxeo.ecm.platform.oauth2.request;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.9.2
  */
 public abstract class Oauth2Request {
-
-    private static final Log log = LogFactory.getLog(Oauth2Request.class);
 
     public static final String CLIENT_ID = "client_id";
 
@@ -54,7 +48,7 @@ public abstract class Oauth2Request {
         clientId = request.getParameter(CLIENT_ID);
         redirectUri = decodeParameter(request, REDIRECT_URI);
         // Fallback for non-RFC compliant client
-        if (isBlank(redirectUri)) {
+        if (StringUtils.isBlank(redirectUri)) {
             redirectUri = decodeParameter(request, REDIRECT_URL);
         }
     }
@@ -62,7 +56,7 @@ public abstract class Oauth2Request {
     public static String decodeParameter(HttpServletRequest request, String parameterName) {
         String value = request.getParameter(parameterName);
         try {
-            if (isNotBlank(value)) {
+            if (StringUtils.isNotBlank(value)) {
                 return URLDecoder.decode(value, "UTF-8");
             }
         } catch (UnsupportedEncodingException e) {

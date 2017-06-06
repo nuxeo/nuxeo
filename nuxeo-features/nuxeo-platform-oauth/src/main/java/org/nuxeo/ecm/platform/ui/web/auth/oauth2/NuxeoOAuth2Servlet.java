@@ -23,8 +23,6 @@ package org.nuxeo.ecm.platform.ui.web.auth.oauth2;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.Constants.TOKEN_SERVICE;
 
 import java.io.IOException;
@@ -36,6 +34,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.oauth2.OAuth2Error;
@@ -52,6 +51,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 9.2
  */
 public class NuxeoOAuth2Servlet extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
 
     protected static final String ENDPOINT_AUTH = "authorization";
 
@@ -126,28 +127,28 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
     }
 
     protected void doGetToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        TokenRequest tokRequest = new TokenRequest(request);
+        TokenRequest tokenRequest = new TokenRequest(request);
         ClientRegistry clientRegistry = Framework.getService(ClientRegistry.class);
         // Process Authorization code
-        if (AUTHORIZATION_CODE_GRANT_TYPE.equals(tokRequest.getGrantType())) {
-            AuthorizationRequest authRequest = AuthorizationRequest.fromCode(tokRequest.getCode());
+        if (AUTHORIZATION_CODE_GRANT_TYPE.equals(tokenRequest.getGrantType())) {
+            AuthorizationRequest authRequest = AuthorizationRequest.fromCode(tokenRequest.getCode());
             OAuth2Error error = null;
             if (authRequest == null) {
                 error = OAuth2Error.ACCESS_DENIED;
             }
             // Check that clientId is the good one, already verified in
             // authorization request
-            else if (!authRequest.getClientId().equals(tokRequest.getClientId())) {
+            else if (!authRequest.getClientId().equals(tokenRequest.getClientId())) {
                 error = OAuth2Error.ACCESS_DENIED;
             }
             // Validate client secret
-            else if (!clientRegistry.isValidClient(tokRequest.getClientId(), tokRequest.getClientSecret())) {
+            else if (!clientRegistry.isValidClient(tokenRequest.getClientId(), tokenRequest.getClientSecret())) {
                 error = OAuth2Error.UNAUTHORIZED_CLIENT;
             }
             // Ensure redirect uris are identical
             else {
-                boolean sameRedirectUri = authRequest.getRedirectUri().equals(tokRequest.getRedirectUri());
-                if (!(isBlank(authRequest.getRedirectUri()) || sameRedirectUri)) {
+                boolean sameRedirectUri = authRequest.getRedirectUri().equals(tokenRequest.getRedirectUri());
+                if (!(StringUtils.isBlank(authRequest.getRedirectUri()) || sameRedirectUri)) {
                     error = OAuth2Error.INVALID_REQUEST;
                 }
             }
@@ -162,11 +163,11 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             TransactionHelper.runInTransaction(() -> tokenStore.store(authRequest.getUsername(), token));
 
             handleTokenResponse(token, response);
-        } else if (REFRESH_TOKEN_GRANT_TYPE.equals(tokRequest.getGrantType())) {
+        } else if (REFRESH_TOKEN_GRANT_TYPE.equals(tokenRequest.getGrantType())) {
             OAuth2Error error = null;
-            if (isBlank(tokRequest.getClientId())) {
+            if (StringUtils.isBlank(tokenRequest.getClientId())) {
                 error = OAuth2Error.ACCESS_DENIED;
-            } else if (!clientRegistry.isValidClient(tokRequest.getClientId(), tokRequest.getClientSecret())) {
+            } else if (!clientRegistry.isValidClient(tokenRequest.getClientId(), tokenRequest.getClientSecret())) {
                 error = OAuth2Error.ACCESS_DENIED;
             }
 
@@ -176,7 +177,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             }
 
             NuxeoOAuth2Token refreshed = TransactionHelper.runInTransaction(
-                    () -> tokenStore.refresh(tokRequest.getRefreshToken(), tokRequest.getClientId()));
+                    () -> tokenStore.refresh(tokenRequest.getRefreshToken(), tokenRequest.getClientId()));
 
             if (refreshed == null) {
                 handleJsonError(OAuth2Error.INVALID_REQUEST, response);
@@ -188,7 +189,8 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         }
     }
 
-    protected void doPostAuthorizationSubmit(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPostAuthorizationSubmit(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         AuthorizationRequest authRequest = AuthorizationRequest.from(request);
         OAuth2Error error = authRequest.checkError();
         if (error != null) {
@@ -211,7 +213,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
         Map<String, String> params = new HashMap<>();
         params.put(AUTHORIZATION_CODE_PARAM, authRequest.getAuthorizationCode());
-        if (isNotBlank(authRequest.getState())) {
+        if (StringUtils.isNotBlank(authRequest.getState())) {
             params.put(STATE_KEY, authRequest.getState());
         }
 
@@ -232,7 +234,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         Map<String, String> params = new HashMap<>();
         params.put(ERROR_PARAM, error.toString().toLowerCase());
         String state = request.getParameter(STATE_KEY);
-        if (isNotBlank(state)) {
+        if (StringUtils.isNotBlank(state)) {
             params.put(STATE_KEY, state);
         }
 

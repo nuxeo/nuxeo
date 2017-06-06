@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.platform.oauth2.request;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Iterator;
@@ -84,7 +82,7 @@ public class AuthorizationRequest extends Oauth2Request {
 
     public OAuth2Error checkError() {
         // Check mandatory fields
-        if (isBlank(responseType) || isBlank(clientId) || isBlank(redirectUri)) {
+        if (StringUtils.isBlank(responseType) || StringUtils.isBlank(clientId) || StringUtils.isBlank(redirectUri)) {
             return OAuth2Error.INVALID_REQUEST;
         }
 
@@ -112,7 +110,7 @@ public class AuthorizationRequest extends Oauth2Request {
     }
 
     public boolean isValidState(HttpServletRequest request) {
-        return isBlank(getState()) || request.getParameter(STATE).equals(getState());
+        return StringUtils.isBlank(getState()) || request.getParameter(STATE).equals(getState());
     }
 
     public String getUsername() {
@@ -132,7 +130,7 @@ public class AuthorizationRequest extends Oauth2Request {
     }
 
     public String getAuthorizationCode() {
-        if (isBlank(authorizationCode)) {
+        if (StringUtils.isBlank(authorizationCode)) {
             authorizationCode = RandomStringUtils.random(10, true, true);
         }
         return authorizationCode;

@@ -43,6 +43,7 @@ import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.jersey.api.client.Client;
@@ -56,6 +57,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ OAuthFeature.class, WebEngineFeature.class })
+@LocalDeploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/jetty-test-config.xml")
 @Jetty(port = 18090)
 public class TestOauth2Challenge {
 

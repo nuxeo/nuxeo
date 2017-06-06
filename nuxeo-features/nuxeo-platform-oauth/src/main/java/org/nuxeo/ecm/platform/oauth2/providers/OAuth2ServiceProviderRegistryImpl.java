@@ -90,9 +90,9 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
 
     @Override
     public OAuth2ServiceProvider addProvider(String serviceName, String description, String tokenServerURL,
-        String authorizationServerURL, String clientId, String clientSecret, List<String> scopes) {
+            String authorizationServerURL, String clientId, String clientSecret, List<String> scopes) {
         return addProvider(serviceName, description, tokenServerURL, authorizationServerURL, null, clientId,
-            clientSecret, scopes, true);
+                clientSecret, scopes, true);
     }
 
     @Override
@@ -102,9 +102,6 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
 
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
-            Map<String, Serializable> filter = new HashMap<>();
-            filter.put("serviceName", serviceName);
-            List<DocumentModel> providers = queryProviders(filter, 1);
             DocumentModel creationEntry = BaseSession.createEntryModel(null, SCHEMA, null, null);
             DocumentModel entry = session.createEntry(creationEntry);
             entry.setProperty(SCHEMA, "serviceName", serviceName);
@@ -143,7 +140,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
             entry.setProperty(SCHEMA, "enabled", enabled && provider.isEnabled());
             if (!enabled) {
                 log.info("OAuth2 provider for " + serviceName
-                    + " is disabled because clientId and/or clientSecret are empty");
+                        + " is disabled because clientId and/or clientSecret are empty");
             }
             session.updateEntry(entry);
             return getProvider(serviceName);
