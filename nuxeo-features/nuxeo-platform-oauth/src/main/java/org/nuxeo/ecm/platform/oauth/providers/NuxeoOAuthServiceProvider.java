@@ -19,11 +19,13 @@
 
 package org.nuxeo.ecm.platform.oauth.providers;
 
-import net.oauth.OAuthServiceProvider;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 
+import net.oauth.OAuthServiceProvider;
+
 public class NuxeoOAuthServiceProvider extends OAuthServiceProvider {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String SCHEMA = "oauthServiceProvider";
 

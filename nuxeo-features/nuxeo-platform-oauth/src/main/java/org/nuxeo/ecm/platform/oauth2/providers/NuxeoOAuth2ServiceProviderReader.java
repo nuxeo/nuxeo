@@ -18,16 +18,15 @@
  */
 package org.nuxeo.ecm.platform.oauth2.providers;
 
+import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
+import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+
+import java.io.IOException;
+import java.util.List;
+
 import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
-import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 /**
  * @since 9.2
@@ -55,6 +54,5 @@ public class NuxeoOAuth2ServiceProviderReader extends EntityJsonReader<NuxeoOAut
         provider.setEnabled(enabled == null ? false : enabled);
         return provider;
     }
-
 
 }

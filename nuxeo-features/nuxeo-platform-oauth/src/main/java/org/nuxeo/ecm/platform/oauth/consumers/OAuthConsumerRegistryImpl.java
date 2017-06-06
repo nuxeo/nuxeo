@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.platform.oauth.consumers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +112,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
         try {
             DirectoryService ds = Framework.getService(DirectoryService.class);
             try (Session session = ds.open(DIRECTORY_NAME)) {
-                DocumentModelList entries = session.getEntries();
+                DocumentModelList entries = session.query(Collections.emptyMap());
                 for (DocumentModel entry : entries) {
                     result.add(NuxeoOAuthConsumer.createFromDirectoryEntry(entry, null));
                 }

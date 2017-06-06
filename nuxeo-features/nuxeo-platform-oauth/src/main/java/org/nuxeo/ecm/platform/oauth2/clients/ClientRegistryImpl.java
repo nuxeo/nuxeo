@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.oauth2.clients;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,42 +59,35 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
 
     @Override
     public boolean hasClient(String clientId) {
-        DirectoryService service = getService();
-        try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
-            Map<String, Serializable> filter = new HashMap<>();
-            filter.put("clientId", clientId);
-            DocumentModelList docs = session.query(filter);
-            if (docs.size() == 0) {
-                return false;
-            }
-
-            DocumentModel entry = docs.get(0);
-            return OAuth2Client.fromDocumentModel(entry).isEnabled();
+        OAuth2Client client = getClient(clientId);
+        if (client == null) {
+            return false;
         }
+        return client.isEnabled();
     }
 
     @Override
     public boolean isValidClient(String clientId, String clientSecret) {
-        DocumentModel docClient = getClientModel(clientId);
-        if (docClient != null) {
-            OAuth2Client client = OAuth2Client.fromDocumentModel(docClient);
-            return client.isValidWith(clientId, clientSecret);
+        OAuth2Client client = getClient(clientId);
+        if (client == null) {
+            return false;
         }
-        return false;
+        return client.isValidWith(clientId, clientSecret);
     }
 
     @Override
     public boolean registerClient(OAuth2Client client) {
-        DocumentModel doc = getClientModel(client.getId());
+        String clientID = client.getId();
+        DocumentModel doc = getClientModel(clientID);
         if (doc != null) {
-            log.info("Trying to register an exisiting client");
+            log.error(String.format("An OAuth2 client with clientId=%s is already registered", clientID));
             return false;
         }
 
         DirectoryService service = getService();
         try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
-            if (session.hasEntry(client.getId())) {
-                log.debug(String.format("ClientId is already registered: %s", client.getId()));
+            if (session.hasEntry(clientID)) {
+                log.error(String.format("An OAuth2 client with clientId=%s is already registered", clientID));
                 return false;
             }
             session.createEntry(client.toMap());
@@ -116,13 +110,17 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
     public List<DocumentModel> listClients() {
         DirectoryService service = getService();
         try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
-            return session.getEntries();
+            return session.query(Collections.emptyMap());
         }
     }
 
+    @Override
     public OAuth2Client getClient(String clientId) {
         DocumentModel doc = getClientModel(clientId);
-        return doc != null ? OAuth2Client.fromDocumentModel(doc) : null;
+        if (doc == null) {
+            return null;
+        }
+        return OAuth2Client.fromDocumentModel(doc);
     }
 
     protected DocumentModel getClientModel(String clientId) {
@@ -139,6 +137,6 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
     }
 
     protected DirectoryService getService() {
-        return Framework.getLocalService(DirectoryService.class);
+        return Framework.getService(DirectoryService.class);
     }
 }

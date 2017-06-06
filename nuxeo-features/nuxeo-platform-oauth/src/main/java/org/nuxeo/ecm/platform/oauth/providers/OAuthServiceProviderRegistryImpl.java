@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.oauth.providers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -209,7 +210,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Framework.doPrivileged(() -> {
             try (Session session = ds.open(DIRECTORY_NAME)) {
-                DocumentModelList entries = session.getEntries();
+                DocumentModelList entries = session.query(Collections.emptyMap());
                 for (DocumentModel entry : entries) {
                     result.add(NuxeoOAuthServiceProvider.createFromDirectoryEntry(entry));
                 }
