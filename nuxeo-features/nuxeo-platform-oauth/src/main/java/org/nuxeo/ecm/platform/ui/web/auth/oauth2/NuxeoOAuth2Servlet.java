@@ -39,6 +39,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.oauth2.OAuth2Error;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
+import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
 import org.nuxeo.ecm.platform.oauth2.request.TokenRequest;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
@@ -140,16 +141,20 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             // authorization request
             else if (!authRequest.getClientId().equals(tokenRequest.getClientId())) {
                 error = OAuth2Error.ACCESS_DENIED;
-            }
-            // Validate client secret
-            else if (!clientRegistry.isValidClient(tokenRequest.getClientId(), tokenRequest.getClientSecret())) {
-                error = OAuth2Error.UNAUTHORIZED_CLIENT;
-            }
-            // Ensure redirect uris are identical
-            else {
-                boolean sameRedirectUri = authRequest.getRedirectUri().equals(tokenRequest.getRedirectUri());
-                if (!(StringUtils.isBlank(authRequest.getRedirectUri()) || sameRedirectUri)) {
-                    error = OAuth2Error.INVALID_REQUEST;
+            } else {
+                OAuth2Client client = clientRegistry.getClient(authRequest.getClientId());
+                // Validate client secret
+                if (client == null || !client.isValidWith(tokenRequest.getClientId(), tokenRequest.getClientSecret())) {
+                    error = OAuth2Error.UNAUTHORIZED_CLIENT;
+                }
+                // Ensure redirect URIs are identical
+                else {
+                    String redirectURI = tokenRequest.getRedirectUri();
+                    if (StringUtils.isBlank(redirectURI) || !OAuth2Client.isRedirectURIValid(redirectURI)
+                            || !redirectURI.equals(client.getRedirectURI())
+                            || !redirectURI.equals(authRequest.getRedirectUri())) {
+                        error = OAuth2Error.INVALID_REQUEST;
+                    }
                 }
             }
 

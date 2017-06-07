@@ -65,6 +65,10 @@ public class TestOauth2Challenge {
 
     protected static final String CLIENT_SECRET = "testSecret";
 
+    protected static final String REDIRECT_URI = "https://redirect.uri";
+
+    protected static final String RESPONSE_TYPE = "code";
+
     protected static final String BASE_URL = "http://localhost:18090";
 
     private static final Integer TIMEOUT = Integer.valueOf(1000 * 60 * 5); // 5min
@@ -77,16 +81,7 @@ public class TestOauth2Challenge {
     @Before
     public void initOAuthClient() {
 
-        if (!clientRegistry.hasClient(CLIENT_ID)) {
-            OAuth2Client oauthClient = new OAuth2Client("Dummy", CLIENT_ID, CLIENT_SECRET);
-            assertTrue(clientRegistry.registerClient(oauthClient));
-
-            // commit the transaction so that the HTTP thread finds the newly created directory entry
-            if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-                TransactionHelper.commitOrRollbackTransaction();
-                TransactionHelper.startTransaction();
-            }
-        }
+        registerClient("Dummy", CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
         // First client to request like a "Client" as OAuth RFC describe it
         client = Client.create();
@@ -101,9 +96,9 @@ public class TestOauth2Challenge {
     public void authorizationShouldRedirectToJSP() {
         // Request an code
         Map<String, String> params = new HashMap<>();
-        params.put("redirect_uri", "Dummy");
+        params.put("redirect_uri", REDIRECT_URI);
         params.put("client_id", CLIENT_ID);
-        params.put("response_type", "code");
+        params.put("response_type", RESPONSE_TYPE);
 
         ClientResponse cr = responseFromAuthorizationWith(params);
         assertEquals(302, cr.getStatus());
@@ -114,11 +109,10 @@ public class TestOauth2Challenge {
 
     @Test
     public void authorizationShouldForbidsUnknownClient() {
-        // Request an code
         Map<String, String> params = new HashMap<>();
-        params.put("redirect_uri", "Dummy");
-        params.put("client_id", "unknow");
-        params.put("response_type", "code");
+        params.put("redirect_uri", REDIRECT_URI);
+        params.put("client_id", "unknown");
+        params.put("response_type", RESPONSE_TYPE);
 
         ClientResponse cr = responseFromAuthorizationWith(params);
         assertEquals(302, cr.getStatus());
@@ -127,13 +121,79 @@ public class TestOauth2Challenge {
     }
 
     @Test
+    public void authorizationShouldValidateRedirectURI() {
+        // Invalid: no redirect URI
+        Map<String, String> params = new HashMap<>();
+        params.put("client_id", CLIENT_ID);
+        params.put("response_type", RESPONSE_TYPE);
+
+        ClientResponse cr = responseFromAuthorizationWith(params);
+        assertEquals(400, cr.getStatus());
+
+        // Invalid: not starting with https
+        params.put("redirect_uri", "http://redirect.uri");
+
+        cr = responseFromAuthorizationWith(params);
+        assertEquals(302, cr.getStatus());
+        String redirect = cr.getHeaders().get("Location").get(0);
+        assertTrue(redirect.contains("error=" + OAuth2Error.INVALID_REQUEST.toString().toLowerCase()));
+
+        // Invalid: starting with http://localhost with localhost part of the domain name
+        params.put("redirect_uri", "http://localhost.somecompany.com");
+
+        cr = responseFromAuthorizationWith(params);
+        assertEquals(302, cr.getStatus());
+        redirect = cr.getHeaders().get("Location").get(0);
+        assertTrue(redirect.contains("error=" + OAuth2Error.INVALID_REQUEST.toString().toLowerCase()));
+
+        // Invalid: not matching the one from the registered client
+        params.put("redirect_uri", "https://unknown.uri");
+
+        cr = responseFromAuthorizationWith(params);
+        assertEquals(302, cr.getStatus());
+        redirect = cr.getHeaders().get("Location").get(0);
+        assertTrue(redirect.contains("error=" + OAuth2Error.INVALID_REQUEST.toString().toLowerCase()));
+
+        // Valid: not starting with http
+        registerClient("Nuxeo Mobile", "nuxeo-mobile-app", "", "nuxeo://authorize");
+        params.put("client_id", "nuxeo-mobile-app");
+        params.put("redirect_uri", "nuxeo://authorize");
+
+        cr = responseFromAuthorizationWith(params);
+        assertEquals(302, cr.getStatus());
+        redirect = cr.getHeaders().get("Location").get(0);
+        assertTrue(redirect.contains(".jsp"));
+
+        // Valid: starting with http://localhost with localhost not part of the domain name
+        registerClient("Localhost", "localhost", "", "http://localhost:8080/nuxeo");
+        params.put("client_id", "localhost");
+        params.put("redirect_uri", "http://localhost:8080/nuxeo");
+
+        cr = responseFromAuthorizationWith(params);
+        assertEquals(302, cr.getStatus());
+        redirect = cr.getHeaders().get("Location").get(0);
+        assertTrue(redirect.contains(".jsp"));
+
+        // Valid: starting with https
+        registerClient("Secure", "secure", "", REDIRECT_URI);
+        params.put("client_id", "secure");
+        params.put("redirect_uri", REDIRECT_URI);
+
+        cr = responseFromAuthorizationWith(params);
+        assertEquals(302, cr.getStatus());
+        redirect = cr.getHeaders().get("Location").get(0);
+        assertTrue(redirect.contains(".jsp"));
+    }
+
+    @Test
     public void tokenShouldCreateAndRefreshWithDummyAuthorization() throws IOException {
-        AuthorizationRequest request = new TestAuthorizationRequest(CLIENT_ID, "code", null, "Dummy", new Date());
+        AuthorizationRequest request = new TestAuthorizationRequest(CLIENT_ID, RESPONSE_TYPE, null, REDIRECT_URI,
+                new Date());
         TestAuthorizationRequest.getRequests().put("fake", request);
 
         // Request a token
         Map<String, String> params = new HashMap<>();
-        params.put("redirect_uri", "Dummy");
+        params.put("redirect_uri", REDIRECT_URI);
         params.put("client_id", CLIENT_ID);
         params.put("client_secret", CLIENT_SECRET);
         params.put("grant_type", "authorization_code");
@@ -189,5 +249,18 @@ public class TestOauth2Challenge {
         WebResource wr = client.resource(BASE_URL).path(url);
         wr.header("Authentication", "Bearer " + accessToken);
         return wr.get(ClientResponse.class);
+    }
+
+    protected void registerClient(String name, String id, String secret, String redirectURI) {
+        if (!clientRegistry.hasClient(id)) {
+            OAuth2Client oauthClient = new OAuth2Client(name, id, secret, redirectURI);
+            assertTrue(clientRegistry.registerClient(oauthClient));
+
+            // Commit the transaction so that the HTTP thread finds the newly created directory entry
+            if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                TransactionHelper.commitOrRollbackTransaction();
+                TransactionHelper.startTransaction();
+            }
+        }
     }
 }

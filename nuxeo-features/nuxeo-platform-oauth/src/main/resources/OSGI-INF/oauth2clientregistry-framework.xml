@@ -18,7 +18,8 @@
 
       For instance :
       <code>
-        <client name="description name" id="clientId" secret="clientSecret" enabled="true" />
+        <client name="description name" id="clientId" secret="clientSecret" redirectURI="clientRedirectURI"
+          enabled="true" />
       </code>
     </documentation>
 

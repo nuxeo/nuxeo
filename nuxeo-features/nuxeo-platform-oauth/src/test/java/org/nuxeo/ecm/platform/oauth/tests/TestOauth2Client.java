@@ -21,10 +21,8 @@ package org.nuxeo.ecm.platform.oauth.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.FileInputStream;
 
 import javax.inject.Inject;
 
@@ -32,11 +30,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.RegistrationInfo;
-import org.nuxeo.runtime.model.impl.ComponentDescriptorReader;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
@@ -48,49 +44,80 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestOauth2Client {
 
     @Inject
-    ClientRegistry registry;
+    protected ClientRegistry registry;
+
+    @Test
+    public void testValidRedirectURI() {
+        assertFalse(OAuth2Client.isRedirectURIValid("http://redirect.uri"));
+        assertFalse(OAuth2Client.isRedirectURIValid("http://localhost.somecompany.com"));
+        assertTrue(OAuth2Client.isRedirectURIValid("nuxeo://authorize"));
+        assertTrue(OAuth2Client.isRedirectURIValid("http://localhost:8080/nuxeo"));
+        assertTrue(OAuth2Client.isRedirectURIValid("https://redirect.uri"));
+    }
+
+    @Test
+    public void testClientIDAndSecretMatchesClient() {
+        OAuth2Client client = new OAuth2Client("testClient", "testClient", "testSecret", "https://redirect.uri");
+
+        client.setEnabled(false);
+        assertFalse(client.isValidWith("testClient", "testSecret"));
+
+        client.setEnabled(true);
+        assertFalse(client.isValidWith("wrongId", "testSecret"));
+        assertFalse(client.isValidWith("testClient", "wrongSecret"));
+        assertTrue(client.isValidWith("testClient", "testSecret"));
+
+        client.setSecret(null);
+        assertTrue(client.isValidWith("testClient", "someSecret"));
+    }
 
     @Test
     public void clientsManagement() {
         assertNotNull(registry);
-        assertEquals(0, registry.listClients().size());
+        assertTrue(registry.listClients().isEmpty());
 
-        String clientId = "myId";
-        OAuth2Client client = new OAuth2Client("My App", clientId, "mySecretSecret");
+        OAuth2Client client = new OAuth2Client("My App", "myId", "mySecretSecret", "https://redirect.uri");
         assertTrue(registry.registerClient(client));
-        // Ensure that a same client registering is forbids
+        // Ensure that registering a client with the same ID is forbidden
         assertFalse(registry.registerClient(client));
 
         assertEquals(1, registry.listClients().size());
         assertTrue(registry.isValidClient(client.getId(), client.getSecret()));
         assertFalse(registry.isValidClient(client.getId(), "falsePositive"));
 
-        client = new OAuth2Client("My App", "myNdId", "");
+        client = new OAuth2Client("My App", "myNdId", "", "https://redirect.uri");
         assertTrue(registry.registerClient(client));
         assertEquals(2, registry.listClients().size());
         assertTrue(registry.isValidClient(client.getId(), "dummySecret"));
 
-        assertTrue(registry.deleteClient(client.getId()));
+        assertTrue(registry.deleteClient("myNdId"));
         assertEquals(1, registry.listClients().size());
-        assertTrue(registry.deleteClient(clientId));
-        assertEquals(0, registry.listClients().size());
+        assertTrue(registry.deleteClient("myId"));
+        assertTrue(registry.listClients().isEmpty());
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/oauth2-client-config.xml")
     public void clientComponentRegistration() throws Exception {
-        assertEquals(0, registry.listClients().size());
-        localDeploy("/OSGI-INF/oauth2-client-config.xml");
-
         assertEquals(2, registry.listClients().size());
+
+        assertTrue(registry.hasClient("xxx-xxx"));
+        assertFalse(registry.hasClient("unknown"));
+
+        OAuth2Client client = registry.getClient("xxx-xxx");
+        assertEquals("my client", client.getName());
+        assertEquals("aSecret", client.getSecret());
+        assertEquals("https://redirect.uri", client.getRedirectURI());
+        assertTrue(client.isEnabled());
+
+        client = registry.getClient("yyy-yyy");
+        assertEquals("another client", client.getName());
+        assertNull(client.getSecret());
+        assertEquals("https://redirect.uri", client.getRedirectURI());
+        assertFalse(client.isEnabled());
+
         assertTrue(registry.deleteClient("xxx-xxx"));
         assertTrue(registry.deleteClient("yyy-yyy"));
-        assertEquals(0, registry.listClients().size());
-    }
-
-    protected void localDeploy(String filename) throws Exception {
-        ComponentDescriptorReader reader = new ComponentDescriptorReader();
-        File file = new File(this.getClass().getResource(filename).toURI());
-        RegistrationInfo info = reader.read(Framework.getRuntime().getContext(), new FileInputStream(file));
-        Framework.getRuntime().getComponentManager().register(info);
+        assertTrue(registry.listClients().isEmpty());
     }
 }
