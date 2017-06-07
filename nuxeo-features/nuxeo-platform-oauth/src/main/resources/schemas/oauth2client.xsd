@@ -7,6 +7,7 @@
   <xs:element name="name" type="xs:string"/>
   <xs:element name="clientId" type="xs:string"/>
   <xs:element name="clientSecret" type="xs:string"/>
+  <xs:element name="redirectURI" type="xs:string"/>
 
   <xs:element name="enabled" type="xs:boolean" default="true"/>
 </xs:schema>

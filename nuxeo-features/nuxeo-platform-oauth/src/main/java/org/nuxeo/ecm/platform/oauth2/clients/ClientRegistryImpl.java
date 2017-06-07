@@ -77,6 +77,9 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
 
     @Override
     public boolean registerClient(OAuth2Client client) {
+        if (!client.isValid()) {
+            return false;
+        }
         String clientID = client.getId();
         DocumentModel doc = getClientModel(clientID);
         if (doc != null) {
