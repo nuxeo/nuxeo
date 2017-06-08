@@ -288,6 +288,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-default-jsf</artifactId>
+        <version>${nuxeo.routing.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
         <artifactId>nuxeo-routing-test</artifactId>
         <version>${nuxeo.routing.version}</version>
       </dependency>
