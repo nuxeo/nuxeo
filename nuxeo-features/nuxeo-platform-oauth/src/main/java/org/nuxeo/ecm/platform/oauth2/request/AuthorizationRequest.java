@@ -85,7 +85,7 @@ public class AuthorizationRequest extends Oauth2Request {
     public OAuth2Error checkError() {
         // Check mandatory fields
         if (StringUtils.isBlank(responseType) || StringUtils.isBlank(clientId) || StringUtils.isBlank(redirectUri)
-                || !OAuth2Client.isRedirectURIValid(redirectUri)) {
+                || !OAuth2Client.isRedirectURIValid(redirectUri) || StringUtils.isBlank(state)) {
             return OAuth2Error.INVALID_REQUEST;
         }
 

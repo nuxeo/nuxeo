@@ -69,6 +69,8 @@ public class TestOauth2Challenge {
 
     protected static final String RESPONSE_TYPE = "code";
 
+    protected static final String STATE = "testState";
+
     protected static final String BASE_URL = "http://localhost:18090";
 
     private static final Integer TIMEOUT = Integer.valueOf(1000 * 60 * 5); // 5min
@@ -94,7 +96,20 @@ public class TestOauth2Challenge {
 
     @Test
     public void authorizationShouldRedirectToJSP() {
-        // Request an code
+        Map<String, String> params = new HashMap<>();
+        params.put("redirect_uri", REDIRECT_URI);
+        params.put("client_id", CLIENT_ID);
+        params.put("response_type", RESPONSE_TYPE);
+        params.put("state", STATE);
+
+        ClientResponse cr = responseFromAuthorizationWith(params);
+        assertEquals(302, cr.getStatus());
+        String redirect = cr.getHeaders().get("Location").get(0);
+        assertTrue(redirect.contains(".jsp"));
+    }
+
+    @Test
+    public void authorizationShouldRejectMissingState() {
         Map<String, String> params = new HashMap<>();
         params.put("redirect_uri", REDIRECT_URI);
         params.put("client_id", CLIENT_ID);
@@ -102,17 +117,17 @@ public class TestOauth2Challenge {
 
         ClientResponse cr = responseFromAuthorizationWith(params);
         assertEquals(302, cr.getStatus());
-
         String redirect = cr.getHeaders().get("Location").get(0);
-        assertTrue(redirect.contains(".jsp"));
+        assertTrue(redirect.contains("error=" + OAuth2Error.INVALID_REQUEST.toString().toLowerCase()));
     }
 
     @Test
-    public void authorizationShouldForbidsUnknownClient() {
+    public void authorizationShouldRejectUnknownClient() {
         Map<String, String> params = new HashMap<>();
         params.put("redirect_uri", REDIRECT_URI);
         params.put("client_id", "unknown");
         params.put("response_type", RESPONSE_TYPE);
+        params.put("state", STATE);
 
         ClientResponse cr = responseFromAuthorizationWith(params);
         assertEquals(302, cr.getStatus());
@@ -126,6 +141,7 @@ public class TestOauth2Challenge {
         Map<String, String> params = new HashMap<>();
         params.put("client_id", CLIENT_ID);
         params.put("response_type", RESPONSE_TYPE);
+        params.put("state", STATE);
 
         ClientResponse cr = responseFromAuthorizationWith(params);
         assertEquals(400, cr.getStatus());
