@@ -13,6 +13,7 @@
 #
 # Contributors:
 #     Florent Guillaume
+#     Guillaume Renard
 
 if [ -z "$1" ]; then
   echo Usage: update.sh ../path/to/the-studio-jar/unpacked >&2
@@ -81,5 +82,23 @@ for wf in SerialDocumentReview ParallelDocumentReview; do
   rm $ZIP
   zip -r $ZIP .
 done
-cd $BUNDLE
 
+# Create JSF extensions.xml
+BUNDLE_JSF=$BUNDLE/../$STUDIONAME"-jsf"
+EXT_JSF=$BUNDLE_JSF/src/main/resources/OSGI-INF/extensions.xml
+echo 'Extracting JSF contrib to' $BUNDLE_JSF
+echo '<?xml version="1.0" encoding="UTF-8"?>' > $EXT_JSF
+echo '<component name="studio.extensions.nuxeo-routing-default.jsf" version="1.0.0">' >> $EXT_JSF
+# extract JSF contrib
+DIR_UI_C=$(xmllint --xpath "//extension[@target='org.nuxeo.ecm.directory.ui.DirectoryUIManager']" $RES/OSGI-INF/extensions.xml)
+echo "  $DIR_UI_C">> $EXT_JSF
+LAYOUT_C=$(xmllint --xpath "//extension[@target='org.nuxeo.ecm.platform.forms.layout.WebLayoutManager']" $RES/OSGI-INF/extensions.xml)
+echo "  $LAYOUT_C">> $EXT_JSF
+echo '</component>' >> $EXT_JSF
+# Remove JSF contribs from core extensions.xml
+sed -e '/<extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager" point="directories"/,/<.extension>/d' \
+    -i '~' $RES/OSGI-INF/extensions.xml
+sed -e '/<extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="layouts"/,/<.extension>/d' \
+    -i '~' $RES/OSGI-INF/extensions.xml
+
+cd $BUNDLE
