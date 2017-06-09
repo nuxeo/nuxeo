@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
@@ -75,6 +77,8 @@ public class UITypesConfigurationActions implements Serializable {
      */
     protected static class TypeLabelAlphabeticalOrder implements Comparator<Type> {
 
+        private static final Log log = LogFactory.getLog(TypeLabelAlphabeticalOrder.class);
+
         private final Map<String, String> messages;
 
         public TypeLabelAlphabeticalOrder(Map<String, String> messages) {
@@ -84,9 +88,21 @@ public class UITypesConfigurationActions implements Serializable {
 
         @Override
         public int compare(Type type1, Type type2) {
-            String label1 = messages.get(type1.getLabel());
-            String label2 = messages.get(type2.getLabel());
-            return label1.compareTo(label2);
+            return getTranslatedLabel(type1).compareTo(getTranslatedLabel(type2));
+        }
+
+        protected String getTranslatedLabel(Type type) {
+            String label = type.getLabel();
+            if (label == null) {
+                String typeId = type.getId();
+                log.error(String.format("No label for the %s type, using its id instead.", typeId));
+                return typeId;
+            }
+            String translatedLabel = messages.get(label);
+            if (translatedLabel == null) {
+                return label;
+            }
+            return translatedLabel;
         }
     }
 
