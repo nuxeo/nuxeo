@@ -42,6 +42,15 @@ public class CoreDirectoryInit implements RepositoryInit {
 
     public static String DOC_PWD_USER2 = "foo2";
 
+    public static String DOC_ID_USERSHA1 = "usersha1";
+
+    public static String DOC_PWD_USERSHA1 = "foosha1";
+
+    // one encrypted password value of clear text password DOC_PWD_USERSHA1 = "foosha1"
+    public static String ENC_PWD_USERSHA1 = "{SSHA}wbm44K3IQWduZj8U+kl0dvAkXvFbxuSe1WmxmQ==";
+
+    public static String DOC_PWD_BADPWDSHA1 = "bad-pwd";
+
     public static String USERS_RESTRICTED_FOLDER = "users-restricted";
 
     public static String USERS_UNRESTRICTED_FOLDER = "users-unrestricted";
@@ -83,6 +92,13 @@ public class CoreDirectoryInit implements RepositoryInit {
         user1.setProperty("schema1", "foo", DOC_PWD_USER1);
         user1.setProperty("schema1", "bar", "bar1");
         session.saveDocument(user1);
+
+        // Creates SHA1 passwords for unit test
+        DocumentModel userSHA1 = createDocument(session, doc.getPathAsString(), "UserSHA1", "CoreDirDoc");
+        userSHA1.setProperty("schema1", "uid", DOC_ID_USERSHA1);
+        userSHA1.setProperty("schema1", "foo", ENC_PWD_USERSHA1);
+        userSHA1.setProperty("schema1", "bar", "barsha1");
+        session.saveDocument(userSHA1);
 
         doc = createDocument(session, ROOT_FOLDER_PATH + "/test", USERS_UNRESTRICTED_FOLDER, "Folder");
 
