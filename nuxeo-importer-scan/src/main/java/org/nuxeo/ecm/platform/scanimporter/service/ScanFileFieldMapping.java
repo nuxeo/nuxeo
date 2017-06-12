@@ -36,7 +36,7 @@ public class ScanFileFieldMapping implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.sss'Z'");
+    public static final SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss'Z'");
 
     @XNode("@sourceXPath")
     protected String sourceXPath;
