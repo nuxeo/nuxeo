@@ -139,7 +139,8 @@ public class PasswordHelper {
     public static byte[] digestWithSalt(String password, byte[] salt, String algorithm) {
         try {
             MessageDigest md = MessageDigest.getInstance(algorithm);
-            md.update(password.getBytes("UTF-8"));
+            String temp_password = (password == null ? "" : password);
+            md.update(temp_password.getBytes("UTF-8"));
             md.update(salt);
             return md.digest();
         } catch (NoSuchAlgorithmException e) {
