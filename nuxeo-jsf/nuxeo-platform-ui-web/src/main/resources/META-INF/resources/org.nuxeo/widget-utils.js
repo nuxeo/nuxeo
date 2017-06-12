@@ -40,7 +40,7 @@ nuxeo.utils = (function(m) {
     } else {
         throw new Error("nuxeo.utils.addOnEvent: Added a callback that was not a function");
     }
-  }
+  };
 
   function executeEventListeners(data) {
     for (var i in eventListeners) {
@@ -54,6 +54,10 @@ nuxeo.utils = (function(m) {
     executeEventListeners({"status": "begin", "flag": flag});
     func();
     executeEventListeners({"status": "success", "flag": flag});
+  }
+
+  function fixTinyMCE(el) {
+    jQuery(el).find("textarea.mceEditor").each(function() { resetTinyMCE(this.id); });
   }
 
   m.moreLessTableRows = function(eltId, displayAll, displayLimit) {
@@ -102,6 +106,7 @@ nuxeo.utils = (function(m) {
       jQuery(el).find("input[value='TEMPLATE_INDEX_MARKER']").val(count);
       // place in the DOM
       tel.before(el);
+      fixTinyMCE(el);
     }, "js-list-add");
     return false;
   };
@@ -112,12 +117,18 @@ nuxeo.utils = (function(m) {
   };
 
   m.moveUpList = function(rowElement) {
-    execute(function(){rowElement.insertBefore(rowElement.prev());}, "js-list-move-up");
+    execute(function() {
+      rowElement.insertBefore(rowElement.prev());
+      fixTinyMCE(rowElement);
+    }, "js-list-move-up");
     return false;
   };
 
   m.moveDownList = function(rowElement) {
-    execute(function(){rowElement.insertAfter(rowElement.next());}, "js-list-move-down");
+    execute(function() {
+      rowElement.insertAfter(rowElement.next());
+      fixTinyMCE(rowElement);
+    }, "js-list-move-down");
     return false;
   };
 
