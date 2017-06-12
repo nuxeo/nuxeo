@@ -87,6 +87,11 @@ function addTinyMCE(id) {
   tinyMCE.execCommand('mceAddEditor', false, id);
 }
 
+function resetTinyMCE(id) {
+  removeTinyMCE(id);
+  addTinyMCE(id);
+}
+
 function removeAllTinyMCEEditors() {
   for (var i = 0; i < tinyMCE.editors.length; i++) {
     try {
