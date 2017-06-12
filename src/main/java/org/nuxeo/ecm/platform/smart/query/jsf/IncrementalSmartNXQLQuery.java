@@ -60,7 +60,7 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
 
     final SimpleDateFormat isoDate = new SimpleDateFormat("yyyy-MM-dd");
 
-    final SimpleDateFormat isoTimeStamp = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    final SimpleDateFormat isoTimeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public IncrementalSmartNXQLQuery(String existingQueryPart) {
         super(existingQueryPart);
