@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
+import org.nuxeo.ecm.directory.PasswordHelper;
 
 /**
  * Default repository initializer that create the default DM doc hierarchy.
@@ -41,6 +42,20 @@ public class CoreDirectoryInit implements RepositoryInit {
     public static String DOC_ID_USER2 = "user2";
 
     public static String DOC_PWD_USER2 = "foo2";
+
+    public static String DOC_ID_USERSHA1 = "usersha1";
+
+    public static String DOC_PWD_USERSHA1 = "foosha1";
+
+    public static String ENC_PWD_USERSHA1 = ""; // computed later
+
+    public static String DOC_PWD_BADPWDSHA1 = "bad-pwd";
+
+    public static String ENC_PWD_BADPWDSHA1 = ""; // computed later
+
+    public static String DOC_PWD_NULLSHA1 = null;
+
+    public static String ENC_PWD_NULLSHA1 = ""; // computed later
 
     public static String USERS_RESTRICTED_FOLDER = "users-restricted";
 
@@ -83,6 +98,17 @@ public class CoreDirectoryInit implements RepositoryInit {
         user1.setProperty("schema1", "foo", DOC_PWD_USER1);
         user1.setProperty("schema1", "bar", "bar1");
         session.saveDocument(user1);
+
+        // Creates SHA1 passwords for unit test
+        ENC_PWD_USERSHA1 = PasswordHelper.hashPassword(DOC_PWD_USERSHA1, PasswordHelper.SSHA);
+        ENC_PWD_BADPWDSHA1 = PasswordHelper.hashPassword(DOC_PWD_BADPWDSHA1, PasswordHelper.SSHA);
+        ENC_PWD_NULLSHA1 = PasswordHelper.hashPassword(DOC_PWD_NULLSHA1, PasswordHelper.SSHA);
+
+        DocumentModel userSHA1 = createDocument(session, doc.getPathAsString(), "UserSHA1", "CoreDirDoc");
+        userSHA1.setProperty("schema1", "uid", DOC_ID_USERSHA1);
+        userSHA1.setProperty("schema1", "foo", ENC_PWD_USERSHA1);
+        userSHA1.setProperty("schema1", "bar", "barsha1");
+        session.saveDocument(userSHA1);
 
         doc = createDocument(session, ROOT_FOLDER_PATH + "/test", USERS_UNRESTRICTED_FOLDER, "Folder");
 
