@@ -537,22 +537,24 @@ public class MultiDirectorySession extends BaseSession {
         init();
         for (SourceInfo sourceInfo : sourceInfos) {
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
-                // Check if the platform is able to manage entry
-                if (!sourceInfo.source.creation && !dirInfo.getSession().isReadOnly()) {
-                    // If not check if entry exist to prevent exception that may
-                    // stop the deletion loop to other subdirectories
-                    // Do not raise exception, because creation is not managed
-                    // by the platform
-                    DocumentModel docModel = dirInfo.getSession().getEntry(id);
-                    if (docModel == null) {
-                        log.warn(String.format(
-                                "MultiDirectory '%s' : The entry id '%s' could not be deleted on subdirectory '%s' because it does not exist",
-                                getName(), id, dirInfo.dirName));
+                if (!dirInfo.getSession().isReadOnly()) {
+                    // Check if the platform is able to manage entry
+                    if (!sourceInfo.source.creation) {
+                        // If not check if entry exist to prevent exception that may
+                        // stop the deletion loop to other subdirectories
+                        // Do not raise exception, because creation is not managed
+                        // by the platform
+                        DocumentModel docModel = dirInfo.getSession().getEntry(id);
+                        if (docModel == null) {
+                            log.warn(String.format(
+                                    "MultiDirectory '%s' : The entry id '%s' could not be deleted on subdirectory '%s' because it does not exist",
+                                    getName(), id, dirInfo.dirName));
+                        } else {
+                            dirInfo.getSession().deleteEntry(id);
+                        }
                     } else {
                         dirInfo.getSession().deleteEntry(id);
                     }
-                } else {
-                    dirInfo.getSession().deleteEntry(id);
                 }
             }
         }
