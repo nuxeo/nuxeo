@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.multi.readonly.subdir.config">
+
+  <extension
+      target="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory"
+      point="directories">
+
+    <directory name="multi">
+      <schema>schema3</schema>
+      <idField>uid</idField>
+      <passwordField>thefoo</passwordField>
+
+      <source name="source" creation="true">
+        <subDirectory name="dir1">
+          <field for="thefoo">foo</field>
+        </subDirectory>
+        <subDirectory name="dir2">
+          <field for="uid">id</field>
+          <field for="thebar">bar</field>
+        </subDirectory>
+      </source>
+    </directory>
+
+  </extension>
+
+</component>
