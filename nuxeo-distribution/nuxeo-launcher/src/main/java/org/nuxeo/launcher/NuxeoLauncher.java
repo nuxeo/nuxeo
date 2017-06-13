@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,6 @@
  *     Ronan DANIELLOU
  */
 package org.nuxeo.launcher;
-
-import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_COMPANY;
-import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_COMPANY_REGEX;
-import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_DESCRIPTION;
-import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_EMAIL;
-import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_PASSWORD;
-import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_PASSWORDND;
-import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_PROJECT;
-import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_PROJECT_REGEX;
-import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_TERMSNCONDITIONS;
 
 import java.io.Console;
 import java.io.File;
@@ -103,6 +93,7 @@ import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.connect.ConnectBroker;
 import org.nuxeo.launcher.connect.ConnectRegistrationBroker;
+import org.nuxeo.launcher.connect.ConnectRegistrationBroker.TrialField;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
 import org.nuxeo.launcher.info.CommandInfo;
@@ -530,7 +521,7 @@ public abstract class NuxeoLauncher {
             + "        mp-upgrade\t\tGet all the available upgrades for the Nuxeo Packages currently installed (requires a registered instance).\n"
             + "        mp-show\t\t\tShow Nuxeo Package(s) information. You must provide the package file(s), name(s) or ID(s) as parameter.\n"
             + "        register\t\tRegister your instance with an existing Connect account. You must provide the credentials, the project name or ID, its type and a description.\n"
-            + "        register-trial\t\tRegister your instance with a new trial Connect account. You must provide an email and a password as credentials, the company name, a project name and a description.\n"
+            + "        register-trial\t\tRegister your instance with a new trial Connect account. You must provide your first name, your last name, an email, the company name and a project name.\n"
             + "\nThe following commands are always executed in console/headless mode (no GUI): "
             + "\"configure\", \"mp-init\", \"mp-purge\", \"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", "
             + "\"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", \"mp-reset\", \"mp-list\", \"mp-listall\", \"mp-update\", "
@@ -566,7 +557,7 @@ public abstract class NuxeoLauncher {
             + "        nuxeoctl mp-reset|mp-purge|mp-hotfix|mp-upgrade [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--accept <true|false|yes|no|ask>]\n\n"
             + "        nuxeoctl mp-add|mp-install|mp-uninstall|mp-remove|mp-set|mp-request [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--nodeps|--relax <true|false|yes|no|ask>|--accept <true|false|yes|no|ask>|-s|-im]\n\n"
             + "        nuxeoctl register [<username> [<project> [<type> <description>] [<pwd>]]]\n\n"
-            + "        nuxeoctl register-trial [<email> <company> <project> <description> [<pwd>]]\n\n"
+            + "        nuxeoctl register-trial [<firstname> <lastname> <email> <company> <project>]\n\n"
             + "        nuxeoctl pack <target> [-d [<categories>]|-q]\n\n" //
             + "        nuxeoctl connect-report [--output <file>|--gzip <*true|false|yes|no>|--pretty-print <true|*false|yes|no>]\n\n"
             + "OPTIONS";
@@ -1579,54 +1570,36 @@ public abstract class NuxeoLauncher {
     }
 
     /**
+     * Register a trial project. The command synopsis:
+     *
+     * <pre>
+     * <code>
+     * nuxeoctl register-trial [ &lt;first&gt; &lt;last&gt; &lt;email&gt; &lt;company&gt; &lt;project&gt; ]
+     * </code>
+     * </pre>
+     *
      * @since 8.3
      */
     public boolean registerTrial() throws IOException, ConfigurationException, PackageException {
         CommandInfo commandInfo = cset.newCommandInfo("register-trial");
-        if (params.length != 0 && params.length != 4 && params.length != 5) {
+        if (params.length != 0 && params.length != 5) {
             throw new ConfigurationException("Wrong number of arguments.");
         }
 
         Map<String, String> registration = new HashMap<>();
-        if (params.length > 3) {
-            String email = params[0];
-            if (!EmailValidator.getInstance().isValid(email)) {
-                throw new ConfigurationException("Invalid email address.");
-            }
-            registration.put(REGISTRATION_EMAIL, email);
-
-            String company = params[1];
-            if (!Pattern.matches(REGISTRATION_COMPANY_REGEX, company)) {
-                throw new ConfigurationException("Company field is mandatory.");
-            }
-            registration.put(REGISTRATION_COMPANY, company);
-
-            String projectName = params[2];
-            if (!Pattern.matches(REGISTRATION_PROJECT_REGEX, projectName)) {
-                throw new ConfigurationException("Project name can only contain alphanumeric characters and dashes.");
-            }
-            registration.put(REGISTRATION_PROJECT, projectName);
-
-            registration.put(REGISTRATION_DESCRIPTION, params[3]);
-        } else {
-            registration.put(REGISTRATION_EMAIL, promptEmail());
-            registration.put(REGISTRATION_COMPANY,
-                    prompt("Company: ", s -> s.matches(REGISTRATION_COMPANY_REGEX), "Company field is mandatory."));
-            registration.put(
-                    REGISTRATION_PROJECT,
-                    prompt("Project name: ", s -> s.matches(REGISTRATION_PROJECT_REGEX),
-                            "Project name can only contain alphanumeric characters and dashes."));
-            registration.put("description", promptDescription());
-        }
 
         if (params.length == 5) {
-            registration.put(REGISTRATION_PASSWORD, params[4]);
-            registration.put(REGISTRATION_PASSWORDND, params[4]);
+            putIfValid(registration, params[0], TrialField.FIRST_NAME);
+            putIfValid(registration, params[1], TrialField.LAST_NAME);
+            putIfValid(registration, params[2], TrialField.EMAIL);
+            putIfValid(registration, params[3], TrialField.COMPANY);
+            putIfValid(registration, params[4], TrialField.PROJECT);
         } else {
-            // TODO NXP-19258 remove password_verif
-            char[] pwd = promptPassword(true);
-            registration.put(REGISTRATION_PASSWORD, new String(pwd));
-            registration.put(REGISTRATION_PASSWORDND, new String(pwd));
+            promptAndPut(registration, TrialField.FIRST_NAME);
+            promptAndPut(registration, TrialField.LAST_NAME);
+            promptAndPut(registration, TrialField.EMAIL);
+            promptAndPut(registration, TrialField.COMPANY);
+            promptAndPut(registration, TrialField.PROJECT);
         }
 
         if (!promptAcceptTerms()) {
@@ -1635,7 +1608,7 @@ public abstract class NuxeoLauncher {
             commandInfo.exitCode = 1;
             return false;
         }
-        registration.put(REGISTRATION_TERMSNCONDITIONS, "true");
+        registration.put(TrialField.TERMS_AND_CONDITIONS.getId(), "true");
 
         try {
             getConnectRegistrationBroker().registerTrial(registration);
@@ -1647,11 +1620,24 @@ public abstract class NuxeoLauncher {
             return false;
         }
         log.info(String.format(
-                "Trial registered to %s for project %s\nDescription: %s\n"
+                "Trial registered to %s for project %s%n"
                         + "Please ensure you have validated your registration with the confirmation email before starting the server.",
-                registration.get(REGISTRATION_EMAIL), registration.get(REGISTRATION_PROJECT),
-                registration.get(REGISTRATION_DESCRIPTION)));
+                registration.get(TrialField.EMAIL.getId()), registration.get(TrialField.PROJECT.getId())));
         return true;
+    }
+
+    protected void putIfValid(Map<String, String> map, String userInput, TrialField field)
+            throws ConfigurationException {
+        Predicate<String> isValid = field.getPredicate();
+        if (!isValid.test(userInput)) {
+            throw new ConfigurationException(field.getErrorMessage());
+        }
+        map.put(field.getId(), userInput);
+    }
+
+    protected void promptAndPut(Map<String, String> map, TrialField field) throws IOException, ConfigurationException {
+        String userInput = prompt(field.getPromptMessage(), field.getPredicate(), field.getErrorMessage());
+        map.put(field.getId(), userInput);
     }
 
     /**

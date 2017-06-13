@@ -97,7 +97,7 @@ public class ConnectStatusActionBean implements Serializable {
     protected ConnectUpdateStatusInfo connectionStatusCache;
 
     public String getRegistredCLID() throws NoCLID {
-        if (isRegistred()) {
+        if (isRegistered()) {
             return LogicalInstanceIdentifier.instance().getCLID();
         } else {
             return null;
@@ -132,8 +132,8 @@ public class ConnectStatusActionBean implements Serializable {
     }
 
     @Factory(scope = ScopeType.APPLICATION, value = "registredConnectInstance")
-    public boolean isRegistred() {
-        return getService().isInstanceRegistred();
+    public boolean isRegistered() {
+        return getService().isInstanceRegistered();
     }
 
     protected void flushContextCache() {
@@ -277,7 +277,7 @@ public class ConnectStatusActionBean implements Serializable {
     @Factory(scope = ScopeType.APPLICATION, value = "connectUpdateStatusInfo")
     public ConnectUpdateStatusInfo getConnectUpdateStatusInfo() {
         if (connectionStatusCache == null) {
-            if (!isRegistred()) {
+            if (!isRegistered()) {
                 connectionStatusCache = ConnectUpdateStatusInfo.unregistered();
             } else {
                 if (isConnectBannerEnabled() && isConnectServerReachable()) {

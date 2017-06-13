@@ -54,9 +54,9 @@ public class ConnectStatusHolder {
         return Framework.getLocalService(ConnectRegistrationService.class);
     }
 
-    public boolean isRegistred() {
+    public boolean isRegistered() {
         // no cache needed
-        return getService().isInstanceRegistred();
+        return getService().isInstanceRegistered();
     }
 
     public SubscriptionStatusWrapper getStatus() {
@@ -86,7 +86,7 @@ public class ConnectStatusHolder {
 
     public SubscriptionStatusWrapper getStatus(boolean forceRefresh) {
         if (instanceStatus == null || forceRefresh) {
-            if (isRegistred()) {
+            if (isRegistered()) {
                 try {
                     instanceStatus = new SubscriptionStatusWrapper(getService().getConnector().getConnectStatus());
                 } catch (CanNotReachConnectServer e) {
