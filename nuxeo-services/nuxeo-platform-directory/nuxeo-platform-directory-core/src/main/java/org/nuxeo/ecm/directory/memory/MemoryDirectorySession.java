@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 
@@ -142,16 +143,19 @@ public class MemoryDirectorySession extends BaseSession {
 
     @Override
     public DocumentModel createEntry(Map<String, Object> fieldMap) throws DirectoryException {
+        checkPermission(SecurityConstants.WRITE);
         return createEntryWithoutReferences(fieldMap);
     }
 
     @Override
     public void updateEntry(DocumentModel docModel) throws DirectoryException {
+        checkPermission(SecurityConstants.WRITE);
         updateEntryWithoutReferences(docModel);
     }
 
     @Override
     public void deleteEntry(String id) throws DirectoryException {
+        checkPermission(SecurityConstants.WRITE);
         deleteEntryWithoutReferences(id);
     }
 
