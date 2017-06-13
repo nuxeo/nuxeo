@@ -19,14 +19,15 @@
 package org.nuxeo.ecm.platform.oauth.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
@@ -35,14 +36,18 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.oauth2.OAuth2Error;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
+import org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Servlet;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -54,9 +59,9 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 5.9.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ OAuthFeature.class, OAuth2JettyFeature.class })
+@Features({ OAuthFeature.class, OAuth2JettyFeature.class, TransientStoreFeature.class })
 @Jetty(port = 18090)
-public class TestOauth2Challenge {
+public class OAuth2ChallengeFixture {
 
     protected static final String CLIENT_ID = "testClient";
 
@@ -75,7 +80,12 @@ public class TestOauth2Challenge {
     @Inject
     protected ClientRegistry clientRegistry;
 
+    @Inject
+    protected TransientStoreService transientStoreService;
+
     protected Client client;
+
+    protected TransientStore store;
 
     @Before
     public void initOAuthClient() {
@@ -88,7 +98,7 @@ public class TestOauth2Challenge {
         client.setReadTimeout(TIMEOUT);
         client.setFollowRedirects(Boolean.FALSE);
 
-        TestAuthorizationRequest.getRequests().clear();
+        store = transientStoreService.getStore(AuthorizationRequest.STORE_NAME);
     }
 
     public void authorizationShouldReturn200() {
@@ -98,7 +108,7 @@ public class TestOauth2Challenge {
         params.put("response_type", RESPONSE_TYPE);
         params.put("state", STATE);
 
-        ClientResponse cr = responseFromAuthorizationWith(params);
+        ClientResponse cr = responseFromGetAuthorizationWith(params);
         assertEquals(200, cr.getStatus());
     }
 
@@ -109,7 +119,7 @@ public class TestOauth2Challenge {
         params.put("client_id", CLIENT_ID);
         params.put("response_type", RESPONSE_TYPE);
 
-        ClientResponse cr = responseFromAuthorizationWith(params);
+        ClientResponse cr = responseFromGetAuthorizationWith(params);
         assertEquals(302, cr.getStatus());
         String redirect = cr.getHeaders().get("Location").get(0);
         assertTrue(redirect.contains("error=" + OAuth2Error.INVALID_REQUEST.toString().toLowerCase()));
@@ -123,7 +133,7 @@ public class TestOauth2Challenge {
         params.put("response_type", RESPONSE_TYPE);
         params.put("state", STATE);
 
-        ClientResponse cr = responseFromAuthorizationWith(params);
+        ClientResponse cr = responseFromGetAuthorizationWith(params);
         assertEquals(302, cr.getStatus());
         String redirect = cr.getHeaders().get("Location").get(0);
         assertTrue(redirect.contains("error=" + OAuth2Error.UNAUTHORIZED_CLIENT.toString().toLowerCase()));
@@ -137,13 +147,13 @@ public class TestOauth2Challenge {
         params.put("response_type", RESPONSE_TYPE);
         params.put("state", STATE);
 
-        ClientResponse cr = responseFromAuthorizationWith(params);
+        ClientResponse cr = responseFromGetAuthorizationWith(params);
         assertEquals(400, cr.getStatus());
 
         // Invalid: not starting with https
         params.put("redirect_uri", "http://redirect.uri");
 
-        cr = responseFromAuthorizationWith(params);
+        cr = responseFromGetAuthorizationWith(params);
         assertEquals(302, cr.getStatus());
         String redirect = cr.getHeaders().get("Location").get(0);
         assertTrue(redirect.contains("error=" + OAuth2Error.INVALID_REQUEST.toString().toLowerCase()));
@@ -151,7 +161,7 @@ public class TestOauth2Challenge {
         // Invalid: starting with http://localhost with localhost part of the domain name
         params.put("redirect_uri", "http://localhost.somecompany.com");
 
-        cr = responseFromAuthorizationWith(params);
+        cr = responseFromGetAuthorizationWith(params);
         assertEquals(302, cr.getStatus());
         redirect = cr.getHeaders().get("Location").get(0);
         assertTrue(redirect.contains("error=" + OAuth2Error.INVALID_REQUEST.toString().toLowerCase()));
@@ -159,7 +169,7 @@ public class TestOauth2Challenge {
         // Invalid: not matching the one from the registered client
         params.put("redirect_uri", "https://unknown.uri");
 
-        cr = responseFromAuthorizationWith(params);
+        cr = responseFromGetAuthorizationWith(params);
         assertEquals(302, cr.getStatus());
         redirect = cr.getHeaders().get("Location").get(0);
         assertTrue(redirect.contains("error=" + OAuth2Error.INVALID_REQUEST.toString().toLowerCase()));
@@ -169,7 +179,7 @@ public class TestOauth2Challenge {
         params.put("client_id", "nuxeo-mobile-app");
         params.put("redirect_uri", "nuxeo://authorize");
 
-        cr = responseFromAuthorizationWith(params);
+        cr = responseFromGetAuthorizationWith(params);
         assertEquals(200, cr.getStatus());
 
         // Valid: starting with http://localhost with localhost not part of the domain name
@@ -177,7 +187,7 @@ public class TestOauth2Challenge {
         params.put("client_id", "localhost");
         params.put("redirect_uri", "http://localhost:8080/nuxeo");
 
-        cr = responseFromAuthorizationWith(params);
+        cr = responseFromGetAuthorizationWith(params);
         assertEquals(200, cr.getStatus());
 
         // Valid: starting with https
@@ -185,45 +195,102 @@ public class TestOauth2Challenge {
         params.put("client_id", "secure");
         params.put("redirect_uri", REDIRECT_URI);
 
-        cr = responseFromAuthorizationWith(params);
+        cr = responseFromGetAuthorizationWith(params);
         assertEquals(200, cr.getStatus());
     }
 
     @Test
-    public void tokenShouldCreateAndRefreshWithDummyAuthorization() throws IOException {
-        AuthorizationRequest request = new TestAuthorizationRequest(CLIENT_ID, RESPONSE_TYPE, null, REDIRECT_URI,
-                new Date());
-        TestAuthorizationRequest.getRequests().put("fake", request);
+    public void shouldDenyAccess() {
+        AuthorizationRequest authorizationRequest = initAuthorizationRequestCall(CLIENT_ID, REDIRECT_URI);
+        String key = authorizationRequest.getAuthorizationKey();
 
-        // Request a token
+        // missing "grant_access" parameter to grant access
         Map<String, String> params = new HashMap<>();
         params.put("redirect_uri", REDIRECT_URI);
         params.put("client_id", CLIENT_ID);
-        params.put("client_secret", CLIENT_SECRET);
-        params.put("grant_type", "authorization_code");
-        params.put("code", request.getAuthorizationCode());
+        params.put("state", STATE);
+        params.put(NuxeoOAuth2Servlet.AUTHORIZATION_KEY, key);
+        ClientResponse cr = responseFromPostAuthorizationWith(params);
+        assertEquals(302, cr.getStatus());
+        String redirect = cr.getHeaders().get("Location").get(0);
+        assertTrue(redirect.contains("error=access_denied"));
 
-        ClientResponse cr = responseFromTokenWith(params);
+        // ensure authorization request has been removed
+        Set<String> keys = store.keySet();
+        assertFalse(keys.contains(key));
+    }
+
+    protected AuthorizationRequest initAuthorizationRequestCall(String clientId, String redirectURI) {
+        Map<String, String> params = new HashMap<>();
+        params.put("redirect_uri", redirectURI);
+        params.put("client_id", clientId);
+        params.put("response_type", "code");
+        params.put("state", STATE);
+
+        ClientResponse cr = responseFromGetAuthorizationWith(params);
+        assertEquals(200, cr.getStatus());
+
+        // get back the authorization request from the store for the needed authorization key
+        Set<String> keys = store.keySet();
+        assertEquals(1, keys.size());
+        String key = keys.toArray(new String[0])[0];
+        return AuthorizationRequest.get(key);
+    }
+
+    @Test
+    public void shouldRetrieveAccessAndRefreshToken() throws IOException {
+        AuthorizationRequest authorizationRequest = initAuthorizationRequestCall(CLIENT_ID, REDIRECT_URI);
+        String key = authorizationRequest.getAuthorizationKey();
+
+        // get an authorization code
+        Map<String, String> params = new HashMap<>();
+        params.put("redirect_uri", REDIRECT_URI);
+        params.put("client_id", CLIENT_ID);
+        params.put(NuxeoOAuth2Servlet.AUTHORIZATION_KEY, key);
+        params.put(NuxeoOAuth2Servlet.GRANT_ACCESS_PARAM, "true");
+        ClientResponse cr = responseFromPostAuthorizationWith(params);
+        assertEquals(302, cr.getStatus());
+        String redirect = cr.getHeaders().get("Location").get(0);
+        assertTrue(redirect.contains("code="));
+        String code = redirect.substring(redirect.indexOf("code=") + 5, redirect.indexOf("&state"));
+
+        // ensure we have only one authorization request
+        Set<String> keys = store.keySet();
+        assertTrue(keys.contains(code));
+        assertFalse(keys.contains(key));
+
+        // get access and refresh tokens
+        params = new HashMap<>();
+        params.put("redirect_uri", REDIRECT_URI);
+        params.put("client_id", CLIENT_ID);
+        params.put("grant_type", "authorization_code");
+        params.put("client_secret", CLIENT_SECRET);
+        params.put("state", STATE);
+        params.put("code", code);
+        cr = responseFromTokenWith(params);
         assertEquals(200, cr.getStatus());
         String json = cr.getEntity(String.class);
-
         ObjectMapper obj = new ObjectMapper();
-
         Map<?, ?> token = obj.readValue(json, Map.class);
         assertNotNull(token);
         String accessToken = (String) token.get("access_token");
         assertEquals(32, accessToken.length());
+        String refreshToken = (String) token.get("refresh_token");
+        assertEquals(64, refreshToken.length());
+
+        // ensure authorization request has been removed
+        keys = store.keySet();
+        assertFalse(keys.contains(code));
+        assertFalse(keys.contains(key));
 
         // Refresh this token
         params.remove("code");
         params.put("grant_type", "refresh_token");
-        params.put("refresh_token", (String) token.get("refresh_token"));
+        params.put("refresh_token", refreshToken);
         cr = responseFromTokenWith(params);
         assertEquals(200, cr.getStatus());
-
         json = cr.getEntity(String.class);
         Map<?, ?> refreshed = obj.readValue(json, Map.class);
-
         assertNotSame(refreshed.get("access_token"), token.get("access_token"));
     }
 
@@ -238,7 +305,7 @@ public class TestOauth2Challenge {
         return wr.queryParams(params).get(ClientResponse.class);
     }
 
-    protected ClientResponse responseFromAuthorizationWith(Map<String, String> queryParams) {
+    protected ClientResponse responseFromGetAuthorizationWith(Map<String, String> queryParams) {
         WebResource wr = client.resource(BASE_URL).path("oauth2").path("authorization");
 
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
@@ -249,10 +316,15 @@ public class TestOauth2Challenge {
         return wr.queryParams(params).get(ClientResponse.class);
     }
 
-    protected ClientResponse responseFromUrl(String url, String accessToken) {
-        WebResource wr = client.resource(BASE_URL).path(url);
-        wr.header("Authentication", "Bearer " + accessToken);
-        return wr.get(ClientResponse.class);
+    protected ClientResponse responseFromPostAuthorizationWith(Map<String, String> queryParams) {
+        WebResource wr = client.resource(BASE_URL).path("oauth2").path("authorization_submit");
+
+        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+        for (Map.Entry<String, String> entry : queryParams.entrySet()) {
+            params.add(entry.getKey(), entry.getValue());
+        }
+
+        return wr.queryParams(params).post(ClientResponse.class);
     }
 
     protected void registerClient(String name, String id, String secret, String redirectURI) {

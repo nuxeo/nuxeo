@@ -21,12 +21,11 @@ package org.nuxeo.ecm.platform.oauth.tests;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-import org.apache.commons.io.FileUtils;
 import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -36,6 +35,9 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
+/**
+ * @since 9.2
+ */
 @Features(JettyFeature.class)
 @LocalDeploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/jetty-test-config.xml")
 public class OAuth2JettyFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
@@ -47,25 +49,15 @@ public class OAuth2JettyFeature extends SimpleFeature implements WorkingDirector
 
     @Override
     public void configure(RuntimeHarness harness, File workingDir) throws IOException, URISyntaxException {
-        File dest = new File(workingDir, "web/root.war/WEB-INF/");
-        dest.mkdirs();
-
-        dest = new File(workingDir + "/web/root.war/WEB-INF/", "web.xml");
-        try (InputStream in = getResource("test-web.xml").openStream()) {
-            FileUtils.copyInputStreamToFile(in, dest);
+        File webInf = new File(workingDir, "web/root.war/WEB-INF/");
+        if (!webInf.mkdirs()) {
+            throw new IOException(String.format("Unable to create %s directory", webInf.getAbsolutePath()));
         }
 
-        URL resource = getResource("web/nuxeo.war");
-        File nuxeoWar = new File(resource.toURI());
-        FileUtils.copyDirectory(nuxeoWar, new File(workingDir, "web/root.war/"));
+        Files.copy(Paths.get(getResource("test-web.xml").toURI()), webInf.toPath().resolve("web.xml"));
 
-        // deploy the jar containing the taglibs
-        dest = new File(workingDir + "/web/root.war/WEB-INF/", "lib");
-        dest.mkdirs();
-        resource = getResource("META-INF/c.tld");
-        String jarPath = new URI(resource.getFile()).getPath();
-        jarPath = jarPath.substring(0, jarPath.indexOf("!"));
-        FileUtils.copyFileToDirectory(new File(jarPath), dest);
+        Files.copy(Paths.get(getResource("test-oauth2Grant.jsp").toURI()),
+                workingDir.toPath().resolve("web/root.war/oauth2Grant.jsp"));
     }
 
     private static URL getResource(String resource) {

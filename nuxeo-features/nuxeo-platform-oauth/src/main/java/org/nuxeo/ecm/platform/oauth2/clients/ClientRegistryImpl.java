@@ -157,8 +157,7 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
         DirectoryService service = Framework.getService(DirectoryService.class);
         return Framework.doPrivileged(() -> {
             try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
-                Map<String, Serializable> filter = new HashMap<>();
-                filter.put("clientId", clientId);
+                Map<String, Serializable> filter = Collections.singletonMap("clientId", clientId);
                 DocumentModelList docs = session.query(filter);
                 if (docs.size() > 0) {
                     return docs.get(0);

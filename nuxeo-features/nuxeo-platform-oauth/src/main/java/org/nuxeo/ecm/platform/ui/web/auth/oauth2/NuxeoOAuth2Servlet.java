@@ -79,8 +79,6 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     public static final String GRANT_ACCESS_PARAM = "grant_access";
 
-    public static final String DENY_ACCESS_PARAM = "deny_access";
-
     public static final int ACCESS_TOKEN_EXPIRATION_TIME = 3600 * 1000;
 
     protected OAuth2TokenStore tokenStore = new OAuth2TokenStore(TOKEN_SERVICE);
@@ -111,13 +109,14 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     protected void doGetAuthorization(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        AuthorizationRequest authRequest = AuthorizationRequest.from(request);
+        AuthorizationRequest authRequest = AuthorizationRequest.fromRequest(request);
         OAuth2Error error = authRequest.checkError();
         if (error != null) {
             handleError(error, request, response, authRequest.getRedirectUri());
             return;
         }
 
+        AuthorizationRequest.store(authRequest.getAuthorizationKey(), authRequest);
         ClientRegistry clientRegistry = Framework.getService(ClientRegistry.class);
         request.setAttribute(AUTHORIZATION_KEY, authRequest.getAuthorizationKey());
         request.setAttribute(STATE_KEY, authRequest.getState());
@@ -132,7 +131,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         ClientRegistry clientRegistry = Framework.getService(ClientRegistry.class);
         // Process Authorization code
         if (AUTHORIZATION_CODE_GRANT_TYPE.equals(tokenRequest.getGrantType())) {
-            AuthorizationRequest authRequest = AuthorizationRequest.fromCode(tokenRequest.getCode());
+            AuthorizationRequest authRequest = AuthorizationRequest.get(tokenRequest.getCode());
             OAuth2Error error = null;
             if (authRequest == null) {
                 error = OAuth2Error.ACCESS_DENIED;
@@ -156,6 +155,10 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
                         error = OAuth2Error.INVALID_REQUEST;
                     }
                 }
+            }
+
+            if (authRequest != null) {
+                AuthorizationRequest.remove(authRequest.getAuthorizationCode());
             }
 
             if (error != null) {
@@ -196,7 +199,15 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     protected void doPostAuthorizationSubmit(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        AuthorizationRequest authRequest = AuthorizationRequest.from(request);
+        String authKeyForm = request.getParameter(AUTHORIZATION_KEY);
+        AuthorizationRequest authRequest = AuthorizationRequest.get(authKeyForm);
+        if (authRequest == null) {
+            handleError(OAuth2Error.INVALID_REQUEST, request, response, null);
+            return;
+        }
+
+        AuthorizationRequest.remove(authRequest.getAuthorizationKey());
+
         OAuth2Error error = authRequest.checkError();
         if (error != null) {
             handleError(error, request, response, authRequest.getRedirectUri());
@@ -204,20 +215,19 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         }
 
         String grantAccess = request.getParameter(GRANT_ACCESS_PARAM);
-        String denyAccess = request.getParameter(DENY_ACCESS_PARAM);
 
         // Ensure that the user actually grant access and the authorization key is the correct one
-        String authKeyForm = request.getParameter(AUTHORIZATION_KEY);
-        if ((denyAccess != null || grantAccess == null) || !authRequest.getAuthorizationKey().equals(authKeyForm)) {
+        if (grantAccess == null || !authRequest.getAuthorizationKey().equals(authKeyForm)) {
             handleError(OAuth2Error.ACCESS_DENIED, request, response, authRequest.getRedirectUri());
             return;
         }
 
-        // Save username in request object
-        authRequest.setUsername(request.getUserPrincipal().getName());
-
+        // now store the authorization request according to its code
+        // to be able to retrieve it in the "/oauth2/token" endpoint
+        String authorizationCode = authRequest.getAuthorizationCode();
+        AuthorizationRequest.store(authorizationCode, authRequest);
         Map<String, String> params = new HashMap<>();
-        params.put(AUTHORIZATION_CODE_PARAM, authRequest.getAuthorizationCode());
+        params.put(AUTHORIZATION_CODE_PARAM, authorizationCode);
         if (StringUtils.isNotBlank(authRequest.getState())) {
             params.put(STATE_KEY, authRequest.getState());
         }
