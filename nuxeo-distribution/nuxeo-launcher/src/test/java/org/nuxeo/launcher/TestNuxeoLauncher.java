@@ -171,6 +171,59 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         assertEquals("Not the right instance.clid file: ", expectedClid.getCLID(), info.clid);
     }
 
+    @Test
+    public void testRegisterTrialIsValidCommand() throws Exception {
+        String[] args = { "register-trial" };
+        NuxeoLauncher launcher = NuxeoLauncher.createLauncher(args);
+        assertTrue(launcher.commandIs("register-trial"));
+        assertTrue(launcher.commandRequiresNoGUI());
+    }
+
+    /**
+     * A valid command of {@code register-trial} contains 0 or 5 additional arguments:
+     *
+     * <pre>
+     * <code>
+     * register-trial
+     * register-trial firstName lastName email company project
+     * </code>
+     * </pre>
+     * <p>
+     * Set timeout to 1 second, {@code timeout = 1000}, to prevent this test takes too long time to finish.
+     * The only case it can happen is when Nuxeo Launcher waits for user
+     * value from standard input (stdin). It means somebody has changed
+     * the implementation of #registerTrial.
+     */
+    @Test(timeout = 1000) // 1s. Explanation in Javadoc.
+    public void testRegisterTrialWithWrongNumberArgs() throws Exception {
+        String[][] argsToTest = new String[][] {
+                {"register-trial"}, // OK
+                {"register-trial", "first"},
+                {"register-trial", "first", "last"},
+                {"register-trial", "first", "last", "email"},
+                {"register-trial", "first", "last", "email", "company"},
+                {"register-trial", "first", "last", "email", "company", "project"}, // OK
+                {"register-trial", "first", "last", "email", "company", "project", "tooMany"}
+        };
+
+        for (String[] args : argsToTest) {
+            NuxeoLauncher launcher = NuxeoLauncher.createLauncher(args);
+            String cmdStr = "Command " + Arrays.toString(args);
+
+            // Skip assertions for valid argument length
+            if (args.length == 1 || args.length == 6) {
+                continue;
+            }
+
+            try {
+                launcher.registerTrial();
+                fail(cmdStr + " did not raise exception.");
+            } catch (ConfigurationException e) {
+                assertEquals(cmdStr + ": " + e.getMessage(), "Wrong number of arguments.", e.getMessage());
+            }
+        }
+    }
+
     /**
      * NXP-19071: avoid confusion with the command parameters when passing an argument to an option, or when calling
      * without argument an option which accepts optional arguments.

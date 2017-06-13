@@ -263,7 +263,7 @@ public class PackageListingProvider extends DefaultObject {
     public boolean canDownload(Package pkg) {
         return pkg.getPackageState() == PackageState.REMOTE
                 && (pkg.getType() == PackageType.STUDIO || pkg.getVisibility() == PackageVisibility.PUBLIC //
-                        || (ConnectStatusHolder.instance().isRegistred() //
+                        || (ConnectStatusHolder.instance().isRegistered() //
                                 && ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK));
     }
 
@@ -286,7 +286,7 @@ public class PackageListingProvider extends DefaultObject {
      */
     public boolean registrationRequired(Package pkg) {
         return pkg.getPackageState() == PackageState.REMOTE && pkg.getType() != PackageType.STUDIO
-                && pkg.getVisibility() != PackageVisibility.PUBLIC && (!ConnectStatusHolder.instance().isRegistred() //
+                && pkg.getVisibility() != PackageVisibility.PUBLIC && (!ConnectStatusHolder.instance().isRegistered() //
                         || ConnectStatusHolder.instance().getStatus().status() != SubscriptionStatusType.OK);
     }
 

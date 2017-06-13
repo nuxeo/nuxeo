@@ -23,10 +23,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.connector.NuxeoClientInstanceType;
 import org.nuxeo.connect.data.ConnectProject;
@@ -42,25 +45,70 @@ import org.nuxeo.launcher.config.ConfigurationException;
  */
 public class ConnectRegistrationBroker {
 
-    public static final String REGISTRATION_EMAIL = "email";
+    public enum TrialField {
+        FIRST_NAME( //
+                "firstName", //
+                "First name", //
+                input -> Pattern.matches("^(\\p{Alnum}+)([\\s-]\\p{Alnum}+)*", input), //
+                "Invalid first name: only letters (without accents), space, and hyphen '-' are accepted." //
+        ), LAST_NAME( //
+                "lastName", //
+                "Last name", //
+                input -> Pattern.matches("^(\\p{Alnum}+)([\\s-]\\p{Alnum}+)*", input), //
+                "Invalid last name: only letters (without accents), space, and hyphen '-' are accepted." //
+        ), EMAIL( //
+                "email", //
+                "Email", //
+                input -> EmailValidator.getInstance().isValid(input), //
+                "Invalid email address." //
+        ), COMPANY( //
+                "company", //
+                "Company", //
+                input -> Pattern.matches("^(\\p{Alnum}+)([\\s-]\\p{Alnum}+)*", input),
+                "Invalid company name: only alphanumeric (without accents), space, and hyphen '-' are accepted." //
+        ), PROJECT( //
+                "connectreg:projectName", //
+                "Project name", //
+                input -> Pattern.matches("^(?:[-\\w]+|)$", input), //
+                "Project name can only contain alphanumeric characters and dashes." //
+        ), TERMS_AND_CONDITIONS( //
+                "termsAndConditions", //
+                "Terms and conditions", //
+                input -> true, // always valid
+                "Unused message." //
+        );
 
-    public static final String REGISTRATION_COMPANY = "company";
+        private String id;
 
-    public static final String REGISTRATION_PROJECT = "connectreg:projectName";
+        private String name;
 
-    public static final String REGISTRATION_DESCRIPTION = "description";
+        private Predicate<String> predicate;
 
-    public static final String REGISTRATION_PASSWORD = "password";
+        private String errorMessage;
 
-    public static final String REGISTRATION_PASSWORDND = "password_verif";
+        TrialField(String id, String name, Predicate<String> predicate, String errorMessage) {
+            this.id = id;
+            this.name = name;
+            this.predicate = predicate;
+            this.errorMessage = errorMessage;
+        }
 
-    public static final String REGISTRATION_TERMSNCONDITIONS = "termsAndConditions";
+        public String getId() {
+            return id;
+        }
 
-    public static final String REGISTRATION_COMPANY_REGEX = "^\\w+$";
+        public String getPromptMessage() {
+            return name + ": ";
+        }
 
-    public static final String REGISTRATION_USERNAME_REGEX = "^\\w+$";
+        public Predicate<String> getPredicate() {
+            return predicate;
+        }
 
-    public static final String REGISTRATION_PROJECT_REGEX = "^(?:[-\\w]+|)$";
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+    }
 
     private static final Log log = LogFactory.getLog(ConnectRegistrationBroker.class);
 
@@ -68,8 +116,8 @@ public class ConnectRegistrationBroker {
         return NuxeoConnectClient.getConnectRegistrationService();
     }
 
-    public void registerTrial(Map<String, String> parameters) throws IOException, RegistrationException,
-            ConfigurationException {
+    public void registerTrial(Map<String, String> parameters)
+            throws IOException, RegistrationException, ConfigurationException {
         try {
             registration().remoteTrialInstanceRegistration(parameters);
         } catch (LogicalInstanceIdentifier.InvalidCLID e) {
