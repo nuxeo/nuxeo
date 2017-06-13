@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,23 @@
  * limitations under the License.
  *
  * Contributors:
- *     Arnaud Kervern
+ *     Thomas Roger
+ *
  */
+
 package org.nuxeo.ecm.platform.oauth.tests;
 
-import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite.SuiteClasses;
+import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.transientstore.test.InMemoryTransientStoreFeature;
 
-@Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.platform.oauth" })
-@LocalDeploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/directory-test-config.xml")
-public class OAuthFeature extends SimpleFeature {
-
+/**
+ * @since 9.2
+ */
+@RunWith(ContributableFeaturesRunner.class)
+@Features(InMemoryTransientStoreFeature.class)
+@SuiteClasses(OAuth2ChallengeFixture.class)
+public class TestOAuth2Challenge {
 }

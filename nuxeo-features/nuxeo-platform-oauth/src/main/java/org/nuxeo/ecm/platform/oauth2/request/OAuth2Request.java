@@ -29,7 +29,7 @@ import org.apache.commons.lang.StringUtils;
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.9.2
  */
-public abstract class Oauth2Request {
+public abstract class OAuth2Request {
 
     public static final String CLIENT_ID = "client_id";
 
@@ -41,10 +41,10 @@ public abstract class Oauth2Request {
 
     protected String redirectUri;
 
-    public Oauth2Request() {
+    public OAuth2Request() {
     }
 
-    public Oauth2Request(HttpServletRequest request) {
+    public OAuth2Request(HttpServletRequest request) {
         clientId = request.getParameter(CLIENT_ID);
         redirectUri = decodeParameter(request, REDIRECT_URI);
         // Fallback for non-RFC compliant client

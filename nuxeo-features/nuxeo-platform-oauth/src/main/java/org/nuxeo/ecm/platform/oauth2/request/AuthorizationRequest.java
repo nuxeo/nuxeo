@@ -18,11 +18,11 @@
  */
 package org.nuxeo.ecm.platform.oauth2.request;
 
-import java.io.UnsupportedEncodingException;
+import java.io.Serializable;
+import java.security.Principal;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,6 +30,8 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.oauth2.OAuth2Error;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
@@ -40,18 +42,17 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.9.2
  */
-public class AuthorizationRequest extends Oauth2Request {
+public class AuthorizationRequest extends OAuth2Request {
+
     private static final Log log = LogFactory.getLog(AuthorizationRequest.class);
 
-    protected static Map<String, AuthorizationRequest> requests = new ConcurrentHashMap<>();
+    public static final String STORE_NAME = "authorizationRequestStore";
 
     protected String responseType;
 
     protected String scope;
 
     protected String state;
-
-    protected String sessionId;
 
     protected Date creationDate;
 
@@ -67,19 +68,63 @@ public class AuthorizationRequest extends Oauth2Request {
 
     public static final String STATE = "state";
 
-    public AuthorizationRequest() {
+    public static AuthorizationRequest fromRequest(HttpServletRequest request) {
+        return new AuthorizationRequest(request);
     }
 
-    public AuthorizationRequest(HttpServletRequest request) {
+    public static AuthorizationRequest fromMap(Map<String, Serializable> map) {
+        return new AuthorizationRequest(map);
+    }
+
+    public static void store(String key, AuthorizationRequest authorizationRequest) {
+        TransientStoreService transientStoreService = Framework.getService(TransientStoreService.class);
+        TransientStore store = transientStoreService.getStore(STORE_NAME);
+        store.putParameters(key, authorizationRequest.toMap());
+    }
+
+    public static AuthorizationRequest get(String key) {
+        TransientStoreService transientStoreService = Framework.getService(TransientStoreService.class);
+        TransientStore store = transientStoreService.getStore(STORE_NAME);
+        Map<String, Serializable> parameters = store.getParameters(key);
+        if (parameters != null) {
+            AuthorizationRequest authorizationRequest = AuthorizationRequest.fromMap(parameters);
+            return authorizationRequest.isExpired() ? null : authorizationRequest;
+        }
+        return null;
+    }
+
+    public static void remove(String key) {
+        TransientStoreService transientStoreService = Framework.getService(TransientStoreService.class);
+        TransientStore store = transientStoreService.getStore(STORE_NAME);
+        store.remove(key);
+    }
+
+    protected AuthorizationRequest(HttpServletRequest request) {
         super(request);
         responseType = request.getParameter(RESPONSE_TYPE);
 
         scope = request.getParameter(SCOPE);
         state = request.getParameter(STATE);
-        sessionId = request.getSession(true).getId();
+
+        Principal principal = request.getUserPrincipal();
+        if (principal != null) {
+            username = principal.getName();
+        }
 
         creationDate = new Date();
         authorizationKey = RandomStringUtils.random(6, true, false);
+    }
+
+    protected AuthorizationRequest(Map<String, Serializable> map) {
+        clientId = (String) map.get("clientId");
+        redirectUri = (String) map.get("redirectUri");
+        responseType = (String) map.get("responseType");
+        scope = (String) map.get("scope");
+        state = (String) map.get("state");
+        creationDate = (Date) map.get("creationDate");
+        authorizationCode = (String) map.get("authorizationCode");
+        authorizationKey = (String) map.get("authorizationKey");
+        username = (String) map.get("username");
     }
 
     public OAuth2Error checkError() {
@@ -117,7 +162,7 @@ public class AuthorizationRequest extends Oauth2Request {
         if (StringUtils.isBlank(clientRequestURI)) {
             log.error(String.format(
                     "No redirect URI set for OAuth2 client %s. It is required to validate the %s parameter, please make sure you update this OAuth2 client.",
-                    client, Oauth2Request.REDIRECT_URI));
+                    client, OAuth2Request.REDIRECT_URI));
             // Checking that the client has a redirect URI since it is now a required field but it might be empty for an
             // old client.
             // In this case we return an error since an empty redirect URI is a security issue.
@@ -149,14 +194,6 @@ public class AuthorizationRequest extends Oauth2Request {
         return username;
     }
 
-    public String getResponseType() {
-        return responseType;
-    }
-
-    public String getScope() {
-        return scope;
-    }
-
     public String getState() {
         return state;
     }
@@ -172,45 +209,36 @@ public class AuthorizationRequest extends Oauth2Request {
         return authorizationKey;
     }
 
-    private static void deleteExpiredRequests() {
-        Iterator<AuthorizationRequest> iterator = requests.values().iterator();
-        AuthorizationRequest req;
-        while (iterator.hasNext() && (req = iterator.next()) != null) {
-            if (req.isExpired()) {
-                requests.remove(req.sessionId);
-            }
+    public Map<String, Serializable> toMap() {
+        Map<String, Serializable> map = new HashMap<>();
+        if (clientId != null) {
+            map.put("clientId", clientId);
         }
-    }
-
-    public static AuthorizationRequest from(HttpServletRequest request) throws UnsupportedEncodingException {
-        deleteExpiredRequests();
-
-        String sessionId = request.getSession(true).getId();
-        if (requests.containsKey(sessionId)) {
-            AuthorizationRequest authRequest = requests.get(sessionId);
-            if (!authRequest.isExpired() && authRequest.isValidState(request)) {
-                return authRequest;
-            }
+        if (redirectUri != null) {
+            map.put("redirectUri", redirectUri);
         }
-
-        AuthorizationRequest authRequest = new AuthorizationRequest(request);
-        requests.put(sessionId, authRequest);
-        return authRequest;
-    }
-
-    public static AuthorizationRequest fromCode(String authorizationCode) {
-        for (AuthorizationRequest auth : requests.values()) {
-            if (auth.authorizationCode != null && auth.authorizationCode.equals(authorizationCode)) {
-                if (auth.sessionId != null) {
-                    requests.remove(auth.sessionId);
-                }
-                return auth.isExpired() ? null : auth;
-            }
+        if (responseType != null) {
+            map.put("responseType", responseType);
         }
-        return null;
+        if (scope != null) {
+            map.put("scope", scope);
+        }
+        if (state != null) {
+            map.put("state", state);
+        }
+        if (creationDate != null) {
+            map.put("creationDate", creationDate);
+        }
+        if (authorizationCode != null) {
+            map.put("authorizationCode", authorizationCode);
+        }
+        if (authorizationKey != null) {
+            map.put("authorizationKey", authorizationKey);
+        }
+        if (username != null) {
+            map.put("username", username);
+        }
+        return map;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
 }

@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.9.2
  */
-public class TokenRequest extends Oauth2Request {
+public class TokenRequest extends OAuth2Request {
 
     protected String grantType;
 
