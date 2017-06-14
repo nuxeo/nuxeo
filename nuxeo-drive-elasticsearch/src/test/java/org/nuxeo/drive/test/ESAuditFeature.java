@@ -22,11 +22,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature.Waiter;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
@@ -42,9 +42,9 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  *
  * @since 8.2
  */
-@Features({ PlatformFeature.class, AuditFeature.class, RepositoryElasticSearchFeature.class })
+@Features({ AutomationFeature.class, AuditFeature.class, RepositoryElasticSearchFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.seqgen",
-        "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml",
+        "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml", "org.nuxeo.admin.center",
         "org.nuxeo.elasticsearch.audit",
         "org.nuxeo.elasticsearch.audit.test:elasticsearch-audit-index-test-contrib.xml",
         "org.nuxeo.drive.elasticsearch" })
