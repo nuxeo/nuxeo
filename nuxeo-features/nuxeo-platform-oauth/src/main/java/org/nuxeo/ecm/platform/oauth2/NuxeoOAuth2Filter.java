@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,11 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Contributors:
+ *     Thomas Roger
+ *
  */
-package org.nuxeo.ecm.platform.ui.web.auth.oauth2;
+package org.nuxeo.ecm.platform.oauth2;
 
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
-import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.Constants.TOKEN_SERVICE;
+import static org.nuxeo.ecm.platform.oauth2.Constants.TOKEN_SERVICE;
 
 import java.io.IOException;
 import java.net.URLDecoder;

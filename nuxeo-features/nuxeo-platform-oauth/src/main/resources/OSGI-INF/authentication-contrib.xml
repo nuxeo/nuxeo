@@ -6,13 +6,11 @@
       point="preFilter">
 
       <preFilter name="OAuth" class="org.nuxeo.ecm.platform.ui.web.auth.oauth.NuxeoOAuthFilter"/>
-      <preFilter name="OAuth2" class="org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter"/>
+      <preFilter name="OAuth2" class="org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Filter"/>
 
   </extension>
 
-  <extension
-    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-    point="startURL">
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="startURL">
 
     <startURLPattern>
       <patterns>
