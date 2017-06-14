@@ -25,7 +25,6 @@ import static org.nuxeo.ecm.core.api.event.CoreEventConstants.REPOSITORY_NAME;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ACE_STATUS_UPDATED;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -33,10 +32,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -65,7 +64,7 @@ public class UpdateACEStatusWork extends AbstractWork {
             + " WHERE (ecm:acl/*1/status = 0 AND ecm:acl/*1/begin <= TIMESTAMP '%s')"
             + " OR (ecm:acl/*1/status = 1 AND ecm:acl/*1/end <= TIMESTAMP '%s')";
 
-    public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final FastDateFormat FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
     protected int batchSize = DEFAULT_BATCH_SIZE;
 
