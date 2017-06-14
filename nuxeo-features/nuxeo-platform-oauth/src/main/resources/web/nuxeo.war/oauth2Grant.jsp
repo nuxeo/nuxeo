@@ -1,128 +1,159 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<%@ page contentType="text/html; charset=UTF-8" %>
-<%@ page language="java" %>
+<!DOCTYPE html>
+<%@ page contentType="text/html; charset=UTF-8"%>
+
+<%@ page import="org.nuxeo.common.Environment"%>
+<%@ page import="org.nuxeo.runtime.api.Framework"%>
+<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper"%>
+<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%
-  String context = request.getContextPath();
+String context = request.getContextPath();
+
+String productName = Framework.getProperty(Environment.PRODUCT_NAME);
+
+LoginScreenConfig screenConfig = LoginScreenHelper.getConfig();
+String loginButtonBackgroundColor = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginButtonBackgroundColor(), "#ff452a");
+String logoWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoWidth(), "113");
+String logoHeight = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoHeight(), "20");
+String logoAlt = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoAlt(), "Nuxeo");
+String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl(), context + "/img/login_logo.png");
+
 %>
 <html>
 <fmt:setBundle basename="messages" var="messages"/>
+
 <head>
-  <style type="text/css">
-    <!--
-    body {
-      font: normal 11px "Lucida Grande", sans-serif;
-      color: #343434;
+<title><%=productName%></title>
+<link rel="icon" type="image/png" href="<%=context%>/icons/favicon.png" />
+<link rel="shortcut icon" type="image/x-icon" href="<%=context%>/icons/favicon.ico" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style type="text/css">
+<!--
+  * {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+  }
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font: normal 16px/22pt "Lucida Grande", Arial, sans-serif;
+    background: #f2f2f2;
+    color: #343434;
+  }
+
+  header {
+    background-color: #fff;
+    text-align: center;
+    padding: .8em 1em .3em;
+  }
+
+  header img {
+    max-height: 3em;
+  }
+
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100% - 10em);
+  }
+
+  form {
+    margin: 0;
+    background-color: #fff;
+    width: 100%;
+    padding: 1.7em;
+  }
+
+  form > * {
+    flex: 1 1 auto;
+    -webkit-box-flex: 1;
+    width: 100%;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+    margin: 2em 0 0;
+  }
+
+  .button {
+    flex-basis: 46%;
+    border: 0;
+    background-color: #f2f2f2;
+    cursor: pointer;
+    font-weight: normal;
+    line-height: 1.5em;
+    font-size: 1em;
+    padding: .7em 1.2em;
+    text-decoration: none;
+    /* Remove iOS corners and glare on inputs */
+    -webkit-appearance: none;
+    -webkit-border-radius: 0;
+  }
+
+  .button:hover,
+  .button:focus {
+    box-shadow: 0 -5px 0 rgba(0, 0, 0, 0.3) inset;
+    outline: none;
+  }
+
+  .button.primary {
+    background-color: <%= loginButtonBackgroundColor %>;
+    color: white;
+    font-weight: bold;
+  }
+
+  @media all and (min-width: 500px) {
+    form {
+      padding: 2.5em;
+      width: 40em;
     }
+  }
+-->
+</style>
 
-    .topBar {
-      background: none #212325;
-      width: 100%;
-      height: 36px;
-      border: 0;
-    }
-
-    .topBar img {
-      margin-left: 20px;
-    }
-
-    H1 {
-      color: #343434;
-      font: bold 14px "Lucida Grande", sans-serif;
-      padding: 0;
-      margin: 2px 0 15px 0;
-      border-bottom: 1px dotted #8B8B8B;
-    }
-
-    H2 {
-      color: #999;
-      font: bold 13px "Lucida Grande", sans-serif;
-      padding: 0;
-      margin: 0 0 0 0;
-    }
-
-    .footer {
-      color: #d6d6d6;
-      font-size: 9px;
-    }
-
-    .loginLegal {
-      padding: 0;
-      margin: 0 0 10px 0;
-    }
-
-    .labelCorp {
-      margin: 0;
-      width: 400px;
-      padding-top: 0px;
-    }
-
-    .labelCorp ul {
-      margin: 0;
-      padding: 0 42px 0 0;
-    }
-
-    .labelCorp li {
-      margin: 0;
-      padding: 0px 8px;
-      list-style: none;
-      float: right;
-    }
-
-    .labelCorp a {
-      text-decoration: none;
-      color: #d7d7d7;
-      font: normal 11px "Lucida Grande", sans-serif;
-      padding-top: 0px;
-    }
-
-    .labelCorp a:hover {
-      text-decoration: underline;
-    }
-
-    -->
-
-  </style>
 </head>
-<body style="margin:0;text-align:center;">
 
-<table cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
-  <tbody>
-  <tr class="topBar">
-    <td>
-      <img width="92" height="36" alt="Nuxeo Document Management" src="<%=context%>/img/nuxeo_logo.png"/>
-    </td>
-  </tr>
+<body>
+<header>
+  <img width="<%=logoWidth%>" height="<%=logoHeight%>" alt="<%=logoAlt%>" src="<%=logoUrl%>" />
+</header>
+<div class="container">
+  <form action="<%=context%>/oauth2/authorization_submit" method="POST">
+    <!-- To prevent caching -->
+    <%
+      response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
+      response.setHeader("Pragma", "no-cache"); // HTTP 1.0
+      response.setDateHeader("Expires", -1); // Prevents caching at the proxy server
+    %>
 
-  <tr>
-    <td align="center">
-      <form action="<%=context%>/oauth2/authorization_submit" method="POST">
-        <h2>
-          <fmt:message bundle="${messages}" key="label.oauth2.grantConfirmation">
-            <fmt:param value="${client_name}"/>
-          </fmt:message>
-        </h2>
+    <fmt:message bundle="${messages}" key="label.oauth2.grantConfirmation">
+      <fmt:param value="${client_name}"/>
+      <fmt:param value="<%=productName%>"/>
+    </fmt:message>
 
-        <br/>
-        <input name="authorization_key" type="hidden"
-          value="${authorization_key}"/>
-        <input name="state" type="hidden" value="${state}"/>
-        <button name="grant_access" value="1">yes</button>
-        <button name="deny_access" value="1">no</button>
-      </form>
-    </td>
-  </tr>
+    <input name="authorization_key" type="hidden" value="${authorization_key}"/>
+    <input name="state" type="hidden" value="${state}"/>
 
-  <tr class="footer">
-    <td align="center" valign="bottom">
-      <div class="loginLegal">
-        <fmt:message bundle="${messages}" key="label.login.copyright"/>
-      </div>
-    </td>
-  </tr>
-  </tbody>
-</table>
+    <div class="buttons">
+      <button class="button" name="deny_access" value="1">
+        <fmt:message bundle="${messages}" key="label.oauth2.cancel" />
+      </button>
+      <button class="button primary" name="grant_access" value="1">
+        <fmt:message bundle="${messages}" key="label.oauth2.allow" />
+      </button>
+    </div>
+  </form>
+</div>
+
 </body>
 </html>
