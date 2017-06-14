@@ -7,7 +7,7 @@
   <servlet>
     <servlet-name>OAuth2 Servlet</servlet-name>
     <servlet-class>
-      org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Servlet
+      org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet
     </servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>

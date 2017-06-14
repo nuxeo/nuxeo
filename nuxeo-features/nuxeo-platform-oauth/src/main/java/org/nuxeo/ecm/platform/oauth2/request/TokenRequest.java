@@ -18,6 +18,11 @@
  */
 package org.nuxeo.ecm.platform.oauth2.request;
 
+import static org.nuxeo.ecm.platform.oauth2.Constants.AUTHORIZATION_CODE_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CLIENT_SECRET_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.GRANT_TYPE_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.REFRESH_TOKEN_PARAM;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -36,10 +41,10 @@ public class TokenRequest extends OAuth2Request {
 
     public TokenRequest(HttpServletRequest request) {
         super(request);
-        grantType = request.getParameter("grant_type");
-        code = request.getParameter("code");
-        clientSecret = request.getParameter("client_secret");
-        refreshToken = request.getParameter("refresh_token");
+        grantType = request.getParameter(GRANT_TYPE_PARAM);
+        code = request.getParameter(AUTHORIZATION_CODE_PARAM);
+        clientSecret = request.getParameter(CLIENT_SECRET_PARAM);
+        refreshToken = request.getParameter(REFRESH_TOKEN_PARAM);
     }
 
     public String getGrantType() {

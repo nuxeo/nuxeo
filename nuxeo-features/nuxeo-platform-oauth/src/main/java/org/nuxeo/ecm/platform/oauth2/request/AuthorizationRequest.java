@@ -18,6 +18,12 @@
  */
 package org.nuxeo.ecm.platform.oauth2.request;
 
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_RESPONSE_TYPE;
+import static org.nuxeo.ecm.platform.oauth2.Constants.REDIRECT_URI_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.RESPONSE_TYPE_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.SCOPE_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.STATE_PARAM;
+
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.Date;
@@ -62,12 +68,6 @@ public class AuthorizationRequest extends OAuth2Request {
 
     protected String username;
 
-    public static final String RESPONSE_TYPE = "response_type";
-
-    public static final String SCOPE = "scope";
-
-    public static final String STATE = "state";
-
     public static AuthorizationRequest fromRequest(HttpServletRequest request) {
         return new AuthorizationRequest(request);
     }
@@ -101,10 +101,10 @@ public class AuthorizationRequest extends OAuth2Request {
 
     protected AuthorizationRequest(HttpServletRequest request) {
         super(request);
-        responseType = request.getParameter(RESPONSE_TYPE);
+        responseType = request.getParameter(RESPONSE_TYPE_PARAM);
 
-        scope = request.getParameter(SCOPE);
-        state = request.getParameter(STATE);
+        scope = request.getParameter(SCOPE_PARAM);
+        state = request.getParameter(STATE_PARAM);
 
         Principal principal = request.getUserPrincipal();
         if (principal != null) {
@@ -162,7 +162,7 @@ public class AuthorizationRequest extends OAuth2Request {
         if (StringUtils.isBlank(clientRequestURI)) {
             log.error(String.format(
                     "No redirect URI set for OAuth2 client %s. It is required to validate the %s parameter, please make sure you update this OAuth2 client.",
-                    client, OAuth2Request.REDIRECT_URI));
+                    client, REDIRECT_URI_PARAM));
             // Checking that the client has a redirect URI since it is now a required field but it might be empty for an
             // old client.
             // In this case we return an error since an empty redirect URI is a security issue.
@@ -175,7 +175,7 @@ public class AuthorizationRequest extends OAuth2Request {
         }
 
         // Check request type
-        if (!"code".equals(responseType)) {
+        if (!CODE_RESPONSE_TYPE.equals(responseType)) {
             return OAuth2Error.UNSUPPORTED_RESPONSE_TYPE;
         }
         return null;
@@ -187,7 +187,7 @@ public class AuthorizationRequest extends OAuth2Request {
     }
 
     public boolean isValidState(HttpServletRequest request) {
-        return StringUtils.isBlank(getState()) || request.getParameter(STATE).equals(getState());
+        return StringUtils.isBlank(getState()) || request.getParameter(STATE_PARAM).equals(getState());
     }
 
     public String getUsername() {

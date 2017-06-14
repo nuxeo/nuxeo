@@ -14,16 +14,19 @@
  * limitations under the License.
  *
  * Contributors:
- *     Arnaud Kervern
  *     Thomas Roger
  *
  */
-package org.nuxeo.ecm.platform.ui.web.auth.oauth2;
+package org.nuxeo.ecm.platform.oauth2;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
-import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.Constants.TOKEN_SERVICE;
+import static org.nuxeo.ecm.platform.oauth2.Constants.AUTHORIZATION_CODE_GRANT_TYPE;
+import static org.nuxeo.ecm.platform.oauth2.Constants.AUTHORIZATION_CODE_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.REFRESH_TOKEN_GRANT_TYPE;
+import static org.nuxeo.ecm.platform.oauth2.Constants.STATE_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.TOKEN_SERVICE;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -38,7 +41,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.ecm.platform.oauth2.OAuth2Error;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
@@ -55,27 +57,19 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    protected static final String ENDPOINT_AUTH = "authorization";
+    public static final String ENDPOINT_AUTH = "authorization";
 
-    protected static final String ENDPOINT_TOKEN = "token";
+    public static final String ENDPOINT_TOKEN = "token";
 
-    protected static final String ENDPOINT_AUTH_SUBMIT = "authorization_submit";
+    public static final String ENDPOINT_AUTH_SUBMIT = "authorization_submit";
 
     public static final String AUTHORIZATION_KEY = "authorization_key";
-
-    public static final String STATE_KEY = "state";
-
-    public static final String AUTHORIZATION_CODE_PARAM = "code";
 
     public static final String ERROR_PARAM = "error";
 
     public static final String CLIENT_NAME = "client_name";
 
     public static final String GRANT_JSP_PAGE_PATH = "/oauth2Grant.jsp";
-
-    public static final String AUTHORIZATION_CODE_GRANT_TYPE = "authorization_code";
-
-    public static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
 
     public static final String GRANT_ACCESS_PARAM = "grant_access";
 
@@ -119,7 +113,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         AuthorizationRequest.store(authRequest.getAuthorizationKey(), authRequest);
         ClientRegistry clientRegistry = Framework.getService(ClientRegistry.class);
         request.setAttribute(AUTHORIZATION_KEY, authRequest.getAuthorizationKey());
-        request.setAttribute(STATE_KEY, authRequest.getState());
+        request.setAttribute(STATE_PARAM, authRequest.getState());
         request.setAttribute(CLIENT_NAME, clientRegistry.getClient(authRequest.getClientId()).getName());
 
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(GRANT_JSP_PAGE_PATH);
@@ -229,7 +223,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         Map<String, String> params = new HashMap<>();
         params.put(AUTHORIZATION_CODE_PARAM, authorizationCode);
         if (StringUtils.isNotBlank(authRequest.getState())) {
-            params.put(STATE_KEY, authRequest.getState());
+            params.put(STATE_PARAM, authRequest.getState());
         }
 
         request.getSession().invalidate();
@@ -248,9 +242,9 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             String redirectURI) throws IOException {
         Map<String, String> params = new HashMap<>();
         params.put(ERROR_PARAM, error.toString().toLowerCase());
-        String state = request.getParameter(STATE_KEY);
+        String state = request.getParameter(STATE_PARAM);
         if (StringUtils.isNotBlank(state)) {
-            params.put(STATE_KEY, state);
+            params.put(STATE_PARAM, state);
         }
 
         sendRedirect(response, redirectURI, params);

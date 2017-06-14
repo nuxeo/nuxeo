@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.platform.oauth2.request;
 
+import static org.nuxeo.ecm.platform.oauth2.Constants.CLIENT_ID_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.REDIRECT_URI_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.REDIRECT_URL_PARAM;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
@@ -31,12 +35,6 @@ import org.apache.commons.lang.StringUtils;
  */
 public abstract class OAuth2Request {
 
-    public static final String CLIENT_ID = "client_id";
-
-    public static final String REDIRECT_URI = "redirect_uri";
-
-    public static final String REDIRECT_URL = "redirect_url";
-
     protected String clientId;
 
     protected String redirectUri;
@@ -45,11 +43,11 @@ public abstract class OAuth2Request {
     }
 
     public OAuth2Request(HttpServletRequest request) {
-        clientId = request.getParameter(CLIENT_ID);
-        redirectUri = decodeParameter(request, REDIRECT_URI);
+        clientId = request.getParameter(CLIENT_ID_PARAM);
+        redirectUri = decodeParameter(request, REDIRECT_URI_PARAM);
         // Fallback for non-RFC compliant client
         if (StringUtils.isBlank(redirectUri)) {
-            redirectUri = decodeParameter(request, REDIRECT_URL);
+            redirectUri = decodeParameter(request, REDIRECT_URL_PARAM);
         }
     }
 
