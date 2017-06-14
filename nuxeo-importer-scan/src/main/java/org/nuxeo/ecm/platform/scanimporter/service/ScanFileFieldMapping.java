@@ -21,8 +21,8 @@
 package org.nuxeo.ecm.platform.scanimporter.service;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -36,7 +36,7 @@ public class ScanFileFieldMapping implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss'Z'");
+    public static final FastDateFormat DEFAULT_DATE_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.sss'Z'");
 
     @XNode("@sourceXPath")
     protected String sourceXPath;
@@ -53,12 +53,12 @@ public class ScanFileFieldMapping implements Serializable {
     @XNode("@dateFormat")
     protected String dateFormatStr;
 
-    protected SimpleDateFormat dateFormat;
+    protected FastDateFormat dateFormat;
 
-    public SimpleDateFormat getDateFormat() {
+    public FastDateFormat getDateFormat() {
         if (dateFormat == null) {
             if (dateFormatStr != null) {
-                dateFormat = new SimpleDateFormat(dateFormatStr);
+                dateFormat = FastDateFormat.getInstance(dateFormatStr);
             } else {
                 dateFormat = DEFAULT_DATE_FORMAT;
             }
