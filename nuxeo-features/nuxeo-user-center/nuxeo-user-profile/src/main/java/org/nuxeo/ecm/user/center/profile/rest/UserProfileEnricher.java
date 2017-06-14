@@ -27,10 +27,9 @@ import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFIL
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class UserProfileEnricher extends AbstractJsonEnricher<NuxeoPrincipal> {
 
-    private static final DateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static final FastDateFormat FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     public static final String NAME = "userprofile";
 

@@ -24,8 +24,9 @@ import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFIL
 import static org.nuxeo.ecm.user.center.profile.rest.UserProfileEnricher.NAME;
 
 import java.io.IOException;
-import java.util.Date;
+import java.util.Calendar;
 
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -52,6 +53,9 @@ import com.google.inject.Inject;
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.user.center.profile" })
 public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<NuxeoPrincipalJsonWriter, NuxeoPrincipal> {
+    
+    private static final FastDateFormat FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    
     public UserProfileEnricherTest() {
         super(NuxeoPrincipalJsonWriter.class, NuxeoPrincipal.class);
     }
@@ -59,12 +63,16 @@ public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<Nux
     @Inject
     CoreSession session;
 
+    private Calendar birthDate;
+
     @Before
     public void setUp() {
+        birthDate = Calendar.getInstance();
+        birthDate.set(1973, 4, 19, 22, 13, 0);
         UserProfileService ups = Framework.getLocalService(UserProfileService.class);
         DocumentModel up = ups.getUserProfileDocument(session);
         up.setPropertyValue(USER_PROFILE_PHONENUMBER_FIELD, "mynumber");
-        up.setPropertyValue(USER_PROFILE_BIRTHDATE_FIELD, new Date());
+        up.setPropertyValue(USER_PROFILE_BIRTHDATE_FIELD, birthDate.getTime());
         session.saveDocument(up);
         session.save();
     }
@@ -77,5 +85,6 @@ public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<Nux
         jsonAssert.has(String.format("avatar", NAME));
         jsonAssert.has(String.format("birthdate", NAME));
         jsonAssert.get(String.format("phonenumber", NAME)).isEquals("mynumber");
+        jsonAssert.get(String.format("birthdate", NAME)).isEquals(FORMATTER.format(birthDate));
     }
 }
