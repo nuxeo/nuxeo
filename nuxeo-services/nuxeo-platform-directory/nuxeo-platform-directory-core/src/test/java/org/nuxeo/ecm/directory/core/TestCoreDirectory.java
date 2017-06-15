@@ -146,13 +146,11 @@ public class TestCoreDirectory {
         Assert.assertFalse(dirSession.authenticate(CoreDirectoryInit.DOC_ID_USER1, "bad-pwd"));
         Assert.assertFalse(dirSession.authenticate("bad-id", "haha"));
         Assert.assertTrue(
-                dirSession.authenticate(CoreDirectoryInit.DOC_ID_USERSHA1, CoreDirectoryInit.DOC_PWD_USERSHA1)); // password
-                                                                                                                 // alright
+                dirSession.authenticate(CoreDirectoryInit.DOC_ID_USERSHA1, CoreDirectoryInit.DOC_PWD_USERSHA1));
         Assert.assertFalse(
-                dirSession.authenticate(CoreDirectoryInit.DOC_ID_USERSHA1, CoreDirectoryInit.DOC_PWD_BADPWDSHA1)); // wrong
-                                                                                                                   // password
-        Assert.assertFalse(dirSession.authenticate(CoreDirectoryInit.DOC_ID_USERSHA1, null)); // null password (avoid
-                                                                                              // NPE)
+                dirSession.authenticate(CoreDirectoryInit.DOC_ID_USERSHA1, CoreDirectoryInit.DOC_PWD_BADPWDSHA1));
+        // null password (avoid NPE)
+        Assert.assertFalse(dirSession.authenticate(CoreDirectoryInit.DOC_ID_USERSHA1, null));
     }
 
     @Test
