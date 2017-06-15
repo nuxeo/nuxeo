@@ -283,8 +283,6 @@ public class LDAPDirectory extends AbstractDirectory {
             LDAPDirectoryDescriptor ldapDirectoryDesc = getDescriptor();
             SearchControls scts = new SearchControls();
             scts.setSearchScope(ldapDirectoryDesc.getSearchScope());
-            scts.setReturningAttributes(new String[] { ldapDirectoryDesc.rdnAttribute,
-                    ldapDirectoryDesc.fieldMapping.get(getIdField()) });
             return scts;
         } else {
             // return the precomputed scts instance
