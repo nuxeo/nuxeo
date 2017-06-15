@@ -26,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +88,7 @@ public class TestConnectBroker {
             return event.getLevel().isGreaterOrEqual(Level.INFO) && (event.getLoggerName().contains("ConnectBroker")
                     || event.getLoggerName().contains("PackagePersistence")
                     || event.getLoggerName().contains("PackageManagerImpl")
+                    || event.getLoggerName().contains("MessageInfo")
                     || event.getLoggerName().contains("LocalDownloadingPackage"));
         }
     }
@@ -255,6 +257,36 @@ public class TestConnectBroker {
                         + "  Local packages to install (3): A:1.2.2-SNAPSHOT, C:1.0.2-SNAPSHOT, D:1.0.4-SNAPSHOT\n",
                 "Uninstalling C-1.0.0", "Uninstalling D-1.0.2-SNAPSHOT", "Uninstalling A-1.2.0",
                 "Installing A-1.2.2-SNAPSHOT", "Installing D-1.0.4-SNAPSHOT", "Installing C-1.0.2-SNAPSHOT");
+        checkLogEvents(expectedLogs, logCaptureResult.getCaughtEvents());
+    }
+
+    /**
+     * Downloading a remote package fails if such package does not exist in remote. An explicit error message is shown:
+     * <pre>
+     * Download failed (not found).
+     * </pre>
+     * See <a href="https://jira.nuxeo.com/browse/NXP-21573">NXP-21573</a>.
+     */
+    @Test
+    @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
+    public void testDownloadUnknownPackage() throws Exception {
+        // Environment setup
+        Environment.getDefault().setProperty(Environment.DISTRIBUTION_NAME, "server");
+        Environment.getDefault().setProperty(Environment.DISTRIBUTION_VERSION, "8.3");
+        ConnectBroker connectBroker = new ConnectBroker(Environment.getDefault());
+        ((StandaloneCallbackHolder) NuxeoConnectClient.getCallBackHolder()).setTestMode(true);
+        final PackageState NON_EXISTENT = null;
+        checkPackagesState(connectBroker, Arrays.asList("unknown-package"), NON_EXISTENT);
+
+        // Test
+        boolean isSuccessful = connectBroker.downloadPackages(Arrays.asList("unknown-package"));
+        assertThat(isSuccessful).isFalse();
+
+        // Assertions
+        checkPackagesState(connectBroker, Arrays.asList("unknown-package"), NON_EXISTENT);
+        List<String> expectedLogs = new ArrayList<>();
+        expectedLogs.add("Downloading [unknown-package]...");
+        expectedLogs.add("\tDownload failed (not found).");
         checkLogEvents(expectedLogs, logCaptureResult.getCaughtEvents());
     }
 
