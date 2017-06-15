@@ -5942,7 +5942,7 @@
         <repository>
           <id>releases</id>
           <url>
-            http://mavenpriv.in.nuxeo.com/nexus/content/repositories/releases
+            https://mavenpriv.nuxeo.com/nexus/content/repositories/releases
           </url>
           <releases>
             <enabled>true</enabled>
@@ -5954,7 +5954,7 @@
         <repository>
           <id>snapshots</id>
           <url>
-            http://mavenpriv.in.nuxeo.com/nexus/content/repositories/snapshots
+            https://mavenpriv.nuxeo.com/nexus/content/repositories/snapshots
           </url>
           <releases>
             <enabled>false</enabled>
@@ -5998,13 +5998,13 @@
         <repository>
           <id>releases</id>
           <url>
-            http://mavenpriv.in.nuxeo.com/nexus/content/repositories/releases
+            https://mavenpriv.nuxeo.com/nexus/content/repositories/releases
           </url>
         </repository>
         <snapshotRepository>
           <id>snapshots</id>
           <url>
-            http://mavenpriv.in.nuxeo.com/nexus/content/repositories/snapshots
+            https://mavenpriv.nuxeo.com/nexus/content/repositories/snapshots
           </url>
           <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
