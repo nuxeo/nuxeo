@@ -61,6 +61,7 @@
     <nuxeo.mqueues.version>9.2-SNAPSHOT</nuxeo.mqueues.version>
     <nuxeo.mongodb.ext.version>9.2-SNAPSHOT</nuxeo.mongodb.ext.version>
     <nuxeo.target.platforms.version>9.2-SNAPSHOT</nuxeo.target.platforms.version>
+    <nuxeo.web.ui.version>9.2-SNAPSHOT</nuxeo.web.ui.version>
     
     <!-- optional addons -->
     <nuxeo.sync.version>9.2-SNAPSHOT</nuxeo.sync.version>
@@ -127,6 +128,7 @@
     <module>nuxeo-agenda</module>
     <module>nuxeo-mongodb-ext</module>
     <module>nuxeo-target-platforms</module>
+    <module>nuxeo-web-ui</module>
   </modules>
 
   <dependencyManagement>
@@ -1126,6 +1128,13 @@
         <groupId>org.nuxeo.utils</groupId>
         <artifactId>nuxeo-target-platforms-sample</artifactId>
         <version>${nuxeo.target.platforms.version}</version>
+      </dependency>
+
+      <!-- Web UI -->
+      <dependency>
+        <groupId>org.nuxeo.web.ui</groupId>
+        <artifactId>nuxeo-web-ui</artifactId>
+        <version>${nuxeo.web.ui.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
