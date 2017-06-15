@@ -1120,7 +1120,7 @@ public class ConnectBroker {
 
             // Check registration and package visibility
             DownloadablePackage downloadablePkg = getPackageManager().findRemotePackageById(pkg);
-            if (downloadablePkg.getVisibility() != PackageVisibility.PUBLIC && !isRegistered) {
+            if (downloadablePkg != null && downloadablePkg.getVisibility() != PackageVisibility.PUBLIC && !isRegistered) {
                 downloadOk = false;
                 cmdInfo.exitCode = 1;
                 cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Registration required.");
@@ -1145,6 +1145,7 @@ public class ConnectBroker {
                 cmdInfo.exitCode = 1;
                 cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Download failed: " + e.getMessage());
             }
+            cmdInfo.log(false); // isDebug=false
         }
         // Check and display progress
         final String progress = "|/-\\";
