@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.web.common.exceptionhandling;
 
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORCE_ANONYMOUS_LOGIN;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGINCONTEXT_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SECURITY_ERROR;
@@ -31,12 +32,16 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javax.security.auth.Subject;
+import javax.security.auth.login.LoginContext;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,6 +50,7 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.WrappedException;
+import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandler;
@@ -95,7 +101,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
 
         // check for Anonymous case
         if (ExceptionHelper.isSecurityError(unwrappedException)) {
-            Principal principal = request.getUserPrincipal();
+            Principal principal = getPrincipal(request);
             if (principal instanceof NuxeoPrincipal) {
                 NuxeoPrincipal nuxeoPrincipal = (NuxeoPrincipal) principal;
                 if (nuxeoPrincipal.isAnonymous()) {
@@ -231,6 +237,19 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
 
     protected Object getUserMessage(String messageKey, Locale locale) {
         return I18NUtils.getMessageString(parameters.getBundleName(), messageKey, null, locale);
+    }
+
+    protected Principal getPrincipal(HttpServletRequest request) {
+        Principal principal = request.getUserPrincipal();
+        if (principal == null) {
+            LoginContext loginContext = (LoginContext) request.getAttribute(LOGINCONTEXT_KEY);
+            principal = Optional.ofNullable(loginContext)
+                                .map(LoginContext::getSubject)
+                                .map(Subject::getPrincipals)
+                                .flatMap(principals -> principals.stream().findFirst())
+                                .orElse(null);
+        }
+        return principal;
     }
 
 }
