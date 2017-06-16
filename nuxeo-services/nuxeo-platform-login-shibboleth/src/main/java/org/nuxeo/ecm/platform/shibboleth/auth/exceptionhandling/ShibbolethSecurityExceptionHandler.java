@@ -16,7 +16,11 @@
 
 package org.nuxeo.ecm.platform.shibboleth.auth.exceptionhandling;
 
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.USERIDENT_KEY;
+
 import java.io.IOException;
+import java.security.Principal;
+import java.util.Optional;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletException;
@@ -25,8 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.web.Session;
 import org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService;
+import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoSecurityExceptionHandler;
 import org.nuxeo.runtime.api.Framework;
@@ -71,6 +75,18 @@ public class ShibbolethSecurityExceptionHandler extends NuxeoSecurityExceptionHa
 
     protected ShibbolethAuthenticationService getService() {
         return Framework.getService(ShibbolethAuthenticationService.class);
+    }
+
+    @Override
+    protected Principal getPrincipal(HttpServletRequest request) {
+        Principal principal = super.getPrincipal(request);
+        if (principal == null) {
+            principal = Optional.ofNullable(request.getSession(false))
+                                .map(s -> (CachableUserIdentificationInfo) s.getAttribute(USERIDENT_KEY))
+                                .map(CachableUserIdentificationInfo::getPrincipal)
+                                .orElse(null);
+        }
+        return principal;
     }
 
 }
