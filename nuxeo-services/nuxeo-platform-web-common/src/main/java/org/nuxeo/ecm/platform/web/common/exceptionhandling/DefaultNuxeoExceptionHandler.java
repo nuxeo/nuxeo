@@ -243,20 +243,12 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
     protected Principal getPrincipal(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
         if (principal == null) {
-            // First see if it is available in the session cache
-            HttpSession session = request.getSession(false);
-            principal = Optional.ofNullable(session)
-                                .map(s -> (CachableUserIdentificationInfo) s.getAttribute(USERIDENT_KEY))
-                                .map(CachableUserIdentificationInfo::getPrincipal)
+            LoginContext loginContext = (LoginContext) request.getAttribute(LOGINCONTEXT_KEY);
+            principal = Optional.ofNullable(loginContext)
+                                .map(LoginContext::getSubject)
+                                .map(Subject::getPrincipals)
+                                .flatMap(principals -> principals.stream().findFirst())
                                 .orElse(null);
-            if (principal == null) {
-                LoginContext loginContext = (LoginContext) request.getAttribute(LOGINCONTEXT_KEY);
-                principal = Optional.ofNullable(loginContext)
-                                    .map(LoginContext::getSubject)
-                                    .map(Subject::getPrincipals)
-                                    .flatMap(principals -> principals.stream().findFirst())
-                                    .orElse(null);
-            }
         }
         return principal;
     }
