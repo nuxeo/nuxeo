@@ -23,21 +23,102 @@ package org.nuxeo.ecm.platform.oauth2;
 /**
  * @since 9.2
  */
-public enum OAuth2Error {
-    INVALID_REQUEST,
+public class OAuth2Error {
 
-    INVALID_GRANT,
+    public static final String INVALID_REQUEST = "invalid_request";
 
-    UNAUTHORIZED_CLIENT,
+    public static final String INVALID_GRANT = "invalid_grant";
 
-    ACCESS_DENIED,
+    public static final String UNAUTHORIZED_CLIENT = "unauthorized_client";
 
-    UNSUPPORTED_RESPONSE_TYPE,
+    public static final String ACCESS_DENIED = "access_denied";
 
-    INVALID_SCOPE,
+    public static final String UNSUPPORTED_RESPONSE_TYPE = "unsupported_response_type";
 
-    SERVER_ERROR,
+    public static final String INVALID_SCOPE = "invalid_scope";
 
-    TEMPORARILY_UNAVAILABLE
+    public static final String SERVER_ERROR = "server_error";
 
+    public static final String TEMPORARILY_UNAVAILABLE = "temporarily_unavailable";
+
+    protected final String id;
+
+    protected final String description;
+
+    protected OAuth2Error(String id, String description) {
+        this.id = id;
+        this.description = description;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public static OAuth2Error invalidRequest(String description) {
+        return new OAuth2Error(INVALID_REQUEST, description);
+    }
+
+    public static OAuth2Error invalidRequest() {
+        return invalidRequest(null);
+    }
+
+    public static OAuth2Error invalidGrant(String description) {
+        return new OAuth2Error(INVALID_GRANT, description);
+    }
+
+    public static OAuth2Error invalidGrant() {
+        return invalidGrant(null);
+    }
+
+    public static OAuth2Error unauthorizedClient(String description) {
+        return new OAuth2Error(UNAUTHORIZED_CLIENT, description);
+    }
+
+    public static OAuth2Error unauthorizedClient() {
+        return unauthorizedClient(null);
+    }
+
+    public static OAuth2Error accessDenied(String description) {
+        return new OAuth2Error(ACCESS_DENIED, description);
+    }
+
+    public static OAuth2Error accessDenied() {
+        return accessDenied(null);
+    }
+
+    public static OAuth2Error unsupportedResponseType(String description) {
+        return new OAuth2Error(UNSUPPORTED_RESPONSE_TYPE, description);
+    }
+
+    public static OAuth2Error unsupportedResponseType() {
+        return unsupportedResponseType(null);
+    }
+
+    public static OAuth2Error invalidScope(String description) {
+        return new OAuth2Error(INVALID_SCOPE, description);
+    }
+
+    public static OAuth2Error invalidScope() {
+        return invalidScope(null);
+    }
+
+    public static OAuth2Error serverError(String description) {
+        return new OAuth2Error(SERVER_ERROR, description);
+    }
+
+    public static OAuth2Error serverError() {
+        return serverError(null);
+    }
+
+    public static OAuth2Error temporarilyUnavailable(String description) {
+        return new OAuth2Error(TEMPORARILY_UNAVAILABLE, description);
+    }
+
+    public static OAuth2Error temporarilyUnavailable() {
+        return temporarilyUnavailable(null);
+    }
 }

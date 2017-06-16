@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.oauth2.request;
 
+import static org.nuxeo.ecm.platform.oauth2.Constants.CLIENT_ID_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_RESPONSE_TYPE;
 import static org.nuxeo.ecm.platform.oauth2.Constants.REDIRECT_URI_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.RESPONSE_TYPE_PARAM;
@@ -38,7 +39,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.oauth2.OAuth2Error;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
@@ -51,6 +51,8 @@ import org.nuxeo.runtime.api.Framework;
 public class AuthorizationRequest extends OAuth2Request {
 
     private static final Log log = LogFactory.getLog(AuthorizationRequest.class);
+
+    public static final String MISSING_REQUIRED_FIELD_MESSAGE = "Missing required field \"%s\".";
 
     public static final String STORE_NAME = "authorizationRequestStore";
 
@@ -129,22 +131,24 @@ public class AuthorizationRequest extends OAuth2Request {
 
     public OAuth2Error checkError() {
         // Check mandatory fields
-        if (StringUtils.isBlank(responseType) || StringUtils.isBlank(clientId) || StringUtils.isBlank(redirectUri)
-                || !OAuth2Client.isRedirectURIValid(redirectUri) || StringUtils.isBlank(state)) {
-            return OAuth2Error.INVALID_REQUEST;
+        if (StringUtils.isBlank(clientId)) {
+            return OAuth2Error.invalidRequest(String.format(MISSING_REQUIRED_FIELD_MESSAGE, CLIENT_ID_PARAM));
+        }
+        if (StringUtils.isBlank(responseType)) {
+            return OAuth2Error.invalidRequest(String.format(MISSING_REQUIRED_FIELD_MESSAGE, RESPONSE_TYPE_PARAM));
+        }
+        if (StringUtils.isBlank(redirectUri)) {
+            return OAuth2Error.invalidRequest(String.format(MISSING_REQUIRED_FIELD_MESSAGE, REDIRECT_URI_PARAM));
+        }
+        if (StringUtils.isBlank(state)) {
+            return OAuth2Error.invalidRequest(String.format(MISSING_REQUIRED_FIELD_MESSAGE, STATE_PARAM));
         }
 
         // Check if client exists
         ClientRegistry registry = Framework.getService(ClientRegistry.class);
-        OAuth2Client client = null;
-        try {
-            client = registry.getClient(clientId);
-            if (client == null || !client.isEnabled()) {
-                return OAuth2Error.UNAUTHORIZED_CLIENT;
-            }
-        } catch (DirectoryException e) {
-            log.warn(e, e);
-            return OAuth2Error.SERVER_ERROR;
+        OAuth2Client client = registry.getClient(clientId);
+        if (client == null || !client.isEnabled()) {
+            return OAuth2Error.unauthorizedClient(String.format("Invalid %s: %s.", CLIENT_ID_PARAM, clientId));
         }
 
         String clientName = client.getName();
@@ -166,17 +170,19 @@ public class AuthorizationRequest extends OAuth2Request {
             // Checking that the client has a redirect URI since it is now a required field but it might be empty for an
             // old client.
             // In this case we return an error since an empty redirect URI is a security issue.
-            return OAuth2Error.INVALID_REQUEST;
+            return OAuth2Error.invalidRequest(String.format("No %s configured on the app.", REDIRECT_URI_PARAM));
         }
 
         // Check that the redirect_uri parameter matches the redirect URI registered for this client
-        if (!redirectUri.equals(clientRequestURI)) {
-            return OAuth2Error.INVALID_REQUEST;
+        if (!OAuth2Client.isRedirectURIValid(redirectUri) || !redirectUri.equals(clientRequestURI)) {
+            return OAuth2Error.invalidRequest(String.format(
+                    "Invalid %s. It must exactly match the one configured for the app.", REDIRECT_URI_PARAM));
         }
 
         // Check request type
         if (!CODE_RESPONSE_TYPE.equals(responseType)) {
-            return OAuth2Error.UNSUPPORTED_RESPONSE_TYPE;
+            return OAuth2Error.unsupportedResponseType(String.format("Unknown %s: got \"%s\", expecting \"%s\".",
+                    RESPONSE_TYPE_PARAM, responseType, CODE_RESPONSE_TYPE));
         }
         return null;
     }
@@ -184,10 +190,6 @@ public class AuthorizationRequest extends OAuth2Request {
     public boolean isExpired() {
         // RFC 4.1.2, Authorization code lifetime is 10
         return new Date().getTime() - creationDate.getTime() > 10 * 60 * 1000;
-    }
-
-    public boolean isValidState(HttpServletRequest request) {
-        return StringUtils.isBlank(getState()) || request.getParameter(STATE_PARAM).equals(getState());
     }
 
     public String getUsername() {

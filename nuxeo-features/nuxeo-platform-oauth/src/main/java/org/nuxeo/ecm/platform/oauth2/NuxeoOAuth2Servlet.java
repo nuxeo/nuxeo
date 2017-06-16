@@ -67,11 +67,15 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     public static final String ERROR_PARAM = "error";
 
+    public static final String ERROR_DESCRIPTION_PARAM = "error_description";
+
     public static final String CLIENT_NAME = "client_name";
 
     public static final String GRANT_JSP_PAGE_PATH = "/oauth2Grant.jsp";
 
     public static final String GRANT_ACCESS_PARAM = "grant_access";
+
+    public static final String ERROR_JSP_PAGE_PATH = "/oauth2error.jsp";
 
     public static final int ACCESS_TOKEN_EXPIRATION_TIME = 3600 * 1000;
 
@@ -106,7 +110,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         AuthorizationRequest authRequest = AuthorizationRequest.fromRequest(request);
         OAuth2Error error = authRequest.checkError();
         if (error != null) {
-            handleError(error, request, response, authRequest.getRedirectUri());
+            handleError(error, request, response);
             return;
         }
 
@@ -120,6 +124,55 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         requestDispatcher.forward(request, response);
     }
 
+    protected void doPostAuthorizationSubmit(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        String authKeyForm = request.getParameter(AUTHORIZATION_KEY);
+        AuthorizationRequest authRequest = AuthorizationRequest.get(authKeyForm);
+        if (authRequest == null) {
+            handleError(OAuth2Error.invalidRequest(), request, response);
+            return;
+        }
+
+        AuthorizationRequest.remove(authRequest.getAuthorizationKey());
+
+        OAuth2Error error = authRequest.checkError();
+        if (error != null) {
+            handleError(error, request, response);
+            return;
+        }
+
+        String grantAccess = request.getParameter(GRANT_ACCESS_PARAM);
+        if (grantAccess == null) {
+            // the user deny access
+            error = OAuth2Error.accessDenied();
+            Map<String, String> params = new HashMap<>();
+            params.put(ERROR_PARAM, error.getId());
+            String errorDescription = error.getDescription();
+            if (StringUtils.isNotBlank(errorDescription)) {
+                params.put(ERROR_DESCRIPTION_PARAM, errorDescription);
+            }
+            String state = request.getParameter(STATE_PARAM);
+            if (StringUtils.isNotBlank(state)) {
+                params.put(STATE_PARAM, state);
+            }
+            sendRedirect(response, authRequest.getRedirectUri(), params);
+            return;
+        }
+
+        // now store the authorization request according to its code
+        // to be able to retrieve it in the "/oauth2/token" endpoint
+        String authorizationCode = authRequest.getAuthorizationCode();
+        AuthorizationRequest.store(authorizationCode, authRequest);
+        Map<String, String> params = new HashMap<>();
+        params.put(AUTHORIZATION_CODE_PARAM, authorizationCode);
+        if (StringUtils.isNotBlank(authRequest.getState())) {
+            params.put(STATE_PARAM, authRequest.getState());
+        }
+
+        request.getSession().invalidate();
+        sendRedirect(response, authRequest.getRedirectUri(), params);
+    }
+
     protected void doGetToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         TokenRequest tokenRequest = new TokenRequest(request);
         ClientRegistry clientRegistry = Framework.getService(ClientRegistry.class);
@@ -128,17 +181,17 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             AuthorizationRequest authRequest = AuthorizationRequest.get(tokenRequest.getCode());
             OAuth2Error error = null;
             if (authRequest == null) {
-                error = OAuth2Error.ACCESS_DENIED;
+                error = OAuth2Error.accessDenied();
             }
             // Check that clientId is the good one, already verified in
             // authorization request
             else if (!authRequest.getClientId().equals(tokenRequest.getClientId())) {
-                error = OAuth2Error.ACCESS_DENIED;
+                error = OAuth2Error.accessDenied();
             } else {
                 OAuth2Client client = clientRegistry.getClient(authRequest.getClientId());
                 // Validate client secret
                 if (client == null || !client.isValidWith(tokenRequest.getClientId(), tokenRequest.getClientSecret())) {
-                    error = OAuth2Error.UNAUTHORIZED_CLIENT;
+                    error = OAuth2Error.unauthorizedClient();
                 }
                 // Ensure redirect URIs are identical
                 else {
@@ -146,7 +199,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
                     if (StringUtils.isBlank(redirectURI) || !OAuth2Client.isRedirectURIValid(redirectURI)
                             || !redirectURI.equals(client.getRedirectURI())
                             || !redirectURI.equals(authRequest.getRedirectUri())) {
-                        error = OAuth2Error.INVALID_REQUEST;
+                        error = OAuth2Error.invalidRequest();
                     }
                 }
             }
@@ -168,9 +221,9 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         } else if (REFRESH_TOKEN_GRANT_TYPE.equals(tokenRequest.getGrantType())) {
             OAuth2Error error = null;
             if (StringUtils.isBlank(tokenRequest.getClientId())) {
-                error = OAuth2Error.ACCESS_DENIED;
+                error = OAuth2Error.accessDenied();
             } else if (!clientRegistry.isValidClient(tokenRequest.getClientId(), tokenRequest.getClientSecret())) {
-                error = OAuth2Error.ACCESS_DENIED;
+                error = OAuth2Error.accessDenied();
             }
 
             if (error != null) {
@@ -182,82 +235,41 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
                     () -> tokenStore.refresh(tokenRequest.getRefreshToken(), tokenRequest.getClientId()));
 
             if (refreshed == null) {
-                handleJsonError(OAuth2Error.INVALID_REQUEST, response);
+                handleJsonError(OAuth2Error.invalidRequest(), response);
             } else {
                 handleTokenResponse(refreshed, response);
             }
         } else {
-            handleJsonError(OAuth2Error.INVALID_GRANT, response);
+            handleJsonError(OAuth2Error.invalidGrant(), response);
         }
-    }
-
-    protected void doPostAuthorizationSubmit(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        String authKeyForm = request.getParameter(AUTHORIZATION_KEY);
-        AuthorizationRequest authRequest = AuthorizationRequest.get(authKeyForm);
-        if (authRequest == null) {
-            handleError(OAuth2Error.INVALID_REQUEST, request, response, null);
-            return;
-        }
-
-        AuthorizationRequest.remove(authRequest.getAuthorizationKey());
-
-        OAuth2Error error = authRequest.checkError();
-        if (error != null) {
-            handleError(error, request, response, authRequest.getRedirectUri());
-            return;
-        }
-
-        String grantAccess = request.getParameter(GRANT_ACCESS_PARAM);
-
-        // Ensure that the user actually grant access and the authorization key is the correct one
-        if (grantAccess == null || !authRequest.getAuthorizationKey().equals(authKeyForm)) {
-            handleError(OAuth2Error.ACCESS_DENIED, request, response, authRequest.getRedirectUri());
-            return;
-        }
-
-        // now store the authorization request according to its code
-        // to be able to retrieve it in the "/oauth2/token" endpoint
-        String authorizationCode = authRequest.getAuthorizationCode();
-        AuthorizationRequest.store(authorizationCode, authRequest);
-        Map<String, String> params = new HashMap<>();
-        params.put(AUTHORIZATION_CODE_PARAM, authorizationCode);
-        if (StringUtils.isNotBlank(authRequest.getState())) {
-            params.put(STATE_PARAM, authRequest.getState());
-        }
-
-        request.getSession().invalidate();
-        sendRedirect(response, authRequest.getRedirectUri(), params);
     }
 
     protected void handleTokenResponse(NuxeoOAuth2Token token, HttpServletResponse response) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-
         response.setHeader("Content-Type", "application/json");
         response.setStatus(SC_OK);
+        ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(response.getWriter(), token.toJsonObject());
     }
 
-    protected void handleError(OAuth2Error error, HttpServletRequest request, HttpServletResponse response,
-            String redirectURI) throws IOException {
-        Map<String, String> params = new HashMap<>();
-        params.put(ERROR_PARAM, error.toString().toLowerCase());
-        String state = request.getParameter(STATE_PARAM);
-        if (StringUtils.isNotBlank(state)) {
-            params.put(STATE_PARAM, state);
-        }
-
-        sendRedirect(response, redirectURI, params);
+    protected void handleError(OAuth2Error error, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        response.reset();
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        request.setAttribute("error", error);
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher(ERROR_JSP_PAGE_PATH);
+        requestDispatcher.forward(request, response);
     }
 
     protected void handleJsonError(OAuth2Error error, HttpServletResponse response) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-
         response.setHeader("Content-Type", "application/json");
         response.setStatus(SC_BAD_REQUEST);
 
         Map<String, String> object = new HashMap<>();
-        object.put(ERROR_PARAM, error.toString().toLowerCase());
+        object.put(ERROR_PARAM, error.getId());
+        if (StringUtils.isNotBlank(error.getDescription())) {
+            object.put(ERROR_DESCRIPTION_PARAM, error.getDescription());
+        }
+        ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(response.getWriter(), object);
     }
 

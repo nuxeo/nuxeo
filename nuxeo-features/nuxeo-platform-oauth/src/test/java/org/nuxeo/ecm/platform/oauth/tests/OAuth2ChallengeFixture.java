@@ -53,7 +53,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet;
-import org.nuxeo.ecm.platform.oauth2.OAuth2Error;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
@@ -132,9 +131,7 @@ public class OAuth2ChallengeFixture {
         params.put(RESPONSE_TYPE_PARAM, CODE_RESPONSE_TYPE);
 
         ClientResponse cr = responseFromGetAuthorizationWith(params);
-        assertEquals(302, cr.getStatus());
-        String redirect = cr.getHeaders().get("Location").get(0);
-        assertTrue(redirect.contains("error=" + OAuth2Error.INVALID_REQUEST.toString().toLowerCase()));
+        assertEquals(400, cr.getStatus());
     }
 
     @Test
@@ -146,9 +143,7 @@ public class OAuth2ChallengeFixture {
         params.put(STATE_PARAM, STATE);
 
         ClientResponse cr = responseFromGetAuthorizationWith(params);
-        assertEquals(302, cr.getStatus());
-        String redirect = cr.getHeaders().get("Location").get(0);
-        assertTrue(redirect.contains("error=" + OAuth2Error.UNAUTHORIZED_CLIENT.toString().toLowerCase()));
+        assertEquals(400, cr.getStatus());
     }
 
     @Test
@@ -166,25 +161,19 @@ public class OAuth2ChallengeFixture {
         params.put(REDIRECT_URI_PARAM, "http://redirect.uri");
 
         cr = responseFromGetAuthorizationWith(params);
-        assertEquals(302, cr.getStatus());
-        String redirect = cr.getHeaders().get("Location").get(0);
-        assertTrue(redirect.contains("error=" + OAuth2Error.INVALID_REQUEST.toString().toLowerCase()));
+        assertEquals(400, cr.getStatus());
 
         // Invalid: starting with http://localhost with localhost part of the domain name
         params.put(REDIRECT_URI_PARAM, "http://localhost.somecompany.com");
 
         cr = responseFromGetAuthorizationWith(params);
-        assertEquals(302, cr.getStatus());
-        redirect = cr.getHeaders().get("Location").get(0);
-        assertTrue(redirect.contains("error=" + OAuth2Error.INVALID_REQUEST.toString().toLowerCase()));
+        assertEquals(400, cr.getStatus());
 
         // Invalid: not matching the one from the registered client
         params.put(REDIRECT_URI_PARAM, "https://unknown.uri");
 
         cr = responseFromGetAuthorizationWith(params);
-        assertEquals(302, cr.getStatus());
-        redirect = cr.getHeaders().get("Location").get(0);
-        assertTrue(redirect.contains("error=" + OAuth2Error.INVALID_REQUEST.toString().toLowerCase()));
+        assertEquals(400, cr.getStatus());
 
         // Valid: not starting with http
         registerClient("Nuxeo Mobile", "nuxeo-mobile-app", "", "nuxeo://authorize");
