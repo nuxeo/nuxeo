@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.oauth.tests;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -56,8 +57,9 @@ public class OAuth2JettyFeature extends SimpleFeature implements WorkingDirector
 
         Files.copy(Paths.get(getResource("test-web.xml").toURI()), webInf.toPath().resolve("web.xml"));
 
-        Files.copy(Paths.get(getResource("test-oauth2Grant.jsp").toURI()),
-                workingDir.toPath().resolve("web/root.war/oauth2Grant.jsp"));
+        URI testPageURI = getResource("test-oauth2page.jsp").toURI();
+        Files.copy(Paths.get(testPageURI), workingDir.toPath().resolve("web/root.war/oauth2Grant.jsp"));
+        Files.copy(Paths.get(testPageURI), workingDir.toPath().resolve("web/root.war/oauth2error.jsp"));
     }
 
     private static URL getResource(String resource) {
