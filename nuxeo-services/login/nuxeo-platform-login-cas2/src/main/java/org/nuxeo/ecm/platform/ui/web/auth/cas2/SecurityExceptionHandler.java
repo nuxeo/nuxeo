@@ -18,15 +18,11 @@
  */
 package org.nuxeo.ecm.platform.ui.web.auth.cas2;
 
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGINCONTEXT_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Set;
 
-import javax.security.auth.Subject;
-import javax.security.auth.login.LoginContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -69,17 +65,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
             return;
         }
 
-        Principal principal = request.getUserPrincipal();
-        if (principal == null) {
-            LoginContext loginContext = (LoginContext) request.getAttribute(LOGINCONTEXT_KEY);
-            Subject subject = loginContext.getSubject();
-            if (subject != null) {
-                Set<Principal> principals = subject.getPrincipals();
-                if (principals != null && !principals.isEmpty()) {
-                    principal = (Principal) principals.toArray()[0];
-                }
-            }
-        }
+        Principal principal = getPrincipal(request);
         if (principal instanceof NuxeoPrincipal) {
             NuxeoPrincipal nuxeoPrincipal = (NuxeoPrincipal) principal;
             // redirect to login than to requested page
