@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.runtime.api.Framework;
 
 public class VirtualHostHelper {
@@ -193,6 +194,8 @@ public class VirtualHostHelper {
             redirectURL += request.getAttribute(REQUESTED_URL);
         } else if (request.getParameter(REQUESTED_URL) != null) {
             redirectURL += request.getParameter(REQUESTED_URL);
+        } else if (NuxeoAuthenticationFilter.getRequestedUrl(request) != null) {
+            redirectURL += NuxeoAuthenticationFilter.getRequestedUrl(request);
         } else {
             redirectURL = request.getRequestURL().toString();
             String queryString = request.getQueryString();
