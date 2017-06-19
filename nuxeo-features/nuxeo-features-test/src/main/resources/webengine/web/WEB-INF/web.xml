@@ -59,6 +59,19 @@
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
   <filter>
+    <display-name>HeaderFixFilter</display-name>
+    <filter-name>HeaderFixFilter</filter-name>
+    <filter-class>
+      org.nuxeo.ecm.webengine.app.HeaderFixFilter
+    </filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>HeaderFixFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+  </filter-mapping>
+  <filter>
     <display-name>WebEngineFilter</display-name>
     <filter-name>WebEngineFilter</filter-name>
     <filter-class>
