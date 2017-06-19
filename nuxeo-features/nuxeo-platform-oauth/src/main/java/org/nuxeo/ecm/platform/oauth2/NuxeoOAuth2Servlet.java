@@ -41,8 +41,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
+import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
 import org.nuxeo.ecm.platform.oauth2.request.TokenRequest;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
@@ -124,10 +124,10 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         }
 
         AuthorizationRequest.store(authRequest.getAuthorizationKey(), authRequest);
-        ClientRegistry clientRegistry = Framework.getService(ClientRegistry.class);
+        OAuth2ClientService clientService = Framework.getService(OAuth2ClientService.class);
         request.setAttribute(AUTHORIZATION_KEY, authRequest.getAuthorizationKey());
         request.setAttribute(STATE_PARAM, state);
-        request.setAttribute(CLIENT_NAME, clientRegistry.getClient(authRequest.getClientId()).getName());
+        request.setAttribute(CLIENT_NAME, clientService.getClient(authRequest.getClientId()).getName());
 
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(GRANT_JSP_PAGE_PATH);
         requestDispatcher.forward(request, response);
@@ -185,7 +185,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     protected void doGetToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         TokenRequest tokenRequest = new TokenRequest(request);
-        ClientRegistry clientRegistry = Framework.getService(ClientRegistry.class);
+        OAuth2ClientService clientService = Framework.getService(OAuth2ClientService.class);
         // Process Authorization code
         if (AUTHORIZATION_CODE_GRANT_TYPE.equals(tokenRequest.getGrantType())) {
             AuthorizationRequest authRequest = AuthorizationRequest.get(tokenRequest.getCode());
@@ -198,7 +198,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             else if (!authRequest.getClientId().equals(tokenRequest.getClientId())) {
                 error = OAuth2Error.accessDenied();
             } else {
-                OAuth2Client client = clientRegistry.getClient(authRequest.getClientId());
+                OAuth2Client client = clientService.getClient(authRequest.getClientId());
                 // Validate client secret
                 if (client == null || !client.isValidWith(tokenRequest.getClientId(), tokenRequest.getClientSecret())) {
                     error = OAuth2Error.unauthorizedClient();
@@ -232,7 +232,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             OAuth2Error error = null;
             if (StringUtils.isBlank(tokenRequest.getClientId())) {
                 error = OAuth2Error.accessDenied();
-            } else if (!clientRegistry.isValidClient(tokenRequest.getClientId(), tokenRequest.getClientSecret())) {
+            } else if (!clientService.isValidClient(tokenRequest.getClientId(), tokenRequest.getClientSecret())) {
                 error = OAuth2Error.accessDenied();
             }
 

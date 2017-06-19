@@ -37,8 +37,8 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.oauth.tokens.OAuthTokenStoreImpl;
-import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
+import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
 import org.nuxeo.runtime.api.Framework;
@@ -57,13 +57,13 @@ public class AuthorizedApplicationsActions implements Serializable {
 
     public List<Map<String, Serializable>> getOAuth2AuthorizedApplications() {
         List<Map<String, Serializable>> applications = new ArrayList<>();
-        ClientRegistry clientRegistry = Framework.getService(ClientRegistry.class);
+        OAuth2ClientService clientService = Framework.getService(OAuth2ClientService.class);
         OAuth2TokenStore tokenStore = new OAuth2TokenStore(TOKEN_SERVICE);
         // Get OAuth2 tokens for the current user
         DocumentModelList tokens = tokenStore.query(getOAuth2QueryFilter());
         // Join them with the related OAuth2 client
         for (DocumentModel token : tokens) {
-            OAuth2Client client = clientRegistry.getClient(
+            OAuth2Client client = clientService.getClient(
                     (String) token.getPropertyValue(NuxeoOAuth2Token.SCHEMA + ":clientId"));
             if (client != null) {
                 Map<String, Serializable> application = new HashMap<>();
@@ -98,7 +98,7 @@ public class AuthorizedApplicationsActions implements Serializable {
 
     protected Map<String, Serializable> getOAuthQueryFilter() {
         Map<String, Serializable> filter = new HashMap<>();
-        filter.put("clientToken", new Integer(0));
+        filter.put("clientToken", 0);
         filter.put("nuxeoLogin", currentUser.getName());
         return filter;
     }

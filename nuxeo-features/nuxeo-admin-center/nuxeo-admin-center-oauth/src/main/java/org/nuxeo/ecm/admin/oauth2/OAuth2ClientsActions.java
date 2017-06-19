@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.admin.oauth2;
 
-import static org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry.OAUTH2CLIENT_DIRECTORY_NAME;
-import static org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry.OAUTH2CLIENT_SCHEMA;
+import static org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService.OAUTH2CLIENT_DIRECTORY_NAME;
+import static org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService.OAUTH2CLIENT_SCHEMA;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;

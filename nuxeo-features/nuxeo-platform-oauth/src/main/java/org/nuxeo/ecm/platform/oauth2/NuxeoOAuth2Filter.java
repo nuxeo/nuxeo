@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
+import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
@@ -95,8 +95,8 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
                                .trim();
         NuxeoOAuth2Token token = TransactionHelper.runInTransaction(() -> tokenStore.getToken(key));
 
-        ClientRegistry clientRegistry = Framework.getService(ClientRegistry.class);
-        if (token == null || token.isExpired() || !clientRegistry.hasClient(token.getClientId())) {
+        OAuth2ClientService clientService = Framework.getService(OAuth2ClientService.class);
+        if (token == null || token.isExpired() || !clientService.hasClient(token.getClientId())) {
             response.setStatus(SC_UNAUTHORIZED);
             return;
         }

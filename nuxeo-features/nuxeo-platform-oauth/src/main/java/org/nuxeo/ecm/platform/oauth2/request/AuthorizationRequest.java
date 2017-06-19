@@ -39,8 +39,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.oauth2.OAuth2Error;
-import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
+import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -136,8 +136,8 @@ public class AuthorizationRequest extends OAuth2Request {
         }
 
         // Check if client exists
-        ClientRegistry registry = Framework.getService(ClientRegistry.class);
-        OAuth2Client client = registry.getClient(clientId);
+        OAuth2ClientService clientService = Framework.getService(OAuth2ClientService.class);
+        OAuth2Client client = clientService.getClient(clientId);
         if (client == null || !client.isEnabled()) {
             return OAuth2Error.unauthorizedClient(String.format("Invalid %s: %s.", CLIENT_ID_PARAM, clientId));
         }

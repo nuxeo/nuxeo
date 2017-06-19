@@ -1,0 +1,8 @@
+name,clientId,clientSecret,redirectURI,enabled
+"Nuxeo Mobile","nuxeo-mobile-app","","nuxeo://authorize",
+"Localhost","localhost","","http://localhost:8080/nuxeo",
+"Secure","secure","","https://redirect.uri",
+"Dummy","testClient","testSecret","https://redirect.uri",
+"Enabled","enabled","testSecret","https://redirect.uri",
+"NotEnabled","notEnabled","testSecret","https://redirect.uri","false"
+"NoSecret","noSecret",,"https://redirect.uri",
