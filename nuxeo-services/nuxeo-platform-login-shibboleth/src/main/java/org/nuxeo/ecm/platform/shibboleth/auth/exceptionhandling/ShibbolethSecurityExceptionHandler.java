@@ -52,7 +52,6 @@ public class ShibbolethSecurityExceptionHandler extends NuxeoSecurityExceptionHa
         try {
             if (!response.isCommitted()) {
                 request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
-                Session.instance().invalidate();
                 response.sendRedirect(loginURL);
                 FacesContext fContext = FacesContext.getCurrentInstance();
                 if (fContext != null) {
