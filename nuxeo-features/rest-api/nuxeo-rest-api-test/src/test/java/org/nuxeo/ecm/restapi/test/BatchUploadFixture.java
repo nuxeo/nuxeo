@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ public class BatchUploadFixture extends BaseTest {
         String data = "batchUploadedData";
 
         // upload the file in automation
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("X-File-Idx", "0");
         headers.put("X-File-Name", filename);
         ClientResponse response = getResponse(RequestType.POST, "automation/batch/upload", data, headers);
@@ -150,7 +150,7 @@ public class BatchUploadFixture extends BaseTest {
         String mimeType = "text/plain";
         String data1 = "Contenu accentué du premier fichier";
         String fileSize1 = String.valueOf(data1.getBytes().length);
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/octet-stream");
         headers.put("X-Upload-Type", "normal");
         headers.put("X-File-Name", fileName1);
@@ -170,7 +170,7 @@ public class BatchUploadFixture extends BaseTest {
         String fileName2 = "Fichier accentué 2.txt";
         String data2 = "Contenu accentué du deuxième fichier";
         String fileSize2 = String.valueOf(data2.getBytes().length);
-        headers = new HashMap<String, String>();
+        headers = new HashMap<>();
         headers.put("X-File-Size", fileSize2);
         headers.put("X-File-Type", mimeType);
 
@@ -282,6 +282,8 @@ public class BatchUploadFixture extends BaseTest {
      */
     @Test
     public void testObeyFileTypeHeader() throws IOException {
+        Map<String, String> headers;
+
         // Get batch id, used as a session id
         ClientResponse response = getResponse(RequestType.POST, "upload");
         assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
@@ -295,8 +297,7 @@ public class BatchUploadFixture extends BaseTest {
         String fileName1 = "No header.txt";
         String data1 = "File without explicit file type";
         String fileSize1 = String.valueOf(data1.getBytes().length);
-        Map<String, String> headers = new HashMap<String, String>();
-        headers = new HashMap<String, String>();
+        headers = new HashMap<>();
         headers.put("X-File-Size", fileSize1);
 
         FormDataMultiPart form = new FormDataMultiPart();
@@ -309,7 +310,7 @@ public class BatchUploadFixture extends BaseTest {
         String fileName2 = "With header.txt";
         String data2 = "File with explicit X-File-Type header";
         String fileSize2 = String.valueOf(data2.getBytes().length);
-        headers = new HashMap<String, String>();
+        headers = new HashMap<>();
         headers.put("X-File-Size", fileSize2);
         headers.put("X-File-Type", mimeType);
 
@@ -383,7 +384,7 @@ public class BatchUploadFixture extends BaseTest {
         String mimeType = "text/plain";
         String data = "Contenu accentué";
         String fileSize = String.valueOf(data.getBytes().length);
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/octet-stream");
         headers.put("X-Upload-Type", "normal");
         headers.put("X-File-Name", fileName);
@@ -481,7 +482,7 @@ public class BatchUploadFixture extends BaseTest {
         String chunkLength3 = String.valueOf(chunk3.getBytes().length);
 
         // Chunk 1
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/octet-stream");
         headers.put("X-Upload-Type", "chunked");
         headers.put("X-Upload-Chunk-Index", "0");
@@ -693,7 +694,7 @@ public class BatchUploadFixture extends BaseTest {
         String chunkLength2 = String.valueOf(chunk2.getBytes().length);
 
         // Chunk 2
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/octet-stream");
         headers.put("X-Upload-Type", "chunked");
         headers.put("X-Upload-Chunk-Index", "1");
@@ -819,7 +820,7 @@ public class BatchUploadFixture extends BaseTest {
                 getResponse(RequestType.POST, "upload/" + batchId + "/a").getStatus());
 
         // Bad chunk index
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("X-Upload-Type", "chunked");
         headers.put("X-Upload-Chunk-Count", "2");
         headers.put("X-Upload-Chunk-Index", "a");
@@ -828,7 +829,7 @@ public class BatchUploadFixture extends BaseTest {
                 getResponse(RequestType.POST, "upload/" + batchId + "/0", "chunkContent", headers).getStatus());
 
         // Bad chunk count
-        headers = new HashMap<String, String>();
+        headers = new HashMap<>();
         headers.put("X-Upload-Type", "chunked");
         headers.put("X-Upload-Chunk-Count", "a");
         headers.put("X-Upload-Chunk-Index", "0");
@@ -837,7 +838,7 @@ public class BatchUploadFixture extends BaseTest {
                 getResponse(RequestType.POST, "upload/" + batchId + "/0", "chunkContent", headers).getStatus());
 
         // Bad file size
-        headers = new HashMap<String, String>();
+        headers = new HashMap<>();
         headers.put("X-Upload-Type", "chunked");
         headers.put("X-Upload-Chunk-Count", "2");
         headers.put("X-Upload-Chunk-Index", "0");
@@ -862,7 +863,7 @@ public class BatchUploadFixture extends BaseTest {
 
         // Upload test files
         String fileName, data, fileSize = null, mimeType = "text/plain";
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         for (int i = 0; i < numfiles; i++) {
             fileName = URLEncoder.encode("Test File " + Integer.toString(i + 1) + ".txt", "UTF-8");
             data = "Test Content " + Integer.toString(i + 1);
