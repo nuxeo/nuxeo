@@ -1,6 +1,5 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
      xmlns:c="http://java.sun.com/jstl/core"
-     xmlns:ui="http://java.sun.com/jsf/facelets"
      xmlns:f="http://java.sun.com/jsf/core"
      xmlns:nxu="http://nuxeo.org/nxweb/util"
      xmlns:nxl="http://nuxeo.org/nxforms/layout"
@@ -8,38 +7,73 @@
 
   <a4j:outputPanel id="authorizedApplicationsPanel" layout="block" class="mainNoTabs">
 
-    <nxu:set var="authorizedApplications" value="#{authorizedApplicationsActions.authorizedApplications}">
+    <nxu:set var="oAuth2AuthorizedApplications" value="#{authorizedApplicationsActions.getOAuth2AuthorizedApplications()}">
+    <nxu:set var="oAuthAuthorizedApplications" value="#{authorizedApplicationsActions.getOAuthAuthorizedApplications()}">
 
+      <c:if test="#{oAuth2AuthorizedApplications.size le 0 and oAuthAuthorizedApplications.size le 0}">
+        <p class="emptyResult emptyResultBig">
+          <h:outputText value="#{messages['user.center.noAuthorizedApplication']}" />
+        </p>
+      </c:if>
+      <c:if test="#{oAuth2AuthorizedApplications.size gt 0 or oAuthAuthorizedApplications.size gt 0}">
+        <p style="margin-bottom: 1em;">
+          <h:outputText value="#{messages['user.center.authorizedApplication.description']}" />
+        </p>
+        <h:form id="authorizedApplicationsForm">
+          <c:if test="#{oAuth2AuthorizedApplications.size gt 0}">
+            <table class="dataTable">
+              <nxu:set var="directoryName" value="oauth2Tokens">
+                <nxu:repeat var="application" value="#{oAuth2AuthorizedApplications}" index="index">
+                  <c:if test="#{index % 2 == 0}">
+                    <c:set var="directoryEntryClass" value="dataRowOdd" />
+                  </c:if>
+                  <c:if test="#{index % 2 != 0}">
+                    <c:set var="directoryEntryClass" value="dataRowEven" />
+                  </c:if>
+                  <c:if test="#{index == 0}">
+                    <nxl:layout name="oAuth2AuthorizedApplications" mode="list_and_header" value="#{application}" />
+                    <nxl:layout name="oAuth2AuthorizedApplications" mode="list" value="#{application}" />
+                  </c:if>
+                  <c:if test="#{index != 0}">
+                    <nxl:layout name="oAuth2AuthorizedApplications" mode="list" value="#{application}" />
+                  </c:if>
+                </nxu:repeat>
+              </nxu:set>
+            </table>
+          </c:if>
+          <c:if test="#{oAuthAuthorizedApplications.size gt 0}">
+            <table class="dataTable">
+              <nxu:set var="directoryName" value="oauthTokens">
+                <nxu:repeat var="application" value="#{oAuthAuthorizedApplications}" index="index">
+                  <c:if test="#{index % 2 == 0}">
+                    <c:set var="directoryEntryClass" value="dataRowOdd" />
+                  </c:if>
+                  <c:if test="#{index % 2 != 0}">
+                    <c:set var="directoryEntryClass" value="dataRowEven" />
+                  </c:if>
+                  <c:if test="#{index == 0}">
+                    <nxl:layout name="oAuthAuthorizedApplications" mode="list_and_header" value="#{application}" />
+                    <nxl:layout name="oAuthAuthorizedApplications" mode="list" value="#{application}" />
+                  </c:if>
+                  <c:if test="#{index != 0}">
+                    <nxl:layout name="oAuthAuthorizedApplications" mode="list" value="#{application}" />
+                  </c:if>
+                </nxu:repeat>
+              </nxu:set>
+            </table>
+          </c:if>
+        </h:form>
+      </c:if>
 
-      <p><h:outputText value="#{messages['user.center.authorizedApplication.description']}" rendered="#{authorizedApplications.size gt 0}"/></p>
-      <p class="emptyResult emptyResultBig"><h:outputText value="#{messages['user.center.noAuthorizedApplication']}" rendered="#{authorizedApplications.size le 0}" /></p>
+    </nxu:set>
+    </nxu:set>
 
-  <h:form id="authorizedApplicationsForm">
-  <table class="dataOutput">
-    <tbody>
-      <nxu:repeat var="application"
-        value="#{authorizedApplicationsActions.authorizedApplications}" index="index">
-        <c:if test="#{index % 2 == 0}">
-          <c:set var="directoryEntryClass" value="dataRowOdd" />
-        </c:if>
-        <c:if test="#{index % 2 != 0}">
-          <c:set var="directoryEntryClass" value="dataRowEven" />
-        </c:if>
-        <c:if test="#{index == 0}">
-          <nxl:layout name="authorizedApplications" mode="list_and_header"
-            value="#{application}" />
-        </c:if>
-        <c:if test="#{index != 0}">
-          <nxl:layout name="authorizedApplications" mode="list" value="#{application}" />
-        </c:if>
-      </nxu:repeat>
-    </tbody>
-  </table>
-  </h:form>
-
-
-  </nxu:set>
   </a4j:outputPanel>
 
+  <h:outputScript target="#{pageJsTarget}">
+    function confirmDeleteAuthorizedApp() {
+      return confirm("#{messages['user.center.oauthtokens.confirmDelete']}");
+    }
+  </h:outputScript>
 
 </div>

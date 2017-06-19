@@ -3,7 +3,57 @@
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
-    <layout name="authorizedApplications">
+
+    <layout name="oAuth2AuthorizedApplications">
+      <templates>
+        <template mode="any">
+          /layouts/layout_authorized_applications_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>oAuth2ApplicationId</widget>
+        </row>
+        <row>
+          <widget>oAuth2ApplicationName</widget>
+        </row>
+        <row>
+          <widget>oAuth2ApplicationAuthorizationDate</widget>
+        </row>
+      </rows>
+
+      <widget name="oAuth2ApplicationId" type="text">
+        <labels>
+          <label mode="any">label.oauth2.authorizedApp.id</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>applicationId</field>
+        </fields>
+      </widget>
+
+      <widget name="oAuth2ApplicationName" type="text">
+        <labels>
+          <label mode="any">label.oauth2.authorizedApp.name</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>applicationName</field>
+        </fields>
+      </widget>
+
+      <widget name="oAuth2ApplicationAuthorizationDate" type="datetime">
+        <labels>
+          <label mode="any">label.oauth2.authorizedApp.authorizationDate</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>applicationAuthorizationDate</field>
+        </fields>
+      </widget>
+    </layout>
+
+    <layout name="oAuthAuthorizedApplications">
       <templates>
         <template mode="any">
           /layouts/layout_authorized_applications_template.xhtml
