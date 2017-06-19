@@ -19,22 +19,28 @@
 package org.nuxeo.ecm.user.center;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.nuxeo.ecm.platform.oauth2.Constants.TOKEN_SERVICE;
 
 import java.io.Serializable;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.oauth.tokens.OAuthTokenStoreImpl;
+import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
+import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
+import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
+import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -49,27 +55,61 @@ public class AuthorizedApplicationsActions implements Serializable {
     @In
     protected NuxeoPrincipal currentUser;
 
-    public List<DocumentModel> getAuthorizedApplications() {
-        DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        try (Session session = directoryService.open(OAuthTokenStoreImpl.DIRECTORY_NAME)) {
-            Map<String, Serializable> queryFilter = getQueryFilter();
-            Set<String> emptySet = Collections.emptySet();
-            return session.query(queryFilter, emptySet, null, true);
+    public List<Map<String, Serializable>> getOAuth2AuthorizedApplications() {
+        List<Map<String, Serializable>> applications = new ArrayList<>();
+        ClientRegistry clientRegistry = Framework.getService(ClientRegistry.class);
+        OAuth2TokenStore tokenStore = new OAuth2TokenStore(TOKEN_SERVICE);
+        // Get OAuth2 tokens for the current user
+        DocumentModelList tokens = tokenStore.query(getOAuth2QueryFilter());
+        // Join them with the related OAuth2 client
+        for (DocumentModel token : tokens) {
+            OAuth2Client client = clientRegistry.getClient(
+                    (String) token.getPropertyValue(NuxeoOAuth2Token.SCHEMA + ":clientId"));
+            if (client != null) {
+                Map<String, Serializable> application = new HashMap<>();
+                application.put("id", token.getPropertyValue(NuxeoOAuth2Token.SCHEMA + ":id"));
+                application.put("applicationId", client.getId());
+                application.put("applicationName", client.getName());
+                Calendar creationDate = (Calendar) token.getPropertyValue(NuxeoOAuth2Token.SCHEMA + ":creationDate");
+                if (creationDate != null) {
+                    application.put("applicationAuthorizationDate", creationDate.getTime());
+                }
+                applications.add(application);
+            }
         }
+        return applications;
     }
 
-    protected Map<String, Serializable> getQueryFilter() {
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
+    public DocumentModelList getOAuthAuthorizedApplications() {
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        return Framework.doPrivileged(() -> {
+            try (Session session = directoryService.open(OAuthTokenStoreImpl.DIRECTORY_NAME)) {
+                Map<String, Serializable> queryFilter = getOAuthQueryFilter();
+                return session.query(queryFilter);
+            }
+        });
+    }
+
+    protected Map<String, Serializable> getOAuth2QueryFilter() {
+        Map<String, Serializable> filter = new HashMap<>();
+        filter.put("nuxeoLogin", currentUser.getName());
+        return filter;
+    }
+
+    protected Map<String, Serializable> getOAuthQueryFilter() {
+        Map<String, Serializable> filter = new HashMap<>();
         filter.put("clientToken", new Integer(0));
         filter.put("nuxeoLogin", currentUser.getName());
         return filter;
     }
 
-    public void revokeAccess(String id) {
+    public void revokeAccess(String directoryName, String id) {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        try (Session session = directoryService.open(OAuthTokenStoreImpl.DIRECTORY_NAME)) {
-            session.deleteEntry(id);
-        }
+        Framework.doPrivileged(() -> {
+            try (Session session = directoryService.open(directoryName)) {
+                session.deleteEntry(id);
+            }
+        });
     }
 
 }

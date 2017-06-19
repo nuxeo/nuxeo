@@ -24,22 +24,6 @@
         </th>
     </tr>
   </thead>
-  <tr class="#{directoryEntryClass}">
-    <nxl:layoutRow>
-      <nxl:layoutRowWidget>
-        <td class="fieldColumn">
-          <nxl:widget widget="#{widget}" value="#{value}" />
-        </td>
-      </nxl:layoutRowWidget>
-    </nxl:layoutRow>
-      <td class="fieldColumn">
-        <a4j:commandLink action="#{authorizedApplicationsActions.revokeAccess(value.id)}"
-          immediate="true" render="authorizedApplicationsPanel"
-          styleClass="action">
-          <h:outputText value="#{messages['command.revokeAccess']}"/>
-        </a4j:commandLink>
-      </td>
-  </tr>
 
 </c:if>
 
@@ -54,11 +38,12 @@
       </nxl:layoutRowWidget>
     </nxl:layoutRow>
       <td class="fieldColumn">
-        <a4j:commandLink action="#{authorizedApplicationsActions.revokeAccess(value.id)}"
-          immediate="true" render="authorizedApplicationsPanel"
-          styleClass="action">
-          <h:outputText value="#{messages['command.revokeAccess']}"/>
-        </a4j:commandLink>
+        <a4j:commandButton value="#{messages['command.revokeAccess']}"
+          action="#{authorizedApplicationsActions.revokeAccess(directoryName, value.id)}"
+          immediate="true"
+          render="authorizedApplicationsPanel"
+          styleClass="button"
+          onclick="return confirmDeleteAuthorizedApp();" />
       </td>
   </tr>
 
