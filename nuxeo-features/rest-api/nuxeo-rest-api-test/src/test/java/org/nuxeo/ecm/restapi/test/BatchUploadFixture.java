@@ -763,6 +763,52 @@ public class BatchUploadFixture extends BaseTest {
     }
 
     /**
+     * We patched the Content-Type and X-File-Type header for NXP-12802 / NXP-13036
+     *
+     * @since 9.2
+     */
+    @Test
+    public void testBatchUploadExecuteWithBadMimeType() throws Exception {
+        // Get batch id, used as a session id
+        ClientResponse response = getResponse(RequestType.POST, "upload");
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        String batchId = node.get("batchId").getValueAsText();
+
+        // Upload file
+        String fileName = URLEncoder.encode("file.pdf", "UTF-8");
+        String badMimeType = "pdf";
+        String data = "Empty and wrong pdf data";
+        String fileSize = String.valueOf(data.getBytes().length);
+        Map<String, String> headers = new HashMap<>();
+        // impossible to test a bad content-type as the client will parse it
+        headers.put("Content-Type", "application/octet-stream");
+        headers.put("X-Upload-Type", "normal");
+        headers.put("X-File-Name", fileName);
+        headers.put("X-File-Size", fileSize);
+        headers.put("X-File-Type", badMimeType);
+        getResponse(RequestType.POST, "upload/" + batchId + "/0", data, headers);
+
+        // Create a doc and attach the uploaded blob to it using the /upload/{batchId}/{fileIdx}/execute endpoint
+        DocumentModel file = session.createDocumentModel("/", "testBatchExecuteDoc", "File");
+        file = session.createDocument(file);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        String json = "{\"params\":{";
+        json += "\"document\":\"" + file.getPathAsString() + "\"";
+        json += "}}";
+        response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/0/execute/Blob.Attach", json);
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+
+        DocumentModel doc = session.getDocument(new PathRef("/testBatchExecuteDoc"));
+        Blob blob = (Blob) doc.getPropertyValue("file:content");
+        assertNotNull(blob);
+        assertEquals("file.pdf", blob.getFilename());
+        assertEquals("application/pdf", blob.getMimeType());
+        assertEquals(data, blob.getString());
+    }
+
+    /**
      * @since 7.4
      */
     @Test
