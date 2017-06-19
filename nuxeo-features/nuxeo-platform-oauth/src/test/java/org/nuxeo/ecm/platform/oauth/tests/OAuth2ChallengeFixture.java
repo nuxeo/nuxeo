@@ -55,14 +55,10 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet;
-import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
-import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.transaction.TransactionHelper;
-import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -74,7 +70,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 5.9.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ OAuthFeature.class, OAuth2JettyFeature.class, TransientStoreFeature.class })
+@Features({ OAuthFeature.class, OAuth2JettyFeature.class })
 @Jetty(port = 18090)
 public class OAuth2ChallengeFixture {
 
@@ -88,10 +84,7 @@ public class OAuth2ChallengeFixture {
 
     protected static final String BASE_URL = "http://localhost:18090";
 
-    private static final Integer TIMEOUT = Integer.valueOf(1000 * 60 * 5); // 5min
-
-    @Inject
-    protected ClientRegistry clientRegistry;
+    private static final int TIMEOUT = 1000 * 60 * 5; // 5min
 
     @Inject
     protected TransientStoreService transientStoreService;
@@ -102,9 +95,6 @@ public class OAuth2ChallengeFixture {
 
     @Before
     public void initOAuthClient() {
-
-        registerClient("Dummy", CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
-
         // First client to request like a "Client" as OAuth RFC describe it
         client = Client.create();
         client.setConnectTimeout(TIMEOUT);
@@ -156,49 +146,39 @@ public class OAuth2ChallengeFixture {
         params.put(CLIENT_ID_PARAM, CLIENT_ID);
         params.put(RESPONSE_TYPE_PARAM, CODE_RESPONSE_TYPE);
         params.put(STATE_PARAM, STATE);
-
         ClientResponse cr = responseFromGetAuthorizationWith(params);
         assertEquals(400, cr.getStatus());
 
         // Invalid: not starting with https
         params.put(REDIRECT_URI_PARAM, "http://redirect.uri");
-
         cr = responseFromGetAuthorizationWith(params);
         assertEquals(400, cr.getStatus());
 
         // Invalid: starting with http://localhost with localhost part of the domain name
         params.put(REDIRECT_URI_PARAM, "http://localhost.somecompany.com");
-
         cr = responseFromGetAuthorizationWith(params);
         assertEquals(400, cr.getStatus());
 
         // Invalid: not matching the one from the registered client
         params.put(REDIRECT_URI_PARAM, "https://unknown.uri");
-
         cr = responseFromGetAuthorizationWith(params);
         assertEquals(400, cr.getStatus());
 
         // Valid: not starting with http
-        registerClient("Nuxeo Mobile", "nuxeo-mobile-app", "", "nuxeo://authorize");
         params.put(CLIENT_ID_PARAM, "nuxeo-mobile-app");
         params.put(REDIRECT_URI_PARAM, "nuxeo://authorize");
-
         cr = responseFromGetAuthorizationWith(params);
         assertEquals(200, cr.getStatus());
 
         // Valid: starting with http://localhost with localhost not part of the domain name
-        registerClient("Localhost", "localhost", "", "http://localhost:8080/nuxeo");
         params.put(CLIENT_ID_PARAM, "localhost");
         params.put(REDIRECT_URI_PARAM, "http://localhost:8080/nuxeo");
-
         cr = responseFromGetAuthorizationWith(params);
         assertEquals(200, cr.getStatus());
 
         // Valid: starting with https
-        registerClient("Secure", "secure", "", REDIRECT_URI);
         params.put(CLIENT_ID_PARAM, "secure");
         params.put(REDIRECT_URI_PARAM, REDIRECT_URI);
-
         cr = responseFromGetAuthorizationWith(params);
         assertEquals(200, cr.getStatus());
     }
@@ -341,18 +321,5 @@ public class OAuth2ChallengeFixture {
         }
 
         return wr.queryParams(params).post(ClientResponse.class);
-    }
-
-    protected void registerClient(String name, String id, String secret, String redirectURI) {
-        if (!clientRegistry.hasClient(id)) {
-            OAuth2Client oauthClient = new OAuth2Client(name, id, secret, redirectURI);
-            assertTrue(clientRegistry.registerClient(oauthClient));
-
-            // Commit the transaction so that the HTTP thread finds the newly created directory entry
-            if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-                TransactionHelper.commitOrRollbackTransaction();
-                TransactionHelper.startTransaction();
-            }
-        }
     }
 }

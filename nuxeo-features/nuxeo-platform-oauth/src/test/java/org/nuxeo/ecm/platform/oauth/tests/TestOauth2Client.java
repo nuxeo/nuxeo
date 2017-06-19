@@ -18,21 +18,17 @@
  */
 package org.nuxeo.ecm.platform.oauth.tests;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
+import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
@@ -43,7 +39,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 public class TestOauth2Client {
 
     @Inject
-    protected ClientRegistry registry;
+    protected OAuth2ClientService clientService;
 
     @Test
     public void testValidRedirectURI() {
@@ -56,67 +52,16 @@ public class TestOauth2Client {
 
     @Test
     public void testClientIDAndSecretMatchesClient() {
-        OAuth2Client client = new OAuth2Client("testClient", "testClient", "testSecret", "https://redirect.uri");
+        OAuth2Client client = clientService.getClient("notEnabled");
+        assertFalse(client.isValidWith("notEnabled", "testSecret"));
 
-        client.setEnabled(false);
-        assertFalse(client.isValidWith("testClient", "testSecret"));
-
-        client.setEnabled(true);
+        client = clientService.getClient("enabled");
         assertFalse(client.isValidWith("wrongId", "testSecret"));
-        assertFalse(client.isValidWith("testClient", "wrongSecret"));
-        assertTrue(client.isValidWith("testClient", "testSecret"));
+        assertFalse(client.isValidWith("enabled", "wrongSecret"));
+        assertTrue(client.isValidWith("enabled", "testSecret"));
 
-        client.setSecret(null);
-        assertTrue(client.isValidWith("testClient", "someSecret"));
+        client = clientService.getClient("noSecret");
+        assertTrue(client.isValidWith("noSecret", "someSecret"));
     }
 
-    @Test
-    public void clientsManagement() {
-        assertNotNull(registry);
-        assertTrue(registry.listClients().isEmpty());
-
-        OAuth2Client client = new OAuth2Client("My App", "myId", "mySecretSecret", "https://redirect.uri");
-        assertTrue(registry.registerClient(client));
-        // Ensure that registering a client with the same ID is forbidden
-        assertFalse(registry.registerClient(client));
-
-        assertEquals(1, registry.listClients().size());
-        assertTrue(registry.isValidClient(client.getId(), client.getSecret()));
-        assertFalse(registry.isValidClient(client.getId(), "falsePositive"));
-
-        client = new OAuth2Client("My App", "myNdId", "", "https://redirect.uri");
-        assertTrue(registry.registerClient(client));
-        assertEquals(2, registry.listClients().size());
-        assertTrue(registry.isValidClient(client.getId(), "dummySecret"));
-
-        assertTrue(registry.deleteClient("myNdId"));
-        assertEquals(1, registry.listClients().size());
-        assertTrue(registry.deleteClient("myId"));
-        assertTrue(registry.listClients().isEmpty());
-    }
-
-    @Test
-    @LocalDeploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/oauth2-client-config.xml")
-    public void clientComponentRegistration() throws Exception {
-        assertEquals(2, registry.listClients().size());
-
-        assertTrue(registry.hasClient("xxx-xxx"));
-        assertFalse(registry.hasClient("unknown"));
-
-        OAuth2Client client = registry.getClient("xxx-xxx");
-        assertEquals("my client", client.getName());
-        assertEquals("aSecret", client.getSecret());
-        assertEquals("https://redirect.uri", client.getRedirectURI());
-        assertTrue(client.isEnabled());
-
-        client = registry.getClient("yyy-yyy");
-        assertEquals("another client", client.getName());
-        assertNull(client.getSecret());
-        assertEquals("https://redirect.uri", client.getRedirectURI());
-        assertFalse(client.isEnabled());
-
-        assertTrue(registry.deleteClient("xxx-xxx"));
-        assertTrue(registry.deleteClient("yyy-yyy"));
-        assertTrue(registry.listClients().isEmpty());
-    }
 }

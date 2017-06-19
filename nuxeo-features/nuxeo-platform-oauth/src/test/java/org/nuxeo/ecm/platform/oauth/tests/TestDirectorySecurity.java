@@ -75,7 +75,7 @@ public class TestDirectorySecurity {
         setUp("oauthTokens", "oauthToken", "token", Collections.singletonMap("token", "123"));
         setUp("oauth2ServiceProviders", "oauth2ServiceProvider", "id", Collections.singletonMap("serviceName", "foo"));
         setUp("oauth2Tokens", "oauth2Token", "id", Collections.singletonMap("clientId", "123"));
-        setUp("oauth2Clients", "oauth2Client", "clientId", Collections.singletonMap("clientId", "123"));
+        setUp("oauth2Clients", "oauth2Client", "id", Collections.singletonMap("clientId", "123"));
     }
 
     @Test
@@ -95,7 +95,7 @@ public class TestDirectorySecurity {
         testDirectoryQuery("oauthTokens", "token");
         testDirectoryQuery("oauth2ServiceProviders", "id");
         testDirectoryQuery("oauth2Tokens", "id");
-        testDirectoryQuery("oauth2Clients", "clientId");
+        testDirectoryQuery("oauth2Clients", "id");
     }
 
     protected void setUp(String directoryName, String schemaName, String idField, Map<String, Object> entryMap)
