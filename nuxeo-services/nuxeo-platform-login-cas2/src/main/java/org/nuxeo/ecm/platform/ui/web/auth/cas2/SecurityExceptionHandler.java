@@ -69,17 +69,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
             return;
         }
 
-        Principal principal = request.getUserPrincipal();
-        if (principal == null) {
-            LoginContext loginContext = (LoginContext) request.getAttribute(LOGINCONTEXT_KEY);
-            Subject subject = loginContext.getSubject();
-            if (subject != null) {
-                Set<Principal> principals = subject.getPrincipals();
-                if (principals != null && !principals.isEmpty()) {
-                    principal = (Principal) principals.toArray()[0];
-                }
-            }
-        }
+        Principal principal = getPrincipal(request);
         if (principal instanceof NuxeoPrincipal) {
             NuxeoPrincipal nuxeoPrincipal = (NuxeoPrincipal) principal;
             // redirect to login than to requested page

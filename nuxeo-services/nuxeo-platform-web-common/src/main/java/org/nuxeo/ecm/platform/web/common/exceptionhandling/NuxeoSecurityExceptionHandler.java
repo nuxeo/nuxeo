@@ -61,7 +61,7 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
             return;
         }
 
-        Principal principal = request.getUserPrincipal();
+        Principal principal = getPrincipal(request);
         if (principal instanceof NuxeoPrincipal) {
             NuxeoPrincipal nuxeoPrincipal = (NuxeoPrincipal) principal;
             if (nuxeoPrincipal.isAnonymous()) {
