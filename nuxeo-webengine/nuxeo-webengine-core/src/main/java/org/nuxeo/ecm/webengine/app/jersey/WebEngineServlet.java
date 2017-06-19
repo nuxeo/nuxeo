@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,12 +60,12 @@ public class WebEngineServlet extends ApplicationServlet {
 
         protected Hashtable<String, String[]> patchHeaders(HttpServletRequest request, boolean patchCType,
                 boolean patchMType) {
-            Hashtable<String, String[]> headers = new Hashtable<String, String[]>();
+            Hashtable<String, String[]> headers = new Hashtable<>();
             // collect headers from request
             Enumeration<String> eachNames = request.getHeaderNames();
             while (eachNames.hasMoreElements()) {
                 String name = eachNames.nextElement().toLowerCase();
-                List<String> values = new LinkedList<String>();
+                List<String> values = new LinkedList<>();
                 Enumeration<String> eachValues = request.getHeaders(name);
                 while (eachValues.hasMoreElements()) {
                     values.add(eachValues.nextElement());
