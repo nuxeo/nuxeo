@@ -259,6 +259,12 @@
   <category name="org.apache.myfaces.renderkit.html.util.DefaultAddResource">
     <priority value="ERROR" />
   </category>
+  <category name="org.apache.zookeeper">
+    <priority value="WARN" />
+  </category>
+  <category name="org.apache.kafka">
+    <priority value="WARN" />
+  </category>
 
   <category name="org.ajax4jsf">
     <priority value="INFO" />

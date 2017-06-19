@@ -227,6 +227,7 @@
     <mongo.java.driver.version>3.3.0</mongo.java.driver.version>
     <quartz.mongodb.version>2.0.0</quartz.mongodb.version>
 
+    <kafka.version>0.10.2.1</kafka.version>
   </properties>
 
   <dependencyManagement>
@@ -4821,29 +4822,36 @@
 
       <!-- Kafka -->
       <dependency>
+        <groupId>com.101tec</groupId>
+        <artifactId>zkclient</artifactId>
+        <version>0.10</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka-clients</artifactId>
-        <version>0.10.1.0</version>
+        <version>${kafka.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka-clients</artifactId>
-        <version>0.10.1.0</version>
+        <version>${kafka.version}</version>
         <classifier>test</classifier>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka_2.11</artifactId>
-        <version>0.10.1.0</version>
+        <version>${kafka.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka_2.11</artifactId>
-        <version>0.10.1.0</version>
+        <version>${kafka.version}</version>
         <classifier>test</classifier>
         <scope>test</scope>
       </dependency>
+
       <dependency>
         <groupId>net.openhft</groupId>
         <artifactId>chronicle-queue</artifactId>
@@ -4869,6 +4877,12 @@
         <artifactId>failsafe</artifactId>
         <version>1.0.1</version>
       </dependency>
+      <dependency>
+        <groupId>org.jgrapht</groupId>
+        <artifactId>jgrapht-core</artifactId>
+        <version>1.0.1</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
