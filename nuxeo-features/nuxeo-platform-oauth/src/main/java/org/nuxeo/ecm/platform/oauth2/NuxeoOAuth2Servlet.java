@@ -77,6 +77,9 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     public static final String ERROR_JSP_PAGE_PATH = "/oauth2error.jsp";
 
+    public static final OAuth2Error MISSING_STATE_ERROR = OAuth2Error.invalidRequest(
+            String.format(AuthorizationRequest.MISSING_REQUIRED_FIELD_MESSAGE, STATE_PARAM));
+
     public static final int ACCESS_TOKEN_EXPIRATION_TIME = 3600 * 1000;
 
     protected OAuth2TokenStore tokenStore = new OAuth2TokenStore(TOKEN_SERVICE);
@@ -114,10 +117,16 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             return;
         }
 
+        String state = request.getParameter(STATE_PARAM);
+        if (StringUtils.isBlank(state)) {
+            handleError(MISSING_STATE_ERROR, request, response);
+            return;
+        }
+
         AuthorizationRequest.store(authRequest.getAuthorizationKey(), authRequest);
         ClientRegistry clientRegistry = Framework.getService(ClientRegistry.class);
         request.setAttribute(AUTHORIZATION_KEY, authRequest.getAuthorizationKey());
-        request.setAttribute(STATE_PARAM, authRequest.getState());
+        request.setAttribute(STATE_PARAM, state);
         request.setAttribute(CLIENT_NAME, clientRegistry.getClient(authRequest.getClientId()).getName());
 
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(GRANT_JSP_PAGE_PATH);
@@ -141,6 +150,12 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             return;
         }
 
+        String state = request.getParameter(STATE_PARAM);
+        if (StringUtils.isBlank(state)) {
+            handleError(MISSING_STATE_ERROR, request, response);
+            return;
+        }
+
         String grantAccess = request.getParameter(GRANT_ACCESS_PARAM);
         if (grantAccess == null) {
             // the user deny access
@@ -151,10 +166,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             if (StringUtils.isNotBlank(errorDescription)) {
                 params.put(ERROR_DESCRIPTION_PARAM, errorDescription);
             }
-            String state = request.getParameter(STATE_PARAM);
-            if (StringUtils.isNotBlank(state)) {
-                params.put(STATE_PARAM, state);
-            }
+            params.put(STATE_PARAM, state);
             sendRedirect(response, authRequest.getRedirectUri(), params);
             return;
         }
@@ -165,9 +177,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         AuthorizationRequest.store(authorizationCode, authRequest);
         Map<String, String> params = new HashMap<>();
         params.put(AUTHORIZATION_CODE_PARAM, authorizationCode);
-        if (StringUtils.isNotBlank(authRequest.getState())) {
-            params.put(STATE_PARAM, authRequest.getState());
-        }
+        params.put(STATE_PARAM, state);
 
         request.getSession().invalidate();
         sendRedirect(response, authRequest.getRedirectUri(), params);
