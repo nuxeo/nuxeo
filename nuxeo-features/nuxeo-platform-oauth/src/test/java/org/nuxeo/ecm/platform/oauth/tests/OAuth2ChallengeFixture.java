@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
@@ -202,7 +204,7 @@ public class OAuth2ChallengeFixture {
 
     @Test
     public void shouldDenyAccess() {
-        AuthorizationRequest authorizationRequest = initAuthorizationRequestCall(CLIENT_ID, REDIRECT_URI);
+        AuthorizationRequest authorizationRequest = initValidAuthorizationRequestCall();
         String key = authorizationRequest.getAuthorizationKey();
 
         // missing "grant_access" parameter to grant access
@@ -215,16 +217,27 @@ public class OAuth2ChallengeFixture {
         assertEquals(302, cr.getStatus());
         String redirect = cr.getHeaders().get("Location").get(0);
         assertTrue(redirect.contains("error=access_denied"));
+        String state = extractParameter(redirect, STATE_PARAM);
+        assertEquals(STATE, state);
 
         // ensure authorization request has been removed
         Set<String> keys = store.keySet();
         assertFalse(keys.contains(key));
     }
 
-    protected AuthorizationRequest initAuthorizationRequestCall(String clientId, String redirectURI) {
+    protected String extractParameter(String url, String parameterName) {
+        Pattern pattern = Pattern.compile(parameterName + "=(.*?)(&|$)");
+        Matcher matcher = pattern.matcher(url);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    protected AuthorizationRequest initValidAuthorizationRequestCall() {
         Map<String, String> params = new HashMap<>();
-        params.put(REDIRECT_URI_PARAM, redirectURI);
-        params.put(CLIENT_ID_PARAM, clientId);
+        params.put(REDIRECT_URI_PARAM, REDIRECT_URI);
+        params.put(CLIENT_ID_PARAM, CLIENT_ID);
         params.put(RESPONSE_TYPE_PARAM, CODE_RESPONSE_TYPE);
         params.put(STATE_PARAM, STATE);
 
@@ -240,7 +253,7 @@ public class OAuth2ChallengeFixture {
 
     @Test
     public void shouldRetrieveAccessAndRefreshToken() throws IOException {
-        AuthorizationRequest authorizationRequest = initAuthorizationRequestCall(CLIENT_ID, REDIRECT_URI);
+        AuthorizationRequest authorizationRequest = initValidAuthorizationRequestCall();
         String key = authorizationRequest.getAuthorizationKey();
 
         // get an authorization code
@@ -249,11 +262,13 @@ public class OAuth2ChallengeFixture {
         params.put(CLIENT_ID_PARAM, CLIENT_ID);
         params.put(NuxeoOAuth2Servlet.AUTHORIZATION_KEY, key);
         params.put(NuxeoOAuth2Servlet.GRANT_ACCESS_PARAM, "true");
+        params.put(STATE_PARAM, STATE);
         ClientResponse cr = responseFromPostAuthorizationWith(params);
         assertEquals(302, cr.getStatus());
         String redirect = cr.getHeaders().get("Location").get(0);
-        assertTrue(redirect.contains("code="));
-        String code = redirect.substring(redirect.indexOf("code=") + 5, redirect.indexOf("&state"));
+        String state = extractParameter(redirect, STATE_PARAM);
+        assertEquals(STATE, state);
+        String code = extractParameter(redirect, AUTHORIZATION_CODE_PARAM);
 
         // ensure we have only one authorization request
         Set<String> keys = store.keySet();
@@ -266,7 +281,6 @@ public class OAuth2ChallengeFixture {
         params.put(CLIENT_ID_PARAM, CLIENT_ID);
         params.put(GRANT_TYPE_PARAM, AUTHORIZATION_CODE_GRANT_TYPE);
         params.put(CLIENT_SECRET_PARAM, CLIENT_SECRET);
-        params.put(STATE_PARAM, STATE);
         params.put(AUTHORIZATION_CODE_PARAM, code);
         cr = responseFromTokenWith(params);
         assertEquals(200, cr.getStatus());

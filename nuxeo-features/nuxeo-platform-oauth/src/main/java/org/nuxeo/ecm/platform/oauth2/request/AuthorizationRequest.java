@@ -23,7 +23,6 @@ import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_RESPONSE_TYPE;
 import static org.nuxeo.ecm.platform.oauth2.Constants.REDIRECT_URI_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.RESPONSE_TYPE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.SCOPE_PARAM;
-import static org.nuxeo.ecm.platform.oauth2.Constants.STATE_PARAM;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -59,8 +58,6 @@ public class AuthorizationRequest extends OAuth2Request {
     protected String responseType;
 
     protected String scope;
-
-    protected String state;
 
     protected Date creationDate;
 
@@ -104,9 +101,7 @@ public class AuthorizationRequest extends OAuth2Request {
     protected AuthorizationRequest(HttpServletRequest request) {
         super(request);
         responseType = request.getParameter(RESPONSE_TYPE_PARAM);
-
         scope = request.getParameter(SCOPE_PARAM);
-        state = request.getParameter(STATE_PARAM);
 
         Principal principal = request.getUserPrincipal();
         if (principal != null) {
@@ -122,7 +117,6 @@ public class AuthorizationRequest extends OAuth2Request {
         redirectUri = (String) map.get("redirectUri");
         responseType = (String) map.get("responseType");
         scope = (String) map.get("scope");
-        state = (String) map.get("state");
         creationDate = (Date) map.get("creationDate");
         authorizationCode = (String) map.get("authorizationCode");
         authorizationKey = (String) map.get("authorizationKey");
@@ -139,9 +133,6 @@ public class AuthorizationRequest extends OAuth2Request {
         }
         if (StringUtils.isBlank(redirectUri)) {
             return OAuth2Error.invalidRequest(String.format(MISSING_REQUIRED_FIELD_MESSAGE, REDIRECT_URI_PARAM));
-        }
-        if (StringUtils.isBlank(state)) {
-            return OAuth2Error.invalidRequest(String.format(MISSING_REQUIRED_FIELD_MESSAGE, STATE_PARAM));
         }
 
         // Check if client exists
@@ -196,10 +187,6 @@ public class AuthorizationRequest extends OAuth2Request {
         return username;
     }
 
-    public String getState() {
-        return state;
-    }
-
     public String getAuthorizationCode() {
         if (StringUtils.isBlank(authorizationCode)) {
             authorizationCode = RandomStringUtils.random(10, true, true);
@@ -224,9 +211,6 @@ public class AuthorizationRequest extends OAuth2Request {
         }
         if (scope != null) {
             map.put("scope", scope);
-        }
-        if (state != null) {
-            map.put("state", state);
         }
         if (creationDate != null) {
             map.put("creationDate", creationDate);
