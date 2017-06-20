@@ -114,6 +114,7 @@ public class OAuth2ChallengeFixture {
         store = transientStoreService.getStore(AuthorizationRequest.STORE_NAME);
     }
 
+    @Test
     public void authorizationShouldReturn200() {
         Map<String, String> params = new HashMap<>();
         params.put(REDIRECT_URI_PARAM, REDIRECT_URI);
