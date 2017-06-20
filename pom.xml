@@ -167,7 +167,7 @@
     <google.oauth.client.version>1.20.0</google.oauth.client.version>
     <google.api.client.version>1.19.1</google.api.client.version>
     <google.api.drive.version>v2-rev161-1.19.1</google.api.drive.version>
-    <dropbox.api.version>1.7.7</dropbox.api.version>
+    <dropbox.api.version>2.1.2</dropbox.api.version>
     <box.api.version>1.1.0</box.api.version>
     <onedrive.api.version>1.0</onedrive.api.version>
     <selenium.version>2.53.0</selenium.version>
