@@ -54,6 +54,17 @@ public class ConnectStatusHolder {
         return Framework.getLocalService(ConnectRegistrationService.class);
     }
 
+    /**
+     * @deprecated Since 9.2, use {@link #isRegistered()} instead.
+     */
+    @Deprecated
+    public boolean isRegistred() {
+        return isRegistered();
+    }
+
+    /**
+     * @since 9.2
+     */
     public boolean isRegistered() {
         // no cache needed
         return getService().isInstanceRegistered();

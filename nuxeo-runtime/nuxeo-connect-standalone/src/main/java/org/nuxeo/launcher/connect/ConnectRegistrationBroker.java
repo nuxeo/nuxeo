@@ -45,6 +45,9 @@ import org.nuxeo.launcher.config.ConfigurationException;
  */
 public class ConnectRegistrationBroker {
 
+    /**
+     * @since 9.2
+     */
     public enum TrialField {
         FIRST_NAME( //
                 "firstName", //
@@ -93,18 +96,30 @@ public class ConnectRegistrationBroker {
             this.errorMessage = errorMessage;
         }
 
+        /**
+         * @since 9.2
+         */
         public String getId() {
             return id;
         }
 
+        /**
+         * @since 9.2
+         */
         public String getPromptMessage() {
             return name + ": ";
         }
 
+        /**
+         * @since 9.2
+         */
         public Predicate<String> getPredicate() {
             return predicate;
         }
 
+        /**
+         * @since 9.2
+         */
         public String getErrorMessage() {
             return errorMessage;
         }
