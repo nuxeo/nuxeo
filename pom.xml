@@ -129,6 +129,7 @@
     <module>nuxeo-mongodb-ext</module>
     <module>nuxeo-target-platforms</module>
     <module>nuxeo-web-ui</module>
+    <module>nuxeo-api-playground</module>
   </modules>
 
   <dependencyManagement>
