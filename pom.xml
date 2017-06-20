@@ -6048,7 +6048,6 @@
                     <!-- Exclusions are tolerated for nightly "date-based" releases only -->
                     <excludes>
                       <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
-                      <!-- TODO NXBT-1765 Disable the next line after the release of Nuxeo Connect Client 1.5.1 -->
                       <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
                       <!-- <exclude>org.jboss.seam:*</exclude> -->
                     </excludes>

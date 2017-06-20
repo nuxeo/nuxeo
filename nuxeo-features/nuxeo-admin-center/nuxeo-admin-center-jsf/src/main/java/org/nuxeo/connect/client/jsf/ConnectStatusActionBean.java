@@ -131,9 +131,20 @@ public class ConnectStatusActionBean implements Serializable {
         return Framework.getLocalService(ConnectRegistrationService.class);
     }
 
+    /**
+     * @since 9.2
+     */
     @Factory(scope = ScopeType.APPLICATION, value = "registredConnectInstance")
     public boolean isRegistered() {
         return getService().isInstanceRegistered();
+    }
+
+    /**
+     * @deprecated Since 9.2, use {@link #isRegistered()} instead.
+     */
+    @Deprecated
+    public boolean isRegistred() {
+        return isRegistered();
     }
 
     protected void flushContextCache() {
