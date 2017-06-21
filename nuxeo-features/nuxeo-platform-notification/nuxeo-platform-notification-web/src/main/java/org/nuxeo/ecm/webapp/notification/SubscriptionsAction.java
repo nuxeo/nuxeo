@@ -44,10 +44,12 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
+import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Handles the subscriptions page.
@@ -222,6 +224,13 @@ public class SubscriptionsAction extends InputController implements Serializable
 
     public void setInheritedNotifications(List<Notification> inheritedNotifications) {
         this.inheritedNotifications = inheritedNotifications;
+    }
+
+    /**
+     * @since 9.2
+     */
+    public boolean canFollow() {
+        return !navigationContext.getCurrentDocument().isProxy();
     }
 
 }

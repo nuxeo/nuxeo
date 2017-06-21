@@ -84,6 +84,7 @@
       <filter-id>hasNoSubscriptions</filter-id>
       <filter-id>canSubscribe</filter-id>
       <filter-id>isNotVersion</filter-id>
+      <filter-id>canFollow</filter-id>
       <properties>
         <property name="ajaxSupport">true</property>
       </properties>
@@ -96,6 +97,7 @@
       <filter-id>hasSubscriptions</filter-id>
       <filter-id>canSubscribe</filter-id>
       <filter-id>isNotVersion</filter-id>
+      <filter-id>canFollow</filter-id>
       <properties>
         <property name="ajaxSupport">true</property>
       </properties>
@@ -263,6 +265,12 @@
     <filter id="isExportableToPDF">
       <rule grant="true">
         <condition>#{conversionActions.isExportableToPDF(blob)}</condition>
+      </rule>
+    </filter>
+
+    <filter id="canFollow">
+      <rule grant="true">
+        <condition>#{subscriptionAction.canFollow()}</condition>
       </rule>
     </filter>
 
