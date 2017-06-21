@@ -198,7 +198,7 @@ public class ConnectBroker {
 
     protected boolean isRemotePackageId(String pkgId) {
         return PackageUtils.isValidPackageId(pkgId)
-                && NuxeoConnectClient.getPackageManager().findPackageById(pkgId) != null;
+                && NuxeoConnectClient.getPackageManager().getRemotePackage(pkgId) != null;
     }
 
     protected String getBestIdForNameInList(String pkgName, List<? extends Package> pkgList) {
@@ -1120,7 +1120,8 @@ public class ConnectBroker {
 
             // Check registration and package visibility
             DownloadablePackage downloadablePkg = getPackageManager().findRemotePackageById(pkg);
-            if (downloadablePkg != null && downloadablePkg.getVisibility() != PackageVisibility.PUBLIC && !isRegistered) {
+            if (downloadablePkg != null && downloadablePkg.getVisibility() != PackageVisibility.PUBLIC
+                    && !isRegistered) {
                 downloadOk = false;
                 cmdInfo.exitCode = 1;
                 cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Registration required.");
@@ -1254,7 +1255,8 @@ public class ConnectBroker {
 
                 // Replace snapshots to install but already in cache (requested by id or filename)
                 if (CollectionUtils.isNotEmpty(localSnapshotsToReplace)) {
-                    log.info(String.format("The following SNAPSHOT package(s) will be replaced in local cache : %s",
+                    log.info(String.format(
+                            "The following SNAPSHOT package(s) will be replaced in local cache (if available): %s",
                             localSnapshotsToReplace));
                     String initialAccept = accept;
                     if ("ask".equalsIgnoreCase(accept)) {
@@ -1271,10 +1273,16 @@ public class ConnectBroker {
                             cmdOk = false;
                         }
                     }
-                    for (String pkgId : localSnapshotsToReplace) {
-                        LocalPackage addedPkg = pkgAdd(pkgId, ignoreMissing);
-                        if (addedPkg == null) {
-                            cmdOk = false;
+                    for (String pkgIdOrFileName : localSnapshotsToReplace) {
+                        if (isLocalPackageFile(pkgIdOrFileName) || isRemotePackageId(pkgIdOrFileName)) {
+                            LocalPackage addedPkg = pkgAdd(pkgIdOrFileName, ignoreMissing);
+                            if (addedPkg == null) {
+                                cmdOk = false;
+                            }
+                        } else {
+                            log.info(String.format(
+                                    "The SNAPSHOT package %s is not available remotely, local cache will be used.",
+                                    pkgIdOrFileName));
                         }
                     }
                 }
@@ -1470,7 +1478,7 @@ public class ConnectBroker {
                 // if a requested SNAPSHOT package is present, mark it for replacement in local cache
                 if (localPackage != null && localPackage.getVersion().isSnapshot()) {
                     if (localPackage.getPackageState().isInstalled()) {
-                        // if it's already installed, unintall it
+                        // if it's already installed, uninstall it
                         localSnapshotsToUninstall.add(nameOrIdToInstall);
                     }
                     // use the local file name if given and ensure we replace the right version, in case
