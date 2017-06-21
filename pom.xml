@@ -224,7 +224,7 @@
 
     <!-- MongoDB -->
     <mongo.java.driver.version>3.3.0</mongo.java.driver.version>
-    <quartz.mongodb.version>2.0.0</quartz.mongodb.version>
+    <quartz.mongodb.version>2.0.0-NX2</quartz.mongodb.version>
 
   </properties>
 
