@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: DocumentPipeImpl.java 29029 2008-01-14 18:38:14Z ldoguin $
  */
-
 package org.nuxeo.ecm.core.io.impl;
 
 import java.io.IOException;
@@ -31,6 +28,7 @@ import org.nuxeo.ecm.core.io.DocumentTransformer;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.DocumentWriter;
 import org.nuxeo.ecm.core.io.ExportedDocument;
+import org.nuxeo.ecm.core.io.impl.transformers.PropertyDeprecationRemover;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -47,7 +45,8 @@ public class DocumentPipeImpl implements DocumentPipe {
 
     public DocumentPipeImpl(int pageSize) {
         this.pageSize = pageSize;
-        transformers = new ArrayList<DocumentTransformer>();
+        this.transformers = new ArrayList<>();
+        this.transformers.add(new PropertyDeprecationRemover());
     }
 
     public DocumentPipeImpl() {
@@ -98,7 +97,7 @@ public class DocumentPipeImpl implements DocumentPipe {
             throw new IllegalArgumentException("Pipe writer cannot be null");
         }
 
-        List<DocumentTranslationMap> maps = new ArrayList<DocumentTranslationMap>();
+        List<DocumentTranslationMap> maps = new ArrayList<>();
         readAndWriteDocs(maps);
         return DocumentTranslationMapImpl.merge(maps);
     }

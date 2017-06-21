@@ -18,7 +18,9 @@
  */
 package org.nuxeo.ecm.core.schema;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Handler used to test if a specific property is marked as deprecated/removed and to get its fallback.
@@ -30,13 +32,34 @@ public class PropertyDeprecationHandler {
     /**
      * Deprecated/removed properties map, its mapping is:
      * <p>
-     *     schemaName -> propertyXPath -> fallbackXPath
+     * schemaName -> propertyXPath -> fallbackXPath
      * </p>
      */
     protected final Map<String, Map<String, String>> properties;
 
     public PropertyDeprecationHandler(Map<String, Map<String, String>> properties) {
         this.properties = properties;
+    }
+
+    /**
+     * @return true if the input property has deprecated/removed property
+     */
+    public boolean hasMarkedProperties(String schema) {
+        return properties.containsKey(schema);
+    }
+
+    /**
+     * Returned properties are a path to marked property.
+     *
+     * @return the deprecated/removed properties for input schema or an empty set if schema doesn't have marked
+     *         properties
+     */
+    public Set<String> getProperties(String schema) {
+        Map<String, String> schemaProperties = properties.get(schema);
+        if (schemaProperties == null) {
+            return Collections.emptySet();
+        }
+        return Collections.unmodifiableSet(schemaProperties.keySet());
     }
 
     /**
