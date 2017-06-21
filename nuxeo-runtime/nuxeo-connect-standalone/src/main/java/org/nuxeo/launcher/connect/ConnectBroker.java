@@ -1145,7 +1145,6 @@ public class ConnectBroker {
                 cmdInfo.exitCode = 1;
                 cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Download failed: " + e.getMessage());
             }
-            cmdInfo.log(false); // isDebug=false
         }
         // Check and display progress
         final String progress = "|/-\\";
