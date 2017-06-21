@@ -284,6 +284,7 @@ public class TestConnectBroker {
 
         // Assertions
         checkPackagesState(connectBroker, Arrays.asList("unknown-package"), NON_EXISTENT);
+        connectBroker.getCommandSet().log();
         List<String> expectedLogs = new ArrayList<>();
         expectedLogs.add("Downloading [unknown-package]...");
         expectedLogs.add("\tDownload failed (not found).");
