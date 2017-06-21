@@ -33,7 +33,7 @@ public class UserAgentMatcher {
 
     private static final Pattern UA_FIREFOX_FROM_4 = Pattern.compile("^[Mm]ozilla.*[Ff]irefox(/|\\s)?(([456789].*)|([1-9][0123456789].*))");
 
-    private static final Pattern UA_SAFARI_FROM_5 = Pattern.compile("^Mozilla.*AppleWebKit.*Version/[5-9].*");
+    private static final Pattern UA_SAFARI_FROM_5 = Pattern.compile("^Mozilla.*AppleWebKit.*Version/.*");
 
     private static final Pattern UA_CHROME = Pattern.compile("^Mozilla.*AppleWebKit.*Chrom(e|ium)/([1-9][0123456789].([0-9.])*)(?: Safari/([0-9.])*)?");
 
