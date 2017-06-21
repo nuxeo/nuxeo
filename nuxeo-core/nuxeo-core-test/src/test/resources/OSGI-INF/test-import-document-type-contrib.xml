@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.test.tests.import.document.types">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="removed" src="schemas/removed.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="Removed" extends="Document">
+      <schema name="dublincore"/>
+      <schema name="removed" />
+    </doctype>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="deprecation">
+    <property schema="removed" name="removed" />
+    <property schema="removed" name="scalarRenamed" fallback="scalar" />
+    <property schema="removed" name="complexRenamed" fallback="complex" />
+    <property schema="removed" name="scalarsRenamed" fallback="scalars" />
+    <property schema="removed" name="complexesRenamed" fallback="complexes" />
+    <property schema="removed" name="complexes/*/scalarRenamed" fallback="complexes/*/scalar" />
+    <property schema="removed" name="complex/scalarMoved" fallback="scalar" />
+    <property schema="removed" name="scalarMoved" fallback="complex/scalar" />
+    <property schema="removed" name="blobnameMoved" fallback="blob/name" />
+  </extension>
+
+</component>
