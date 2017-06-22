@@ -38,4 +38,9 @@ public class ConnectRegistrationPage extends ConnectWizardPage {
         WebElement title = findElementWithTimeout(By.xpath("//h1"));
         return title.getText().trim();
     }
+
+    public void submit() {
+        WebElement input = findElementWithTimeout(By.xpath("//input[@value=\"Continue\"]"));
+        input.submit();
+    }
 }

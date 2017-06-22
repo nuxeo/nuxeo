@@ -26,8 +26,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import com.google.common.base.Function;
-
 public class ConnectWizardPage extends AbstractWizardPage {
 
     protected static final String REGISTER_DIV_LOCATOR = "//div[@class=\"CSS_CLASS\"]";
@@ -65,8 +63,8 @@ public class ConnectWizardPage extends AbstractWizardPage {
         return REGISTER_DIV_LOCATOR.replace("CSS_CLASS", "ui blue submit button btnPrev");
     }
 
-    public ConnectWizardPage getLink(String text) {
-        ConnectWizardPage wpage = getLink(ConnectWizardPage.class, text);
+    public ConnectWizardPage openLink(String text) {
+        ConnectWizardPage wpage = openLink(ConnectWizardPage.class, text);
         if (!driver.getCurrentUrl().contains(CONNECT_IFRAME_URL_PATTERN)) {
             System.out.println("Oups, we are out of the frame !!!");
             driver.switchTo().frame("connectForm");
@@ -76,15 +74,11 @@ public class ConnectWizardPage extends AbstractWizardPage {
     }
 
     public ConnectWizardPage submitWithError() {
-        return next(ConnectWizardPage.class, new Function<WebDriver, Boolean>() {
-            @Override
-            public Boolean apply(WebDriver input) {
-                return findElementWithTimeout(By.cssSelector(".warning.message li"), 5 * 1000) != null;
-            }
-        });
+        return next(ConnectWizardPage.class,
+                input -> findElementWithTimeout(By.cssSelector(".warning.message li"), 5 * 1000) != null);
     }
 
-    public <T extends AbstractPage> T getLink(Class<T> wizardPageClass, String text) {
+    public <T extends AbstractPage> T openLink(Class<T> wizardPageClass, String text) {
         WebElement link = findElementWithTimeout(By.linkText(text));
         if (link == null) {
             return null;

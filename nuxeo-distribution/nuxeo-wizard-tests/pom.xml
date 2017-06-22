@@ -14,8 +14,6 @@
 
   <properties>
     <connect.password>setTheValueInYourSettings</connect.password>
-    <!-- NXP-15177: skip by default while failing randomly -->
-    <skipITs>true</skipITs>
   </properties>
 
   <dependencies>
