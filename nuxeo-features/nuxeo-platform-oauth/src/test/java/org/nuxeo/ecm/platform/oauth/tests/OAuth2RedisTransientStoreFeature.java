@@ -20,16 +20,15 @@
 
 package org.nuxeo.ecm.platform.oauth.tests;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite.SuiteClasses;
-import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
+import org.nuxeo.ecm.core.redis.transientstore.TransientStoreRedisFeature;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
  * @since 9.2
  */
-@RunWith(ContributableFeaturesRunner.class)
-@Features(OAuth2InMemoryTransientStoreFeature.class)
-@SuiteClasses(OAuth2ChallengeFixture.class)
-public class TestOAuth2Challenge {
+@Features(TransientStoreRedisFeature.class)
+@LocalDeploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/transientstore-redis-test-config.xml")
+public class OAuth2RedisTransientStoreFeature extends SimpleFeature {
 }
