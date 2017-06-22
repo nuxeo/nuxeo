@@ -103,7 +103,7 @@ Contributors:
             success: function(files) {
               var blobs = [];
               files.forEach(function(file) {
-                var fileId = this._getPathFromUrl(file.link);
+                var fileId = this._getPathFromUrl(file.link); // NXP-22530: Replace path with dropbox file id
                 blobs.push({
                   providerId: this.providerId,
                   providerName: 'Dropbox',

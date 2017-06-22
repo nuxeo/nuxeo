@@ -295,7 +295,7 @@ public class DropboxBlobUploader implements JSFBlobUploader {
      */
     private boolean hasAccessToFile(String filePath, String accessToken) {
         try {
-            return getDropboxBlobProvider().getDropboxClient(accessToken).getMetadata(filePath) != null;
+            return getDropboxBlobProvider().getDropboxClient(accessToken).files().getMetadata(filePath) != null;
         } catch (DbxException | IOException e) {
             throw new RuntimeException(e); // TODO better feedback
         }
