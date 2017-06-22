@@ -26,9 +26,6 @@ import java.lang.annotation.Target;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.cache.CacheFeature;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.test.runner.Defaults;
@@ -40,8 +37,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import redis.clients.jedis.Protocol;
 
-@Features({ CoreFeature.class, CacheFeature.class })
-@RepositoryConfig(init = DefaultRepositoryInit.class)
+@Features({ CacheFeature.class })
 public class RedisFeature extends SimpleFeature {
 
     /**
@@ -63,7 +59,7 @@ public class RedisFeature extends SimpleFeature {
 
     public static final String PROP_HOST = "nuxeo.test.redis.host";
 
-    public static final String PROP_PORT= "nuxeo.test.redis.port";
+    public static final String PROP_PORT = "nuxeo.test.redis.port";
 
     public static final Mode DEFAULT_MODE = Mode.server;
 
@@ -111,8 +107,9 @@ public class RedisFeature extends SimpleFeature {
                 port = Integer.parseInt(portProp);
             }
         }
-   return port;
+        return port;
     }
+
     protected RedisServerDescriptor newRedisServerDescriptor() {
         RedisServerDescriptor desc = new RedisServerDescriptor();
         desc.host = getHost();
@@ -187,13 +184,12 @@ public class RedisFeature extends SimpleFeature {
 
     protected Config config = Defaults.of(Config.class);
 
-
     protected void registerComponentListener() {
         Framework.getRuntime().getComponentManager().addListener(new ComponentManager.LifeCycleHandler() {
             @Override
             public void afterActivation(ComponentManager mgr) {
                 // overwrite the redis config (before redis component is started)
-                RedisComponent comp = (RedisComponent)Framework.getRuntime().getComponent("org.nuxeo.ecm.core.redis");
+                RedisComponent comp = (RedisComponent) Framework.getRuntime().getComponent("org.nuxeo.ecm.core.redis");
                 if (comp != null) {
                     installConfig(comp);
                 }

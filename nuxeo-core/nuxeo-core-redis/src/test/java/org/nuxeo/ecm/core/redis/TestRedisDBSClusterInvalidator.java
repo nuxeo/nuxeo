@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.redis.RedisFeature.Mode;
 import org.nuxeo.ecm.core.redis.contribs.RedisDBSClusterInvalidator;
 import org.nuxeo.ecm.core.storage.dbs.DBSInvalidations;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -38,7 +37,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 8.10
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, RedisFeature.class })
+@Features({ RedisFeature.class })
 public class TestRedisDBSClusterInvalidator {
 
     @Inject
