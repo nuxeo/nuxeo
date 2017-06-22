@@ -1,7 +1,7 @@
 Nuxeo Routing Default
 =====================
 
-This module defines the default workflow for Nuxeo.
+This module defines the default workflow JSF extension for Nuxeo.
 
 ## Information for Nuxeo developers
 
@@ -9,19 +9,6 @@ This module is adapted from the definition built from the Studio project named `
 
 ## Update
 
-Changes in this module should be done in the Studio project to ensure
-accurate synchronization of changes between the Studio project and
-this code.
+Do not directly modify this module.
 
-Here is the procedure to follow when making changes to files generated
-by Studio:
-
-- make changes in the Studio project, and commit with an accurate
-  description of the changes (references to JIRA issues are very welcome),
-- download the generated jar and unzip it in a temp folder,
-- from this directory, run:
-
-        $ ./etc/update.sh  temp-folder-where-jar-was-unzipped/
-
-If you need more changes to the generated jar, you should update the
-script at `etc/update.sh`.
+Check out [nuxeo-routing-default README](../nuxeo-routing-default/README.md) to see how to modify this code.
