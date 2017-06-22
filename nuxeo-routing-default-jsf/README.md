@@ -7,12 +7,6 @@ This module defines the default workflow for Nuxeo.
 
 This module is adapted from the definition built from the Studio project named `nuxeo-routing-default`.
 
-## Requirements
-
-You need xmllint installed.
-On Mac OS X (Yosemite), it is installed by default.
-On Ubuntu, if it is not already installed, you can run apt-get install libxml2-utils
-
 ## Update
 
 Changes in this module should be done in the Studio project to ensure
