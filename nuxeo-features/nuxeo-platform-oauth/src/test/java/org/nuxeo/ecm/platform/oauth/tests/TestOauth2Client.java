@@ -18,8 +18,11 @@
  */
 package org.nuxeo.ecm.platform.oauth.tests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
 
 import javax.inject.Inject;
 
@@ -43,7 +46,9 @@ public class TestOauth2Client {
 
     @Test
     public void testValidRedirectURI() {
+        assertFalse(OAuth2Client.isRedirectURIValid(""));
         assertFalse(OAuth2Client.isRedirectURIValid("http://redirect.uri"));
+        assertFalse(OAuth2Client.isRedirectURIValid(" http://redirect.uri"));
         assertFalse(OAuth2Client.isRedirectURIValid("http://localhost.somecompany.com"));
         assertTrue(OAuth2Client.isRedirectURIValid("nuxeo://authorize"));
         assertTrue(OAuth2Client.isRedirectURIValid("http://localhost:8080/nuxeo"));
@@ -62,6 +67,20 @@ public class TestOauth2Client {
 
         client = clientService.getClient("noSecret");
         assertTrue(client.isValidWith("noSecret", "someSecret"));
+    }
+
+    @Test
+    public void testClientService() {
+        assertTrue(clientService.hasClient("testClient"));
+
+        OAuth2Client client = clientService.getClient("testClient");
+        assertEquals("Dummy", client.getName());
+        assertEquals("testClient", client.getId());
+        assertTrue(client.isEnabled());
+        assertEquals(Arrays.asList("https://redirect.uri", "http://localhost:8080/nuxeo", "nuxeo://authorize"),
+                client.getRedirectURIs());
+
+        assertTrue(clientService.isValidClient("testClient", "testSecret"));
     }
 
 }

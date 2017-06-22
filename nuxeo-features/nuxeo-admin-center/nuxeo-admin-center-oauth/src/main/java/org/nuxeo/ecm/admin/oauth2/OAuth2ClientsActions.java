@@ -21,6 +21,9 @@ package org.nuxeo.ecm.admin.oauth2;
 import static org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService.OAUTH2CLIENT_DIRECTORY_NAME;
 import static org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService.OAUTH2CLIENT_SCHEMA;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -53,12 +56,28 @@ public class OAuth2ClientsActions extends DirectoryBasedEditor {
         return OAUTH2CLIENT_SCHEMA;
     }
 
-    public void validateClient(FacesContext context, UIComponent component, Object value) {
-        if (!(value instanceof String) || !OAuth2Client.isRedirectURIValid((String) value)) {
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    ComponentUtils.translate(context, "label.oauth2.invalid.redirectURI"), null);
-            throw new ValidatorException(message);
+    public void validateRedirectURIs(FacesContext context, UIComponent component, Object value) {
+        if (!(value instanceof String)) {
+            handleValidationError(context, "label.oauth2.missing.redirectURI");
         }
+        List<String> redirectURIs = Arrays.asList(((String) value).split(","));
+        if (redirectURIs.isEmpty()) {
+            handleValidationError(context, "label.oauth2.missing.redirectURI");
+        }
+        redirectURIs.stream().map(String::trim).forEach(redirectURI -> {
+            if (redirectURI.isEmpty()) {
+                handleValidationError(context, "label.oauth2.empty.redirectURI");
+            }
+            if (!OAuth2Client.isRedirectURIValid(redirectURI)) {
+                handleValidationError(context, "label.oauth2.invalid.redirectURIs");
+            }
+        });
+    }
+
+    protected void handleValidationError(FacesContext context, String label) {
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context, label),
+                null);
+        throw new ValidatorException(message);
     }
 
 }

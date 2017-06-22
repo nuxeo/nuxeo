@@ -20,6 +20,9 @@ package org.nuxeo.ecm.platform.oauth2.clients;
 
 import static org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService.OAUTH2CLIENT_SCHEMA;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -42,19 +45,23 @@ public class OAuth2Client {
     /**
      * @since 9.2
      */
-    protected String redirectURI;
+    protected List<String> redirectURIs;
 
     protected boolean enabled;
 
     /**
      * @since 9.2
      */
-    protected OAuth2Client(String name, String id, String secret, String redirectURI, boolean enabled) {
+    protected OAuth2Client(String name, String id, String secret, List<String> redirectURIs, boolean enabled) {
         this.name = name;
         this.id = id;
         this.secret = secret;
-        this.redirectURI = redirectURI;
+        this.redirectURIs = redirectURIs;
         this.enabled = enabled;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getId() {
@@ -64,12 +71,8 @@ public class OAuth2Client {
     /**
      * @since 9.2
      */
-    public String getRedirectURI() {
-        return redirectURI;
-    }
-
-    public String getName() {
-        return name;
+    public List<String> getRedirectURIs() {
+        return redirectURIs;
     }
 
     public boolean isEnabled() {
@@ -80,15 +83,22 @@ public class OAuth2Client {
         String name = (String) doc.getPropertyValue(OAUTH2CLIENT_SCHEMA + ":name");
         String id = (String) doc.getPropertyValue(OAUTH2CLIENT_SCHEMA + ":clientId");
         String secret = (String) doc.getPropertyValue(OAUTH2CLIENT_SCHEMA + ":clientSecret");
-        String redirectURI = (String) doc.getPropertyValue(OAUTH2CLIENT_SCHEMA + ":redirectURI");
+        List<String> redirectURIs;
+        String redirectURIsProperty = (String) doc.getPropertyValue(OAUTH2CLIENT_SCHEMA + ":redirectURIs");
+        if (StringUtils.isEmpty(redirectURIsProperty)) {
+            redirectURIs = Collections.emptyList();
+        } else {
+            redirectURIs = Arrays.asList(redirectURIsProperty.split(","));
+        }
         boolean enabled = (Boolean) doc.getPropertyValue(OAUTH2CLIENT_SCHEMA + ":enabled");
 
-        return new OAuth2Client(name, id, secret, redirectURI, enabled);
+        return new OAuth2Client(name, id, secret, redirectURIs, enabled);
     }
 
     /**
      * A redirect URI is considered as valid if and only if:
      * <ul>
+     * <li>It is not empty</li>
      * <li>It starts with https, e.g. https://my.redirect.uri</li>
      * <li>It doesn't start with http, e.g. nuxeo://authorize</li>
      * <li>It starts with http://localhost with localhost not part of the domain name, e.g. http://localhost:8080/nuxeo,
@@ -98,8 +108,9 @@ public class OAuth2Client {
      * @since 9.2
      */
     public static boolean isRedirectURIValid(String redirectURI) {
-        return redirectURI.startsWith("https") || !redirectURI.startsWith("http")
-                || LOCALHOST_PATTERN.matcher(redirectURI).matches();
+        String trimmed = redirectURI.trim();
+        return !trimmed.isEmpty() && (trimmed.startsWith("https") || !trimmed.startsWith("http")
+                || LOCALHOST_PATTERN.matcher(trimmed).matches());
     }
 
     public boolean isValidWith(String clientId, String clientSecret) {
@@ -112,7 +123,7 @@ public class OAuth2Client {
      */
     @Override
     public String toString() {
-        return String.format("%s(name=%s, id=%s, redirectURI=%s, enabled=%b)", getClass().getSimpleName(), name, id,
-                redirectURI, enabled);
+        return String.format("%s(name=%s, id=%s, redirectURIs=%s, enabled=%b)", getClass().getSimpleName(), name, id,
+                redirectURIs, enabled);
     }
 }
