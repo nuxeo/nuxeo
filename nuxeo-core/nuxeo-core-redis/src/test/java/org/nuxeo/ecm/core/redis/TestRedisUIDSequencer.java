@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.redis.contribs.RedisUIDSequencer;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.runtime.test.runner.Features;
@@ -35,7 +36,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
-@Features(RedisFeature.class)
+@Features({ CoreFeature.class, RedisFeature.class })
 @LocalDeploy("org.nuxeo.ecm.core.redis.tests:test-uidsequencer-contrib.xml")
 public class TestRedisUIDSequencer {
 

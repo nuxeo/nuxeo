@@ -25,14 +25,11 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features({ RedisFeature.class })
+@Features({ CoreFeature.class, RedisFeature.class })
 public class TestRedisWorkSchedule {
 
     @Inject
     CoreSession session;
-
-    @Inject
-    CoreFeature core;
 
     static TestRedisWorkSchedule self;
 
@@ -51,7 +48,7 @@ public class TestRedisWorkSchedule {
     public static class PfouhListener implements PostCommitEventListener {
 
         public PfouhListener() {
-           super();
+            super();
         }
 
         @Override
@@ -66,6 +63,7 @@ public class TestRedisWorkSchedule {
          *
          */
         private static final long serialVersionUID = 1L;
+
         final DocumentModel doc;
 
         public DocWrapper(DocumentModel source) {
@@ -82,9 +80,8 @@ public class TestRedisWorkSchedule {
         doc = session.createDocument(doc);
         DocumentEventContext context = new DocumentEventContext(session, session.getPrincipal(), doc);
         context.newEvent("pfouh");
-        context.getProperties().put("pfouh",new DocWrapper(doc));
-        Framework.getService(EventProducer.class)
-                .fireEvent(context.newEvent("pfouh"));
+        context.getProperties().put("pfouh", new DocWrapper(doc));
+        Framework.getService(EventProducer.class).fireEvent(context.newEvent("pfouh"));
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         Assert.assertTrue(observed.await(10, TimeUnit.SECONDS));
