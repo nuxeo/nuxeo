@@ -24,12 +24,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.MalformedURLException;
+
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -42,9 +40,10 @@ import org.nuxeo.functionaltests.pages.admincenter.SystemHomePage;
 import org.nuxeo.functionaltests.pages.admincenter.UpdateCenterPage;
 import org.nuxeo.functionaltests.pages.wizard.ConnectRegistrationPage;
 import org.nuxeo.functionaltests.pages.wizard.ConnectWizardPage;
-import org.nuxeo.functionaltests.pages.wizard.IFrameHelper;
 import org.nuxeo.functionaltests.pages.wizard.SummaryWizardPage;
 import org.nuxeo.functionaltests.pages.wizard.WizardPage;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
@@ -64,20 +63,16 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
     protected static final String CONNECT_LOGIN = "junit4tester";
 
-    protected static final String CONNECT_PROJECT_SELECTOR = "junit4tester";
-
     protected static final String CONNECT_PROJECT_SELECTOR_UUID = "575954be-6027-45b7-8cd1-77a6bcb0832d";
 
     protected static final String CONNECT_FORM_TITLE = "Nuxeo Online Services";
 
-    @Ignore("NXP-15177: failing randomly")
+    protected static final String REGISTRATION_OK = "Nuxeo Online Services registration is OK.";
+
     @Test
     public void testAll() throws Exception {
         runWizardAndRestart();
-        installPackageAndRestart();
-        verifyPackageInstallation();
-        studioPackageInstallAndUninstall();
-        verifyPackageUndeployProcessUnderWindows();
+        verifyWizardSetup();
     }
 
     protected String getTestPassword() {
@@ -152,7 +147,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         userPage = userPage.navById(WizardPage.class, "checkNetwork");
         assertTrue(userPage.hasError());
         userPage.clearInput("nuxeo.ldap.url");
-        userPage.fillInput("nuxeo.ldap.url", "ldap://ldap.testathon.net:389");
+        userPage.fillInput("nuxeo.ldap.url", "ldap://ldap.forumsys.com:389");
         userPage = userPage.navById(WizardPage.class, "checkNetwork");
         assertFalse(userPage.hasError());
         userPage.selectOptionWithReload("nuxeo.directory.type", "default");
@@ -177,73 +172,20 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         smtpPage = smtpPage.next(true);
         assertTrue(smtpPage.hasError());
         assertTrue(smtpPage.selectOption("mail.transport.auth", "false"));
+        smtpPage.next();
+
+        registerConnectInstance();
 
         // **********************
-        // Connect Form
-        WizardPage connectWizardPage = smtpPage.next();
-        assertNotNull(connectWizardPage);
-        assertFalse(connectWizardPage.hasError());
-
-        // enter embedded IFrame
-        ConnectWizardPage connectPage1 = connectWizardPage.getConnectPage();
-        assertNotNull(connectPage1);
-        assertEquals(CONNECT_FORM_TITLE, connectPage1.getTitle());
-
-        // try to validate
-        ConnectWizardPage connectPage2 = connectPage1.submitWithError();
-        assertNotNull(connectPage2);
-        assertTrue(connectPage2.getErrorMessage().startsWith("There were some errors in your form:"));
-
-        // ok, let's try to skip the screen
-        WizardPage connectSkip = connectPage1.navByLink(WizardPage.class, "Or skip and don't register", true);
-        assertNotNull(connectSkip);
-        assertEquals("You have not signed up for a free trial of Nuxeo Online Services.", connectSkip.getTitle2());
-
-        // ok, let's register
-        connectWizardPage = connectSkip.navById(WizardPage.class, "btnRetry", true);
-        connectPage1 = connectWizardPage.getConnectPage(); // enter iframe
-                                                           // again
-        assertNotNull(connectPage1);
-
-        // Register with a existing account
-        ConnectRegistrationPage connectSignIn = connectPage1.getLink("click here").asPage(ConnectRegistrationPage.class);
-
-        // Login through CAS
-        String mainWindow = driver.getWindowHandle();
-        WebDriver popup = AbstractTest.getPopup();
-        System.out.println(popup.getCurrentUrl());
-        popup.findElement(By.id("username")).sendKeys(CONNECT_LOGIN);
-        popup.findElement(By.id("password")).sendKeys(getTestPassword());
-        popup.findElement(By.cssSelector(".btn-submit")).click();
-
-        driver.switchTo().window(mainWindow);
-
-        IFrameHelper.focusOnConnectFrame(driver);
-        assertEquals("Register your new Nuxeo instance", connectSignIn.getTitle());
-
-        // select the associated project
-        connectSignIn.selectOption("project", CONNECT_PROJECT_SELECTOR_UUID);
-        // connectProjectPage.fillInput("project", CONNECT_PROJECT_SELECTOR);
-
-        // **********************
-        // Exit Online Registration Form and Display Packages selection
-        WizardPage packageSelectiondPage = connectSignIn.nav(WizardPage.class, "Continue");
+        // Online Registration exited and Display Packages page must be visible
+        WizardPage packageSelectiondPage = asPage(WizardPage.class);
 
         assertNotNull(packageSelectiondPage);
         assertEquals("Select Modules", packageSelectiondPage.getTitle());
 
-        // use specific url
-        String currentUrl = driver.getCurrentUrl();
-        currentUrl = currentUrl + "?showPresets=true";
-        packageSelectiondPage = get(currentUrl, WizardPage.class);
-
-        WebElement presetBtn = Locator.findElementWithTimeout(By.id("preset_nuxeo-dm"));
-        presetBtn.click();
-        Thread.sleep(1000);
-
         // **************************
         // Package Download Screen
-        WizardPage packageDownloadPage = packageSelectiondPage.next();
+        WizardPage packageDownloadPage = asPage(WizardPage.class).next();
         assertNotNull(packageDownloadPage);
         assertEquals("Download Module(s)", packageDownloadPage.getTitle());
 
@@ -258,80 +200,69 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         summary.restart();
     }
 
-    public void loopOnIframe() throws Exception {
-
+    public void registerConnectInstance() throws InterruptedException {
         // **********************
-        // welcome
-        WizardPage welcomePage = get(NUXEO_URL, WizardPage.class);
-        assertTrue(welcomePage.getTitle().contains("Welcome to "));
-
-        // **********************
-        // Settings
-        WizardPage settingsPage = welcomePage.next();
-        assertNotNull(settingsPage);
-
-        assertEquals("General Settings", settingsPage.getTitle());
-
-        // **********************
-        // proxy
-        WizardPage proxyPage = settingsPage.next();
-        assertNotNull(proxyPage);
-        assertFalse(proxyPage.hasError());
-        assertEquals("HTTP Proxy Settings", proxyPage.getTitle());
-
-        assertTrue(proxyPage.selectOption("nuxeo.http.proxy.type", "none"));
-
-        // **********************
-        // Database settings
-        WizardPage dbPage = proxyPage.next();
-        assertNotNull(dbPage);
-        assertFalse(dbPage.hasError());
-        assertEquals("Database Settings", dbPage.getTitle());
-
-        // **********************
-        // SMTP Settings
-        WizardPage smtpPage = dbPage.next();
-        assertNotNull(smtpPage);
-        assertEquals("SMTP Settings", smtpPage.getTitle());
-        assertTrue(smtpPage.selectOption("mail.transport.auth", "false"));
-
-        // **********************
-        // Online Registration Form
-
-        WizardPage connectWizardPage = smtpPage.next(WizardPage.class);
-
-        for (int i = 1; i < 20; i++) {
-
-            assertNotNull(connectWizardPage);
-            assertFalse(connectWizardPage.hasError());
-
-            // enter embedded IFrame
-            System.out.println(driver.getCurrentUrl());
-            ConnectWizardPage connectPage1 = connectWizardPage.getConnectPage();
-            System.out.println(driver.getCurrentUrl());
-            assertNotNull(connectPage1);
-            assertEquals(CONNECT_FORM_TITLE, connectPage1.getTitle());
-
-            // try to validate
-            ConnectWizardPage connectPage2 = connectPage1.next(ConnectWizardPage.class);
-            assertNotNull(connectPage2);
-            assertEquals("There were some errors in your form: You must define a login", connectPage2.getErrorMessage());
-
-            // ok, let's try to skip the screen
-            ConnectWizardPage connectSkip = connectPage1.nav(ConnectWizardPage.class, "Skip");
-            assertNotNull(connectSkip);
-            assertEquals("You have not registered your instance on Nuxeo Online Services.", connectSkip.getTitle2());
-
-            // ok, let's register
-            connectWizardPage = connectSkip.navById(WizardPage.class, "btnRetry");
-
+        // Connect Form
+        WizardPage connectWizardPage = asPage(WizardPage.class);
+        // Use a timeout to pass through quickly
+        if (Locator.hasElementWithTimeout(By.id("connectRegistered"), 1000)) {
+            // Instance already registered
+            connectWizardPage.next();
+            return;
         }
 
+        assertNotNull(Locator.findElementWithTimeout(By.linkText("Register Your Instance")));
+
+        // Save main window handle to ease the switch back
+        String mainWindowsHandle = driver.getWindowHandle();
+
+        // enter on popup
+        ConnectWizardPage connectPage1 = connectWizardPage.getConnectPage();
+        assertNotNull(connectPage1);
+        assertEquals(CONNECT_FORM_TITLE, connectPage1.getTitle());
+
+        // try to validate
+        ConnectWizardPage connectPage2 = connectPage1.submitWithError();
+        assertNotNull(connectPage2);
+        assertTrue(connectPage2.getErrorMessage().startsWith("There were some errors in your form:"));
+
+        // Register with a existing account
+        ConnectRegistrationPage connectSignIn = connectPage1.openLink("click here")
+                                                            .asPage(ConnectRegistrationPage.class);
+
+        // Login through CAS
+        AbstractTest.switchToPopup("sso");
+        driver.findElement(By.id("username")).sendKeys(CONNECT_LOGIN);
+        driver.findElement(By.id("password")).sendKeys(getTestPassword());
+        driver.findElement(By.cssSelector(".btn-submit")).click();
+
+        // select the associated project
+        switchToPopup("site/connect/wizardInstanceRegistration");
+        connectSignIn.selectOption("project", CONNECT_PROJECT_SELECTOR_UUID);
+        connectSignIn.submit();
+
+        driver.switchTo().window(mainWindowsHandle);
+        Thread.sleep(1000);
+
+        // After form submit; redirect is automatic and can be already done.
+        String currentUrl = driver.getCurrentUrl();
+        if (!currentUrl.contains("PackagesSelection")) {
+            Locator.waitUntilURLDifferentFrom(currentUrl);
+        }
     }
 
     @Test
     @Ignore
-    public void testRestartFromAdminCenter() throws UserNotConnectedException {
+    public void testAdminCenter() throws Exception {
+        studioPackageInstallAndUninstall();
+        installPackageAndRestart();
+        verifyPackageInstallation();
+        verifyPackageUndeployProcessUnderWindows();
+    }
+
+    @Test
+    @Ignore
+    public void testRestartFromAdminCenter() throws Exception {
         // login
         DocumentBasePage home = login(NX_LOGIN, NX_PASSWORD);
         // Open Admin Center and restart
@@ -342,7 +273,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         systemHome.restart();
     }
 
-    public void installPackageAndRestart() throws Exception {
+    public void verifyWizardSetup() throws UserNotConnectedException, MalformedURLException {
         // login
         DocumentBasePage home = login(NX_LOGIN, NX_PASSWORD);
 
@@ -353,15 +284,26 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         // Check registration on Online Registration Home
         ConnectHomePage connectHome = adminHome.getConnectHomePage();
         assertNotNull(connectHome);
-        assertEquals("Connect registration OK", connectHome.getConnectStatus());
+        assertEquals(REGISTRATION_OK, connectHome.getConnectStatus());
 
         // Check setup parameters
         SystemHomePage systemPage = connectHome.getSystemHomePage();
         String smtpHost = systemPage.getConfig("mail.transport.host");
         assertEquals(SMTP_SERVER_HOST, smtpHost);
 
+        navToUrl("http://localhost:8080/nuxeo/logout");
+    }
+
+    public void installPackageAndRestart() throws Exception {
+        // login
+        DocumentBasePage home = login(NX_LOGIN, NX_PASSWORD);
+
+        // Open Admin Center
+        AdminCenterBasePage adminHome = home.getAdminCenter();
+        assertNotNull(adminHome);
+
         // Go to Update Center
-        UpdateCenterPage updateCenterHome = systemPage.getUpdateCenterHomePage();
+        UpdateCenterPage updateCenterHome = adminHome.getUpdateCenterHomePage();
         updateCenterHome = updateCenterHome.getPackagesFromNuxeoMarketPlace();
 
         // ensure there is no filter
@@ -417,7 +359,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         // Go to Update Center
         ConnectHomePage connectHome = adminHome.getConnectHomePage();
         assertNotNull(connectHome);
-        assertEquals("Connect registration OK", connectHome.getConnectStatus());
+        assertEquals(REGISTRATION_OK, connectHome.getConnectStatus());
         SystemHomePage systemPage = connectHome.getSystemHomePage();
         UpdateCenterPage updateCenterHome = systemPage.getUpdateCenterHomePage();
         updateCenterHome = updateCenterHome.getPackagesFromNuxeoMarketPlace();
@@ -465,7 +407,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         // Go to Update Center
         ConnectHomePage connectHome = adminHome.getConnectHomePage();
         assertNotNull(connectHome);
-        assertEquals("Connect registration OK", connectHome.getConnectStatus());
+        assertEquals(REGISTRATION_OK, connectHome.getConnectStatus());
         SystemHomePage systemPage = connectHome.getSystemHomePage();
         UpdateCenterPage updateCenterHome = systemPage.getUpdateCenterHomePage();
         updateCenterHome = updateCenterHome.getPackagesFromNuxeoMarketPlace();

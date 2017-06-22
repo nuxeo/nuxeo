@@ -64,6 +64,7 @@ import org.nuxeo.functionaltests.proxy.ProxyManager;
 import org.nuxeo.runtime.api.Framework;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -319,14 +320,31 @@ public abstract class AbstractTest {
         return asPage(pageClassToProxy);
     }
 
-    public static WebDriver getPopup() {
-        String currentWindow = driver.getWindowHandle();
+    public static WebDriver switchToPopup(String url) {
+        String currentWindow = null;
+        try {
+            currentWindow = driver.getWindowHandle();
+        } catch (NoSuchWindowException ignored) {
+            // Nothing to do; it can happen when manipulating closed popups
+        }
+
         for (String popup : driver.getWindowHandles()) {
             if (popup.equals(currentWindow)) {
                 continue;
             }
-            return driver.switchTo().window(popup);
+
+            WebDriver popupDriver = driver.switchTo().window(popup);
+            if (url == null || popupDriver.getCurrentUrl().contains(url)) {
+                System.out.println(popupDriver.getCurrentUrl());
+                return popupDriver;
+            }
         }
+
+        if (currentWindow != null) {
+            // Switch back to main window
+            driver.switchTo().window(currentWindow);
+        }
+
         return null;
     }
 

@@ -168,12 +168,25 @@ public class Locator {
      * Finds the first {@link WebElement} using the given method, with a timeout.
      *
      * @param by the locating mechanism
-     * @param timeout the timeout in milliseconds
      * @return the first matching element on the current page, if found
      * @throws NoSuchElementException when not found
      */
     public static WebElement findElementWithTimeout(By by) throws NoSuchElementException {
         return findElementWithTimeout(by, AbstractTest.LOAD_TIMEOUT_SECONDS * 1000);
+    }
+
+    /**
+     * Checks if a corresponding elements is present, with a timeout.
+     *
+     * @param by the locating mechanism
+     * @return true if element exists, false otherwise
+     */
+    public static boolean hasElementWithTimeout(By by) {
+        try {
+            return findElementWithTimeout(by) != null;
+        } catch (NoSuchElementException nsee) {
+            return false;
+        }
     }
 
     /**
@@ -186,6 +199,21 @@ public class Locator {
      */
     public static WebElement findElementWithTimeout(By by, int timeout) throws NoSuchElementException {
         return findElementWithTimeout(by, timeout, null);
+    }
+
+    /**
+     * Checks if a corresponding elements is present, with a timeout.
+     *
+     * @param by the locating mechanism
+     * @param timeout the timeout in milliseconds
+     * @return true if element exists, false otherwise
+     */
+    public static boolean hasElementWithTimeout(By by, int timeout) {
+        try {
+            return findElementWithTimeout(by, timeout) != null;
+        } catch (NoSuchElementException nsee) {
+            return false;
+        }
     }
 
     /**
@@ -536,13 +564,10 @@ public class Locator {
      */
     public static void waitUntilURLDifferentFrom(String url) {
         final String refurl = url;
-        ExpectedCondition<Boolean> urlchanged = new ExpectedCondition<Boolean>() {
-            @Override
-            public Boolean apply(WebDriver d) {
-                String currentUrl = d.getCurrentUrl();
-                AbstractTest.log.debug("currentUrl is still: " + currentUrl);
-                return !currentUrl.equals(refurl);
-            }
+        ExpectedCondition<Boolean> urlchanged = d -> {
+            String currentUrl = d.getCurrentUrl();
+            AbstractTest.log.debug("currentUrl is still: " + currentUrl);
+            return !currentUrl.equals(refurl);
         };
         WebDriverWait wait = new WebDriverWait(AbstractTest.driver, URLCHANGE_MAX_WAIT);
         wait.until(urlchanged);

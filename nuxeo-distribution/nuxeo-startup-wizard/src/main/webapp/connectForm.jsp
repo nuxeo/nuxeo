@@ -46,7 +46,7 @@
 <% } else { %>
 
 <h1><fmt:message key="label.connectFinish.ok"/></h1>
-<div class="formPadding">
+<div class="formPadding" id="connectRegistered">
   <fmt:message key="label.connectFinish.ok.details"/>
   <%@ include file="includes/prevnext.jsp" %>
   <script>

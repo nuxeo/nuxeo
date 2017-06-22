@@ -22,17 +22,13 @@ package org.nuxeo.functionaltests.pages.wizard;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.functionaltests.AbstractTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import com.google.common.base.Function;
-
 public class WizardPage extends AbstractWizardPage {
 
-    // protected static final String NEXT_BUTTON_LOCATOR = "//input[@class=\"glossyButton\" and @value=\"Next step\"]";
-    // protected static final String PREV_BUTTON_LOCATOR =
-    // "//input[@class=\"glossyButton\" and @value=\"Previous step\"]";
     protected static final String NEXT_BUTTON_LOCATOR = "id('btnNext')";
 
     protected static final String PREV_BUTTON_LOCATOR = "id('btnPrev')";
@@ -48,12 +44,7 @@ public class WizardPage extends AbstractWizardPage {
 
     public WizardPage next(Boolean errorExpected) {
         if (errorExpected) {
-            return next(WizardPage.class, new Function<WebDriver, Boolean>() {
-                @Override
-                public Boolean apply(WebDriver driver) {
-                    return hasError();
-                }
-            });
+            return next(WizardPage.class, driver -> hasError());
         } else {
             return next(WizardPage.class);
         }
@@ -65,12 +56,7 @@ public class WizardPage extends AbstractWizardPage {
 
     public WizardPage previous(Boolean errorExpected) {
         if (errorExpected) {
-            return previous(WizardPage.class, new Function<WebDriver, Boolean>() {
-                @Override
-                public Boolean apply(WebDriver driver) {
-                    return hasError();
-                }
-            });
+            return previous(WizardPage.class, driver -> hasError());
         } else {
             return previous(WizardPage.class);
         }
@@ -87,7 +73,8 @@ public class WizardPage extends AbstractWizardPage {
     }
 
     public ConnectWizardPage getConnectPage() {
-        return asPage(ConnectWizardPage.class);
+        AbstractTest.switchToPopup("/register/#/embedded");
+        return AbstractTest.asPage(ConnectWizardPage.class);
     }
 
     public boolean hasError() {
@@ -120,12 +107,12 @@ public class WizardPage extends AbstractWizardPage {
         return getInfos().size() > 0;
     }
 
-    public String getTitle2() {
-        WebElement title2 = findElementWithTimeout(By.xpath("//h2"));
-        if (title2 == null) {
+    public String getTagText(String tag) {
+        WebElement tagElt = findElementWithTimeout(By.xpath("//" + tag));
+        if (tagElt == null) {
             return null;
         }
-        return title2.getText();
+        return tagElt.getText();
     }
 
 }

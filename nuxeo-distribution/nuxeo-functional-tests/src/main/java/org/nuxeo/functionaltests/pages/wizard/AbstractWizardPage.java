@@ -29,7 +29,7 @@ import com.google.common.base.Function;
 
 public abstract class AbstractWizardPage extends AbstractPage {
 
-    protected static final String BUTTON_LOCATOR = "//input[@class=\"glossyButton\" and @value=\"LABEL\"]";
+    protected static final String BUTTON_LOCATOR = "//input[@value=\"LABEL\"]";
 
     public AbstractWizardPage(WebDriver driver) {
         super(driver);
