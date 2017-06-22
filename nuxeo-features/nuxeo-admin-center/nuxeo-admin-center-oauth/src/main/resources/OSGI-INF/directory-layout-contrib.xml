@@ -21,7 +21,7 @@
           <widget>clientSecret</widget>
         </row>
         <row>
-          <widget>redirectURI</widget>
+          <widget>redirectURIs</widget>
         </row>
         <row>
           <widget>enabled</widget>
@@ -77,22 +77,22 @@
           </property>
         </properties>
       </widget>
-      <widget name="redirectURI" type="text">
+      <widget name="redirectURIs" type="text">
         <labels>
-          <label mode="any">label.oauth2.redirectURI</label>
+          <label mode="any">label.oauth2.redirectURIs</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>oauth2Client.redirectURI</field>
+          <field>oauth2Client.redirectURIs</field>
         </fields>
         <properties mode="any">
           <property name="help">
-            label.oauth2.help.redirectURI
+            label.oauth2.help.redirectURIs
           </property>
         </properties>
         <properties widgetMode="edit">
           <property name="required">true</property>
-           <property name="validator">#{oauth2ClientsActions.validateClient}</property>
+           <property name="validator">#{oauth2ClientsActions.validateRedirectURIs}</property>
         </properties>
       </widget>
       <widget name="enabled" type="checkbox">

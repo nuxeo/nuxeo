@@ -37,17 +37,17 @@ public abstract class OAuth2Request {
 
     protected String clientId;
 
-    protected String redirectUri;
+    protected String redirectURI;
 
     public OAuth2Request() {
     }
 
     public OAuth2Request(HttpServletRequest request) {
         clientId = request.getParameter(CLIENT_ID_PARAM);
-        redirectUri = decodeParameter(request, REDIRECT_URI_PARAM);
+        redirectURI = decodeParameter(request, REDIRECT_URI_PARAM);
         // Fallback for non-RFC compliant client
-        if (StringUtils.isBlank(redirectUri)) {
-            redirectUri = decodeParameter(request, REDIRECT_URL_PARAM);
+        if (StringUtils.isBlank(redirectURI)) {
+            redirectURI = decodeParameter(request, REDIRECT_URL_PARAM);
         }
     }
 
@@ -63,8 +63,8 @@ public abstract class OAuth2Request {
         return value;
     }
 
-    public String getRedirectUri() {
-        return redirectUri;
+    public String getRedirectURI() {
+        return redirectURI;
     }
 
     public String getClientId() {

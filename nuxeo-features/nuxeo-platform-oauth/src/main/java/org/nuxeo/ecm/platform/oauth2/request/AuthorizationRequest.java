@@ -28,10 +28,12 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -114,7 +116,7 @@ public class AuthorizationRequest extends OAuth2Request {
 
     protected AuthorizationRequest(Map<String, Serializable> map) {
         clientId = (String) map.get("clientId");
-        redirectUri = (String) map.get("redirectUri");
+        redirectURI = (String) map.get("redirectURI");
         responseType = (String) map.get("responseType");
         scope = (String) map.get("scope");
         creationDate = (Date) map.get("creationDate");
@@ -130,9 +132,6 @@ public class AuthorizationRequest extends OAuth2Request {
         }
         if (StringUtils.isBlank(responseType)) {
             return OAuth2Error.invalidRequest(String.format(MISSING_REQUIRED_FIELD_MESSAGE, RESPONSE_TYPE_PARAM));
-        }
-        if (StringUtils.isBlank(redirectUri)) {
-            return OAuth2Error.invalidRequest(String.format(MISSING_REQUIRED_FIELD_MESSAGE, REDIRECT_URI_PARAM));
         }
 
         // Check if client exists
@@ -153,21 +152,39 @@ public class AuthorizationRequest extends OAuth2Request {
             // should not prevent the authorization request from working.
         }
 
-        String clientRequestURI = client.getRedirectURI();
-        if (StringUtils.isBlank(clientRequestURI)) {
+        List<String> clientRedirectURIs = client.getRedirectURIs();
+        if (CollectionUtils.isEmpty(clientRedirectURIs)) {
             log.error(String.format(
-                    "No redirect URI set for OAuth2 client %s. It is required to validate the %s parameter, please make sure you update this OAuth2 client.",
-                    client, REDIRECT_URI_PARAM));
-            // Checking that the client has a redirect URI since it is now a required field but it might be empty for an
-            // old client.
-            // In this case we return an error since an empty redirect URI is a security issue.
-            return OAuth2Error.invalidRequest(String.format("No %s configured on the app.", REDIRECT_URI_PARAM));
+                    "No redirect URI set for OAuth2 client %s, at least one is required. Please make sure you update this OAuth2 client.",
+                    client));
+            // Checking that the client has at least one redirect URI since it is now a required field but it might be
+            // empty for an old client.
+            // In this case we return an error since we cannot trust the redirect_uri parameter for security reasons.
+            return OAuth2Error.invalidRequest("No redirect URI configured for the app.");
         }
 
-        // Check that the redirect_uri parameter matches the redirect URI registered for this client
-        if (!OAuth2Client.isRedirectURIValid(redirectUri) || !redirectUri.equals(clientRequestURI)) {
+        String clientRedirectURI = null;
+        // No redirect_uri parameter, use the first redirect URI registered for this client
+        if (StringUtils.isBlank(redirectURI)) {
+            clientRedirectURI = clientRedirectURIs.get(0);
+        } else {
+            // Check that the redirect_uri parameter matches one of the the redirect URIs registered for this client
+            if (!clientRedirectURIs.contains(redirectURI)) {
+                return OAuth2Error.invalidRequest(String.format(
+                        "Invalid %s parameter: %s. It must exactly match one of the redirect URIs configured for the app.",
+                        REDIRECT_URI_PARAM, redirectURI));
+            }
+            clientRedirectURI = redirectURI;
+        }
+
+        // Check redirect URI validity
+        if (!OAuth2Client.isRedirectURIValid(clientRedirectURI)) {
+            log.error(String.format(
+                    "The redirect URI %s set for OAuth2 client %s is invalid: it must not be empty and start with https for security reasons. Please make sure you update this OAuth2 client.",
+                    clientRedirectURI, client));
             return OAuth2Error.invalidRequest(String.format(
-                    "Invalid %s. It must exactly match the one configured for the app.", REDIRECT_URI_PARAM));
+                    "Invalid redirect URI configured for the app: %s. It must not be empty and start with https for security reasons.",
+                    clientRedirectURI));
         }
 
         // Check request type
@@ -203,8 +220,8 @@ public class AuthorizationRequest extends OAuth2Request {
         if (clientId != null) {
             map.put("clientId", clientId);
         }
-        if (redirectUri != null) {
-            map.put("redirectUri", redirectUri);
+        if (redirectURI != null) {
+            map.put("redirectURI", redirectURI);
         }
         if (responseType != null) {
             map.put("responseType", responseType);

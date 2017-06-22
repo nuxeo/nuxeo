@@ -144,6 +144,15 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             return;
         }
 
+        // If the redirect URI was included in the authorization request use it else fall back on the first one
+        // registered for the client
+        String redirectURI = authRequest.getRedirectURI();
+        if (StringUtils.isBlank(redirectURI)) {
+            redirectURI = Framework.getService(OAuth2ClientService.class)
+                                   .getClient(authRequest.getClientId())
+                                   .getRedirectURIs()
+                                   .get(0);
+        }
         String state = request.getParameter(STATE_PARAM);
         String grantAccess = request.getParameter(GRANT_ACCESS_PARAM);
         if (grantAccess == null) {
@@ -158,7 +167,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             if (StringUtils.isNotBlank(state)) {
                 params.put(STATE_PARAM, state);
             }
-            sendRedirect(response, authRequest.getRedirectUri(), params);
+            sendRedirect(response, redirectURI, params);
             return;
         }
 
@@ -173,7 +182,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         }
 
         request.getSession().invalidate();
-        sendRedirect(response, authRequest.getRedirectUri(), params);
+        sendRedirect(response, redirectURI, params);
     }
 
     protected void doGetToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -196,12 +205,12 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
                 if (client == null || !client.isValidWith(tokenRequest.getClientId(), tokenRequest.getClientSecret())) {
                     error = OAuth2Error.unauthorizedClient();
                 }
-                // Ensure redirect URIs are identical
+                // Ensure redirect URIs are identical if the redirect_uri parameter was included in the authorization
+                // request
                 else {
-                    String redirectURI = tokenRequest.getRedirectUri();
-                    if (StringUtils.isBlank(redirectURI) || !OAuth2Client.isRedirectURIValid(redirectURI)
-                            || !redirectURI.equals(client.getRedirectURI())
-                            || !redirectURI.equals(authRequest.getRedirectUri())) {
+                    String authRequestRedirectURI = authRequest.getRedirectURI();
+                    if (StringUtils.isNotBlank(authRequestRedirectURI)
+                            && !authRequestRedirectURI.equals(tokenRequest.getRedirectURI())) {
                         error = OAuth2Error.invalidRequest();
                     }
                 }
