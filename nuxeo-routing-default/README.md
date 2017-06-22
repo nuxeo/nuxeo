@@ -31,3 +31,5 @@ by Studio:
 
 If you need more changes to the generated jar, you should update the
 script at `etc/update.sh`.
+
+The script will move JSF contribution to `nuxeo-routing-default-jsf` accordingly.
