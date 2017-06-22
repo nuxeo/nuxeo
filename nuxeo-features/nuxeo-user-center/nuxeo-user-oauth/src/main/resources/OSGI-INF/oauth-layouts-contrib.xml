@@ -12,25 +12,12 @@
       </templates>
       <rows>
         <row>
-          <widget>oAuth2ApplicationId</widget>
-        </row>
-        <row>
           <widget>oAuth2ApplicationName</widget>
         </row>
         <row>
           <widget>oAuth2ApplicationAuthorizationDate</widget>
         </row>
       </rows>
-
-      <widget name="oAuth2ApplicationId" type="text">
-        <labels>
-          <label mode="any">label.oauth2.authorizedApp.id</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>applicationId</field>
-        </fields>
-      </widget>
 
       <widget name="oAuth2ApplicationName" type="text">
         <labels>
