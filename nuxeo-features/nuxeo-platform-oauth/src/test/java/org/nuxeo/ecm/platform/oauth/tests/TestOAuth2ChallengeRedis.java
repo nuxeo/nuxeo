@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.oauth.tests;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
-import org.nuxeo.ecm.core.redis.transientstore.TransientStoreRedisFeature;
 import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
 
@@ -30,7 +29,7 @@ import org.nuxeo.runtime.test.runner.Features;
  * @since 9.2
  */
 @RunWith(ContributableFeaturesRunner.class)
-@Features(TransientStoreRedisFeature.class)
+@Features(OAuth2RedisTransientStoreFeature.class)
 @SuiteClasses(OAuth2ChallengeFixture.class)
 public class TestOAuth2ChallengeRedis {
 }
