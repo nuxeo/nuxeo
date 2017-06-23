@@ -1395,9 +1395,13 @@ public class ConfigurationGenerator {
     }
 
     public InetAddress getBindAddress() throws ConfigurationException {
+        return getBindAddress(userConfig.getProperty(PARAM_BIND_ADDRESS));
+    }
+
+    public static InetAddress getBindAddress(String hostName) throws ConfigurationException {
         InetAddress bindAddress;
         try {
-            bindAddress = InetAddress.getByName(userConfig.getProperty(PARAM_BIND_ADDRESS));
+            bindAddress = InetAddress.getByName(hostName);
             if (bindAddress.isAnyLocalAddress()) {
                 boolean preferIPv6 = "false".equals(System.getProperty("java.net.preferIPv4Stack"))
                         && "true".equals(System.getProperty("java.net.preferIPv6Addresses"));
