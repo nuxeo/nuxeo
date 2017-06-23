@@ -200,6 +200,7 @@ public class SchemaManagerImpl implements SchemaManager {
     }
 
     public synchronized void registerFacet(FacetDescriptor fd) {
+        allFacets.removeIf(f -> f.getName().equals(fd.getName()));
         allFacets.add(fd);
         dirty = true;
         log.info("Registered facet: " + fd.name);
