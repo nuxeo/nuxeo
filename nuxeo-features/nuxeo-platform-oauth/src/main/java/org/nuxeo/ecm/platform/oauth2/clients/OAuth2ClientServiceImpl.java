@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -63,8 +64,11 @@ public class OAuth2ClientServiceImpl extends DefaultComponent implements OAuth2C
             try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
                 Map<String, Serializable> filter = Collections.singletonMap("clientId", clientId);
                 DocumentModelList docs = session.query(filter);
-                if (docs.size() > 0) {
+                if (docs.size() == 1) {
                     return docs.get(0);
+                } else if (docs.size() > 1) {
+                    throw new NuxeoException(
+                            String.format("More than one client registered for the '%s' id", clientId));
                 }
             }
             return null;

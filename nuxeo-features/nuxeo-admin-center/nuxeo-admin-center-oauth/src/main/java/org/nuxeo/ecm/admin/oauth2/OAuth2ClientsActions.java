@@ -34,7 +34,9 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.admin.oauth.DirectoryBasedEditor;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
+import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
@@ -80,4 +82,12 @@ public class OAuth2ClientsActions extends DirectoryBasedEditor {
         throw new ValidatorException(message);
     }
 
+    public void validateClientId(FacesContext context, UIComponent component, Object value) {
+        OAuth2ClientService clientService = Framework.getService(OAuth2ClientService.class);
+        if (value instanceof String && clientService.hasClient((String) value)) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    ComponentUtils.translate(context, "label.oauth2.existing.clientId"), null);
+            throw new ValidatorException(message);
+        }
+    }
 }
