@@ -576,10 +576,8 @@ public class RouterServlet extends HttpServlet {
                 ctx.trackError(PARAM_BIND_ADDRESS, "error.invalid.ip");
             }
             try {
-                InetAddress inetAddress = InetAddress.getByName(bindAddress);
+                InetAddress inetAddress = ConfigurationGenerator.getBindAddress(bindAddress);
                 ConfigurationGenerator.checkAddressReachable(inetAddress);
-            } catch (UnknownHostException e) {
-                ctx.trackError(PARAM_BIND_ADDRESS, "error.invalid.ip");
             } catch (ConfigurationException e) {
                 ctx.trackError(PARAM_BIND_ADDRESS, "error.already.used.ip");
             }
