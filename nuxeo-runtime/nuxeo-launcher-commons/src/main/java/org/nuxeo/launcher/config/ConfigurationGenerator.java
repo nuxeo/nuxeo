@@ -1394,10 +1394,25 @@ public class ConfigurationGenerator {
         checkPortAvailable(bindAddress, Integer.parseInt(userConfig.getProperty(PARAM_HTTP_PORT)));
     }
 
+    /**
+     * Checks the userConfig bind address is not 0.0.0.0 and replaces it with 127.0.0.1 if needed
+     * 
+     * @return the userConfig bind address if not 0.0.0.0 else 127.0.0.1
+     * @throws ConfigurationException
+     * @since 5.7
+     */
     public InetAddress getBindAddress() throws ConfigurationException {
         return getBindAddress(userConfig.getProperty(PARAM_BIND_ADDRESS));
     }
 
+    /**
+     * Checks hostName bind address is not 0.0.0.0 and replaces it with 127.0.0.1 if needed
+     * 
+     * @param hostName the hostname of Nuxeo server (works also with the IP)
+     * @return the bind address matching hostName parameter if not 0.0.0.0 else 127.0.0.1
+     * @throws ConfigurationException
+     * @since 9.2
+     */
     public static InetAddress getBindAddress(String hostName) throws ConfigurationException {
         InetAddress bindAddress;
         try {
