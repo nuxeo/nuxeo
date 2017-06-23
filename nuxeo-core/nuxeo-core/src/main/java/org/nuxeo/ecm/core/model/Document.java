@@ -263,12 +263,12 @@ public interface Document {
     String getChangeToken();
 
     /**
-     * Validates that the passed change token is compatible with the one for this document.
+     * Validates that the passed user-visible change token is compatible with the one for this document.
      *
      * @return {@code false} if the change token is not valid
      * @since 9.2
      */
-    boolean validateChangeToken(String changeToken);
+    boolean validateUserVisibleChangeToken(String changeToken);
 
     /**
      * Marks the document as being modified by a user change.

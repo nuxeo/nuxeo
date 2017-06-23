@@ -224,7 +224,7 @@ public class DocumentModelFactory {
         // change token
         String changeToken = (String) docModel.getContextData(CoreSession.CHANGE_TOKEN);
         boolean userChange = StringUtils.isNotEmpty(changeToken);
-        if (!doc.validateChangeToken(changeToken)) {
+        if (!doc.validateUserVisibleChangeToken(changeToken)) {
             throw new ConcurrentUpdateException(doc.getUUID());
         }
         userChange = userChange || Boolean.TRUE.equals(docModel.getContextData(CoreSession.USER_CHANGE));

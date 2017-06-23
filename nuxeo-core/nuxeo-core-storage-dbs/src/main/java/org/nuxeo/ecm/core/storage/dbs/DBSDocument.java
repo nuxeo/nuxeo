@@ -167,7 +167,7 @@ public class DBSDocument extends BaseDocument<State> {
 
     public static final String KEY_LOCK_CREATED = "ecm:lockCreated";
 
-    public static final String KEY_SYS_VERSION = "ecm:sysVersion";
+    public static final String KEY_SYS_CHANGE_TOKEN = "ecm:systemChangeToken";
 
     public static final String KEY_CHANGE_TOKEN = "ecm:changeToken";
 
@@ -771,15 +771,15 @@ public class DBSDocument extends BaseDocument<State> {
     @Override
     public String getChangeToken() {
         if (session.changeTokenEnabled) {
-            Long sysVersion = docState.getSysVersion();
+            Long sysChangeToken = docState.getSysChangeToken();
             Long changeToken = docState.getChangeToken();
-            String userChangeToken = buildUserChangeToken(sysVersion, changeToken);
+            String userVisibleChangeToken = buildUserVisibleChangeToken(sysChangeToken, changeToken);
             if (isProxy()) {
                 Long targetChangeToken = getTargetDocument().docState.getChangeToken();
                 String targetUserChangeToken = targetChangeToken == null ? null : targetChangeToken.toString();
-                return getProxyChangeToken(userChangeToken, targetUserChangeToken);
+                return getProxyChangeToken(userVisibleChangeToken, targetUserChangeToken);
             } else {
-                return userChangeToken;
+                return userVisibleChangeToken;
             }
         } else {
             DBSDocumentState docState = getStateOrTarget();
@@ -802,14 +802,14 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public boolean validateChangeToken(String userChangeToken) {
-        if (userChangeToken == null) {
+    public boolean validateUserVisibleChangeToken(String userVisibleChangeToken) {
+        if (userVisibleChangeToken == null) {
             return true;
         }
         if (isProxy()) {
-            return validateProxyChangeToken(userChangeToken, docState, getTargetDocument().docState);
+            return validateProxyChangeToken(userVisibleChangeToken, docState, getTargetDocument().docState);
         } else {
-            return docState.validateChangeToken(userChangeToken);
+            return docState.validateUserVisibleChangeToken(userVisibleChangeToken);
         }
     }
 
@@ -831,7 +831,7 @@ public class DBSDocument extends BaseDocument<State> {
         if (proxyToken == null && targetToken == null) {
             return true;
         }
-        return proxyState.validateChangeToken(proxyToken) && targetState.validateChangeToken(targetToken);
+        return proxyState.validateUserVisibleChangeToken(proxyToken) && targetState.validateUserVisibleChangeToken(targetToken);
     }
 
     @Override

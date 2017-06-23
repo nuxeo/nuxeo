@@ -301,9 +301,9 @@ public class PersistenceContext {
             Set<Serializable> modifiedDocIds = findModifiedDocuments();
             for (Serializable id : modifiedDocIds) {
                 SimpleFragment hier = getHier(id, false);
-                // increment system version
-                Long base = (Long) hier.get(Model.MAIN_SYS_VERSION_KEY);
-                hier.put(Model.MAIN_SYS_VERSION_KEY, DeltaLong.valueOf(base, 1));
+                // increment system change token
+                Long base = (Long) hier.get(Model.MAIN_SYS_CHANGE_TOKEN_KEY);
+                hier.put(Model.MAIN_SYS_CHANGE_TOKEN_KEY, DeltaLong.valueOf(base, 1));
                 // update change token if applicable (user change)
                 if (userChangeIds.contains(id)) {
                     Map<String, Serializable> conditions = updateChangeToken(hier);

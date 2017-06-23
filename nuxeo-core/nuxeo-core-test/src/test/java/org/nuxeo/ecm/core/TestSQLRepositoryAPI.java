@@ -4410,7 +4410,7 @@ public class TestSQLRepositoryAPI {
         doc = session.saveDocument(doc);
         session.save();
 
-        // the system version has been updated
+        // the system change token has been updated
         // but not the user change token as this was not flagged a user change
         String token2 = doc.getChangeToken();
         assertNotEquals(token, token2);
@@ -4425,7 +4425,7 @@ public class TestSQLRepositoryAPI {
         doc = session.saveDocument(doc);
         session.save();
 
-        // the system version has been updated again
+        // the system change token has been updated again
         // and the user change token as well
         String token3 = doc.getChangeToken();
         assertNotEquals(token, token2);

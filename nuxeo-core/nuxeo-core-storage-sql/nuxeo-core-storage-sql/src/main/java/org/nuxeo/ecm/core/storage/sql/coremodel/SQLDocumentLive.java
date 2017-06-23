@@ -326,9 +326,9 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     @Override
     public String getChangeToken() {
         if (session.isChangeTokenEnabled()) {
-            Long sysVersion = (Long) getPropertyValue(Model.MAIN_SYS_VERSION_PROP);
+            Long sysChangeToken = (Long) getPropertyValue(Model.MAIN_SYS_CHANGE_TOKEN_PROP);
             Long changeToken = (Long) getPropertyValue(Model.MAIN_CHANGE_TOKEN_PROP);
-            return buildUserChangeToken(sysVersion, changeToken);
+            return buildUserVisibleChangeToken(sysChangeToken, changeToken);
         } else {
             Calendar modified;
             try {
@@ -341,14 +341,14 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public boolean validateChangeToken(String userChangeToken) {
-        if (userChangeToken == null) {
+    public boolean validateUserVisibleChangeToken(String userVisibleChangeToken) {
+        if (userVisibleChangeToken == null) {
             return true;
         }
         if (session.isChangeTokenEnabled()) {
-            Long sysVersion = (Long) getPropertyValue(Model.MAIN_SYS_VERSION_PROP);
+            Long sysChangeToken = (Long) getPropertyValue(Model.MAIN_SYS_CHANGE_TOKEN_PROP);
             Long changeToken = (Long) getPropertyValue(Model.MAIN_CHANGE_TOKEN_PROP);
-            return validateUserChangeToken(sysVersion, changeToken, userChangeToken);
+            return validateUserVisibleChangeToken(sysChangeToken, changeToken, userVisibleChangeToken);
         } else {
             Calendar modified;
             try {
@@ -360,7 +360,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
                 return true;
             }
             String currentToken = String.valueOf(modified.getTimeInMillis());
-            return userChangeToken.equals(currentToken);
+            return userVisibleChangeToken.equals(currentToken);
         }
     }
 
