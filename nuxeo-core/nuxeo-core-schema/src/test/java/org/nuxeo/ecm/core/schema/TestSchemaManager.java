@@ -267,9 +267,15 @@ public class TestSchemaManager extends NXRuntimeTestCase {
 
     @Test
     public void testFacetNoPerDocumentQuery() throws Exception {
+        assertFalse(schemaManager.getNoPerDocumentQueryFacets().contains("someFacet"));
+
         pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-facet-per-document.xml");
 
         assertTrue(schemaManager.getNoPerDocumentQueryFacets().contains("someFacet"));
+
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-facet-per-document-override.xml");
+
+        assertFalse(schemaManager.getNoPerDocumentQueryFacets().contains("someFacet"));
     }
 
     protected static List<String> schemaNames(List<Schema> schemas) {
