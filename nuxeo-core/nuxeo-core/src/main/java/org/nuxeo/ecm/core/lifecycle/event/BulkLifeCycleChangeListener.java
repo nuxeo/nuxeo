@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Listener for life cycle change events.
@@ -127,7 +128,6 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
                 targetState = ""; // unused
             }
             changeChildrenState(session, transition, targetState, doc);
-            session.save();
         }
     }
 
@@ -159,17 +159,30 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
             long pageSize = Long.parseLong(confService.getProperty(GET_CHILDREN_PAGE_SIZE_PROPERTY, "500"));
             // execute a first query to know total size
             String query = String.format("SELECT * FROM Document where ecm:parentId ='%s'", doc.getId());
-            DocumentModelList docs = session.query(query, null, pageSize, 0, true);
-            changeDocumentsState(session, transition, targetState, docs);
+            DocumentModelList documents = session.query(query, null, pageSize, 0, true);
+            changeDocumentsState(session, transition, targetState, documents);
+            session.save();
+            // commit the first page
+            TransactionHelper.commitOrRollbackTransaction();
+
             // loop on other children
-            long nbChildren = docs.totalSize();
-            for (long i = 1; i < nbChildren / pageSize; i++) {
-                docs = session.query(query, null, pageSize, pageSize * i, false);
-                changeDocumentsState(session, transition, targetState, docs);
+            long nbChildren = documents.totalSize();
+            for (long offset = pageSize; offset < nbChildren; offset += pageSize) {
+                long i = offset;
+                // start a new transaction
+                TransactionHelper.runInTransaction(() -> {
+                    DocumentModelList docs = session.query(query, null, pageSize, i, false);
+                    changeDocumentsState(session, transition, targetState, docs);
+                    session.save();
+                });
             }
+
+            // start a new transaction for following
+            TransactionHelper.startTransaction();
         } else {
-            DocumentModelList docs = session.getChildren(doc.getRef());
-            changeDocumentsState(session, transition, targetState, docs);
+            DocumentModelList documents = session.getChildren(doc.getRef());
+            changeDocumentsState(session, transition, targetState, documents);
+            session.save();
         }
     }
 
