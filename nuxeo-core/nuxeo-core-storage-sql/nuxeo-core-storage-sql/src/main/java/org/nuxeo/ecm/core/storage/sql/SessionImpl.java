@@ -964,7 +964,7 @@ public class SessionImpl implements Session, XAResource {
         hierRow.putNew(Model.MAIN_PRIMARY_TYPE_KEY, typeName);
         hierRow.putNew(Model.HIER_CHILD_ISPROPERTY_KEY, Boolean.valueOf(complexProp));
         if (changeTokenEnabled) {
-            hierRow.putNew(Model.MAIN_SYS_VERSION_KEY, Long.valueOf(0));
+            hierRow.putNew(Model.MAIN_SYS_CHANGE_TOKEN_KEY, Long.valueOf(0));
         }
         SimpleFragment hierFragment = context.createHierarchyFragment(hierRow);
         FragmentGroup fragmentGroup = new FragmentGroup(hierFragment, new FragmentsMap());

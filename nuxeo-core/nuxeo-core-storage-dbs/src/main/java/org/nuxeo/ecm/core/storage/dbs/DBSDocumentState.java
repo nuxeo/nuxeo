@@ -23,7 +23,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_SYS_VERSION;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_SYS_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
 import java.io.Serializable;
@@ -180,18 +180,18 @@ public class DBSDocumentState {
         return (String) get(KEY_VERSION_SERIES_ID);
     }
 
-    public Long getSysVersion() {
-        return (Long) get(KEY_SYS_VERSION);
+    public Long getSysChangeToken() {
+        return (Long) get(KEY_SYS_CHANGE_TOKEN);
     }
 
     public Long getChangeToken() {
         return (Long) get(KEY_CHANGE_TOKEN);
     }
 
-    public boolean validateChangeToken(String userChangeToken) {
-        Long sysVersion = getSysVersion();
+    public boolean validateUserVisibleChangeToken(String userVisibleChangeToken) {
+        Long sysChangeToken = getSysChangeToken();
         Long changeToken = getChangeToken();
-        return BaseDocument.validateUserChangeToken(sysVersion, changeToken, userChangeToken);
+        return BaseDocument.validateUserVisibleChangeToken(sysChangeToken, changeToken, userVisibleChangeToken);
     }
 
     @Override

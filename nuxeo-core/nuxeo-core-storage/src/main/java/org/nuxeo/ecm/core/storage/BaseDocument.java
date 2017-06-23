@@ -1127,35 +1127,36 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     public static final String TOKEN_SEP = "-";
 
     /**
-     * Builds the user-visible change token from low-level system version and change token information.
+     * Builds the user-visible change token from low-level change token and system change token information.
      *
-     * @param sysVersion the system version
+     * @param sysChangeToken the system change token
      * @param changeToken the change token
      * @return the user-visible change token
      * @since 9.2
      */
-    public static String buildUserChangeToken(Long sysVersion, Long changeToken) {
-        if (sysVersion == null || changeToken == null) {
+    public static String buildUserVisibleChangeToken(Long sysChangeToken, Long changeToken) {
+        if (sysChangeToken == null || changeToken == null) {
             return null;
         }
-        return sysVersion.toString() + TOKEN_SEP + changeToken.toString();
+        return sysChangeToken.toString() + TOKEN_SEP + changeToken.toString();
     }
 
     /**
      * Validates that the passed user-visible change token is compatible with the current change token.
      *
-     * @param sysVersion the system version
+     * @param sysChangeToken the system change token
      * @param changeToken the change token
-     * @param userChangeToken the user-visible change token
+     * @param userVisibleChangeToken the user-visible change token
      * @return {@code false} if the change token is not valid
      * @since 9.2
      */
-    public static boolean validateUserChangeToken(Long sysVersion, Long changeToken, String userChangeToken) {
-        if (sysVersion == null || changeToken == null) {
+    public static boolean validateUserVisibleChangeToken(Long sysChangeToken, Long changeToken,
+            String userVisibleChangeToken) {
+        if (sysChangeToken == null || changeToken == null) {
             return true;
         }
-        // we only compare the user change token, not the system version, to allow background system updates
-        String[] parts = userChangeToken.split(TOKEN_SEP);
+        // we only compare the change token, not the system change token, to allow background system updates
+        String[] parts = userVisibleChangeToken.split(TOKEN_SEP);
         if (parts.length != 2) {
             return false; // invalid format
         }

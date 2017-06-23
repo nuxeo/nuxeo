@@ -121,9 +121,9 @@ public class Model {
 
     public static final String MAIN_IS_VERSION_KEY = "isversion";
 
-    public static final String MAIN_SYS_VERSION_PROP = "ecm:sysVersion";
+    public static final String MAIN_SYS_CHANGE_TOKEN_PROP = "ecm:systemChangeToken";
 
-    public static final String MAIN_SYS_VERSION_KEY = "sysversion";
+    public static final String MAIN_SYS_CHANGE_TOKEN_KEY = "systemchangetoken";
 
     public static final String MAIN_CHANGE_TOKEN_PROP = "ecm:changeToken";
 
@@ -1301,7 +1301,7 @@ public class Model {
         addPropertyInfo(MAIN_IS_VERSION_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_IS_VERSION_KEY, false,
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
         if (changeTokenEnabled) {
-            addPropertyInfo(MAIN_SYS_VERSION_PROP, PropertyType.LONG, HIER_TABLE_NAME, MAIN_SYS_VERSION_KEY, false,
+            addPropertyInfo(MAIN_SYS_CHANGE_TOKEN_PROP, PropertyType.LONG, HIER_TABLE_NAME, MAIN_SYS_CHANGE_TOKEN_KEY, false,
                     LongType.INSTANCE, ColumnType.LONG);
             addPropertyInfo(MAIN_CHANGE_TOKEN_PROP, PropertyType.LONG, HIER_TABLE_NAME, MAIN_CHANGE_TOKEN_KEY, false,
                     LongType.INSTANCE, ColumnType.LONG);

@@ -45,7 +45,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_VERSION_SERIES_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_READ_ACL;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_SYS_VERSION;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_SYS_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
 import java.io.Serializable;
@@ -346,7 +346,7 @@ public class DBSTransactionState {
         docState.put(KEY_POS, pos);
         docState.put(KEY_PRIMARY_TYPE, typeName);
         if (session.changeTokenEnabled) {
-            docState.put(KEY_SYS_VERSION, Long.valueOf(0));
+            docState.put(KEY_SYS_CHANGE_TOKEN, Long.valueOf(0));
         }
         // update read acls for new doc
         updateDocumentReadAcls(id);
@@ -616,9 +616,9 @@ public class DBSTransactionState {
                 }
                 ChangeTokenUpdater changeTokenUpdater;
                 if (session.changeTokenEnabled) {
-                    // increment system version
-                    Long base = (Long) docState.get(KEY_SYS_VERSION);
-                    docState.put(KEY_SYS_VERSION, DeltaLong.valueOf(base, 1));
+                    // increment system change token
+                    Long base = (Long) docState.get(KEY_SYS_CHANGE_TOKEN);
+                    docState.put(KEY_SYS_CHANGE_TOKEN, DeltaLong.valueOf(base, 1));
                     // update change token if applicable (user change)
                     if (userChangeIds.contains(id)) {
                         changeTokenUpdater = new ChangeTokenUpdater(docState);

@@ -244,11 +244,11 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public boolean validateChangeToken(String changeToken) {
-        if (changeToken == null) {
+    public boolean validateUserVisibleChangeToken(String userVisibleChangeToken) {
+        if (userVisibleChangeToken == null) {
             return true;
         }
-        String[] parts = changeToken.split(CHANGE_TOKEN_PROXY_SEP, 2);
+        String[] parts = userVisibleChangeToken.split(CHANGE_TOKEN_PROXY_SEP, 2);
         if (parts.length != 2) {
             // invalid format
             return false;
@@ -264,7 +264,7 @@ public class SQLDocumentProxy implements SQLDocument {
         if (proxyToken == null && targetToken == null) {
             return true;
         }
-        return proxy.validateChangeToken(proxyToken) && target.validateChangeToken(targetToken);
+        return proxy.validateUserVisibleChangeToken(proxyToken) && target.validateUserVisibleChangeToken(targetToken);
     }
 
     @Override

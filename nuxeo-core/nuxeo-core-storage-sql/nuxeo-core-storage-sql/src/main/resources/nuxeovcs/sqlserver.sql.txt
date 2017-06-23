@@ -1327,6 +1327,6 @@ UPDATE locks SET
 ############################################################
 
 
-#CATEGORY: upgradeSysVersion
+#CATEGORY: upgradeSysChangeToken
 
-UPDATE hierarchy SET sysversion = 0 WHERE sysversion IS NULL AND isproperty = 0
+UPDATE hierarchy SET systemchangetoken = 0 WHERE systemchangetoken IS NULL AND isproperty = 0
