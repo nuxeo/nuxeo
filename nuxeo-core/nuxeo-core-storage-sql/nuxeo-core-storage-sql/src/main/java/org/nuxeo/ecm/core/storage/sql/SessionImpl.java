@@ -1583,4 +1583,9 @@ public class SessionImpl implements Session, XAResource {
         return changeTokenEnabled;
     }
 
+    @Override
+    public void markUserChange(Serializable id) {
+        context.markUserChange(id);
+    }
+
 }

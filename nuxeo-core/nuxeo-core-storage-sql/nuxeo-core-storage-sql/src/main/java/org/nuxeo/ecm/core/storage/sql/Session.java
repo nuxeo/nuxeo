@@ -499,4 +499,14 @@ public interface Session extends Connection {
      */
     boolean isChangeTokenEnabled();
 
+    /**
+     * Marks the document as being modified by a user change.
+     * <p>
+     * This causes an additional change token increment and check during save.
+     *
+     * @param id the document id
+     * @since 9.2
+     */
+    void markUserChange(Serializable id);
+
 }

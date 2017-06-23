@@ -146,6 +146,13 @@ public class PersistenceContext {
     private final Set<Serializable> createdIds;
 
     /**
+     * Document ids modified as "user changes", which means that a change token should be checked.
+     *
+     * @since 9.2
+     */
+    protected final Set<Serializable> userChangeIds = new HashSet<>();
+
+    /**
      * Cache statistics
      *
      * @since 5.7
@@ -209,6 +216,7 @@ public class PersistenceContext {
         int n = clearLocalCaches();
         modified.clear(); // not empty when rolling back before save
         createdIds.clear();
+        userChangeIds.clear();
         return n;
     }
 
@@ -257,6 +265,17 @@ public class PersistenceContext {
     }
 
     /**
+     * Marks this document id as belonging to a user change.
+     *
+     * @since 9.2
+     */
+    protected void markUserChange(Serializable id) {
+        if (session.changeTokenEnabled) {
+            userChangeIds.add(id);
+        }
+    }
+
+    /**
      * Saves all the created, modified and deleted rows into a batch object, for later execution.
      * <p>
      * Also updates the passed fragmentsToClearDirty list with dirty modified fragments, for later call of clearDirty
@@ -285,10 +304,13 @@ public class PersistenceContext {
                 // increment system version
                 Long base = (Long) hier.get(Model.MAIN_SYS_VERSION_KEY);
                 hier.put(Model.MAIN_SYS_VERSION_KEY, DeltaLong.valueOf(base, 1));
-                // update change token
-                Map<String, Serializable> conditions = updateChangeToken(hier);
-                rowUpdateConditions.put(id, conditions);
+                // update change token if applicable (user change)
+                if (userChangeIds.contains(id)) {
+                    Map<String, Serializable> conditions = updateChangeToken(hier);
+                    rowUpdateConditions.put(id, conditions);
+                }
             }
+            userChangeIds.clear();
         }
 
         // created main rows are saved first in the batch (in their order of

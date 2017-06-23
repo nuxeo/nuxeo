@@ -271,6 +271,15 @@ public interface Document {
     boolean validateChangeToken(String changeToken);
 
     /**
+     * Marks the document as being modified by a user change.
+     * <p>
+     * This causes an additional change token increment and check during save.
+     *
+     * @since 9.2
+     */
+    void markUserChange();
+
+    /**
      * Loads a {@link DocumentPart} from storage.
      * <p>
      * Reading data is done by {@link DocumentPart} because of per-proxy schemas.

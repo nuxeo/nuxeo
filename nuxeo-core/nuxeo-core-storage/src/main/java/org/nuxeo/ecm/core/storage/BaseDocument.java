@@ -1123,6 +1123,9 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
      */
     protected abstract Lock removeDocumentLock(String owner);
 
+    // also used as a regexp for split
+    public static final String TOKEN_SEP = "-";
+
     /**
      * Builds the user-visible change token from low-level system version and change token information.
      *
@@ -1135,7 +1138,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         if (sysVersion == null || changeToken == null) {
             return null;
         }
-        return sysVersion.toString() + '-' + changeToken.toString();
+        return sysVersion.toString() + TOKEN_SEP + changeToken.toString();
     }
 
     /**
@@ -1151,7 +1154,12 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         if (sysVersion == null || changeToken == null) {
             return true;
         }
-        return userChangeToken.equals(sysVersion.toString() + '-' + changeToken.toString());
+        // we only compare the user change token, not the system version, to allow background system updates
+        String[] parts = userChangeToken.split(TOKEN_SEP);
+        if (parts.length != 2) {
+            return false; // invalid format
+        }
+        return parts[1].equals(changeToken.toString());
     }
 
     /**

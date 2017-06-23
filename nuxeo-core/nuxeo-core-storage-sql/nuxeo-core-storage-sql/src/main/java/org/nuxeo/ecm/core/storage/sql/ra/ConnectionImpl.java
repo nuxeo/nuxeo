@@ -423,4 +423,9 @@ public class ConnectionImpl implements Session {
         return getSession().isChangeTokenEnabled();
     }
 
+    @Override
+    public void markUserChange(Serializable id) {
+        getSession().markUserChange(id);
+    }
+
 }
