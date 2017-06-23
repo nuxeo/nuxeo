@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -40,7 +41,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.admin.setup.TestSetupWizardActionBean.CustomLogFilter;
@@ -60,7 +60,7 @@ public class TestSetupWizardActionBean {
 
     private SetupWizardActionBean setupWizardActionBean;
 
-    private Map<String, String> parameters, advancedParameters;
+    private Map<String, Serializable> parameters, advancedParameters;
 
     private File nuxeoHome, nuxeoConf, expectedNuxeoConf;
 

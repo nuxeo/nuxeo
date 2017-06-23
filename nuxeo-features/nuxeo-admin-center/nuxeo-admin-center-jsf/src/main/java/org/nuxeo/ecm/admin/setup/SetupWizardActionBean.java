@@ -42,10 +42,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -115,9 +117,9 @@ public class SetupWizardActionBean implements Serializable {
             "nuxeo.user.emergency.enable", "nuxeo.user.emergency.username", "nuxeo.user.emergency.password",
             "nuxeo.user.emergency.firstname", "nuxeo.user.emergency.lastname" };
 
-    protected Map<String, String> parameters;
+    protected Map<String, Serializable> parameters;
 
-    protected Map<String, String> advancedParameters;
+    protected Map<String, Serializable> advancedParameters;
 
     protected static final String PROXY_NONE = "none";
 
@@ -186,12 +188,12 @@ public class SetupWizardActionBean implements Serializable {
     }
 
     @Factory(value = "advancedParams", scope = ScopeType.EVENT)
-    public Map<String, String> getAdvancedParameters() {
+    public Map<String, Serializable> getAdvancedParameters() {
         return advancedParameters;
     }
 
     @Factory(value = "setupParams", scope = ScopeType.EVENT)
-    public Map<String, String> getParameters() {
+    public Map<String, Serializable> getParameters() {
         return parameters;
     }
 
@@ -226,7 +228,7 @@ public class SetupWizardActionBean implements Serializable {
         }
 
         if (parameters.get("nuxeo.directory.type") != null) {
-            directoryType = parameters.get("nuxeo.directory.type");
+            directoryType = (String) parameters.get("nuxeo.directory.type");
         }
     }
 
@@ -253,17 +255,6 @@ public class SetupWizardActionBean implements Serializable {
 
     @SuppressWarnings("unchecked")
     protected void saveParameters() {
-
-        // Fix types (replace Long, BigDecimal and Boolean with String)
-        Iterator it = parameters.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-            Object value = entry.getValue();
-            if (value instanceof Long || value instanceof Boolean || value instanceof BigDecimal) {
-                entry.setValue(value.toString());
-            }
-        }
-
         // manage httpProxy settings (setting null is not accepted)
         if (!PROXY_AUTHENTICATED.equals(proxyType)) {
             parameters.put("nuxeo.http.proxy.login", "");
@@ -276,14 +267,19 @@ public class SetupWizardActionBean implements Serializable {
 
         // Remove empty values for password keys
         for (String pwdKey : SECRET_KEYS) {
-            if (StringUtils.isEmpty(parameters.get(pwdKey))) {
+            if (StringUtils.isEmpty((String) parameters.get(pwdKey))) {
                 parameters.remove(pwdKey);
             }
         }
 
-        Map<String, String> customParameters = new HashMap<>();
-        customParameters.putAll(parameters);
-        customParameters.putAll(advancedParameters);
+        // compute <String, String> parameters for the ConfigurationGenerator
+        Stream<Entry<String, Serializable>> parametersStream = parameters.entrySet().stream();
+        Stream<Entry<String, Serializable>> advancedParametersStream = advancedParameters.entrySet().stream();
+        Map<String, String> customParameters = Stream.concat(parametersStream, advancedParametersStream).collect(
+                HashMap::new, (m, e) -> m.put(e.getKey(), Optional.ofNullable(e.getValue())
+                                                                  .map(Object::toString)
+                                                                  .orElse(null)),
+                HashMap::putAll);
         try {
             setupConfigGenerator.saveFilteredConfiguration(customParameters);
         } catch (ConfigurationException e) {
@@ -333,14 +329,15 @@ public class SetupWizardActionBean implements Serializable {
         String dbPort = dbPortLong.toString();
 
         if (StringUtils.isEmpty(dbPwd)) {
-            dbPwd = parameters.get("nuxeo.db.password");
+            dbPwd = (String) parameters.get("nuxeo.db.password");
         }
 
         String errorLabel = null;
         Exception error = null;
         try {
-            setupConfigGenerator.checkDatabaseConnection(parameters.get(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME),
-                    dbName, dbUser, dbPwd, dbHost, dbPort);
+            setupConfigGenerator.checkDatabaseConnection(
+                    (String) parameters.get(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME), dbName, dbUser, dbPwd,
+                    dbHost, dbPort);
         } catch (IOException e) {
             errorLabel = ERROR_DB_FS;
             error = e;
@@ -424,7 +421,7 @@ public class SetupWizardActionBean implements Serializable {
 
     public boolean getNeedGroupConfiguration() {
         if (needGroupConfiguration == null) {
-            String storageType = parameters.get("nuxeo.user.group.storage");
+            String storageType = (String) parameters.get("nuxeo.user.group.storage");
             if ("userLdapOnly".equals(storageType) || "multiUserSqlGroup".equals(storageType)) {
                 needGroupConfiguration = Boolean.FALSE;
             } else {
