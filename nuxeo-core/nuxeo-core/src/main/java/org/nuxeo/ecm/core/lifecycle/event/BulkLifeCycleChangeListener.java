@@ -63,11 +63,6 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
      */
     public static final String GET_CHILDREN_PAGE_SIZE_PROPERTY = "nuxeo.bulkLifeCycleChangeListener.get-children-page-size";
 
-    /**
-     * @since 8.10-HF05 9.2
-     */
-    public static final long GET_CHILDREN_PAGINATION_DISABLED_FLAG = -1;
-
     private static final Log log = LogFactory.getLog(BulkLifeCycleChangeListener.class);
 
     @Override
@@ -131,11 +126,7 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
                 transition = LifeCycleConstants.UNDELETE_TRANSITION;
                 targetState = ""; // unused
             }
-            ConfigurationService confService = Framework.getService(ConfigurationService.class);
-            boolean paginate = confService.isBooleanPropertyTrue(PAGINATE_GET_CHILDREN_PROPERTY);
-            long pageSize = paginate ? Long.parseLong(confService.getProperty(GET_CHILDREN_PAGE_SIZE_PROPERTY, "500"))
-                    : GET_CHILDREN_PAGINATION_DISABLED_FLAG;
-            changeChildrenState(session, pageSize, transition, targetState, doc);
+            changeChildrenState(session, transition, targetState, doc);
             session.save();
         }
     }
@@ -158,40 +149,43 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
     }
 
     /**
-     * @since 8.10-HF05 9.2
+     * @since 9.2
      */
-    protected void changeChildrenState(CoreSession session, long pageSize, String transition, String targetState,
-            DocumentModel doc) {
-        if (pageSize == GET_CHILDREN_PAGINATION_DISABLED_FLAG) {
-            DocumentModelList docs = session.getChildren(doc.getRef());
-            changeDocumentsState(session, pageSize, transition, targetState, docs);
-        } else {
+    protected void changeChildrenState(CoreSession session, String transition, String targetState, DocumentModel doc) {
+        // Check if we need to paginate children fetch
+        ConfigurationService confService = Framework.getService(ConfigurationService.class);
+        boolean paginate = confService.isBooleanPropertyTrue(PAGINATE_GET_CHILDREN_PROPERTY);
+        if (paginate) {
+            long pageSize = Long.parseLong(confService.getProperty(GET_CHILDREN_PAGE_SIZE_PROPERTY, "500"));
             // execute a first query to know total size
             String query = String.format("SELECT * FROM Document where ecm:parentId ='%s'", doc.getId());
             DocumentModelList docs = session.query(query, null, pageSize, 0, true);
-            changeDocumentsState(session, pageSize, transition, targetState, docs);
+            changeDocumentsState(session, transition, targetState, docs);
             // loop on other children
             long nbChildren = docs.totalSize();
             for (long i = 1; i < nbChildren / pageSize; i++) {
                 docs = session.query(query, null, pageSize, pageSize * i, false);
-                changeDocumentsState(session, pageSize, transition, targetState, docs);
+                changeDocumentsState(session, transition, targetState, docs);
             }
+        } else {
+            DocumentModelList docs = session.getChildren(doc.getRef());
+            changeDocumentsState(session, transition, targetState, docs);
         }
     }
 
-    // change doc state and recurse in children
     /**
-     * @since 8.10-HF05 9.2
+     * Change doc state. Don't recurse on children as following transition trigger an event which will be handled by
+     * this listener.
+     *
+     * @since 9.2
      */
-    protected void changeDocumentsState(CoreSession session, long pageSize, String transition, String targetState,
+    protected void changeDocumentsState(CoreSession session, String transition, String targetState,
             DocumentModelList docs) {
         for (DocumentModel doc : docs) {
-            boolean removed = false;
             if (doc.getCurrentLifeCycleState() == null) {
                 if (LifeCycleConstants.DELETED_STATE.equals(targetState)) {
                     log.debug("Doc has no lifecycle, deleting ...");
                     session.removeDocument(doc.getRef());
-                    removed = true;
                 }
             } else if (doc.getAllowedStateTransitions().contains(transition) && !doc.isProxy()) {
                 doc.followTransition(transition);
@@ -201,30 +195,20 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
                 } else if (LifeCycleConstants.DELETED_STATE.equals(targetState)) {
                     log.debug("Impossible to change state of " + doc.getRef() + " :removing");
                     session.removeDocument(doc.getRef());
-                    removed = true;
                 } else {
                     log.debug("Document" + doc.getRef() + " has no transition to the target LifeCycle state");
                 }
             }
-            if (doc.isFolder() && !removed) {
-                changeChildrenState(session, pageSize, transition, targetState, doc);
-            }
         }
     }
 
-    // change doc state and recurse in children
     /**
-     * @deprecated since 9.2 use {@link #changeDocumentsState(CoreSession, long, String, String, DocumentModelList)}
-     *             instead to allow paginating children fetch (depending on configuration).
+     * @deprecated since 9.2 use {@link #changeDocumentsState(CoreSession, String, String, DocumentModelList)} instead.
      */
     @Deprecated
     protected void changeDocumentsState(CoreSession session, DocumentModelList docs, String transition,
             String targetState) {
-        ConfigurationService confService = Framework.getService(ConfigurationService.class);
-        boolean paginate = confService.isBooleanPropertyTrue(PAGINATE_GET_CHILDREN_PROPERTY);
-        long pageSize = paginate ? Long.parseLong(confService.getProperty(GET_CHILDREN_PAGE_SIZE_PROPERTY, "500"))
-                : GET_CHILDREN_PAGINATION_DISABLED_FLAG;
-        changeDocumentsState(session, pageSize, transition, targetState, docs);
+        changeDocumentsState(session, transition, targetState, docs);
     }
 
 }
