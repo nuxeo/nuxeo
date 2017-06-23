@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.INITIAL_CHANGE_TOKEN;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.INITIAL_SYS_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_GRANT;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_PERMISSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
@@ -346,7 +347,7 @@ public class DBSTransactionState {
         docState.put(KEY_POS, pos);
         docState.put(KEY_PRIMARY_TYPE, typeName);
         if (session.changeTokenEnabled) {
-            docState.put(KEY_SYS_CHANGE_TOKEN, Long.valueOf(0));
+            docState.put(KEY_SYS_CHANGE_TOKEN, INITIAL_SYS_CHANGE_TOKEN);
         }
         // update read acls for new doc
         updateDocumentReadAcls(id);
