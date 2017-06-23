@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.oauth.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 
@@ -28,6 +29,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
 import org.nuxeo.runtime.test.runner.Features;
@@ -83,4 +85,13 @@ public class TestOauth2Client {
         assertTrue(clientService.isValidClient("testClient", "testSecret"));
     }
 
+    @Test
+    public void shouldNotAllow2ClientsWithSameId() {
+        try {
+            clientService.getClient("existing");
+            fail();
+        } catch (NuxeoException e) {
+            assertEquals("More than one client registered for the 'existing' id", e.getMessage());
+        }
+    }
 }
