@@ -114,6 +114,13 @@ public class DBSTransactionState {
     protected Set<String> transientCreated = new LinkedHashSet<>();
 
     /**
+     * Document ids modified as "user changes", which means that a change token should be checked.
+     *
+     * @since 9.2
+     */
+    protected final Set<Serializable> userChangeIds = new HashSet<>();
+
+    /**
      * Undo log.
      * <p>
      * A map of document ids to null or State. The value is null when the document has to be deleted when applying the
@@ -562,6 +569,10 @@ public class DBSTransactionState {
         repository.deleteStates(ids);
     }
 
+    public void markUserChange(String id) {
+        userChangeIds.add(id);
+    }
+
     /**
      * Writes transient state to database.
      * <p>
@@ -608,8 +619,12 @@ public class DBSTransactionState {
                     // increment system version
                     Long base = (Long) docState.get(KEY_SYS_VERSION);
                     docState.put(KEY_SYS_VERSION, DeltaLong.valueOf(base, 1));
-                    // update change token
-                    changeTokenUpdater = new ChangeTokenUpdater(docState);
+                    // update change token if applicable (user change)
+                    if (userChangeIds.contains(id)) {
+                        changeTokenUpdater = new ChangeTokenUpdater(docState);
+                    } else {
+                        changeTokenUpdater = null;
+                    }
                 } else {
                     changeTokenUpdater = null;
                 }
@@ -618,6 +633,7 @@ public class DBSTransactionState {
             docState.setNotDirty();
         }
         transientCreated.clear();
+        userChangeIds.clear();
         scheduleWork(works);
     }
 

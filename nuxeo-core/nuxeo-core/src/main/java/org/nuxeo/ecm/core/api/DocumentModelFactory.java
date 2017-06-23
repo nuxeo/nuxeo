@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
@@ -222,8 +223,14 @@ public class DocumentModelFactory {
 
         // change token
         String changeToken = (String) docModel.getContextData(CoreSession.CHANGE_TOKEN);
+        boolean userChange = StringUtils.isNotEmpty(changeToken);
         if (!doc.validateChangeToken(changeToken)) {
             throw new ConcurrentUpdateException(doc.getUUID());
+        }
+        userChange = userChange || Boolean.TRUE.equals(docModel.getContextData(CoreSession.USER_CHANGE));
+        docModel.putContextData(CoreSession.USER_CHANGE, null);
+        if (userChange) {
+            doc.markUserChange();
         }
 
         // facets added/removed

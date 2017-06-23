@@ -364,6 +364,11 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
         }
     }
 
+    @Override
+    public void markUserChange() {
+        session.markUserChange(getNode().getId());
+    }
+
     /*
      * ----- LifeCycle -----
      */

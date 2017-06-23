@@ -124,6 +124,16 @@ public interface CoreSession extends AutoCloseable {
     String CHANGE_TOKEN = "changeToken";
 
     /**
+     * User change, a Boolean parameter passed in context data at {@link #saveDocument} time.
+     * <p>
+     * When {@linkplain Boolean#TRUE TRUE}, it marks the document as being modified by a user change. This causes an
+     * additional change token increment and check during save.
+     *
+     * @since 9.2
+     */
+    String USER_CHANGE = "userChange";
+
+    /**
      * Closes this session.
      *
      * @since 5.9.3

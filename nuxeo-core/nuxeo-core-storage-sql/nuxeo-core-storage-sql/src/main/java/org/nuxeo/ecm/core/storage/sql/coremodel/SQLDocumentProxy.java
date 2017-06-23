@@ -268,6 +268,12 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
+    public void markUserChange() {
+        proxy.markUserChange();
+        target.markUserChange();
+    }
+
+    @Override
     public Set<String> getAllFacets() {
         return target.getAllFacets(); // TODO proxy facets
     }

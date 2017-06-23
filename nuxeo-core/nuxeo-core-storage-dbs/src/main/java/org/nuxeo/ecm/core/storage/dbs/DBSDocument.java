@@ -834,6 +834,14 @@ public class DBSDocument extends BaseDocument<State> {
         return proxyState.validateChangeToken(proxyToken) && targetState.validateChangeToken(targetToken);
     }
 
+    @Override
+    public void markUserChange() {
+        if (isProxy()) {
+            session.markUserChange(getTargetDocumentId());
+        }
+        session.markUserChange(id);
+    }
+
     protected DBSDocumentState getStateOrTarget(Type type) throws PropertyException {
         return getStateOrTargetForSchema(type.getName());
     }
@@ -1043,12 +1051,12 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public DBSDocument getTargetDocument() {
-        if (isProxy()) {
-            String targetId = (String) docState.get(KEY_PROXY_TARGET_ID);
-            return session.getDocument(targetId);
-        } else {
-            return null;
-        }
+        String targetId = getTargetDocumentId();
+        return targetId == null ? null : session.getDocument(targetId);
+    }
+
+    protected String getTargetDocumentId() {
+        return isProxy() ? (String) docState.get(KEY_PROXY_TARGET_ID) : null;
     }
 
     @Override
