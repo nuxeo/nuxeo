@@ -7,21 +7,7 @@
     <!-- unzip the war template -->
     <unzip from="${bundle.fileName}" to="/" prefix="web">
       <include>web/nuxeo.war/**</include>
-      <exclude>web/nuxeo.war/ui/i18n/**</exclude>
     </unzip>
-
-    <!-- create a temporary folder -->
-    <delete path="${bundle.fileName}.tmp" />
-    <mkdir path="${bundle.fileName}.tmp" />
-    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp" />
-
-    <!-- append the translations -->
-    <append from="${bundle.fileName}.tmp/web/nuxeo.war/ui/i18n/messages.json"
-      to="nuxeo.war/ui/i18n/messages.json" />
-    <append from="${bundle.fileName}.tmp/web/nuxeo.war/ui/i18n/messages-fr.json"
-      to="nuxeo.war/ui/i18n/messages-fr.json" />
-
-    <delete path="${bundle.fileName}.tmp" />
 
   </install>
 
