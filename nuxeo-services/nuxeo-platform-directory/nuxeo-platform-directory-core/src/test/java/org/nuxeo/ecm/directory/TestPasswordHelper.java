@@ -55,6 +55,9 @@ public class TestPasswordHelper {
         hashed = PasswordHelper.hashPassword(password, PasswordHelper.SMD5);
         assertTrue(hashed.startsWith("{SMD5}"));
         assertTrue(PasswordHelper.verifyPassword(password, hashed));
+        hashed = PasswordHelper.hashPassword(null, PasswordHelper.SSHA);
+        assertTrue(hashed.startsWith("{SSHA}"));
+        assertTrue(PasswordHelper.verifyPassword(null, hashed));
     }
 
     @Test
