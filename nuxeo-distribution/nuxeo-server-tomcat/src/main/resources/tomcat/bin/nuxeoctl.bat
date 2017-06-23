@@ -209,7 +209,7 @@ if "%JAVA_OPTS%" == "" set JAVA_OPTS=-Xms512m -Xmx1024m -Djava.net.preferIPv4Sta
 set JAVA_OPTS=%JAVA_OPTS:"=""%
 
 REM ***** Add third-party packages from the installer to the path *****
-set PATH=%NUXEO_HOME%\3rdparty\ffmpeg\bin;%NUXEO_HOME%\3rdparty\ImageMagick;%PATH%;%NUXEO_HOME%\3rdparty\pdftohtml;%NUXEO_HOME%\3rdparty\gs\bin;%NUXEO_HOME%\3rdparty\misc\bin
+set PATH=%NUXEO_HOME%\3rdparty\java\bin;%NUXEO_HOME%\3rdparty\ffmpeg\bin;%NUXEO_HOME%\3rdparty\ImageMagick;%PATH%;%NUXEO_HOME%\3rdparty\pdftohtml;%NUXEO_HOME%\3rdparty\gs\bin;%NUXEO_HOME%\3rdparty\misc\bin
 
 echo [%DATE%] Command: %0 %1 %2 %3 %4 %5 %6 %7 %8 %9 >> "%NUXEO_LOG_DIR%\nuxeoctl.log"
 
