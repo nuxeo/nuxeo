@@ -41,8 +41,11 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeMap;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -103,15 +106,14 @@ public class SetupWizardActionBean implements Serializable {
             "nuxeo.ldap.bindpassword", "nuxeo.ldap.retries", "nuxeo.ldap.user.searchBaseDn",
             "nuxeo.ldap.user.searchClass", "nuxeo.ldap.user.searchFilter", "nuxeo.ldap.user.searchScope",
             "nuxeo.ldap.user.readonly", "nuxeo.ldap.user.mapping.rdn", "nuxeo.ldap.user.mapping.username",
-            "nuxeo.ldap.user.mapping.password", "nuxeo.ldap.user.mapping.firstname",
-            "nuxeo.ldap.user.mapping.lastname", "nuxeo.ldap.user.mapping.email", "nuxeo.ldap.user.mapping.company",
-            "nuxeo.ldap.group.searchBaseDn", "nuxeo.ldap.group.searchFilter", "nuxeo.ldap.group.searchScope",
-            "nuxeo.ldap.group.readonly", "nuxeo.ldap.group.mapping.rdn", "nuxeo.ldap.group.mapping.name",
-            "nuxeo.ldap.group.mapping.label", "nuxeo.ldap.group.mapping.members.staticAttributeId",
-            "nuxeo.ldap.group.mapping.members.dynamicAttributeId", "nuxeo.ldap.defaultAdministratorId",
-            "nuxeo.ldap.defaultMembersGroup", "nuxeo.user.anonymous.enable", "nuxeo.user.emergency.enable",
-            "nuxeo.user.emergency.username", "nuxeo.user.emergency.password", "nuxeo.user.emergency.firstname",
-            "nuxeo.user.emergency.lastname" };
+            "nuxeo.ldap.user.mapping.password", "nuxeo.ldap.user.mapping.firstname", "nuxeo.ldap.user.mapping.lastname",
+            "nuxeo.ldap.user.mapping.email", "nuxeo.ldap.user.mapping.company", "nuxeo.ldap.group.searchBaseDn",
+            "nuxeo.ldap.group.searchFilter", "nuxeo.ldap.group.searchScope", "nuxeo.ldap.group.readonly",
+            "nuxeo.ldap.group.mapping.rdn", "nuxeo.ldap.group.mapping.name", "nuxeo.ldap.group.mapping.label",
+            "nuxeo.ldap.group.mapping.members.staticAttributeId", "nuxeo.ldap.group.mapping.members.dynamicAttributeId",
+            "nuxeo.ldap.defaultAdministratorId", "nuxeo.ldap.defaultMembersGroup", "nuxeo.user.anonymous.enable",
+            "nuxeo.user.emergency.enable", "nuxeo.user.emergency.username", "nuxeo.user.emergency.password",
+            "nuxeo.user.emergency.firstname", "nuxeo.user.emergency.lastname" };
 
     protected Map<String, String> parameters;
 
@@ -205,9 +207,8 @@ public class SetupWizardActionBean implements Serializable {
         advancedParameters = new TreeMap<>();
         // will remove managed parameters later in setParameter()
         for (String key : userConfig.stringPropertyNames()) {
-            if (System.getProperty(key) == null
-                    || key.matches("^(nuxeo|org\\.nuxeo|catalina|derby|h2|java\\.home|"
-                            + "java\\.io\\.tmpdir|tomcat|sun\\.rmi\\.dgc).*")) {
+            if (System.getProperty(key) == null || key.matches("^(nuxeo|org\\.nuxeo|catalina|derby|h2|java\\.home|"
+                    + "java\\.io\\.tmpdir|tomcat|sun\\.rmi\\.dgc).*")) {
                 advancedParameters.put(key, userConfig.getProperty(key).trim());
             }
         }
@@ -352,13 +353,13 @@ public class SetupWizardActionBean implements Serializable {
         }
         if (error != null) {
             log.error(error, error);
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
-                    errorLabel), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    ComponentUtils.translate(context, errorLabel), null);
             throw new ValidatorException(message);
         }
 
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, ComponentUtils.translate(context,
-                "error.db.none"), null);
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                ComponentUtils.translate(context, "error.db.none"), null);
         message.setSeverity(FacesMessage.SEVERITY_INFO);
         context.addMessage(component.getClientId(context), message);
     }
@@ -479,13 +480,13 @@ public class SetupWizardActionBean implements Serializable {
         }
         if (error != null) {
             log.error(error, error);
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
-                    errorLabel), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    ComponentUtils.translate(context, errorLabel), null);
             throw new ValidatorException(message);
         }
 
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, ComponentUtils.translate(context,
-                "error.ldap.network.none"), null);
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                ComponentUtils.translate(context, "error.ldap.network.none"), null);
         message.setSeverity(FacesMessage.SEVERITY_INFO);
         context.addMessage(component.getClientId(context), message);
     }
@@ -528,13 +529,13 @@ public class SetupWizardActionBean implements Serializable {
         }
         if (error != null) {
             log.error(error, error);
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
-                    errorLabel), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    ComponentUtils.translate(context, errorLabel), null);
             throw new ValidatorException(message);
         }
 
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, ComponentUtils.translate(context,
-                "error.ldap.auth.none"), null);
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                ComponentUtils.translate(context, "error.ldap.auth.none"), null);
         message.setSeverity(FacesMessage.SEVERITY_INFO);
         context.addMessage(component.getClientId(context), message);
     }
