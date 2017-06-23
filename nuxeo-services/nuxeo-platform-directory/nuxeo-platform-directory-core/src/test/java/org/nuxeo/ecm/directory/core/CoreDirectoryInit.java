@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
-import org.nuxeo.ecm.directory.PasswordHelper;
 
 /**
  * Default repository initializer that create the default DM doc hierarchy.
