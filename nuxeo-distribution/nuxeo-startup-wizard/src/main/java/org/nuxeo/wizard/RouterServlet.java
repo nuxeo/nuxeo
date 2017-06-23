@@ -575,10 +575,8 @@ public class RouterServlet extends HttpServlet {
                 ctx.trackError("nuxeo.bind.address", "error.invalid.ip");
             }
             try {
-                InetAddress inetAddress = InetAddress.getByName(bindAddress);
+                InetAddress inetAddress = ConfigurationGenerator.getBindAddress(bindAddress);
                 ConfigurationGenerator.checkAddressReachable(inetAddress);
-            } catch (UnknownHostException e) {
-                ctx.trackError("nuxeo.bind.address", "error.invalid.ip");
             } catch (ConfigurationException e) {
                 ctx.trackError("nuxeo.bind.address", "error.already.used.ip");
             }
