@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Listener for life cycle change events.
@@ -139,7 +140,6 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
             long pageSize = paginate ? Long.parseLong(confService.getProperty(GET_CHILDREN_PAGE_SIZE_PROPERTY, "500"))
                     : GET_CHILDREN_PAGINATION_DISABLED_FLAG;
             changeChildrenState(session, pageSize, transition, targetState, doc);
-            session.save();
         }
     }
 
@@ -166,19 +166,32 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
     protected void changeChildrenState(CoreSession session, long pageSize, String transition, String targetState,
             DocumentModel doc) {
         if (pageSize == GET_CHILDREN_PAGINATION_DISABLED_FLAG) {
-            DocumentModelList docs = session.getChildren(doc.getRef());
-            changeDocumentsState(session, pageSize, transition, targetState, docs);
+            DocumentModelList documents = session.getChildren(doc.getRef());
+            changeDocumentsState(session, pageSize, transition, targetState, documents);
+            session.save();
         } else {
             // execute a first query to know total size
             String query = String.format("SELECT * FROM Document where ecm:parentId ='%s'", doc.getId());
-            DocumentModelList docs = session.query(query, null, pageSize, 0, true);
-            changeDocumentsState(session, pageSize, transition, targetState, docs);
+            DocumentModelList documents = session.query(query, null, pageSize, 0, true);
+            changeDocumentsState(session, pageSize, transition, targetState, documents);
+            session.save();
+            // commit the first page
+            TransactionHelper.commitOrRollbackTransaction();
+
             // loop on other children
-            long nbChildren = docs.totalSize();
-            for (long i = 1; i < nbChildren / pageSize; i++) {
-                docs = session.query(query, null, pageSize, pageSize * i, false);
-                changeDocumentsState(session, pageSize, transition, targetState, docs);
+            long nbChildren = documents.totalSize();
+            for (long offset = pageSize; offset < nbChildren; offset += pageSize) {
+                long i = offset;
+                // start a new transaction
+                TransactionHelper.runInTransaction(() -> {
+                    DocumentModelList docs = session.query(query, null, pageSize, i, false);
+                    changeDocumentsState(session, pageSize, transition, targetState, docs);
+                    session.save();
+                });
             }
+
+            // start a new transaction for following
+            TransactionHelper.startTransaction();
         }
     }
 
