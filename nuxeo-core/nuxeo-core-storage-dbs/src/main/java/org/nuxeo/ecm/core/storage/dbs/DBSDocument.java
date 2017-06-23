@@ -196,6 +196,8 @@ public class DBSDocument extends BaseDocument<State> {
 
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 
+    public static final Long INITIAL_SYS_CHANGE_TOKEN = Long.valueOf(0);
+
     public static final Long INITIAL_CHANGE_TOKEN = Long.valueOf(0);
 
     protected final String id;
@@ -775,9 +777,8 @@ public class DBSDocument extends BaseDocument<State> {
             Long changeToken = docState.getChangeToken();
             String userVisibleChangeToken = buildUserVisibleChangeToken(sysChangeToken, changeToken);
             if (isProxy()) {
-                Long targetChangeToken = getTargetDocument().docState.getChangeToken();
-                String targetUserChangeToken = targetChangeToken == null ? null : targetChangeToken.toString();
-                return getProxyChangeToken(userVisibleChangeToken, targetUserChangeToken);
+                String targetUserVisibleChangeToken = getTargetDocument().getChangeToken();
+                return getProxyUserVisibleChangeToken(userVisibleChangeToken, targetUserVisibleChangeToken);
             } else {
                 return userVisibleChangeToken;
             }
@@ -788,7 +789,7 @@ public class DBSDocument extends BaseDocument<State> {
         }
     }
 
-    protected static String getProxyChangeToken(String proxyToken, String targetToken) {
+    protected static String getProxyUserVisibleChangeToken(String proxyToken, String targetToken) {
         if (proxyToken == null && targetToken == null) {
             return null;
         } else {
@@ -813,9 +814,9 @@ public class DBSDocument extends BaseDocument<State> {
         }
     }
 
-    protected static boolean validateProxyChangeToken(String changeToken, DBSDocumentState proxyState,
+    protected static boolean validateProxyChangeToken(String userVisibleChangeToken, DBSDocumentState proxyState,
             DBSDocumentState targetState) {
-        String[] parts = changeToken.split(CHANGE_TOKEN_PROXY_SEP, 2);
+        String[] parts = userVisibleChangeToken.split(CHANGE_TOKEN_PROXY_SEP, 2);
         if (parts.length != 2) {
             // invalid format
             return false;

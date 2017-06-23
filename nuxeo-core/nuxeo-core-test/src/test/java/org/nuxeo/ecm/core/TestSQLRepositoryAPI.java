@@ -4553,6 +4553,44 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
+    public void testChangeTokenForProxy() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        maybeCreateChangeToken(doc);
+        doc = session.createDocument(doc);
+        session.save();
+        String docToken = doc.getChangeToken();
+        if (isChangeTokenEnabled()) {
+            assertEquals("0-0", docToken);
+        }
+
+        // create live proxy
+        DocumentModel proxy = session.createProxy(doc.getRef(), new PathRef("/"));
+        String proxyToken = proxy.getChangeToken();
+        if (isChangeTokenEnabled()) {
+            assertEquals("0-0/0-0", proxyToken);
+        }
+
+        // change the live document and check token
+        doc.setPropertyValue("dc:title", "Doc Changed");
+        maybeUpdateChangeToken(doc);
+        doc = session.saveDocument(doc);
+        session.save();
+        proxy = session.getDocument(proxy.getRef());
+        String proxyToken2 = proxy.getChangeToken();
+        if (isChangeTokenEnabled()) {
+            assertEquals("0-0/1-0", proxyToken2);
+        }
+
+        // now change the proxy itself and re-check token
+        session.move(proxy.getRef(), new PathRef("/"), "renamedproxy");
+        session.save();
+        String proxyToken3 = proxy.getChangeToken();
+        if (isChangeTokenEnabled()) {
+            assertEquals("1-0/1-0", proxyToken3);
+        }
+    }
+
+    @Test
     public void testOptimisticLockingWithExplicitChangeToken() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         maybeCreateChangeToken(doc);

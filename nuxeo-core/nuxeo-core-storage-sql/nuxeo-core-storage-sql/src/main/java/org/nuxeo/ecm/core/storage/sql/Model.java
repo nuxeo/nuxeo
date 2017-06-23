@@ -295,6 +295,8 @@ public class Model {
 
     public static final Long INITIAL_CHANGE_TOKEN = Long.valueOf(0);
 
+    public static final Long INITIAL_SYS_CHANGE_TOKEN = Long.valueOf(0);
+
     protected final boolean softDeleteEnabled;
 
     protected final boolean proxiesEnabled;
