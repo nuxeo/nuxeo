@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.test.security.sensitive">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="template-vocabulary" template="true" extends="template-directory">
+      <schema>vocabulary</schema>
+      <idField>id</idField>
+    </directory>
+
+    <directory name="sensitive" extends="template-vocabulary">
+      <dataFile>test-sensitive.csv</dataFile>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
+    </directory>
+
+  </extension>
+
+</component>
