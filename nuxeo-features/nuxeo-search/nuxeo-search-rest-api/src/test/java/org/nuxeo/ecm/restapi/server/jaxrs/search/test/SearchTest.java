@@ -123,10 +123,11 @@ public class SearchTest extends BaseTest {
         // NXQL on it
         DocumentModel folder = RestServerInit.getFolder(1, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.add("query", "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
-                + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:note1,:note2)\n"
-                + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:currentLifeCycleState !=\n"
-                + "        'deleted'");
+        queryParams.add("query",
+                "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
+                        + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:note1,:note2)\n"
+                        + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:currentLifeCycleState !=\n"
+                        + "        'deleted'");
         queryParams.add("note1", "Note 1");
         queryParams.add("note2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());
@@ -144,7 +145,8 @@ public class SearchTest extends BaseTest {
         DocumentModel folder = RestServerInit.getFolder(1, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("queryParams", folder.getId());
-        ClientResponse response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP"), queryParams);
+        ClientResponse response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP"),
+                queryParams);
 
         // Then I get document listing as result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -189,8 +191,7 @@ public class SearchTest extends BaseTest {
         for (JsonNode qf : node.get("quickFilters")) {
             String name = qf.get("name").getTextValue();
             boolean active = qf.get("active").getBooleanValue();
-            assertEquals("testQF".equals(name) || "testQF2".equals(name),
-                    active);
+            assertEquals("testQF".equals(name) || "testQF2".equals(name), active);
         }
     }
 
@@ -357,10 +358,9 @@ public class SearchTest extends BaseTest {
     @Test
     public void iCanSaveSearchByQuery() throws IOException {
         String data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
-                + "  \"query\": \"select * from Document where dc:creator = ?\",\n"
-                + "  \"queryLanguage\": \"NXQL\",\n" + "  \"queryParams\": \"$currentUser\",\n"
-                + "  \"pageSize\": \"2\"\n," + "  \"contentViewData\": \"{" + "\\\"viewVar\\\": \\\"value\\\""
-                + "}\"\n" + "}";
+                + "  \"query\": \"select * from Document where dc:creator = ?\",\n" + "  \"queryLanguage\": \"NXQL\",\n"
+                + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"2\"\n," + "  \"contentViewData\": \"{"
+                + "\\\"viewVar\\\": \\\"value\\\"" + "}\"\n" + "}";
 
         ClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -417,16 +417,15 @@ public class SearchTest extends BaseTest {
     @Test
     public void iCantSaveSearchInvalidParams() throws IOException {
         String data = "{\n" + "  \"entity-type\": \"savedSearch\",\n"
-                + "  \"query\": \"select * from Document where dc:creator = ?\",\n"
-                + "  \"queryLanguage\": \"NXQL\",\n" + "  \"queryParams\": \"$currentUser\",\n"
-                + "  \"pageSize\": \"2\"\n" + "}";
+                + "  \"query\": \"select * from Document where dc:creator = ?\",\n" + "  \"queryLanguage\": \"NXQL\",\n"
+                + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"2\"\n" + "}";
         ClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data);
         assertInvalidTitle(response);
 
         data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
-                + "  \"query\": \"select * from Document where dc:creator = ?\",\n"
-                + "  \"queryLanguage\": \"NXQL\",\n" + "  \"queryParams\": \"$currentUser\",\n"
-                + "  \"pageSize\": \"2\",\n" + "  \"pageProviderName\": \"TEST_PP\"\n" + "}";
+                + "  \"query\": \"select * from Document where dc:creator = ?\",\n" + "  \"queryLanguage\": \"NXQL\",\n"
+                + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"2\",\n"
+                + "  \"pageProviderName\": \"TEST_PP\"\n" + "}";
         response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data);
         assertMixedQueryAndPageProvider(response);
 
@@ -499,10 +498,9 @@ public class SearchTest extends BaseTest {
     @Test
     public void iCanUpdateSearchByQuery() throws IOException {
         String data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"my search 1\",\n"
-                + "  \"query\": \"select * from Document where dc:creator = ?\",\n"
-                + "  \"queryLanguage\": \"NXQL\",\n" + "  \"queryParams\": \"$currentUser\",\n"
-                + "  \"pageSize\": \"1\",\n" + "  \"contentViewData\": \"{" + "\\\"viewVar\\\": \\\"another value\\\""
-                + "}\"\n" + "}";
+                + "  \"query\": \"select * from Document where dc:creator = ?\",\n" + "  \"queryLanguage\": \"NXQL\",\n"
+                + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"1\",\n" + "  \"contentViewData\": \"{"
+                + "\\\"viewVar\\\": \\\"another value\\\"" + "}\"\n" + "}";
 
         ClientResponse response = getResponse(RequestType.PUT,
                 getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data);
@@ -538,10 +536,9 @@ public class SearchTest extends BaseTest {
     @Test
     public void iCantUpdateSearchInvalidId() throws IOException {
         String data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"my search 1\",\n"
-                + "  \"query\": \"select * from Document where dc:creator = ?\",\n"
-                + "  \"queryLanguage\": \"NXQL\",\n" + "  \"queryParams\": \"$currentUser\",\n"
-                + "  \"pageSize\": \"1\",\n" + "  \"contentViewData\": \"{" + "\\\"viewVar\\\": \\\"another value\\\""
-                + "}\"\n" + "}";
+                + "  \"query\": \"select * from Document where dc:creator = ?\",\n" + "  \"queryLanguage\": \"NXQL\",\n"
+                + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"1\",\n" + "  \"contentViewData\": \"{"
+                + "\\\"viewVar\\\": \\\"another value\\\"" + "}\"\n" + "}";
 
         ClientResponse response = getResponse(RequestType.PUT, getSavedSearchPath("-1"), data);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
@@ -552,17 +549,16 @@ public class SearchTest extends BaseTest {
     @Test
     public void iCantUpdateSearchInvalidQueryOrPageProvider() throws IOException {
         String data = "{\n" + "  \"entity-type\": \"savedSearch\",\n"
-                + "  \"query\": \"select * from Document where dc:creator = ?\",\n"
-                + "  \"queryLanguage\": \"NXQL\",\n" + "  \"queryParams\": \"$currentUser\",\n"
-                + "  \"pageSize\": \"1\"\n" + "}";
+                + "  \"query\": \"select * from Document where dc:creator = ?\",\n" + "  \"queryLanguage\": \"NXQL\",\n"
+                + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"1\"\n" + "}";
         ClientResponse response = getResponse(RequestType.PUT,
                 getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data);
         assertInvalidTitle(response);
 
         data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
-                + "  \"query\": \"select * from Document where dc:creator = ?\",\n"
-                + "  \"queryLanguage\": \"NXQL\",\n" + "  \"queryParams\": \"$currentUser\",\n"
-                + "  \"pageSize\": \"2\",\n" + "  \"pageProviderName\": \"TEST_PP\"\n" + "}";
+                + "  \"query\": \"select * from Document where dc:creator = ?\",\n" + "  \"queryLanguage\": \"NXQL\",\n"
+                + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"2\",\n"
+                + "  \"pageProviderName\": \"TEST_PP\"\n" + "}";
         response = getResponse(RequestType.PUT, getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data);
         assertMixedQueryAndPageProvider(response);
 
