@@ -135,30 +135,19 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
     protected List<SortInfo> getSortInfo(MultivaluedMap<String, String> queryParams) {
         String sortBy = queryParams.getFirst(SORT_BY);
         String sortOrder = queryParams.getFirst(SORT_ORDER);
-        List<SortInfo> sortInfoList = null;
-        if (!StringUtils.isBlank(sortBy)) {
-            sortInfoList = new ArrayList<>();
-            String[] sorts = sortBy.split(",");
-            String[] orders = null;
-            if (!StringUtils.isBlank(sortOrder)) {
-                orders = sortOrder.split(",");
-            }
-            for (int i = 0; i < sorts.length; i++) {
-                String sort = sorts[i];
-                boolean sortAscending = (orders != null && orders.length > i && "asc".equals(orders[i].toLowerCase()));
-                sortInfoList.add(new SortInfo(sort, sortAscending));
-            }
-        }
-        return sortInfoList;
+        return getSortInfo(sortBy, sortOrder);
     }
 
     protected List<SortInfo> getSortInfo(String sortBy, String sortOrder) {
-        List<SortInfo> sortInfoList = new ArrayList<>();
+        List<SortInfo> sortInfoList = null;
         if (!StringUtils.isBlank(sortBy)) {
             String[] sorts = sortBy.split(",");
             String[] orders = null;
             if (!StringUtils.isBlank(sortOrder)) {
                 orders = sortOrder.split(",");
+            }
+            if (sorts.length > 0) {
+                sortInfoList = new ArrayList<>();
             }
             for (int i = 0; i < sorts.length; i++) {
                 String sort = sorts[i];

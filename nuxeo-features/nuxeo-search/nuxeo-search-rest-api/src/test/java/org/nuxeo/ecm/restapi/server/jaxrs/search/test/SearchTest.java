@@ -141,7 +141,7 @@ public class SearchTest extends BaseTest {
     }
 
     @Test
-    public void iCanPerformPageProviderOnRepository() throws IOException {
+    public void iCanPerformPageProviderOnRepositoryWithDefaultSort() throws IOException {
         // Given a repository, when I perform a pageprovider on it
         DocumentModel folder = RestServerInit.getFolder(1, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
@@ -158,6 +158,28 @@ public class SearchTest extends BaseTest {
         assertEquals("Note 2", jsonNode.get("title").getValueAsText());
         jsonNode = entries.get(1);
         assertEquals("Note 1", jsonNode.get("title").getValueAsText());
+    }
+
+    @Test
+    public void iCanPerformPageProviderOnRepositoryWithCustomSort() throws IOException {
+        // Given a repository, when I perform a pageprovider on it
+        DocumentModel folder = RestServerInit.getFolder(1, session);
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("queryParams", folder.getId());
+        queryParams.add("sortBy", "dc:title");
+        queryParams.add("sortOrder", "asc");
+        ClientResponse response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP"),
+                queryParams);
+
+        // Then I get document listing as result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        List<JsonNode> entries = getLogEntries(node);
+        assertEquals(2, entries.size());
+        JsonNode jsonNode = entries.get(0);
+        assertEquals("Note 1", jsonNode.get("title").getValueAsText());
+        jsonNode = entries.get(1);
+        assertEquals("Note 2", jsonNode.get("title").getValueAsText());
     }
 
     @Test
