@@ -23,14 +23,14 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.HIGHLIGHT_CTX_DATA;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @since 9.1
@@ -44,14 +44,16 @@ public class HighlightJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
     @Override
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
-        jg.writeFieldName(HIGHLIGHT_CTX_DATA);
-        jg.writeStartObject();
+        jg.writeArrayFieldStart(HIGHLIGHT_CTX_DATA);
         Map<String, List<String>> h = (Map<String, List<String>>) document.getContextData(HIGHLIGHT_CTX_DATA);
         if (h != null) {
             for (String field : h.keySet()) {
-                jg.writeObjectField(field, h.get(field));
+                jg.writeStartObject();
+                jg.writeStringField("field", field);
+                jg.writeObjectField("segments", h.get(field));
+                jg.writeEndObject();
             }
         }
-        jg.writeEndObject();
+        jg.writeEndArray();
     }
 }
