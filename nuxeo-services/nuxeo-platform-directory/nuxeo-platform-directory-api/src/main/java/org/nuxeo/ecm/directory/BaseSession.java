@@ -160,7 +160,7 @@ public abstract class BaseSession implements Session {
             return true;
         }
         String username = user.getName();
-        if (username.equals(LoginComponent.SYSTEM_USERNAME)) {
+        if (username.equals(LoginComponent.SYSTEM_USERNAME) || user.isAdministrator()) {
             return true;
         }
 
