@@ -138,8 +138,8 @@ public class MongoDBDirectory extends AbstractDirectory {
 
     protected void loadData(Schema schema, Session session) {
         if (descriptor.getDataFileName() != null) {
-            DirectoryCSVLoader.loadData(descriptor.getDataFileName(), descriptor.getDataFileCharacterSeparator(),
-                    schema, session::createEntry);
+            Framework.doPrivileged(() -> DirectoryCSVLoader.loadData(descriptor.getDataFileName(),
+                    descriptor.getDataFileCharacterSeparator(), schema, session::createEntry));
         }
     }
 
