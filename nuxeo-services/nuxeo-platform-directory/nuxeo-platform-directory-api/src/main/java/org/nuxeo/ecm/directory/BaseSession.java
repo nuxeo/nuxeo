@@ -82,8 +82,7 @@ public abstract class BaseSession implements Session {
         }
         String username = currentUser.getName();
         List<String> userGroups = currentUser.getAllGroups();
-
-        if (username.equalsIgnoreCase(LoginComponent.SYSTEM_USERNAME)) {
+        if (username.equalsIgnoreCase(LoginComponent.SYSTEM_USERNAME) || currentUser.isAdministrator()) {
             return true;
         }
 
