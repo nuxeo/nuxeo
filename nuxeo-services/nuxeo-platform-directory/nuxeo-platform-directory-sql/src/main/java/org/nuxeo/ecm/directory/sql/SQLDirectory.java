@@ -263,8 +263,8 @@ public class SQLDirectory extends AbstractDirectory {
         addSession(session);
         if (loadData && descriptor.getDataFileName() != null) {
             Schema schema = Framework.getService(SchemaManager.class).getSchema(getSchema());
-            DirectoryCSVLoader.loadData(descriptor.getDataFileName(), descriptor.getDataFileCharacterSeparator(),
-                    schema, session::createEntry);
+            Framework.doPrivileged(() -> DirectoryCSVLoader.loadData(descriptor.getDataFileName(),
+                    descriptor.getDataFileCharacterSeparator(), schema, session::createEntry));
         }
         return session;
     }
