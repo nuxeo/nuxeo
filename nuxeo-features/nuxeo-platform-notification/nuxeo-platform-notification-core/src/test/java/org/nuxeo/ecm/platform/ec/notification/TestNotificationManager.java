@@ -19,7 +19,9 @@
 package org.nuxeo.ecm.platform.ec.notification;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.audit.service.NXAuditEventsService.DISABLE_AUDIT_LOGGER;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -68,6 +70,10 @@ public class TestNotificationManager {
         DocumentModel doc2 = session.createDocument(session.createDocumentModel("/", "doc2", "File"));
         notificationManager.addSubscription(prefixedPrincipalName, "notification1", doc1, false, principal,
                 "notification1");
+
+        // Make sure we don't change the context data, that could affect following write operations
+        assertNull(doc1.getContextData().get(DISABLE_AUDIT_LOGGER));
+
         notificationManager.addSubscription(prefixedPrincipalName, "notification2", doc1, false, principal,
                 "notification1");
         notificationManager.addSubscription(prefixedPrincipalName, "notification1", doc2, false, principal,
@@ -96,6 +102,8 @@ public class TestNotificationManager {
         // Remove subscriptions
         notificationManager.removeSubscriptions(prefixedPrincipalName, expectedDoc1Notifications, doc1);
         notificationManager.removeSubscription(prefixedPrincipalName, "notification1", doc2);
+        assertNull(doc2.getContextData().get(DISABLE_AUDIT_LOGGER));
+
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
