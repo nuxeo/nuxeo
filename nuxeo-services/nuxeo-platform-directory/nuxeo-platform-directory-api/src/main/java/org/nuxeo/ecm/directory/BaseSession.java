@@ -42,9 +42,9 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
@@ -271,8 +271,8 @@ public abstract class BaseSession implements Session, EntrySource {
      *
      * @since 5.3.1
      */
-    public static DocumentModel createEntryModel(String sessionId, String schema, String id,
-            Map<String, Object> values, boolean readOnly) throws PropertyException {
+    public static DocumentModel createEntryModel(String sessionId, String schema, String id, Map<String, Object> values,
+            boolean readOnly) throws PropertyException {
         DocumentModel entry = createEntryModel(sessionId, schema, id, values);
         if (readOnly) {
             setReadOnlyEntry(entry);
