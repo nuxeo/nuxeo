@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -140,7 +141,7 @@ public class SearchTest extends BaseTest {
     }
 
     @Test
-    public void iCanPerformPageProviderOnRepository() throws IOException {
+    public void iCanPerformPageProviderOnRepositoryWithDefaultSort() throws IOException {
         // Given a repository, when I perform a pageprovider on it
         DocumentModel folder = RestServerInit.getFolder(1, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
@@ -151,7 +152,34 @@ public class SearchTest extends BaseTest {
         // Then I get document listing as result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+        List<JsonNode> entries = getLogEntries(node);
+        assertEquals(2, entries.size());
+        JsonNode jsonNode = entries.get(0);
+        assertEquals("Note 2", jsonNode.get("title").getValueAsText());
+        jsonNode = entries.get(1);
+        assertEquals("Note 1", jsonNode.get("title").getValueAsText());
+    }
+
+    @Test
+    public void iCanPerformPageProviderOnRepositoryWithCustomSort() throws IOException {
+        // Given a repository, when I perform a pageprovider on it
+        DocumentModel folder = RestServerInit.getFolder(1, session);
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("queryParams", folder.getId());
+        queryParams.add("sortBy", "dc:title");
+        queryParams.add("sortOrder", "asc");
+        ClientResponse response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP"),
+                queryParams);
+
+        // Then I get document listing as result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        List<JsonNode> entries = getLogEntries(node);
+        assertEquals(2, entries.size());
+        JsonNode jsonNode = entries.get(0);
+        assertEquals("Note 1", jsonNode.get("title").getValueAsText());
+        jsonNode = entries.get(1);
+        assertEquals("Note 2", jsonNode.get("title").getValueAsText());
     }
 
     @Test
@@ -252,7 +280,7 @@ public class SearchTest extends BaseTest {
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(
-                "Failed to execute query: SELECT * FROM Document where dc:title=:foo, Lexical Error: Illegal character <:> at offset 38",
+                "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38",
                 getErrorMessage(node));
     }
 
