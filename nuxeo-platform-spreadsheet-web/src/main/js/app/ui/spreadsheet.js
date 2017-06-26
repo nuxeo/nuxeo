@@ -93,7 +93,10 @@ class Spreadsheet {
 
           let column = {
             def: {properties: {any: {sortPropertyName: c.field, label: c.label}}},
-            widget: {field: c.field}
+            widget: {
+              field: c.field,
+              readOnly: c.readOnly
+            },
           };
 
           // get field from schemas map

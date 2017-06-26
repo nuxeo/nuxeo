@@ -34,6 +34,10 @@ class Column {
     if (SPECIAL_FIELDS[this.field] && SPECIAL_FIELDS[this.field].widget) {
       Object.assign(this, SPECIAL_FIELDS[this.field].widget);
     }
+
+    if (this.widget.readOnly) {
+      Object.assign(this, {readOnly: true});
+    }
     // Bind the renderer to this column
     if (this.renderer) {
       this.renderer = this.renderer.bind(this);
@@ -81,6 +85,7 @@ class Column {
 const SPECIAL_FIELDS = {
 
   // system metadata fields
+
   'dc:created': {
     widget: {
       readOnly: true
