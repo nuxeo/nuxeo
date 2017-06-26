@@ -847,8 +847,12 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals(Collections.emptyList(), v.getValues());
 
         v = p.getProperties().get("cmis:changeToken");
-        Calendar lastModified = (Calendar) p.getProperties().get("dc:modified").getFirstValue();
-        assertEquals(Long.toString(lastModified.getTimeInMillis()), v.getFirstValue());
+        if (coreFeature.getStorageConfiguration().isChangeTokenEnabled()) {
+            assertEquals("2-0", v.getFirstValue());
+        } else {
+            Calendar lastModified = (Calendar) p.getProperties().get("dc:modified").getFirstValue();
+            assertEquals(Long.toString(lastModified.getTimeInMillis()), v.getFirstValue());
+        }
 
         // with filter
         p = objService.getProperties(repositoryId, ob.getId(), "cmis:name", null);
