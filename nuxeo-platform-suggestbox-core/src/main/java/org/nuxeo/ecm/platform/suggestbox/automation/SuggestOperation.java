@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.suggestbox.automation;
 
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -75,6 +76,17 @@ public class SuggestOperation {
             suggestionJSON.put("icon", suggestion.getIconURL());
             suggestionJSON.put("thumbnailUrl", suggestion.getThumbnailURL());
             suggestionJSON.put("url", suggestion.getObjectUrl());
+
+            JSONArray highlights = new JSONArray();
+            if (suggestion.getHighlights() != null) {
+                for (Entry<String, List<String>> e : suggestion.getHighlights().entrySet()) {
+                    JSONObject h = new JSONObject();
+                    h.put("field", e.getKey());
+                    h.put("segments", e.getValue());
+                    highlights.add(h);
+                }
+            }
+            suggestionJSON.put("highlights", highlights);
 
             result.add(suggestionJSON);
         }

@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.platform.suggestbox.service;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Base class for building data transfer objects for results of requests to the SuggestionService.
@@ -43,6 +45,8 @@ public abstract class Suggestion implements Serializable {
 
     protected String description = "";
 
+    protected Map<String, List<String>> highlights;
+
     protected boolean disabled = false;
 
     public Suggestion(String id, String type, String label, String iconURL) {
@@ -60,6 +64,15 @@ public abstract class Suggestion implements Serializable {
         this.thumbnailURL = thumbnailURL;
     }
 
+    /**
+     * @since 9.2
+     */
+    public Suggestion(String id, String type, String label, String iconURL, String thumbnailURL,
+            Map<String, List<String>> highlights) {
+        this(id, type, label, iconURL);
+        this.thumbnailURL = thumbnailURL;
+        this.highlights = highlights;
+    }
 
     /**
      * The id of the object associated to the suggestion.
@@ -120,12 +133,21 @@ public abstract class Suggestion implements Serializable {
     }
 
     /**
+     * @since 9.2
+     */
+    public Suggestion withHighlights(Map<String, List<String>> highlights) {
+        this.highlights = highlights;
+        return this;
+    }
+
+    /**
      * @since 8.4
      */
     public Suggestion withThumbnailURL(String thumbnailURL) {
         this.thumbnailURL = thumbnailURL;
         return this;
     }
+
 
     public Suggestion disable() {
         this.disabled = true;
@@ -141,5 +163,15 @@ public abstract class Suggestion implements Serializable {
     @Override
     public String toString() {
         return String.format("Suggestion(\"%s\", \"%s\", \"%s\")", type, label, iconURL);
+    }
+
+    /**
+     * Get the map of highlights associated to the suggested result. The key of a map entry item represents the
+     * highlighted field, the value is the list of segment.
+     *
+     * @since 9.2
+     */
+    public Map<String, List<String>> getHighlights() {
+        return highlights;
     }
 }

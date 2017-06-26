@@ -20,11 +20,13 @@ package org.nuxeo.ecm.platform.suggestbox.service.suggesters;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -47,6 +49,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentLookupSuggester implements Suggester {
 
+    protected List<String> highlights = null;
+
     protected String providerName = "DEFAULT_DOCUMENT_SUGGESTION";
 
     protected SuggesterDescriptor descriptor;
@@ -57,6 +61,13 @@ public class DocumentLookupSuggester implements Suggester {
         String providerName = descriptor.getParameters().get("providerName");
         if (providerName != null) {
             this.providerName = providerName;
+        }
+        String highlightFields = descriptor.getParameters().get("highlightFields");
+        if (highlightFields != null) {
+            if (!StringUtils.isBlank(highlightFields)) {
+                String[] fields = highlightFields.split(",");
+                highlights = Arrays.asList(fields);
+            }
         }
     }
 
@@ -76,8 +87,8 @@ public class DocumentLookupSuggester implements Suggester {
         }
         try {
             List<Suggestion> suggestions = new ArrayList<Suggestion>();
-            PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(providerName,
-                    null, null, null, props, new Object[] { userInput });
+            PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(providerName, null,
+                    null, null, null, props, highlights, null, new Object[] { userInput });
             for (DocumentModel doc : pp.getCurrentPage()) {
                 suggestions.add(DocumentSuggestion.fromDocumentModel(doc));
             }

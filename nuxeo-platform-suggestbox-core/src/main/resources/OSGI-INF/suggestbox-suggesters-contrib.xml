@@ -9,6 +9,7 @@
       class="org.nuxeo.ecm.platform.suggestbox.service.suggesters.DocumentLookupSuggester">
       <parameters>
         <parameter name="providerName">DEFAULT_DOCUMENT_SUGGESTION</parameter>
+        <parameter name="highlightFields">*</parameter>
       </parameters>
     </suggester>
 

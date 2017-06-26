@@ -20,12 +20,14 @@ package org.nuxeo.ecm.platform.suggestbox.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 
 /**
@@ -57,8 +59,11 @@ public class DocumentSuggestion extends Suggestion {
             icon = typeInfo.getIcon();
         }
         String thumbnailURL = String.format("api/v1/id/%s/@rendition/thumbnail", doc.getId());
+        @SuppressWarnings("unchecked")
+        Map<String, List<String>> highlights = (Map<String, List<String>>) doc.getContextData(
+                PageProvider.HIGHLIGHT_CTX_DATA);
         return new DocumentSuggestion(doc.getId(), new DocumentLocationImpl(doc), doc.getTitle(), icon).withDescription(
-                description).withThumbnailURL(thumbnailURL);
+                description).withThumbnailURL(thumbnailURL).withHighlights(highlights);
     }
 
     public DocumentLocation getDocumentLocation() {
