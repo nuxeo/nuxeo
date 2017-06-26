@@ -21,7 +21,6 @@ package org.nuxeo.elasticsearch.io;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.HIGHLIGHT_CTX_DATA;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,6 +30,7 @@ import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
 
 /**
  * @since 9.1
@@ -39,13 +39,14 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 public class HighlightJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
     public HighlightJsonEnricher() {
-        super(HIGHLIGHT_CTX_DATA);
+        super(PageProvider.HIGHLIGHT_CTX_DATA);
     }
 
     @Override
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
-        jg.writeArrayFieldStart(HIGHLIGHT_CTX_DATA);
-        Map<String, List<String>> h = (Map<String, List<String>>) document.getContextData(HIGHLIGHT_CTX_DATA);
+        jg.writeArrayFieldStart(PageProvider.HIGHLIGHT_CTX_DATA);
+        Map<String, List<String>> h = (Map<String, List<String>>) document.getContextData(
+                PageProvider.HIGHLIGHT_CTX_DATA);
         if (h != null) {
             for (String field : h.keySet()) {
                 jg.writeStartObject();

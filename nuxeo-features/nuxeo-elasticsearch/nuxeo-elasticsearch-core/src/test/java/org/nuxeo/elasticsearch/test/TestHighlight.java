@@ -22,7 +22,13 @@ package org.nuxeo.elasticsearch.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.HIGHLIGHT_CTX_DATA;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.junit.Before;
@@ -34,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
@@ -41,13 +48,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @since 9.1
@@ -117,14 +117,14 @@ public class TestHighlight {
 
         assertEquals(2, ret.totalSize());
 
-        Map<String, List<String>> highlights = (Map<String, List<String>>) ret.get(0).getContextData(HIGHLIGHT_CTX_DATA);
+        Map<String, List<String>> highlights = (Map<String, List<String>>) ret.get(0).getContextData(PageProvider.HIGHLIGHT_CTX_DATA);
         assertEquals(2, highlights.size());
         assertTrue(highlights.containsKey("dc:title"));
         assertTrue(highlights.containsKey("ecm:binarytext"));
         assertEquals("<em>Search</em> me", highlights.get("dc:title").get(0));
         assertEquals("you know for <em>search</em>", highlights.get("ecm:binarytext").get(0));
 
-        Map<String, List<String>> highlights2 = (Map<String, List<String>>) ret.get(1).getContextData(HIGHLIGHT_CTX_DATA);
+        Map<String, List<String>> highlights2 = (Map<String, List<String>>) ret.get(1).getContextData(PageProvider.HIGHLIGHT_CTX_DATA);
         assertEquals("test my <em>search</em> with highlight", highlights2.get("ecm:binarytext").get(0));
     }
 
@@ -185,7 +185,7 @@ public class TestHighlight {
 
         assertEquals(1, ret.totalSize());
 
-        Map<String, List<String>> highlights = (Map<String, List<String>>) ret.get(0).getContextData(HIGHLIGHT_CTX_DATA);
+        Map<String, List<String>> highlights = (Map<String, List<String>>) ret.get(0).getContextData(PageProvider.HIGHLIGHT_CTX_DATA);
         assertEquals(1, highlights.size());
         assertEquals(3, highlights.get("ecm:binarytext").size());
         assertEquals(

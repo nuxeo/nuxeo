@@ -18,8 +18,6 @@
  */
 package org.nuxeo.elasticsearch.fetcher;
 
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.HIGHLIGHT_CTX_DATA;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +31,7 @@ import org.elasticsearch.search.highlight.HighlightField;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.elasticsearch.io.DocumentModelReaders;
 
 /**
@@ -64,7 +63,7 @@ public class EsFetcher extends Fetcher {
                     }
                     fields.put(field, list);
                 }
-                doc.putContextData(HIGHLIGHT_CTX_DATA, (Serializable) fields);
+                doc.putContextData(PageProvider.HIGHLIGHT_CTX_DATA, (Serializable) fields);
             }
             ret.add(doc);
         }

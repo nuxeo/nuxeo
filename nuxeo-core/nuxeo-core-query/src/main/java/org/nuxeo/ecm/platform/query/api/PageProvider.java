@@ -67,6 +67,13 @@ public interface PageProvider<T> extends Serializable {
     public static final long PAGE_LIMIT_UNKNOWN = -1;
 
     /**
+     * Highlight context data property name. Used to store highlights in document context data when fetching ES results
+     *
+     * @since 9.1
+     */
+    public static final String HIGHLIGHT_CTX_DATA = "highlight";
+
+    /**
      * Returns the provider identifier
      */
     String getName();
