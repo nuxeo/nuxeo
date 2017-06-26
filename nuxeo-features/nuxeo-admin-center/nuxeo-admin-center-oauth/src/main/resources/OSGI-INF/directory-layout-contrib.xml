@@ -93,7 +93,8 @@
         </properties>
         <properties widgetMode="edit">
           <property name="required">true</property>
-           <property name="validator">#{oauth2ClientsActions.validateRedirectURIs}</property>
+          <property name="validator">#{oauth2ClientsActions.validateRedirectURIs}</property>
+          <property name="placeholder">#{messages['label.oauth2.redirectURIs.placeholder']}</property>
         </properties>
       </widget>
       <widget name="enabled" type="checkbox">
