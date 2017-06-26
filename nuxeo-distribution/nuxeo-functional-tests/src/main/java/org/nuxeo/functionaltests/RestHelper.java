@@ -27,8 +27,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -67,6 +70,8 @@ public class RestHelper {
 
     private static final List<String> groupsToDelete = new ArrayList<>();
 
+    protected static final Map<String, Set<String>> directoryEntryIdsToDelete = new HashMap<>();
+
     private static final int NOT_FOUND_ERROR_STATUS = 404;
 
     protected static final Log log = LogFactory.getLog(RestHelper.class);
@@ -82,6 +87,7 @@ public class RestHelper {
         cleanupDocuments();
         cleanupUsers();
         cleanupGroups();
+        cleanupDirectoryEntries();
     }
 
     public static void cleanupDocuments() {
@@ -101,6 +107,13 @@ public class RestHelper {
     public static void cleanupGroups() {
         groupsToDelete.forEach(RestHelper::deleteGroup);
         groupsToDelete.clear();
+    }
+
+    public static void cleanupDirectoryEntries() {
+        directoryEntryIdsToDelete.forEach((directoryName, entryIds) -> {
+            entryIds.forEach(id -> deleteDirectoryEntry(directoryName, id));
+        });
+        clearDirectoryEntryIdsToDelete();
     }
 
     public static String createUser(String username, String password) {
@@ -136,6 +149,14 @@ public class RestHelper {
 
     public static void removeUserToDelete(String userName) {
         usersToDelete.remove(userName);
+    }
+
+    public static void addDirectoryEntryToDelete(String directoryName, String entryId) {
+        directoryEntryIdsToDelete.computeIfAbsent(directoryName, k -> new HashSet<>()).add(entryId);
+    }
+
+    public static void clearDirectoryEntryIdsToDelete() {
+        directoryEntryIdsToDelete.clear();
     }
 
     private static String buildUserJSON(String username, String password, String firstName, String lastName,
@@ -279,6 +300,53 @@ public class RestHelper {
         }
 
         document.removePermission(username);
+    }
+
+    /**
+     * @since 9.2
+     */
+    public static String createDirectoryEntry(String directoryName, Map<String, String> properties) {
+        Response response = CLIENT.post(NUXEO_URL + "/api/v1/directory/" + directoryName,
+                buildDirectoryEntryJSON(directoryName, properties));
+        if (!response.isSuccessful()) {
+            throw new NuxeoClientException(
+                    String.format("Unable to create entry for directory %s: %s", directoryName, properties));
+        }
+        try (ResponseBody responseBody = response.body()) {
+            JsonNode jsonNode = MAPPER.readTree(responseBody.charStream());
+            String entryId = jsonNode.get("properties").get("id").getValueAsText();
+            addDirectoryEntryToDelete(directoryName, entryId);
+            return entryId;
+        } catch (IOException e) {
+            throw new NuxeoClientException(e);
+        }
+    }
+
+    /**
+     * @since 9.2
+     */
+    public static void deleteDirectoryEntry(String directoryName, String entryId) {
+        // Work around JAVACLIENT-133 by passing an empty string
+        CLIENT.delete(NUXEO_URL + "/api/v1/directory/" + directoryName + "/" + entryId, "");
+    }
+
+    protected static String buildDirectoryEntryJSON(String directoryName, Map<String, String> properties) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"entity-type\": \"directoryEntry\"").append(",\n");
+        sb.append("\"directoryName\": \"").append(directoryName).append("\",\n");
+        sb.append("\"properties\": {").append("\n");
+        sb.append(properties.keySet()
+                            .stream()
+                            .map(key -> new StringBuilder().append("\"")
+                                                           .append(key)
+                                                           .append("\": \"")
+                                                           .append(properties.get(key))
+                                                           .append("\""))
+                            .collect(Collectors.joining(",\n")));
+        sb.append("\n").append("}").append("\n");
+        sb.append("}");
+        return sb.toString();
     }
 
     public static void logOnServer(String level, String message) {

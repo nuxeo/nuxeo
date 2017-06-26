@@ -133,6 +133,11 @@ public class AuthorizationRequest extends OAuth2Request {
         if (StringUtils.isBlank(responseType)) {
             return OAuth2Error.invalidRequest(String.format(MISSING_REQUIRED_FIELD_MESSAGE, RESPONSE_TYPE_PARAM));
         }
+        // Check response type
+        if (!CODE_RESPONSE_TYPE.equals(responseType)) {
+            return OAuth2Error.unsupportedResponseType(String.format("Unknown %s: got \"%s\", expecting \"%s\".",
+                    RESPONSE_TYPE_PARAM, responseType, CODE_RESPONSE_TYPE));
+        }
 
         // Check if client exists
         OAuth2ClientService clientService = Framework.getService(OAuth2ClientService.class);
@@ -187,11 +192,6 @@ public class AuthorizationRequest extends OAuth2Request {
                     clientRedirectURI));
         }
 
-        // Check request type
-        if (!CODE_RESPONSE_TYPE.equals(responseType)) {
-            return OAuth2Error.unsupportedResponseType(String.format("Unknown %s: got \"%s\", expecting \"%s\".",
-                    RESPONSE_TYPE_PARAM, responseType, CODE_RESPONSE_TYPE));
-        }
         return null;
     }
 

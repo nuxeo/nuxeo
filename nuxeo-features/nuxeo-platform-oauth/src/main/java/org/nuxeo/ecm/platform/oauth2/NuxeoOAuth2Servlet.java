@@ -132,7 +132,8 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         String authKeyForm = request.getParameter(AUTHORIZATION_KEY);
         AuthorizationRequest authRequest = AuthorizationRequest.get(authKeyForm);
         if (authRequest == null) {
-            handleError(OAuth2Error.invalidRequest(), request, response);
+            handleError(OAuth2Error.invalidRequest(String.format("Invalid %s: %s.", AUTHORIZATION_KEY, authKeyForm)),
+                    request, response);
             return;
         }
 

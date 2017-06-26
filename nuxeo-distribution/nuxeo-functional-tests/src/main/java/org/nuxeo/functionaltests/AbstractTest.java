@@ -437,6 +437,16 @@ public abstract class AbstractTest {
     }
 
     /**
+     * Logs out without expecting to be redirected to the login page. This can be the case on a simple server
+     * distribution when logged in: the logout action can redirect to the home.html startup page.
+     *
+     * @since 9.2
+     */
+    public void logoutSimply() {
+        driver.get(NUXEO_URL + "/logout");
+    }
+
+    /**
      * navigate to a link text. wait until the link is available and click on it.
      */
     public <T extends AbstractPage> T nav(Class<T> pageClass, String linkText) {
