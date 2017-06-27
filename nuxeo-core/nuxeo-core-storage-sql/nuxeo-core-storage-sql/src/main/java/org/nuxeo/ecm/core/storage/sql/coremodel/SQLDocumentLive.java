@@ -336,7 +336,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
             } catch (PropertyNotFoundException e) {
                 modified = null;
             }
-            return modified == null ? null : String.valueOf(modified.getTimeInMillis());
+            return getLegacyChangeToken(modified);
         }
     }
 
@@ -356,11 +356,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
             } catch (PropertyNotFoundException e) {
                 modified = null;
             }
-            if (modified == null) {
-                return true;
-            }
-            String currentToken = String.valueOf(modified.getTimeInMillis());
-            return userVisibleChangeToken.equals(currentToken);
+            return validateLegacyChangeToken(modified, userVisibleChangeToken);
         }
     }
 

@@ -785,7 +785,7 @@ public class DBSDocument extends BaseDocument<State> {
         } else {
             DBSDocumentState docState = getStateOrTarget();
             Calendar modified = (Calendar) docState.get(KEY_DC_MODIFIED);
-            return modified == null ? null : String.valueOf(modified.getTimeInMillis());
+            return getLegacyChangeToken(modified);
         }
     }
 
@@ -807,10 +807,16 @@ public class DBSDocument extends BaseDocument<State> {
         if (userVisibleChangeToken == null) {
             return true;
         }
-        if (isProxy()) {
-            return validateProxyChangeToken(userVisibleChangeToken, docState, getTargetDocument().docState);
+        if (session.changeTokenEnabled) {
+            if (isProxy()) {
+                return validateProxyChangeToken(userVisibleChangeToken, docState, getTargetDocument().docState);
+            } else {
+                return docState.validateUserVisibleChangeToken(userVisibleChangeToken);
+            }
         } else {
-            return docState.validateUserVisibleChangeToken(userVisibleChangeToken);
+            DBSDocumentState docState = getStateOrTarget();
+            Calendar modified = (Calendar) docState.get(KEY_DC_MODIFIED);
+            return validateLegacyChangeToken(modified, userVisibleChangeToken);
         }
     }
 
