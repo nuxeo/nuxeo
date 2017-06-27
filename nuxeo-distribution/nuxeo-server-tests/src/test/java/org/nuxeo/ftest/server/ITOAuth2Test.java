@@ -77,28 +77,27 @@ public class ITOAuth2Test extends AbstractTest {
     @Test
     public void testAuhorizationErrors() {
         // No client_id parameter
-        OAuth2ErrorPage errorPage = getOAuth2ErrorPage("/oauth2/authorization");
+        OAuth2ErrorPage errorPage = getOAuth2ErrorPage("/oauth2/authorize");
         assertTrue(driver.getTitle().endsWith("400"));
         errorPage.checkTitle("Bad Request");
         errorPage.checkDescription(String.format(MISSING_REQUIRED_FIELD_MESSAGE, CLIENT_ID_PARAM));
 
         // No response_type parameter
-        errorPage = getOAuth2ErrorPage("/oauth2/authorization?client_id=test-client");
+        errorPage = getOAuth2ErrorPage("/oauth2/authorize?client_id=test-client");
         errorPage.checkDescription(String.format(MISSING_REQUIRED_FIELD_MESSAGE, RESPONSE_TYPE_PARAM));
 
         // Invalid response_type parameter
-        errorPage = getOAuth2ErrorPage("/oauth2/authorization?client_id=test-client&response_type=unknown");
+        errorPage = getOAuth2ErrorPage("/oauth2/authorize?client_id=test-client&response_type=unknown");
         errorPage.checkDescription(String.format("Unknown %s: got \"unknown\", expecting \"%s\".", RESPONSE_TYPE_PARAM,
                 CODE_RESPONSE_TYPE));
 
         // Invalid client_id parameter
-        driver.get(NUXEO_URL + "/oauth2/authorization?client_id=unknown&response_type=code");
-        errorPage = getOAuth2ErrorPage("/oauth2/authorization?client_id=unknown&response_type=code");
+        errorPage = getOAuth2ErrorPage("/oauth2/authorize?client_id=unknown&response_type=code");
         errorPage.checkDescription(String.format("Invalid %s: unknown.", CLIENT_ID_PARAM));
 
         // Invalid redirect_uri parameter
         errorPage = getOAuth2ErrorPage(
-                "/oauth2/authorization?client_id=test-client&response_type=code&redirect_uri=unknown");
+                "/oauth2/authorize?client_id=test-client&response_type=code&redirect_uri=unknown");
         errorPage.checkDescription(String.format(
                 "Invalid %s parameter: unknown. It must exactly match one of the redirect URIs configured for the app.",
                 REDIRECT_URI_PARAM));
@@ -146,7 +145,7 @@ public class ITOAuth2Test extends AbstractTest {
     }
 
     protected OAuth2GrantPage getOAuth2GrantPage() {
-        driver.get(NUXEO_URL + "/oauth2/authorization?client_id=test-client&response_type=code&state=1234");
+        driver.get(NUXEO_URL + "/oauth2/authorize?client_id=test-client&response_type=code&state=1234");
         // First need to authenticate
         LoginPage loginPage = asPage(LoginPage.class);
         OAuth2GrantPage grantPage = loginPage.login(TEST_USERNAME, TEST_PASSWORD, OAuth2GrantPage.class);

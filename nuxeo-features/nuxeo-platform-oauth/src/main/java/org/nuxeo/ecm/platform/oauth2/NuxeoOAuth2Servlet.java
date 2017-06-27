@@ -57,11 +57,11 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String ENDPOINT_AUTH = "authorization";
+    public static final String ENDPOINT_AUTH = "authorize";
 
     public static final String ENDPOINT_TOKEN = "token";
 
-    public static final String ENDPOINT_AUTH_SUBMIT = "authorization_submit";
+    public static final String ENDPOINT_AUTH_SUBMIT = "authorize_submit";
 
     public static final String AUTHORIZATION_KEY = "authorization_key";
 
@@ -86,7 +86,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
         if (pathInfo.endsWith(ENDPOINT_AUTH)) {
-            doGetAuthorization(request, response);
+            doGetAuthorize(request, response);
         } else if (pathInfo.endsWith(ENDPOINT_TOKEN)) {
             doGetToken(request, response);
         } else {
@@ -99,13 +99,13 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
         if (pathInfo.endsWith(ENDPOINT_AUTH_SUBMIT)) {
-            doPostAuthorizationSubmit(request, response);
+            doPostAuthorizeSubmit(request, response);
         } else {
             response.sendError(SC_NOT_FOUND);
         }
     }
 
-    protected void doGetAuthorization(HttpServletRequest request, HttpServletResponse response)
+    protected void doGetAuthorize(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         AuthorizationRequest authRequest = AuthorizationRequest.fromRequest(request);
         OAuth2Error error = authRequest.checkError();
@@ -127,7 +127,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         requestDispatcher.forward(request, response);
     }
 
-    protected void doPostAuthorizationSubmit(HttpServletRequest request, HttpServletResponse response)
+    protected void doPostAuthorizeSubmit(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         String authKeyForm = request.getParameter(AUTHORIZATION_KEY);
         AuthorizationRequest authRequest = AuthorizationRequest.get(authKeyForm);

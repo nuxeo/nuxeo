@@ -107,95 +107,95 @@ public class OAuth2ChallengeFixture {
     }
 
     @Test
-    public void authorizationShouldReturn200() {
+    public void authorizeShouldReturn200() {
         Map<String, String> params = new HashMap<>();
         params.put(REDIRECT_URI_PARAM, REDIRECT_URI);
         params.put(CLIENT_ID_PARAM, CLIENT_ID);
         params.put(RESPONSE_TYPE_PARAM, CODE_RESPONSE_TYPE);
         params.put(STATE_PARAM, STATE);
 
-        ClientResponse cr = responseFromGetAuthorizationWith(params);
+        ClientResponse cr = responseFromGetAuthorizeWith(params);
         assertEquals(200, cr.getStatus());
     }
 
     @Test
-    public void authorizationShouldRejectUnknownClient() {
+    public void authorizeShouldRejectUnknownClient() {
         Map<String, String> params = new HashMap<>();
         params.put(REDIRECT_URI_PARAM, REDIRECT_URI);
         params.put(CLIENT_ID_PARAM, "unknown");
         params.put(RESPONSE_TYPE_PARAM, CODE_RESPONSE_TYPE);
         params.put(STATE_PARAM, STATE);
 
-        ClientResponse cr = responseFromGetAuthorizationWith(params);
+        ClientResponse cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
     }
 
     @Test
-    public void authorizationShouldValidateRedirectURI() {
+    public void authorizeShouldValidateRedirectURI() {
         Map<String, String> params = new HashMap<>();
         params.put(RESPONSE_TYPE_PARAM, CODE_RESPONSE_TYPE);
         params.put(STATE_PARAM, STATE);
 
         // Invalid: no redirect_uri parameter and no registered redirect URI
         params.put(CLIENT_ID_PARAM, "no-redirect-uri");
-        ClientResponse cr = responseFromGetAuthorizationWith(params);
+        ClientResponse cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
 
         // Invalid: no redirect_uri parameter with invalid first registered redirect URI: not starting with https
         params.put(CLIENT_ID_PARAM, "not-https");
-        cr = responseFromGetAuthorizationWith(params);
+        cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
 
         // Invalid: no redirect_uri parameter with invalid first registered redirect URI: starting with http://localhost
         // with localhost part of the domain name
         params.put(CLIENT_ID_PARAM, "localhost-domain-name");
-        cr = responseFromGetAuthorizationWith(params);
+        cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
 
         // Valid: no redirect_uri parameter with valid first registered redirect URI: starting with https
         params.put(CLIENT_ID_PARAM, CLIENT_ID);
-        cr = responseFromGetAuthorizationWith(params);
+        cr = responseFromGetAuthorizeWith(params);
         assertEquals(200, cr.getStatus());
 
         // Invalid: redirect_uri parameter not matching any of the registered redirect URIs
         params.put(REDIRECT_URI_PARAM, "https://unknown.uri");
-        cr = responseFromGetAuthorizationWith(params);
+        cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
 
         // Invalid: redirect_uri parameter matching one of the registered redirect URIs not starting with https
         params.put(CLIENT_ID_PARAM, "not-https");
         params.put(REDIRECT_URI_PARAM, "http://redirect.uri");
-        cr = responseFromGetAuthorizationWith(params);
+        cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
 
         // Valid: redirect_uri parameter matching one of the registered redirect URIs starting with https
         params.put(CLIENT_ID_PARAM, CLIENT_ID);
         params.put(REDIRECT_URI_PARAM, REDIRECT_URI);
-        cr = responseFromGetAuthorizationWith(params);
+        cr = responseFromGetAuthorizeWith(params);
         assertEquals(200, cr.getStatus());
 
         // Valid: redirect_uri parameter matching one of the registered redirect URIs starting with http://localhost
         // with localhost not part of the domain name
         params.put(REDIRECT_URI_PARAM, "http://localhost:8080/nuxeo");
-        cr = responseFromGetAuthorizationWith(params);
+        cr = responseFromGetAuthorizeWith(params);
         assertEquals(200, cr.getStatus());
 
         // Valid: redirect_uri parameter matching one of the registered redirect URIs not starting with http
         params.put(REDIRECT_URI_PARAM, "nuxeo://authorize");
-        cr = responseFromGetAuthorizationWith(params);
+        cr = responseFromGetAuthorizeWith(params);
         assertEquals(200, cr.getStatus());
     }
 
     @Test
     public void shouldDenyAccess() {
-        AuthorizationRequest authorizationRequest = initValidAuthorizationRequestCall(STATE);
+        AuthorizationRequest authorizationRequest = initValidAuthorizeRequestCall(STATE);
         String key = authorizationRequest.getAuthorizationKey();
 
         // missing "grant_access" parameter to grant access
         Map<String, String> params = new HashMap<>();
         params.put(STATE_PARAM, STATE);
         params.put(NuxeoOAuth2Servlet.AUTHORIZATION_KEY, key);
-        ClientResponse cr = responseFromPostAuthorizationWith(params);
+        ClientResponse cr = responseFromPostAuthorizeWith(params);
         assertEquals(302, cr.getStatus());
         String redirect = cr.getHeaders().get("Location").get(0);
         assertTrue(redirect.contains("error=access_denied"));
@@ -218,7 +218,7 @@ public class OAuth2ChallengeFixture {
     }
 
     protected void shouldRetrieveAccessAndRefreshToken(String state) throws IOException {
-        AuthorizationRequest authorizationRequest = initValidAuthorizationRequestCall(state);
+        AuthorizationRequest authorizationRequest = initValidAuthorizeRequestCall(state);
         String key = authorizationRequest.getAuthorizationKey();
 
         // get an authorization code
@@ -244,7 +244,7 @@ public class OAuth2ChallengeFixture {
         assertFalse(keys.contains(code));
         assertFalse(keys.contains(key));
 
-        authorizationRequest = initValidAuthorizationRequestCall(state);
+        authorizationRequest = initValidAuthorizeRequestCall(state);
         key = authorizationRequest.getAuthorizationKey();
         code = getAuthorizationCode(key, state);
         params.put(AUTHORIZATION_CODE_PARAM, code);
@@ -275,7 +275,7 @@ public class OAuth2ChallengeFixture {
         assertNotSame(refreshed.get("access_token"), token.get("access_token"));
     }
 
-    protected AuthorizationRequest initValidAuthorizationRequestCall(String state) {
+    protected AuthorizationRequest initValidAuthorizeRequestCall(String state) {
         Map<String, String> params = new HashMap<>();
         params.put(REDIRECT_URI_PARAM, REDIRECT_URI);
         params.put(CLIENT_ID_PARAM, CLIENT_ID);
@@ -284,7 +284,7 @@ public class OAuth2ChallengeFixture {
             params.put(STATE_PARAM, STATE);
         }
 
-        ClientResponse cr = responseFromGetAuthorizationWith(params);
+        ClientResponse cr = responseFromGetAuthorizeWith(params);
         assertEquals(200, cr.getStatus());
 
         // get back the authorization request from the store for the needed authorization key
@@ -302,7 +302,7 @@ public class OAuth2ChallengeFixture {
         if (state != null) {
             params.put(STATE_PARAM, STATE);
         }
-        ClientResponse cr = responseFromPostAuthorizationWith(params);
+        ClientResponse cr = responseFromPostAuthorizeWith(params);
         assertEquals(302, cr.getStatus());
         String redirect = cr.getHeaders().get("Location").get(0);
         if (state != null) {
@@ -328,7 +328,7 @@ public class OAuth2ChallengeFixture {
         return null;
     }
 
-    protected ClientResponse responseFromGetAuthorizationWith(Map<String, String> queryParams) {
+    protected ClientResponse responseFromGetAuthorizeWith(Map<String, String> queryParams) {
         WebResource wr = client.resource(BASE_URL).path("oauth2").path(ENDPOINT_AUTH);
 
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
@@ -339,7 +339,7 @@ public class OAuth2ChallengeFixture {
         return wr.queryParams(params).get(ClientResponse.class);
     }
 
-    protected ClientResponse responseFromPostAuthorizationWith(Map<String, String> queryParams) {
+    protected ClientResponse responseFromPostAuthorizeWith(Map<String, String> queryParams) {
         WebResource wr = client.resource(BASE_URL).path("oauth2").path(ENDPOINT_AUTH_SUBMIT);
 
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();

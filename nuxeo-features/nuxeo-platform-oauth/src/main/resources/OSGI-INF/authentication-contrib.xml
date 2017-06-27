@@ -14,7 +14,7 @@
 
     <startURLPattern>
       <patterns>
-        <pattern>oauth2/authorization</pattern>
+        <pattern>oauth2/authorize</pattern>
       </patterns>
     </startURLPattern>
 
