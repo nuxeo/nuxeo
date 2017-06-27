@@ -3310,7 +3310,7 @@ public class TestSQLRepositoryQuery {
         final int batchSize = 13;
         DocumentModel doc;
         for (int i=0; i<nbDocs; i++) {
-            doc = new DocumentModelImpl("/", "doc1", "File");
+            doc = new DocumentModelImpl("/", "doc" + i, "File");
             session.createDocument(doc);
         }
         session.save();
@@ -3459,7 +3459,7 @@ public class TestSQLRepositoryQuery {
         // System.out.println("nbDocs: " + nbDocs + ", batch: " + batchSize + ", thread: " + nbThread);
         DocumentModel doc;
         for (int i=0; i<nbDocs; i++) {
-            doc = new DocumentModelImpl("/", "doc1", "File");
+            doc = new DocumentModelImpl("/", "doc" + i, "File");
             session.createDocument(doc);
         }
         session.save();
