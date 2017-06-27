@@ -39,6 +39,9 @@ nuxeo.vcs.fulltext.analyzer.language=english
 nuxeo.vcs.optimizations.acl.enabled=true
 nuxeo.vcs.optimizations.path.enabled=true
 
+# Enable reliable change tokens in VCS/DBS
+nuxeo.changetoken.enabled=true
+
 # Mail server
 mail.store.protocol=pop3
 mail.store.host=localhost
