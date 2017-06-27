@@ -1,20 +1,6 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.directories">
 
-  <!-- template defining the base storage -->
-
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
-
-    <directory name="template-directory" template="true">
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <autoincrementIdField>false</autoincrementIdField>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
-    </directory>
-
-  </extension>
-
   <!-- template definitions for vocabularies -->
 
   <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
@@ -22,21 +8,29 @@
     <directory name="template-vocabulary" template="true" extends="template-directory">
       <schema>vocabulary</schema>
       <idField>id</idField>
+      <cacheEntryName>cache-vocabulary</cacheEntryName>
+      <cacheEntryWithoutReferencesName>cache-vocabulary</cacheEntryWithoutReferencesName>
     </directory>
 
     <directory name="template-xvocabulary" template="true" extends="template-directory">
       <schema>xvocabulary</schema>
       <idField>id</idField>
+      <cacheEntryName>cache-xvocabulary</cacheEntryName>
+      <cacheEntryWithoutReferencesName>cache-xvocabulary</cacheEntryWithoutReferencesName>
     </directory>
 
     <directory name="template-l10nxvocabulary" template="true" extends="template-directory">
       <schema>l10nxvocabulary</schema>
       <idField>id</idField>
+      <cacheEntryName>cache-l10nxvocabulary</cacheEntryName>
+      <cacheEntryWithoutReferencesName>cache-l10nxvocabulary</cacheEntryWithoutReferencesName>
     </directory>
 
     <directory name="template-documentsLists" template="true" extends="template-directory">
       <schema>documentsLists</schema>
       <idField>id</idField>
+      <cacheEntryName>cache-documentsLists</cacheEntryName>
+      <cacheEntryWithoutReferencesName>cache-documentsLists</cacheEntryWithoutReferencesName>
     </directory>
 
   </extension>

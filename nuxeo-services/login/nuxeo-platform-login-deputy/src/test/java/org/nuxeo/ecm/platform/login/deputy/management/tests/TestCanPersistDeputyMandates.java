@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.login.deputy.management.DeputyManagementStorageService;
 import org.nuxeo.ecm.platform.login.deputy.management.DeputyManager;
@@ -43,9 +44,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.ecm.default.config", "org.nuxeo.ecm.directory.types.contrib",
+@Features({ CoreFeature.class, DirectoryFeature.class })
+@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.default.config", "org.nuxeo.ecm.directory.types.contrib",
         "org.nuxeo.ecm.platform.login.deputy.management" })
 @LocalDeploy("org.nuxeo.ecm.platform.login.deputy.management:datasource-contrib.xml")
 public class TestCanPersistDeputyMandates {
