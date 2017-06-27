@@ -168,7 +168,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             if (StringUtils.isNotBlank(state)) {
                 params.put(STATE_PARAM, state);
             }
-            sendRedirect(response, redirectURI, params);
+            sendRedirect(request, response, redirectURI, params);
             return;
         }
 
@@ -182,8 +182,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             params.put(STATE_PARAM, state);
         }
 
-        request.getSession().invalidate();
-        sendRedirect(response, redirectURI, params);
+        sendRedirect(request, response, redirectURI, params);
     }
 
     protected void doGetToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -266,6 +265,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     protected void handleError(OAuth2Error error, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
+        request.getSession().invalidate();
         response.reset();
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         request.setAttribute("error", error);
@@ -286,8 +286,9 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         mapper.writeValue(response.getWriter(), object);
     }
 
-    protected void sendRedirect(HttpServletResponse response, String redirectURI, Map<String, String> params)
-            throws IOException {
+    protected void sendRedirect(HttpServletRequest request, HttpServletResponse response, String redirectURI,
+            Map<String, String> params) throws IOException {
+        request.getSession().invalidate();
         if (redirectURI == null) {
             response.sendError(SC_BAD_REQUEST, "No redirect URI");
             return;
