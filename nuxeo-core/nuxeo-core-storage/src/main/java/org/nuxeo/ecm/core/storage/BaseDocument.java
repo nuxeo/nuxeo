@@ -1164,6 +1164,35 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     }
 
     /**
+     * Validates that the passed user-visible change token is compatible with the current legacy change token.
+     *
+     * @param modified the {@code dc:modified} timestamp
+     * @param userVisibleChangeToken the user-visible change token
+     * @return {@code false} if the change token is not valid
+     * @since 9.2
+     */
+    protected boolean validateLegacyChangeToken(Calendar modified, String userVisibleChangeToken) {
+        if (modified == null) {
+            return true;
+        }
+        return userVisibleChangeToken.equals(String.valueOf(modified.getTimeInMillis()));
+    }
+
+    /**
+     * Gets the legacy change token for the given timestamp.
+     *
+     * @param modified the {@code dc:modified} timestamp
+     * @return the legacy change token
+     * @since 9.2
+     */
+    protected String getLegacyChangeToken(Calendar modified) {
+        if (modified == null) {
+            return null;
+        }
+        return String.valueOf(modified.getTimeInMillis());
+    }
+
+    /**
      * Updates a change token to its new value.
      *
      * @param changeToken the change token (not {@code null})
