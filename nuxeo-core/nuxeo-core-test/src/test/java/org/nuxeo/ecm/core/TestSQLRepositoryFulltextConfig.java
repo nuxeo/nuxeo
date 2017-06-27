@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -27,9 +26,9 @@ import java.util.TimeZone;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.TestSQLRepositoryFulltextConfig.IgnoreNonVCSAndMySQL;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -41,6 +40,8 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.reload.ReloadService;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule.Condition;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -51,7 +52,23 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.runtime.reload")
+@ConditionalIgnoreRule.Ignore(condition = IgnoreNonVCSAndMySQL.class)
 public class TestSQLRepositoryFulltextConfig {
+
+    public static class IgnoreNonVCSAndMySQL implements Condition {
+
+        @Inject
+        protected CoreFeature coreFeature;
+
+        @Override
+        public boolean shouldIgnore() {
+            return !coreFeature.getStorageConfiguration().isVCS()
+                    // MySQL fulltext is funky with respect to what words it finds in small databases
+                    // so don't bother testing on MySQL, this is mostly a configuration test anyway
+                    || coreFeature.getStorageConfiguration().isVCSMySQL();
+        }
+
+    }
 
     @Inject
     protected CoreFeature coreFeature;
@@ -64,14 +81,6 @@ public class TestSQLRepositoryFulltextConfig {
 
     @Inject
     protected ReloadService reloadService;
-
-    @Before
-    public void setUp() {
-        assumeTrue(coreFeature.getStorageConfiguration().isVCS());
-        // MySQL fulltext is funky with respect to what words it finds in small databases
-        // so don't bother testing on MySQL, this is mostly a configuration test anyway
-        assumeTrue(!coreFeature.getStorageConfiguration().isVCSMySQL());
-    }
 
     protected void newRepository() throws InterruptedException {
         waitForAsyncCompletion();
