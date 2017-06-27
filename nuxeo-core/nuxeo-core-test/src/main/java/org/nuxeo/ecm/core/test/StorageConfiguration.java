@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.mongodb.client.MongoDatabase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -180,12 +181,8 @@ public class StorageConfiguration {
     protected void clearMongoDB(MongoDBRepositoryDescriptor descriptor) throws UnknownHostException {
         MongoClient mongoClient = MongoDBRepository.newMongoClient(descriptor);
         try {
-            DBCollection coll = MongoDBRepository.getCollection(descriptor, mongoClient);
-            coll.dropIndexes();
-            coll.remove(new BasicDBObject());
-            coll = MongoDBRepository.getCountersCollection(descriptor, mongoClient);
-            coll.dropIndexes();
-            coll.remove(new BasicDBObject());
+            MongoDatabase database = mongoClient.getDatabase(descriptor.dbname);
+            database.drop();
         } finally {
             mongoClient.close();
         }
