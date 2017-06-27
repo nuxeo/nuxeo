@@ -243,20 +243,26 @@ public class ComponentManagerImpl implements ComponentManager {
             log.warn("Component " + name.getName() + " was blacklisted. Ignoring.");
             return;
         }
-        if (registry.contains(name)) {
-            if (name.getName().startsWith("org.nuxeo.runtime.")) {
-                // XXX we hide the fact that nuxeo-runtime bundles are
-                // registered twice
-                // TODO fix the root cause and remove this
+
+        Set<ComponentName> componentsToRemove = stash.toRemove;
+        // Look if the component is not going to be removed when applying the stash
+        // before checking for duplicates.
+        if (!componentsToRemove.contains(name)) {
+            if (registry.contains(name)) {
+                if (name.getName().startsWith("org.nuxeo.runtime.")) {
+                    // XXX we hide the fact that nuxeo-runtime bundles are
+                    // registered twice
+                    // TODO fix the root cause and remove this
+                    return;
+                }
+                handleError("Duplicate component name: " + name, null);
                 return;
             }
-            handleError("Duplicate component name: " + name, null);
-            return;
-        }
-        for (ComponentName n : ri.getAliases()) {
-            if (registry.contains(n)) {
-                handleError("Duplicate component name: " + n + " (alias for " + name + ")", null);
-                return;
+            for (ComponentName n : ri.getAliases()) {
+                if (registry.contains(n)) {
+                    handleError("Duplicate component name: " + n + " (alias for " + name + ")", null);
+                    return;
+                }
             }
         }
 
