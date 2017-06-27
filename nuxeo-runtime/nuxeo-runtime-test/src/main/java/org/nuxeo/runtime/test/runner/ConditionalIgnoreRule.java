@@ -32,12 +32,13 @@ import javax.inject.Named;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
+import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
-public class ConditionalIgnoreRule implements MethodRule {
+public class ConditionalIgnoreRule implements TestRule, MethodRule {
     @Inject
     private RunNotifier runNotifier;
 
@@ -49,6 +50,11 @@ public class ConditionalIgnoreRule implements MethodRule {
 
         @Rule
         public MethodRule methodRule() {
+            return rule;
+        }
+
+        @Rule
+        public static TestRule testRule() {
             return rule;
         }
 
@@ -77,8 +83,8 @@ public class ConditionalIgnoreRule implements MethodRule {
     }
 
     public static final class IgnoreIsolated implements Condition {
-        boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader"
-                .equals(getClass().getClassLoader().getClass().getName());
+        boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader".equals(
+                getClass().getClassLoader().getClass().getName());
 
         @Override
         public boolean shouldIgnore() {
@@ -101,33 +107,48 @@ public class ConditionalIgnoreRule implements MethodRule {
     }
 
     @Override
-    public Statement apply(Statement base, FrameworkMethod method, Object fixtureTarget) {
-        Class<?> fixtureType = fixtureTarget.getClass();
-        Method fixtureMethod = method.getMethod();
-        Description description = Description.createTestDescription(fixtureType, fixtureMethod.getName(),
-                fixtureMethod.getAnnotations());
-        return shouldIgnore(base, description, runner.getConfig(method, Ignore.class), fixtureType, fixtureMethod,
-                fixtureTarget);
-    }
-
-    protected Statement shouldIgnore(Statement base, Description description, Ignore ignore, Class<?> type) {
-        return shouldIgnore(base, description, ignore, type, null, null);
-    }
-
-    protected Statement shouldIgnore(Statement base, Description description, Ignore ignore, Class<?> type,
-            Method method, Object target) {
+    public Statement apply(Statement base, Description description) {
+        Ignore ignore = runner.getConfig(Ignore.class);
         Class<? extends Condition> conditionType = ignore.condition();
         if (conditionType == null) {
-            return base;
-        }
-        if (!newCondition(type, method, target, conditionType).shouldIgnore()) {
             return base;
         }
         return new Statement() {
 
             @Override
             public void evaluate() throws Throwable {
-                runNotifier.fireTestIgnored(description);
+                // as this is a TestRule / Rule (see Feature#testRule) runtime was already started
+                // because we are here after BeforeClassStatement (runtime start) and before
+                // the MethodRule / Rule execution which cause processing of method annotations, but here we just want
+                // to check condition on the class which doesn't depend on method annotations
+                if (newCondition(null, null, null, conditionType).shouldIgnore()) {
+                    runNotifier.fireTestIgnored(description);
+                } else {
+                    base.evaluate();
+                }
+            }
+        };
+    }
+
+    @Override
+    public Statement apply(Statement base, FrameworkMethod frameworkMethod, Object target) {
+        Ignore ignore = runner.getConfig(frameworkMethod, Ignore.class);
+        Class<? extends Condition> conditionType = ignore.condition();
+        if (conditionType == null) {
+            return base;
+        }
+        Class<?> type = target.getClass();
+        Method method = frameworkMethod.getMethod();
+        Description description = Description.createTestDescription(type, method.getName(), method.getAnnotations());
+        return new Statement() {
+
+            @Override
+            public void evaluate() throws Throwable {
+                if (newCondition(type, method, target, conditionType).shouldIgnore()) {
+                    runNotifier.fireTestIgnored(description);
+                } else {
+                    base.evaluate();
+                }
             }
         };
     }
