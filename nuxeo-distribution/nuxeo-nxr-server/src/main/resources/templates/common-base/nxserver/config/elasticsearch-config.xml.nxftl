@@ -226,8 +226,8 @@
       },
       "ecm:binarytext" : {
          "type" : "string",
-         "index" : "no",
-         "include_in_all" : true
+         "include_in_all" : true,
+         "analyzer" : "fulltext"
       },
       "ecm:path" : {
          "type" : "multi_field",
