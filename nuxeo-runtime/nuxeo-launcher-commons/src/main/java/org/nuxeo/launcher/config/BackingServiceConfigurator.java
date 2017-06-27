@@ -26,10 +26,10 @@ import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -221,11 +221,17 @@ public class BackingServiceConfigurator {
 
         Collection<File> jars = new ArrayList<>();
 
-        // Add templatePath if relative classPath
-        Path target = entry.startsWith("/") ? Paths.get(entry) : Paths.get(templatePath.toString(), entry);
-        String path = target.toString();
+        // Source path are expressed with "/", so we convert them to the current FS impl.
+        entry = entry.replace("/", File.separator);
 
-        int slashIndex = path.lastIndexOf("/");
+        // Add templatePath if relative classPath
+        String path = new File(entry).isAbsolute() ? entry  : templatePath.toString() + File.separator + entry;
+
+        int slashIndex = path.lastIndexOf(File.separator);
+        if(slashIndex == -1) {
+            return Collections.emptyList();
+        }
+
         String dirName = path.substring(0, slashIndex);
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + path);
 
