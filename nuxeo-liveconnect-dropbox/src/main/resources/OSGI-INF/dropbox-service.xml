@@ -14,8 +14,8 @@
       <name>dropbox</name>
       <description>Dropbox</description>
       <class>org.nuxeo.ecm.liveconnect.dropbox.DropboxOAuth2ServiceProvider</class>
-      <tokenServerURL>https://api.dropbox.com/1/oauth2/token</tokenServerURL>
-      <authorizationServerURL>https://www.dropbox.com/1/oauth2/authorize?force_reapprove=true</authorizationServerURL>
+      <tokenServerURL>https://api.dropbox.com/oauth2/token</tokenServerURL>
+      <authorizationServerURL>https://www.dropbox.com/oauth2/authorize?force_reapprove=true</authorizationServerURL>
     </provider>
   </extension>
 

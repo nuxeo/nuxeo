@@ -23,7 +23,7 @@ import java.util.Objects;
 import org.nuxeo.ecm.liveconnect.core.AbstractLiveConnectFile;
 import org.nuxeo.ecm.liveconnect.core.LiveConnectFileInfo;
 
-import com.dropbox.core.DbxEntry;
+import com.dropbox.core.v2.files.FileMetadata;
 
 /**
  * @since 8.1
@@ -32,25 +32,25 @@ public class DropboxLiveConnectFile extends AbstractLiveConnectFile {
 
     private static final long serialVersionUID = 1L;
 
-    private final DbxEntry.File file;
+    private final FileMetadata file;
 
-    public DropboxLiveConnectFile(LiveConnectFileInfo info, DbxEntry.File file) {
+    public DropboxLiveConnectFile(LiveConnectFileInfo info, FileMetadata file) {
         super(info);
         this.file = Objects.requireNonNull(file);
     }
 
     @Override
     public String getFilename() {
-        return file.name;
+        return file.getName();
     }
 
     @Override
     public long getFileSize() {
-        return file.numBytes;
+        return file.getSize();
     }
 
     @Override
     public String getDigest() {
-        return file.rev;
+        return file.getRev();
     }
 }

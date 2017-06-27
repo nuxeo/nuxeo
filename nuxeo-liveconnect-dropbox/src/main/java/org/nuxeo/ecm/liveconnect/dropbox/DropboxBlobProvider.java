@@ -25,6 +25,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
@@ -34,12 +36,14 @@ import org.nuxeo.ecm.liveconnect.core.LiveConnectFile;
 import org.nuxeo.ecm.liveconnect.core.LiveConnectFileInfo;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 
-import com.dropbox.core.DbxClient;
-import com.dropbox.core.DbxEntry;
+import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.DbxException;
+import com.dropbox.core.DbxDownloader;
+import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.DbxRequestConfig;
-import com.dropbox.core.DbxThumbnailFormat;
-import com.dropbox.core.DbxThumbnailSize;
+import com.dropbox.core.v2.files.ThumbnailFormat;
+import com.dropbox.core.v2.files.ThumbnailSize;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequestFactory;
@@ -51,6 +55,8 @@ import com.google.api.client.http.HttpResponse;
  * @since 7.3
  */
 public class DropboxBlobProvider extends AbstractLiveConnectBlobProvider<DropboxOAuth2ServiceProvider> {
+
+    private static final Log log = LogFactory.getLog(DropboxBlobProvider.class);
 
     private static final String APPLICATION_NAME = "Nuxeo/0";
 
@@ -73,19 +79,18 @@ public class DropboxBlobProvider extends AbstractLiveConnectBlobProvider<Dropbox
         LiveConnectFileInfo fileInfo = toFileInfo(blob);
         String filePath = fileInfo.getFileId();
         String url = null;
-        DbxClient client = getDropboxClient(getCredential(fileInfo));
+        DbxClientV2 client = getDropboxClient(getCredential(fileInfo));
         try {
             switch (usage) {
-            case STREAM:
-                url = client.createTemporaryDirectUrl(filePath).url;
-                break;
-            case DOWNLOAD:
-                url = client.createShareableUrl(filePath);
-                url = url.replace("dl=0", "dl=1"); // enable download flag in url
-                break;
-            case VIEW:
-                url = client.createShareableUrl(filePath);
-                break;
+                case STREAM:
+                    url = client.files().getTemporaryLink(filePath).getLink();
+                    break;
+                case DOWNLOAD:
+                    url = client.files().getTemporaryLink(filePath).getLink();
+                    break;
+                case VIEW:
+                    url = client.files().getTemporaryLink(filePath).getLink();
+                    break;
             }
         } catch (DbxException e) {
             throw new IOException("Failed to get Dropbox file URI " + e);
@@ -103,16 +108,18 @@ public class DropboxBlobProvider extends AbstractLiveConnectBlobProvider<Dropbox
         LiveConnectFileInfo fileInfo = toFileInfo(blob);
         String filePath = fileInfo.getFileId();
         try {
-            DbxClient.Downloader downloader = getDropboxClient(getCredential(fileInfo)).startGetThumbnail(
-                    DbxThumbnailSize.w64h64, DbxThumbnailFormat.bestForFileName(filePath, DbxThumbnailFormat.JPEG),
-                    filePath, null);
-
+            DbxDownloader downloader = getDropboxClient(getCredential(fileInfo)).files()
+                    .getThumbnailBuilder(filePath)
+                    .withFormat(ThumbnailFormat.JPEG)
+                    .withSize(ThumbnailSize.W64H64)
+                    .start();
             if (downloader == null) {
                 return null;
             }
-            return downloader.body;
+            return downloader.getInputStream();
         } catch (DbxException e) {
-            throw new IOException("Failed to get Dropbox file thumbnail " + e);
+            log.warn(String.format("Failed to get thumbnail for file %s", filePath), e);
+            return null;
         }
     }
 
@@ -137,13 +144,13 @@ public class DropboxBlobProvider extends AbstractLiveConnectBlobProvider<Dropbox
         return null;
     }
 
-    protected DbxClient getDropboxClient(Credential credential) throws IOException {
+    protected DbxClientV2 getDropboxClient(Credential credential) throws IOException {
         return getDropboxClient(credential.getAccessToken());
     }
 
-    protected DbxClient getDropboxClient(String accessToken) throws IOException {
+    protected DbxClientV2 getDropboxClient(String accessToken) throws IOException {
         DbxRequestConfig config = new DbxRequestConfig(APPLICATION_NAME, Locale.getDefault().toString());
-        return new DbxClient(config, accessToken);
+        return new DbxClientV2(config, accessToken);
     }
 
     /**
@@ -163,11 +170,15 @@ public class DropboxBlobProvider extends AbstractLiveConnectBlobProvider<Dropbox
     @Override
     protected LiveConnectFile retrieveFile(LiveConnectFileInfo fileInfo) throws IOException {
         try {
-            DbxEntry fileMetadata = getDropboxClient(getCredential(fileInfo)).getMetadata(fileInfo.getFileId());
+            FileMetadata fileMetadata = getDropboxClient(getCredential(fileInfo))
+                    .files()
+                    .download(fileInfo.getFileId())
+                    .getResult();
+
             if (fileMetadata == null) {
                 return null;
             }
-            return new DropboxLiveConnectFile(fileInfo, fileMetadata.asFile());
+            return new DropboxLiveConnectFile(fileInfo, fileMetadata);
         } catch (DbxException e) {
             throw new IOException("Failed to retrieve Dropbox file metadata", e);
         }
