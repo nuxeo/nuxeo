@@ -128,7 +128,7 @@ String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl()
   <img width="<%=logoWidth%>" height="<%=logoHeight%>" alt="<%=logoAlt%>" src="<%=logoUrl%>" />
 </header>
 <div class="container">
-  <form action="<%=context%>/oauth2/authorization_submit" method="POST">
+  <form action="<%=context%>/oauth2/authorize_submit" method="POST">
     <!-- To prevent caching -->
     <%
       response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
