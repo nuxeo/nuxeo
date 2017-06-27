@@ -148,7 +148,7 @@ public class TestDocument {
     public void testSetValueErrors2() throws Exception {
         Document root = session.getRootDocument();
         Document doc1 = root.addChild("doc", "TestDocument");
-        Document doc2 = root.addChild("doc", "File");
+        Document doc2 = root.addChild("doc2", "File");
         doc1.setValue("tp:complexList", Collections.singletonList(Collections.emptyMap()));
 
         BiConsumer<String, Object> c1 = (xpath, value) -> DocumentSetValue.accept(doc1, xpath, value);

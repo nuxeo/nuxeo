@@ -1006,17 +1006,66 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session2 = repository.getConnection();
         Node root2 = session2.getRootNode();
         Node foo2 = session2.addChildNode(root2, "foo", null, "TestDoc", false);
-        session2.save();
+        try {
+            session2.save();
+        } catch (ConcurrentUpdateException e) {
+            // low-level duplicates are disabled (through unique indexes or constraints)
+            // no need to test further
+            return;
+        }
         // on read we get one or the other, but no crash
         Session session3 = repository.getConnection();
         Node root3 = session3.getRootNode();
         Node foo3 = session3.getChildNode(root3, "foo", false);
         assertTrue(foo3.getId().equals(foo1.getId()) || foo3.getId().equals(foo2.getId()));
-        // try again, has been fixed (only one error in logs)
-        Session session4 = repository.getConnection();
-        Node root4 = session4.getRootNode();
-        Node foo4 = session4.getChildNode(root4, "foo", false);
-        assertEquals(foo3.getId(), foo4.getId());
+    }
+
+    @Test
+    public void testConcurrentComplexPropCreation() throws Exception {
+        // two docs with same name (possible at this low level)
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node doc = session.addChildNode(root, "foo", null, "TestDoc", false);
+        Node owner = session.getChildNode(doc, "tst:owner", true); // complex prop auto-created by parent
+        // create a second one
+        Node ownerbis = session.addChildNode(doc, "tst:owner", null, "person", true);
+        try {
+            session.save();
+        } catch (ConcurrentUpdateException e) {
+            // low-level duplicates are disabled (through unique indexes or constraints)
+            // no need to test further
+            return;
+        }
+        // on read we get one or the other, but no crash
+        Session session2 = repository.getConnection();
+        Node root2 = session2.getRootNode();
+        Node doc2 = session2.getChildNode(root2, "foo", false);
+        Node owner2 = session2.getChildNode(doc2, "tst:owner", true);
+        assertTrue(owner2.getId().equals(owner.getId()) || owner2.getId().equals(ownerbis.getId()));
+    }
+
+    @Test
+    public void testConcurrentComplexListCreation() throws Exception {
+        // two docs with same name (possible at this low level)
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node doc = session.addChildNode(root, "foo", null, "TestDoc", false);
+        session.addChildNode(doc, "tst:friends", Long.valueOf(0), "person", true);
+        // create a second one at same pos
+        session.addChildNode(doc, "tst:friends", Long.valueOf(0), "person", true);
+        try {
+            session.save();
+        } catch (ConcurrentUpdateException e) {
+            // low-level duplicates are disabled (through unique indexes or constraints)
+            // no need to test further
+            return;
+        }
+        // on read we get both and no crash
+        Session session2 = repository.getConnection();
+        Node root2 = session2.getRootNode();
+        Node doc2 = session2.getChildNode(root2, "foo", false);
+        List<Node> friends = session2.getChildren(doc2, "tst:friends", true);
+        assertEquals(2, friends.size());
     }
 
     @Test
@@ -3905,7 +3954,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // doc2 tst:owner/firstname = 'Bruce'
         Node doc2 = session.addChildNode(root, "doc2", null, "TestDoc", false);
-        Node owner = session.addChildNode(doc2, "tst:owner", null, "person", true);
+        Node owner = session.getChildNode(doc2, "tst:owner", true); // complex prop auto-created by parent
         owner.setSimpleProperty("firstname", "Bruce");
 
         // doc3 tst:friends/0/firstname = 'John'

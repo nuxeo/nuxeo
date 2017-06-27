@@ -173,13 +173,13 @@ public class TestAutoVersioning extends AbstractTestVersioning {
         assertFalse(doc.isCheckedOut());
         assertEquals("0.1", doc.getVersionLabel());
 
-        doc = session.createDocumentModel("/", "testfile1", "Note2");
+        doc = session.createDocumentModel("/", "testfile2", "Note2");
         doc = session.createDocument(doc);
         doc = session.saveDocument(doc);
         assertTrue(doc.isCheckedOut());
         assertEquals("0.0", doc.getVersionLabel());
 
-        doc = session.createDocumentModel("/", "testfile1", "Note3");
+        doc = session.createDocumentModel("/", "testfile3", "Note3");
         doc = session.createDocument(doc);
         doc = session.saveDocument(doc);
         assertFalse(doc.isCheckedOut());

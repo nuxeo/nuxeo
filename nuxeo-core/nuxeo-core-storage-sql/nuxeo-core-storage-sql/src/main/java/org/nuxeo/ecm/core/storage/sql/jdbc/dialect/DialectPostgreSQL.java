@@ -100,6 +100,8 @@ public class DialectPostgreSQL extends Dialect {
 
     protected final boolean arrayColumnsEnabled;
 
+    protected final boolean childNameUniqueConstraintEnabled;
+
     protected String usersSeparator;
 
     protected final DialectIdType idType;
@@ -120,6 +122,8 @@ public class DialectPostgreSQL extends Dialect {
             log.info("Path optimizations " + (pathOptimizationsEnabled ? "enabled" : "disabled"));
         }
         arrayColumnsEnabled = repositoryDescriptor != null && repositoryDescriptor.getArrayColumns();
+        childNameUniqueConstraintEnabled = repositoryDescriptor != null
+                && repositoryDescriptor.getChildNameUniqueConstraintEnabled();
         int major, minor;
         try {
             major = metadata.getDatabaseMajorVersion();
@@ -459,6 +463,35 @@ public class DialectPostgreSQL extends Dialect {
             }
         }
         return super.getColumnName(name);
+    }
+
+    @Override
+    public List<String> getCustomPostCreateSqls(Table table) {
+        if (!table.getKey().equals(Model.HIER_TABLE_NAME)) {
+            return Collections.emptyList();
+        }
+        if (!childNameUniqueConstraintEnabled) {
+            return Collections.emptyList();
+        }
+        List<String> sqls = new ArrayList<>(3);
+        // CREATE UNIQUE INDEX hierarchy_unique_child ON hierarchy (parentid, name)
+        // WHERE isproperty = false
+        sqls.add(String.format("CREATE UNIQUE INDEX \"hierarchy_unique_child\" ON \"%s\" (\"%s\", \"%s\") WHERE \"%s\" = false",
+                Model.HIER_TABLE_NAME, Model.HIER_PARENT_KEY, Model.HIER_CHILD_NAME_KEY,
+                Model.HIER_CHILD_ISPROPERTY_KEY));
+        // CREATE UNIQUE INDEX hierarchy_unique_child_complex ON hierarchy (parentid, name)
+        // WHERE isproperty = true AND pos IS NULL
+        sqls.add(String.format(
+                "CREATE UNIQUE INDEX \"hierarchy_unique_child_complex\" ON \"%s\" (\"%s\", \"%s\") WHERE \"%s\" = true AND \"%s\" IS NULL",
+                Model.HIER_TABLE_NAME, Model.HIER_PARENT_KEY, Model.HIER_CHILD_NAME_KEY,
+                Model.HIER_CHILD_ISPROPERTY_KEY, Model.HIER_CHILD_POS_KEY));
+        // CREATE UNIQUE INDEX hierarchy_unique_child_complex_list ON hierarchy (parentid, name, pos)
+        // WHERE isproperty = true AND pos IS NOT NULL
+        sqls.add(String.format(
+                "CREATE UNIQUE INDEX \"hierarchy_unique_child_complex_list\" ON \"%s\" (\"%s\", \"%s\", \"%s\") WHERE \"%s\" = true AND \"%s\" IS NOT NULL",
+                Model.HIER_TABLE_NAME, Model.HIER_PARENT_KEY, Model.HIER_CHILD_NAME_KEY, Model.HIER_CHILD_POS_KEY,
+                Model.HIER_CHILD_ISPROPERTY_KEY, Model.HIER_CHILD_POS_KEY));
+        return sqls;
     }
 
     @Override

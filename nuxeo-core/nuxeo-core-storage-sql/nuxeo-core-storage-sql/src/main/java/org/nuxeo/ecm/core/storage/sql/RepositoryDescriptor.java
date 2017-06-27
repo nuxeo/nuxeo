@@ -276,6 +276,13 @@ public class RepositoryDescriptor {
         arrayColumns = Boolean.valueOf(enabled);
     }
 
+    @XNode("childNameUniqueConstraintEnabled")
+    private Boolean childNameUniqueConstraintEnabled;
+
+    public boolean getChildNameUniqueConstraintEnabled() {
+        return defaultTrue(childNameUniqueConstraintEnabled);
+    }
+
     @XNode("indexing/queryMaker@class")
     public void setQueryMakerDeprecated(String klass) {
         log.warn("Setting queryMaker from repository configuration is now deprecated");
