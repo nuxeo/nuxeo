@@ -266,12 +266,18 @@ public class NotificationService extends DefaultComponent implements Notificatio
         return doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
     }
 
-    private void disableEvents(DocumentModel doc) {
+    protected void disableEvents(DocumentModel doc) {
         doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
         doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
         doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
         doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, true);
+    }
 
+    protected void restoreEvents(DocumentModel doc) {
+        doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, null);
+        doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, null);
+        doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, null);
+        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, null);
     }
 
     @Override
@@ -285,6 +291,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
                 doc.getAdapter(SubscriptionAdapter.class).addSubscription(username, notification);
                 disableEvents(doc);
                 session.saveDocument(doc);
+                restoreEvents(doc);
             }
 
         };
@@ -307,6 +314,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
                 doc.getAdapter(SubscriptionAdapter.class).addSubscriptionsToAll(username);
                 disableEvents(doc);
                 session.saveDocument(doc);
+                restoreEvents(doc);
             }
         };
         runner.runUnrestricted();
@@ -334,6 +342,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
                 }
                 disableEvents(doc);
                 session.saveDocument(doc);
+                restoreEvents(doc);
             }
         };
         runner.runUnrestricted();
