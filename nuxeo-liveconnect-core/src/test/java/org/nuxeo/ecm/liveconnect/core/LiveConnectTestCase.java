@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -32,9 +33,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @Ignore
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.mimetype", "org.nuxeo.ecm.platform.oauth",
-        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.default.config" })
+@Features({CoreFeature.class, DirectoryFeature.class})
+@Deploy({ "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.mimetype", "org.nuxeo.ecm.platform.oauth", "org.nuxeo.ecm.default.config" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml",
         "org.nuxeo.ecm.liveconnect.core:OSGI-INF/test-core-cache-config.xml",
         "org.nuxeo.ecm.liveconnect.core:OSGI-INF/test-core-config.xml",
