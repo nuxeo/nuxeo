@@ -815,14 +815,11 @@ public class TestCmisBinding extends TestCmisBindingBase {
         ob = getObject(ob.getId());
         assertEquals("new title", getString(ob, "dc:title"));
 
-        List<Holder<String>> changeTokenHolders = Arrays.asList(new Holder<>(null), new Holder<>("bogusChangeToken"));
-        for (Holder<String> ctHolder : changeTokenHolders) {
-            try {
-                objService.updateProperties(repositoryId, objectIdHolder, ctHolder, props, null);
-                fail(String.format("updateProperties with '%s' cmis:changeToken should fail", ctHolder));
-            } catch (CmisUpdateConflictException e) {
-                // ok
-            }
+        try {
+            objService.updateProperties(repositoryId, objectIdHolder, new Holder<>("bogusChangeToken"), props, null);
+            fail("updateProperties with bogus cmis:changeToken should fail");
+        } catch (CmisUpdateConflictException e) {
+            // ok
         }
     }
 
@@ -921,14 +918,12 @@ public class TestCmisBinding extends TestCmisBindingBase {
         objService.setContentStream(repositoryId, objectIdHolder, Boolean.TRUE, changeTokenHolder, cs, null);
         assertEquals(ob.getId(), objectIdHolder.getValue());
 
-        List<Holder<String>> changeTokenHolders = Arrays.asList(new Holder<>(null), new Holder<>("bogusChangeToken"));
-        for (Holder<String> ctHolder : changeTokenHolders) {
-            try {
-                objService.setContentStream(repositoryId, objectIdHolder, Boolean.TRUE, ctHolder, cs, null);
-                fail(String.format("setContentStream with '%s' cmis:changeToken should fail", ctHolder));
-            } catch (CmisUpdateConflictException e) {
-                // ok
-            }
+        try {
+            objService.setContentStream(repositoryId, objectIdHolder, Boolean.TRUE, new Holder<>("bogusChangeToken"),
+                    cs, null);
+            fail("setContentStream with bogus cmis:changeToken should fail");
+        } catch (CmisUpdateConflictException e) {
+            // ok
         }
 
         // refetch
@@ -944,13 +939,11 @@ public class TestCmisBinding extends TestCmisBindingBase {
         changeTokenHolder = getChangeTokenHolder(ob);
         objService.deleteContentStream(repositoryId, objectIdHolder, changeTokenHolder, null);
 
-        for (Holder<String> ctHolder : changeTokenHolders) {
-            try {
-                objService.deleteContentStream(repositoryId, objectIdHolder, ctHolder, null);
-                fail(String.format("deleteContentStream with '%s' cmis:changeToken should fail", ctHolder));
-            } catch (CmisUpdateConflictException e) {
-                // ok
-            }
+        try {
+            objService.deleteContentStream(repositoryId, objectIdHolder, new Holder<>("bogusChangeToken"), null);
+            fail("deleteContentStream with bogus cmis:changeToken should fail");
+        } catch (CmisUpdateConflictException e) {
+            // ok
         }
 
         // refetch

@@ -134,6 +134,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -1146,15 +1147,16 @@ public class NuxeoCmisService extends AbstractCmisService
         if (objectIdHolder == null || (objectId = objectIdHolder.getValue()) == null) {
             throw new CmisInvalidArgumentException("Missing object ID");
         }
-
         DocumentModel doc = getDocumentModel(objectId);
-        String operation = contentStream == null ? "deleteContentStream" : "setContentStream";
-        verifyChangeToken(doc, changeTokenHolder, operation);
-
         // TODO test doc checkout state
         try {
             NuxeoPropertyData.setContentStream(doc, contentStream, !Boolean.FALSE.equals(overwriteFlag));
-            doc = coreSession.saveDocument(doc);
+            setChangeTokenForUpdate(doc, changeTokenHolder);
+            try {
+                doc = coreSession.saveDocument(doc);
+            } catch (ConcurrentUpdateException e) {
+                throw new CmisUpdateConflictException(e.getMessage());
+            }
             NuxeoPropertyData.validateBlobDigest(doc, callContext);
             save();
         } catch (IOException e) {
@@ -1162,20 +1164,15 @@ public class NuxeoCmisService extends AbstractCmisService
         }
     }
 
-    protected void verifyChangeToken(DocumentModel doc, Holder<String> changeTokenHolder, String operation) {
-        if (doc == null) {
+    protected void setChangeTokenForUpdate(DocumentModel doc, Holder<String> changeTokenHolder) {
+        if (changeTokenHolder == null) {
             return;
         }
-        String docChangeToken = doc.getChangeToken();
-        if (StringUtils.isBlank(docChangeToken)) {
+        String changeToken = changeTokenHolder.getValue();
+        if (changeToken == null) {
             return;
         }
-        String reqChangeToken = changeTokenHolder == null ? null : changeTokenHolder.getValue();
-        if (!docChangeToken.equals(reqChangeToken)) {
-            throw new CmisUpdateConflictException(String.format(
-                    "Request %s failed because supplied changeToken: '%s' does not match existing changeToken: '%s'",
-                    operation, reqChangeToken, docChangeToken));
-        }
+        doc.putContextData(CoreSession.CHANGE_TOKEN, changeToken);
     }
 
     @Override
@@ -1193,10 +1190,14 @@ public class NuxeoCmisService extends AbstractCmisService
             throw new CmisInvalidArgumentException("Missing object ID");
         }
         DocumentModel doc = getDocumentModel(objectId);
-        verifyChangeToken(doc, changeTokenHolder, "updateProperties");
         NuxeoObjectData object = new NuxeoObjectData(this, doc);
         updateProperties(object, properties, false);
-        coreSession.saveDocument(doc);
+        setChangeTokenForUpdate(doc, changeTokenHolder);
+        try {
+            coreSession.saveDocument(doc);
+        } catch (ConcurrentUpdateException e) {
+            throw new CmisUpdateConflictException(e.getMessage());
+        }
     }
 
     @Override
