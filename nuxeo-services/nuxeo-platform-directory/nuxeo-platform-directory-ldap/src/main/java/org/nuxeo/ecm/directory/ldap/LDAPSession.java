@@ -305,7 +305,7 @@ public class LDAPSession extends BaseSession {
     @Override
     public void deleteEntryWithoutReferences(String id) {
         try {
-            SearchResult result = getLdapEntry(id);
+            SearchResult result = getLdapEntry(id, false);
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("LDAPSession.deleteEntry(%s): LDAP destroySubcontext dn='%s' [%s]", id,
@@ -415,7 +415,7 @@ public class LDAPSession extends BaseSession {
     @Override
     public DocumentModel getEntryFromSource(String id, boolean fetchReferences) throws DirectoryException {
         try {
-            SearchResult result = getLdapEntry(id, true);
+            SearchResult result = getLdapEntry(id, false);
             if (result == null) {
                 return null;
             }
