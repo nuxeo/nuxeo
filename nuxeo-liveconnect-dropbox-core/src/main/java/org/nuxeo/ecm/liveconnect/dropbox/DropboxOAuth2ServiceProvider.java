@@ -35,7 +35,7 @@ import com.google.api.client.json.JsonObjectParser;
  */
 public class DropboxOAuth2ServiceProvider extends AbstractLiveConnectOAuth2ServiceProvider {
 
-    private static final String ACCOUNT_INFO_URL = "https://api.dropbox.com/1/account/info";
+    private static final String ACCOUNT_INFO_URL = "https://api.dropbox.com/2/users/get_current_account";
 
     private static final HttpRequestFactory requestFactory = HTTP_TRANSPORT.createRequestFactory(
             request -> request.setParser(new JsonObjectParser(JSON_FACTORY)));
@@ -43,9 +43,9 @@ public class DropboxOAuth2ServiceProvider extends AbstractLiveConnectOAuth2Servi
     @Override
     protected String getUserEmail(String accessToken) throws IOException {
         GenericUrl url = new GenericUrl(ACCOUNT_INFO_URL);
-        url.set("access_token", accessToken);
+        url.set("authorization", "Bearer " + accessToken);
 
-        HttpResponse response = requestFactory.buildGetRequest(url).execute();
+        HttpResponse response = requestFactory.buildPostRequest(url, null).execute();
         GenericJson json = response.parseAs(GenericJson.class);
         return json.get("email").toString();
     }
