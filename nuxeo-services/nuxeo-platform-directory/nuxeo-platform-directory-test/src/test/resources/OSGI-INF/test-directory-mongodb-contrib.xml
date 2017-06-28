@@ -6,6 +6,7 @@
     <directory name="template-directory" template="true">
       <serverUrl>${nuxeo.test.mongodb.server}</serverUrl>
       <databaseName>${nuxeo.test.mongodb.dbname}</databaseName>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
   </extension>
