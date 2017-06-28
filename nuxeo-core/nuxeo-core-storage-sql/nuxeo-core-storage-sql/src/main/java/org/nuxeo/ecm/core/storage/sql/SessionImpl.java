@@ -963,6 +963,9 @@ public class SessionImpl implements Session, XAResource {
         hierRow.putNew(Model.HIER_CHILD_POS_KEY, pos);
         hierRow.putNew(Model.MAIN_PRIMARY_TYPE_KEY, typeName);
         hierRow.putNew(Model.HIER_CHILD_ISPROPERTY_KEY, Boolean.valueOf(complexProp));
+        if (changeTokenEnabled) {
+            hierRow.putNew(Model.MAIN_SYS_CHANGE_TOKEN_KEY, Model.INITIAL_SYS_CHANGE_TOKEN);
+        }
         SimpleFragment hierFragment = context.createHierarchyFragment(hierRow);
         FragmentGroup fragmentGroup = new FragmentGroup(hierFragment, new FragmentsMap());
         return new Node(context, fragmentGroup, context.getPath(hierFragment));
@@ -976,6 +979,10 @@ public class SessionImpl implements Session, XAResource {
         Node proxy = addChildNode(parent, name, pos, Model.PROXY_TYPE, false);
         proxy.setSimpleProperty(Model.PROXY_TARGET_PROP, targetId);
         proxy.setSimpleProperty(Model.PROXY_VERSIONABLE_PROP, versionableId);
+        if (changeTokenEnabled) {
+            proxy.setSimpleProperty(Model.MAIN_SYS_CHANGE_TOKEN_PROP, Model.INITIAL_SYS_CHANGE_TOKEN);
+            proxy.setSimpleProperty(Model.MAIN_CHANGE_TOKEN_PROP, Model.INITIAL_CHANGE_TOKEN);
+        }
         SimpleFragment proxyFragment = (SimpleFragment) proxy.fragments.get(Model.PROXY_TABLE_NAME);
         context.createdProxyFragment(proxyFragment);
         return proxy;
@@ -1578,6 +1585,11 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public boolean isChangeTokenEnabled() {
         return changeTokenEnabled;
+    }
+
+    @Override
+    public void markUserChange(Serializable id) {
+        context.markUserChange(id);
     }
 
 }

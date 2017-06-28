@@ -326,7 +326,9 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     @Override
     public String getChangeToken() {
         if (session.isChangeTokenEnabled()) {
-            return (String) getPropertyValue(Model.MAIN_CHANGE_TOKEN_PROP);
+            Long sysChangeToken = (Long) getPropertyValue(Model.MAIN_SYS_CHANGE_TOKEN_PROP);
+            Long changeToken = (Long) getPropertyValue(Model.MAIN_CHANGE_TOKEN_PROP);
+            return buildUserVisibleChangeToken(sysChangeToken, changeToken);
         } else {
             Calendar modified;
             try {
@@ -334,8 +336,33 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
             } catch (PropertyNotFoundException e) {
                 modified = null;
             }
-            return modified == null ? null : String.valueOf(modified.getTimeInMillis());
+            return getLegacyChangeToken(modified);
         }
+    }
+
+    @Override
+    public boolean validateUserVisibleChangeToken(String userVisibleChangeToken) {
+        if (userVisibleChangeToken == null) {
+            return true;
+        }
+        if (session.isChangeTokenEnabled()) {
+            Long sysChangeToken = (Long) getPropertyValue(Model.MAIN_SYS_CHANGE_TOKEN_PROP);
+            Long changeToken = (Long) getPropertyValue(Model.MAIN_CHANGE_TOKEN_PROP);
+            return validateUserVisibleChangeToken(sysChangeToken, changeToken, userVisibleChangeToken);
+        } else {
+            Calendar modified;
+            try {
+                modified = (Calendar) getPropertyValue(DC_MODIFIED);
+            } catch (PropertyNotFoundException e) {
+                modified = null;
+            }
+            return validateLegacyChangeToken(modified, userVisibleChangeToken);
+        }
+    }
+
+    @Override
+    public void markUserChange() {
+        session.markUserChange(getNode().getId());
     }
 
     /*

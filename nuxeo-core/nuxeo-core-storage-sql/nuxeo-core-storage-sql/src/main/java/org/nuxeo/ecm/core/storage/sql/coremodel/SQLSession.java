@@ -895,4 +895,8 @@ public class SQLSession implements Session {
         return session.isChangeTokenEnabled();
     }
 
+    public void markUserChange(Serializable id) {
+        session.markUserChange(id);
+    }
+
 }

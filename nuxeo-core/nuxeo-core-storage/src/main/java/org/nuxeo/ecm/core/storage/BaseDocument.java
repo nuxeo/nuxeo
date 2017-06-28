@@ -1123,4 +1123,84 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
      */
     protected abstract Lock removeDocumentLock(String owner);
 
+    // also used as a regexp for split
+    public static final String TOKEN_SEP = "-";
+
+    /**
+     * Builds the user-visible change token from low-level change token and system change token information.
+     *
+     * @param sysChangeToken the system change token
+     * @param changeToken the change token
+     * @return the user-visible change token
+     * @since 9.2
+     */
+    public static String buildUserVisibleChangeToken(Long sysChangeToken, Long changeToken) {
+        if (sysChangeToken == null || changeToken == null) {
+            return null;
+        }
+        return sysChangeToken.toString() + TOKEN_SEP + changeToken.toString();
+    }
+
+    /**
+     * Validates that the passed user-visible change token is compatible with the current change token.
+     *
+     * @param sysChangeToken the system change token
+     * @param changeToken the change token
+     * @param userVisibleChangeToken the user-visible change token
+     * @return {@code false} if the change token is not valid
+     * @since 9.2
+     */
+    public static boolean validateUserVisibleChangeToken(Long sysChangeToken, Long changeToken,
+            String userVisibleChangeToken) {
+        if (sysChangeToken == null || changeToken == null) {
+            return true;
+        }
+        // we only compare the change token, not the system change token, to allow background system updates
+        String[] parts = userVisibleChangeToken.split(TOKEN_SEP);
+        if (parts.length != 2) {
+            return false; // invalid format
+        }
+        return parts[1].equals(changeToken.toString());
+    }
+
+    /**
+     * Validates that the passed user-visible change token is compatible with the current legacy change token.
+     *
+     * @param modified the {@code dc:modified} timestamp
+     * @param userVisibleChangeToken the user-visible change token
+     * @return {@code false} if the change token is not valid
+     * @since 9.2
+     */
+    protected boolean validateLegacyChangeToken(Calendar modified, String userVisibleChangeToken) {
+        if (modified == null) {
+            return true;
+        }
+        return userVisibleChangeToken.equals(String.valueOf(modified.getTimeInMillis()));
+    }
+
+    /**
+     * Gets the legacy change token for the given timestamp.
+     *
+     * @param modified the {@code dc:modified} timestamp
+     * @return the legacy change token
+     * @since 9.2
+     */
+    protected String getLegacyChangeToken(Calendar modified) {
+        if (modified == null) {
+            return null;
+        }
+        return String.valueOf(modified.getTimeInMillis());
+    }
+
+    /**
+     * Updates a change token to its new value.
+     *
+     * @param changeToken the change token (not {@code null})
+     * @return the updated change token
+     * @since 9.2
+     */
+    public static Long updateChangeToken(Long changeToken) {
+        return Long.valueOf(changeToken.longValue() + 1);
+    }
+
 }

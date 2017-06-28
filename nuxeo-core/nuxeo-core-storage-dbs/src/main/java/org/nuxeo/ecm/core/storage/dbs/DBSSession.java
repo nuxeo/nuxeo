@@ -1974,4 +1974,15 @@ public class DBSSession implements Session {
         return repository.getLockManager();
     }
 
+    /**
+     * Marks this document id as belonging to a user change.
+     *
+     * @since 9.2
+     */
+    public void markUserChange(String id) {
+        if (changeTokenEnabled) {
+            transaction.markUserChange(id);
+        }
+    }
+
 }

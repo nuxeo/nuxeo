@@ -82,7 +82,7 @@ public class StorageConfiguration {
 
     private static final String CHANGE_TOKEN_ENABLED_PROPERTY = "nuxeo.test.changetoken.enabled";
 
-    private static final String CHANGE_TOKEN_ENABLED_DEFAULT = "false";
+    private static final String CHANGE_TOKEN_ENABLED_DEFAULT = "true";
 
     private String coreType;
 

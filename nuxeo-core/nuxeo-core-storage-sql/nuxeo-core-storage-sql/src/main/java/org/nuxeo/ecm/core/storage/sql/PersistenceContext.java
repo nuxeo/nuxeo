@@ -42,7 +42,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.storage.BaseDocument;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.CopyResult;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.IdWithTypes;
@@ -144,6 +146,13 @@ public class PersistenceContext {
     private final Set<Serializable> createdIds;
 
     /**
+     * Document ids modified as "user changes", which means that a change token should be checked.
+     *
+     * @since 9.2
+     */
+    protected final Set<Serializable> userChangeIds = new HashSet<>();
+
+    /**
      * Cache statistics
      *
      * @since 5.7
@@ -207,6 +216,7 @@ public class PersistenceContext {
         int n = clearLocalCaches();
         modified.clear(); // not empty when rolling back before save
         createdIds.clear();
+        userChangeIds.clear();
         return n;
     }
 
@@ -255,6 +265,17 @@ public class PersistenceContext {
     }
 
     /**
+     * Marks this document id as belonging to a user change.
+     *
+     * @since 9.2
+     */
+    protected void markUserChange(Serializable id) {
+        if (session.changeTokenEnabled) {
+            userChangeIds.add(id);
+        }
+    }
+
+    /**
      * Saves all the created, modified and deleted rows into a batch object, for later execution.
      * <p>
      * Also updates the passed fragmentsToClearDirty list with dirty modified fragments, for later call of clearDirty
@@ -267,13 +288,29 @@ public class PersistenceContext {
         // update change tokens
         Map<Serializable, Map<String, Serializable>> rowUpdateConditions = new HashMap<>();
         if (session.changeTokenEnabled) {
-            // find which docs are modified and therefore need a change token check
+            // find which docs are created
+            for (Serializable id : createdIds) {
+                SimpleFragment hier = getHier(id, false);
+                if (hier == null) {
+                    // was created and deleted before save
+                    continue;
+                }
+                hier.put(Model.MAIN_CHANGE_TOKEN_KEY, Model.INITIAL_CHANGE_TOKEN);
+            }
+            // find which docs are modified
             Set<Serializable> modifiedDocIds = findModifiedDocuments();
             for (Serializable id : modifiedDocIds) {
                 SimpleFragment hier = getHier(id, false);
-                Map<String, Serializable> conditions = updateChangeToken(hier);
-                rowUpdateConditions.put(id, conditions);
+                // increment system change token
+                Long base = (Long) hier.get(Model.MAIN_SYS_CHANGE_TOKEN_KEY);
+                hier.put(Model.MAIN_SYS_CHANGE_TOKEN_KEY, DeltaLong.valueOf(base, 1));
+                // update change token if applicable (user change)
+                if (userChangeIds.contains(id)) {
+                    Map<String, Serializable> conditions = updateChangeToken(hier);
+                    rowUpdateConditions.put(id, conditions);
+                }
             }
+            userChangeIds.clear();
         }
 
         // created main rows are saved first in the batch (in their order of
@@ -351,21 +388,16 @@ public class PersistenceContext {
 
     /** Updates a change token in the main fragment, and returns the condition to check. */
     protected Map<String, Serializable> updateChangeToken(SimpleFragment hier) {
-        String oldToken = (String) hier.get(Model.MAIN_CHANGE_TOKEN_KEY);
-        String newToken;
+        Long oldToken = (Long) hier.get(Model.MAIN_CHANGE_TOKEN_KEY);
+        Long newToken;
         if (oldToken == null) {
             // document without change token, just created
             newToken = Model.INITIAL_CHANGE_TOKEN;
         } else {
-            newToken = updateChangeToken(oldToken);
+            newToken = BaseDocument.updateChangeToken(oldToken);
         }
         hier.put(Model.MAIN_CHANGE_TOKEN_KEY, newToken);
         return Collections.singletonMap(Model.MAIN_CHANGE_TOKEN_KEY, oldToken);
-    }
-
-    /** Updates a change token to its new value. */
-    protected String updateChangeToken(String token) {
-        return Long.toString(Long.parseLong(token) + 1);
     }
 
     private boolean complexProp(SimpleFragment fragment) {
