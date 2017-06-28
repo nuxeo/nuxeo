@@ -136,7 +136,8 @@ public class BackingServiceConfigurator {
                 try {
                     File templateDir = configurationGenerator.getTemplateConf(template).getParentFile();
                     String classPath = getClasspathForTemplate(template);
-                    String checkClass = configurationGenerator.getUserConfig().getProperty(template + PARAM_CHECK_SUFFIX);
+                    String checkClass = configurationGenerator.getUserConfig()
+                                                              .getProperty(template + PARAM_CHECK_SUFFIX);
 
                     Optional<URLClassLoader> ucl = getClassLoaderForTemplate(templateDir, classPath);
                     if (ucl.isPresent()) {
@@ -163,7 +164,7 @@ public class BackingServiceConfigurator {
      * @param template The name of the template
      * @return
      */
-    //VisibleForTesting
+    // VisibleForTesting
     String getClasspathForTemplate(String template) {
         String classPath = configurationGenerator.getUserConfig().getProperty(template + PARAM_CHECK_CLASSPATH_SUFFIX);
         TextTemplate templateParser = new TextTemplate(configurationGenerator.getUserConfig());
@@ -214,7 +215,6 @@ public class BackingServiceConfigurator {
      * <li>nxserver/lib -> ${templatePath}/nxserver/lib</li>
      * <li>/somePath/someLib-*.jar</li>
      * </ul>
-     *
      */
     // VisibleForTesting
     Collection<File> getJarsFromClasspathEntry(Path templatePath, String entry) {
@@ -225,10 +225,10 @@ public class BackingServiceConfigurator {
         entry = entry.replace("/", File.separator);
 
         // Add templatePath if relative classPath
-        String path = new File(entry).isAbsolute() ? entry  : templatePath.toString() + File.separator + entry;
+        String path = new File(entry).isAbsolute() ? entry : templatePath.toString() + File.separator + entry;
 
         int slashIndex = path.lastIndexOf(File.separator);
-        if(slashIndex == -1) {
+        if (slashIndex == -1) {
             return Collections.emptyList();
         }
 
@@ -236,8 +236,8 @@ public class BackingServiceConfigurator {
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + path);
 
         File parentDir = new File(dirName);
-        File[] realMatchingFiles = parentDir.listFiles(
-                f -> matcher.matches(f.toPath()) && f.toPath().startsWith(configurationGenerator.getNuxeoHome().toPath()));
+        File[] realMatchingFiles = parentDir.listFiles(f -> matcher.matches(f.toPath())
+                && f.toPath().startsWith(configurationGenerator.getNuxeoHome().toPath()));
 
         if (realMatchingFiles != null) {
             for (File file : realMatchingFiles) {
