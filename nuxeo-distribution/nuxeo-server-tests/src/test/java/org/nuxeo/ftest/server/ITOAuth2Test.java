@@ -34,6 +34,8 @@ import static org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest.MISSING
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -46,12 +48,18 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.LoginPage;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+
 /**
  * Tests the OAuth2 authorization flow handled by the {@link NuxeoOAuth2Servlet}.
  *
  * @since 9.2
  */
 public class ITOAuth2Test extends AbstractTest {
+
+    protected Client client = Client.create();
 
     @BeforeClass
     public static void beforeClass() {
@@ -137,6 +145,62 @@ public class ITOAuth2Test extends AbstractTest {
         assertTrue(parameters.containsKey(AUTHORIZATION_CODE_PARAM));
     }
 
+    @Test
+    public void testAuthorizationWithAccessToken() {
+        OAuth2GrantPage grantPage = getOAuth2GrantPage("Administrator", "Administrator");
+        grantPage.grant();
+        String currentURL = driver.getCurrentUrl();
+        Map<String, String> parameters = URIUtils.getRequestParameters(currentURL);
+        String code = parameters.get(AUTHORIZATION_CODE_PARAM);
+        driver.get(NUXEO_URL + "/oauth2/token?grant_type=authorization_code&client_id=test-client&code=" + code);
+        String pageSource = driver.getPageSource();
+        String accessToken = extractJSONParameter(pageSource, "access_token");
+
+        WebResource wr = webResourceFor("/");
+        ClientResponse cr = wr.get(ClientResponse.class);
+        assertEquals(401, cr.getStatus());
+
+        wr = webResourceFor("/");
+        cr = wr.header("Authorization", "Bearer " + accessToken).get(ClientResponse.class);
+        assertEquals(200, cr.getStatus());
+
+        wr = webResourceFor("/");
+        cr = wr.queryParam("access_token", accessToken).get(ClientResponse.class);
+        assertEquals(200, cr.getStatus());
+
+        // refresh the access token
+        String refreshToken = extractJSONParameter(pageSource, "refresh_token");
+        driver.get(NUXEO_URL + "/oauth2/token?grant_type=refresh_token&client_id=test-client&refresh_token="
+                + refreshToken);
+        pageSource = driver.getPageSource();
+        String refreshedAccessToken = extractJSONParameter(pageSource, "access_token");
+
+        wr = webResourceFor("/");
+        cr = wr.header("Authorization", "Bearer " + accessToken).get(ClientResponse.class);
+        assertEquals(401, cr.getStatus());
+
+        wr = webResourceFor("/");
+        cr = wr.header("Authorization", "Bearer " + refreshedAccessToken).get(ClientResponse.class);
+        assertEquals(200, cr.getStatus());
+
+        wr = webResourceFor("/");
+        cr = wr.queryParam("access_token", refreshedAccessToken).get(ClientResponse.class);
+        assertEquals(200, cr.getStatus());
+    }
+
+    protected String extractJSONParameter(String pageSource, String parameterName) {
+        Pattern pattern = Pattern.compile(".*\"" + parameterName + "\":\"(.*?)\".*");
+        Matcher matcher = pattern.matcher(pageSource);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    protected WebResource webResourceFor(String docPath) {
+        return client.resource(NUXEO_URL).path("api").path("v1").path("path").path(docPath);
+    }
+
     protected OAuth2ErrorPage getOAuth2ErrorPage(String resource) {
         driver.get(NUXEO_URL + resource);
         // First need to authenticate
@@ -145,10 +209,14 @@ public class ITOAuth2Test extends AbstractTest {
     }
 
     protected OAuth2GrantPage getOAuth2GrantPage() {
+        return getOAuth2GrantPage(TEST_USERNAME, TEST_PASSWORD);
+    }
+
+    protected OAuth2GrantPage getOAuth2GrantPage(String username, String password) {
         driver.get(NUXEO_URL + "/oauth2/authorize?client_id=test-client&response_type=code&state=1234");
         // First need to authenticate
         LoginPage loginPage = asPage(LoginPage.class);
-        OAuth2GrantPage grantPage = loginPage.login(TEST_USERNAME, TEST_PASSWORD, OAuth2GrantPage.class);
+        OAuth2GrantPage grantPage = loginPage.login(username, password, OAuth2GrantPage.class);
         grantPage.checkClientName("Test Client");
         grantPage.checkAuthorizationKey();
         grantPage.checkState("1234");

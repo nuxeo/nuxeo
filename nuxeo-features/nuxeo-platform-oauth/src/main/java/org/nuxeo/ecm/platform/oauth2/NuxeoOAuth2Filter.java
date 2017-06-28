@@ -23,7 +23,6 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.nuxeo.ecm.platform.oauth2.Constants.TOKEN_SERVICE;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.security.Principal;
 
 import javax.security.auth.login.LoginContext;
@@ -35,6 +34,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
@@ -54,6 +54,8 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
 
     private static final Log log = LogFactory.getLog(NuxeoOAuth2Filter.class);
 
+    public static final String ACCESS_TOKEN_PARAM = "access_token";
+
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
     public static final String BEARER_AUTHENTICATION_SCHEME = "Bearer ";
@@ -63,15 +65,16 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        if (!isValid(request)) {
+        if (!(request instanceof HttpServletRequest)) {
             chain.doFilter(request, response);
             return;
         }
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        if (isAuthorizedRequest(httpRequest)) {
-            processAuthentication(httpRequest, httpResponse, chain);
+        String accessToken = getAccessToken(httpRequest);
+        if (accessToken != null) {
+            processAuthentication(accessToken, httpRequest, httpResponse, chain);
         }
 
         if (!response.isCommitted()) {
@@ -79,21 +82,9 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         }
     }
 
-    protected boolean isValid(ServletRequest request) {
-        if (!(request instanceof HttpServletRequest)) {
-            return false;
-        }
-
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        return isAuthorizedRequest(httpRequest);
-    }
-
-    protected void processAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
-        String key = URLDecoder.decode(
-                request.getHeader(AUTHORIZATION_HEADER).substring(BEARER_AUTHENTICATION_SCHEME.length()), "UTF-8")
-                               .trim();
-        NuxeoOAuth2Token token = TransactionHelper.runInTransaction(() -> tokenStore.getToken(key));
+    protected void processAuthentication(String accessToken, HttpServletRequest request, HttpServletResponse response,
+            FilterChain chain) throws IOException, ServletException {
+        NuxeoOAuth2Token token = TransactionHelper.runInTransaction(() -> tokenStore.getToken(accessToken));
 
         OAuth2ClientService clientService = Framework.getService(OAuth2ClientService.class);
         if (token == null || token.isExpired() || !clientService.hasClient(token.getClientId())) {
@@ -116,6 +107,14 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         }
     }
 
+    protected String getAccessToken(HttpServletRequest request) {
+        String accessToken = request.getParameter(ACCESS_TOKEN_PARAM);
+        String authorization = request.getHeader(AUTHORIZATION_HEADER);
+        return StringUtils.isNotBlank(accessToken) ? accessToken
+                : authorization != null && authorization.startsWith(BEARER_AUTHENTICATION_SCHEME)
+                        ? authorization.substring(BEARER_AUTHENTICATION_SCHEME.length()).trim() : null;
+    }
+
     protected LoginContext buildLoginContext(NuxeoOAuth2Token token) {
         try {
             return NuxeoAuthenticationFilter.loginAs(token.getNuxeoLogin());
@@ -125,8 +124,4 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         return null;
     }
 
-    protected boolean isAuthorizedRequest(HttpServletRequest request) {
-        String authorization = request.getHeader(AUTHORIZATION_HEADER);
-        return authorization != null && authorization.startsWith(BEARER_AUTHENTICATION_SCHEME);
-    }
 }
