@@ -210,6 +210,9 @@ public class TestPageProvider {
         DocumentModel doc = p.get(0);
         Assert.assertEquals("TestMe9", doc.getTitle());
 
+        Assert.assertTrue(pp.isLastPageAvailable());
+        Assert.assertTrue(pp.isNextPageAvailable());
+
         pp.nextPage();
         p = pp.getCurrentPage();
         Assert.assertEquals(pageSize, p.size());
@@ -690,6 +693,45 @@ public class TestPageProvider {
                 "    } ]\n" + //
                 "  }\n" + //
                 "}", esquery);
+    }
+
+    @Test
+    public void testMaxResultWindow() throws Exception {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("NXQL_PP_PATTERN");
+        HashMap<String, Serializable> props = new HashMap<>();
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+        long pageSize = 2;
+        ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_PP_PATTERN", ppdef,
+                null, null, pageSize, (long) 0, props);
+        pp.setMaxResultWindow(6);
+        Assert.assertEquals(6, pp.getMaxResultWindow());
+        // create 10 docs
+        startTransaction();
+        for (int i = 0; i < 10; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i, "File");
+            doc.setPropertyValue("dc:title", "TestMe" + i);
+            doc = session.createDocument(doc);
+        }
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // get current page
+        List<DocumentModel> p = pp.getCurrentPage();
+        Assert.assertEquals(10, pp.getResultsCount());
+        Assert.assertEquals(5, pp.getNumberOfPages());
+        Assert.assertTrue(pp.isNextPageAvailable());
+        // last page is not accessible
+        Assert.assertFalse(pp.isLastPageAvailable());
+        // only 3 pages are navigable
+        Assert.assertEquals(3, pp.getPageLimit());
+        // page 2
+        pp.nextPage();
+        // page 3 reach the max result window of 6 docs
+        pp.nextPage();
+        Assert.assertFalse(pp.isNextPageAvailable());
+        Assert.assertFalse(pp.isLastPageAvailable());
     }
 
     protected void assertEqualsEvenUnderWindows(String expected, String actual) {
