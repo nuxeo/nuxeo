@@ -30,7 +30,9 @@ import javax.transaction.Transaction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.JarUtils;
+import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
@@ -262,6 +264,34 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
      */
     protected void setFlushedNow() {
         lastFlushed = System.currentTimeMillis();
+    }
+
+    /**
+     * @deprecated since 5.6, use {@link #runDeploymentPreprocessor()} instead.
+     *             Keep it as compatibility code until NXP-9642 is done.
+     */
+    @Override
+    @Deprecated
+    public void installWebResources(File file) throws IOException {
+        log.info("Install web resources");
+        if (file.isDirectory()) {
+            File war = new File(file, "web");
+            war = new File(war, "nuxeo.war");
+            if (war.isDirectory()) {
+                FileUtils.copyTree(war, getAppDir());
+            } else {
+                // compatibility mode with studio 1.5 - see NXP-6186
+                war = new File(file, "nuxeo.war");
+                if (war.isDirectory()) {
+                    FileUtils.copyTree(war, getAppDir());
+                }
+            }
+        } else if (file.isFile()) { // a jar
+            File war = getWarDir();
+            ZipUtils.unzip("web/nuxeo.war", file, war);
+            // compatibility mode with studio 1.5 - see NXP-6186
+            ZipUtils.unzip("nuxeo.war", file, war);
+        }
     }
 
     @Override
