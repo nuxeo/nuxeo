@@ -166,19 +166,21 @@ public class MongoDBSession extends BaseSession {
         List<Bson> updates = fieldMap.entrySet().stream().map(e -> Updates.set(e.getKey(), e.getValue())).collect(
                 Collectors.toList());
 
-        try {
-            UpdateResult result = getCollection().updateOne(bson, Updates.combine(updates));
-            // Throw an error if no document matched the update
-            if (!result.wasAcknowledged()) {
-                throw new DirectoryException(
-                        "Error while updating the entry, the request has not been acknowledged by the server");
+        if (!updates.isEmpty()) {
+            try {
+                UpdateResult result = getCollection().updateOne(bson, Updates.combine(updates));
+                // Throw an error if no document matched the update
+                if (!result.wasAcknowledged()) {
+                    throw new DirectoryException(
+                            "Error while updating the entry, the request has not been acknowledged by the server");
+                }
+                if (result.getMatchedCount() == 0) {
+                    throw new DirectoryException(
+                            String.format("Error while updating the entry, no document was found with the id %s", id));
+                }
+            } catch (MongoWriteException e) {
+                throw new DirectoryException(e);
             }
-            if (result.getMatchedCount() == 0) {
-                throw new DirectoryException(
-                        String.format("Error while updating the entry, no document was found with the id %s", id));
-            }
-        } catch (MongoWriteException e) {
-            throw new DirectoryException(e);
         }
         return referenceFieldList;
     }
@@ -277,22 +279,10 @@ public class MongoDBSession extends BaseSession {
                                         .map(Map.Entry::getValue)
                                         .findFirst()
                                         .orElse(null);
-            Object value = null;
-            if (field != null) {
-                Type type = field.getType();
-                if (entry.getValue() instanceof String) {
-                    String originalValue = (String) entry.getValue();
-                    if (type instanceof IntegerType) {
-                        value = Integer.valueOf(originalValue);
-                    } else if (type instanceof LongType) {
-                        value = Long.valueOf(originalValue);
-                    } else {
-                        value = MongoDBSerializationHelper.valueToBson(entry.getValue());
-                    }
-                }
-            } else {
-                value = MongoDBSerializationHelper.valueToBson(entry.getValue());
-            }
+
+            Serializable v = entry.getValue();
+            Object value = (field != null) ? MongoDBSerializationHelper.valueToBson(v, field.getType())
+                    : MongoDBSerializationHelper.valueToBson(v);
             String key = entry.getKey();
             if (fulltext != null && fulltext.contains(key)) {
                 String val = String.valueOf(value);

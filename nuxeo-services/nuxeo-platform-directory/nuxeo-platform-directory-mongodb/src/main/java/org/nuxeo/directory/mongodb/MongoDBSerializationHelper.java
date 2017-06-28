@@ -32,6 +32,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
+import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 
 /**
  * Helper for serialization/deserialization of BSON objects
@@ -95,6 +98,24 @@ public class MongoDBSerializationHelper {
             return listToBson(Arrays.asList((Object[]) value));
         } else {
             return serializableToBson(value);
+        }
+    }
+
+    /**
+     * Cast an object according to its instance ans its type
+     *
+     * @param value the object to transform
+     * @param type the object type
+     * @return the BSON object
+     * @since 9.2
+     */
+    public static Object valueToBson(Object value, Type type) {
+        if (value != null && type instanceof IntegerType) {
+            return Integer.valueOf(String.valueOf(value));
+        } else if (value != null && type instanceof LongType) {
+            return Long.valueOf(String.valueOf(value));
+        } else {
+            return valueToBson(value);
         }
     }
 
