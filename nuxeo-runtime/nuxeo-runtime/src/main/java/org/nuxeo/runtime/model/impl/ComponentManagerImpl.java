@@ -827,10 +827,14 @@ public class ComponentManagerImpl implements ComponentManager {
         List<RegistrationInfoImpl> toRemove = stash.getRegistrationsToRemove(registry);
         if (isStarted()) {
             for (RegistrationInfoImpl ri : toRemove) {
+                this.started.remove(ri);
                 ri.stop();
             }
         }
         for (RegistrationInfoImpl ri : toRemove) {
+            if (isStandby()) {
+                this.standby.remove(ri);
+            }
             ri.deactivate();
         }
 
@@ -843,7 +847,6 @@ public class ComponentManagerImpl implements ComponentManager {
             }
         }
         if (isStandby()) {
-            this.standby.removeAll(toRemove);
             // activate the new components
             for (RegistrationInfoImpl ri : stash.toAdd) {
                 if (ri.isResolved()) {
@@ -853,7 +856,6 @@ public class ComponentManagerImpl implements ComponentManager {
                 }
             }
         } else if (isStarted()) {
-            this.started.removeAll(toRemove);
             // start the new components and add them to the started list
             for (RegistrationInfoImpl ri : stash.toAdd) {
                 if (ri.isResolved()) {
