@@ -1,5 +1,6 @@
 <!--
-(C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+@license
+(C) Copyright Nuxeo Corp. (http://nuxeo.com/)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,9 +13,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-Contributors:
-  Guillaume Renard <grenard@nuxeo.com>
 -->
 <nuxeo-slot-content name="damSearchMenuButtons" slot="DRAWER_ITEMS" order="45">
   <template>
@@ -26,6 +24,7 @@ Contributors:
 <nuxeo-slot-content name="damSearchMenuButtons" slot="DRAWER_PAGES">
   <template>
     <nuxeo-search-form name="assetsSearch" search-name="assets" auto display-auto-control
-                       provider="assets_search" schemas="dublincore,common,uid"></nuxeo-search-form>
+                       provider="assets_search"
+                       schemas="dublincore,common,uid,thumbnail"></nuxeo-search-form>
   </template>
 </nuxeo-slot-content>

@@ -1,5 +1,6 @@
 <!--
-(C) Copyright 2017 Nuxeo (http://nuxeo.com/) and contributors.
+@license
+(C) Copyright Nuxeo Corp. (http://nuxeo.com/)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,9 +13,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-Contributors:
-  Nelson Silva <nsilva@nuxeo.com>
 -->
 
 <!--
@@ -25,14 +23,15 @@ Contributors:
 <dom-module id="nuxeo-assets-search-results">
   <template>
 
+    <style>
+      nuxeo-justified-grid {
+        min-height: calc(100vh - 10em);
+      }
+    </style>
+
     <nuxeo-results name="assets" nx-provider="[[nxProvider]]">
 
-      <nuxeo-data-grid name="grid" icon="icons:apps" class="results" empty-label="[[i18n('searchResults.noResults')]]" selection-enabled display-quick-filters>
-        <template>
-          <nuxeo-document-grid-thumbnail tabindex$="{{tabIndex}}" selected$="{{selected}}" doc="[[item]]" on-navigate="_navigate">
-          </nuxeo-document-grid-thumbnail>
-        </template>
-      </nuxeo-data-grid>
+      <nuxeo-justified-grid name="grid" icon="icons:apps" class="results"></nuxeo-justified-grid>
 
       <nuxeo-data-table name="table" icon="icons:list" class="results"
                         settings-enabled
