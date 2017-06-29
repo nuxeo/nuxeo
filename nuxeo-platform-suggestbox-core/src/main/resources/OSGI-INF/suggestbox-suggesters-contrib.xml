@@ -9,7 +9,7 @@
       class="org.nuxeo.ecm.platform.suggestbox.service.suggesters.DocumentLookupSuggester">
       <parameters>
         <parameter name="providerName">DEFAULT_DOCUMENT_SUGGESTION</parameter>
-        <parameter name="highlightFields">*</parameter>
+        <parameter name="highlightFields">dc:title.fulltext,ecm:binarytext,dc:description.fulltext,ecm:tag,note:note.fulltext,file:content.name</parameter>
       </parameters>
     </suggester>
 
