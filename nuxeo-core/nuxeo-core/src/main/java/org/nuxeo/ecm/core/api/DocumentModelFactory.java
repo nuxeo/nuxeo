@@ -296,7 +296,6 @@ public class DocumentModelFactory {
             refresh.isVersionSeriesCheckedOut = doc.isVersionSeriesCheckedOut();
             refresh.versionSeriesId = doc.getVersionSeriesId();
             refresh.checkinComment = doc.getCheckinComment();
-            // TODO change token
         }
 
         if ((flags & DocumentModel.REFRESH_CONTENT) != 0) {
