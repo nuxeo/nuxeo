@@ -218,7 +218,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
 
     @Override
     public boolean isLastPageAvailable() {
-        if ((getResultsCount() + getPageSize()) < getMaxResultWindow()) {
+        if ((getResultsCount() + getPageSize()) <= getMaxResultWindow()) {
             return super.isNextPageAvailable();
         }
         return false;
@@ -226,7 +226,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
 
     @Override
     public boolean isNextPageAvailable() {
-        if ((getCurrentPageOffset() + 2 * getPageSize()) < getMaxResultWindow()) {
+        if ((getCurrentPageOffset() + 2 * getPageSize()) <= getMaxResultWindow()) {
             return super.isNextPageAvailable();
         }
         return false;
@@ -253,7 +253,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
             } catch (NumberFormatException e) {
                 log.warn(String.format(
                     "Invalid maxResultWindow property value: %s for page provider: %s, fallback to default.",
-                            maxResultWindow, getName()));
+                            maxResultWindowStr, getName()));
                 maxResultWindow = Long.valueOf(DEFAULT_ES_MAX_RESULT_WINDOW_VALUE);
             }
         }
