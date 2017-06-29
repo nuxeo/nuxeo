@@ -728,6 +728,7 @@ public class TestPageProvider {
         Assert.assertEquals(3, pp.getPageLimit());
         // page 2
         pp.nextPage();
+        Assert.assertTrue(pp.isNextPageAvailable());
         // page 3 reach the max result window of 6 docs
         pp.nextPage();
         Assert.assertFalse(pp.isNextPageAvailable());

@@ -47,6 +47,10 @@ import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
+
+import static org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider.DEFAULT_ES_MAX_RESULT_WINDOW_VALUE;
+import static org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider.ES_MAX_RESULT_WINDOW_PROPERTY;
 
 public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implements PageProvider<LogEntry> {
 
@@ -59,6 +63,8 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
     public static final String UICOMMENTS_PROPERTY = "generateUIComments";
 
     protected static String emptyQuery = "{ \"match_all\" : { }\n }";
+
+    protected Long maxResultWindow;
 
     @Override
     public String toString() {
@@ -247,6 +253,59 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
             }
         }
         return sortInfos;
+    }
+
+    @Override
+    public boolean isLastPageAvailable() {
+        if ((getResultsCount() + getPageSize()) <= getMaxResultWindow()) {
+            return super.isNextPageAvailable();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isNextPageAvailable() {
+        if ((getCurrentPageOffset() + 2 * getPageSize()) <= getMaxResultWindow()) {
+            return super.isNextPageAvailable();
+        }
+        return false;
+    }
+
+    @Override
+    public long getPageLimit() {
+        return getMaxResultWindow() / getPageSize();
+    }
+
+    /**
+     * Returns the max result window where the PP can navigate without raising Elasticsearch
+     * QueryPhaseExecutionException. {@code from + size} must be less than or equal to this value.
+     *
+     * @since 9.2
+     */
+    public long getMaxResultWindow() {
+        if (maxResultWindow == null) {
+            ConfigurationService cs = Framework.getService(ConfigurationService.class);
+            String maxResultWindowStr = cs.getProperty(ES_MAX_RESULT_WINDOW_PROPERTY,
+                    DEFAULT_ES_MAX_RESULT_WINDOW_VALUE);
+            try {
+                maxResultWindow = Long.valueOf(maxResultWindowStr);
+            } catch (NumberFormatException e) {
+                log.warn(String.format(
+                    "Invalid maxResultWindow property value: %s for page provider: %s, fallback to default.",
+                            maxResultWindowStr, getName()));
+                maxResultWindow = Long.valueOf(DEFAULT_ES_MAX_RESULT_WINDOW_VALUE);
+            }
+        }
+        return maxResultWindow;
+    }
+
+    /**
+     * Set the max result window where the PP can navigate, for testing purpose.
+     *
+     * @since 9.2
+     */
+    public void setMaxResultWindow(long maxResultWindow) {
+        this.maxResultWindow = maxResultWindow;
     }
 
 }
