@@ -392,6 +392,23 @@ public class TestSQLRepositoryProperties {
         assertComplexListElements(actual, 0, "baz", 333);
     }
 
+    @Test
+    public void testComplexListChangeAfterClear() throws Exception {
+        // complex list with one element
+        doc.setPropertyValue("tp:complexList", (Serializable) Arrays.asList(Collections.singletonMap("string", "foo")));
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // clear
+        doc.setPropertyValue("tp:complexList", (Serializable) Collections.emptyList());
+        doc = session.saveDocument(doc);
+        // don't save the session here
+        // re-add one element (-> delete + insert in database)
+        doc.setPropertyValue("tp:complexList", (Serializable) Arrays.asList(Collections.singletonMap("string", "bar")));
+        doc = session.saveDocument(doc);
+        session.save(); // save succeeds, no unique constraint problem
+    }
+
     // DBS-only test for in-db data corruption(?) (NXP-21278)
     @Test
     public void testComplexListElementNullInStorage() throws Exception {

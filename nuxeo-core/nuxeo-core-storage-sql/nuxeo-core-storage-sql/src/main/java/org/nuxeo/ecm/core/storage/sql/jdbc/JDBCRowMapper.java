@@ -434,16 +434,18 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
     @Override
     public void write(RowBatch batch) {
+        // do deletes first to avoid violating constraint of unique child name in parent
+        // when replacing a complex list element
+        if (!batch.deletes.isEmpty()) {
+            writeDeletes(batch.deletes);
+        }
+        // batch.deletesDependent not executed
         if (!batch.creates.isEmpty()) {
             writeCreates(batch.creates);
         }
         if (!batch.updates.isEmpty()) {
             writeUpdates(batch.updates);
         }
-        if (!batch.deletes.isEmpty()) {
-            writeDeletes(batch.deletes);
-        }
-        // batch.deletesDependent not executed
     }
 
     protected void writeCreates(List<Row> creates) {
