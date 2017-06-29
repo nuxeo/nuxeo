@@ -44,6 +44,7 @@ import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.query.NxqlQueryConverter;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Elasticsearch Page provider that converts the NXQL query build by CoreQueryDocumentPageProvider.
@@ -52,17 +53,25 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider {
 
-    public static final String CORE_SESSION_PROPERTY = "coreSession";
-
-    public static final String SEARCH_ON_ALL_REPOSITORIES_PROPERTY = "searchAllRepositories";
-
     protected static final Log log = LogFactory.getLog(ElasticSearchNxqlPageProvider.class);
 
     private static final long serialVersionUID = 1L;
 
+    public static final String CORE_SESSION_PROPERTY = "coreSession";
+
+    public static final String SEARCH_ON_ALL_REPOSITORIES_PROPERTY = "searchAllRepositories";
+
+    // @since 9.2
+    public static final String ES_MAX_RESULT_WINDOW_PROPERTY = "org.nuxeo.elasticsearch.provider.maxResultWindow";
+
+    // This is the default ES index.max_result_window
+    public static final String DEFAULT_ES_MAX_RESULT_WINDOW_VALUE = "10000";
+
     protected List<DocumentModel> currentPageDocuments;
 
     protected HashMap<String, Aggregate<? extends Bucket>> currentAggregates;
+
+    protected Long maxResultWindow;
 
     @Override
     public List<DocumentModel> getCurrentPage() {
@@ -206,4 +215,58 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
             eventProps.put("aggregatesMatches", aggregateMatches);
         }
     }
+
+    @Override
+    public boolean isLastPageAvailable() {
+        if ((getResultsCount() + getPageSize()) < getMaxResultWindow()) {
+            return super.isNextPageAvailable();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isNextPageAvailable() {
+        if ((getCurrentPageOffset() + 2 * getPageSize()) < getMaxResultWindow()) {
+            return super.isNextPageAvailable();
+        }
+        return false;
+    }
+
+    @Override
+    public long getPageLimit() {
+        return getMaxResultWindow() / getPageSize();
+    }
+
+    /**
+     * Returns the max result window where the PP can navigate without raising Elasticsearch
+     * QueryPhaseExecutionException. {@code from + size} must be less than or equal to this value.
+     *
+     * @since 9.2
+     */
+    public long getMaxResultWindow() {
+        if (maxResultWindow == null) {
+            ConfigurationService cs = Framework.getService(ConfigurationService.class);
+            String maxResultWindowStr = cs.getProperty(ES_MAX_RESULT_WINDOW_PROPERTY,
+                    DEFAULT_ES_MAX_RESULT_WINDOW_VALUE);
+            try {
+                maxResultWindow = Long.valueOf(maxResultWindowStr);
+            } catch (NumberFormatException e) {
+                log.warn(String.format(
+                    "Invalid maxResultWindow property value: %s for page provider: %s, fallback to default.",
+                            maxResultWindow, getName()));
+                maxResultWindow = Long.valueOf(DEFAULT_ES_MAX_RESULT_WINDOW_VALUE);
+            }
+        }
+        return maxResultWindow;
+    }
+
+    /**
+     * Set the max result window where the PP can navigate, for testing purpose.
+     *
+     * @since 9.2
+     */
+    public void setMaxResultWindow(long maxResultWindow) {
+        this.maxResultWindow = maxResultWindow;
+    }
+
 }
