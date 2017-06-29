@@ -112,13 +112,13 @@ public abstract class AbstractRepositoryTestCase {
             assertNotNull(sectionModel);
             DocumentModel section = session.createDocument(sectionModel);
             assertNotNull(section);
-            DocumentModel section1Model = session.createDocumentModel(section.getPathAsString(), "3", "Folder");
+            DocumentModel section1Model = session.createDocumentModel(section.getPathAsString(), "3a", "Folder");
             DocumentModel section1 = session.createDocument(section1Model);
             assertNotNull(section1);
-            DocumentModel section2Model = session.createDocumentModel(section.getPathAsString(), "3", "Folder");
+            DocumentModel section2Model = session.createDocumentModel(section.getPathAsString(), "3b", "Folder");
             DocumentModel section2 = session.createDocument(section2Model);
             assertNotNull(section2);
-            DocumentModel section3Model = session.createDocumentModel(section.getPathAsString(), "3", "Folder");
+            DocumentModel section3Model = session.createDocumentModel(section.getPathAsString(), "3c", "Folder");
             DocumentModel section3 = session.createDocument(section3Model);
             assertNotNull(section3);
             doc = session.createDocument(model);
