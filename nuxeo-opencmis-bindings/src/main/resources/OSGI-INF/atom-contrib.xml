@@ -14,18 +14,20 @@
     </filterConfig>
   </extension>
 
-  <!-- make sure no redirect for authentication happens -->
-  <extension
-    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-    point="authenticators">
-    <authenticationPlugin name="BASIC_AUTH"
-      enabled="true"
-      class="org.nuxeo.ecm.platform.ui.web.auth.plugins.BasicAuthenticator">
-      <parameters>
-        <parameter name="ForcePromptURL_CMISAtomPub">atom/cmis</parameter>
-        <parameter name="ForcePromptURL_CMIS10AtomPub">atom/cmis10</parameter>
-      </parameters>
-    </authenticationPlugin>
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="specificChains">
+
+    <specificAuthenticationChain name="ATOM_CMIS">
+
+      <urlPatterns>
+        <url>(.*)/atom/cmis(/.*)?</url>
+        <url>(.*)/atom/cmis10(/.*)?</url>
+      </urlPatterns>
+      <replacementChain>
+        <plugin>AUTOMATION_BASIC_AUTH</plugin>
+        <plugin>TOKEN_AUTH</plugin>
+      </replacementChain>
+    </specificAuthenticationChain>
+
   </extension>
 
 </component>
