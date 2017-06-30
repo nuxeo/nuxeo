@@ -20,6 +20,11 @@
 ## Shell script calling a multi-OS Nuxeo Java launcher.
 ## Using explicitely bash to avoid dash which is not POSIX.
 ##
+
+if [[ "x $@" =~ " -d" || "x $@" =~ " --debug" || -n "$LAUNCHER_DEBUG" ]]; then
+  set -x
+fi
+
 MAX_FD_LIMIT_HELP_URL="https://doc.nuxeo.com/nxdoc/java.net.SocketException-too-many-open-files/"
 
 : ${NUXEO_HOME:=$(cd "$(dirname "$0")"/..; pwd -P)}
@@ -211,8 +216,6 @@ while true; do
     fi
   done
   cp "$NUXEO_LAUNCHER" "$TMPLAUNCHER"
-  [[ "x $@" =~ " -d" || "x $@" =~ " --debug" || -n "$LAUNCHER_DEBUG" ]] && \
-           echo "Launcher command: $JAVA  \"-Xbootclasspath/a:$JAVA_TOOLS\" $LAUNCHER_DEBUG \"-Dlauncher.java.opts=$JAVA_OPTS\" \"-Dnuxeo.home=$NUXEO_HOME\" \"-Dnuxeo.conf=$NUXEO_CONF\" \"-Dnuxeo.log.dir=$LOG_DIR\" -jar \"$TMPLAUNCHER\" $@"
   echo [`date`] "Launcher command: $JAVA  \"-Xbootclasspath/a:$JAVA_TOOLS\" $LAUNCHER_DEBUG \"-Dlauncher.java.opts=$JAVA_OPTS\" \"-Dnuxeo.home=$NUXEO_HOME\" \"-Dnuxeo.conf=$NUXEO_CONF\" \"-Dnuxeo.log.dir=$LOG_DIR\" -jar \"$TMPLAUNCHER\" $@" >> "$LOG_DIR"/nuxeoctl.log
   "$JAVA" "-Xbootclasspath/a:$JAVA_TOOLS" $LAUNCHER_DEBUG "-Dlauncher.java.opts=$JAVA_OPTS" "-Dnuxeo.home=$NUXEO_HOME" "-Dnuxeo.conf=$NUXEO_CONF" "-Dnuxeo.log.dir=$LOG_DIR" -jar "$TMPLAUNCHER" "$@"
   exitcode=$?
