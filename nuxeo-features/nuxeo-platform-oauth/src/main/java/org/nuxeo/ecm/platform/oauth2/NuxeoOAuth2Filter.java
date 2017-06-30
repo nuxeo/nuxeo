@@ -75,9 +75,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         String accessToken = getAccessToken(httpRequest);
         if (accessToken != null) {
             processAuthentication(accessToken, httpRequest, httpResponse, chain);
-        }
-
-        if (!response.isCommitted()) {
+        } else {
             chain.doFilter(request, response);
         }
     }
