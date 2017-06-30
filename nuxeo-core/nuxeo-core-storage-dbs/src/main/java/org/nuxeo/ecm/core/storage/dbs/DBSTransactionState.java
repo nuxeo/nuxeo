@@ -620,6 +620,7 @@ public class DBSTransactionState {
                     // increment system change token
                     Long base = (Long) docState.get(KEY_SYS_CHANGE_TOKEN);
                     docState.put(KEY_SYS_CHANGE_TOKEN, DeltaLong.valueOf(base, 1));
+                    diff.put(KEY_SYS_CHANGE_TOKEN, DeltaLong.valueOf(base, 1));
                     // update change token if applicable (user change)
                     if (userChangeIds.contains(id)) {
                         changeTokenUpdater = new ChangeTokenUpdater(docState);
