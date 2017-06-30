@@ -6,7 +6,7 @@ function formatSuggestedCollection(collection) {
   } else {
     markup = "<table><tbody>";
   }
-  markup += "<tr><td>";
+  markup += "<tr><td style='width:20px'>";
   if (!isNew) {
     if (collection.icon) {
       markup += "<img class='smallIcon' src='" + window.nxContextPath
