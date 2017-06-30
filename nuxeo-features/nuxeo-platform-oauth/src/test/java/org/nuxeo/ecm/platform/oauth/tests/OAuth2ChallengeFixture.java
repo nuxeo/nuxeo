@@ -350,15 +350,15 @@ public class OAuth2ChallengeFixture {
         return wr.queryParams(params).post(ClientResponse.class);
     }
 
-    protected ClientResponse responseFromTokenWith(Map<String, String> queryParams) {
+    protected ClientResponse responseFromTokenWith(Map<String, String> params) {
         WebResource wr = client.resource(BASE_URL).path("oauth2").path(ENDPOINT_TOKEN);
 
-        MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-        for (Map.Entry<String, String> entry : queryParams.entrySet()) {
-            params.add(entry.getKey(), entry.getValue());
+        MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            formData.add(entry.getKey(), entry.getValue());
         }
 
-        return wr.queryParams(params).get(ClientResponse.class);
+        return wr.post(ClientResponse.class, formData);
     }
 
 }
