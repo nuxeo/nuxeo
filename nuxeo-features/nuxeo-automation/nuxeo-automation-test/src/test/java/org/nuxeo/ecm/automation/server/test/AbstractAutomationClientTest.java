@@ -45,6 +45,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.RemoteException;
@@ -433,6 +434,7 @@ public abstract class AbstractAutomationClientTest {
      * Test blobs input / output
      */
     @Test
+    @Ignore("NXP-22652")
     public void testGetBlobs() throws Exception {
         // create a note
         Document note = (Document) session.newRequest(CreateDocument.ID)
