@@ -4440,6 +4440,28 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
+    public void testChangeTokenSystem() {
+        assumeTrue("test only makes sense for real change tokens", isChangeTokenEnabled());
+
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        assertEquals("0-0", doc.getChangeToken());
+
+        // now change the doc
+        doc.setPropertyValue("dc:title", "Doc Changed");
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // reopen session to not read from caches
+        reopenSession();
+        doc = session.getDocument(doc.getRef());
+
+        // the system change token has been updated and written (+ 1 another change for fulltext)
+        assertEquals("2-0", doc.getChangeToken());
+    }
+
+    @Test
     public void testChangeTokenBatched() {
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
         DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
