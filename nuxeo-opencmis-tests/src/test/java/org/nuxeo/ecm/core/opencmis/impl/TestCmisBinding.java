@@ -155,6 +155,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoTypeHelper;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
+import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -844,8 +845,12 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals(Collections.emptyList(), v.getValues());
 
         v = p.getProperties().get("cmis:changeToken");
-        if (coreFeature.getStorageConfiguration().isChangeTokenEnabled()) {
-            assertEquals("2-0", v.getFirstValue());
+        StorageConfiguration storageConfiguration = coreFeature.getStorageConfiguration();
+        if (storageConfiguration.isChangeTokenEnabled()) {
+            // there are 2 updates for fulltext (simple text and binary)
+            // and DBS has an additional update for ecm:racl
+            String expected = storageConfiguration.isVCS() ? "2-0" : "3-0";
+            assertEquals(expected, v.getFirstValue());
         } else {
             Calendar lastModified = (Calendar) p.getProperties().get("dc:modified").getFirstValue();
             assertEquals(Long.toString(lastModified.getTimeInMillis()), v.getFirstValue());
