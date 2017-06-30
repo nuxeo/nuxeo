@@ -1,36 +1,34 @@
 /*
- * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
- *     tdelprat, jcarsique
+ *     tdelprat
+ *     jcarsique
+ *     Yannis JULIENNE
  */
 
 package org.nuxeo.ecm.admin;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.SimpleLog;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
-import org.nuxeo.log4j.ThreadedStreamGobbler;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -61,44 +59,28 @@ public class NuxeoCtlManager {
     }
 
     protected static boolean doExec(String path, String logPath) {
-        String[] cmd;
-        if (SystemUtils.IS_OS_WINDOWS) {
-            cmd = new String[] { "cmd", "/C", winEscape(new File(path, CMD_WIN).getPath()), "--gui=false", "restartbg" };
-        } else {
-            cmd = new String[] { "/bin/sh", "-c", "\"" + new File(path, CMD_POSIX).getPath() + "\"" + " restartbg" };
-        }
-
-        Process p1;
         try {
+            String[] cmd = getCommand(path);
             if (log.isDebugEnabled()) {
                 log.debug("Restart command: " + StringUtils.join(cmd, " "));
             }
-            ProcessBuilder pb = new ProcessBuilder(cmd);
-            p1 = pb.start();
+            ProcessBuilder pb = new ProcessBuilder(cmd).redirectOutput(new File(logPath, "restart.log")).redirectError(
+                    new File(logPath, "restart-err.log"));
+            pb.start();
         } catch (IOException e) {
             log.error("Unable to restart server", e);
             return false;
         }
 
-        if (isWindows()) {
-            File logPathDir = new File(logPath);
-            File out = new File(logPathDir, "restart-" + System.currentTimeMillis() + ".log");
-            File err = new File(logPathDir, "restart-err-" + System.currentTimeMillis() + ".log");
-            OutputStream fout = null;
-            OutputStream ferr = null;
-            try {
-                fout = new FileOutputStream(out);
-                ferr = new FileOutputStream(err);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            new ThreadedStreamGobbler(p1.getInputStream(), fout).start();
-            new ThreadedStreamGobbler(p1.getErrorStream(), ferr).start();
-        } else {
-            new ThreadedStreamGobbler(p1.getInputStream(), SimpleLog.LOG_LEVEL_OFF).start();
-            new ThreadedStreamGobbler(p1.getErrorStream(), SimpleLog.LOG_LEVEL_ERROR).start();
-        }
         return true;
+    }
+
+    protected static String[] getCommand(String path) {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return new String[] { "cmd", "/C", winEscape(new File(path, CMD_WIN).getPath()), "--gui=false",
+                    "restartbg" };
+        }
+        return new String[] { "/bin/sh", "-c", "\"" + new File(path, CMD_POSIX).getPath() + "\"" + " restartbg" };
     }
 
     private static boolean restartInProgress = false;
