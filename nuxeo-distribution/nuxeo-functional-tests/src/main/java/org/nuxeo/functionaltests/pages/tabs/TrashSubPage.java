@@ -112,7 +112,10 @@ public class TrashSubPage extends AbstractPage {
      * @since 8.3
      */
     public TrashSubPage selectByTitle(String... titles) {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         getElement().checkByTitle(titles);
+        arm.end();
         return asPage(TrashSubPage.class);
     }
 
@@ -120,7 +123,10 @@ public class TrashSubPage extends AbstractPage {
      * @since 8.3
      */
     public DocumentBasePage restoreDocument(String... titles) {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         getElement().checkByTitle(titles);
+        arm.end();
         restoreSelectedDocuments();
         return asPage(DocumentBasePage.class);
     }
@@ -129,8 +135,10 @@ public class TrashSubPage extends AbstractPage {
      * @since 8.3
      */
     public TrashSubPage purgeDocument(String... titles) {
-//        return getElement().selectByTitle(titles).delete(TrashSubPage.class);
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         getElement().checkByTitle(titles);
+        arm.end();
         deleteSelectedDocuments();
         return asPage(TrashSubPage.class);
     }
