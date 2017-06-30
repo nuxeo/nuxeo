@@ -87,8 +87,6 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         String pathInfo = request.getPathInfo();
         if (pathInfo.endsWith(ENDPOINT_AUTH)) {
             doGetAuthorize(request, response);
-        } else if (pathInfo.endsWith(ENDPOINT_TOKEN)) {
-            doGetToken(request, response);
         } else {
             response.sendError(SC_NOT_FOUND);
         }
@@ -100,6 +98,8 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         String pathInfo = request.getPathInfo();
         if (pathInfo.endsWith(ENDPOINT_AUTH_SUBMIT)) {
             doPostAuthorizeSubmit(request, response);
+        } else if (pathInfo.endsWith(ENDPOINT_TOKEN)) {
+            doPostToken(request, response);
         } else {
             response.sendError(SC_NOT_FOUND);
         }
@@ -185,7 +185,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         sendRedirect(request, response, redirectURI, params);
     }
 
-    protected void doGetToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPostToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         TokenRequest tokenRequest = new TokenRequest(request);
         OAuth2ClientService clientService = Framework.getService(OAuth2ClientService.class);
         // Process Authorization code
