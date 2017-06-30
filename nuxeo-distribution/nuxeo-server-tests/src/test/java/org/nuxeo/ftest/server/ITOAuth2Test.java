@@ -59,6 +59,26 @@ import com.sun.jersey.api.client.WebResource;
  */
 public class ITOAuth2Test extends AbstractTest {
 
+    public static class OAuth2Token {
+
+        public final String accessToken;
+
+        public final String refreshToken;
+
+        public OAuth2Token(String accessToken, String refreshToken) {
+            this.accessToken = accessToken;
+            this.refreshToken = refreshToken;
+        }
+    }
+
+    public static final String DOC_PATH = "/api/v1/path/";
+
+    public static final String JSON_CMIS_PATH = "/json/cmis";
+
+    public static final String ATOM_CMIS_PATH = "/atom/cmis";
+
+    public static final String ATOM_CMIS10_PATH = "/atom/cmis10";
+
     protected Client client = Client.create();
 
     @BeforeClass
@@ -146,7 +166,40 @@ public class ITOAuth2Test extends AbstractTest {
     }
 
     @Test
-    public void testAuthorizationWithAccessToken() {
+    public void testAuthorizationOnRestAPI() {
+        OAuth2Token token = getOAuth2Token();
+
+        checkAuthorizationWithValidAccessToken(DOC_PATH, token.accessToken);
+
+        // refresh the access token
+        OAuth2Token refreshedToken = refreshOAuth2Token(token.refreshToken);
+
+        checkAuthorizationWithInvalidAccessToken(DOC_PATH, token.accessToken);
+
+        checkAuthorizationWithValidAccessToken(DOC_PATH, refreshedToken.accessToken);
+    }
+
+    @Test
+    public void testAuthorizationOnCMIS() {
+        OAuth2Token token = getOAuth2Token();
+
+        checkAuthorizationWithValidAccessToken(JSON_CMIS_PATH, token.accessToken);
+        checkAuthorizationWithValidAccessToken(ATOM_CMIS_PATH, token.accessToken);
+        checkAuthorizationWithValidAccessToken(ATOM_CMIS10_PATH, token.accessToken);
+
+        // refresh the access token
+        OAuth2Token refreshedToken = refreshOAuth2Token(token.refreshToken);
+
+        checkAuthorizationWithInvalidAccessToken(JSON_CMIS_PATH, token.accessToken);
+        checkAuthorizationWithInvalidAccessToken(ATOM_CMIS_PATH, token.accessToken);
+        checkAuthorizationWithInvalidAccessToken(ATOM_CMIS10_PATH, token.accessToken);
+
+        checkAuthorizationWithValidAccessToken(JSON_CMIS_PATH, refreshedToken.accessToken);
+        checkAuthorizationWithValidAccessToken(ATOM_CMIS_PATH, refreshedToken.accessToken);
+        checkAuthorizationWithValidAccessToken(ATOM_CMIS10_PATH, refreshedToken.accessToken);
+    }
+
+    protected OAuth2Token getOAuth2Token() {
         OAuth2GrantPage grantPage = getOAuth2GrantPage("Administrator", "Administrator");
         grantPage.grant();
         String currentURL = driver.getCurrentUrl();
@@ -154,38 +207,40 @@ public class ITOAuth2Test extends AbstractTest {
         String code = parameters.get(AUTHORIZATION_CODE_PARAM);
         driver.get(NUXEO_URL + "/oauth2/token?grant_type=authorization_code&client_id=test-client&code=" + code);
         String pageSource = driver.getPageSource();
-        String accessToken = extractJSONParameter(pageSource, "access_token");
+        return new OAuth2Token(extractJSONParameter(pageSource, "access_token"),
+                extractJSONParameter(pageSource, "refresh_token"));
+    }
 
-        WebResource wr = webResourceFor("/");
+    protected OAuth2Token refreshOAuth2Token(String refreshToken) {
+        driver.get(NUXEO_URL + "/oauth2/token?grant_type=refresh_token&client_id=test-client&refresh_token="
+                + refreshToken);
+        String pageSource = driver.getPageSource();
+        return new OAuth2Token(extractJSONParameter(pageSource, "access_token"),
+                extractJSONParameter(pageSource, "refresh_token"));
+    }
+
+    protected void checkAuthorizationWithValidAccessToken(String path, String accessToken) {
+        WebResource wr = client.resource(NUXEO_URL).path(path);
         ClientResponse cr = wr.get(ClientResponse.class);
         assertEquals(401, cr.getStatus());
 
-        wr = webResourceFor("/");
-        cr = wr.header("Authorization", "Bearer " + accessToken).get(ClientResponse.class);
-        assertEquals(200, cr.getStatus());
-
-        wr = webResourceFor("/");
+        wr = client.resource(NUXEO_URL).path(path);
         cr = wr.queryParam("access_token", accessToken).get(ClientResponse.class);
         assertEquals(200, cr.getStatus());
 
-        // refresh the access token
-        String refreshToken = extractJSONParameter(pageSource, "refresh_token");
-        driver.get(NUXEO_URL + "/oauth2/token?grant_type=refresh_token&client_id=test-client&refresh_token="
-                + refreshToken);
-        pageSource = driver.getPageSource();
-        String refreshedAccessToken = extractJSONParameter(pageSource, "access_token");
-
-        wr = webResourceFor("/");
+        wr = client.resource(NUXEO_URL).path(path);
         cr = wr.header("Authorization", "Bearer " + accessToken).get(ClientResponse.class);
+        assertEquals(200, cr.getStatus());
+    }
+
+    protected void checkAuthorizationWithInvalidAccessToken(String path, String accessToken) {
+        WebResource wr = client.resource(NUXEO_URL).path(path);
+        ClientResponse cr = wr.queryParam("access_token", accessToken).get(ClientResponse.class);
         assertEquals(401, cr.getStatus());
 
-        wr = webResourceFor("/");
-        cr = wr.header("Authorization", "Bearer " + refreshedAccessToken).get(ClientResponse.class);
-        assertEquals(200, cr.getStatus());
-
-        wr = webResourceFor("/");
-        cr = wr.queryParam("access_token", refreshedAccessToken).get(ClientResponse.class);
-        assertEquals(200, cr.getStatus());
+        wr = client.resource(NUXEO_URL).path(path);
+        cr = wr.header("Authorization", "Bearer " + accessToken).get(ClientResponse.class);
+        assertEquals(401, cr.getStatus());
     }
 
     protected String extractJSONParameter(String pageSource, String parameterName) {
@@ -195,10 +250,6 @@ public class ITOAuth2Test extends AbstractTest {
             return matcher.group(1);
         }
         return null;
-    }
-
-    protected WebResource webResourceFor(String docPath) {
-        return client.resource(NUXEO_URL).path("api").path("v1").path("path").path(docPath);
     }
 
     protected OAuth2ErrorPage getOAuth2ErrorPage(String resource) {
