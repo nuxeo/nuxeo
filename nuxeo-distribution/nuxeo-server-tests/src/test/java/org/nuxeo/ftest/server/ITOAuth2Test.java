@@ -27,16 +27,19 @@ import static org.nuxeo.ecm.platform.oauth2.Constants.REDIRECT_URI_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.RESPONSE_TYPE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.STATE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.AUTHORIZATION_KEY;
+import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ENDPOINT_TOKEN;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.OAuth2Error.ACCESS_DENIED;
 import static org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest.MISSING_REQUIRED_FIELD_MESSAGE;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -51,6 +54,7 @@ import org.nuxeo.functionaltests.pages.LoginPage;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
  * Tests the OAuth2 authorization flow handled by the {@link NuxeoOAuth2Servlet}.
@@ -166,7 +170,7 @@ public class ITOAuth2Test extends AbstractTest {
     }
 
     @Test
-    public void testAuthorizationOnRestAPI() {
+    public void testAuthorizationOnRestAPI() throws IOException {
         OAuth2Token token = getOAuth2Token();
 
         checkAuthorizationWithValidAccessToken(DOC_PATH, token.accessToken);
@@ -180,7 +184,7 @@ public class ITOAuth2Test extends AbstractTest {
     }
 
     @Test
-    public void testAuthorizationOnCMIS() {
+    public void testAuthorizationOnCMIS() throws IOException {
         OAuth2Token token = getOAuth2Token();
 
         checkAuthorizationWithValidAccessToken(JSON_CMIS_PATH, token.accessToken);
@@ -199,24 +203,41 @@ public class ITOAuth2Test extends AbstractTest {
         checkAuthorizationWithValidAccessToken(ATOM_CMIS10_PATH, refreshedToken.accessToken);
     }
 
-    protected OAuth2Token getOAuth2Token() {
+    protected OAuth2Token getOAuth2Token() throws IOException {
         OAuth2GrantPage grantPage = getOAuth2GrantPage("Administrator", "Administrator");
         grantPage.grant();
         String currentURL = driver.getCurrentUrl();
         Map<String, String> parameters = URIUtils.getRequestParameters(currentURL);
         String code = parameters.get(AUTHORIZATION_CODE_PARAM);
-        driver.get(NUXEO_URL + "/oauth2/token?grant_type=authorization_code&client_id=test-client&code=" + code);
-        String pageSource = driver.getPageSource();
-        return new OAuth2Token(extractJSONParameter(pageSource, "access_token"),
-                extractJSONParameter(pageSource, "refresh_token"));
+
+        Map<String, String> params = new HashMap<>();
+        params.put("grant_type", "authorization_code");
+        params.put("client_id", "test-client");
+        params.put("code", code);
+        return getOAuth2Token(params);
     }
 
-    protected OAuth2Token refreshOAuth2Token(String refreshToken) {
-        driver.get(NUXEO_URL + "/oauth2/token?grant_type=refresh_token&client_id=test-client&refresh_token="
-                + refreshToken);
-        String pageSource = driver.getPageSource();
-        return new OAuth2Token(extractJSONParameter(pageSource, "access_token"),
-                extractJSONParameter(pageSource, "refresh_token"));
+    protected OAuth2Token getOAuth2Token(Map<String, String> params) throws IOException {
+        WebResource wr = client.resource(NUXEO_URL).path("oauth2").path(ENDPOINT_TOKEN);
+
+        MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            formData.add(entry.getKey(), entry.getValue());
+        }
+
+        ClientResponse cr = wr.post(ClientResponse.class, formData);
+        String json = cr.getEntity(String.class);
+        ObjectMapper obj = new ObjectMapper();
+        Map<?, ?> token = obj.readValue(json, Map.class);
+        return new OAuth2Token((String) token.get("access_token"), (String) token.get("refresh_token"));
+    }
+
+    protected OAuth2Token refreshOAuth2Token(String refreshToken) throws IOException {
+        Map<String, String> params = new HashMap<>();
+        params.put("grant_type", "refresh_token");
+        params.put("client_id", "test-client");
+        params.put("refresh_token", refreshToken);
+        return getOAuth2Token(params);
     }
 
     protected void checkAuthorizationWithValidAccessToken(String path, String accessToken) {
@@ -241,15 +262,6 @@ public class ITOAuth2Test extends AbstractTest {
         wr = client.resource(NUXEO_URL).path(path);
         cr = wr.header("Authorization", "Bearer " + accessToken).get(ClientResponse.class);
         assertEquals(401, cr.getStatus());
-    }
-
-    protected String extractJSONParameter(String pageSource, String parameterName) {
-        Pattern pattern = Pattern.compile(".*\"" + parameterName + "\":\"(.*?)\".*");
-        Matcher matcher = pattern.matcher(pageSource);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        return null;
     }
 
     protected OAuth2ErrorPage getOAuth2ErrorPage(String resource) {
