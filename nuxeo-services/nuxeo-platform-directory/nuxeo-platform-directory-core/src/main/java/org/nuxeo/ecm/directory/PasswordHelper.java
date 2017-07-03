@@ -141,7 +141,7 @@ public class PasswordHelper {
         try {
             MessageDigest md = MessageDigest.getInstance(algorithm);
             if (password == null) {
-            	password = "";
+                password = "";
             }
             md.update(password.getBytes("UTF-8"));
             md.update(salt);
