@@ -21,7 +21,7 @@ class UserEditor extends Select2Editor {
 
   prepare(row, col, prop, td, originalValue, cellProperties) {
     // flatten our values to a list of ids
-    var value = (Array.isArray(originalValue)) ? originalValue.map((u) => u.id) : originalValue.id;
+    var value = (Array.isArray(originalValue)) ? originalValue.map((u) => u.id) : originalValue ? originalValue.id : undefined;
     super.prepare(row, col, prop, td, value, cellProperties);
   }
 
