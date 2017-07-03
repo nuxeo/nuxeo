@@ -9,7 +9,8 @@
 
   <nxu:set var="currentLocalFlavorName"
     value="#{themeConfigurationActions.currentLocalFlavorName}"
-    cache="true">
+    cache="true"
+    useAlias="true">
   <nxu:set var="defaultFlavorName"
     value="#{themeConfigurationActions.getDefaultFlavorName(themeActions.defaultTheme)}"
     cache="true">
@@ -45,7 +46,8 @@
         <a4j:outputPanel id="#{widget.id}_preview" layout="block">
           <nxu:set var="selectedFlavor"
             value="#{themeActions.getFlavor(selectedFlavorName)}"
-            cache="true">
+            cache="true"
+            useAlias="true">
             <c:choose>
               <c:when test="#{! empty selectedFlavor.logo.previewPath}">
                 <h:graphicImage value="#{selectedFlavor.logo.previewPath}" class="palettePreviewLogo" />
