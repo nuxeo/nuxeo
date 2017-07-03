@@ -193,14 +193,26 @@ NodeVariables["comment"]= null;}</param>
     <directory name="WorkflowType">
       <schema>vocabulary</schema>
       <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <table>studio_vocabulary_WorkflowType</table>
       <dataFile>data/vocabularies/WorkflowType.csv</dataFile>
+      <cacheEntryName>vocab-WorkflowType-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>vocab-WorkflowType-cache-without-references</cacheEntryWithoutReferencesName>
     </directory>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
+    <cache name="vocab-WorkflowType-cache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+      <option name="maxSize">1000</option>
+      <option name="concurrencyLevel">500</option>
+      <ttl>60</ttl>
+    </cache>
+    <cache name="vocab-WorkflowType-cache-without-references" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+      <option name="maxSize">1000</option>
+      <option name="concurrencyLevel">500</option>
+      <ttl>60</ttl>
+    </cache>
   </extension>
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="var_global_Task2169" prefix="var_global_Task2169" override="true" src="data/schemas/var_global_Task2169.xsd"/>
