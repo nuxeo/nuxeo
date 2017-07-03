@@ -20,6 +20,9 @@
 
 package org.nuxeo.ecm.platform.oauth2;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @since 9.2
  */
@@ -56,5 +59,19 @@ public final class Constants {
     public static final String AUTHORIZATION_CODE_GRANT_TYPE = "authorization_code";
 
     public static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
+
+    /** --------------------------- PKCE --------------------------- */
+    public static final String CODE_CHALLENGE_PARAM = "code_challenge";
+
+    public static final String CODE_CHALLENGE_METHOD_PARAM = "code_challenge_method";
+
+    public static final String CODE_VERIFIER_PARAM = "code_verifier";
+
+    public static final String CODE_CHALLENGE_METHOD_PLAIN = "plain";
+
+    public static final String CODE_CHALLENGE_METHOD_S256 = "S256";
+
+    public static final List<String> CODE_CHALLENGE_METHODS_SUPPORTED = Arrays.asList(CODE_CHALLENGE_METHOD_PLAIN,
+            CODE_CHALLENGE_METHOD_S256);
 
 }
