@@ -40,6 +40,9 @@ public class TestPasswordHelper {
         assertFalse(PasswordHelper.verifyPassword("abcd", "{SSHA}WXYZ"));
         assertFalse(PasswordHelper.verifyPassword("abcd", "{SSHA}WPvqVeSt0Mr2llICYmAX9+pjtPH271eznDHvrwfghijkl"));
         assertFalse(PasswordHelper.verifyPassword("abcd", "{SSHA}/wZ7JQUARlC*"));
+        String hashed = PasswordHelper.hashPassword(null, PasswordHelper.SSHA);
+        assertTrue(hashed.startsWith("{SSHA}"));
+        assertTrue(PasswordHelper.verifyPassword(null, hashed));
     }
 
     @Test
