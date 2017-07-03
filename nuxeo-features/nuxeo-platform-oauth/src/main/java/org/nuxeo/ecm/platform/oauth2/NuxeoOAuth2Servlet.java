@@ -204,14 +204,24 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
                 // Validate client secret
                 if (client == null || !client.isValidWith(tokenRequest.getClientId(), tokenRequest.getClientSecret())) {
                     error = OAuth2Error.unauthorizedClient();
-                }
-                // Ensure redirect URIs are identical if the redirect_uri parameter was included in the authorization
-                // request
-                else {
+                } else {
+                    // Ensure redirect URIs are identical if the redirect_uri parameter was included in the
+                    // authorization request
                     String authRequestRedirectURI = authRequest.getRedirectURI();
                     if (StringUtils.isNotBlank(authRequestRedirectURI)
                             && !authRequestRedirectURI.equals(tokenRequest.getRedirectURI())) {
                         error = OAuth2Error.invalidRequest();
+                    } else {
+                        // Check PKCE
+                        String codeChallenge = authRequest.getCodeChallenge();
+                        if (codeChallenge != null) {
+                            String codeVerifier = tokenRequest.getCodeVerifier();
+                            if (codeVerifier == null) {
+                                error = OAuth2Error.invalidRequest();
+                            } else if (!authRequest.isCodeVerifierValid(codeVerifier)) {
+                                error = OAuth2Error.invalidGrant();
+                            }
+                        }
                     }
                 }
             }

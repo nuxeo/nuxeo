@@ -19,6 +19,11 @@
 package org.nuxeo.ecm.platform.oauth2.request;
 
 import static org.nuxeo.ecm.platform.oauth2.Constants.CLIENT_ID_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_CHALLENGE_METHODS_SUPPORTED;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_CHALLENGE_METHOD_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_CHALLENGE_METHOD_PLAIN;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_CHALLENGE_METHOD_S256;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_CHALLENGE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_RESPONSE_TYPE;
 import static org.nuxeo.ecm.platform.oauth2.Constants.REDIRECT_URI_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.RESPONSE_TYPE_PARAM;
@@ -33,6 +38,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
@@ -68,6 +75,10 @@ public class AuthorizationRequest extends OAuth2Request {
     protected String authorizationKey;
 
     protected String username;
+
+    protected String codeChallenge;
+
+    protected String codeChallengeMethod;
 
     public static AuthorizationRequest fromRequest(HttpServletRequest request) {
         return new AuthorizationRequest(request);
@@ -112,6 +123,9 @@ public class AuthorizationRequest extends OAuth2Request {
 
         creationDate = new Date();
         authorizationKey = RandomStringUtils.random(6, true, false);
+
+        codeChallenge = request.getParameter(CODE_CHALLENGE_PARAM);
+        codeChallengeMethod = request.getParameter(CODE_CHALLENGE_METHOD_PARAM);
     }
 
     protected AuthorizationRequest(Map<String, Serializable> map) {
@@ -123,6 +137,8 @@ public class AuthorizationRequest extends OAuth2Request {
         authorizationCode = (String) map.get("authorizationCode");
         authorizationKey = (String) map.get("authorizationKey");
         username = (String) map.get("username");
+        codeChallenge = (String) map.get("codeChallenge");
+        codeChallengeMethod = (String) map.get("codeChallengeMethod");
     }
 
     public OAuth2Error checkError() {
@@ -192,6 +208,19 @@ public class AuthorizationRequest extends OAuth2Request {
                     clientRedirectURI));
         }
 
+        // Check PKCE parameters
+        if (codeChallenge != null && codeChallengeMethod == null
+                || codeChallenge == null && codeChallengeMethod != null) {
+            return OAuth2Error.invalidRequest(String.format(
+                    "Invalid PKCE parameters: either both %s and %s parameters must be sent or none of them.",
+                    CODE_CHALLENGE_PARAM, CODE_CHALLENGE_METHOD_PARAM));
+        }
+        if (codeChallengeMethod != null && !CODE_CHALLENGE_METHODS_SUPPORTED.contains(codeChallengeMethod)) {
+            return OAuth2Error.invalidRequest(String.format(
+                    "Invalid %s parameter: transform algorithm %s not supported. The server only supports %s.",
+                    CODE_CHALLENGE_METHOD_PARAM, codeChallengeMethod, CODE_CHALLENGE_METHODS_SUPPORTED));
+        }
+
         return null;
     }
 
@@ -213,6 +242,14 @@ public class AuthorizationRequest extends OAuth2Request {
 
     public String getAuthorizationKey() {
         return authorizationKey;
+    }
+
+    public String getCodeChallenge() {
+        return codeChallenge;
+    }
+
+    public String getCodeChallengeMethod() {
+        return codeChallengeMethod;
     }
 
     public Map<String, Serializable> toMap() {
@@ -241,7 +278,27 @@ public class AuthorizationRequest extends OAuth2Request {
         if (username != null) {
             map.put("username", username);
         }
+        if (codeChallenge != null) {
+            map.put("codeChallenge", codeChallenge);
+        }
+        if (codeChallengeMethod != null) {
+            map.put("codeChallengeMethod", codeChallengeMethod);
+        }
         return map;
+    }
+
+    public boolean isCodeVerifierValid(String codeVerifier) {
+        if (codeChallenge == null || codeChallengeMethod == null) {
+            return false;
+        }
+        switch (codeChallengeMethod) {
+        case CODE_CHALLENGE_METHOD_S256:
+            return codeChallenge.equals(Base64.encodeBase64URLSafeString(DigestUtils.sha256(codeVerifier)));
+        case CODE_CHALLENGE_METHOD_PLAIN:
+            return codeChallenge.equals(codeVerifier);
+        default:
+            return false;
+        }
     }
 
 }

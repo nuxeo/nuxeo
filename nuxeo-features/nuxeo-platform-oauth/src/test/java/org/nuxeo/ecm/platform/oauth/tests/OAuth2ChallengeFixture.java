@@ -27,7 +27,12 @@ import static org.nuxeo.ecm.platform.oauth2.Constants.AUTHORIZATION_CODE_GRANT_T
 import static org.nuxeo.ecm.platform.oauth2.Constants.AUTHORIZATION_CODE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.CLIENT_ID_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.CLIENT_SECRET_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_CHALLENGE_METHOD_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_CHALLENGE_METHOD_PLAIN;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_CHALLENGE_METHOD_S256;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_CHALLENGE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_RESPONSE_TYPE;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_VERIFIER_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.GRANT_TYPE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.REDIRECT_URI_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.REFRESH_TOKEN_GRANT_TYPE;
@@ -38,6 +43,7 @@ import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ENDPOINT_AUTH;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ENDPOINT_AUTH_SUBMIT;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ENDPOINT_TOKEN;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.OAuth2Error.INVALID_GRANT;
 import static org.nuxeo.ecm.platform.oauth2.OAuth2Error.INVALID_REQUEST;
 
 import java.io.IOException;
@@ -50,6 +56,9 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -186,6 +195,39 @@ public class OAuth2ChallengeFixture {
         assertEquals(200, cr.getStatus());
     }
 
+    /**
+     * The client must send either both "code_challenge" and "code_challenge_method" parameters along with the
+     * authorization request or none of them.
+     * <p>
+     * The value of the "code_challenge_method" parameter must be either "plain" or "S256".
+     */
+    @Test
+    public void authorizeShouldValidatePKCE() {
+        // Invalid: code_challenge_method but no code_challenge
+        Map<String, String> params = new HashMap<>();
+        params.put(CLIENT_ID_PARAM, CLIENT_ID);
+        params.put(RESPONSE_TYPE_PARAM, CODE_RESPONSE_TYPE);
+        params.put(CODE_CHALLENGE_METHOD_PARAM, CODE_CHALLENGE_METHOD_S256);
+        ClientResponse cr = responseFromGetAuthorizeWith(params);
+        assertEquals(400, cr.getStatus());
+
+        // Invalid: code_challenge but no code_challenge_method
+        params.remove(CODE_CHALLENGE_METHOD_PARAM);
+        params.put(CODE_CHALLENGE_PARAM, "myCodeChallenge");
+        cr = responseFromGetAuthorizeWith(params);
+        assertEquals(400, cr.getStatus());
+
+        // Invalid: code_challenge_method not supported
+        params.put(CODE_CHALLENGE_METHOD_PARAM, "unknown");
+        cr = responseFromGetAuthorizeWith(params);
+        assertEquals(400, cr.getStatus());
+
+        // Valid: code_challenge and supported code_challenge_method
+        params.put(CODE_CHALLENGE_METHOD_PARAM, "S256");
+        cr = responseFromGetAuthorizeWith(params);
+        assertEquals(200, cr.getStatus());
+    }
+
     @Test
     public void shouldDenyAccess() {
         AuthorizationRequest authorizationRequest = initValidAuthorizeRequestCall(STATE);
@@ -217,6 +259,74 @@ public class OAuth2ChallengeFixture {
         shouldRetrieveAccessAndRefreshToken(STATE);
     }
 
+    /**
+     * If the "code_challenge" and "code_challenge_method" parameters are sent along with the authorization request, the
+     * client must send a "code_verifier" parameter along with the token request.
+     * <p>
+     * The server performs the proof of possession of the code verifier by the client by calculating the code challenge
+     * from the received "code_verifier" parameter transformed according to the "code_challenge_method" and comparing it
+     * with the previously associated "code_challenge".
+     */
+    @Test
+    public void tokenShouldValidatePKCE() throws IOException {
+        // let's first issue a code verifier by generating high-entropy cryptographic random string using unreserved
+        // characters with a minimum length of 43 characters
+        String codeVerifier = Base64.encodeBase64URLSafeString(RandomUtils.nextBytes(32));
+        // let's first use a code challenge derived from the code verifier by using the plain transformation
+        String codeChallenge = codeVerifier;
+
+        // missing code_verifier parameter
+        ClientResponse cr = getTokenResponse(null, codeChallenge, CODE_CHALLENGE_METHOD_PLAIN, null);
+        assertEquals(400, cr.getStatus());
+        String json = cr.getEntity(String.class);
+        ObjectMapper obj = new ObjectMapper();
+        Map<?, ?> error = obj.readValue(json, Map.class);
+        assertEquals(INVALID_REQUEST, error.get(ERROR_PARAM));
+
+        // invalid code_verifier parameter with plain code challenge method
+        cr = getTokenResponse(null, codeChallenge, CODE_CHALLENGE_METHOD_PLAIN, "invalidCodeVerifier");
+        assertEquals(400, cr.getStatus());
+        json = cr.getEntity(String.class);
+        obj = new ObjectMapper();
+        error = obj.readValue(json, Map.class);
+        assertEquals(INVALID_GRANT, error.get(ERROR_PARAM));
+
+        // valid code_verifier parameter with plain code challenge method
+        cr = getTokenResponse(null, codeChallenge, CODE_CHALLENGE_METHOD_PLAIN, codeVerifier);
+        assertEquals(200, cr.getStatus());
+        json = cr.getEntity(String.class);
+        obj = new ObjectMapper();
+        Map<?, ?> token = obj.readValue(json, Map.class);
+        assertNotNull(token);
+        String accessToken = (String) token.get("access_token");
+        assertEquals(32, accessToken.length());
+        String refreshToken = (String) token.get("refresh_token");
+        assertEquals(64, refreshToken.length());
+
+        // let's now use a code challenge derived from the code verifier by using the S256 transformation
+        codeChallenge = Base64.encodeBase64URLSafeString(DigestUtils.sha256(codeVerifier));
+
+        // invalid code_verifier parameter with S256 code challenge method
+        cr = getTokenResponse(null, codeChallenge, CODE_CHALLENGE_METHOD_S256, "invalidCodeVerifier");
+        assertEquals(400, cr.getStatus());
+        json = cr.getEntity(String.class);
+        obj = new ObjectMapper();
+        error = obj.readValue(json, Map.class);
+        assertEquals(INVALID_GRANT, error.get(ERROR_PARAM));
+
+        // valid code_verifier parameter with S256 code challenge method
+        cr = getTokenResponse(null, codeChallenge, CODE_CHALLENGE_METHOD_S256, codeVerifier);
+        assertEquals(200, cr.getStatus());
+        json = cr.getEntity(String.class);
+        obj = new ObjectMapper();
+        token = obj.readValue(json, Map.class);
+        assertNotNull(token);
+        accessToken = (String) token.get("access_token");
+        assertEquals(32, accessToken.length());
+        refreshToken = (String) token.get("refresh_token");
+        assertEquals(64, refreshToken.length());
+    }
+
     protected void shouldRetrieveAccessAndRefreshToken(String state) throws IOException {
         AuthorizationRequest authorizationRequest = initValidAuthorizeRequestCall(state);
         String key = authorizationRequest.getAuthorizationKey();
@@ -244,12 +354,7 @@ public class OAuth2ChallengeFixture {
         assertFalse(keys.contains(code));
         assertFalse(keys.contains(key));
 
-        authorizationRequest = initValidAuthorizeRequestCall(state);
-        key = authorizationRequest.getAuthorizationKey();
-        code = getAuthorizationCode(key, state);
-        params.put(AUTHORIZATION_CODE_PARAM, code);
-        params.put(REDIRECT_URI_PARAM, REDIRECT_URI);
-        cr = responseFromTokenWith(params);
+        cr = getTokenResponse(state);
         assertEquals(200, cr.getStatus());
         json = cr.getEntity(String.class);
         Map<?, ?> token = obj.readValue(json, Map.class);
@@ -276,12 +381,23 @@ public class OAuth2ChallengeFixture {
     }
 
     protected AuthorizationRequest initValidAuthorizeRequestCall(String state) {
+        return initValidAuthorizeRequestCall(state, null, null);
+    }
+
+    protected AuthorizationRequest initValidAuthorizeRequestCall(String state, String codeChallenge,
+            String codeChallengeMethod) {
         Map<String, String> params = new HashMap<>();
         params.put(REDIRECT_URI_PARAM, REDIRECT_URI);
         params.put(CLIENT_ID_PARAM, CLIENT_ID);
         params.put(RESPONSE_TYPE_PARAM, CODE_RESPONSE_TYPE);
         if (state != null) {
             params.put(STATE_PARAM, STATE);
+        }
+        if (codeChallenge != null) {
+            params.put(CODE_CHALLENGE_PARAM, codeChallenge);
+        }
+        if (codeChallengeMethod != null) {
+            params.put(CODE_CHALLENGE_METHOD_PARAM, codeChallengeMethod);
         }
 
         ClientResponse cr = responseFromGetAuthorizeWith(params);
@@ -317,6 +433,28 @@ public class OAuth2ChallengeFixture {
         assertFalse(keys.contains(key));
 
         return code;
+    }
+
+    protected ClientResponse getTokenResponse(String state) {
+        return getTokenResponse(state, null, null, null);
+    }
+
+    protected ClientResponse getTokenResponse(String state, String codeChallenge, String codeChallengeMethod,
+            String codeVerifier) {
+        AuthorizationRequest authorizationRequest = initValidAuthorizeRequestCall(state, codeChallenge,
+                codeChallengeMethod);
+        String key = authorizationRequest.getAuthorizationKey();
+        String code = getAuthorizationCode(key, state);
+        Map<String, String> params = new HashMap<>();
+        params.put(GRANT_TYPE_PARAM, AUTHORIZATION_CODE_GRANT_TYPE);
+        params.put(AUTHORIZATION_CODE_PARAM, code);
+        params.put(CLIENT_ID_PARAM, CLIENT_ID);
+        params.put(CLIENT_SECRET_PARAM, CLIENT_SECRET);
+        params.put(REDIRECT_URI_PARAM, REDIRECT_URI);
+        if (codeVerifier != null) {
+            params.put(CODE_VERIFIER_PARAM, codeVerifier);
+        }
+        return responseFromTokenWith(params);
     }
 
     protected String extractParameter(String url, String parameterName) {

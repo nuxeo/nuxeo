@@ -22,6 +22,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.oauth2.Constants.AUTHORIZATION_CODE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.CLIENT_ID_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_CHALLENGE_METHODS_SUPPORTED;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_CHALLENGE_METHOD_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_CHALLENGE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_RESPONSE_TYPE;
 import static org.nuxeo.ecm.platform.oauth2.Constants.REDIRECT_URI_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.RESPONSE_TYPE_PARAM;
@@ -133,6 +136,23 @@ public class ITOAuth2Test extends AbstractTest {
         errorPage.checkDescription(String.format(
                 "Invalid %s parameter: unknown. It must exactly match one of the redirect URIs configured for the app.",
                 REDIRECT_URI_PARAM));
+
+        // Invalid PKCE parameters
+        errorPage = getOAuth2ErrorPage(
+                "/oauth2/authorize?client_id=test-client&response_type=code&code_challenge=myCodeChallenge");
+        errorPage.checkDescription(
+                String.format("Invalid PKCE parameters: either both %s and %s parameters must be sent or none of them.",
+                        CODE_CHALLENGE_PARAM, CODE_CHALLENGE_METHOD_PARAM));
+        errorPage = getOAuth2ErrorPage(
+                "/oauth2/authorize?client_id=test-client&response_type=code&code_challenge_method=S256");
+        errorPage.checkDescription(
+                String.format("Invalid PKCE parameters: either both %s and %s parameters must be sent or none of them.",
+                        CODE_CHALLENGE_PARAM, CODE_CHALLENGE_METHOD_PARAM));
+        errorPage = getOAuth2ErrorPage(
+                "/oauth2/authorize?client_id=test-client&response_type=code&code_challenge=myCodeChallenge&code_challenge_method=unknown");
+        errorPage.checkDescription(String.format(
+                "Invalid %s parameter: transform algorithm unknown not supported. The server only supports %s.",
+                CODE_CHALLENGE_METHOD_PARAM, CODE_CHALLENGE_METHODS_SUPPORTED));
     }
 
     @Test
