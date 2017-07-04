@@ -76,6 +76,14 @@ public class TestRenditionOperation {
         assertEquals("application/pdf", renditionBlob.getMimeType());
         assertEquals("dummy.pdf", renditionBlob.getFilename());
 
+        // do it again in order to check the cached blob
+        ctx = new OperationContext(session);
+        ctx.setInput(file);
+        renditionBlob = (Blob) automationService.run(ctx, GetRendition.ID, params);
+        assertNotNull(renditionBlob);
+        assertEquals("application/pdf", renditionBlob.getMimeType());
+        assertEquals("dummy.pdf", renditionBlob.getFilename());
+
         Rendition pdfRendition = renditionService.getRendition(file, "pdf");
         assertEquals(renditionBlob.getLength(), pdfRendition.getBlob().getLength());
     }
