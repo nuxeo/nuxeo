@@ -364,6 +364,9 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
             if (config.isCacheEnabled()) {
                 ConversionCacheHolder.addToCache(cacheKey, result);
             }
+        } else {
+            // we need to reset the filename if result came from cache because it's just a hash
+            result.getBlob().setFilename(null);
         }
 
         if (result != null) {
