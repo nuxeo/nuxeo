@@ -57,6 +57,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -1668,7 +1669,7 @@ public class ConfigurationGenerator {
         String currentTemplatesStr = userConfig.getProperty(PARAM_TEMPLATES_NAME);
         List<String> templatesList = new ArrayList<>();
         templatesList.addAll(Arrays.asList(currentTemplatesStr.split(TEMPLATE_SEPARATOR)));
-        return templatesList;
+        return templatesList.stream().map(t -> replaceEnvironmentVariables(t)).collect(Collectors.toList());
     }
 
     /**
