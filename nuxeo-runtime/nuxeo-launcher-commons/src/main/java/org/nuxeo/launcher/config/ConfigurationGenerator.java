@@ -58,6 +58,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -1414,7 +1415,7 @@ public class ConfigurationGenerator {
 
     /**
      * Checks the userConfig bind address is not 0.0.0.0 and replaces it with 127.0.0.1 if needed
-     * 
+     *
      * @return the userConfig bind address if not 0.0.0.0 else 127.0.0.1
      * @throws ConfigurationException
      * @since 5.7
@@ -1425,7 +1426,7 @@ public class ConfigurationGenerator {
 
     /**
      * Checks hostName bind address is not 0.0.0.0 and replaces it with 127.0.0.1 if needed
-     * 
+     *
      * @param hostName the hostname of Nuxeo server (works also with the IP)
      * @return the bind address matching hostName parameter if not 0.0.0.0 else 127.0.0.1
      * @throws ConfigurationException
@@ -1667,9 +1668,11 @@ public class ConfigurationGenerator {
      */
     public List<String> getTemplateList() {
         String currentTemplatesStr = userConfig.getProperty(PARAM_TEMPLATES_NAME);
-        List<String> templatesList = new ArrayList<>();
-        templatesList.addAll(Arrays.asList(currentTemplatesStr.split(TEMPLATE_SEPARATOR)));
-        return templatesList.stream().map(t -> replaceEnvironmentVariables(t)).collect(Collectors.toList());
+
+        return Stream.of(currentTemplatesStr.split(TEMPLATE_SEPARATOR))
+                .map(this::replaceEnvironmentVariables)
+                .collect(Collectors.toList());
+
     }
 
     /**
