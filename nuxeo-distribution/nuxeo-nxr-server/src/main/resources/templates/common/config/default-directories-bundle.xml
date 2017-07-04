@@ -18,7 +18,6 @@
       <passwordField>password</passwordField>
       <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
       <autoincrementIdField>false</autoincrementIdField>
-      <computeMultiTenantId>false</computeMultiTenantId>
       <dataFile>users.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <querySizeLimit>50</querySizeLimit>
