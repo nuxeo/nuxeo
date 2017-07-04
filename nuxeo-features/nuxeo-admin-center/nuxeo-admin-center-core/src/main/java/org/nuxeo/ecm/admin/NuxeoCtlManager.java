@@ -62,9 +62,8 @@ public class NuxeoCtlManager {
             if (log.isDebugEnabled()) {
                 log.debug("Restart command: " + StringUtils.join(cmd, " "));
             }
-            ProcessBuilder pb = new ProcessBuilder(cmd).
-                    redirectOutput(new File(logPath, "restart.log")).
-                    redirectError(new File(logPath, "restart-err.log"));
+            ProcessBuilder pb = new ProcessBuilder(cmd).redirectOutput(new File(logPath, "restart.log")).redirectError(
+                    new File(logPath, "restart-err.log"));
             pb.start();
         } catch (IOException e) {
             log.error("Unable to restart server", e);
@@ -74,6 +73,13 @@ public class NuxeoCtlManager {
         return true;
     }
 
+    /**
+     * Gets the OS dependent command for nuxeoctl restartbg
+     *
+     * @param path the Nuxeo bin path
+     * @return an array of String to pass to the {@link ProcessBuilder}
+     * @since 8.10-HF10
+     */
     protected static String[] getCommand(String path) {
         if (SystemUtils.IS_OS_WINDOWS) {
             return new String[] { "cmd", "/C", winEscape(new File(path, CMD_WIN).getPath()), "--gui=false",
