@@ -165,7 +165,6 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin, NuxeoAuthe
     public Boolean handleLogout(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         Cookie cookie = getTokenCookie(httpRequest);
         if (cookie != null) {
-            cookie.setMaxAge(0);
             cookie.setValue("");
             httpResponse.addCookie(cookie);
         }
