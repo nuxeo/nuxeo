@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements Cachab
 
     @Override
     public void load(String path) throws IOException {
-        blobs = new ArrayList<Blob>();
+        blobs = new ArrayList<>();
         File base = new File(path);
         if (base.isDirectory()) {
             addDirectoryToList(base, "");
