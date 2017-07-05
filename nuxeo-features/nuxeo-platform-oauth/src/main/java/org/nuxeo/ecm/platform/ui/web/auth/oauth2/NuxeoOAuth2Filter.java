@@ -116,7 +116,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String uri = httpRequest.getRequestURI();
-        if (httpRequest.getPathInfo() != null && httpRequest.getPathInfo().startsWith(OAUTH2_SEGMENT)) {
+        if (uri.contains(OAUTH2_SEGMENT) && !uri.contains("/api/v1" + OAUTH2_SEGMENT)) {
             String endpoint = uri.split(OAUTH2_SEGMENT)[1];
             switch (endpoint) {
             case ENDPOINT_AUTH:
