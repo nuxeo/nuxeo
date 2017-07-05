@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -38,7 +39,7 @@ public class PermissionVisibilityDescriptor {
     @XNode("@type")
     private String typeName = "";
 
-    private final List<PermissionUIItemDescriptor> items = new ArrayList<PermissionUIItemDescriptor>();
+    private final List<PermissionUIItemDescriptor> items = new CopyOnWriteArrayList<>();
 
     private String[] sortedPermissionNames;
 
