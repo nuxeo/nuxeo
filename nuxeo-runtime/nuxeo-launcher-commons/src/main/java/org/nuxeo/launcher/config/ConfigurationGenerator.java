@@ -1669,8 +1669,7 @@ public class ConfigurationGenerator {
     public List<String> getTemplateList() {
         String currentTemplatesStr = userConfig.getProperty(PARAM_TEMPLATES_NAME);
 
-        return Stream.of(currentTemplatesStr.split(TEMPLATE_SEPARATOR))
-                .map(this::replaceEnvironmentVariables)
+        return Stream.of(replaceEnvironmentVariables(currentTemplatesStr).split(TEMPLATE_SEPARATOR))
                 .collect(Collectors.toList());
 
     }
