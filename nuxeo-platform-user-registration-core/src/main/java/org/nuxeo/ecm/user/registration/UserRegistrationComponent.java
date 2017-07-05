@@ -96,7 +96,7 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
         @Override
         public void run() {
 
-            //Check if login is defined - if not define it with email
+            // Check if login is defined - if not define it with email
             userInfo.setLogin(userInfo.getLogin() == null ? userInfo.getEmail() : userInfo.getLogin());
 
             String title = "registration request for " + userInfo.getLogin() + " (" + userInfo.getEmail() + " "
@@ -166,15 +166,15 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
     @Override
     public String submitRegistrationRequest(String configurationName, UserRegistrationInfo userInfo,
             DocumentRegistrationInfo docInfo, Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept, String principalName) throws
-            UserRegistrationException {
+            ValidationMethod validationMethod, boolean autoAccept, String principalName)
+            throws UserRegistrationException {
         RegistrationCreator creator = new RegistrationCreator(configurationName, userInfo, docInfo, additionnalInfo,
                 validationMethod, principalName);
         creator.runUnrestricted();
         String registrationUuid = creator.getRegistrationUuid();
 
-        boolean userAlreadyExists = null != Framework.getLocalService(UserManager.class).getPrincipal(
-                userInfo.getLogin());
+        boolean userAlreadyExists = null != Framework.getLocalService(UserManager.class)
+                                                     .getPrincipal(userInfo.getLogin());
         // Directly accept registration if the configuration allow it and the
         // user already exists
         RegistrationRules registrationRules = getRegistrationRules(configurationName);
@@ -213,7 +213,8 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
         input.put("info", (Serializable) additionnalInfo);
         StringWriter writer = new StringWriter();
 
-        UserRegistrationConfiguration configuration = getConfiguration((DocumentModel) registrationInfo.get(REGISTRATION_DATA_DOC));
+        UserRegistrationConfiguration configuration = getConfiguration(
+                (DocumentModel) registrationInfo.get(REGISTRATION_DATA_DOC));
         try {
             rh.getRenderingEngine().render(configuration.getSuccessEmailTemplate(), input, writer);
         } catch (RenderingException e) {
@@ -239,8 +240,8 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
     @Override
     public void addRightsOnDoc(CoreSession session, DocumentModel registrationDoc) {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
-        DocumentModel document = ((DefaultRegistrationUserFactory) getRegistrationUserFactory(configuration)).doAddDocumentPermission(
-                session, registrationDoc, configuration);
+        DocumentModel document = ((DefaultRegistrationUserFactory) getRegistrationUserFactory(
+                configuration)).doAddDocumentPermission(session, registrationDoc, configuration);
         if (document != null) {
             ((RegistrationUserFactory) getRegistrationUserFactory(configuration)).doPostAddDocumentPermission(session,
                     registrationDoc, document);
