@@ -512,6 +512,12 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertEquals("jdbc://10.0.0.1 false", configGenerator.getUserConfig().getProperty("nuxeo.env.prop3"));
     }
 
+    @Test
+    public void testEnvironmentVariableInTemplates() throws Exception {
+        configGenerator.getUserConfig().setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "${env:NUXEO_DB_TYPE:default,sql},docker,${env:NUXEO_DB_HOST:docker}");
+        assertEquals("default,sql,docker,10.0.0.1",String.join(",",configGenerator.getTemplateList()));
+    }
+
     /**
      * NXP-22031 - test the configuration reloading after wizard setup when using Nuxeo GUI launcher.
      */
