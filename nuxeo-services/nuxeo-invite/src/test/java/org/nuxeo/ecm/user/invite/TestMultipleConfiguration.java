@@ -75,7 +75,8 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
         assertEquals(0, userManager.searchUsers("testUser").size());
         assertEquals(0, userManager.searchUsers("testUser2").size());
 
-        UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(DEFAULT_CONFIGURATION_NAME);
+        UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(
+                DEFAULT_CONFIGURATION_NAME);
 
         // User info
         DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
