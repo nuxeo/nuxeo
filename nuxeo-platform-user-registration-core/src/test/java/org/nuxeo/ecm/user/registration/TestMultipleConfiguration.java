@@ -19,31 +19,40 @@ package org.nuxeo.ecm.user.registration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.user.invite.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
 
 import java.io.Serializable;
 import java.util.HashMap;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.user.invite.RegistrationRules;
 import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  */
 public class TestMultipleConfiguration extends AbstractUserRegistration {
 
+    protected DocumentModel testWorkspace;
+
+    @Before
+    public void createTestWorkspace() {
+        testWorkspace = session.createDocumentModel("/default-domain", "testWorkspace", "Workspace");
+        testWorkspace.setPropertyValue("dc:title", "Test Workspace");
+        session.createDocument(testWorkspace);
+    }
+
     @Test
     public void testMultipleUserRegistration() {
         initializeRegistrations();
-
-        // Create workspaces where users will be invited
-        DocumentModel testWorkspace = session.createDocumentModel("/default-domain", "testWorkspace", "Workspace");
-        testWorkspace.setPropertyValue("dc:title", "Test Workspace");
-        String workspaceId = session.createDocument(testWorkspace).getId();
-        session.save();
 
         assertEquals(0, userManager.searchUsers("testUser").size());
         assertEquals(0, userManager.searchUsers("testUser2").size());
@@ -79,5 +88,35 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
 
         assertNotNull(userManager.getUserModel("testUser"));
         assertNotNull(userManager.getUserModel("testUser2"));
+    }
+
+    @Test
+    public void testForceValidationForNonExistingUser() {
+        initializeRegistrations();
+
+        // User info
+        UserRegistrationInfo userInfo = new UserRegistrationInfo();
+        userInfo.setLogin("testUser");
+        userInfo.setEmail("dummy@test.com");
+
+        // Doc info
+        DocumentRegistrationInfo docInfo = new DocumentRegistrationInfo();
+        docInfo.setDocumentId(testWorkspace.getId());
+        docInfo.setPermission(SecurityConstants.READ_WRITE);
+
+        String requestId = userRegistrationService.submitRegistrationRequest("test", userInfo, docInfo, new HashMap<>(),
+                UserRegistrationService.ValidationMethod.NONE, false, "adminTest");
+        DocumentModel request = session.getDocument(new IdRef(requestId));
+        assertNull(request.getPropertyValue("registration:accepted"));
+
+        try {
+            Framework.getProperties().put(RegistrationRules.FORCE_VALIDATION_NON_EXISTING_USER_PROPERTY, "true");
+            requestId = userRegistrationService.submitRegistrationRequest("test", userInfo, docInfo, new HashMap<>(),
+                    UserRegistrationService.ValidationMethod.NONE, false, "adminTest");
+            request = session.getDocument(new IdRef(requestId));
+            assertTrue((Boolean) request.getPropertyValue("registration:accepted"));
+        } finally {
+            Framework.getProperties().remove(RegistrationRules.FORCE_VALIDATION_NON_EXISTING_USER_PROPERTY);
+        }
     }
 }
