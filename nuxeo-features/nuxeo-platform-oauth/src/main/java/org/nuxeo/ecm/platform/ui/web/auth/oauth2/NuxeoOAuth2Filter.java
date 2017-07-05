@@ -19,7 +19,6 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.HashMap;
@@ -76,8 +75,8 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
 
         if (!isValid(request)) {
             chain.doFilter(request, response);
@@ -111,8 +110,8 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         return isAuthorizedRequest(httpRequest) || httpRequest.getRequestURI().contains(OAUTH2_SEGMENT);
     }
 
-    protected void process(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
+    protected void process(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
@@ -273,7 +272,8 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
                 return;
             }
 
-            NuxeoOAuth2Token refreshed = getTokenStore().refresh(tokRequest.getRefreshToken(), tokRequest.getClientId());
+            NuxeoOAuth2Token refreshed = getTokenStore().refresh(tokRequest.getRefreshToken(),
+                    tokRequest.getClientId());
             if (refreshed == null) {
                 handleJsonError(ERRORS.invalid_request, request, response);
             } else {
