@@ -42,6 +42,8 @@ public class RegistrationRules {
     public static final String FIELD_DISPLAY_LOCAL_TAB = SCHEMA_REGISTRATION_RULES + ":"
             + "displayLocalRegistrationTab";
 
+    public static final String FORCE_VALIDATION_NON_EXISTING_USER_PROPERTY = "nuxeo.user.registration.force.validation.non.existing";
+
     protected DocumentModel requestContainer;
 
     private static final Log log = LogFactory.getLog(RegistrationRules.class);
@@ -87,6 +89,6 @@ public class RegistrationRules {
     }
 
     public boolean allowDirectValidationForNonExistingUser() {
-        return Framework.isBooleanPropertyTrue("nuxeo.user.registration.force.validation.non.existing");
+        return Framework.isBooleanPropertyTrue(FORCE_VALIDATION_NON_EXISTING_USER_PROPERTY);
     }
 }
