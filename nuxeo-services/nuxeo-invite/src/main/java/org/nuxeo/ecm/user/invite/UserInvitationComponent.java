@@ -42,9 +42,6 @@ import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -77,6 +74,10 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 public class UserInvitationComponent extends DefaultComponent implements UserInvitationService {
 
@@ -134,8 +135,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     }
 
     @Override
-    public DocumentModel getRegistrationRulesDocument(CoreSession session, String configurationName)
-            {
+    public DocumentModel getRegistrationRulesDocument(CoreSession session, String configurationName) {
         // By default, configuration is hold by the root request document
         return getOrCreateRootDocument(session, configurationName);
     }
@@ -278,8 +278,8 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
                 targetPrincipal = userManager.getPrincipal((String) doc.getPropertyValue("userinfo:email"));
             }
             if (targetPrincipal != null) {
-                DocumentModel target = session.getDocument(new IdRef(
-                        (String) doc.getPropertyValue("docinfo:documentId")));
+                DocumentModel target = session.getDocument(
+                        new IdRef((String) doc.getPropertyValue("docinfo:documentId")));
                 ACP acp = target.getACP();
                 Map<String, Serializable> contextData = new HashMap<>();
                 contextData.put("notify", true);
@@ -440,8 +440,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     }
 
-    protected void sendValidationEmail(Map<String, Serializable> additionnalInfo, DocumentModel registrationDoc)
-            {
+    protected void sendValidationEmail(Map<String, Serializable> additionnalInfo, DocumentModel registrationDoc) {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         sendEmail(additionnalInfo, registrationDoc, configuration.getValidationEmailTemplate(),
                 configuration.getValidationEmailTitle());
@@ -521,8 +520,8 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
                 (String) registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField()));
     }
 
-    protected void generateMail(String destination, String copy, String title, String content) throws NamingException,
-            MessagingException {
+    protected void generateMail(String destination, String copy, String title, String content)
+            throws NamingException, MessagingException {
 
         InitialContext ic = new InitialContext();
         Session session = (Session) ic.lookup(getJavaMailJndiName());
@@ -543,8 +542,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     @Override
     public String submitRegistrationRequest(DocumentModel userRegistrationModel,
-            Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod, boolean autoAccept)
-            {
+            Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod, boolean autoAccept) {
         return submitRegistrationRequest(DEFAULT_CONFIGURATION_NAME, userRegistrationModel, additionnalInfo,
                 validationMethod, autoAccept);
     }
@@ -583,10 +581,9 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     @Override
     public String submitRegistrationRequest(String configurationName, DocumentModel userRegistrationModel,
-            Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod, boolean autoAccept)
-            {
-        RegistrationCreator creator = new RegistrationCreator(configurationName, userRegistrationModel,
-                additionnalInfo, validationMethod);
+            Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod, boolean autoAccept) {
+        RegistrationCreator creator = new RegistrationCreator(configurationName, userRegistrationModel, additionnalInfo,
+                validationMethod);
         creator.runUnrestricted();
         String registrationUuid = creator.getRegistrationUuid();
 
@@ -663,7 +660,8 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         input.put("info", (Serializable) additionnalInfo);
         StringWriter writer = new StringWriter();
 
-        UserRegistrationConfiguration configuration = getConfiguration((DocumentModel) registrationInfo.get(REGISTRATION_DATA_DOC));
+        UserRegistrationConfiguration configuration = getConfiguration(
+                (DocumentModel) registrationInfo.get(REGISTRATION_DATA_DOC));
         try {
             rh.getRenderingEngine().render(configuration.getSuccessEmailTemplate(), input, writer);
         } catch (RenderingException e) {
@@ -697,8 +695,9 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
                 } else if (newConfig.isRemove()) {
                     configurations.remove(newConfig.getName());
                 } else {
-                    log.warn("Trying to register an existing userRegistration configuration without removing or merging it, in: "
-                            + contributor.getName());
+                    log.warn(
+                            "Trying to register an existing userRegistration configuration without removing or merging it, in: "
+                                    + contributor.getName());
                 }
             } else {
                 configurations.put(newConfig.getName(), newConfig);
@@ -725,8 +724,8 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     }
 
     @Override
-    public NuxeoPrincipal createUser(CoreSession session, DocumentModel registrationDoc) throws
-            UserRegistrationException {
+    public NuxeoPrincipal createUser(CoreSession session, DocumentModel registrationDoc)
+            throws UserRegistrationException {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         return getRegistrationUserFactory(configuration).doCreateUser(session, registrationDoc, configuration);
     }
@@ -795,8 +794,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     }
 
     @Override
-    public void reviveRegistrationRequests(CoreSession session, List<DocumentModel> registrationDocs)
-            {
+    public void reviveRegistrationRequests(CoreSession session, List<DocumentModel> registrationDocs) {
         for (DocumentModel registrationDoc : registrationDocs) {
             reviveRegistrationRequest(session, registrationDoc, new HashMap<String, Serializable>());
         }
@@ -815,8 +813,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     }
 
     @Override
-    public void deleteRegistrationRequests(CoreSession session, List<DocumentModel> registrationDocs)
-            {
+    public void deleteRegistrationRequests(CoreSession session, List<DocumentModel> registrationDocs) {
         for (DocumentModel registration : registrationDocs) {
             UserRegistrationConfiguration configuration = getConfiguration(registration);
             if (!registration.hasSchema(configuration.getUserInfoSchemaName())) {
