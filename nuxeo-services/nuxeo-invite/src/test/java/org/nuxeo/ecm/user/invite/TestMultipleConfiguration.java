@@ -18,6 +18,7 @@ package org.nuxeo.ecm.user.invite;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.user.invite.RegistrationRules.FIELD_ALLOW_USER_CREATION;
 import static org.nuxeo.ecm.user.invite.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
@@ -28,7 +29,9 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
@@ -64,12 +67,6 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
     public void testMultipleUserRegistration() {
         initializeRegistrations();
 
-        // Create workspaces where users will be invited
-        DocumentModel testWorkspace = session.createDocumentModel("/default-domain", "testWorkspace", "Workspace");
-        testWorkspace.setPropertyValue("dc:title", "Test Workspace");
-        String workspaceId = session.createDocument(testWorkspace).getId();
-        session.save();
-
         assertEquals(0, userManager.searchUsers("testUser").size());
         assertEquals(0, userManager.searchUsers("testUser2").size());
 
@@ -102,5 +99,31 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
 
         assertNotNull(userManager.getUserModel("testUser"));
         assertNotNull(userManager.getUserModel("testUser2"));
+    }
+
+    @Test
+    public void testForceValidationForNonExistingUser() {
+        initializeRegistrations();
+
+        UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(
+                DEFAULT_CONFIGURATION_NAME);
+        DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
+        userInfo.setPropertyValue("userinfo:login", "testUser");
+        userInfo.setPropertyValue("userinfo:email", "dummy@test.com");
+
+        String requestId = userRegistrationService.submitRegistrationRequest(DEFAULT_CONFIGURATION_NAME, userInfo,
+                new HashMap<>(), UserInvitationService.ValidationMethod.NONE, false);
+        DocumentModel request = session.getDocument(new IdRef(requestId));
+        assertNull(request.getPropertyValue("registration:accepted"));
+
+        try {
+            Framework.getProperties().put(RegistrationRules.FORCE_VALIDATION_NON_EXISTING_USER_PROPERTY, "true");
+            requestId = userRegistrationService.submitRegistrationRequest(DEFAULT_CONFIGURATION_NAME, userInfo,
+                    new HashMap<>(), UserInvitationService.ValidationMethod.NONE, false);
+            request = session.getDocument(new IdRef(requestId));
+            assertTrue((Boolean) request.getPropertyValue("registration:accepted"));
+        } finally {
+            Framework.getProperties().remove(RegistrationRules.FORCE_VALIDATION_NON_EXISTING_USER_PROPERTY);
+        }
     }
 }
