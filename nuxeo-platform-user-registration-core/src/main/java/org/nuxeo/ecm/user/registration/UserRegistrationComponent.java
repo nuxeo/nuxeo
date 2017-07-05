@@ -182,8 +182,7 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
         RegistrationRules registrationRules = getRegistrationRules(configurationName);
         boolean byPassAdminValidation = autoAccept;
         byPassAdminValidation |= userAlreadyExists && registrationRules.allowDirectValidationForExistingUser();
-        byPassAdminValidation |= registrationRules.allowDirectValidationForExistingUser()
-                && registrationRules.allowDirectValidationForNonExistingUser();
+        byPassAdminValidation |= !userAlreadyExists && registrationRules.allowDirectValidationForNonExistingUser();
         if (byPassAdminValidation) {
             // Build validationBaseUrl with nuxeo.url property as request is
             // not accessible.
