@@ -402,6 +402,7 @@ public class WorkManagerTest {
         assertMetrics(0, 0, 1, 0);
     }
 
+    @Ignore("NXP-22704")
     @Test
     public void transientFilesWorkAreCleaned() throws Exception {
         final File file = feature.resolveAndCreate(new File("pfouh"));
