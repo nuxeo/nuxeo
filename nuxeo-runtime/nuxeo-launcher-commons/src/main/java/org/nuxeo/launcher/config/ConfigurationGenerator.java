@@ -794,6 +794,7 @@ public class ConfigurationGenerator {
             log.warn("No template found in configuration! Fallback on 'default'.");
             templates = "default";
         }
+        templates = replaceEnvironmentVariables(templates);
         userConfig.setProperty(PARAM_TEMPLATES_NAME, templates);
         return templates;
     }
