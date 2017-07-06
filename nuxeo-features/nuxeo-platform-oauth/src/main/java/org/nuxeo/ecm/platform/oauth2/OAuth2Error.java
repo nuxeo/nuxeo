@@ -27,8 +27,6 @@ public class OAuth2Error {
 
     public static final String INVALID_REQUEST = "invalid_request";
 
-    public static final String INVALID_GRANT = "invalid_grant";
-
     public static final String UNAUTHORIZED_CLIENT = "unauthorized_client";
 
     public static final String ACCESS_DENIED = "access_denied";
@@ -40,6 +38,12 @@ public class OAuth2Error {
     public static final String SERVER_ERROR = "server_error";
 
     public static final String TEMPORARILY_UNAVAILABLE = "temporarily_unavailable";
+
+    public static final String INVALID_CLIENT = "invalid_client";
+
+    public static final String INVALID_GRANT = "invalid_grant";
+
+    public static final String UNSUPPORTED_GRANT_TYPE = "unsupported_grant_type";
 
     protected final String id;
 
@@ -64,14 +68,6 @@ public class OAuth2Error {
 
     public static OAuth2Error invalidRequest() {
         return invalidRequest(null);
-    }
-
-    public static OAuth2Error invalidGrant(String description) {
-        return new OAuth2Error(INVALID_GRANT, description);
-    }
-
-    public static OAuth2Error invalidGrant() {
-        return invalidGrant(null);
     }
 
     public static OAuth2Error unauthorizedClient(String description) {
@@ -120,5 +116,29 @@ public class OAuth2Error {
 
     public static OAuth2Error temporarilyUnavailable() {
         return temporarilyUnavailable(null);
+    }
+
+    public static OAuth2Error invalidClient(String description) {
+        return new OAuth2Error(INVALID_CLIENT, description);
+    }
+
+    public static OAuth2Error invalidClient() {
+        return invalidClient(null);
+    }
+
+    public static OAuth2Error invalidGrant(String description) {
+        return new OAuth2Error(INVALID_GRANT, description);
+    }
+
+    public static OAuth2Error invalidGrant() {
+        return invalidGrant(null);
+    }
+
+    public static OAuth2Error unsupportedGrantType(String description) {
+        return new OAuth2Error(UNSUPPORTED_GRANT_TYPE, description);
+    }
+
+    public static OAuth2Error unsupportedGrantType() {
+        return unsupportedGrantType(null);
     }
 }
