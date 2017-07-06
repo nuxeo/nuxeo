@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>
     <@block name="title">Nuxeo Platform Explorer</@block>
