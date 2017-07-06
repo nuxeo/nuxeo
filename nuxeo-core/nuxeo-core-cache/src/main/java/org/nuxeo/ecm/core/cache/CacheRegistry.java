@@ -59,8 +59,8 @@ public final class CacheRegistry extends ContributionFragmentRegistry<CacheDescr
         }
 
         if (caches.containsKey(name)) {
-            throw new IllegalStateException(String.format(
-                    "Another cache has already been registered for the given name %s", name));
+            log.warn(String.format("Another cache has already been registered for the given name %s", name));
+            return;
         }
 
         caches.put(name, descriptor);
@@ -80,7 +80,8 @@ public final class CacheRegistry extends ContributionFragmentRegistry<CacheDescr
         String name = origContrib.name;
         CacheDescriptor cache = caches.remove(name);
         if (cache == null) {
-            throw new IllegalStateException("No such cache registered" + name);
+            log.warn("No such cache registered" + name);
+            return;
         }
         try {
             cache.stop();
