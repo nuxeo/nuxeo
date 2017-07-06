@@ -22,8 +22,10 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.MAX_RESULTS_PROPERTY;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.PAGE_SIZE_RESULTS_KEY;
-import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME;
-import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE_PROVIDER_NAME;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants
+        .DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants
+        .DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE_PROVIDER_NAME;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -35,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -55,6 +58,7 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -91,11 +95,18 @@ import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.task.core.helpers.TaskActorsHelper;
 import org.nuxeo.ecm.platform.task.core.service.TaskEventNotificationHelper;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.ComponentEvent;
+import org.nuxeo.runtime.ComponentListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentManager;
+import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.Extension;
+import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -158,6 +169,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     protected RepositoryInitializationHandler repositoryInitializationHandler;
 
     private Cache<String, String> modelsChache;
+
+    /**
+     * @since 9.2
+     */
+    private DocumentRoutingRuntimeListener runtimeListener;
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
@@ -724,6 +740,9 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         modelsChache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(10, TimeUnit.MINUTES).build();
         repositoryInitializationHandler = new RouteModelsInitializator();
         repositoryInitializationHandler.install();
+        // TODO remove it when changing reload strategy
+        runtimeListener = new DocumentRoutingRuntimeListener();
+        Framework.getRuntime().getComponentManager().addComponentListener(runtimeListener);
     }
 
     @Override
@@ -731,6 +750,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         super.deactivate(context);
         if (repositoryInitializationHandler != null) {
             repositoryInitializationHandler.uninstall();
+        }
+        // TODO remove it when changing reload strategy
+        if (runtimeListener != null) {
+            Framework.getRuntime().getComponentManager().removeComponentListener(runtimeListener);
         }
     }
 
@@ -1460,4 +1483,67 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     public boolean isWorkflowModel(final DocumentRoute documentRoute) {
         return documentRoute.isValidated();
     }
+
+    /**
+     * We need this listener due to the {@code unstash} reload strategy which doesn't call repository initializator.
+     *
+     * @since 9.2
+     */
+    public static class DocumentRoutingRuntimeListener implements ComponentListener {
+
+        @Override
+        public void handleEvent(ComponentEvent event) {
+            // only handle event for component registering routes
+            if (event != null && ComponentEvent.COMPONENT_STARTED == event.id) {
+                RegistrationInfo ri = event.registrationInfo;
+                // look for this service registration
+                boolean hasRouteContribution = Stream.of(ri.getExtensions())
+                                                     .map(Extension::getTargetComponent)
+                                                     .map(ComponentName::getName)
+                                                     .anyMatch("org.nuxeo.ecm.platform.routing.service"::equals);
+                if (hasRouteContribution) {
+                    importAllRouteModels();
+                }
+            }
+        }
+
+        protected void importAllRouteModels() {
+            // This code is welly done by RouteModelsInitializator, but in development mode we also want to execute it
+            // during hotreload. Currently "unstash" reload strategy doesn't allow to correctly do that, once we'll have
+            // changed the strategy, initializators will be called after a hotreload
+            if (!Framework.isDevModeSet()) {
+                log.info("Do not import all route models: dev mode is not set");
+                return;
+            }
+            try {
+                RepositoryManager rm = Framework.getService(RepositoryManager.class);
+                // Transaction management
+                boolean txStarted = !TransactionHelper.isTransactionActive() && TransactionHelper.startTransaction();
+                boolean txSucceed = false;
+                try {
+                    new UnrestrictedSessionRunner(rm.getDefaultRepositoryName()) {
+
+                        @Override
+                        public void run() {
+                            DocumentRoutingService service = Framework.getLocalService(DocumentRoutingService.class);
+                            service.importAllRouteModels(session);
+                        }
+
+                    }.runUnrestricted();
+                    txSucceed = true;
+                } finally {
+                    if (txStarted) {
+                        if (!txSucceed) {
+                            TransactionHelper.setTransactionRollbackOnly();
+                            log.warn("Rollbacking import of route models");
+                        }
+                        TransactionHelper.commitOrRollbackTransaction();
+                    }
+                }
+            } catch (NuxeoException e) {
+                log.error("Error while reloading the route models", e);
+            }
+        }
+    }
+
 }
