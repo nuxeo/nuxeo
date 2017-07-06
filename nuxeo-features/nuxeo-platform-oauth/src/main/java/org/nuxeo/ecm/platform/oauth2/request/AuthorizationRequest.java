@@ -158,8 +158,11 @@ public class AuthorizationRequest extends OAuth2Request {
         // Check if client exists
         OAuth2ClientService clientService = Framework.getService(OAuth2ClientService.class);
         OAuth2Client client = clientService.getClient(clientId);
-        if (client == null || !client.isEnabled()) {
-            return OAuth2Error.unauthorizedClient(String.format("Invalid %s: %s.", CLIENT_ID_PARAM, clientId));
+        if (client == null) {
+            return OAuth2Error.invalidRequest(String.format("Invalid %s: %s.", CLIENT_ID_PARAM, clientId));
+        }
+        if (!client.isEnabled()) {
+            return OAuth2Error.accessDenied(String.format("Client %s is disabled.", clientId));
         }
 
         String clientName = client.getName();
@@ -181,7 +184,7 @@ public class AuthorizationRequest extends OAuth2Request {
             // Checking that the client has at least one redirect URI since it is now a required field but it might be
             // empty for an old client.
             // In this case we return an error since we cannot trust the redirect_uri parameter for security reasons.
-            return OAuth2Error.invalidRequest("No redirect URI configured for the app.");
+            return OAuth2Error.accessDenied("No redirect URI configured for the app.");
         }
 
         String clientRedirectURI = null;

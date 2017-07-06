@@ -24,6 +24,8 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.nuxeo.ecm.platform.oauth2.Constants.AUTHORIZATION_CODE_GRANT_TYPE;
 import static org.nuxeo.ecm.platform.oauth2.Constants.AUTHORIZATION_CODE_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_VERIFIER_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.GRANT_TYPE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.REFRESH_TOKEN_GRANT_TYPE;
 import static org.nuxeo.ecm.platform.oauth2.Constants.STATE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.TOKEN_SERVICE;
@@ -158,7 +160,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         String grantAccess = request.getParameter(GRANT_ACCESS_PARAM);
         if (grantAccess == null) {
             // the user deny access
-            error = OAuth2Error.accessDenied();
+            error = OAuth2Error.accessDenied("Access denied by the user");
             Map<String, String> params = new HashMap<>();
             params.put(ERROR_PARAM, error.getId());
             String errorDescription = error.getDescription();
@@ -188,38 +190,46 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
     protected void doPostToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         TokenRequest tokenRequest = new TokenRequest(request);
         OAuth2ClientService clientService = Framework.getService(OAuth2ClientService.class);
+        String grantType = tokenRequest.getGrantType();
         // Process Authorization code
-        if (AUTHORIZATION_CODE_GRANT_TYPE.equals(tokenRequest.getGrantType())) {
+        if (AUTHORIZATION_CODE_GRANT_TYPE.equals(grantType)) {
             AuthorizationRequest authRequest = AuthorizationRequest.get(tokenRequest.getCode());
             OAuth2Error error = null;
             if (authRequest == null) {
-                error = OAuth2Error.accessDenied();
+                error = OAuth2Error.invalidGrant("Invalid authorization code");
             }
-            // Check that clientId is the good one, already verified in
-            // authorization request
-            else if (!authRequest.getClientId().equals(tokenRequest.getClientId())) {
-                error = OAuth2Error.accessDenied();
-            } else {
-                OAuth2Client client = clientService.getClient(authRequest.getClientId());
-                // Validate client secret
-                if (client == null || !client.isValidWith(tokenRequest.getClientId(), tokenRequest.getClientSecret())) {
-                    error = OAuth2Error.unauthorizedClient();
+            // Check that clientId is the good one, already verified in authorization request
+            else {
+                String tokenClientId = tokenRequest.getClientId();
+                if (!authRequest.getClientId().equals(tokenClientId)) {
+                    error = OAuth2Error.invalidClient(String.format("Invalid client id: %s", tokenClientId));
                 } else {
-                    // Ensure redirect URIs are identical if the redirect_uri parameter was included in the
-                    // authorization request
-                    String authRequestRedirectURI = authRequest.getRedirectURI();
-                    if (StringUtils.isNotBlank(authRequestRedirectURI)
-                            && !authRequestRedirectURI.equals(tokenRequest.getRedirectURI())) {
-                        error = OAuth2Error.invalidRequest();
+                    OAuth2Client client = clientService.getClient(authRequest.getClientId());
+                    // Validate client secret
+                    if (client == null
+                            || !client.isValidWith(tokenRequest.getClientId(), tokenRequest.getClientSecret())) {
+                        error = OAuth2Error.invalidClient("Disabled client or invalid client secret");
                     } else {
-                        // Check PKCE
-                        String codeChallenge = authRequest.getCodeChallenge();
-                        if (codeChallenge != null) {
-                            String codeVerifier = tokenRequest.getCodeVerifier();
-                            if (codeVerifier == null) {
-                                error = OAuth2Error.invalidRequest();
-                            } else if (!authRequest.isCodeVerifierValid(codeVerifier)) {
-                                error = OAuth2Error.invalidGrant();
+                        // Ensure redirect URIs are identical if the redirect_uri parameter was included in the
+                        // authorization request
+                        String authRequestRedirectURI = authRequest.getRedirectURI();
+                        String tokenRequestRedirectURI = tokenRequest.getRedirectURI();
+                        if (StringUtils.isNotBlank(authRequestRedirectURI)
+                                && !authRequestRedirectURI.equals(tokenRequestRedirectURI)) {
+                            error = OAuth2Error.invalidGrant(
+                                    String.format("Invalid redirect URI: %s", tokenRequestRedirectURI));
+                        } else {
+                            // Check PKCE
+                            String codeChallenge = authRequest.getCodeChallenge();
+                            if (codeChallenge != null) {
+                                String codeVerifier = tokenRequest.getCodeVerifier();
+                                if (codeVerifier == null) {
+                                    error = OAuth2Error.invalidRequest(
+                                            String.format("Missing %s parameter", CODE_VERIFIER_PARAM));
+                                } else if (!authRequest.isCodeVerifierValid(codeVerifier)) {
+                                    error = OAuth2Error.invalidGrant(
+                                            String.format("Invalid %s parameter", CODE_VERIFIER_PARAM));
+                                }
                             }
                         }
                     }
@@ -240,12 +250,12 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             TransactionHelper.runInTransaction(() -> tokenStore.store(authRequest.getUsername(), token));
 
             handleTokenResponse(token, response);
-        } else if (REFRESH_TOKEN_GRANT_TYPE.equals(tokenRequest.getGrantType())) {
+        } else if (REFRESH_TOKEN_GRANT_TYPE.equals(grantType)) {
             OAuth2Error error = null;
             if (StringUtils.isBlank(tokenRequest.getClientId())) {
-                error = OAuth2Error.accessDenied();
+                error = OAuth2Error.invalidRequest("Empty client id");
             } else if (!clientService.isValidClient(tokenRequest.getClientId(), tokenRequest.getClientSecret())) {
-                error = OAuth2Error.accessDenied();
+                error = OAuth2Error.invalidClient("Disabled client or invalid client secret");
             }
 
             if (error != null) {
@@ -257,12 +267,15 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
                     () -> tokenStore.refresh(tokenRequest.getRefreshToken(), tokenRequest.getClientId()));
 
             if (refreshed == null) {
-                handleJsonError(OAuth2Error.invalidRequest(), response);
+                handleJsonError(OAuth2Error.invalidGrant("Cannot refresh token"), response);
             } else {
                 handleTokenResponse(refreshed, response);
             }
         } else {
-            handleJsonError(OAuth2Error.invalidGrant(), response);
+            handleJsonError(OAuth2Error.unsupportedGrantType(
+                    String.format("Unknown %s: got \"%s\", expecting \"%s\" or \"%s\".", GRANT_TYPE_PARAM, grantType,
+                            AUTHORIZATION_CODE_GRANT_TYPE, REFRESH_TOKEN_GRANT_TYPE)),
+                    response);
         }
     }
 

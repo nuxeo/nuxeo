@@ -31,6 +31,7 @@ import static org.nuxeo.ecm.platform.oauth2.Constants.RESPONSE_TYPE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.STATE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.AUTHORIZATION_KEY;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ENDPOINT_TOKEN;
+import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_DESCRIPTION_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.OAuth2Error.ACCESS_DENIED;
 import static org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest.MISSING_REQUIRED_FIELD_MESSAGE;
@@ -173,6 +174,7 @@ public class ITOAuth2Test extends AbstractTest {
         assertEquals("http://localhost:8080/nuxeo/home.html", URIUtils.getURIPath(currentURL));
         Map<String, String> expectedParameters = new HashMap<>();
         expectedParameters.put(ERROR_PARAM, ACCESS_DENIED);
+        expectedParameters.put(ERROR_DESCRIPTION_PARAM, "Access denied by the user");
         expectedParameters.put(STATE_PARAM, "1234");
         assertEquals(expectedParameters, URIUtils.getRequestParameters(currentURL));
     }

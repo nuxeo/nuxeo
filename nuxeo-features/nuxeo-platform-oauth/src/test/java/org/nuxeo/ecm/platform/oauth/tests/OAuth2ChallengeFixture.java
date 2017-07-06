@@ -42,11 +42,18 @@ import static org.nuxeo.ecm.platform.oauth2.Constants.STATE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ENDPOINT_AUTH;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ENDPOINT_AUTH_SUBMIT;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ENDPOINT_TOKEN;
+import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_DESCRIPTION_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.OAuth2Error.ACCESS_DENIED;
+import static org.nuxeo.ecm.platform.oauth2.OAuth2Error.INVALID_CLIENT;
 import static org.nuxeo.ecm.platform.oauth2.OAuth2Error.INVALID_GRANT;
 import static org.nuxeo.ecm.platform.oauth2.OAuth2Error.INVALID_REQUEST;
+import static org.nuxeo.ecm.platform.oauth2.OAuth2Error.UNSUPPORTED_GRANT_TYPE;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -122,7 +129,6 @@ public class OAuth2ChallengeFixture {
         params.put(CLIENT_ID_PARAM, CLIENT_ID);
         params.put(RESPONSE_TYPE_PARAM, CODE_RESPONSE_TYPE);
         params.put(STATE_PARAM, STATE);
-
         ClientResponse cr = responseFromGetAuthorizeWith(params);
         assertEquals(200, cr.getStatus());
     }
@@ -134,7 +140,6 @@ public class OAuth2ChallengeFixture {
         params.put(CLIENT_ID_PARAM, "unknown");
         params.put(RESPONSE_TYPE_PARAM, CODE_RESPONSE_TYPE);
         params.put(STATE_PARAM, STATE);
-
         ClientResponse cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
     }
@@ -229,7 +234,15 @@ public class OAuth2ChallengeFixture {
     }
 
     @Test
-    public void shouldDenyAccess() {
+    public void authorizeShouldValidateKey() {
+        Map<String, String> params = new HashMap<>();
+        params.put(NuxeoOAuth2Servlet.AUTHORIZATION_KEY, "invalidKey");
+        ClientResponse cr = responseFromPostAuthorizeWith(params);
+        assertEquals(400, cr.getStatus());
+    }
+
+    @Test
+    public void authorizeShouldDenyAccess() throws UnsupportedEncodingException {
         AuthorizationRequest authorizationRequest = initValidAuthorizeRequestCall(STATE);
         String key = authorizationRequest.getAuthorizationKey();
 
@@ -240,7 +253,10 @@ public class OAuth2ChallengeFixture {
         ClientResponse cr = responseFromPostAuthorizeWith(params);
         assertEquals(302, cr.getStatus());
         String redirect = cr.getHeaders().get("Location").get(0);
-        assertTrue(redirect.contains("error=access_denied"));
+        String error = extractParameter(redirect, ERROR_PARAM);
+        assertEquals(ACCESS_DENIED, error);
+        String errorDescription = extractParameter(redirect, ERROR_DESCRIPTION_PARAM);
+        assertEquals(URLEncoder.encode("Access denied by the user", StandardCharsets.UTF_8.name()), errorDescription);
         String state = extractParameter(redirect, STATE_PARAM);
         assertEquals(STATE, state);
 
@@ -250,13 +266,71 @@ public class OAuth2ChallengeFixture {
     }
 
     @Test
-    public void shouldRetrieveAccessAndRefreshTokenWithoutState() throws IOException {
-        shouldRetrieveAccessAndRefreshToken(null);
-    }
+    public void tokenShouldValidateParameters() throws IOException {
+        // unsupported grant_type parameter
+        Map<String, String> params = new HashMap<>();
+        params.put(GRANT_TYPE_PARAM, "unknown");
+        ClientResponse cr = responseFromTokenWith(params);
+        assertEquals(400, cr.getStatus());
+        String json = cr.getEntity(String.class);
+        ObjectMapper obj = new ObjectMapper();
+        Map<?, ?> error = obj.readValue(json, Map.class);
+        assertEquals(UNSUPPORTED_GRANT_TYPE, error.get(ERROR_PARAM));
+        assertEquals(String.format("Unknown %s: got \"unknown\", expecting \"%s\" or \"%s\".", GRANT_TYPE_PARAM,
+                AUTHORIZATION_CODE_GRANT_TYPE, REFRESH_TOKEN_GRANT_TYPE), error.get(ERROR_DESCRIPTION_PARAM));
 
-    @Test
-    public void shouldRetrieveAccessAndRefreshTokenWithState() throws IOException {
-        shouldRetrieveAccessAndRefreshToken(STATE);
+        // invalid authorization code
+        params.put(GRANT_TYPE_PARAM, AUTHORIZATION_CODE_GRANT_TYPE);
+        params.put(AUTHORIZATION_CODE_PARAM, "invalidCode");
+        cr = responseFromTokenWith(params);
+        assertEquals(400, cr.getStatus());
+        json = cr.getEntity(String.class);
+        error = obj.readValue(json, Map.class);
+        assertEquals(INVALID_GRANT, error.get(ERROR_PARAM));
+        assertEquals("Invalid authorization code", error.get(ERROR_DESCRIPTION_PARAM));
+
+        // invalid client_id parameter
+        AuthorizationRequest authorizationRequest = initValidAuthorizeRequestCall(null);
+        String key = authorizationRequest.getAuthorizationKey();
+        String code = getAuthorizationCode(key, null);
+        params.put(AUTHORIZATION_CODE_PARAM, code);
+        params.put(CLIENT_ID_PARAM, "unknown");
+        cr = responseFromTokenWith(params);
+        assertEquals(400, cr.getStatus());
+        json = cr.getEntity(String.class);
+        error = obj.readValue(json, Map.class);
+        assertEquals(INVALID_CLIENT, error.get(ERROR_PARAM));
+        assertEquals("Invalid client id: unknown", error.get(ERROR_DESCRIPTION_PARAM));
+        ensureAuthorizationRequestRemovedFromStore(key, code);
+
+        // invalid client_secret parameter
+        authorizationRequest = initValidAuthorizeRequestCall(null);
+        key = authorizationRequest.getAuthorizationKey();
+        code = getAuthorizationCode(key, null);
+        params.put(AUTHORIZATION_CODE_PARAM, code);
+        params.put(CLIENT_ID_PARAM, CLIENT_ID);
+        params.put(CLIENT_SECRET_PARAM, "invalidSecret");
+        cr = responseFromTokenWith(params);
+        assertEquals(400, cr.getStatus());
+        json = cr.getEntity(String.class);
+        error = obj.readValue(json, Map.class);
+        assertEquals(INVALID_CLIENT, error.get(ERROR_PARAM));
+        assertEquals("Disabled client or invalid client secret", error.get(ERROR_DESCRIPTION_PARAM));
+        ensureAuthorizationRequestRemovedFromStore(key, code);
+
+        // check that the redirect_uri parameter is required when included in the authorization request
+        authorizationRequest = initValidAuthorizeRequestCall(null);
+        key = authorizationRequest.getAuthorizationKey();
+        code = getAuthorizationCode(key, null);
+        params.put(AUTHORIZATION_CODE_PARAM, code);
+        params.put(CLIENT_SECRET_PARAM, CLIENT_SECRET);
+        cr = responseFromTokenWith(params);
+        assertEquals(400, cr.getStatus());
+        json = cr.getEntity(String.class);
+        error = obj.readValue(json, Map.class);
+        assertEquals(INVALID_GRANT, error.get(ERROR_PARAM));
+        assertEquals("Invalid redirect URI: null", error.get(ERROR_DESCRIPTION_PARAM));
+        ensureAuthorizationRequestRemovedFromStore(key, code);
     }
 
     /**
@@ -282,20 +356,20 @@ public class OAuth2ChallengeFixture {
         ObjectMapper obj = new ObjectMapper();
         Map<?, ?> error = obj.readValue(json, Map.class);
         assertEquals(INVALID_REQUEST, error.get(ERROR_PARAM));
+        assertEquals(String.format("Missing %s parameter", CODE_VERIFIER_PARAM), error.get(ERROR_DESCRIPTION_PARAM));
 
         // invalid code_verifier parameter with plain code challenge method
         cr = getTokenResponse(null, codeChallenge, CODE_CHALLENGE_METHOD_PLAIN, "invalidCodeVerifier");
         assertEquals(400, cr.getStatus());
         json = cr.getEntity(String.class);
-        obj = new ObjectMapper();
         error = obj.readValue(json, Map.class);
         assertEquals(INVALID_GRANT, error.get(ERROR_PARAM));
+        assertEquals(String.format("Invalid %s parameter", CODE_VERIFIER_PARAM), error.get(ERROR_DESCRIPTION_PARAM));
 
         // valid code_verifier parameter with plain code challenge method
         cr = getTokenResponse(null, codeChallenge, CODE_CHALLENGE_METHOD_PLAIN, codeVerifier);
         assertEquals(200, cr.getStatus());
         json = cr.getEntity(String.class);
-        obj = new ObjectMapper();
         Map<?, ?> token = obj.readValue(json, Map.class);
         assertNotNull(token);
         String accessToken = (String) token.get("access_token");
@@ -310,15 +384,14 @@ public class OAuth2ChallengeFixture {
         cr = getTokenResponse(null, codeChallenge, CODE_CHALLENGE_METHOD_S256, "invalidCodeVerifier");
         assertEquals(400, cr.getStatus());
         json = cr.getEntity(String.class);
-        obj = new ObjectMapper();
         error = obj.readValue(json, Map.class);
         assertEquals(INVALID_GRANT, error.get(ERROR_PARAM));
+        assertEquals(String.format("Invalid %s parameter", CODE_VERIFIER_PARAM), error.get(ERROR_DESCRIPTION_PARAM));
 
         // valid code_verifier parameter with S256 code challenge method
         cr = getTokenResponse(null, codeChallenge, CODE_CHALLENGE_METHOD_S256, codeVerifier);
         assertEquals(200, cr.getStatus());
         json = cr.getEntity(String.class);
-        obj = new ObjectMapper();
         token = obj.readValue(json, Map.class);
         assertNotNull(token);
         accessToken = (String) token.get("access_token");
@@ -327,36 +400,21 @@ public class OAuth2ChallengeFixture {
         assertEquals(64, refreshToken.length());
     }
 
+    @Test
+    public void shouldRetrieveAccessAndRefreshTokenWithoutState() throws IOException {
+        shouldRetrieveAccessAndRefreshToken(null);
+    }
+
+    @Test
+    public void shouldRetrieveAccessAndRefreshTokenWithState() throws IOException {
+        shouldRetrieveAccessAndRefreshToken(STATE);
+    }
+
     protected void shouldRetrieveAccessAndRefreshToken(String state) throws IOException {
-        AuthorizationRequest authorizationRequest = initValidAuthorizeRequestCall(state);
-        String key = authorizationRequest.getAuthorizationKey();
-
-        // get an authorization code
-        String code = getAuthorizationCode(key, state);
-
-        // get access and refresh tokens
-        Map<String, String> params = new HashMap<>();
-        params.put(CLIENT_ID_PARAM, CLIENT_ID);
-        params.put(GRANT_TYPE_PARAM, AUTHORIZATION_CODE_GRANT_TYPE);
-        params.put(CLIENT_SECRET_PARAM, CLIENT_SECRET);
-        params.put(AUTHORIZATION_CODE_PARAM, code);
-
-        // check that the redirect_uri parameter is required since it was included in the authorization request
-        ClientResponse cr = responseFromTokenWith(params);
-        assertEquals(400, cr.getStatus());
+        ClientResponse cr = getTokenResponse(state);
+        assertEquals(200, cr.getStatus());
         String json = cr.getEntity(String.class);
         ObjectMapper obj = new ObjectMapper();
-        Map<?, ?> error = obj.readValue(json, Map.class);
-        assertEquals(INVALID_REQUEST, error.get(ERROR_PARAM));
-
-        // ensure authorization request has been removed
-        Set<String> keys = store.keySet();
-        assertFalse(keys.contains(code));
-        assertFalse(keys.contains(key));
-
-        cr = getTokenResponse(state);
-        assertEquals(200, cr.getStatus());
-        json = cr.getEntity(String.class);
         Map<?, ?> token = obj.readValue(json, Map.class);
         assertNotNull(token);
         String accessToken = (String) token.get("access_token");
@@ -365,13 +423,13 @@ public class OAuth2ChallengeFixture {
         assertEquals(64, refreshToken.length());
 
         // ensure authorization request has been removed
-        keys = store.keySet();
-        assertFalse(keys.contains(code));
-        assertFalse(keys.contains(key));
+        assertTrue(store.keySet().isEmpty());
 
         // Refresh this token
-        params.remove(AUTHORIZATION_CODE_PARAM);
+        Map<String, String> params = new HashMap<>();
         params.put(GRANT_TYPE_PARAM, REFRESH_TOKEN_GRANT_TYPE);
+        params.put(CLIENT_ID_PARAM, CLIENT_ID);
+        params.put(CLIENT_SECRET_PARAM, CLIENT_SECRET);
         params.put(REFRESH_TOKEN_PARAM, refreshToken);
         cr = responseFromTokenWith(params);
         assertEquals(200, cr.getStatus());
@@ -433,6 +491,12 @@ public class OAuth2ChallengeFixture {
         assertFalse(keys.contains(key));
 
         return code;
+    }
+
+    protected void ensureAuthorizationRequestRemovedFromStore(String key, String code) {
+        Set<String> keys = store.keySet();
+        assertFalse(keys.contains(key));
+        assertFalse(keys.contains(code));
     }
 
     protected ClientResponse getTokenResponse(String state) {
