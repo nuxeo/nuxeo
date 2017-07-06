@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  *
  * Contributors:
  *     Maxime Hilaire
- *
  */
 package org.nuxeo.ecm.core.cache;
 
@@ -38,7 +37,7 @@ public final class CacheRegistry extends ContributionFragmentRegistry<CacheDescr
     private static final Log log = LogFactory.getLog(CacheRegistry.class);
 
     // map of cache
-    protected final Map<String, CacheDescriptor> caches = new HashMap<String, CacheDescriptor>();
+    protected final Map<String, CacheDescriptor> caches = new HashMap<>();
 
     protected boolean started;
 
@@ -59,8 +58,8 @@ public final class CacheRegistry extends ContributionFragmentRegistry<CacheDescr
         }
 
         if (caches.containsKey(name)) {
-            throw new IllegalStateException(String.format(
-                    "Another cache has already been registered for the given name %s", name));
+            throw new IllegalStateException(
+                    String.format("Another cache has already been registered for the given name %s", name));
         }
 
         caches.put(name, descriptor);
