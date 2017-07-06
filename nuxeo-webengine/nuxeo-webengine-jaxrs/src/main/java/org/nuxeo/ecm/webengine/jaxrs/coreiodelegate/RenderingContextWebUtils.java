@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContextImpl.RenderingContextBuilder;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
@@ -108,8 +109,7 @@ public final class RenderingContextWebUtils {
         if (request instanceof HttpServletRequest) {
             HttpServletRequest webRequest = (HttpServletRequest) request;
             // base url
-            @SuppressWarnings("deprecation")
-            String baseURL = VirtualHostHelper.getBaseURL(webRequest);
+            String baseURL = VirtualHostHelper.getBaseURL(request);
             // current session
             CoreSession session = SessionFactory.getSession(webRequest);
             builder.base(baseURL).session(session);
