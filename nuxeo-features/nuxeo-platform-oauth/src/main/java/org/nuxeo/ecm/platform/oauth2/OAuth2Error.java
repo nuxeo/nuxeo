@@ -141,4 +141,9 @@ public class OAuth2Error {
     public static OAuth2Error unsupportedGrantType() {
         return unsupportedGrantType(null);
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s(id=%s, description=%s)", getClass().getSimpleName(), id, description);
+    }
 }
