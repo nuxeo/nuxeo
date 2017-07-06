@@ -120,6 +120,7 @@ public class RouterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // store posted data
+        req.setCharacterEncoding("UTF-8");
         Context.instance(req).getCollector().collectConfigurationParams(req);
         doGet(req, resp);
     }
