@@ -63,6 +63,10 @@
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-web-common</artifactId>
+    </dependency>
   </dependencies>
 
 </project>
