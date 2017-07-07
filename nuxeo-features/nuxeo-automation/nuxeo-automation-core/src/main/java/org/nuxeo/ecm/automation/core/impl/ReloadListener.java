@@ -20,6 +20,7 @@ package org.nuxeo.ecm.automation.core.impl;
 
 import org.nuxeo.ecm.automation.AutomationAdmin;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 
@@ -31,7 +32,7 @@ public class ReloadListener implements EventListener {
     @Override
     public void handleEvent(Event event) {
         final String id = event.getId();
-        if ("flushCompiledChains".equals(id) || "flush".equals(id)) {
+        if ("flushCompiledChains".equals(id) || ReloadService.FLUSH_EVENT_ID.equals(id)) {
             AutomationAdmin svc = Framework.getLocalService(AutomationAdmin.class);
             svc.flushCompiledChains();
         }
