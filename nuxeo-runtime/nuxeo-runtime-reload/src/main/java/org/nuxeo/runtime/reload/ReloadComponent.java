@@ -241,6 +241,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                     try {
                         b.stop();
                         b.uninstall();
+                        refreshComponents();
                     } finally {
                         TransactionHelper.resumeTransaction(tx);
                     }
