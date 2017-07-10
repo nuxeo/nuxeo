@@ -131,6 +131,7 @@ public class OAuth2ChallengeFixture {
         params.put(STATE_PARAM, STATE);
         ClientResponse cr = responseFromGetAuthorizeWith(params);
         assertEquals(200, cr.getStatus());
+        assertStoreContainsSingleKey();
     }
 
     @Test
@@ -142,6 +143,7 @@ public class OAuth2ChallengeFixture {
         params.put(STATE_PARAM, STATE);
         ClientResponse cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
+        assertStoreIsEmpty();
     }
 
     @Test
@@ -154,50 +156,62 @@ public class OAuth2ChallengeFixture {
         params.put(CLIENT_ID_PARAM, "no-redirect-uri");
         ClientResponse cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
+        assertStoreIsEmpty();
 
         // Invalid: no redirect_uri parameter with invalid first registered redirect URI: not starting with https
         params.put(CLIENT_ID_PARAM, "not-https");
         cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
+        assertStoreIsEmpty();
 
         // Invalid: no redirect_uri parameter with invalid first registered redirect URI: starting with http://localhost
         // with localhost part of the domain name
         params.put(CLIENT_ID_PARAM, "localhost-domain-name");
         cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
+        assertStoreIsEmpty();
 
         // Valid: no redirect_uri parameter with valid first registered redirect URI: starting with https
         params.put(CLIENT_ID_PARAM, CLIENT_ID);
         cr = responseFromGetAuthorizeWith(params);
         assertEquals(200, cr.getStatus());
+        assertStoreContainsSingleKey();
+        store.removeAll();
 
         // Invalid: redirect_uri parameter not matching any of the registered redirect URIs
         params.put(REDIRECT_URI_PARAM, "https://unknown.uri");
         cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
+        assertStoreIsEmpty();
 
         // Invalid: redirect_uri parameter matching one of the registered redirect URIs not starting with https
         params.put(CLIENT_ID_PARAM, "not-https");
         params.put(REDIRECT_URI_PARAM, "http://redirect.uri");
         cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
+        assertStoreIsEmpty();
 
         // Valid: redirect_uri parameter matching one of the registered redirect URIs starting with https
         params.put(CLIENT_ID_PARAM, CLIENT_ID);
         params.put(REDIRECT_URI_PARAM, REDIRECT_URI);
         cr = responseFromGetAuthorizeWith(params);
         assertEquals(200, cr.getStatus());
+        assertStoreContainsSingleKey();
+        store.removeAll();
 
         // Valid: redirect_uri parameter matching one of the registered redirect URIs starting with http://localhost
         // with localhost not part of the domain name
         params.put(REDIRECT_URI_PARAM, "http://localhost:8080/nuxeo");
         cr = responseFromGetAuthorizeWith(params);
         assertEquals(200, cr.getStatus());
+        assertStoreContainsSingleKey();
+        store.removeAll();
 
         // Valid: redirect_uri parameter matching one of the registered redirect URIs not starting with http
         params.put(REDIRECT_URI_PARAM, "nuxeo://authorize");
         cr = responseFromGetAuthorizeWith(params);
         assertEquals(200, cr.getStatus());
+        assertStoreContainsSingleKey();
     }
 
     /**
@@ -215,22 +229,26 @@ public class OAuth2ChallengeFixture {
         params.put(CODE_CHALLENGE_METHOD_PARAM, CODE_CHALLENGE_METHOD_S256);
         ClientResponse cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
+        assertStoreIsEmpty();
 
         // Invalid: code_challenge but no code_challenge_method
         params.remove(CODE_CHALLENGE_METHOD_PARAM);
         params.put(CODE_CHALLENGE_PARAM, "myCodeChallenge");
         cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
+        assertStoreIsEmpty();
 
         // Invalid: code_challenge_method not supported
         params.put(CODE_CHALLENGE_METHOD_PARAM, "unknown");
         cr = responseFromGetAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
+        assertStoreIsEmpty();
 
         // Valid: code_challenge and supported code_challenge_method
         params.put(CODE_CHALLENGE_METHOD_PARAM, "S256");
         cr = responseFromGetAuthorizeWith(params);
         assertEquals(200, cr.getStatus());
+        assertStoreContainsSingleKey();
     }
 
     @Test
@@ -239,6 +257,7 @@ public class OAuth2ChallengeFixture {
         params.put(NuxeoOAuth2Servlet.AUTHORIZATION_KEY, "invalidKey");
         ClientResponse cr = responseFromPostAuthorizeWith(params);
         assertEquals(400, cr.getStatus());
+        assertStoreIsEmpty();
     }
 
     @Test
@@ -259,10 +278,8 @@ public class OAuth2ChallengeFixture {
         assertEquals(URLEncoder.encode("Access denied by the user", StandardCharsets.UTF_8.name()), errorDescription);
         String state = extractParameter(redirect, STATE_PARAM);
         assertEquals(STATE, state);
-
         // ensure authorization request has been removed
-        Set<String> keys = store.keySet();
-        assertFalse(keys.contains(key));
+        assertStoreIsEmpty();
     }
 
     @Test
@@ -278,6 +295,7 @@ public class OAuth2ChallengeFixture {
         assertEquals(UNSUPPORTED_GRANT_TYPE, error.get(ERROR_PARAM));
         assertEquals(String.format("Unknown %s: got \"unknown\", expecting \"%s\" or \"%s\".", GRANT_TYPE_PARAM,
                 AUTHORIZATION_CODE_GRANT_TYPE, REFRESH_TOKEN_GRANT_TYPE), error.get(ERROR_DESCRIPTION_PARAM));
+        assertStoreIsEmpty();
 
         // invalid authorization code
         params.put(GRANT_TYPE_PARAM, AUTHORIZATION_CODE_GRANT_TYPE);
@@ -288,6 +306,7 @@ public class OAuth2ChallengeFixture {
         error = obj.readValue(json, Map.class);
         assertEquals(INVALID_GRANT, error.get(ERROR_PARAM));
         assertEquals("Invalid authorization code", error.get(ERROR_DESCRIPTION_PARAM));
+        assertStoreIsEmpty();
 
         // invalid client_id parameter
         AuthorizationRequest authorizationRequest = initValidAuthorizeRequestCall(null);
@@ -301,7 +320,7 @@ public class OAuth2ChallengeFixture {
         error = obj.readValue(json, Map.class);
         assertEquals(INVALID_CLIENT, error.get(ERROR_PARAM));
         assertEquals("Invalid client id: unknown", error.get(ERROR_DESCRIPTION_PARAM));
-        ensureAuthorizationRequestRemovedFromStore(key, code);
+        assertStoreIsEmpty();
 
         // invalid client_secret parameter
         authorizationRequest = initValidAuthorizeRequestCall(null);
@@ -316,7 +335,7 @@ public class OAuth2ChallengeFixture {
         error = obj.readValue(json, Map.class);
         assertEquals(INVALID_CLIENT, error.get(ERROR_PARAM));
         assertEquals("Disabled client or invalid client secret", error.get(ERROR_DESCRIPTION_PARAM));
-        ensureAuthorizationRequestRemovedFromStore(key, code);
+        assertStoreIsEmpty();
 
         // check that the redirect_uri parameter is required when included in the authorization request
         authorizationRequest = initValidAuthorizeRequestCall(null);
@@ -330,7 +349,7 @@ public class OAuth2ChallengeFixture {
         error = obj.readValue(json, Map.class);
         assertEquals(INVALID_GRANT, error.get(ERROR_PARAM));
         assertEquals("Invalid redirect URI: null", error.get(ERROR_DESCRIPTION_PARAM));
-        ensureAuthorizationRequestRemovedFromStore(key, code);
+        assertStoreIsEmpty();
     }
 
     /**
@@ -422,9 +441,6 @@ public class OAuth2ChallengeFixture {
         String refreshToken = (String) token.get("refresh_token");
         assertEquals(64, refreshToken.length());
 
-        // ensure authorization request has been removed
-        assertTrue(store.keySet().isEmpty());
-
         // Refresh this token
         Map<String, String> params = new HashMap<>();
         params.put(GRANT_TYPE_PARAM, REFRESH_TOKEN_GRANT_TYPE);
@@ -436,6 +452,7 @@ public class OAuth2ChallengeFixture {
         json = cr.getEntity(String.class);
         Map<?, ?> refreshed = obj.readValue(json, Map.class);
         assertNotSame(refreshed.get("access_token"), token.get("access_token"));
+        assertStoreIsEmpty();
     }
 
     protected AuthorizationRequest initValidAuthorizeRequestCall(String state) {
@@ -487,16 +504,11 @@ public class OAuth2ChallengeFixture {
 
         // ensure we have only one authorization request
         Set<String> keys = store.keySet();
+        assertEquals(1, keys.size());
         assertTrue(keys.contains(code));
         assertFalse(keys.contains(key));
 
         return code;
-    }
-
-    protected void ensureAuthorizationRequestRemovedFromStore(String key, String code) {
-        Set<String> keys = store.keySet();
-        assertFalse(keys.contains(key));
-        assertFalse(keys.contains(code));
     }
 
     protected ClientResponse getTokenResponse(String state) {
@@ -518,7 +530,9 @@ public class OAuth2ChallengeFixture {
         if (codeVerifier != null) {
             params.put(CODE_VERIFIER_PARAM, codeVerifier);
         }
-        return responseFromTokenWith(params);
+        ClientResponse cr = responseFromTokenWith(params);
+        assertStoreIsEmpty();
+        return cr;
     }
 
     protected String extractParameter(String url, String parameterName) {
@@ -561,6 +575,14 @@ public class OAuth2ChallengeFixture {
         }
 
         return wr.post(ClientResponse.class, formData);
+    }
+
+    protected void assertStoreIsEmpty() {
+        assertEquals(0, store.keySet().size());
+    }
+
+    protected void assertStoreContainsSingleKey() {
+        assertEquals(1, store.keySet().size());
     }
 
 }
