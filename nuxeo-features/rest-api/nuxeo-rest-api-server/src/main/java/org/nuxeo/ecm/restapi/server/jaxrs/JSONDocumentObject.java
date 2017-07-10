@@ -36,6 +36,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -76,13 +77,18 @@ public class JSONDocumentObject extends DocumentObject {
      */
     @PUT
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
-    public DocumentModel doPut(DocumentModel inputDoc, @Context HttpHeaders headers) {
+    public Response doPut(DocumentModel inputDoc, @Context HttpHeaders headers) {
         DocumentModelJsonReader.applyPropertyValues(inputDoc, doc);
         CoreSession session = ctx.getCoreSession();
         versioningDocFromHeaderIfExists(headers);
-        doc = session.saveDocument(doc);
-        session.save();
-        return isVersioning ? session.getLastDocumentVersion(doc.getRef()) : doc;
+        try {
+            doc = session.saveDocument(doc);
+            session.save();
+        } catch (ConcurrentUpdateException e) {
+            return Response.status(Status.CONFLICT).entity("Invalid change token").build();
+        }
+        DocumentModel returnedDoc = isVersioning ? session.getLastDocumentVersion(doc.getRef()) : doc;
+        return Response.ok(returnedDoc).build();
     }
 
     @POST
