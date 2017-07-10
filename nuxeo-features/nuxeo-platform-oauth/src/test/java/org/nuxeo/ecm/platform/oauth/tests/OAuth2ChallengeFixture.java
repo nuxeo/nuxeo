@@ -57,6 +57,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,13 +68,16 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
+import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -120,6 +124,18 @@ public class OAuth2ChallengeFixture {
         client.setFollowRedirects(Boolean.FALSE);
 
         store = transientStoreService.getStore(AuthorizationRequest.STORE_NAME);
+
+        // Allow logging traces from the underlying HTTP client sun.net.www.protocol.http.HttpURLConnection
+        // Set back the "org.nuxeo.runtime.redirectJUL" property to true (set to false by NXRuntimeTestCase)
+        System.setProperty(AbstractRuntimeService.REDIRECT_JUL, "true");
+        // Set the threshold to FINE as we are interested in the requests and responses
+        JavaUtilLoggingHelper.redirectToApacheCommons(Level.FINE);
+    }
+
+    @After
+    public void tearDown() {
+        JavaUtilLoggingHelper.redirectToApacheCommons(Level.INFO);
+        System.setProperty(AbstractRuntimeService.REDIRECT_JUL, "false");
     }
 
     @Test
