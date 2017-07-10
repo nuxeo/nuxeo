@@ -29,6 +29,11 @@
     <appender-ref ref="FILE" />
   </category>
 
+  <category name="sun.net.www.protocol.http.HttpURLConnection" additivity="false">
+    <priority value="TRACE" />
+    <appender-ref ref="FILE" />
+  </category>
+
   <root>
     <priority value="WARN" />
     <appender-ref ref="CONSOLE" />
