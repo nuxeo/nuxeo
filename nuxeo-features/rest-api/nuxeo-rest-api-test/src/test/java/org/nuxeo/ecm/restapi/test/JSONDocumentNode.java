@@ -32,7 +32,7 @@ import org.codehaus.jackson.node.ObjectNode;
  */
 public class JSONDocumentNode {
 
-    private ObjectNode node;
+    public ObjectNode node;
 
     private ObjectMapper mapper = new ObjectMapper();
 
