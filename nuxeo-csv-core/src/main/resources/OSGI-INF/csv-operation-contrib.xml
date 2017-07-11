@@ -5,6 +5,7 @@
     point="operations">
         <operation class="org.nuxeo.ecm.csv.core.operation.CSVImportOperation"/>
         <operation class="org.nuxeo.ecm.csv.core.operation.CSVImportStatusOperation"/>
+        <operation class="org.nuxeo.ecm.csv.core.operation.CSVImportLogOperation"/>
         <operation class="org.nuxeo.ecm.csv.core.operation.CSVImportResultOperation"/>
   </extension>
 

@@ -60,7 +60,7 @@ limitations under the License.
         --paper-spinner-color: var(--default-primary-color);
       }
 
-      .suggester, .options {
+      .suggester, .options, .summary {
         margin: 16px 32px;
       }
 
@@ -343,12 +343,22 @@ limitations under the License.
         color: orange;
       }
 
+      div[failed] {
+        color: orange;
+      }
+
+      .item {
+        cursor: pointer;
+        padding: 16px 22px;
+        border-bottom: 1px solid #DDD;
+      }
     </style>
 
     <nuxeo-connection id="nx"></nuxeo-connection>
     <nuxeo-resource id="csvImportRes"></nuxeo-resource>
     <nuxeo-operation id="cvsImportStatus" op="CSV.ImportStatus"></nuxeo-operation>
     <nuxeo-operation id="cvsImportResultOp" op="CSV.ImportResult"></nuxeo-operation>
+    <nuxeo-operation id="cvsImportLogOp" op="CSV.ImportLog"></nuxeo-operation>
 
     <iron-pages selected="[[stage]]" attr-for-selected="name" class="vertical layout flex">
 
@@ -443,7 +453,7 @@ limitations under the License.
       </div>
 
       <div name="progress" class="vertical layout flex">
-        <div id="progress" class="layout flex step">
+        <div id="progress" class="summary">
           <div hidden$="[[_hasResult]]">
             <div hidden$="[[_error]]">
               <div class="name status">[[progressLabel]]</div>
@@ -471,6 +481,24 @@ limitations under the License.
               </div>
             </div>
             <div class="brief" hidden$="[[!receiveEmailReport]]">[[i18n('csv.import.report.notify')]]</div>
+          </div>
+        </div>
+
+        <div class="vertical layout flex step">
+          <div class="drop-scrollable">
+            <iron-list id="list" items="[[_importLogs]]">
+              <template>
+                <div class="item">
+                  <div class="list-item-info horizontal layout ">
+                    <div class="flex-1" failed$="[[_isError(item)]]" skipped$="[[_isSkipped(item)]]">
+                      [[i18n('csv.import.report.line')]] [[item.line]]
+                    </div>
+                    <div class="flex-1" failed$="[[_isError(item)]]" skipped$="[[_isSkipped(item)]]">[[item.status]]</div>
+                    <div class="flex-3 list-item-detail">[[_i18n(item.localizedMessage, item.localizedMessageParams)]]</div>
+                  </div>
+                </div>
+              </template>
+            </iron-list>
           </div>
         </div>
 
@@ -526,6 +554,10 @@ limitations under the License.
         },
         _importResult: {
           type: Object
+        },
+        _importLogs: {
+          type: Array,
+          value: []
         },
         _hasResult: {
           type: Boolean,
@@ -585,6 +617,26 @@ limitations under the License.
         '_visibleOnStage(visible,stage)',
         '_observeVisible(visible)'
       ],
+
+      _i18n(label, params){
+        return !params || params.length == 0 ? this.i18n(label)
+            : (params.length == 1 ? this.i18n(label, params[0]) : this.i18n(label, params[0], params[1]));
+      },
+
+      _filterLogs: function(items){
+        return items.filter(function (item) {
+          return this._isError(item) || this._isSkipped(item);
+        }.bind(this));
+
+      },
+
+      _isError: function(log){
+        return log.status === 'ERROR';
+      },
+
+      _isSkipped: function(log){
+        return log.status === 'SKIPPED';
+      },
 
       _observeVisible: function() {
         if (this.visible) {
@@ -669,6 +721,7 @@ limitations under the License.
         this.$.uploadFiles.value = '';
         this._hasResult = false;
         this.progressLabel = '';
+        this._importLogs = [];
       },
 
       _handleError: function(error) {
@@ -728,6 +781,12 @@ limitations under the License.
             if (this._count < 0) {
               this._error = true;
             } else {
+              this.$.cvsImportLogOp.input = importId;
+              this.$.cvsImportLogOp.execute().then(function(res) {
+                this._importLogs = this._filterLogs(res.value);
+                this.$.list.notifyResize();
+              }.bind(this));
+
               this.$.cvsImportResultOp.input = importId;
               this.$.cvsImportResultOp.execute().then(function(res) {
                 this._importResult = res.value;
