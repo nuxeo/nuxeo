@@ -69,9 +69,10 @@ public class DirectoryEntryJsonWriterTest extends
             DirectoryEntry entry = new DirectoryEntry(directoryName, entryModel);
             JsonAssert json = jsonAssert(entry);
             json.isObject();
-            json.properties(3);
+            json.properties(4);
             json.has("entity-type").isEquals("directoryEntry");
             json.has("directoryName").isEquals(directoryName);
+            json.has("id").isEquals("123");
             json = json.has("properties").isObject();
             json.properties(2);
             json.has("id").isEquals("123");
@@ -114,9 +115,10 @@ public class DirectoryEntryJsonWriterTest extends
             json.isObject();
             json = json.has("properties").isObject();
             json = json.has("label").isObject();
-            json.properties(3);
+            json.properties(4);
             json.has("entity-type").isEquals("directoryEntry");
             json.has("directoryName").isEquals(directoryName);
+            json.has("id").isEquals("123");
             json = json.has("properties").isObject();
             json.properties(2);
             json.has("id").isEquals("123");

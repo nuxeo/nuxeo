@@ -25,7 +25,9 @@ import static org.junit.Assert.assertNull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
@@ -57,7 +59,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -79,6 +80,8 @@ public class DirectoryTest extends BaseTest {
     TransactionalFeature txFeature;
 
     private static final String TESTDIRNAME = "testdir";
+
+    private static final String INT_ID_TEST_DIR_NAME = "intIdTestDir";
 
     Session dirSession = null;
 
@@ -218,6 +221,34 @@ public class DirectoryTest extends BaseTest {
         docEntry = dirSession.getEntry("test1");
         assertEquals("newlabel", docEntry.getPropertyValue("vocabulary:label"));
 
+        // update an entry without the `id` field at the root
+        String compatJSONEntry = "{\"entity-type\":\"directoryEntry\",\"directoryName\":\"testdir\",\"properties\":{\"id\":\"test1\",\"label\":\"another label\"}}";
+        response = getResponse(RequestType.PUT, "/directory/" + TESTDIRNAME + "/" + docEntry.getId(), compatJSONEntry);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        nextTransaction(); // see committed changes
+        docEntry = dirSession.getEntry(docEntry.getId());
+        assertEquals("another label", docEntry.getPropertyValue("vocabulary:label"));
+    }
+
+    @Test
+    public void itCanUpdateADirectoryEntryWithAnIntId() throws IOException {
+        try (Session dirSession = ds.open(INT_ID_TEST_DIR_NAME)) {
+            Map<String, Object> entry = new HashMap<>();
+            entry.put("label", "test label");
+            DocumentModel docEntry = dirSession.createEntry(entry);
+            nextTransaction(); // see committed changes
+
+            docEntry.setPropertyValue("intIdSchema:label", "new label");
+            String jsonEntry = getDirectoryEntryAsJson(INT_ID_TEST_DIR_NAME, docEntry);
+            ClientResponse response = getResponse(RequestType.PUT,
+                    "/directory/" + INT_ID_TEST_DIR_NAME + "/" + docEntry.getId(), jsonEntry);
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            nextTransaction(); // see committed changes
+            docEntry = dirSession.getEntry(docEntry.getId());
+            assertEquals("new label", docEntry.getPropertyValue("intIdSchema:label"));
+        }
     }
 
     @Test
