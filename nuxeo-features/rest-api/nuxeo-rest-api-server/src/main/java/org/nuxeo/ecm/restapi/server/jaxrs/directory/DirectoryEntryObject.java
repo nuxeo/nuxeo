@@ -56,7 +56,7 @@ public class DirectoryEntryObject extends DefaultObject {
     @Override
     protected void initialize(Object... args) {
         if (args.length < 1) {
-            throw new IllegalArgumentException("Directory Entry obhect  takes one parameter");
+            throw new IllegalArgumentException("Directory Entry object  takes one parameter");
         }
 
         entry = (DirectoryEntry) args[0];
@@ -78,14 +78,10 @@ public class DirectoryEntryObject extends DefaultObject {
             DirectoryEntry run(Session session) {
                 DocumentModel docEntry = entry.getDocumentModel();
                 session.updateEntry(docEntry);
-
-                String id = (String) docEntry.getPropertyValue(directory.getSchema() + ":" + directory.getIdField());
-
-                return new DirectoryEntry(directory.getName(), session.getEntry(id));
+                return new DirectoryEntry(directory.getName(), session.getEntry(docEntry.getId()));
 
             }
         });
-
     }
 
     private void checkEditGuards() {

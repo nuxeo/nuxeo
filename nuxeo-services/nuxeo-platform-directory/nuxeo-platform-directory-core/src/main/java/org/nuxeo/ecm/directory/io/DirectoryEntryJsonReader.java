@@ -32,6 +32,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -80,11 +81,20 @@ public class DirectoryEntryJsonReader extends EntityJsonReader<DirectoryEntry> {
         Directory directory = directoryService.getDirectory(directoryName);
         String schema = directory.getSchema();
 
-        JsonNode propsNode = jn.get("properties");
-        if (propsNode != null && !propsNode.isNull() && propsNode.isObject()) {
-            String id = getStringField(propsNode, directory.getIdField());
-            try (Session session = directory.getSession()) {
-                DocumentModel entry = session.getEntry(id);
+        try (Session session = directory.getSession()) {
+            DocumentModel entry = null;
+            String id = getStringField(jn, "id");
+            if (StringUtils.isNotBlank(id)) {
+                entry = session.getEntry(id);
+            }
+
+            JsonNode propsNode = jn.get("properties");
+            if (propsNode != null && !propsNode.isNull() && propsNode.isObject()) {
+                if (entry == null) {
+                    // backward compatibility; try to fetch the entry from the id inside the properties
+                    id = getStringField(propsNode, directory.getIdField());
+                    entry = session.getEntry(id);
+                }
                 if (entry == null) {
                     entry = BaseSession.createEntryModel(null, schema, id, new HashMap<String, Object>());
                 }
