@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     bstefanescu
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.runtime.reload;
 
@@ -32,21 +33,21 @@ import org.osgi.framework.BundleException;
  */
 public interface ReloadService extends TimestampedService {
 
-    public static final String RELOAD_TOPIC = "org.nuxeo.runtime.reload";
+    String RELOAD_TOPIC = "org.nuxeo.runtime.reload";
 
-    public static final String FLUSH_EVENT_ID = "flush";
+    String FLUSH_EVENT_ID = "flush";
 
-    public static final String BEFORE_RELOAD_EVENT_ID = "before-reload";
+    String BEFORE_RELOAD_EVENT_ID = "before-reload";
 
-    public static final String RELOAD_EVENT_ID = "reload";
+    String RELOAD_EVENT_ID = "reload";
 
-    public static final String AFTER_RELOAD_EVENT_ID = "after-reload";
+    String AFTER_RELOAD_EVENT_ID = "after-reload";
 
-    public static final String FLUSH_SEAM_EVENT_ID = FLUSH_EVENT_ID+"SeamComponents";
+    String FLUSH_SEAM_EVENT_ID = FLUSH_EVENT_ID + "SeamComponents";
 
-    public static final String RELOAD_SEAM_EVENT_ID = "reloadSeamComponents";
+    String RELOAD_SEAM_EVENT_ID = "reloadSeamComponents";
 
-    public static final String RELOAD_REPOSITORIES_ID = "reloadRepositories";
+    String RELOAD_REPOSITORIES_ID = "reloadRepositories";
 
     /**
      * Sends a runtime event with id {@link #RELOAD_EVENT_ID} so that listeners can be notified that a reload has been
@@ -54,8 +55,8 @@ public interface ReloadService extends TimestampedService {
      * <p>
      * Also calls {@link #reloadProperties()} by default, but not other reload methods as they could alter the running
      * application behaviour.
-     * @throws InterruptedException
      *
+     * @throws InterruptedException
      * @since 5.5
      * @see #reloadProperties()
      */
@@ -63,6 +64,7 @@ public interface ReloadService extends TimestampedService {
 
     /**
      * Reloads the Nuxeo repository configuration
+     *
      * @throws InterruptedException
      */
     void reloadRepository() throws InterruptedException;
@@ -93,26 +95,26 @@ public interface ReloadService extends TimestampedService {
 
     /**
      * Returns the last time one of the flush commands where called on this service instance ({@link #flush()} or
-     * {@link #flushJaasCache()} or {@link #flushSeamComponents()}, or null if never called
+     * {@link #flushJaasCache()} or {@link #flushSeamComponents()}, or null if never called.
      *
      * @since 5.6
      */
     Long lastFlushed();
 
     /**
-     * Sends an event that can trigger reset of JaasCache
+     * Sends an event that can trigger reset of JaasCache.
      */
     void flushJaasCache();
 
     /**
-     * Sends a runtime event with id {@link #FLUSH_SEAM_EVENT_ID}
+     * Sends a runtime event with id {@link #FLUSH_SEAM_EVENT_ID}.
      *
      * @since 5.6
      */
     void flushSeamComponents();
 
     /**
-     * Deploys bundle to the runtime, without reloading resources
+     * Deploys bundle to the runtime, without reloading resources.
      *
      * @since 5.5
      * @see #deployBundle(File, boolean)
@@ -127,26 +129,26 @@ public interface ReloadService extends TimestampedService {
     String deployBundle(File file, boolean reloadResources) throws BundleException;
 
     /**
-     * Undeploys bundle from the runtime, given the bundle resource, gives possibility to control resources reloading
+     * Undeploys bundle from the runtime, given the bundle resource, gives possibility to control resources reloading.
      *
      * @since 5.6
      */
     void undeployBundle(File file, boolean reloadResources) throws BundleException;
 
     /**
-     * Undeploys bundle from the runtime, given the bundle filename
+     * Undeploys bundle from the runtime, given the bundle filename.
      *
      * @since 5.6
      */
     void undeployBundle(String bundleName) throws BundleException;
 
     /**
-     * Runs the deployment preprocessor
+     * Runs the deployment preprocessor.
      *
      * @since 5.6
-     * @See {@link DeploymentPreprocessor}
+     * @see {@link DeploymentPreprocessor}
      */
-    public void runDeploymentPreprocessor() throws IOException;
+    void runDeploymentPreprocessor() throws IOException;
 
     /**
      * Copies the bundle web resources into the nuxeo WAR directory.

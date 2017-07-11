@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.content.template.service;
 
 import java.util.HashMap;
@@ -47,9 +44,9 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
 
     private static final Log log = LogFactory.getLog(ContentTemplateServiceImpl.class);
 
-    private final Map<String, ContentFactoryDescriptor> factories = new HashMap<String, ContentFactoryDescriptor>();
+    private final Map<String, ContentFactoryDescriptor> factories = new HashMap<>();
 
-    private final Map<String, FactoryBindingDescriptor> factoryBindings = new HashMap<String, FactoryBindingDescriptor>();
+    private final Map<String, FactoryBindingDescriptor> factoryBindings = new HashMap<>();
 
     private PostContentCreationHandlerRegistry postContentCreationHandlers;
 
@@ -73,7 +70,6 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
         if (extensionPoint.equals(FACTORY_DECLARATION_EP)) {
             // store factories
             ContentFactoryDescriptor descriptor = (ContentFactoryDescriptor) contribution;
@@ -112,7 +108,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
     }
 
     private FactoryBindingDescriptor mergeFactoryBindingDescriptor(FactoryBindingDescriptor newOne) {
-        FactoryBindingDescriptor old = null;
+        FactoryBindingDescriptor old;
         if (null != newOne.getTargetType()) {
             old = factoryBindings.get(newOne.getTargetType());
         } else {

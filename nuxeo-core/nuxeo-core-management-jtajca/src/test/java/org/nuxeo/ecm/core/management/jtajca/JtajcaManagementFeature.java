@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Stephane Lacoin
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.ecm.core.management.jtajca;
 

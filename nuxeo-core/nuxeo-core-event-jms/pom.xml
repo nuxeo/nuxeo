@@ -8,8 +8,8 @@
   </parent>
 
   <artifactId>nuxeo-core-event-jms</artifactId>
-  <name>Nuxeo Core Event</name>
-  <description>Core Events model and implementation</description>
+  <name>Nuxeo Core Event JMS</name>
+  <description>Core Events JMS model and implementation</description>
 
   <dependencies>
     <dependency>

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     bstefanescu
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.runtime.tomcat.dev;
 
@@ -83,7 +84,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
         writeComponentIndex();
         postloadDevBundles(); // start dev bundles if any
         String installReloadTimerOption = (String) env.get(INSTALL_RELOAD_TIMER);
-        if (installReloadTimerOption != null && Boolean.parseBoolean(installReloadTimerOption) == Boolean.TRUE) {
+        if (installReloadTimerOption != null && Boolean.parseBoolean(installReloadTimerOption)) {
             toggleTimer();
         }
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
@@ -209,9 +210,9 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     }
 
     protected void installNewClassLoader(DevBundle[] bundles) {
-        List<URL> jarUrls = new ArrayList<URL>();
-        List<File> seamDirs = new ArrayList<File>();
-        List<File> resourceBundleFragments = new ArrayList<File>();
+        List<URL> jarUrls = new ArrayList<>();
+        List<File> seamDirs = new ArrayList<>();
+        List<File> resourceBundleFragments = new ArrayList<>();
         // filter dev bundles types
         for (DevBundle bundle : bundles) {
             if (bundle.devBundleType.isJar) {
@@ -250,9 +251,6 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
         File file = new File(home.getParentFile(), "sdk");
         file.mkdirs();
         file = new File(file, "components.index");
-        // if (file.isFile()) {
-        // return;
-        // }
         try {
             Method m = getClassLoader().loadClass("org.nuxeo.runtime.model.impl.ComponentRegistrySerializer")
                     .getMethod("writeIndex", File.class);
@@ -273,12 +271,12 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     }
 
     public void installResourceBundleFragments(List<File> files) throws IOException {
-        Map<String, List<File>> fragments = new HashMap<String, List<File>>();
+        Map<String, List<File>> fragments = new HashMap<>();
 
         for (File file : files) {
             String name = resourceBundleName(file);
             if (!fragments.containsKey(name)) {
-                fragments.put(name, new ArrayList<File>());
+                fragments.put(name, new ArrayList<>());
             }
             fragments.get(name).add(file);
         }
