@@ -27,12 +27,12 @@ import javax.ws.rs.POST;
 import javax.ws.rs.core.Context;
 
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.ConflictOperationException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.AutomationServer;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
@@ -72,10 +72,7 @@ public abstract class ExecutableResource extends DefaultObject {
             int customHttpStatus = xreq.getRestOperationContext().getHttpStatus();
             return ResponseHelper.getResponse(result, request, customHttpStatus);
         } catch (OperationException | NuxeoException | SecurityException | MessagingException | IOException cause) {
-            if (cause instanceof ConflictOperationException) {
-                throw WebException.newException("Failed to invoke operation: " + getId(), cause,
-                        HttpServletResponse.SC_CONFLICT);
-            } else if (cause instanceof OperationNotFoundException) {
+            if (cause instanceof OperationNotFoundException) {
                 throw WebException.newException("Failed to invoke operation: " + getId(), cause,
                         HttpServletResponse.SC_NOT_FOUND);
             } else {
@@ -83,6 +80,10 @@ public abstract class ExecutableResource extends DefaultObject {
                 if (unWrapException instanceof RestOperationException) {
                     int customHttpStatus = ((RestOperationException) unWrapException).getStatus();
                     throw WebException.newException("Failed to invoke operation: " + getId(), cause, customHttpStatus);
+                }
+                if (unWrapException instanceof ConcurrentUpdateException) {
+                    throw WebException.newException("Failed to invoke operation: " + getId(), unWrapException,
+                            HttpServletResponse.SC_CONFLICT);
                 }
                 throw WebException.newException("Failed to invoke operation: " + getId(), cause);
             }
