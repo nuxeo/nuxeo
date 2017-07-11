@@ -345,8 +345,8 @@ public class DirectoryTest extends BaseTest {
         return getDirectoryEntryAsJson(TESTDIRNAME, dirEntry);
     }
 
-    private String getDirectoryEntryAsJson(String dirName, DocumentModel dirEntry) throws IOException,
-            JsonGenerationException {
+    private String getDirectoryEntryAsJson(String dirName, DocumentModel dirEntry)
+            throws IOException, JsonGenerationException {
         return MarshallerHelper.objectToJson(new DirectoryEntry(dirName, dirEntry), CtxBuilder.get());
     }
 

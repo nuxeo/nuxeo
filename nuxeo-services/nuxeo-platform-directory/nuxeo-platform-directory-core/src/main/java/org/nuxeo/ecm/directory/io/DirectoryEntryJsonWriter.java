@@ -80,7 +80,6 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
  *             <-- additional property provided by extend() method
  * }
  * </pre>
- *
  * </p>
  *
  * @since 7.2

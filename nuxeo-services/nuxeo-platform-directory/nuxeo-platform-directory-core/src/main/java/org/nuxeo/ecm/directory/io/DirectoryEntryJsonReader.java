@@ -60,7 +60,6 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
  *   }
  * }
  * </pre>
- *
  * </p>
  *
  * @since 7.2
