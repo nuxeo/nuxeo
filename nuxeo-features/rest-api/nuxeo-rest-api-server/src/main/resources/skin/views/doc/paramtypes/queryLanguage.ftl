@@ -1,8 +1,7 @@
 {
   "paramType": "path",
   "name": "queryLanguage",
-  "description": "The query language. Default is NXQL.",
+  "description": "The query language.",
   "dataType": "string",
-  "required": true,
-  "default": "NXQL"
+  "required": true
 }
