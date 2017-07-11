@@ -16,6 +16,7 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.ecm.core.test;
 
@@ -155,7 +156,7 @@ public class CoreFeature extends SimpleFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) {
-	runner.getFeature(RuntimeFeature.class).registerHandler(new CoreDeployer());
+        runner.getFeature(RuntimeFeature.class).registerHandler(new CoreDeployer());
 
         storageConfiguration = new StorageConfiguration(this);
         txFeature = runner.getFeature(TransactionalFeature.class);
@@ -274,8 +275,8 @@ public class CoreFeature extends SimpleFeature {
             try {
                 log.trace("remove everything except root");
                 // remove proxies first, as we cannot remove a target if there's a proxy pointing to it
-                try (IterableQueryResult results = session
-                        .queryAndFetch("SELECT ecm:uuid FROM Document WHERE ecm:isProxy = 1", NXQL.NXQL)) {
+                try (IterableQueryResult results = session.queryAndFetch(
+                        "SELECT ecm:uuid FROM Document WHERE ecm:isProxy = 1", NXQL.NXQL)) {
                     batchRemoveDocuments(results);
                 } catch (QueryParseException e) {
                     // ignore, proxies disabled
@@ -407,15 +408,14 @@ public class CoreFeature extends SimpleFeature {
 
     public class CoreDeployer extends HotDeployer.ActionHandler {
 
-		@Override
-		public void exec(String action, String... agrs) throws Exception {
-			waitForAsyncCompletion();
-	        releaseCoreSession();
-			next.exec(action, agrs);
-			Framework.getService(ReloadService.class).reloadRepository();
-	        createCoreSession();
-
-		}
+        @Override
+        public void exec(String action, String... agrs) throws Exception {
+            waitForAsyncCompletion();
+            releaseCoreSession();
+            next.exec(action, agrs);
+            Framework.getService(ReloadService.class).reloadRepository();
+            createCoreSession();
+        }
 
     }
 

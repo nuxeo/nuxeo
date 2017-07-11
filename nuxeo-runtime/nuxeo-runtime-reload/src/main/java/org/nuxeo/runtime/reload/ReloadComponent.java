@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     bstefanescu
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.runtime.reload;
 
@@ -82,7 +83,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     protected void refreshComponents() {
         String reloadStrategy = Framework.getProperty("org.nuxeo.runtime.reload_strategy", "restart");
-        log.info("Refresh components. Strategy: " + reloadStrategy);
+        if (log.isInfoEnabled()) {
+            log.info("Refresh components. Strategy: " + reloadStrategy);
+        }
         // reload components / contributions
         ComponentManager mgr = Framework.getRuntime().getComponentManager();
         if ("unstash".equals(reloadStrategy)) {
@@ -99,9 +102,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     @Override
     public void reload() throws InterruptedException {
-        if (log.isDebugEnabled()) {
-            log.debug("Starting reload");
-        }
+        log.debug("Starting reload");
 
         try {
             reloadProperties();
@@ -264,12 +265,12 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
      * @since 5.6
      */
     protected void setFlushedNow() {
-        lastFlushed = System.currentTimeMillis();
+        lastFlushed = Long.valueOf(System.currentTimeMillis());
     }
 
     /**
-     * @deprecated since 5.6, use {@link #runDeploymentPreprocessor()} instead.
-     *             Keep it as compatibility code until NXP-9642 is done.
+     * @deprecated since 5.6, use {@link #runDeploymentPreprocessor()} instead. Keep it as compatibility code until
+     *             NXP-9642 is done.
      */
     @Override
     @Deprecated
@@ -297,9 +298,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     @Override
     public void runDeploymentPreprocessor() throws IOException {
-        if (log.isDebugEnabled()) {
-            log.debug("Start running deployment preprocessor");
-        }
+        log.debug("Start running deployment preprocessor");
         String rootPath = Environment.getDefault().getRuntimeHome().getAbsolutePath();
         File root = new File(rootPath);
         DeploymentPreprocessor processor = new DeploymentPreprocessor(root);
@@ -307,9 +306,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         processor.init();
         // and predeploy
         processor.predeploy();
-        if (log.isDebugEnabled()) {
-            log.debug("Deployment preprocessing done");
-        }
+        log.debug("Deployment preprocessing done");
     }
 
     protected static File getAppDir() {

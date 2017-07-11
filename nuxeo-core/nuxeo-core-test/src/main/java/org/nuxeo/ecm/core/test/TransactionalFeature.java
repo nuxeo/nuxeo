@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Stephane Lacoin
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.ecm.core.test;
 
@@ -27,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
@@ -43,10 +43,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class TransactionalFeature extends SimpleFeature {
 
     protected TransactionalConfig config;
-
-    protected String autoactivationValue;
-
-    protected boolean nsOwner;
 
     protected boolean txStarted;
 
@@ -99,14 +95,14 @@ public class TransactionalFeature extends SimpleFeature {
         }
         try {
             File file = new ThreadDeadlocksDetector().dump(new long[0]);
-            LogFactory.getLog(TransactionalFeature.class).warn("timed out in " + waiter.getClass() + ", thread dump available in " + file);
+            LogFactory.getLog(TransactionalFeature.class)
+                      .warn("timed out in " + waiter.getClass() + ", thread dump available in " + file);
         } catch (IOException cause) {
-            LogFactory.getLog(TransactionalFeature.class).warn("timed out in " + waiter.getClass() + ", cannot take thread dump", cause);
+            LogFactory.getLog(TransactionalFeature.class)
+                      .warn("timed out in " + waiter.getClass() + ", cannot take thread dump", cause);
         }
         return false;
     }
-
-    protected Class<? extends RepositoryFactory> defaultFactory;
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
@@ -115,27 +111,26 @@ public class TransactionalFeature extends SimpleFeature {
 
     @Override
     public void beforeSetup(FeaturesRunner runner) throws Exception {
-        if (config.autoStart() == false) {
-            return;
+        if (config.autoStart()) {
+            txStarted = TransactionHelper.startTransaction();
         }
-        txStarted = TransactionHelper.startTransaction();
     }
 
     @Override
     public void afterTeardown(FeaturesRunner runner) throws Exception {
-        if (txStarted == false) {
+        if (txStarted) {
+            TransactionHelper.commitOrRollbackTransaction();
+        } else {
             if (TransactionHelper.isTransactionActive()) {
                 try {
                     TransactionHelper.setTransactionRollbackOnly();
                     TransactionHelper.commitOrRollbackTransaction();
                 } finally {
-                    Logger.getLogger(TransactionalFeature.class).warn(
-                            "Committing a transaction for your, please do it yourself");
+                    Logger.getLogger(TransactionalFeature.class)
+                          .warn("Committing a transaction for your, please do it yourself");
                 }
             }
-            return;
         }
-        TransactionHelper.commitOrRollbackTransaction();
     }
 
 }
