@@ -36,7 +36,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.ConflictOperationException;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationType;
@@ -44,6 +43,7 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.AutomationInfo;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -145,10 +145,7 @@ public class AutomationResource extends ModuleRoot {
             OperationType op = service.getOperation(oid);
             return newObject("operation", op);
         } catch (OperationException cause) {
-            if (cause instanceof ConflictOperationException) {
-                return WebException.newException("Failed to invoke operation: " + oid, cause,
-                        HttpServletResponse.SC_CONFLICT);
-            } else if (cause instanceof OperationNotFoundException) {
+            if (cause instanceof OperationNotFoundException) {
                 return WebException.newException("Failed to invoke " + "operation: " + oid, cause,
                         HttpServletResponse.SC_NOT_FOUND);
             } else {
@@ -156,6 +153,10 @@ public class AutomationResource extends ModuleRoot {
                 if (unWrapException instanceof RestOperationException) {
                     int customHttpStatus = ((RestOperationException) unWrapException).getStatus();
                     throw WebException.newException("Failed to invoke operation: " + oid, cause, customHttpStatus);
+                }
+                if (unWrapException instanceof ConcurrentUpdateException) {
+                    throw WebException.newException("Failed to invoke operation: " + oid, unWrapException,
+                            HttpServletResponse.SC_CONFLICT);
                 }
                 throw WebException.newException("Failed to invoke operation: " + oid, cause);
             }
