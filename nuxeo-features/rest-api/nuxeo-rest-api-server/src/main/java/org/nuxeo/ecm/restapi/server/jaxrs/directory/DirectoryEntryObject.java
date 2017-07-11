@@ -61,7 +61,7 @@ public class DirectoryEntryObject extends DefaultObject {
 
         entry = (DirectoryEntry) args[0];
         directory = getDirectoryFromEntry(entry);
-        entryId = (String) args[1];;
+        entryId = (String) args[1];
     }
 
     @GET
