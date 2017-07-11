@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
@@ -74,9 +75,9 @@ public class DirectoryTest extends BaseTest {
     @Inject
     DirectoryService ds;
 
-    /**
-    *
-    */
+    @Inject
+    TransactionalFeature txFeature;
+
     private static final String TESTDIRNAME = "testdir";
 
     Session dirSession = null;
@@ -86,9 +87,6 @@ public class DirectoryTest extends BaseTest {
     public void doBefore() throws Exception {
         super.doBefore();
         dirSession = ds.open(TESTDIRNAME);
-        // see committed directory changes (init)
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
     }
 
     @After
@@ -99,8 +97,9 @@ public class DirectoryTest extends BaseTest {
     }
 
     protected void nextTransaction() {
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
+        dirSession.close();
+        txFeature.nextTransaction();
+        dirSession = ds.open(TESTDIRNAME);
     }
 
     @Test
