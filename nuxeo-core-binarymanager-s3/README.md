@@ -78,7 +78,11 @@ See http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.htm
 # Enable CloudFront Direct Download
 
 Please, read carefully the [CloudFront documentation](https://aws.amazon.com/fr/documentation/cloudfront/) to understand how you bind a CloudFront distribution to a S3 bucket.
-After you created a CloudFront distribution domain bound to your S3 repository. Accessing your objects is not restricted per default. You have to enable the `restriction viewer access` (Look at [Serving Private Content throught CloudFront](http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html)), then each distribution URL must be signed to access the target object.
+After you created a CloudFront distribution domain bound to your S3 repository. Accessing your objects is not restricted per default. 
+
+You have to enable the `restriction viewer access` (Look at [Serving Private Content throught CloudFront](http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html)), then each distribution URL must be signed to access the target object.
+
+You have to set the `Query String Forwarding and Caching` on `all parameters` (Look at [Configuring CloudFront to Cache Based on Query String Parameters](http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/QueryStringParameters.html)) in order to correctly forward `Content Disposition` parameters to get a response with a correct filename. 
 
 ## Mandatory Parameters
 S3 parameters (except `nuxeo.core.binarymanager`) are mandatory, additionally CloudFront requires some new ones:
