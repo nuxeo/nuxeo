@@ -53,7 +53,6 @@ import org.nuxeo.connect.update.task.standalone.commands.Copy;
 import org.nuxeo.connect.update.task.standalone.commands.Delete;
 import org.nuxeo.connect.update.task.standalone.commands.DeployConfigPlaceholder;
 import org.nuxeo.connect.update.task.standalone.commands.DeployPlaceholder;
-import org.nuxeo.connect.update.task.standalone.commands.FlushCoreCachePlaceholder;
 import org.nuxeo.connect.update.task.standalone.commands.FlushJaasCachePlaceholder;
 import org.nuxeo.connect.update.task.standalone.commands.FlushPlaceholder;
 import org.nuxeo.connect.update.task.standalone.commands.InstallPlaceholder;
@@ -178,7 +177,6 @@ public class StandaloneUpdateService implements PackageUpdateService {
         addCommand(Delete.ID, Delete.class);
         addCommand(InstallPlaceholder.ID, InstallPlaceholder.class);
         addCommand(UninstallPlaceholder.ID, UninstallPlaceholder.class);
-        addCommand(FlushCoreCachePlaceholder.ID, FlushCoreCachePlaceholder.class);
         addCommand(FlushJaasCachePlaceholder.ID, FlushJaasCachePlaceholder.class);
         addCommand(FlushPlaceholder.ID, FlushPlaceholder.class);
         addCommand(ReloadPropertiesPlaceholder.ID, ReloadPropertiesPlaceholder.class);

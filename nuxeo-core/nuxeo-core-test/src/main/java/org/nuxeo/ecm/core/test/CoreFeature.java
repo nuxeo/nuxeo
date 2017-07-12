@@ -55,7 +55,6 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.URLStreamRef;
-import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -408,14 +407,13 @@ public class CoreFeature extends SimpleFeature {
 
     public class CoreDeployer extends HotDeployer.ActionHandler {
 
-        @Override
-        public void exec(String action, String... agrs) throws Exception {
-            waitForAsyncCompletion();
-            releaseCoreSession();
-            next.exec(action, agrs);
-            Framework.getService(ReloadService.class).reloadRepository();
-            createCoreSession();
-        }
+		@Override
+		public void exec(String action, String... agrs) throws Exception {
+			waitForAsyncCompletion();
+	        releaseCoreSession();
+			next.exec(action, agrs);
+	        createCoreSession();
+		}
 
     }
 

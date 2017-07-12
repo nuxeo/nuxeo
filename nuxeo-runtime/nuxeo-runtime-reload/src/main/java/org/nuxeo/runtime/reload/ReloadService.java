@@ -51,8 +51,6 @@ public interface ReloadService extends TimestampedService {
 
     String RELOAD_SEAM_EVENT_ID = "reloadSeamComponents";
 
-    String RELOAD_REPOSITORIES_ID = "reloadRepositories";
-
     /**
      * Sends a runtime event with id {@link #RELOAD_EVENT_ID} so that listeners can be notified that a reload has been
      * done.
@@ -65,13 +63,6 @@ public interface ReloadService extends TimestampedService {
      * @see #reloadProperties()
      */
     void reload() throws InterruptedException;
-
-    /**
-     * Reloads the Nuxeo repository configuration
-     *
-     * @throws InterruptedException
-     */
-    void reloadRepository() throws InterruptedException;
 
     /**
      * Reloads runtime framework properties

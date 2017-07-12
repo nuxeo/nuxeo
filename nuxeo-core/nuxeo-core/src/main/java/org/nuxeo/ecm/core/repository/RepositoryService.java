@@ -152,7 +152,6 @@ public class RepositoryService extends DefaultComponent {
      *
      * @since 7.2
      * @see #getRepository(String)
-     * @see #getSession(String, String)
      */
     protected Repository doGetRepository(String repositoryName) {
         Repository repository = repositories.get(repositoryName);

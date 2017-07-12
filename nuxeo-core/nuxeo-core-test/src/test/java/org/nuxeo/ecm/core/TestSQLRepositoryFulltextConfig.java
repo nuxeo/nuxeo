@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule.Condition;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -78,17 +77,6 @@ public class TestSQLRepositoryFulltextConfig {
 
     @Inject
     protected CoreSession session;
-
-    @Inject
-    protected ReloadService reloadService;
-
-    protected void newRepository() throws InterruptedException {
-        waitForAsyncCompletion();
-        coreFeature.releaseCoreSession();
-        // reload repo with new config
-        reloadService.reloadRepository();
-        session = coreFeature.createCoreSession();
-    }
 
     protected void waitForAsyncCompletion() {
         nextTransaction();
@@ -179,8 +167,6 @@ public class TestSQLRepositoryFulltextConfig {
             "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
             "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml" })
     public void testFulltextOnlyNoteFile() throws Exception {
-        newRepository();
-
         DocumentModelList dml;
         createDocs();
 
@@ -211,8 +197,6 @@ public class TestSQLRepositoryFulltextConfig {
             "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
             "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml" })
     public void testFulltextNoteFileExcluded() throws Exception {
-        newRepository();
-
         DocumentModelList dml;
         createDocs();
 
@@ -244,8 +228,6 @@ public class TestSQLRepositoryFulltextConfig {
             "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
             "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml" })
     public void testFulltextMixedConfig() throws Exception {
-        newRepository();
-
         DocumentModelList dml;
         createDocs();
 
@@ -275,8 +257,6 @@ public class TestSQLRepositoryFulltextConfig {
     // deploy contrib where only Note and File are not fulltext indexed
     @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-note-not-indexable-contrib.xml")
     public void testNotFulltextIndexableFacet() throws Exception {
-        newRepository();
-
         DocumentModelList dml;
         createDocs();
 
