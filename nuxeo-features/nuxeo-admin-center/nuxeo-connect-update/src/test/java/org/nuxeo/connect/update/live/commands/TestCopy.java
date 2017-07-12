@@ -23,20 +23,17 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.junit.runner.RunWith;
+import org.nuxeo.connect.update.ConnectUpdateFeature;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.connect.client", "org.nuxeo.connect.client.wrapper", "org.nuxeo.connect.update",
-        "org.nuxeo.runtime.reload" })
+@Features(ConnectUpdateFeature.class)
 public class TestCopy extends org.nuxeo.connect.update.standalone.commands.TestCopy {
 
     @Inject

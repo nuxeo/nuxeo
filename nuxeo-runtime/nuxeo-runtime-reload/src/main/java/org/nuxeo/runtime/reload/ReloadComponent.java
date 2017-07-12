@@ -23,8 +23,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
+import java.util.List;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.transaction.Transaction;
 
@@ -34,7 +36,6 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.ZipUtils;
-import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
@@ -54,6 +55,21 @@ import org.osgi.service.packageadmin.PackageAdmin;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ReloadComponent extends DefaultComponent implements ReloadService {
+
+    /**
+     * The reload strategy to adopt for hot reload. Default value is {@link #RELOAD_STRATEGY_VALUE_DEFAULT}.
+     *
+     * @since 9.3
+     */
+    public static final String RELOAD_STRATEGY_PARAMETER = "org.nuxeo.runtime.reload_strategy";
+
+    public static final String RELOAD_STRATEGY_VALUE_UNSTASH = "unstash";
+
+    public static final String RELOAD_STRATEGY_VALUE_STANDBY = "standby";
+
+    public static final String RELOAD_STRATEGY_VALUE_RESTART = "restart";
+
+    public static final String RELOAD_STRATEGY_VALUE_DEFAULT = RELOAD_STRATEGY_VALUE_STANDBY;
 
     private static final Log log = LogFactory.getLog(ReloadComponent.class);
 
@@ -82,21 +98,28 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     protected void refreshComponents() {
-        String reloadStrategy = Framework.getProperty("org.nuxeo.runtime.reload_strategy", "restart");
+        String reloadStrategy = Framework.getProperty(RELOAD_STRATEGY_PARAMETER, RELOAD_STRATEGY_VALUE_DEFAULT);
         if (log.isInfoEnabled()) {
             log.info("Refresh components. Strategy: " + reloadStrategy);
         }
         // reload components / contributions
         ComponentManager mgr = Framework.getRuntime().getComponentManager();
-        if ("unstash".equals(reloadStrategy)) {
+        switch(reloadStrategy) {
+        case RELOAD_STRATEGY_VALUE_UNSTASH:
             // compat mode
             mgr.unstash();
-        } else if ("standby".equals(reloadStrategy)) { // standby / resume
+            break;
+        case RELOAD_STRATEGY_VALUE_STANDBY:
+            // standby / resume
             mgr.standby();
             mgr.unstash();
             mgr.resume();
-        } else { // restart mode
+            break;
+        case RELOAD_STRATEGY_VALUE_RESTART:
+        default:
+            // restart mode
             mgr.refresh(false);
+            break;
         }
     }
 
@@ -157,101 +180,117 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public String deployBundle(File file) throws BundleException {
-        return deployBundle(file, false);
-    }
-
-    @Override
-    public String deployBundle(File file, boolean reloadResourceClasspath) throws BundleException {
-        String name = getOSGIBundleName(file);
-        if (name == null) {
-            log.error(
-                    String.format("No Bundle-SymbolicName found in MANIFEST for jar at '%s'", file.getAbsolutePath()));
-            return null;
+    public void deployBundles(List<File> files, boolean reloadResources) throws BundleException {
+        List<String> missingNames = files.stream()
+                                         .filter(file -> getOSGIBundleName(file) == null)
+                                         .map(File::getAbsolutePath)
+                                         .collect(Collectors.toList());
+        if (!missingNames.isEmpty()) {
+            missingNames.forEach(
+                    name -> log.error(String.format("No Bundle-SymbolicName found in MANIFEST for jar at '%s'", name)));
+            // TODO investigate why we need to exit here, getBundleContext().installBundle(path) will throw an exception
+            // unless, maybe tests ?
+            return;
+        }
+        if (log.isInfoEnabled()) {
+            StringBuilder builder = new StringBuilder("Before deploy bundles\n");
+            Framework.getRuntime().getStatusMessage(builder);
+            log.info(builder.toString());
         }
 
-        String path = file.getAbsolutePath();
-
-        log.info(String.format("Before deploy bundle for file at '%s'\n" + "%s", path, getRuntimeStatus()));
-
-        if (reloadResourceClasspath) {
-            URL url;
-            try {
-                url = new File(path).toURI().toURL();
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
-            Framework.reloadResourceLoader(Collections.singletonList(url), null);
+        // Reload resources
+        if (reloadResources) {
+            List<URL> urls = files.stream().map(this::toURL).collect(Collectors.toList());
+            Framework.reloadResourceLoader(urls, null);
         }
 
-        // check if this is a bundle first
-        Bundle newBundle = getBundleContext().installBundle(path);
-        if (newBundle == null) {
-            throw new IllegalArgumentException("Could not find a valid bundle at path: " + path);
-        }
+        // Deploy bundles
         Transaction tx = TransactionHelper.suspendTransaction();
         try {
-            newBundle.start();
+            BundleContext bundleContext = getBundleContext();
+            for (File file : files) {
+                String path = file.getAbsolutePath();
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Before deploy bundle for file at '%s'", path));
+                }
+                Bundle bundle = bundleContext.installBundle(path);
+                if (bundle == null) {
+                    // TODO check why this is necessary, our implementation always return sth
+                    throw new IllegalArgumentException("Could not find a valid bundle at path: " + path);
+                }
+                bundle.start();
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Deploy done for bundle with name '%s'", bundle.getSymbolicName()));
+                }
+            }
             refreshComponents();
         } finally {
             TransactionHelper.resumeTransaction(tx);
         }
 
-        log.info(String.format("Deploy done for bundle with name '%s'.\n" + "%s", newBundle.getSymbolicName(),
-                getRuntimeStatus()));
-
-        return newBundle.getSymbolicName();
-    }
-
-    @Override
-    public void undeployBundle(File file, boolean reloadResources) throws BundleException {
-        String name = getOSGIBundleName(file);
-        String path = file.getAbsolutePath();
-        if (name == null) {
-            log.error(String.format("No Bundle-SymbolicName found in MANIFEST for jar at '%s'", path));
-            return;
-        }
-
-        undeployBundle(name);
-
-        if (reloadResources) {
-            URL url;
-            try {
-                url = new File(path).toURI().toURL();
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
-            Framework.reloadResourceLoader(null, Collections.singletonList(url));
+        if (log.isInfoEnabled()) {
+            StringBuilder builder = new StringBuilder("After deploy bundles\n");
+            Framework.getRuntime().getStatusMessage(builder);
+            log.info(builder.toString());
         }
     }
 
     @Override
-    public void undeployBundle(String bundleName) throws BundleException {
-        if (bundleName == null) {
-            // ignore
-            return;
+    public void undeployBundles(List<String> bundleNames, boolean reloadResources) throws BundleException {
+        if (log.isInfoEnabled()) {
+            StringBuilder builder = new StringBuilder("Before undeploy bundles\n");
+            Framework.getRuntime().getStatusMessage(builder);
+            log.info(builder.toString());
         }
-        log.info(String.format("Before undeploy bundle with name '%s'.\n" + "%s", bundleName, getRuntimeStatus()));
+
+        // Undeploy bundles
         BundleContext ctx = getBundleContext();
         ServiceReference ref = ctx.getServiceReference(PackageAdmin.class.getName());
         PackageAdmin srv = (PackageAdmin) ctx.getService(ref);
+        Transaction tx = TransactionHelper.suspendTransaction();
+        // use a stream builder because it is optimized for one element only
+        Stream.Builder<String> paths = Stream.builder();
         try {
-            for (Bundle b : srv.getBundles(bundleName, null)) {
-                if (b != null && b.getState() == Bundle.ACTIVE) {
-                    Transaction tx = TransactionHelper.suspendTransaction();
-                    try {
-                        b.stop();
-                        b.uninstall();
-                        refreshComponents();
-                    } finally {
-                        TransactionHelper.resumeTransaction(tx);
+            for (String bundleName : bundleNames) {
+                for (Bundle bundle : srv.getBundles(bundleName, null)) {
+                    if (bundle != null && bundle.getState() == Bundle.ACTIVE) {
+                        if (log.isInfoEnabled()) {
+                            log.info(String.format("Before undeploy bundle with name '%s'.", bundleName));
+                        }
+                        paths.add(bundle.getLocation());
+                        bundle.stop();
+                        bundle.uninstall();
+                        if (log.isInfoEnabled()) {
+                            log.info(String.format("After undeploy bundle with name '%s'.", bundleName));
+                        }
                     }
                 }
             }
+            refreshComponents();
         } finally {
+            TransactionHelper.resumeTransaction(tx);
             ctx.ungetService(ref);
         }
-        log.info(String.format("Undeploy done.\n" + "%s", getRuntimeStatus()));
+
+        // Reload resources
+        if (reloadResources) {
+            List<URL> urls = paths.build().map(File::new).map(this::toURL).collect(Collectors.toList());
+            Framework.reloadResourceLoader(null, urls);
+        }
+
+        if (log.isInfoEnabled()) {
+            StringBuilder builder = new StringBuilder("After undeploy bundles\n");
+            Framework.getRuntime().getStatusMessage(builder);
+            log.info(builder.toString());
+        }
+    }
+
+    protected URL toURL(File file) {
+        try {
+            return file.toURI().toURL();
+        } catch (MalformedURLException e) {
+            throw new RuntimeServiceException(e);
+        }
     }
 
     @Override
@@ -334,45 +373,46 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         return bundleName;
     }
 
-    protected String getRuntimeStatus() {
-        StringBuilder msg = new StringBuilder();
-        RuntimeService runtime = Framework.getRuntime();
-        runtime.getStatusMessage(msg);
-        return msg.toString();
-    }
 
-    protected void triggerReloadWithNewTransaction(String id) throws InterruptedException {
+    /**
+     * @deprecated since 9.3 should not be needed anymore
+     */
+    @Deprecated
+    protected void triggerReloadWithNewTransaction(String eventId) throws InterruptedException {
         if (TransactionHelper.isTransactionMarkedRollback()) {
             throw new AssertionError("The calling transaction is marked rollback");
         }
         // we need to commit or rollback transaction because suspending it leads to a lock/errors when acquiring a new
         // connection during the datasource reload
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
+        boolean hasTransaction = TransactionHelper.isTransactionActiveOrMarkedRollback();
+        if (hasTransaction) {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         try {
-            try {
-                triggerReload(id);
-            } catch (RuntimeException cause) {
-                TransactionHelper.setTransactionRollbackOnly();
-                throw cause;
-            } finally {
-                TransactionHelper.commitOrRollbackTransaction();
-            }
+            TransactionHelper.runInTransaction(() -> triggerReload(eventId));
         } finally {
-            TransactionHelper.startTransaction();
+            // start a new transaction only if one already existed
+            // this is because there's no user transaction when coming from SDK
+            if (hasTransaction) {
+                TransactionHelper.startTransaction();
+            }
         }
     }
 
-    protected void triggerReload(String id) throws InterruptedException {
-        log.info("about to reload for " + id);
+    /**
+     * @deprecated since 9.3 should not be needed anymore
+     */
+    @Deprecated
+    protected void triggerReload(String eventId) {
+        log.info("About to send reload event for id: " + eventId);
         Framework.getLocalService(EventService.class)
                  .sendEvent(new Event(RELOAD_TOPIC, BEFORE_RELOAD_EVENT_ID, this, null));
         try {
-            Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, id, this, null));
+            Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, eventId, this, null));
         } finally {
             Framework.getLocalService(EventService.class)
                      .sendEvent(new Event(RELOAD_TOPIC, AFTER_RELOAD_EVENT_ID, this, null));
-            log.info("returning from " + id);
+            log.info("Returning from reload for event id: " + eventId);
         }
     }
 }

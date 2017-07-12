@@ -25,12 +25,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Bundle descriptor for hot deployment
+ * Bundle descriptor for hot deployment.
  *
  * @since 5.5
  */
@@ -45,24 +45,20 @@ public class DevBundle implements Serializable {
     protected final String path;
 
     public static DevBundle[] parseDevBundleLines(InputStream is) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        try {
-            ArrayList<DevBundle> bundles = new ArrayList<DevBundle>();
-            String line = reader.readLine();
-            while (line != null) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+            List<DevBundle> bundles = new ArrayList<>();
+            String line;
+                while ((line = reader.readLine()) != null) {
                 line = line.trim();
                 if (line.length() > 0 && !line.startsWith("#")) {
                     bundles.add(parseDevBundleLine(line));
                 }
-                line = reader.readLine();
             }
             return bundles.toArray(new DevBundle[bundles.size()]);
-        } finally {
-            reader.close();
         }
     }
 
-    public static DevBundle parseDevBundleLine(String line) throws MalformedURLException {
+    public static DevBundle parseDevBundleLine(String line) {
         int index = line.indexOf(':');
         String typename = line.substring(0, index);
         typename = typename.substring(0, 1).toUpperCase() + typename.substring(1);
@@ -76,7 +72,7 @@ public class DevBundle implements Serializable {
     }
 
     public URL url() throws IOException {
-        return new File(path).toURI().toURL();
+        return file().toURI().toURL();
     }
 
     public File file() {
@@ -90,4 +86,12 @@ public class DevBundle implements Serializable {
     public String getPath() {
         return file().getAbsolutePath();
     }
+
+    /**
+     * @since 9.3
+     */
+    public DevBundleType getDevBundleType() {
+        return devBundleType;
+    }
+
 }

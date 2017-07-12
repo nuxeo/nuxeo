@@ -57,7 +57,7 @@ public class Undeploy extends UndeployPlaceholder {
             return;
         }
         try {
-            service.undeployBundle(file, true);
+            service.undeployBundle(name, true);
         } catch (BundleException e) {
             throw new PackageException("Failed to undeploy bundle " + file, e);
         }
