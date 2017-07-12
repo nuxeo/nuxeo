@@ -21,6 +21,11 @@ package org.nuxeo.runtime.tomcat.dev;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Invokes the ReloadService by reflection as this module does not have access to the runtime context.
@@ -32,9 +37,9 @@ public class ReloadServiceInvoker {
 
     protected Object reloadService;
 
-    protected Method deployBundle;
+    protected Method deployBundles;
 
-    protected Method undeployBundle;
+    protected Method undeployBundles;
 
     /**
      * Method to run the deployment preprocessor, previously handled by the deployBundle method
@@ -45,9 +50,11 @@ public class ReloadServiceInvoker {
 
     /**
      * Method to install local web resources, as the deployment preprocessor won't see dev bundles as defined by Nuxeo
-     * IDE
+     * IDE.
      *
      * @since 5.6
+     * @deprecated since 5.6, use {@link #runDeploymentPreprocessor} instead, also see
+     *             org.nuxeo.runtime.reload.ReloadService
      */
     protected Method installWebResources;
 
@@ -59,19 +66,26 @@ public class ReloadServiceInvoker {
 
     protected Method reloadSeam;
 
+    /**
+     * @since 9.3
+     */
+    protected Method getOSGIBundleName;
+
     public ReloadServiceInvoker(ClassLoader cl) throws ReflectiveOperationException {
         Class<?> frameworkClass = cl.loadClass("org.nuxeo.runtime.api.Framework");
         Class<?> reloadServiceClass = cl.loadClass("org.nuxeo.runtime.reload.ReloadService");
-        Method getLocalService = frameworkClass.getDeclaredMethod("getLocalService", new Class<?>[] { Class.class });
-        reloadService = getLocalService.invoke(null, new Object[] { reloadServiceClass });
-        deployBundle = reloadServiceClass.getDeclaredMethod("deployBundle", new Class<?>[] { File.class });
-        undeployBundle = reloadServiceClass.getDeclaredMethod("undeployBundle", new Class<?>[] { String.class });
-        runDeploymentPreprocessor = reloadServiceClass.getDeclaredMethod("runDeploymentPreprocessor", new Class<?>[0]);
-        installWebResources = reloadServiceClass.getDeclaredMethod("installWebResources", new Class<?>[] { File.class });
-        flush = reloadServiceClass.getDeclaredMethod("flush", new Class<?>[0]);
-        reload = reloadServiceClass.getDeclaredMethod("reload", new Class<?>[0]);
-        flushSeam = reloadServiceClass.getDeclaredMethod("flushSeamComponents", new Class<?>[0]);
-        reloadSeam = reloadServiceClass.getDeclaredMethod("reloadSeamComponents", new Class<?>[0]);
+        Method getLocalService = frameworkClass.getDeclaredMethod("getLocalService", Class.class);
+        reloadService = getLocalService.invoke(null, reloadServiceClass);
+        // TODO REVIEW - should we reload resources when deploying and undeploying ?
+        deployBundles = reloadServiceClass.getDeclaredMethod("deployBundles", List.class);
+        undeployBundles = reloadServiceClass.getDeclaredMethod("undeployBundles", List.class);
+        runDeploymentPreprocessor = reloadServiceClass.getDeclaredMethod("runDeploymentPreprocessor");
+        installWebResources = reloadServiceClass.getDeclaredMethod("installWebResources", File.class);
+        flush = reloadServiceClass.getDeclaredMethod("flush");
+        reload = reloadServiceClass.getDeclaredMethod("reload");
+        flushSeam = reloadServiceClass.getDeclaredMethod("flushSeamComponents");
+        reloadSeam = reloadServiceClass.getDeclaredMethod("reloadSeamComponents");
+        getOSGIBundleName = reloadServiceClass.getDeclaredMethod("getOSGIBundleName", File.class);
     }
 
     public void hotDeployBundles(DevBundle[] bundles) throws ReflectiveOperationException {
@@ -79,20 +93,32 @@ public class ReloadServiceInvoker {
         try {
             Thread.currentThread().setContextClassLoader(reloadService.getClass().getClassLoader());
             flush();
-            boolean hasSeam = false;
             // rebuild existing war, this will remove previously copied web
             // resources
             // commented out for now, see NXP-9642
             // runDeploymentPreprocessor();
+
+            // don't use stream here, cause of ReflectiveOperationException
+            boolean hasSeam = false;
+            List<File> files = new ArrayList<>(bundles.length);
             for (DevBundle bundle : bundles) {
-                if (bundle.devBundleType == DevBundleType.Bundle) {
-                    bundle.name = (String) deployBundle.invoke(reloadService, new Object[] { bundle.file() });
-                    // install its web resources
-                    installWebResources.invoke(reloadService, new Object[] { bundle.file() });
-                } else if (bundle.devBundleType.equals(DevBundleType.Seam)) {
-                    hasSeam = true;
+                if (bundle.getDevBundleType() == DevBundleType.Bundle) {
+                    File file = bundle.file();
+                    // fill dev bundle with its OSGI bundle name in order to allow SDK to undeploy them
+                    // this is how admin center get bundle name
+                    bundle.name = getOSGIBundleName(file);
+                    files.add(file);
+                } else {
+                    hasSeam = hasSeam || bundle.getDevBundleType() == DevBundleType.Seam;
                 }
             }
+            // deploy bundles
+            deployBundles(files);
+            // install their web resources
+            for (File file : files) {
+                installWebResources(file);
+            }
+            // check if we need to reload seam
             if (hasSeam) {
                 reloadSeam();
             }
@@ -106,28 +132,43 @@ public class ReloadServiceInvoker {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(reloadService.getClass().getClassLoader());
-            boolean hasSeam = false;
-            for (DevBundle bundle : bundles) {
-                if (bundle.devBundleType.equals(DevBundleType.Bundle) && bundle.name != null) {
-                    undeployBundle.invoke(reloadService, new Object[] { bundle.name });
-                } else if (bundle.devBundleType.equals(DevBundleType.Seam)) {
-                    hasSeam = true;
-                }
-            }
+            List<String> bundleNames = Stream.of(bundles)
+                                             .filter(bundle -> bundle.devBundleType == DevBundleType.Bundle)
+                                             .map(DevBundle::getName)
+                                             .filter(Objects::nonNull)
+                                             .collect(Collectors.toList());
+            // undeploy bundles
+            undeployBundles(bundleNames);
             // run deployment preprocessor again: this will remove potential
             // resources that were copied in the war at deploy
             // commented out for now, see NXP-9642
             // runDeploymentPreprocessor();
-            if (hasSeam) {
-                flushSeam.invoke(reloadService);
+
+            // check if we need to flush seam
+            if (Stream.of(bundles).map(DevBundle::getDevBundleType).anyMatch(DevBundleType.Seam::equals)) {
+                flushSeam();
             }
         } finally {
             Thread.currentThread().setContextClassLoader(cl);
         }
     }
 
+    protected void deployBundles(List<File> files) throws ReflectiveOperationException {
+        // instantiate an object array in order to prevent array to var-args
+        deployBundles.invoke(reloadService, files);
+    }
+
+    protected void undeployBundles(List<String> bundleNames) throws ReflectiveOperationException {
+        // instantiate an object array in order to prevent array to var-args
+        undeployBundles.invoke(reloadService, bundleNames);
+    }
+
     protected void flush() throws ReflectiveOperationException {
         flush.invoke(reloadService);
+    }
+
+    protected void flushSeam() throws ReflectiveOperationException {
+        flushSeam.invoke(reloadService);
     }
 
     protected void reload() throws ReflectiveOperationException {
@@ -140,6 +181,22 @@ public class ReloadServiceInvoker {
 
     protected void runDeploymentPreprocessor() throws ReflectiveOperationException {
         runDeploymentPreprocessor.invoke(reloadService);
+    }
+
+    /**
+     * @since 9.3
+     */
+    protected String getOSGIBundleName(File file) throws ReflectiveOperationException {
+        return (String) getOSGIBundleName.invoke(reloadService, file);
+    }
+
+    /**
+     * @deprecated since 5.6, use {@link #runDeploymentPreprocessor()} instead, also see
+     *             org.nuxeo.runtime.reload.ReloadService
+     */
+    @Deprecated
+    protected void installWebResources(File file) throws ReflectiveOperationException {
+        installWebResources.invoke(reloadService, file);
     }
 
 }

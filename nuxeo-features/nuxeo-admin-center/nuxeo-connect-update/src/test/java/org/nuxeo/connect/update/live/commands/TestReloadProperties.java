@@ -27,27 +27,24 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.junit.runner.RunWith;
+import org.nuxeo.connect.update.ConnectUpdateFeature;
+import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
-import org.nuxeo.connect.update.LocalPackage;
+import org.nuxeo.connect.update.standalone.commands.AbstractCommandTest;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.task.live.commands.ReloadProperties;
 import org.nuxeo.connect.update.util.PackageBuilder;
 import org.nuxeo.connect.update.xml.XmlWriter;
-import org.nuxeo.connect.update.standalone.commands.AbstractCommandTest;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.connect.client", "org.nuxeo.connect.client.wrapper", "org.nuxeo.connect.update",
-        "org.nuxeo.runtime.reload" })
+@Features(ConnectUpdateFeature.class)
 public class TestReloadProperties extends AbstractCommandTest {
 
     @Inject

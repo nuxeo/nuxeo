@@ -193,10 +193,4 @@
 
   </extension-point>
 
-  <extension target="org.nuxeo.runtime.EventService" point="listeners">
-    <listener
-      class="org.nuxeo.ecm.core.schema.FlushPendingsRegistrationOnReloadListener">
-      <topic>org.nuxeo.runtime.reload</topic>
-    </listener>
-  </extension>
 </component>

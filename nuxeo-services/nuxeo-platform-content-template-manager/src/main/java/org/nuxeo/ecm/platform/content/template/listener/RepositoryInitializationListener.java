@@ -29,27 +29,18 @@ import org.nuxeo.runtime.api.Framework;
 
 public class RepositoryInitializationListener extends RepositoryInitializationHandler {
 
-    private ContentTemplateService service;
-
     @Override
     public void doInitializeRepository(CoreSession session) {
         // This method gets called as a system user
         // so we have all needed rights to do the check and the creation
         DocumentModel root = session.getRootDocument();
-        ContentTemplateService service = getService();
+        ContentTemplateService service = Framework.getService(ContentTemplateService.class);
         service.executeFactoryForType(root);
         // Allow queries to see changes during
         // postContentCreationHandler executions
         session.save();
         service.executePostContentCreationHandlers(session);
         session.save();
-    }
-
-    private ContentTemplateService getService() {
-        if (service == null) {
-            service = Framework.getLocalService(ContentTemplateService.class);
-        }
-        return service;
     }
 
 }
