@@ -863,8 +863,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     public int setToPreparedStatement(PreparedStatement ps, int i, Serializable object) throws SQLException {
         if (object instanceof Calendar) {
-            Calendar cal = (Calendar) object;
-            ps.setTimestamp(i, dialect.getTimestampFromCalendar(cal), cal);
+            dialect.setToPreparedStatementTimestamp(ps, i, object, null);
         } else if (object instanceof java.sql.Date) {
             ps.setDate(i, (java.sql.Date) object);
         } else if (object instanceof Long) {
@@ -887,7 +886,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 jdbcType = Types.CLOB;
             } else if (object instanceof Calendar[]) {
                 jdbcType = dialect.getJDBCTypeAndString(ColumnType.TIMESTAMP).jdbcType;
-                object = dialect.getTimestampFromCalendar((Calendar) object);
+                object = dialect.getTimestampFromCalendar((Calendar[]) object);
             } else if (object instanceof Integer[]) {
                 jdbcType = dialect.getJDBCTypeAndString(ColumnType.INTEGER).jdbcType;
             } else {
