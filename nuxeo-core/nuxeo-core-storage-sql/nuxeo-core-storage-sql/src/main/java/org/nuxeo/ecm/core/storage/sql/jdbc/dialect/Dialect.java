@@ -356,13 +356,14 @@ public abstract class Dialect {
 
     public void setToPreparedStatementTimestamp(PreparedStatement ps, int index, Serializable value, Column column)
             throws SQLException {
-        Calendar cal = (Calendar) value;
-        Timestamp ts = cal == null ? null : new Timestamp(cal.getTimeInMillis());
-        ps.setTimestamp(index, ts, cal); // cal passed for timezone
+        Timestamp ts = getTimestampFromCalendar((Calendar) value);
+        // NOTE we don't pass the Calendar as third parameter to setTimestamp(), because
+        // this causes h2, Oracle and SQL Server to write incorrect dates
+        ps.setTimestamp(index, ts); // default timezone
     }
 
     public Timestamp getTimestampFromCalendar(Calendar value) {
-        return new Timestamp(value.getTimeInMillis());
+        return value == null ? null : new Timestamp(value.getTimeInMillis());
     }
 
     public Timestamp[] getTimestampFromCalendar(Serializable[] value) {
@@ -380,7 +381,7 @@ public abstract class Dialect {
         if (value == null) {
             return null;
         }
-        Calendar cal = new GregorianCalendar(); // XXX timezone
+        Calendar cal = new GregorianCalendar(); // default timezone
         cal.setTimeInMillis(value.getTime());
         return cal;
     }
@@ -419,14 +420,7 @@ public abstract class Dialect {
     }
 
     protected Serializable getFromResultSetTimestamp(ResultSet rs, int index, Column column) throws SQLException {
-        Timestamp ts = rs.getTimestamp(index);
-        if (ts == null) {
-            return null;
-        } else {
-            Serializable cal = new GregorianCalendar(); // XXX timezone
-            ((Calendar) cal).setTimeInMillis(ts.getTime());
-            return cal;
-        }
+        return getCalendarFromTimestamp(rs.getTimestamp(index));
     }
 
     public boolean storesUpperCaseIdentifiers() {
