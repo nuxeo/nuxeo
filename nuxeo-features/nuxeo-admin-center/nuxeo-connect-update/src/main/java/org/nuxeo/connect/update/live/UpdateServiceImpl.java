@@ -29,7 +29,6 @@ import org.nuxeo.connect.update.task.live.LiveUninstallTask;
 import org.nuxeo.connect.update.task.live.commands.Deploy;
 import org.nuxeo.connect.update.task.live.commands.DeployConfig;
 import org.nuxeo.connect.update.task.live.commands.Flush;
-import org.nuxeo.connect.update.task.live.commands.FlushCoreCache;
 import org.nuxeo.connect.update.task.live.commands.FlushJaasCache;
 import org.nuxeo.connect.update.task.live.commands.ReloadProperties;
 import org.nuxeo.connect.update.task.live.commands.RollbackAndUndeploy;
@@ -52,7 +51,6 @@ public class UpdateServiceImpl extends StandaloneUpdateService implements Packag
     @Override
     protected void addCommands() {
         super.addCommands();
-        addCommand(FlushCoreCache.ID, FlushCoreCache.class);
         addCommand(FlushJaasCache.ID, FlushJaasCache.class);
         addCommand(Flush.ID, Flush.class);
 

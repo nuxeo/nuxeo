@@ -39,6 +39,4 @@ public class ReloadEventNames {
 
     public static final String RELOAD_SEAM_EVENT_ID = ReloadService.RELOAD_SEAM_EVENT_ID;
 
-    public static final String RELOAD_REPOSITORIES_ID = ReloadService.RELOAD_REPOSITORIES_ID;
-
 }

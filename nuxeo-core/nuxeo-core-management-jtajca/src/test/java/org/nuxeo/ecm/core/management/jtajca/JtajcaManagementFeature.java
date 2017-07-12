@@ -35,6 +35,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.management.ManagementFeature;
 import org.nuxeo.runtime.management.ServerLocator;
+import org.nuxeo.runtime.test.runner.ContainerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -48,8 +49,8 @@ import com.google.inject.Provider;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
-@Features(ManagementFeature.class)
-@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.management.jtajca" })
+@Features({ ManagementFeature.class, ContainerFeature.class })
+@Deploy({ "org.nuxeo.ecm.core.management.jtajca" })
 @LocalDeploy({ "org.nuxeo.ecm.core.management.jtajca:login-config.xml" })
 public class JtajcaManagementFeature extends SimpleFeature {
 
@@ -115,15 +116,7 @@ public class JtajcaManagementFeature extends SimpleFeature {
         if (core == null) {
             return;
         }
-        // if components are restarted (due to a hot deploy) while in a test method we need to register
-        // a deploy handler to recreate the tx checker..
-        runner.getFeature(RuntimeFeature.class).registerHandler(new ActionHandler() {
-            @Override
-            public void exec(String action, String... args) throws Exception {
-                next.exec(action, args);
-                JtajcaManagementFeature.this.txChecker = new TxChecker(runner);
-            }
-        });
+        runner.getFeature(RuntimeFeature.class).registerHandler(new JtajcaDeployer(runner));
         // bind repository
         String repositoryName = core.getStorageConfiguration().getRepositoryName();
         NuxeoContainer.getConnectionManager(repositoryName);
@@ -179,4 +172,22 @@ public class JtajcaManagementFeature extends SimpleFeature {
             txChecker = null;
         }
     }
+
+    public class JtajcaDeployer extends ActionHandler {
+
+        protected final FeaturesRunner runner;
+
+        public JtajcaDeployer(FeaturesRunner runner) {
+            this.runner = runner;
+        }
+
+        @Override
+        public void exec(String action, String... args) throws Exception {
+            // if components are restarted (due to a hot deploy) while in a test method we need to register
+            // a deploy handler to recreate the tx checker.
+            next.exec(action, args);
+            JtajcaManagementFeature.this.txChecker = new TxChecker(runner);
+        }
+    }
+
 }

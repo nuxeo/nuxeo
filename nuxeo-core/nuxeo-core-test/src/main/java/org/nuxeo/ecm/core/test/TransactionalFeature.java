@@ -35,6 +35,8 @@ import org.nuxeo.runtime.management.jvm.ThreadDeadlocksDetector;
 import org.nuxeo.runtime.test.runner.ContainerFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer.ActionHandler;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -46,10 +48,13 @@ public class TransactionalFeature extends SimpleFeature {
 
     protected boolean txStarted;
 
-    final List<Waiter> waiters = new LinkedList<>();
+    protected final List<Waiter> waiters = new LinkedList<>();
 
+    @FunctionalInterface
     public interface Waiter {
+
         boolean await(long deadline) throws InterruptedException;
+
     }
 
     public void addWaiter(Waiter waiter) {
@@ -107,17 +112,26 @@ public class TransactionalFeature extends SimpleFeature {
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
         config = runner.getConfig(TransactionalConfig.class);
+        runner.getFeature(RuntimeFeature.class).registerHandler(new TransactionalDeployer());
     }
 
     @Override
     public void beforeSetup(FeaturesRunner runner) throws Exception {
+        startTransactionBefore();
+    }
+
+    @Override
+    public void afterTeardown(FeaturesRunner runner) throws Exception {
+        commitOrRollbackTransactionAfter();
+    }
+
+    protected void startTransactionBefore() {
         if (config.autoStart()) {
             txStarted = TransactionHelper.startTransaction();
         }
     }
 
-    @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
+    protected void commitOrRollbackTransactionAfter() {
         if (txStarted) {
             TransactionHelper.commitOrRollbackTransaction();
         } else {
@@ -131,6 +145,24 @@ public class TransactionalFeature extends SimpleFeature {
                 }
             }
         }
+    }
+
+    /**
+     * Handler used to commit transaction before next action and start a new one after next action if
+     * {@link TransactionalConfig#autoStart()} is true. This is because framework is about to be reloaded, then a new
+     * transaction manager will be installed.
+     *
+     * @since 9.3
+     */
+    public class TransactionalDeployer extends ActionHandler {
+
+        @Override
+        public void exec(String action, String... args) throws Exception {
+            commitOrRollbackTransactionAfter();
+            next.exec(action, args);
+            startTransactionBefore();
+        }
+
     }
 
 }

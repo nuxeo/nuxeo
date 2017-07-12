@@ -41,16 +41,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterException;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- *
- *
  * @since 8.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ ContainerFeature.class, RuntimeFeature.class, LogCaptureFeature.class })
+@Features({ ContainerFeature.class, LogCaptureFeature.class })
 @LocalDeploy("org.nuxeo.runtime.datasource:sql-validate-datasource-contrib.xml")
 @LogCaptureFeature.FilterWith(CaptureValidationErrors.class)
 public class TestValidateConnection {
