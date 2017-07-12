@@ -376,7 +376,7 @@ public class DialectPostgreSQL extends Dialect {
             ps.setDouble(index, ((Double) value).doubleValue());
             return;
         case Types.TIMESTAMP:
-            ps.setTimestamp(index, getTimestampFromCalendar((Calendar) value));
+            setToPreparedStatementTimestamp(ps, index, value, column);
             return;
         case Types.ARRAY:
             int jdbcBaseType = column.getJdbcBaseType();
@@ -424,7 +424,7 @@ public class DialectPostgreSQL extends Dialect {
         case Types.DOUBLE:
             return rs.getDouble(index);
         case Types.TIMESTAMP:
-            return getCalendarFromTimestamp(rs.getTimestamp(index));
+            return getFromResultSetTimestamp(rs, index, column);
         case Types.ARRAY:
             Array array = rs.getArray(index);
             if (array == null) {

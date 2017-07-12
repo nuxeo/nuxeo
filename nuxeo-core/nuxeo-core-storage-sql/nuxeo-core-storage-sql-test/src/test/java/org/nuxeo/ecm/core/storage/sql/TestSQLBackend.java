@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
@@ -448,6 +449,55 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // delete the node
         // session.removeNode(nodea);
         // session.save();
+    }
+
+    /**
+     * Test persistence of date in another time zone than the default one.
+     *
+     * @since 9.3
+     */
+    @Test
+    public void testDateWithTimeZone() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+
+        GregorianCalendar cal = new GregorianCalendar(2008, Calendar.DECEMBER, 14, 12, 34, 56);
+
+        // cal has a the default time zone, let's change it to UTC (keeping the same instant)
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        node.setSimpleProperty("tst:created", cal);
+        session.save();
+
+        // reopen a session to read from database and not caches
+        session.close();
+        session = repository.getConnection();
+        node = session.getChildNode(session.getRootNode(), "foo", false);
+
+        // read date should be the same instant
+        GregorianCalendar readCal = (GregorianCalendar) node.getSimpleProperty("tst:created").getValue();
+        assertEqualsCalendars(cal, readCal);
+
+        // in case the default time zone is already UTC let's test with another one
+        cal.setTimeZone(TimeZone.getTimeZone("EST"));
+        node.setSimpleProperty("tst:created", cal);
+        session.save();
+
+        // reopen a session to read from database and not caches
+        session.close();
+        session = repository.getConnection();
+        node = session.getChildNode(session.getRootNode(), "foo", false);
+
+        // read date should be the same instant
+        readCal = (GregorianCalendar) node.getSimpleProperty("tst:created").getValue();
+        assertEqualsCalendars(cal, readCal);
+    }
+
+    /** Gives a clear error message with full dates on assertion failure. */
+    public static void assertEqualsCalendars(GregorianCalendar a, GregorianCalendar b) {
+        if (a.getTimeInMillis() != b.getTimeInMillis()) {
+            assertEquals(a.toZonedDateTime().toString(), b.toZonedDateTime().toString());
+        }
     }
 
     @Test
