@@ -147,14 +147,43 @@ public class DocumentBrowsingTest extends BaseTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // When i do a PUT request on the document with modified data
+        // and the same change token
         JSONDocumentNode jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
+        String changeToken = jsonDoc.node.get("changeToken").getTextValue();
+        assertNotNull(changeToken);
         jsonDoc.setPropertyValue("dc:title", "New title");
         response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // Then the document is updated
         fetchInvalidations();
         note = RestServerInit.getNote(0, session);
         assertEquals("New title", note.getTitle());
+
+    }
+
+    @Test
+    public void iCannotUpdateADocumentWithOldChangeToken() throws Exception {
+
+        // Given a document
+        DocumentModel note = RestServerInit.getNote(0, session);
+        ClientResponse response = getResponse(RequestType.GET, "id/" + note.getId());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // When i do a PUT request on the document with modified data
+        // and pass an old/invalid change token
+        JSONDocumentNode jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
+        jsonDoc.setPropertyValue("dc:title", "New title");
+        jsonDoc.node.put("changeToken", "9999-1234"); // old/invalid change token
+        response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson());
+
+        // Then we get a 409 CONFLICT
+        assertEquals(Response.Status.CONFLICT.getStatusCode(), response.getStatus());
+
+        // And the document is NOT updated
+        fetchInvalidations();
+        note = RestServerInit.getNote(0, session);
+        assertEquals("Note 0", note.getTitle()); // still old title
 
     }
 

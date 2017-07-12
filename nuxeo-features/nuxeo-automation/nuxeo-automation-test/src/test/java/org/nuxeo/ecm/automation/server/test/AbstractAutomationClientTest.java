@@ -267,6 +267,64 @@ public abstract class AbstractAutomationClientTest {
     }
 
     @Test
+    public void testUpdateDocumentWithChangeToken() throws Exception {
+        // create a doc
+        Document doc = (Document) session.newRequest(CreateDocument.ID)
+                                         .setInput(automationTestFolder)
+                                         .set("type", "Note")
+                                         .set("name", "note1")
+                                         .set("properties", "dc:title=Note1")
+                                         .execute();
+        String docPath = "/automation-test-folder/note1";
+
+        // we have a change token
+        String changeToken = doc.getChangeToken();
+        assertNotNull(changeToken);
+
+        // update with previous change token
+        doc = (Document) session.newRequest(UpdateDocument.ID)
+                                .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                .setInput(new DocRef(docPath))
+                                .set("changeToken", changeToken)
+                                .set("properties", "dc:title=Update 1")
+                                .execute();
+        assertEquals("Update 1", doc.getString("dc:title"));
+
+        // update by simulating a system change in between (depends on change token internals)
+        changeToken = doc.getChangeToken();
+        String[] parts = changeToken.split("-");
+        String newChangeToken = (Long.parseLong(parts[0]) - 1) + "-" + parts[1];
+        doc = (Document) session.newRequest(UpdateDocument.ID)
+                                .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                .setInput(new DocRef(docPath))
+                                .set("changeToken", newChangeToken)
+                                .set("properties", "dc:title=Update 2")
+                                .execute();
+        assertEquals("Update 2", doc.getString("dc:title"));
+
+        // failing update by passing an old/invalid change token
+        try {
+            session.newRequest(UpdateDocument.ID)
+                   .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                   .setInput(new DocRef(docPath))
+                   .set("changeToken", "9999-1234") // old/invalid change token
+                   .set("properties", "dc:title=Update 3")
+                   .execute();
+            fail("should have failed with 409");
+        } catch (RemoteException e) {
+            assertEquals(409, e.getStatus());
+        }
+
+        // re-fetch
+        doc = (Document) session.newRequest(FetchDocument.ID)
+                                .set("value", docPath)
+                                .execute();
+
+        // check that the doc was not updated due to invalid change token
+        assertEquals("Update 2", doc.getString("dc:title"));
+    }
+
+    @Test
     public void testNullProperties() throws Exception {
         Document note = (Document) session.newRequest(CreateDocument.ID)
                                           .setInput(automationTestFolder)

@@ -20,7 +20,6 @@ package org.nuxeo.ecm.automation.core.operations.document;
 
 import java.io.IOException;
 
-import org.nuxeo.ecm.automation.ConflictOperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -29,6 +28,7 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -53,19 +53,14 @@ public class UpdateDocument {
     protected String changeToken = null;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws ConflictOperationException, IOException {
-
+    public DocumentModel run(DocumentModel doc) throws ConcurrentUpdateException, IOException {
         if (changeToken != null) {
             // Check for dirty update
-            String repoToken = doc.getChangeToken();
-            if (!changeToken.equals(repoToken)) {
-                throw new ConflictOperationException(doc);
-            }
+            doc.putContextData(CoreSession.CHANGE_TOKEN, changeToken);
         }
-
         DocumentHelper.setProperties(session, doc, properties);
         if (save) {
-            doc = session.saveDocument(doc);
+            doc = session.saveDocument(doc); // may throw ConcurrentUpdateException if bad change token
         }
         return doc;
     }
