@@ -58,12 +58,4 @@
     <object class="org.nuxeo.ecm.platform.routing.api.RouteModelResourceType" />
   </extension-point>
 
-  <extension target="org.nuxeo.runtime.EventService" point="listeners">
-    <listener
-      class="org.nuxeo.ecm.platform.routing.core.listener.RouteModelsReloader">
-      <topic>org.nuxeo.runtime.reload</topic>
-    </listener>
-  </extension>
-
-
 </component>
