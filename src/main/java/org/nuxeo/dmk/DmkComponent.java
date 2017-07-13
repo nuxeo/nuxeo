@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,11 @@ package org.nuxeo.dmk;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.InstanceNotFoundException;
 import javax.management.JMException;
-import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
@@ -174,4 +168,5 @@ public class DmkComponent extends DefaultComponent {
                     + " (not active, to be started in JMX console)");
         }
     }
+
 }
