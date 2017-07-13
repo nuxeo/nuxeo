@@ -115,7 +115,25 @@ public class DmkComponent extends DefaultComponent {
     }
 
     @Override
-    public void deactivate(ComponentContext arg0) {
+    public void start(ComponentContext context) {
+        if (configs.containsKey("html")) {
+            htmlAdaptor = newAdaptor(configs.get("html"));
+            log.info("JMX HTML adaptor available at port 8081 (not active, to be started in JMX console)");
+        }
+        if (configs.containsKey("http")) {
+            httpConnector = newConnector(configs.get("http"));
+            log.info("JMX HTTP connector available at " + httpConnector.getAddress()
+                    + " (not active, to be started in JMX console)");
+        }
+        if (configs.containsKey("https")) {
+            httpsConnector = newConnector(configs.get("https"));
+            log.info("JMX HTTPS connector available at " + httpConnector.getAddress()
+                    + " (not active, to be started in JMX console)");
+        }
+    }
+
+    @Override
+    public void stop(ComponentContext arg0) {
         if (htmlAdaptor != null) {
             try {
                 destroyAdaptor(htmlAdaptor);
@@ -125,7 +143,6 @@ public class DmkComponent extends DefaultComponent {
         }
 
         if (httpConnector != null) {
-
             try {
                 destroyConnector(httpConnector);
             } finally {
@@ -148,24 +165,6 @@ public class DmkComponent extends DefaultComponent {
         if ("protocols".equals(extensionPoint)) {
             DmkProtocol protocol = (DmkProtocol) contribution;
             configs.put(protocol.name, protocol);
-        }
-    }
-
-    @Override
-    public void applicationStarted(ComponentContext context) {
-        if (configs.containsKey("html")) {
-            htmlAdaptor = newAdaptor(configs.get("html"));
-            log.info("JMX HTML adaptor available at port 8081 (not active, to be started in JMX console)");
-        }
-        if (configs.containsKey("http")) {
-            httpConnector = newConnector(configs.get("http"));
-            log.info("JMX HTTP connector available at " + httpConnector.getAddress()
-                    + " (not active, to be started in JMX console)");
-        }
-        if (configs.containsKey("https")) {
-            httpsConnector = newConnector(configs.get("https"));
-            log.info("JMX HTTPS connector available at " + httpConnector.getAddress()
-                    + " (not active, to be started in JMX console)");
         }
     }
 
