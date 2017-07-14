@@ -83,7 +83,7 @@ public abstract class AbstractCommandTest extends PackageTestCase {
      */
     protected void installDone(Task task, Throwable error) throws Exception {
         if (error != null) {
-            log.error(error);
+            log.error("Unexpected Rollback on Install Task", error);
             fail("Unexpected Rollback on Install Task");
         }
     }
@@ -97,7 +97,7 @@ public abstract class AbstractCommandTest extends PackageTestCase {
      */
     protected void uninstallDone(Task task, Throwable error) throws Exception {
         if (error != null) {
-            log.error(error);
+            log.error("Unexpected Rollback on uninstall Task", error);
             fail("Unexpected Rollback on uninstall Task");
         }
     }
