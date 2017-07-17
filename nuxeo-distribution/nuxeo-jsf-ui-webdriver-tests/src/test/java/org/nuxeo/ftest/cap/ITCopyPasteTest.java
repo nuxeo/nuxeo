@@ -18,6 +18,12 @@
  */
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
@@ -33,13 +39,6 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedExceptio
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
-import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Test the copy and past feature.
@@ -57,9 +56,9 @@ public class ITCopyPasteTest extends AbstractTest {
     @Before
     public void before() {
         RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, null, null, null, null, "members");
-        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE1_TITLE, null);
-        RestHelper.createDocument(WORKSPACES_PATH + WORKSPACE1_TITLE, FILE_TYPE, FILE1_NAME, null);
-        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE2_TITLE, null);
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE1_TITLE);
+        RestHelper.createDocument(WORKSPACES_PATH + WORKSPACE1_TITLE, FILE_TYPE, FILE1_NAME);
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE2_TITLE);
         RestHelper.addPermission(WORKSPACES_PATH + WORKSPACE2_TITLE, TEST_USERNAME, "Everything");
     }
 

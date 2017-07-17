@@ -3,4 +3,5 @@ sdk.target=.
 nuxeo.template.includes=default
 
 nuxeo.server.sdk=true
+nuxeo.server.sdkInstallReloadTimer=true
 facelets.REFRESH_PERIOD=2

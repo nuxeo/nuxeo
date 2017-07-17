@@ -77,9 +77,9 @@ public class ITUsersGroupsTest extends AbstractTest {
         RestHelper.createUser("bree", "bree1", "Bree", "Van de Kaamp", "Nuxeo", "dev@null", null);
         RestHelper.createUser("gabrielle", "gabrielle1", "Gabrielle", "Solis", "Nuxeo", "dev@null", null);
         RestHelper.createGroup("Johns", "Johns group", new String[] { "jdoe", "jsmith", "bree" }, null);
-        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE);
         RestHelper.createDocument(TEST_WORKSPACE_PATH, NOTE_TYPE, TEST_NOTE_TITLE, "Test Note description");
-        RestHelper.createDocument(SECTIONS_PATH, SECTION_TYPE, TEST_SECTION_TITLE, null);
+        RestHelper.createDocument(SECTIONS_PATH, SECTION_TYPE, TEST_SECTION_TITLE);
     }
 
     @After

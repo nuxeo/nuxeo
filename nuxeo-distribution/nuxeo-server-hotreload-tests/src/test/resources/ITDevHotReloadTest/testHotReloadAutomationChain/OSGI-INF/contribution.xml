@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ftest.server.dev.hot.reload.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
+    <chain id="CreateDocumentAndStartWorkflow">
+      <param type="string" name="parentPath" />
+      <param type="string" name="docName" />
+      <operation id="Repository.GetDocument">
+        <param type="document" name="value">expr:ChainParameters['parentPath']</param>
+      </operation>
+      <operation id="Document.Create">
+        <param type="string" name="type">File</param>
+        <param type="string" name="name">expr:ChainParameters['docName']</param>
+      </operation>
+      <operation id="Context.StartWorkflow">
+        <param type="string" name="id">SerialDocumentReview</param>
+        <param type="boolean" name="start">true</param>
+      </operation>
+    </chain>
+  </extension>
+
+</component>

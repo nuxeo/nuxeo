@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ftest.server.dev.hot.reload.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="event-handlers">
+    <handler chainId="CreateFirstChild">
+      <event>documentCreated</event>
+      <filters>
+        <doctype>Folder</doctype>
+        <attribute>Regular Document</attribute>
+      </filters>
+    </handler>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
+    <chain id="CreateFirstChild">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.Create">
+        <param type="string" name="type">File</param>
+        <param type="string" name="name">file</param>
+      </operation>
+    </chain>
+  </extension>
+
+</component>

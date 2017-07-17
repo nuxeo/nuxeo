@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ftest.server.dev.hot.reload.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+    <directory name="hierarchical" extends="template-xvocabulary">
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <dataFile>data/vocabularies/hierarchical.csv</dataFile>
+      <parentDirectory>hierarchical</parentDirectory>
+    </directory>
+  </extension>
+
+</component>

@@ -19,6 +19,18 @@
 
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FOLDER_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_URL;
+import static org.nuxeo.functionaltests.Constants.FOLDER_TYPE;
+import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,20 +41,6 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedExceptio
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.TrashSubPage;
 
-import static org.nuxeo.ftest.cap.TestConstants.TEST_FOLDER_TITLE;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_URL;
-
-import static org.nuxeo.functionaltests.Constants.FOLDER_TYPE;
-import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 /**
  * Tests content view local config
  *
@@ -51,7 +49,7 @@ import static org.junit.Assert.assertTrue;
 public class ITContentViewLocalConfigTest extends AbstractTest {
     @BeforeClass
     public static void before() {
-        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE);
         String parentId = RestHelper.createDocument(TEST_WORKSPACE_PATH, FOLDER_TYPE, TEST_FOLDER_TITLE,
                 "Test folder description");
         RestHelper.createDocument(parentId, NOTE_TYPE, "localConfigNote", "Note description");

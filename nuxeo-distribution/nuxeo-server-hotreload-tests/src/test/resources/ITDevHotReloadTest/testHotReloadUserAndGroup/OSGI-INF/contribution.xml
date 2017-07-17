@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ftest.server.dev.hot.reload.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+    <directory name="userDirectory" extends="template-user">
+      <schema>user</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>data/users.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+      <querySizeLimit>50</querySizeLimit>
+      <cacheEntryName>user-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>user-entry-cache-without-references</cacheEntryWithoutReferencesName>
+      <references>
+        <inverseReference field="groups" directory="groupDirectory" dualReferenceField="members" />
+      </references>
+    </directory>
+    <directory name="groupDirectory" extends="template-group">
+      <schema>group</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>groupname</idField>
+      <dataFile>data/groups.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+      <autoincrementIdField>false</autoincrementIdField>
+      <cacheEntryName>group-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>group-entry-cache-without-references</cacheEntryWithoutReferencesName>
+      <references>
+        <reference field="members" directory="userDirectory" name="user2group" source="groupId" target="userId"
+                   dataFile="data/user2group.csv" />
+        <reference field="subGroups" directory="groupDirectory" name="group2group" source="parentGroupId"
+                   target="childGroupId" />
+        <inverseReference field="parentGroups" directory="groupDirectory" dualReferenceField="subGroups" />
+      </references>
+    </directory>
+  </extension>
+
+</component>

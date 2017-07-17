@@ -18,6 +18,16 @@
  */
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -40,18 +50,6 @@ import org.openqa.selenium.WebElement;
 
 import com.google.common.base.Function;
 
-import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
-
-import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
-import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 /**
  * @since 5.9.3
  */
@@ -70,8 +68,8 @@ public class ITVocabularyTest extends AbstractTest {
 
     @Before
     public void before() {
-        String wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE, null);
-        fileId = RestHelper.createDocument(wsId, FILE_TYPE, TEST_FILE_TITLE, null);
+        String wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE);
+        fileId = RestHelper.createDocument(wsId, FILE_TYPE, TEST_FILE_TITLE);
     }
 
     @After

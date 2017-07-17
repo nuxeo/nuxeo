@@ -48,8 +48,8 @@ public class ITFolderTest extends AbstractTest {
     @Before
     public void before() {
         RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, "John", "Smith", "Nuxeo", "jsmith@nuxeo.com", "members");
-        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
-        RestHelper.createDocument(TEST_WORKSPACE_PATH, FOLDER_TYPE, TEST_FOLDER_TITLE, null);
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE);
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, FOLDER_TYPE, TEST_FOLDER_TITLE);
         RestHelper.addPermission(TEST_WORKSPACE_PATH, TEST_USERNAME, "Everything");
     }
 

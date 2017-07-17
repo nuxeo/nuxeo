@@ -59,8 +59,8 @@ public class ITDomainTest extends AbstractTest {
     @Before
     public void before() {
         RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, null, null, null, null, "members");
-        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
-        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE, null);
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE);
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE);
     }
 
     @After

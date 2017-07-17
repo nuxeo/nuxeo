@@ -54,7 +54,7 @@ public class ITBlobActionsTest extends AbstractTest {
 
     @Before
     public void before() {
-        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE);
     }
 
     @After

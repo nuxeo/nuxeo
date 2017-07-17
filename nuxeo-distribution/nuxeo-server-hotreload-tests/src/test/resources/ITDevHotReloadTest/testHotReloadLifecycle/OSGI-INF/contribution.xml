@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ftest.server.dev.hot.reload.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="lifecycle">
+    <lifecycle name="newDefault" defaultInitial="draft">
+      <transitions>
+        <transition name="to_in_process" destinationState="in_process" />
+        <transition name="to_archived" destinationState="archived" />
+        <transition name="to_draft" destinationState="draft" />
+      </transitions>
+      <states>
+        <state name="draft" initial="true">
+          <transitions>
+            <transition>to_archived</transition>
+            <transition>to_in_process</transition>
+          </transitions>
+        </state>
+        <state name="in_process">
+          <transitions>
+            <transition>to_archived</transition>
+            <transition>to_draft</transition>
+          </transitions>
+        </state>
+        <state name="archived">
+          <transitions>
+            <transition>to_draft</transition>
+          </transitions>
+        </state>
+      </states>
+    </lifecycle>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="types">
+    <types>
+      <type name="File">newDefault</type>
+    </types>
+  </extension>
+
+</component>

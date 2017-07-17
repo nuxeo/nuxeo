@@ -21,6 +21,24 @@
 
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FOLDER_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.functionaltests.Constants.FOLDER_TYPE;
+import static org.nuxeo.functionaltests.Constants.SECTIONS_PATH;
+import static org.nuxeo.functionaltests.Constants.SECTION_TYPE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +46,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Constants;
-import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.UserHomePage;
@@ -40,24 +57,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_FOLDER_TITLE;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
-import static org.nuxeo.functionaltests.Constants.FOLDER_TYPE;
-import static org.nuxeo.functionaltests.Constants.SECTIONS_PATH;
-import static org.nuxeo.functionaltests.Constants.SECTIONS_TITLE;
-import static org.nuxeo.functionaltests.Constants.SECTION_TYPE;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
 
 /**
  * @since 8.3
@@ -98,9 +97,9 @@ public class ITPublishDocumentTests extends AbstractTest {
 
     @Before
     public void before() {
-        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE);
         RestHelper.createDocument(TEST_WORKSPACE_PATH, FOLDER_TYPE, TEST_FOLDER_TITLE, "Test folder description");
-        RestHelper.createDocument(SECTIONS_PATH, SECTION_TYPE, TEST_SECTION_TITLE, null);
+        RestHelper.createDocument(SECTIONS_PATH, SECTION_TYPE, TEST_SECTION_TITLE);
         RestHelper.createUser(TEST_USERNAME, TEST_USERNAME, null, null, null, null, "members");
         RestHelper.createUser(PUBLISHER_USERNAME, PUBLISHER_USERNAME, null, null, null, null, "members");
         RestHelper.createUser(READER_USERNAME, READER_USERNAME, null, null, null, null, "members");
@@ -128,7 +127,7 @@ public class ITPublishDocumentTests extends AbstractTest {
         publishTab.expandAll();
         int nbSections = publishTab.getTreeNode().size();
 
-        RestHelper.createDocument(SECTIONS_PATH, SECTION_TYPE, OTHER_TEST_SECTION_TITLE, null);
+        RestHelper.createDocument(SECTIONS_PATH, SECTION_TYPE, OTHER_TEST_SECTION_TITLE);
         publishTab.refreshPublicationTree();
 
         assertEquals(nbSections + 1, publishTab.getTreeNode().size());

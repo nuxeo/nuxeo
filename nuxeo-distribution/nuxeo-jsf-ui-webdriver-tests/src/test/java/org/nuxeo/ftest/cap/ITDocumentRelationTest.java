@@ -18,6 +18,13 @@
  */
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -32,14 +39,6 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedExceptio
 import org.nuxeo.functionaltests.pages.tabs.RelationTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
-import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
-import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Document Relations test.
@@ -58,9 +57,9 @@ public class ITDocumentRelationTest extends AbstractTest {
 
     @Before
     public void setUp() throws UserNotConnectedException, IOException {
-        wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE, null);
-        RestHelper.createDocument(wsId, FILE_TYPE, FILE_NAME1, null);
-        RestHelper.createDocument(wsId, FILE_TYPE, FILE_NAME2, null);
+        wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE);
+        RestHelper.createDocument(wsId, FILE_TYPE, FILE_NAME1);
+        RestHelper.createDocument(wsId, FILE_TYPE, FILE_NAME2);
     }
 
     @After

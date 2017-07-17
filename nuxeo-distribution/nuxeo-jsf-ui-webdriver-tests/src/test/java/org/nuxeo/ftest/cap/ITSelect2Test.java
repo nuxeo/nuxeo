@@ -19,6 +19,15 @@
  */
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
 import java.util.Date;
 import java.util.List;
 
@@ -33,17 +42,6 @@ import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
-import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
-
-import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
-import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Select2 feature test.
@@ -67,8 +65,8 @@ public class ITSelect2Test extends AbstractTest {
     public void before() {
         RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, TEST_USERNAME, "lastname1", "company1", "email1",
                 "members");
-        String wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE, null);
-        fileId = RestHelper.createDocument(wsId, FILE_TYPE, TEST_FILE_TITLE, null);
+        String wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE);
+        fileId = RestHelper.createDocument(wsId, FILE_TYPE, TEST_FILE_TITLE);
         RestHelper.addPermission(wsId, TEST_USERNAME, "Everything");
     }
 

@@ -56,7 +56,7 @@ public class ITArchivedVersionsTest extends AbstractTest {
 
     @Before
     public void before() throws DocumentBasePage.UserNotConnectedException {
-        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE);
         RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE, "Test File description");
         RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_2_TITLE, "Test File2 description");
 
