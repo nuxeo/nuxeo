@@ -137,6 +137,7 @@ public abstract class DefaultListJsonWriter<EntityType> extends AbstractJsonWrit
             jg.writeNumberField("maxPageSize", paginable.getMaxPageSize());
             jg.writeNumberField("currentPageSize", paginable.getCurrentPageSize());
             jg.writeNumberField("currentPageIndex", paginable.getCurrentPageIndex());
+            jg.writeNumberField("currentPageOffset", paginable.getCurrentPageOffset());
             jg.writeNumberField("numberOfPages", paginable.getNumberOfPages());
             jg.writeBooleanField("isPreviousPageAvailable", paginable.isPreviousPageAvailable());
             jg.writeBooleanField("isNextPageAvailable", paginable.isNextPageAvailable());

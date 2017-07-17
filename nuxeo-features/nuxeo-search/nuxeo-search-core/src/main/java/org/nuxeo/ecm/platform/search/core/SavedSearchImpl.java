@@ -201,4 +201,12 @@ public class SavedSearchImpl implements SavedSearch {
         }
         return (T) value;
     }
+
+    /**
+     * @since 9.3
+     */
+    @Override
+    public Long getCurrentPageOffset() {
+        return getPropertyValue(SavedSearchConstants.CURRENT_PAGE_OFFSET_PROPERTY_NAME);
+    }
 }

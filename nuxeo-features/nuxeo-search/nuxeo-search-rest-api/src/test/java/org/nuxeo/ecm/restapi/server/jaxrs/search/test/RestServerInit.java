@@ -39,6 +39,11 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class RestServerInit implements RepositoryInit {
 
+    /**
+     * @since 9.3
+     */
+    protected static final int MAX_FILE = 5;
+
     @Override
     public void populate(CoreSession session) {
         JsonFactoryManager jsonFactoryManager = Framework.getService(JsonFactoryManager.class);
@@ -48,7 +53,7 @@ public class RestServerInit implements RepositoryInit {
         // try to prevent NXP-15404
         // clearRepositoryCaches(session.getRepositoryName());
         // Create some docs
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < MAX_FILE; i++) {
             DocumentModel doc = session.createDocumentModel("/", "folder_" + i, "Folder");
             doc.setPropertyValue("dc:title", "Folder " + i);
             if (i == 0) {
@@ -62,7 +67,7 @@ public class RestServerInit implements RepositoryInit {
             doc = session.createDocument(doc);
         }
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < MAX_FILE; i++) {
             DocumentModel doc = session.createDocumentModel("/folder_1", "note_" + i, "Note");
             doc.setPropertyValue("dc:title", "Note " + i);
             doc.setPropertyValue("dc:source", "Source" + i);

@@ -32,6 +32,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.restapi.server.jaxrs.search.QueryExecutor;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -158,6 +160,39 @@ public class SearchTest extends BaseTest {
         assertEquals("Note 2", jsonNode.get("title").getValueAsText());
         jsonNode = entries.get(1);
         assertEquals("Note 1", jsonNode.get("title").getValueAsText());
+    }
+
+    /**
+     * @since 9.3
+     */
+    @Test
+    public void iCanPerformPageProviderOnRepositoryWithOffset() throws IOException {
+        // Given a repository, when I perform a pageprovider on it
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add(QueryExecutor.CURRENT_PAGE_OFFSET, "0");
+        queryParams.add(QueryExecutor.PAGE_SIZE, "" + RestServerInit.MAX_FILE);
+        ClientResponse response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP_ALL_NOTE"),
+                queryParams);
+
+        // Then I get document listing as result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        ArrayNode notes = (ArrayNode) node.get("entries");
+        assertEquals(RestServerInit.MAX_FILE, notes.size());
+
+        for (int i = 0; i < RestServerInit.MAX_FILE; i++) {
+            queryParams = new MultivaluedMapImpl();
+            queryParams.add(QueryExecutor.CURRENT_PAGE_OFFSET, i + "");
+            queryParams.add(QueryExecutor.PAGE_SIZE, "1");
+            response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP_ALL_NOTE"), queryParams);
+
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, getLogEntries(node).size());
+            String retrievedTitle = ((ArrayNode) node.get("entries")).get(0).get("title").getTextValue();
+            assertEquals(notes.get(i).get("title").getTextValue(), retrievedTitle);
+        }
     }
 
     @Test

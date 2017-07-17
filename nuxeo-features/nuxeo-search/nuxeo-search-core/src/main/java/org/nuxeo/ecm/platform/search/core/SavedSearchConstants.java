@@ -51,4 +51,9 @@ public class SavedSearchConstants {
 
     public static final String CONTENT_VIEW_DATA_PROPERTY_NAME = "saved:contentViewData";
 
+    /**
+     * @since 9.3
+     */
+    public static final String CURRENT_PAGE_OFFSET_PROPERTY_NAME = "saved:currentPageOffset";
+
 }
