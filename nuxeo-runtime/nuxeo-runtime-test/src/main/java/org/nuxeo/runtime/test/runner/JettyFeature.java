@@ -21,13 +21,25 @@ package org.nuxeo.runtime.test.runner;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
 import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 
+import sun.net.www.http.HttpClient;
+
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Runs an embedded Jetty server with the nuxeo webapp deployed.
+ * <p>
+ * Note that at initialization the feature disables the {@code retryPostProp} property of
+ * {@link sun.net.www.http.HttpClient}, the underlying HTTP client used by {@link com.sun.jersey.api.client.Client}.
+ * <p>
+ * This is to prevent the JDK's default behavior kept for backward compatibility: an unsuccessful HTTP POST request is
+ * automatically resent to the server, unsuccessful in this case meaning the server did not send a valid HTTP response
+ * or an {@code IOException} occurred. Yet in the tests using the Jersey client to make calls to Nuxeo we don't want
+ * this as it can hide errors occurring in the HTTP communication that should prevent an appropriate response from being
+ * sent by the server.
  */
 @Deploy("org.nuxeo.runtime.jetty")
 @Features(RuntimeFeature.class)
@@ -35,6 +47,8 @@ public class JettyFeature extends SimpleFeature implements WorkingDirectoryConfi
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
+        disableSunHttpClientRetryPostProp();
+
         Jetty jetty = runner.getConfig(Jetty.class);
         if (jetty == null) {
             jetty = Defaults.of(Jetty.class);
@@ -97,6 +111,21 @@ public class JettyFeature extends SimpleFeature implements WorkingDirectoryConfi
         // return
         // Thread.currentThread().getContextClassLoader().getResource(resource);
         return Jetty.class.getClassLoader().getResource(resource);
+    }
+
+    /**
+     * Prevents the JDK's default behavior of resending an unsuccessful HTTP POST request automatically to the server by
+     * disabling the the {@code retryPostProp} property of {@link sun.net.www.http.HttpClient}.
+     * <p>
+     * This can also be achieved by setting the {@code sun.net.http.retryPost} system property to {@code false}.
+     *
+     * @since 9.3
+     */
+    public static void disableSunHttpClientRetryPostProp()
+            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        Field field = HttpClient.class.getDeclaredField("retryPostProp");
+        field.setAccessible(true);
+        field.setBoolean(null, false);
     }
 
 }
