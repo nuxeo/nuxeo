@@ -75,6 +75,15 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
             List<String> highlights, List<QuickFilter> quickFilters, Object... parameters) {
+        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, null, properties,
+                highlights, quickFilters, parameters);
+    }
+
+    @Override
+    public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
+            List<SortInfo> sortInfos, Long pageSize, Long currentPage, Long currentOffset,
+            Map<String, Serializable> properties, List<String> highlights, List<QuickFilter> quickFilters,
+            Object... parameters) {
 
         if (desc == null) {
             return null;
@@ -124,6 +133,9 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
         }
         if (currentPage != null && currentPage.longValue() > 0) {
             pageProvider.setCurrentPage(currentPage.longValue());
+        }
+        if (currentOffset != null && currentOffset.longValue() >= 0) {
+            pageProvider.setCurrentPageOffset(currentOffset.longValue());
         }
 
         return pageProvider;
@@ -217,6 +229,19 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
             throw new NuxeoException(String.format("Could not resolve page provider with name '%s'", name));
         }
         return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, highlights,
+                quickFilters, parameters);
+    }
+
+    @Override
+    public PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
+            Long pageSize, Long currentPage, Long currentOffset, Map<String, Serializable> properties,
+            List<String> highlights, List<QuickFilter> quickFilters, Object... parameters) {
+        PageProviderDefinition desc = providerReg.getPageProvider(name);
+        if (desc == null) {
+            throw new NuxeoException(String.format("Could not resolve page provider with name '%s'", name));
+        }
+        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, currentOffset, properties,
+                highlights,
                 quickFilters, parameters);
     }
 

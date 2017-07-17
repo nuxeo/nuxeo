@@ -91,8 +91,8 @@ public class SearchObject extends QueryExecutor {
 
     @GET
     @Path("pp/{pageProviderName}/execute")
-    public Object doQueryByPageProvider(@Context UriInfo uriInfo, @PathParam("pageProviderName") String pageProviderName)
-            throws RestOperationException {
+    public Object doQueryByPageProvider(@Context UriInfo uriInfo,
+            @PathParam("pageProviderName") String pageProviderName) throws RestOperationException {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         return queryByPageProvider(pageProviderName, queryParams);
     }
@@ -109,9 +109,9 @@ public class SearchObject extends QueryExecutor {
     @Path("saved")
     public List<SavedSearch> doGetSavedSearches(@Context UriInfo uriInfo) throws RestOperationException {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-        DocumentModelList results = queryParams.containsKey(PAGE_PROVIDER_NAME_PARAM) ? queryByPageProvider(
-                SAVED_SEARCHES_PAGE_PROVIDER_PARAMS, queryParams) : queryByPageProvider(SAVED_SEARCHES_PAGE_PROVIDER,
-                queryParams);
+        DocumentModelList results = queryParams.containsKey(PAGE_PROVIDER_NAME_PARAM)
+                ? queryByPageProvider(SAVED_SEARCHES_PAGE_PROVIDER_PARAMS, queryParams)
+                : queryByPageProvider(SAVED_SEARCHES_PAGE_PROVIDER, queryParams);
         List<SavedSearch> savedSearches = new ArrayList<>(results.size());
         for (DocumentModel doc : results) {
             savedSearches.add(doc.getAdapter(SavedSearch.class));
@@ -241,24 +241,25 @@ public class SearchObject extends QueryExecutor {
             throws RestOperationException {
         Long pageSize = getPageSize(params);
         Long currentPageIndex = getCurrentPageIndex(params);
+        Long currentPageOffset = getCurrentPageOffset(params);
         Long maxResults = getMaxResults(params);
         List<SortInfo> sortInfo = getSortInfo(params);
 
         if (!StringUtils.isEmpty(search.getPageProviderName())) {
             List<QuickFilter> quickFilters = getQuickFilters(search.getPageProviderName(), params);
-            return querySavedSearchByPageProvider(
-                    search.getPageProviderName(),
+            return querySavedSearchByPageProvider(search.getPageProviderName(),
                     pageSize != null ? pageSize : search.getPageSize(),
                     currentPageIndex != null ? currentPageIndex : search.getCurrentPageIndex(),
-                    search.getQueryParams(),
-                    search.getNamedParams(),
-                    sortInfo != null ? sortInfo : getSortInfo(search.getSortBy(), search.getSortOrder()),
-                    quickFilters,
-                    search.getDocument().getType() != SavedSearchConstants.PARAMETERIZED_SAVED_SEARCH_TYPE_NAME ? search.getDocument()
-                            : null);
+                    currentPageOffset != null ? currentPageOffset : search.getCurrentPageOffset(),
+                    search.getQueryParams(), search.getNamedParams(),
+                    sortInfo != null ? sortInfo : getSortInfo(search.getSortBy(), search.getSortOrder()), quickFilters,
+                    search.getDocument().getType() != SavedSearchConstants.PARAMETERIZED_SAVED_SEARCH_TYPE_NAME
+                            ? search.getDocument() : null);
         } else if (!StringUtils.isEmpty(search.getQuery()) && !StringUtils.isEmpty(search.getQueryLanguage())) {
-            return querySavedSearchByLang(search.getQueryLanguage(), search.getQuery(), pageSize != null ? pageSize
-                    : search.getPageSize(), currentPageIndex != null ? currentPageIndex : search.getCurrentPageIndex(),
+            return querySavedSearchByLang(search.getQueryLanguage(), search.getQuery(),
+                    pageSize != null ? pageSize : search.getPageSize(),
+                    currentPageIndex != null ? currentPageIndex : search.getCurrentPageIndex(),
+                    currentPageOffset != null ? currentPageOffset : search.getCurrentPageOffset(),
                     maxResults != null ? maxResults : search.getMaxResults(), search.getQueryParams(),
                     search.getNamedParams(),
                     sortInfo != null ? sortInfo : getSortInfo(search.getSortBy(), search.getSortOrder()));
@@ -268,8 +269,8 @@ public class SearchObject extends QueryExecutor {
     }
 
     protected DocumentModelList querySavedSearchByLang(String queryLanguage, String query, Long pageSize,
-            Long currentPageIndex, Long maxResults, String orderedParams, Map<String, String> namedParameters,
-            List<SortInfo> sortInfo) throws RestOperationException {
+            Long currentPageIndex, Long currentPageOffset, Long maxResults, String orderedParams,
+            Map<String, String> namedParameters, List<SortInfo> sortInfo) throws RestOperationException {
         Properties namedParametersProps = getNamedParameters(namedParameters);
         Object[] parameters = replaceParameterPattern(new Object[] { orderedParams });
         Map<String, Serializable> props = getProperties();
@@ -277,13 +278,14 @@ public class SearchObject extends QueryExecutor {
         DocumentModel searchDocumentModel = getSearchDocumentModel(ctx.getCoreSession(), pageProviderService, null,
                 namedParametersProps);
 
-        return queryByLang(query, pageSize, currentPageIndex, maxResults, sortInfo, parameters, props,
-                searchDocumentModel);
+        return queryByLang(query, pageSize, currentPageIndex, currentPageOffset, maxResults, sortInfo, parameters,
+                props, searchDocumentModel);
     }
 
     protected DocumentModelList querySavedSearchByPageProvider(String pageProviderName, Long pageSize,
-            Long currentPageIndex, String orderedParams, Map<String, String> namedParameters, List<SortInfo> sortInfo,
-            List<QuickFilter> quickFilters, DocumentModel searchDocumentModel) throws RestOperationException {
+            Long currentPageIndex, Long currentPageOffset, String orderedParams, Map<String, String> namedParameters,
+            List<SortInfo> sortInfo, List<QuickFilter> quickFilters, DocumentModel searchDocumentModel)
+            throws RestOperationException {
         Properties namedParametersProps = getNamedParameters(namedParameters);
         Object[] parameters = orderedParams != null ? replaceParameterPattern(new Object[] { orderedParams })
                 : new Object[0];
@@ -300,8 +302,8 @@ public class SearchObject extends QueryExecutor {
             }
         }
 
-        return queryByPageProvider(pageProviderName, pageSize, currentPageIndex, sortInfo, quickFilters, parameters, props,
-                documentModel);
+        return queryByPageProvider(pageProviderName, pageSize, currentPageIndex, currentPageOffset, sortInfo,
+                quickFilters, parameters, props, documentModel);
     }
 
 }

@@ -90,6 +90,11 @@ public class PaginablePageProvider<T> extends ArrayList<T> implements Paginable<
     }
 
     @Override
+    public long getCurrentPageOffset() {
+        return pageProvider.getCurrentPageOffset();
+    }
+
+    @Override
     public boolean isSortable() {
         return pageProvider.isSortable();
     }

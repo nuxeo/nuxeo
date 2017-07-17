@@ -76,6 +76,13 @@ public interface Paginable<T> extends List<T> {
     long getCurrentPageSize();
 
     /**
+     * Returns the offset (starting from 0) of the first element in the current page or <code>UNKNOWN_SIZE</code>.
+     *
+     * @since 9.3
+     */
+    long getCurrentPageOffset();
+
+    /**
      * Returns the current page index as a zero-based integer.
      */
     long getCurrentPageIndex();

@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.model.Document;
 
 /**
  * @since 8.3
@@ -46,6 +45,11 @@ public interface SavedSearch extends Serializable {
     Long getPageSize();
 
     Long getCurrentPageIndex();
+
+    /**
+     * @since 9.3
+     */
+    Long getCurrentPageOffset();
 
     Long getMaxResults();
 

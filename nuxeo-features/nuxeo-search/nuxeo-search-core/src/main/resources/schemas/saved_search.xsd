@@ -33,6 +33,7 @@
 
   <xs:element name="pageSize" type="xs:long" />
   <xs:element name="currentPageIndex" type="xs:long" />
+  <xs:element name="currentPageOffset" type="xs:long" />
   <xs:element name="maxResults" type="xs:long" />
   <xs:element name="sortBy" type="xs:string" />
   <xs:element name="sortOrder" type="xs:string" />
