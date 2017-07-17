@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.features.test.tests
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;name=testRetryPost
