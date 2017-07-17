@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import javax.servlet.ServletException;
 
@@ -123,8 +126,21 @@ public class DevValve extends ValveBase {
         resp.setStatus(200);
     }
 
-    private void postReload(Request req, Response resp) {
-        log.error("#### TODO: POST RELOAD");
+    private void postReload(Request req, Response resp) throws IOException {
+        ClassLoader webLoader = req.getContext().getLoader().getClassLoader();
+        if (webLoader instanceof NuxeoDevWebappClassLoader) {
+            NuxeoDevWebappClassLoader loader = (NuxeoDevWebappClassLoader) webLoader;
+            DevFrameworkBootstrap bootstrap = loader.getBootstrap();
+            String devBundlesLocation = bootstrap.getDevBundlesLocation();
+            try {
+                Files.copy(req.getStream(), Paths.get(devBundlesLocation), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                log.error("Unable to write to dev.bundles", e);
+                resp.sendError(500, "Unable to write to dev.bundles");
+            }
+            // only if dev.bundles was modified
+            bootstrap.loadDevBundles();
+        }
         resp.setStatus(200);
     }
 

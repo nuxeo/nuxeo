@@ -65,11 +65,11 @@ public class ITPermissionsTest extends AbstractTest {
         RestHelper.createUser("linnet", "linnet1", null, null, null, null, "members");
         RestHelper.createUser("susan", "susan1", null, null, null, null, "members");
         RestHelper.createGroup("housewives", "Housewives", new String[] { "linnet", "susan" }, null);
-        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE);
         RestHelper.addPermission(WORKSPACES_PATH, TEST_USERNAME, SecurityConstants.EVERYTHING);
-        RestHelper.createDocument(SECTIONS_PATH, SECTION_TYPE, TEST_SECTION_TITLE, null);
+        RestHelper.createDocument(SECTIONS_PATH, SECTION_TYPE, TEST_SECTION_TITLE);
         RestHelper.addPermission(SECTIONS_PATH, TEST_USERNAME, SecurityConstants.EVERYTHING);
-        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE, null);
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE);
     }
 
     @After

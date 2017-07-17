@@ -46,7 +46,7 @@ import okhttp3.Response;
  */
 public class LogTestWatchman extends TestWatchman {
 
-    protected static final Log log = LogFactory.getLog(AbstractTest.class);
+    private static final Log log = LogFactory.getLog(LogTestWatchman.class);
 
     protected String lastScreenshot;
 

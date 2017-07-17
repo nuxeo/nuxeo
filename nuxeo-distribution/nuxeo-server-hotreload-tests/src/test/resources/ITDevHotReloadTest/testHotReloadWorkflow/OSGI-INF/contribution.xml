@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ftest.server.dev.hot.reload.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="var_start-node" prefix="var_start-node" override="true" src="data/schemas/var_start-node.xsd"/>
+    <schema name="var_stop-node" prefix="var_stop-node" override="true" src="data/schemas/var_stop-node.xsd"/>
+    <schema name="var_newWorkflow" prefix="var_newWorkflow" override="true" src="data/schemas/var_newWorkflow.xsd"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <facet name="facet-var_start-node">
+      <schema name="var_start-node"/>
+    </facet>
+    <facet name="facet-var_stop-node">
+      <schema name="var_stop-node"/>
+    </facet>
+    <facet name="facet-var_newWorkflow">
+      <schema name="var_newWorkflow"/>
+    </facet>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.routing.service" point="routeModelImporter">
+    <template-resource id="newWorkflow" path="data/newWorkflow.zip"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
+    <filter id="filter@wf@newWorkflow">
+      <rule grant="true">
+        <type>File</type>
+      </rule>
+    </filter>
+  </extension>
+
+</component>

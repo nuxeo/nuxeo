@@ -60,9 +60,9 @@ public class ITSelectAndFilterTest extends AbstractTest {
 
     @Before
     public void before() {
-        wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE, null);
-        RestHelper.createDocument(wsId, FILE_TYPE, Boolean.toString(true), null);
-        RestHelper.createDocument(wsId, FILE_TYPE, Boolean.toString(false), null);
+        wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE);
+        RestHelper.createDocument(wsId, FILE_TYPE, Boolean.toString(true));
+        RestHelper.createDocument(wsId, FILE_TYPE, Boolean.toString(false));
     }
 
     @After

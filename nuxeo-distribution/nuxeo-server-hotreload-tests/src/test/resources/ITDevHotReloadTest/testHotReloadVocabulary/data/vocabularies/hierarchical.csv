@@ -1,0 +1,7 @@
+"id","label","parent","obsolete"
+"root1","root1","","0"
+"child1","child1","root1","0"
+"child2","child2","root1","0"
+"root2","root2","","0"
+"child3","child3","root2","0"
+"child4","child4","root2","0"

@@ -407,13 +407,13 @@ public class CoreFeature extends SimpleFeature {
 
     public class CoreDeployer extends HotDeployer.ActionHandler {
 
-		@Override
-		public void exec(String action, String... agrs) throws Exception {
-			waitForAsyncCompletion();
-	        releaseCoreSession();
-			next.exec(action, agrs);
-	        createCoreSession();
-		}
+        @Override
+        public void exec(String action, String... agrs) throws Exception {
+            waitForAsyncCompletion();
+            releaseCoreSession();
+            next.exec(action, agrs);
+            createCoreSession();
+        }
 
     }
 

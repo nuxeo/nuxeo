@@ -19,19 +19,6 @@
 
 package org.nuxeo.ftest.cap;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.nuxeo.functionaltests.AbstractTest;
-import org.nuxeo.functionaltests.RestHelper;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
-import org.nuxeo.functionaltests.pages.tabs.TrashSubPage;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_FOLDER_TITLE;
@@ -43,6 +30,19 @@ import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
 import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
 import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
 
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.RestHelper;
+import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
+import org.nuxeo.functionaltests.pages.tabs.TrashSubPage;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
 /**
  * Verify document deletion
  *
@@ -52,7 +52,7 @@ public class ITVerifyDeleteDocumentContentTest extends AbstractTest {
 
     @Before
     public void before() {
-        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE);
         String parentId = RestHelper.createDocument(TEST_WORKSPACE_PATH, FOLDER_TYPE, TEST_FOLDER_TITLE,
                 "Test folder description");
         RestHelper.createDocument(parentId, NOTE_TYPE, "note to restore 1", "This note will be restored.");

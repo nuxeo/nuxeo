@@ -47,7 +47,7 @@ public class ITPageProviderNavigation extends AbstractTest {
 
     @Before
     public void before() {
-        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE);
         for (int i = 0; i < NB_NOTES; i++) {
             RestHelper.createDocument(TEST_WORKSPACE_PATH, NOTE_TYPE, TEST_NOTE_TITLE + i,
                     String.format("Test Note%s description", i));
