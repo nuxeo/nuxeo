@@ -17,6 +17,7 @@
  *     Miguel Nixo
  *     Ricardo Dias
  *     Bertrand Chauvin
+ *     Thibaud Arguillere
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
@@ -30,7 +31,6 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 
@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.api.PathRef;
  * @since 8.3
  */
 @Operation(id = CopySchema.ID, category = Constants.CAT_DOCUMENT, label = "Copy Schema",
-    description = "Copy all the properties from the schema of the source into the input document. Either sourceId or sourcePath parameter should be filled. When both are filled, sourceId will be used. Activating the save parameter forces the changes to be written in database immediately (at the cost of performance loss), otherwise changes made to the document will be written in bulk when the chain succeeds.")
+    description = "Copy all the properties from the schema of the source into the input document. Either sourceId or sourcePath parameter should be filled. When both are filled, sourceId will be used. If saveDocument is true, the document is saved. If save is true, the session is saved (setting save to true and saveDocument to false has no effect, the session will not be saved)")
 public class CopySchema {
 
     public static final String ID = "Document.CopySchema";
@@ -61,6 +61,9 @@ public class CopySchema {
     @Param(name = "save", required = false, values = { "true" })
     protected boolean save = true;
 
+    @Param(name = "saveDocument", required = false, values = { "true" })
+    protected boolean saveDocument = true;
+
     private DocumentModel getDocumentFromIdOrPath() throws OperationException {
         if (sourceId != null) {
             return session.getDocument(new IdRef(sourceId));
@@ -80,9 +83,11 @@ public class CopySchema {
         DocumentModel source = getDocumentFromIdOrPath();
         copySchemaProperties(source, target);
 
-        target = session.saveDocument(target);
-        if (save) {
-            session.save();
+        if (saveDocument) {
+            target = session.saveDocument(target);
+            if (save) {
+                session.save();
+            }
         }
         return target;
     }
