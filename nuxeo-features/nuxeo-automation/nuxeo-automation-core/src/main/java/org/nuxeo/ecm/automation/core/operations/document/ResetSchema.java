@@ -16,6 +16,7 @@
  * Contributors:
  *     Miguel Nixo
  *     Ricardo Dias
+ *     Thibaud Arguillere
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
@@ -37,7 +38,7 @@ import java.util.Map;
  * @since 8.3
  */
 @Operation(id = ResetSchema.ID, category = Constants.CAT_DOCUMENT, label = "Reset Schema",
-    description = "Reset all properties for a given schema or xpath. Activating the save parameter forces the changes to be written in database immediately (at the cost of performance loss), otherwise changes made to the document will be written in bulk when the chain succeeds.")
+    description = "Reset all properties for a given schema or xpath. If saveDocument is true, the document is saved. If save is true, the session is saved (setting save to true and saveDocument to false has no effect, the session will not be saved)")
 public class ResetSchema {
 
     public static final String ID = "Document.ResetSchema";
@@ -57,6 +58,9 @@ public class ResetSchema {
     @Param(name = "save", required = false, values = { "true" })
     protected boolean save = true;
 
+    @Param(name = "saveDocument", required = false, values = { "true" })
+    protected boolean saveDocument = true;
+
     private void resetSchemaProperties(DocumentModel target) throws OperationException {
         if (xpath != null) {
             target.setPropertyValue(xpath, null);
@@ -72,9 +76,11 @@ public class ResetSchema {
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel target) throws OperationException {
         resetSchemaProperties(target);
-        target = session.saveDocument(target);
-        if (save) {
-            session.save();
+        if(saveDocument) {
+        	target = session.saveDocument(target);
+            if (save) {
+                session.save();
+            }
         }
         return target;
     }

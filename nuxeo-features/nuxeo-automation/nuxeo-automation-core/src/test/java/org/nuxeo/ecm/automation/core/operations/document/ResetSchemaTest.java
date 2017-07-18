@@ -15,9 +15,11 @@
  *
  * Contributors:
  *     Miguel Nixo
+ *     Thibaud Arguillere
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -185,6 +187,27 @@ public class ResetSchemaTest {
             assertNull(target1.getProperty(schema, entry.getKey()));
             assertNull(target2.getProperty(schema, entry.getKey()));
         }
+    }
+    
+    @Test
+    public void shouldNotSaveTheDocument() throws Exception {
+    	
+        target1.setPropertyValue("common:icon-expanded", "icon-expanded-target1");
+        target1 = session.saveDocument(target1);
+        
+        OperationContext context = new OperationContext(session);
+        context.setInput(target1);
+        OperationChain chain = new OperationChain("testSouldNotSaveTheDocument");
+        chain.add(ResetSchema.ID).set("schema", "common").set("saveDocument", false);
+        /*DocumentModel ignore = (DocumentModel)*/service.run(context, chain);
+        
+        String value = (String) target1.getPropertyValue("common:icon-expanded");
+        assertNull(value);
+        
+        target1.refresh();
+        value = (String) target1.getPropertyValue("common:icon-expanded");
+        assertEquals("Target document should not have been saved when saveDocument is false", "icon-expanded-target1", value);
+        
     }
 
 }
