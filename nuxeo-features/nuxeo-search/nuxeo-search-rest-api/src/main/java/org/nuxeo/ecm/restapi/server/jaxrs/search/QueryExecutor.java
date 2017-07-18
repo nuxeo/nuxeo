@@ -282,7 +282,7 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         String query = getQuery(queryParams);
         Long pageSize = getPageSize(queryParams);
         Long currentPageIndex = getCurrentPageIndex(queryParams);
-        Long currentPageOffset = getCurrentPageIndex(queryParams);
+        Long currentPageOffset = getCurrentPageOffset(queryParams);
         Long maxResults = getMaxResults(queryParams);
         Properties namedParameters = getNamedParameters(queryParams);
         Object[] parameters = getParameters(queryParams);

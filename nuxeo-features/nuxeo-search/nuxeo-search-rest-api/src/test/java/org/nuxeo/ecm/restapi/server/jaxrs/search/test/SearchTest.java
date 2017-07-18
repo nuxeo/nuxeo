@@ -167,7 +167,7 @@ public class SearchTest extends BaseTest {
      */
     @Test
     public void iCanPerformPageProviderOnRepositoryWithOffset() throws IOException {
-        // Given a repository, when I perform a pageprovider on it
+        // Given a repository, when I fetched the first page
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add(QueryExecutor.CURRENT_PAGE_OFFSET, "0");
         queryParams.add(QueryExecutor.PAGE_SIZE, "" + RestServerInit.MAX_FILE);
@@ -180,13 +180,28 @@ public class SearchTest extends BaseTest {
         ArrayNode notes = (ArrayNode) node.get("entries");
         assertEquals(RestServerInit.MAX_FILE, notes.size());
 
+        // Then I can retrieve the same result using offset
         for (int i = 0; i < RestServerInit.MAX_FILE; i++) {
             queryParams = new MultivaluedMapImpl();
             queryParams.add(QueryExecutor.CURRENT_PAGE_OFFSET, i + "");
             queryParams.add(QueryExecutor.PAGE_SIZE, "1");
             response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP_ALL_NOTE"), queryParams);
 
-            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, getLogEntries(node).size());
+            String retrievedTitle = ((ArrayNode) node.get("entries")).get(0).get("title").getTextValue();
+            assertEquals(notes.get(i).get("title").getTextValue(), retrievedTitle);
+        }
+
+        // Then I can retrieve the same result using offset and NXQL
+        for (int i = 0; i < RestServerInit.MAX_FILE; i++) {
+            queryParams = new MultivaluedMapImpl();
+            queryParams.add(QueryExecutor.CURRENT_PAGE_OFFSET, i + "");
+            queryParams.add(QueryExecutor.PAGE_SIZE, "1");
+            queryParams.putSingle("query", "SELECT * FROM Note WHERE ecm:isVersion = 0 ORDER BY dc:title ASC");
+            response = getResponse(RequestType.GET, QUERY_EXECUTE_PATH, queryParams);
+
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             node = mapper.readTree(response.getEntityInputStream());
             assertEquals(1, getLogEntries(node).size());
