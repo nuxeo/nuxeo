@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.tag;
 
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_RESTORED;
@@ -27,8 +26,6 @@ import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
@@ -73,12 +70,6 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
                 return;
             }
             switch (name) {
-            case DOCUMENT_CHECKEDIN:
-                DocumentRef versionRef = (DocumentRef) ctx.getProperty("checkedInVersionRef");
-                if (versionRef instanceof IdRef) {
-                    tagService.copyTags(session, docId, versionRef.toString());
-                }
-                break;
             case DOCUMENT_PROXY_PUBLISHED:
                 if (doc.isProxy()) {
                     DocumentModel version = session.getSourceDocument(doc.getRef());
@@ -102,8 +93,7 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
     @Override
     public boolean acceptEvent(Event event) {
         String name = event.getName();
-        return DOCUMENT_CHECKEDIN.equals(name)
-                || DOCUMENT_PROXY_PUBLISHED.equals(name)
+        return DOCUMENT_PROXY_PUBLISHED.equals(name)
                 || DOCUMENT_RESTORED.equals(name)
                 || DOCUMENT_REMOVED.equals(name)
                 || (LifeCycleConstants.TRANSITION_EVENT.equals(name) && LifeCycleConstants.DELETED_STATE.equals(event.getContext().getProperty(
