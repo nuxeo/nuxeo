@@ -26,6 +26,8 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.runtime.api.Framework;
 
 public class TestDirtyProperty extends AbstractTestProperty {
 
@@ -179,7 +181,7 @@ public class TestDirtyProperty extends AbstractTestProperty {
     }
 
     @Test
-    public void testComplexPropertyChangedWithSameValueNotDirty() {
+    public void testComplexPropertyChangedWithSameValueStillDirty() {
         ComplexProperty property = getComplexProperty();
         Map<String, String> value = new HashMap<>();
         value.put("test1", "test1");
@@ -190,13 +192,21 @@ public class TestDirtyProperty extends AbstractTestProperty {
         value2.put("test1", "test1");
         value2.put("test2", "test2");
         property.setValue(value2);
-        assertFalse(property.isDirty());
-        assertFalse(property.get("test1").isDirty());
-        assertFalse(property.get("test2").isDirty());
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        if (schemaManager.getClearComplexPropertyBeforeSet()) {
+            // still dirty because we rewrite everything on setValue
+            assertTrue(property.isDirty());
+            assertTrue(property.get("test1").isDirty());
+            assertTrue(property.get("test2").isDirty());
+        } else {
+            assertFalse(property.isDirty());
+            assertFalse(property.get("test1").isDirty());
+            assertFalse(property.get("test2").isDirty());
+        }
     }
 
     @Test
-    public void testComplexPropertyPartialChangedPartialDirty() {
+    public void testComplexPropertyPartialChangedStillDirty() {
         ComplexProperty property = getComplexProperty();
         Map<String, String> value = new HashMap<>();
         value.put("test1", "test1");
@@ -209,11 +219,16 @@ public class TestDirtyProperty extends AbstractTestProperty {
         property.setValue(value2);
         assertTrue(property.isDirty());
         assertTrue(property.get("test1").isDirty());
-        assertFalse(property.get("test2").isDirty());
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        if (schemaManager.getClearComplexPropertyBeforeSet()) {
+            assertTrue(property.get("test2").isDirty());
+        } else {
+            assertFalse(property.get("test2").isDirty());
+        }
     }
 
     @Test
-    public void testComplexPropertyAddChildPartialDirty() {
+    public void testComplexPropertyAddChildStillDirty() {
         ComplexProperty property = getComplexProperty();
         Map<String, String> value = new HashMap<>();
         value.put("test1", "test1");
@@ -224,12 +239,18 @@ public class TestDirtyProperty extends AbstractTestProperty {
         value2.put("test2", "test2");
         property.setValue(value2);
         assertTrue(property.isDirty());
-        assertFalse(property.get("test1").isDirty());
-        assertTrue(property.get("test2").isDirty());
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        if (schemaManager.getClearComplexPropertyBeforeSet()) {
+            assertTrue(property.get("test1").isDirty());
+            assertTrue(property.get("test2").isDirty());
+        } else {
+            assertFalse(property.get("test1").isDirty());
+            assertTrue(property.get("test2").isDirty());
+        }
     }
 
     @Test
-    public void testComplexPropertySetNullChildPartialDirty() {
+    public void testComplexPropertySetNullChildStillDirty() {
         ComplexProperty property = getComplexProperty();
         Map<String, String> value = new HashMap<>();
         value.put("test1", "test1");
@@ -241,8 +262,14 @@ public class TestDirtyProperty extends AbstractTestProperty {
         value2.put("test2", null);
         property.setValue(value2);
         assertTrue(property.isDirty());
-        assertFalse(property.get("test1").isDirty());
-        assertTrue(property.get("test2").isDirty());
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        if (schemaManager.getClearComplexPropertyBeforeSet()) {
+            assertTrue(property.get("test1").isDirty());
+            assertFalse(property.get("test2").isDirty()); // not dirty because null...
+        } else {
+            assertFalse(property.get("test1").isDirty());
+            assertTrue(property.get("test2").isDirty());
+        }
     }
 
     @Test
