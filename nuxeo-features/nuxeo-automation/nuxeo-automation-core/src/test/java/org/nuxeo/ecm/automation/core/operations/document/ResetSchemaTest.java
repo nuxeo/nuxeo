@@ -199,7 +199,7 @@ public class ResetSchemaTest {
         context.setInput(target1);
         OperationChain chain = new OperationChain("testSouldNotSaveTheDocument");
         chain.add(ResetSchema.ID).set("schema", "common").set("saveDocument", false);
-        /*DocumentModel ignore = (DocumentModel)*/service.run(context, chain);
+        service.run(context, chain);
         
         String value = (String) target1.getPropertyValue("common:icon-expanded");
         assertNull(value);

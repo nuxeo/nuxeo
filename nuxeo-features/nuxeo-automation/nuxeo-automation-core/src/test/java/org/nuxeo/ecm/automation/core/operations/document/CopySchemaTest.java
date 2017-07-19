@@ -257,7 +257,7 @@ public class CopySchemaTest {
         context.setInput(target1);
         OperationChain chain = new OperationChain("testSaveParameters_1");
         chain.add(CopySchema.ID).set("sourceId", source.getId()).set("schema", "common").set("saveDocument", false);
-        /*DocumentModel ignore = (DocumentModel)*/service.run(context, chain);
+        service.run(context, chain);
         
         String value = (String) target1.getPropertyValue("common:icon-expanded");
         assertEquals("icon-expanded-source", value);

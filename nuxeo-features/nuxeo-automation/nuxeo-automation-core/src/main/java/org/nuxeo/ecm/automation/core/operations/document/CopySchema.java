@@ -83,8 +83,8 @@ public class CopySchema {
         DocumentModel source = getDocumentFromIdOrPath();
         copySchemaProperties(source, target);
 
-        if(saveDocument) {
-        	target = session.saveDocument(target);
+        if (saveDocument) {
+            target = session.saveDocument(target);
             if (save) {
                 session.save();
             }
