@@ -276,18 +276,21 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         if (!isVersion()) {
             throw new PropertyException("Cannot write readonly property: " + name);
         }
-        if (!name.startsWith(DC_PREFIX) && !(property.getField().getDeclaringType() instanceof Schema
-                && ((Schema) property.getField().getDeclaringType()).isVersionWritabe())) {
+        if (!name.startsWith(DC_PREFIX) && !getTopLevelSchema(property).isVersionWritabe()) {
             throw new PropertyException("Cannot set property on a version: " + name);
         }
-        // ignore if value is unchanged (only for dublincore)
-        // dublincore contains only scalars and arrays
+        // ignore write if value can quickly be detected as unchanged
         Object value = property.getValueForWrite();
         Object oldValue;
-        if (property.getType().isSimpleType()) {
+        Type type = property.getType();
+        if (type.isSimpleType()) {
             oldValue = state.getSingle(name);
-        } else {
+        } else if (type.isListType() && ((ListType) type).getFieldType().isSimpleType()) {
             oldValue = state.getArray(name);
+        } else {
+            // complex property or complex list, no quick way to detect changes
+            // do write
+            return false;
         }
         if (!ArrayUtils.isEquals(value, oldValue)) {
             // do write
@@ -295,6 +298,21 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         }
         // ignore attempt to write identical value
         return true;
+    }
+
+    /**
+     * Gets the {@link Schema} at the top-level of the type hierarchy for this {@link Property}.
+     *
+     * @since 9.3
+     */
+    protected Schema getTopLevelSchema(Property property) {
+        for (;;) {
+            Type type = property.getType();
+            if (type instanceof Schema) {
+                return (Schema) type;
+            }
+            property = property.getParent();
+        }
     }
 
     protected BlobInfo getBlobInfo(T state) throws PropertyException {
@@ -755,18 +773,18 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
      */
     protected boolean writeComplexProperty(T state, ComplexProperty complexProperty, WriteContext writeContext)
             throws PropertyException {
-        return writeComplexProperty(state, complexProperty, null, false, writeContext);
+        return writeComplexProperty(state, complexProperty, null, writeContext);
     }
 
     /**
      * Writes state from a complex property.
      * <p>
-     * Writes only properties that are dirty, unless skipDirtyCheck is true in which case everything is written.
+     * Writes only properties that are dirty.
      *
      * @return {@code true} if something changed
      */
-    protected boolean writeComplexProperty(T state, ComplexProperty complexProperty, String xpath,
-            boolean skipDirtyCheck, WriteContext wc) throws PropertyException {
+    protected boolean writeComplexProperty(T state, ComplexProperty complexProperty, String xpath, WriteContext wc)
+            throws PropertyException {
         @SuppressWarnings("unchecked")
         BlobWriteContext<T> writeContext = (BlobWriteContext<T>) wc;
         if (complexProperty instanceof BlobProperty) {
@@ -779,14 +797,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         }
         boolean changed = false;
         for (Property property : complexProperty) {
-            // write dirty properties, but also phantoms with non-null default values
-            // this is critical for DeltaLong updates to work, they need a non-null initial value
-            if (skipDirtyCheck || property.isDirty()
-                    || (property.isPhantom() && property.getField().getDefaultValue() != null)) {
-                // do the write
-            } else {
-                continue;
-            }
+            // write all properties, even non-dirty or phantom ones, as they may have been reset by a partial write
             String name = property.getField().getName().getPrefixedName();
             name = internalName(name);
             if (checkReadOnlyIgnoredWrite(property, state)) {
@@ -804,7 +815,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             } else if (type.isComplexType()) {
                 // complex property
                 T childState = getChildForWrite(state, name, type);
-                writeComplexProperty(childState, (ComplexProperty) property, xp, skipDirtyCheck, writeContext);
+                writeComplexProperty(childState, (ComplexProperty) property, xp, writeContext);
             } else {
                 ListType listType = (ListType) type;
                 if (listType.getFieldType().isSimpleType()) {
@@ -857,9 +868,8 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                     for (Property childProperty : property.getChildren()) {
                         T childState = childStates.get(i);
                         String xpi = xp + '/' + i;
-                        boolean moved = childProperty.isMoved();
                         boolean c = writeComplexProperty(childState, (ComplexProperty) childProperty, xpi,
-                                skipDirtyCheck || moved , writeContext);
+                                writeContext);
                         if (c) {
                             writeContext.recordChange(xpi);
                         }
