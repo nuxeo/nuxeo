@@ -784,6 +784,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
             throw new DirectoryException(message);
         }
         Type type = field.getType();
+        if (type instanceof SimpleTypeImpl) {
+            // type with constraint
+            type = type.getSuperType();
+        }
         String typeName = type.getName();
 
         if ("string".equals(typeName)) {
