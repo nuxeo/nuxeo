@@ -76,8 +76,8 @@ public class ResetSchema {
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel target) throws OperationException {
         resetSchemaProperties(target);
-        if(saveDocument) {
-        	target = session.saveDocument(target);
+        if (saveDocument) {
+            target = session.saveDocument(target);
             if (save) {
                 session.save();
             }
