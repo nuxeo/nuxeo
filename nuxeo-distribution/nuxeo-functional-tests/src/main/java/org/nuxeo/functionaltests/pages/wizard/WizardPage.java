@@ -63,13 +63,13 @@ public class WizardPage extends AbstractWizardPage {
     }
 
     @Override
-    protected String getNextButtonLocator() {
-        return NEXT_BUTTON_LOCATOR;
+    protected By getNextButtonLocator() {
+        return By.xpath(NEXT_BUTTON_LOCATOR);
     }
 
     @Override
-    protected String getPreviousButtonLocator() {
-        return PREV_BUTTON_LOCATOR;
+    protected By getPreviousButtonLocator() {
+        return By.xpath(PREV_BUTTON_LOCATOR);
     }
 
     public ConnectWizardPage getConnectPage() {
