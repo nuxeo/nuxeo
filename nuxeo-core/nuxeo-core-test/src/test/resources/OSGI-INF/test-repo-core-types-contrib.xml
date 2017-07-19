@@ -11,6 +11,8 @@
       prefix="tp" />
     <schema name="age" src="schemas/age.xsd" prefix="age" />
     <schema name="info" src="schemas/info.xsd" prefix="info" />
+    <schema name="complex" src="schemas/complex.xsd" prefix="cpx" />
+    <schema name="complexList" src="schemas/complexlist.xsd" prefix="cpxl" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
@@ -27,9 +29,13 @@
       <schema name="testList" />
       <schema name="book" />
       <prefetch>uid, common.icon, dc:title dc:subjects
-        testList.participants, 
+        testList.participants,
         book:author/pJob, book:author/pName/FirstName
         </prefetch>
+    </doctype>
+    <doctype name="MyDocType2" extends="Document">
+      <schema name="complex" />
+      <schema name="complexList" />
     </doctype>
     <doctype name="Book" extends="Folder">
       <schema name="common" />

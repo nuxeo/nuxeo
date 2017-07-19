@@ -164,6 +164,18 @@ public class TestSQLRepositoryProperties {
         return file;
     }
 
+    /** Helper function to build a simple map with minimal syntax. */
+    protected static Map<String, Serializable> map(Object... values) {
+        if (values.length % 2 != 0) {
+            throw new IllegalArgumentException("Invalid number of parameters");
+        }
+        Map<String, Serializable> map = new HashMap<>();
+        for (int i = 0; i < values.length; i += 2) {
+            map.put((String) values[i], (Serializable) values[i+1]);
+        }
+        return map;
+    }
+
     @Test
     public void testUnknownProperty() throws Exception {
         try {
@@ -1352,6 +1364,115 @@ public class TestSQLRepositoryProperties {
         Map<String, Serializable> map = list.get(0);
         assertEquals(1, ((String[]) map.get("array")).length);
         assertEquals("baz", ((String[]) map.get("array"))[0]);
+    }
+
+    /**
+     * <pre>
+     * write {"foo": "foo1"}
+     * => {"foo": "foo1", "bar": null}
+     * </pre>
+     */
+    @Test
+    public void testGetComplexMap() {
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType2");
+        doc.setPropertyValue("cpx:complex", (Serializable) map("foo", "foo1"));
+        doc = session.createDocument(doc);
+        session.save();
+
+        // check
+        @SuppressWarnings("unchecked")
+        Map<String, Serializable> updatedMap = (Map<String, Serializable>) doc.getPropertyValue("cpx:complex");
+        Map<String, Serializable> expectedMap = map("foo", "foo1", "bar", null);
+        assertEquals(expectedMap, updatedMap);
+    }
+
+    /**
+     * <pre>
+     * from {"foo": "foo1", "bar": "bar1"}
+     * write {"foo": "foo2"}
+     * => {"foo": "foo2", "bar": null}
+     * </pre>
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSetComplexMap() {
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType2");
+        doc.setPropertyValue("cpx:complex", (Serializable) map("foo", "foo1", "bar", "bar1"));
+        doc = session.createDocument(doc);
+        session.save();
+
+        // update
+        doc.setPropertyValue("cpx:complex", (Serializable) map("foo", "foo2"));
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // check
+        Map<String, Serializable> updatedMap = (Map<String, Serializable>) doc.getPropertyValue("cpx:complex");
+        Map<String, Serializable> expectedMap = map("foo", "foo2", "bar", null);
+        assertEquals(expectedMap, updatedMap);
+
+        // update again
+        // do an individual update through property xpath
+        doc.getProperty("cpx:complex/bar").setValue("bar2");
+
+        // check
+        updatedMap = (Map<String, Serializable>) doc.getPropertyValue("cpx:complex");
+        expectedMap = map("foo", "foo2", "bar", "bar2");
+        assertEquals(expectedMap, updatedMap);
+    }
+
+    /**
+     * <pre>
+     * from {"foo": "foo1", "bar": "bar1"}
+     * write {"foo": null}
+     * => {"foo": null, "bar": null}
+     * </pre>
+     */
+    @Test
+    public void testSetComplexMapWithNullValue() {
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType2");
+        doc.setPropertyValue("cpx:complex", (Serializable) map("foo", "foo1", "bar", "bar1"));
+        doc = session.createDocument(doc);
+        session.save();
+
+        // update with a null value
+        doc.setPropertyValue("cpx:complex", (Serializable) map("foo", null));
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // check
+        @SuppressWarnings("unchecked")
+        Map<String, Serializable> updatedMap = (Map<String, Serializable>) doc.getPropertyValue("cpx:complex");
+        Map<String, Serializable> expectedMap = map("foo", null, "bar", null);
+        assertEquals(expectedMap, updatedMap);
+    }
+
+    /**
+     * <pre>
+     * from [{"foo": "foo1", "bar": "bar1"}]
+     * write [{"foo": "foo2"}]
+     * => [{"foo": "foo2", "bar": null}]
+     * </pre>
+     */
+    @Test
+    public void testSetComplexMapInList() {
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType2");
+        doc.setPropertyValue("cpxl:complexList", (Serializable) Arrays.asList(map("foo", "foo1", "bar", "bar1")));
+        doc = session.createDocument(doc);
+        session.save();
+
+        // update
+        List<Map<String, Serializable>> updateList = Arrays.asList(map("foo", "foo2"));
+        doc.setPropertyValue("cpxl:complexList", (Serializable) updateList);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // check
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> updatedList = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                "cpxl:complexList");
+        List<Map<String, Serializable>> expectedList = Arrays.asList(map("foo", "foo2", "bar", null));
+        assertEquals(expectedList, updatedList);
     }
 
 }

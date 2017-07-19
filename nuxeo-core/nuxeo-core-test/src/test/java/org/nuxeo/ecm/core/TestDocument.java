@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,6 +53,7 @@ import org.nuxeo.ecm.core.model.Document.WriteContext;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
+import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -443,7 +443,7 @@ public class TestDocument {
 
     /** Gets the facets internal datastructure from the schema manager. */
     protected Map<String, CompositeType> getSchemaManagerFacets() throws Exception {
-        Field field = schemaManager.getClass().getDeclaredField("facets");
+        java.lang.reflect.Field field = schemaManager.getClass().getDeclaredField("facets");
         field.setAccessible(true);
         return (Map<String, CompositeType>) field.get(schemaManager);
     }
@@ -481,7 +481,12 @@ public class TestDocument {
         boolean changed = doc.writeDocumentPart(dp, writeContext);
         assertTrue(changed);
         Set<String> changes = writeContext.getChanges();
-        assertEquals(Collections.singleton("dc:title"), changes);
+        // expect all of the schema fields to be written (others are set to null)
+        Set<String> expected = new HashSet<>();
+        for (Field field : schema.getFields()) {
+            expected.add(field.getName().getPrefixedName());
+        }
+        assertEquals(expected, changes);
 
         // change to complex prop
         schema = doc.getType().getSchema("complexschema");
@@ -492,9 +497,22 @@ public class TestDocument {
         changed = doc.writeDocumentPart(dp, writeContext);
         assertTrue(changed);
         changes = writeContext.getChanges();
-        // check that we don't have cmpf:attachedFile/vignettes/0 in the list
-        assertEquals(new HashSet<>(Arrays.asList("cmpf:attachedFile", "cmpf:attachedFile/vignettes",
-                "cmpf:attachedFile/vignettes/1", "cmpf:attachedFile/vignettes/1/width")), changes);
+        expected = new HashSet<>(Arrays.asList( //
+                "cmpf:attachedFile", //
+                "cmpf:attachedFile/name", //
+                "cmpf:attachedFile/vignettes", //
+                "cmpf:attachedFile/vignettes/0", //
+                "cmpf:attachedFile/vignettes/0/content", //
+                "cmpf:attachedFile/vignettes/0/height", //
+                "cmpf:attachedFile/vignettes/0/label", //
+                "cmpf:attachedFile/vignettes/0/width", //
+                "cmpf:attachedFile/vignettes/1", //
+                "cmpf:attachedFile/vignettes/1/content", //
+                "cmpf:attachedFile/vignettes/1/height", //
+                "cmpf:attachedFile/vignettes/1/label", //
+                "cmpf:attachedFile/vignettes/1/width" //
+        ));
+        assertEquals(expected, changes);
 
         // change to blob
         dp = new DocumentPartImpl(schema);
@@ -504,9 +522,22 @@ public class TestDocument {
         changed = doc.writeDocumentPart(dp, writeContext);
         assertTrue(changed);
         changes = writeContext.getChanges();
-        // check that we don't have cmpf:attachedFile/vignettes/0 in the list
-        assertEquals(new HashSet<>(Arrays.asList("cmpf:attachedFile", "cmpf:attachedFile/vignettes",
-                "cmpf:attachedFile/vignettes/1", "cmpf:attachedFile/vignettes/1/content")), changes);
+        expected = new HashSet<>(Arrays.asList( //
+                "cmpf:attachedFile", //
+                "cmpf:attachedFile/name", //
+                "cmpf:attachedFile/vignettes", //
+                "cmpf:attachedFile/vignettes/0", //
+                "cmpf:attachedFile/vignettes/0/content", //
+                "cmpf:attachedFile/vignettes/0/height", //
+                "cmpf:attachedFile/vignettes/0/label", //
+                "cmpf:attachedFile/vignettes/0/width", //
+                "cmpf:attachedFile/vignettes/1", //
+                "cmpf:attachedFile/vignettes/1/content", //
+                "cmpf:attachedFile/vignettes/1/height", //
+                "cmpf:attachedFile/vignettes/1/label", //
+                "cmpf:attachedFile/vignettes/1/width" //
+        ));
+        assertEquals(expected, changes);
     }
 
     @Test
