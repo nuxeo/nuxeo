@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:nxs="http://www.nuxeo.org/ecm/schemas/complex/"
+           targetNamespace="http://www.nuxeo.org/ecm/schemas/complex/">
+
+   <xs:element name="complex" type="nxs:complex"/>
+
+   <xs:complexType name="complex">
+      <xs:sequence>
+         <xs:element name="foo" type="xs:string"/>
+         <xs:element name="bar" type="xs:string"/>
+      </xs:sequence>
+   </xs:complexType>
+
+</xs:schema>
