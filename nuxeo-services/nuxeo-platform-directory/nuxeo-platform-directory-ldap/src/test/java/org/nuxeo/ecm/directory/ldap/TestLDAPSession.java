@@ -558,6 +558,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 // try to tweak the DN read-only field
                 entry.setProperty(USER_SCHEMANAME, "dn", "cn=this,ou=is,ou=a,ou=fake,o=dn");
 
+                entry.setProperty(USER_SCHEMANAME, "email", "nobody@nowhere.com");
                 entry.setProperty(USER_SCHEMANAME, "employeeType", Arrays.asList("item3", "item4"));
                 List<String> groups = Arrays.asList("administrators", "members");
                 entry.setProperty(USER_SCHEMANAME, "groups", groups);
