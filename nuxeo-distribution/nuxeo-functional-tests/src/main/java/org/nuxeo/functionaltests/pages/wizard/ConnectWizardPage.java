@@ -54,19 +54,18 @@ public class ConnectWizardPage extends AbstractWizardPage {
     }
 
     @Override
-    protected String getNextButtonLocator() {
-        return REGISTER_DIV_LOCATOR.replace("CSS_CLASS", "ui blue submit button btnNext");
+    protected By getNextButtonLocator() {
+        return By.xpath(REGISTER_DIV_LOCATOR.replace("CSS_CLASS", "ui blue submit button btnNext"));
     }
 
     @Override
-    protected String getPreviousButtonLocator() {
-        return REGISTER_DIV_LOCATOR.replace("CSS_CLASS", "ui blue submit button btnPrev");
+    protected By getPreviousButtonLocator() {
+        return By.xpath(REGISTER_DIV_LOCATOR.replace("CSS_CLASS", "ui blue submit button btnPrev"));
     }
 
     public ConnectWizardPage openLink(String text) {
         ConnectWizardPage wpage = openLink(ConnectWizardPage.class, text);
         if (!driver.getCurrentUrl().contains(CONNECT_IFRAME_URL_PATTERN)) {
-            System.out.println("Oups, we are out of the frame !!!");
             driver.switchTo().frame("connectForm");
             return asPage(ConnectWizardPage.class);
         }

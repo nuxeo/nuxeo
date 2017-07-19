@@ -23,6 +23,7 @@ import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
 import com.google.common.base.Function;
@@ -40,17 +41,18 @@ public abstract class AbstractWizardPage extends AbstractPage {
         return title.getText().trim();
     }
 
-    protected abstract String getNextButtonLocator();
+    protected abstract By getNextButtonLocator();
 
-    protected abstract String getPreviousButtonLocator();
+    protected abstract By getPreviousButtonLocator();
 
     public <T extends AbstractWizardPage> T next(Class<T> wizardPageClass) {
         return next(wizardPageClass, null);
     }
 
     public <T extends AbstractWizardPage> T next(Class<T> wizardPageClass, Function<WebDriver, Boolean> function) {
-        WebElement buttonNext = findElementWithTimeout(By.xpath(getNextButtonLocator()));
+        WebElement buttonNext = findElementWithTimeout(getNextButtonLocator());
         String URLbefore = driver.getCurrentUrl();
+        new Actions(driver).moveToElement(buttonNext).perform();
         buttonNext.click();
         if (function == null) {
             waitUntilURLDifferentFrom(URLbefore);
@@ -65,7 +67,7 @@ public abstract class AbstractWizardPage extends AbstractPage {
     }
 
     public <T extends AbstractWizardPage> T previous(Class<T> wizardPageClass, Function<WebDriver, Boolean> function) {
-        WebElement buttonPrev = findElementWithTimeout(By.xpath(getPreviousButtonLocator()));
+        WebElement buttonPrev = findElementWithTimeout(getPreviousButtonLocator());
         String URLbefore = driver.getCurrentUrl();
         buttonPrev.click();
         if (function == null) {

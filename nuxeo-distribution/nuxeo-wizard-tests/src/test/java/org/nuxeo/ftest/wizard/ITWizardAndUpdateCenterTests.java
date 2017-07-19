@@ -235,11 +235,14 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         driver.findElement(By.id("username")).sendKeys(CONNECT_LOGIN);
         driver.findElement(By.id("password")).sendKeys(getTestPassword());
         driver.findElement(By.cssSelector(".btn-submit")).click();
+//        driver.findElement(By.id("navToCB")).click();
 
         // select the associated project
         switchToPopup("site/connect/wizardInstanceRegistration");
+
         connectSignIn.selectOption("project", CONNECT_PROJECT_SELECTOR_UUID);
         connectSignIn.submit();
+//        driver.findElement(By.id("navToCB")).click();
 
         driver.switchTo().window(mainWindowsHandle);
         Thread.sleep(1000);
