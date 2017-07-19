@@ -50,7 +50,7 @@ public class SliceVideo {
     @Param(name = "duration", required = false)
     protected String duration;
 
-    @Param(name = "encode", required = false)
+    @Param(name = "encode", required = false, values = "true")
     protected boolean encode = true;
 
     @Param(name = "xpath", required = false)
