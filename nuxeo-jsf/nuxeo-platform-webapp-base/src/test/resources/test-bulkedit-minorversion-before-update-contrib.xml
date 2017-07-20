@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webapp.bulkedit.testContrib.minorversion.beforeupdate" version="1.0">
+
+  <require>org.nuxeo.ecm.core.versioning.default-policies</require>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <policy id="bulkEdit-policy" beforeUpdate="true" increment="MINOR" order="200">
+      <filter-id>bulkEdit-filter</filter-id>
+    </policy>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+    <filter id="bulkEdit-filter">
+      <condition>#{currentDocument.contextData.source == "bulkEdit"}</condition>
+    </filter>
+  </extension>
+
+</component>
