@@ -85,7 +85,7 @@ public class ResourceServlet extends HttpServlet {
         ScriptFile file = module.getSkinResource(path);
         if (file != null) {
             long lastModified = file.lastModified();
-            resp.setDateHeader("Last-Modified:", lastModified);
+            resp.setDateHeader("Last-Modified", lastModified);
             resp.addHeader("Cache-Control", "public");
             resp.addHeader("Server", "Nuxeo/WebEngine-1.0");
 
