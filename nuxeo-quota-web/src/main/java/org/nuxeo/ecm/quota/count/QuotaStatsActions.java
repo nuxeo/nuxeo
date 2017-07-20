@@ -37,6 +37,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.common.utils.SizeUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -49,6 +50,7 @@ import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.ecm.quota.size.QuotaDisplayValue;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -62,6 +64,12 @@ public class QuotaStatsActions implements Serializable {
     protected Log log = LogFactory.getLog(QuotaStatsActions.class);
 
     private static final long serialVersionUID = -1L;
+
+    /** @since 9.3 */
+    public static final String QUOTA_MAX_SIZE_PROP = "nuxeo.quota.maxsize";
+
+    /** @since 9.3 */
+    public static final String QUOTA_MAX_SIZE_DEFAULT= "999 GB";
 
     @In(create = true)
     protected transient CoreSession documentManager;
@@ -82,9 +90,12 @@ public class QuotaStatsActions implements Serializable {
 
     protected WorkManager workManager;
 
+    protected long configuredMaxQuotaSize;
+
     @Create
     public void initialize() {
         initQuotaActivatedOnUserWorkspaces();
+        initConfiguredMaxQuotaSize();
     }
 
     public List<QuotaStatsUpdater> getQuotaStatsUpdaters() {
@@ -162,7 +173,22 @@ public class QuotaStatsActions implements Serializable {
         if (doc != null) {
             maxQuotaSize = getQuotaStatsService().getQuotaFromParent(doc, documentManager);
         }
-        return maxQuotaSize > 0 ? maxQuotaSize : 1072668082176L; // 999GB
+        return maxQuotaSize > 0 ? maxQuotaSize : configuredMaxQuotaSize;
+    }
+
+    /**
+     * @since 9.3
+     */
+    protected void initConfiguredMaxQuotaSize() {
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        String max = configurationService.getProperty(QUOTA_MAX_SIZE_PROP, QUOTA_MAX_SIZE_DEFAULT);
+        try {
+            configuredMaxQuotaSize = SizeUtils.parseSizeInBytes(max);
+        } catch (NumberFormatException e) {
+            log.error("Invalid value for configuration property " + QUOTA_MAX_SIZE_PROP + ": " + max
+                    + "; using default: " + QUOTA_MAX_SIZE_DEFAULT);
+            configuredMaxQuotaSize = SizeUtils.parseSizeInBytes(QUOTA_MAX_SIZE_DEFAULT);
+        }
     }
 
     /**
