@@ -37,9 +37,9 @@
       <tbody>
       <#list users as user>
       	<tr>
-      		<td><a href="${This.path}/user/${user}">${user}<a/></td>
-      		<td>${user.firstName}</td>
-      		<td>${user.lastName}</td>
+      		<td><a href="${This.path}/user/${user?html}">${user?html}<a/></td>
+      		<td>${user.firstName?html}</td>
+      		<td>${user.lastName?html}</td>
       	</tr>
       </#list>
       </tbody>
