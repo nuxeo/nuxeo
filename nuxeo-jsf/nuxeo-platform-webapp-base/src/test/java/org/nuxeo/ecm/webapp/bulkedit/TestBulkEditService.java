@@ -41,10 +41,14 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.platform.tag.Tag;
+import org.nuxeo.ecm.platform.tag.TagService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 5.7.3
@@ -52,7 +56,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.webapp.base" })
+@Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.webapp.base",
+        "org.nuxeo.ecm.platform.tag.api", "org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.query.api" })
 public class TestBulkEditService {
 
     @Inject
@@ -60,6 +65,9 @@ public class TestBulkEditService {
 
     @Inject
     protected EventService eventService;
+
+    @Inject
+    protected TagService tagService;
 
     @Inject
     protected BulkEditService bulkEditService;
@@ -125,6 +133,43 @@ public class TestBulkEditService {
             assertFalse("new source".equals(version.getPropertyValue("dc:source")));
             assertEquals("0.1", version.getVersionLabel());
         }
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.webapp.base:test-bulkedit-minorversion-before-update-contrib.xml")
+    public void testBulkEditBeforeUpdate() {
+        // behaviour should be compliant with NXP-12225, NXP-22099 provides fix with auto-versioning
+        List<DocumentModel> docs = createTestDocuments();
+        DocumentModel sourceDoc = buildSimpleDocumentModel();
+
+        bulkEditService.updateDocuments(session, sourceDoc, docs);
+
+        String username = session.getPrincipal().getName();
+        for (DocumentModel doc : docs) {
+            tagService.tag(session, doc.getId(), "tag", username);
+        }
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        DocumentModel doc = session.getDocument(docs.get(0).getRef());
+        assertEquals("new title", doc.getPropertyValue("dc:title"));
+        assertEquals("new creator", doc.getProperty("dc:creator").getValue());
+        assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
+        assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
+
+        List<Tag> tags = tagService.getDocumentTags(session, doc.getId(), username);
+        assertEquals(1, tags.size());
+        assertEquals("tag", tags.get(0).getLabel());
+
+        assertEquals("0.1+", doc.getVersionLabel());
+
+        DocumentModel version = session.getLastDocumentVersion(doc.getRef());
+        assertEquals("doc1", version.getPropertyValue("dc:title"));
+        assertEquals("0.1", version.getVersionLabel());
+
+        tags = tagService.getDocumentTags(session, version.getId(), username);
+        assertEquals(0, tags.size());
     }
 
     @Test
