@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.mongodb.MongoClient;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -54,6 +55,8 @@ public class MongoDBDirectory extends AbstractDirectory {
 
     protected boolean initialized;
 
+    protected MongoClient client;
+
     public MongoDBDirectory(MongoDBDirectoryDescriptor descriptor) {
         super(descriptor, MongoDBReference.class);
 
@@ -77,6 +80,7 @@ public class MongoDBDirectory extends AbstractDirectory {
 
         countersCollectionName = getName() + ".counters";
 
+        client = MongoDBConnectionHelper.newMongoClient(descriptor.getServerUrl());
     }
 
     @Override
@@ -152,4 +156,15 @@ public class MongoDBDirectory extends AbstractDirectory {
     public String getCountersCollectionName() {
         return countersCollectionName;
     }
+
+    @Override
+    public void shutdown() {
+        super.shutdown();
+        client.close();
+    }
+
+    protected MongoClient getClient() {
+        return client;
+    }
+
 }
