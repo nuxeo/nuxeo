@@ -63,7 +63,7 @@ public class LogEntryListJsonWriterTest extends AbstractJsonWriterTest.External<
         PageProvider<LogEntry> pp = (PageProvider<LogEntry>) pps.getPageProvider(name, null, 3l, 0l, properties, root);
         LogEntryList list = new LogEntryList(pp);
         JsonAssert json = jsonAssert(list);
-        json.properties(17);
+        json.properties(18);
         json.has("entity-type").isEquals("logEntries");
         json.has("isPaginable").isTrue();
         json.has("resultsCount").isInt();
@@ -80,6 +80,7 @@ public class LogEntryListJsonWriterTest extends AbstractJsonWriterTest.External<
         json.has("errorMessage").isNull();
         json.has("pageIndex").isEquals(pp.getCurrentPageIndex());
         json.has("pageCount").isEquals(pp.getResultsCount());
+        json.has("currentPageOffset").isEquals(pp.getCurrentPageOffset());
         json = json.has("entries").isArray();
         json = json.has(0).isObject();
         json.has("entity-type").isEquals("logEntry");
