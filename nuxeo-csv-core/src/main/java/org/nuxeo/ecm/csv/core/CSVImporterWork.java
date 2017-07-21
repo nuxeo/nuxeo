@@ -207,7 +207,6 @@ public class CSVImporterWork extends TransientStoreWork {
         startDate = new Date();
     }
 
-
     @Override
     public String getCategory() {
         return CATEGORY_CSV_IMPORTER;
@@ -324,8 +323,8 @@ public class CSVImporterWork extends TransientStoreWork {
                 try {
                     if (importRecord(record, header)) {
                         docsCreatedCount++;
-                        getStore().putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.RUNNING,
-                                docsCreatedCount, total));
+                        getStore().putParameter(id, "status",
+                                new CSVImportStatus(CSVImportStatus.State.RUNNING, docsCreatedCount, total));
                         if (docsCreatedCount % batchSize == 0) {
                             commitOrRollbackTransaction();
                             startTransaction();
@@ -623,8 +622,12 @@ public class CSVImporterWork extends TransientStoreWork {
             String message = loadTemplate(TEMPLATE_IMPORT_RESULT);
 
             OperationChain chain = new OperationChain("SendMail");
-            chain.add(SendMail.ID).set("from", from).set("to", to).set("HTML", true).set("subject", subject)
-                    .set("message", message);
+            chain.add(SendMail.ID)
+                 .set("from", from)
+                 .set("to", to)
+                 .set("HTML", true)
+                 .set("subject", subject)
+                 .set("message", message);
             Framework.getLocalService(AutomationService.class).run(ctx, chain);
         } catch (Exception e) {
             ExceptionUtils.checkInterrupt(e);

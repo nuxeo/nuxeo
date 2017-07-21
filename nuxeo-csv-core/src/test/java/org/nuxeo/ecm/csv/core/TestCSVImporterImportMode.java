@@ -36,6 +36,7 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -47,51 +48,18 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, DirectoryFeature.class, TransientStoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.login", //
-        "org.nuxeo.ecm.platform.web.common", //
-        "org.nuxeo.ecm.platform.usermanager.api", //
-        "org.nuxeo.ecm.platform.usermanager:OSGI-INF/UserService.xml", //
-        "org.nuxeo.ecm.core.io", //
-        "org.nuxeo.ecm.platform.query.api", //
-        "org.nuxeo.ecm.platform.types.api", //
-        "org.nuxeo.ecm.platform.types.core", //
-        "org.nuxeo.ecm.platform.dublincore", //
-        "org.nuxeo.ecm.csv.core" //
-})
-@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml", //
-        "org.nuxeo.ecm.csv.core:OSGI-INF/test-directories-contrib.xml", //
-        "org.nuxeo.ecm.csv.core:OSGI-INF/test-types-contrib.xml", //
-        "org.nuxeo.ecm.csv.core:OSGI-INF/test-ui-types-contrib.xml" })
-
-public class TestCSVImporterImportMode {
+public class TestCSVImporterImportMode extends AbstractCSVImporterTest {
 
     private static final String DOCS_WITH_CREATOR_CSV = "docs_with_creator.csv";
 
-    @Inject
-    protected CoreSession session;
-
-    @Inject
-    protected CSVImporter csvImporter;
-
-    @Inject
-    protected WorkManager workManager;
-
-    @Inject
-    protected CoreFeature coreFeature;
-
-    private File getCSVFile(String name) {
-        return new File(FileUtils.getResourcePathFromContext(name));
-    }
-
     @Test
-    public void shouldImportAllDocuments() throws InterruptedException {
+    public void shouldImportAllDocuments() throws InterruptedException, IOException {
 
         CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.IMPORT).build();
         TransactionHelper.commitOrRollbackTransaction();
 
-        String importId = csvImporter.launchImport(session, "/", getCSVFile(DOCS_WITH_CREATOR_CSV),
-                DOCS_WITH_CREATOR_CSV, options);
+        String importId = csvImporter.launchImport(session, "/", getCSVBlob(DOCS_WITH_CREATOR_CSV),
+                options);
 
         workManager.awaitCompletion(10000, TimeUnit.SECONDS);
         TransactionHelper.startTransaction();
@@ -129,9 +97,5 @@ public class TestCSVImporterImportMode {
         assertEquals("12/12/2012", new SimpleDateFormat(options.getDateFormat()).format(creationDate.getTime()));
         Calendar modificationDate = (Calendar) doc.getPropertyValue("dc:modified");
         assertEquals("04/12/2015", new SimpleDateFormat(options.getDateFormat()).format(modificationDate.getTime()));
-    }
-
-    public CoreSession openSessionAs(String username) {
-        return coreFeature.openCoreSession(username);
     }
 }

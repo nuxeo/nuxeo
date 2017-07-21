@@ -17,16 +17,25 @@
 
 package org.nuxeo.ecm.csv.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.directory.test.DirectoryFeature;
-import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -34,60 +43,18 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
-import javax.inject.Inject;
-import java.io.File;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, DirectoryFeature.class, TransientStoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.login", //
-        "org.nuxeo.ecm.platform.web.common", //
-        "org.nuxeo.ecm.platform.usermanager.api", //
-        "org.nuxeo.ecm.platform.usermanager:OSGI-INF/UserService.xml", //
-        "org.nuxeo.ecm.core.io", //
-        "org.nuxeo.ecm.platform.query.api", //
-        "org.nuxeo.ecm.platform.types.api", //
-        "org.nuxeo.ecm.platform.types.core", //
-        "org.nuxeo.ecm.platform.dublincore", //
-        "org.nuxeo.ecm.csv.core" //
-})
-@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml", //
-        "org.nuxeo.ecm.csv.core:OSGI-INF/test-directories-contrib.xml", //
-        "org.nuxeo.ecm.csv.core:OSGI-INF/test-types-contrib.xml", //
-        "org.nuxeo.ecm.csv.core:OSGI-INF/test-ui-types-contrib.xml" })
-
-public class TestCSVImporterImportModeUUID {
+public class TestCSVImporterImportModeUUID extends AbstractCSVImporterTest {
 
     private static final String DOCS_WITH_UUID = "docs_with_uuid.csv";
 
-    @Inject
-    protected CoreSession session;
-
-    @Inject
-    protected CSVImporter csvImporter;
-
-    @Inject
-    protected WorkManager workManager;
-
-    @Inject
-    protected CoreFeature coreFeature;
-
-    private File getCSVFile(String name) {
-        return new File(FileUtils.getResourcePathFromContext(name));
-    }
-
     @Test
-    public void shouldImportAllDocuments() throws InterruptedException {
+    public void shouldImportAllDocuments() throws InterruptedException, IOException {
 
         CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.IMPORT).build();
         TransactionHelper.commitOrRollbackTransaction();
 
-        String importId = csvImporter.launchImport(session, "/", getCSVFile(DOCS_WITH_UUID), DOCS_WITH_UUID, options);
+        String importId = csvImporter.launchImport(session, "/", getCSVBlob(DOCS_WITH_UUID), options);
 
         workManager.awaitCompletion(10000, TimeUnit.SECONDS);
         TransactionHelper.startTransaction();
@@ -116,9 +83,5 @@ public class TestCSVImporterImportModeUUID {
         assertTrue(session.exists(new PathRef("/mycomplexfile")));
         doc = session.getDocument(new PathRef("/mycomplexfile"));
         assertEquals("b2bd65d9-ed48-4d00-a926-21af2a5d9c12", doc.getId());
-    }
-
-    public CoreSession openSessionAs(String username) {
-        return coreFeature.openCoreSession(username);
     }
 }

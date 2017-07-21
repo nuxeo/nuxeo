@@ -19,6 +19,13 @@
 
 package org.nuxeo.ecm.csv.jsf;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.io.FilenameUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -26,24 +33,19 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.csv.core.CSVImportLog;
 import org.nuxeo.ecm.csv.core.CSVImportResult;
 import org.nuxeo.ecm.csv.core.CSVImportStatus;
 import org.nuxeo.ecm.csv.core.CSVImporter;
 import org.nuxeo.ecm.csv.core.CSVImporterOptions;
 import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.FileUploadEvent;
 import org.richfaces.model.UploadedFile;
-
-import java.io.File;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
 
 ;
 
@@ -106,14 +108,15 @@ public class CSVImportActions implements Serializable {
         csvFileName = FilenameUtils.getName(item.getName());
     }
 
-    public void importCSVFile() {
+    public void importCSVFile() throws IOException {
         if (csvFile != null) {
             CSVImporterOptions options = new CSVImporterOptions.Builder().sendEmail(notifyUserByEmail)
                                                                          .importMode(getImportMode())
                                                                          .build();
             CSVImporter csvImporter = Framework.getService(CSVImporter.class);
             csvImportId = csvImporter.launchImport(documentManager,
-                    navigationContext.getCurrentDocument().getPathAsString(), csvFile, csvFileName, options);
+                    navigationContext.getCurrentDocument().getPathAsString(),
+                    Blobs.createBlob(csvFile, null, null, csvFileName), options);
         }
     }
 
