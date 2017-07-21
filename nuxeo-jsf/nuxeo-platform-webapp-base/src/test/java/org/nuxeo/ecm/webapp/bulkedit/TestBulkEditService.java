@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,9 @@ public class TestBulkEditService {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected EventService eventService;
@@ -138,6 +142,9 @@ public class TestBulkEditService {
     @Test
     @LocalDeploy("org.nuxeo.ecm.webapp.base:test-bulkedit-minorversion-before-update-contrib.xml")
     public void testBulkEditBeforeUpdate() {
+
+        assumeTrue("DBS does not support tags", !coreFeature.getStorageConfiguration().isDBS());
+
         // behaviour should be compliant with NXP-12225, NXP-22099 provides fix with auto-versioning
         List<DocumentModel> docs = createTestDocuments();
         DocumentModel sourceDoc = buildSimpleDocumentModel();
