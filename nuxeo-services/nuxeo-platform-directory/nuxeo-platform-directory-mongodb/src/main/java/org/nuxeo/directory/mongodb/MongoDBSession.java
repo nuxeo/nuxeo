@@ -72,8 +72,6 @@ import com.mongodb.client.result.UpdateResult;
  */
 public class MongoDBSession extends BaseSession {
 
-    protected MongoClient client;
-
     protected String dbName;
 
     protected String countersCollectionName;
@@ -81,7 +79,6 @@ public class MongoDBSession extends BaseSession {
     public MongoDBSession(MongoDBDirectory directory) {
         super(directory, MongoDBReference.class);
         MongoDBDirectoryDescriptor desc = directory.getDescriptor();
-        client = MongoDBConnectionHelper.newMongoClient(desc.getServerUrl());
         dbName = desc.getDatabaseName();
         countersCollectionName = directory.getCountersCollectionName();
     }
@@ -315,7 +312,6 @@ public class MongoDBSession extends BaseSession {
 
     @Override
     public void close() throws DirectoryException {
-        client.close();
         getDirectory().removeSession(this);
     }
 
@@ -346,7 +342,7 @@ public class MongoDBSession extends BaseSession {
      * @return the MongoDB collection
      */
     public MongoCollection<Document> getCollection(String collection) {
-        return MongoDBConnectionHelper.getCollection(client, dbName, collection);
+        return MongoDBConnectionHelper.getCollection(getClient(), dbName, collection);
     }
 
     /**
@@ -365,7 +361,7 @@ public class MongoDBSession extends BaseSession {
      * @return true if the server has the collection, false otherwise
      */
     public boolean hasCollection(String collection) {
-        return MongoDBConnectionHelper.hasCollection(client, dbName, collection);
+        return MongoDBConnectionHelper.hasCollection(getClient(), dbName, collection);
     }
 
     protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
@@ -375,6 +371,10 @@ public class MongoDBSession extends BaseSession {
         }
         String id = String.valueOf(fieldMap.get(idFieldName));
         return createEntryModel(null, schemaName, id, fieldMap, isReadOnly());
+    }
+
+    protected MongoClient getClient() {
+        return getDirectory().getClient();
     }
 
 }
