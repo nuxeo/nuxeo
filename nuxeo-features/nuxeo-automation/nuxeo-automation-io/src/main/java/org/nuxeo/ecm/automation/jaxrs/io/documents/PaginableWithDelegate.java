@@ -125,4 +125,9 @@ public class PaginableWithDelegate<T> extends ArrayList<T> implements Paginable<
         return delegate.getAvailableQuickFilters();
     }
 
+    @Override
+    public long getCurrentPageOffset() {
+        return delegate.getCurrentPageOffset();
+    }
+
 }
