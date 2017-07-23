@@ -90,6 +90,9 @@ public class SchemaManagerImpl implements SchemaManager {
     /** Effective prefetch info. */
     protected PrefetchInfo prefetchInfo;
 
+    /** Effective clearComplexPropertyBeforeSet flag. */
+    protected boolean clearComplexPropertyBeforeSet;
+
     /** Effective schemas. */
     protected Map<String, Schema> schemas = new HashMap<>();
 
@@ -121,6 +124,12 @@ public class SchemaManagerImpl implements SchemaManager {
     private File schemaDir;
 
     public static final String SCHEMAS_DIR_NAME = "schemas";
+
+    /**
+     * Default used for clearComplexPropertyBeforeSet if there is no XML configuration found.
+     * @since 9.3
+     */
+    public static final boolean CLEAR_COMPLEX_PROP_BEFORE_SET_DEFAULT = true;
 
     protected List<Runnable> recomputeCallbacks;
 
@@ -174,16 +183,25 @@ public class SchemaManagerImpl implements SchemaManager {
     public synchronized void registerConfiguration(TypeConfiguration config) {
         allConfigurations.add(config);
         dirty = true;
-        log.info("Registered global prefetch: " + config.prefetchInfo);
+        if (StringUtils.isNotBlank(config.prefetchInfo)) {
+            log.info("Registered global prefetch: " + config.prefetchInfo);
+        }
+        if (config.clearComplexPropertyBeforeSet != null) {
+            log.info("Registered clearComplexPropertyBeforeSet: " + config.clearComplexPropertyBeforeSet);
+        }
     }
 
     public synchronized void unregisterConfiguration(TypeConfiguration config) {
         if (allConfigurations.remove(config)) {
             dirty = true;
-            log.info("Unregistered global prefetch: " + config.prefetchInfo);
+            if (StringUtils.isNotBlank(config.prefetchInfo)) {
+                log.info("Unregistered global prefetch: " + config.prefetchInfo);
+            }
+            if (config.clearComplexPropertyBeforeSet != null) {
+                log.info("Unregistered clearComplexPropertyBeforeSet: " + config.clearComplexPropertyBeforeSet);
+            }
         } else {
-            log.error("Unregistering unknown prefetch: " + config.prefetchInfo);
-
+            log.error("Unregistering unknown configuration: " + config);
         }
     }
 
@@ -306,11 +324,15 @@ public class SchemaManagerImpl implements SchemaManager {
      */
 
     protected void recomputeConfiguration() {
-        if (allConfigurations.isEmpty()) {
-            prefetchInfo = null;
-        } else {
-            TypeConfiguration last = allConfigurations.get(allConfigurations.size() - 1);
-            prefetchInfo = new PrefetchInfo(last.prefetchInfo);
+        prefetchInfo = null;
+        clearComplexPropertyBeforeSet = CLEAR_COMPLEX_PROP_BEFORE_SET_DEFAULT;
+        for (TypeConfiguration tc : allConfigurations) {
+            if (StringUtils.isNotBlank(tc.prefetchInfo)) {
+                prefetchInfo = new PrefetchInfo(tc.prefetchInfo);
+            }
+            if (tc.clearComplexPropertyBeforeSet != null) {
+                clearComplexPropertyBeforeSet = tc.clearComplexPropertyBeforeSet.booleanValue();
+            }
         }
     }
 
@@ -872,6 +894,11 @@ public class SchemaManagerImpl implements SchemaManager {
     @Override
     public PropertyDeprecationHandler getRemovedProperties() {
         return new PropertyDeprecationHandler(removedProperties);
+    }
+
+    @Override
+    public boolean getClearComplexPropertyBeforeSet() {
+        return clearComplexPropertyBeforeSet;
     }
 
 }

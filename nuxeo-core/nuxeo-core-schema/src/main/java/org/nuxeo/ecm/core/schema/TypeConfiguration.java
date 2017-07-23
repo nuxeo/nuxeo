@@ -33,4 +33,13 @@ public class TypeConfiguration {
     @XNode("prefetch")
     String prefetchInfo;
 
+    @XNode("clearComplexPropertyBeforeSet")
+    Boolean clearComplexPropertyBeforeSet;
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(prefetchInfo=" + prefetchInfo + ", clearComplexPropertyBeforeSet="
+                + clearComplexPropertyBeforeSet + ')';
+    }
+
 }
