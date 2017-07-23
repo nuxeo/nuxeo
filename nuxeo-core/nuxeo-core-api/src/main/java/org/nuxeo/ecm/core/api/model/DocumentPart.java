@@ -41,6 +41,14 @@ public interface DocumentPart extends Property {
 
     void importDiff(PropertyDiff diff) throws PropertyException;
 
+    /**
+     * Whether or not to ignore any previous values when setting complex properties.
+     *
+     * @return {@code true} if setting a complex property ignores any previous values
+     * @since 9.3
+     */
+    boolean getClearComplexPropertyBeforeSet();
+
     //
     // public void setContextData(String key, Object value);
     //
