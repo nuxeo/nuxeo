@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,32 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Florent Guillaume
  */
-
-package org.nuxeo.runtime;
-
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XObject;
+package org.nuxeo.common.xmap;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Exception during XMap processing.
+ *
+ * @since 9.3
  */
-@XObject("printer")
-public class DummyContribution {
+public class XMapException extends RuntimeException {
 
-    @XNode("message")
-    public String message;
+    private static final long serialVersionUID = 1L;
 
-    @XNode("@class")
-    public Class<?> klass;
-
-    public DummyContribution() {
+    public XMapException() {
     }
 
-    public DummyContribution(String message) {
-        this.message = message;
+    public XMapException(String message) {
+        super(message);
+    }
+
+    public XMapException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public XMapException(Throwable cause) {
+        super(cause);
     }
 
 }

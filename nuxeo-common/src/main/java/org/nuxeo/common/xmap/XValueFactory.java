@@ -203,8 +203,7 @@ public abstract class XValueFactory {
             try {
                 return context.loadClass(value);
             } catch (ClassNotFoundException e) {
-                log.error("Cannot load class: " + value, e);
-                return null;
+                throw new XMapException("Cannot load class: " + value, e);
             }
         }
 

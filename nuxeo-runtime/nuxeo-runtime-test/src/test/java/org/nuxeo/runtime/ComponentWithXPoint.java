@@ -42,6 +42,9 @@ public class ComponentWithXPoint extends DefaultComponent {
     @Override
     public void registerExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
+        if (contribs == null) {
+            return;
+        }
         for (Object contrib : contribs) {
             log.debug("Registering: " + ((DummyContribution) contrib).message);
             this.contribs.add((DummyContribution) contrib);
@@ -51,6 +54,9 @@ public class ComponentWithXPoint extends DefaultComponent {
     @Override
     public void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
+        if (contribs == null) {
+            return;
+        }
         for (Object contrib : contribs) {
             log.debug("Un-Registering: " + ((DummyContribution) contrib).message);
             this.contribs.add((DummyContribution) contrib);
