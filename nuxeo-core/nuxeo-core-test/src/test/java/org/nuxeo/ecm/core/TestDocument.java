@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Document.WriteContext;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -450,8 +451,40 @@ public class TestDocument {
         return (Map<String, CompositeType>) field.get(schemaManager);
     }
 
+    protected void setClearComplexPropertyBeforeSet(boolean clearComplexPropertyBeforeSet) throws Exception {
+        java.lang.reflect.Field field = schemaManager.getClass().getDeclaredField("clearComplexPropertyBeforeSet");
+        field.setAccessible(true);
+        field.set(schemaManager, Boolean.valueOf(clearComplexPropertyBeforeSet));
+    }
+
     @Test
-    public void testGetChanges() throws Exception {
+    public void testClearComplexPropertyBeforeSetDefault() throws Exception {
+        boolean clearComplexPropertyBeforeSet = schemaManager.getClearComplexPropertyBeforeSet();
+        // test the platform default behavior
+        assertTrue(clearComplexPropertyBeforeSet);
+    }
+
+    @Test
+    public void testGetChangesWithClearComplexPropertyBeforeSet() throws Exception {
+        testGetChangesClearComplexPropertyBeforeSet(true);
+    }
+
+    @Test
+    public void testGetChangesWithoutClearComplexPropertyBeforeSet() throws Exception {
+        testGetChangesClearComplexPropertyBeforeSet(false);
+    }
+
+    protected void testGetChangesClearComplexPropertyBeforeSet(boolean clearComplexPropertyBeforeSet) throws Exception {
+        boolean oldClearComplexPropertyBeforeSet = schemaManager.getClearComplexPropertyBeforeSet();
+        try {
+            setClearComplexPropertyBeforeSet(clearComplexPropertyBeforeSet);
+            testGetChanges();
+        } finally {
+            setClearComplexPropertyBeforeSet(oldClearComplexPropertyBeforeSet);
+        }
+    }
+
+    protected void testGetChanges() throws Exception {
         Document root = session.getRootDocument();
         Document doc = root.addChild("doc", "ComplexDoc");
 
@@ -483,10 +516,15 @@ public class TestDocument {
         boolean changed = doc.writeDocumentPart(dp, writeContext);
         assertTrue(changed);
         Set<String> changes = writeContext.getChanges();
-        // expect all of the schema fields to be written (others are set to null)
-        Set<String> expected = new HashSet<>();
-        for (Field field : schema.getFields()) {
-            expected.add(field.getName().getPrefixedName());
+        Set<String> expected;
+        if (schemaManager.getClearComplexPropertyBeforeSet()) {
+            // expect all of the schema fields to be written (others are set to null)
+            expected = new HashSet<>();
+            for (Field field : schema.getFields()) {
+                expected.add(field.getName().getPrefixedName());
+            }
+        } else {
+            expected = Collections.singleton("dc:title");
         }
         assertEquals(expected, changes);
 
@@ -499,21 +537,31 @@ public class TestDocument {
         changed = doc.writeDocumentPart(dp, writeContext);
         assertTrue(changed);
         changes = writeContext.getChanges();
-        expected = new HashSet<>(Arrays.asList( //
-                "cmpf:attachedFile", //
-                "cmpf:attachedFile/name", //
-                "cmpf:attachedFile/vignettes", //
-                "cmpf:attachedFile/vignettes/0", //
-                "cmpf:attachedFile/vignettes/0/content", //
-                "cmpf:attachedFile/vignettes/0/height", //
-                "cmpf:attachedFile/vignettes/0/label", //
-                "cmpf:attachedFile/vignettes/0/width", //
-                "cmpf:attachedFile/vignettes/1", //
-                "cmpf:attachedFile/vignettes/1/content", //
-                "cmpf:attachedFile/vignettes/1/height", //
-                "cmpf:attachedFile/vignettes/1/label", //
-                "cmpf:attachedFile/vignettes/1/width" //
-        ));
+        if (schemaManager.getClearComplexPropertyBeforeSet()) {
+            expected = new HashSet<>(Arrays.asList( //
+                    "cmpf:attachedFile", //
+                    "cmpf:attachedFile/name", //
+                    "cmpf:attachedFile/vignettes", //
+                    "cmpf:attachedFile/vignettes/0", //
+                    "cmpf:attachedFile/vignettes/0/content", //
+                    "cmpf:attachedFile/vignettes/0/height", //
+                    "cmpf:attachedFile/vignettes/0/label", //
+                    "cmpf:attachedFile/vignettes/0/width", //
+                    "cmpf:attachedFile/vignettes/1", //
+                    "cmpf:attachedFile/vignettes/1/content", //
+                    "cmpf:attachedFile/vignettes/1/height", //
+                    "cmpf:attachedFile/vignettes/1/label", //
+                    "cmpf:attachedFile/vignettes/1/width" //
+            ));
+        } else {
+            // check that we don't have cmpf:attachedFile/vignettes/0 in the list
+            expected = new HashSet<>(Arrays.asList( //
+                    "cmpf:attachedFile", //
+                    "cmpf:attachedFile/vignettes", //
+                    "cmpf:attachedFile/vignettes/1", //
+                    "cmpf:attachedFile/vignettes/1/width" //
+            ));
+        }
         assertEquals(expected, changes);
 
         // change to blob
@@ -524,21 +572,31 @@ public class TestDocument {
         changed = doc.writeDocumentPart(dp, writeContext);
         assertTrue(changed);
         changes = writeContext.getChanges();
-        expected = new HashSet<>(Arrays.asList( //
-                "cmpf:attachedFile", //
-                "cmpf:attachedFile/name", //
-                "cmpf:attachedFile/vignettes", //
-                "cmpf:attachedFile/vignettes/0", //
-                "cmpf:attachedFile/vignettes/0/content", //
-                "cmpf:attachedFile/vignettes/0/height", //
-                "cmpf:attachedFile/vignettes/0/label", //
-                "cmpf:attachedFile/vignettes/0/width", //
-                "cmpf:attachedFile/vignettes/1", //
-                "cmpf:attachedFile/vignettes/1/content", //
-                "cmpf:attachedFile/vignettes/1/height", //
-                "cmpf:attachedFile/vignettes/1/label", //
-                "cmpf:attachedFile/vignettes/1/width" //
-        ));
+        if (schemaManager.getClearComplexPropertyBeforeSet()) {
+            expected = new HashSet<>(Arrays.asList( //
+                    "cmpf:attachedFile", //
+                    "cmpf:attachedFile/name", //
+                    "cmpf:attachedFile/vignettes", //
+                    "cmpf:attachedFile/vignettes/0", //
+                    "cmpf:attachedFile/vignettes/0/content", //
+                    "cmpf:attachedFile/vignettes/0/height", //
+                    "cmpf:attachedFile/vignettes/0/label", //
+                    "cmpf:attachedFile/vignettes/0/width", //
+                    "cmpf:attachedFile/vignettes/1", //
+                    "cmpf:attachedFile/vignettes/1/content", //
+                    "cmpf:attachedFile/vignettes/1/height", //
+                    "cmpf:attachedFile/vignettes/1/label", //
+                    "cmpf:attachedFile/vignettes/1/width" //
+            ));
+        } else {
+            // check that we don't have cmpf:attachedFile/vignettes/0 in the list
+            expected = new HashSet<>(Arrays.asList( //
+                    "cmpf:attachedFile", //
+                    "cmpf:attachedFile/vignettes", //
+                    "cmpf:attachedFile/vignettes/1", //
+                    "cmpf:attachedFile/vignettes/1/content" //
+            ));
+        }
         assertEquals(expected, changes);
     }
 
