@@ -24,6 +24,7 @@ package org.nuxeo.runtime.model.impl;
 import java.io.Serializable;
 
 import org.nuxeo.common.xmap.XMap;
+import org.nuxeo.common.xmap.XMapException;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -102,7 +103,13 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
                     }
                 }
             }
-            contribs = xmap.loadAll(new XMapContext(extension.getContext()), extension.getElement());
+            try {
+                contribs = xmap.loadAll(new XMapContext(extension.getContext()), extension.getElement());
+            } catch (XMapException e) {
+                throw new RuntimeException(
+                        e.getMessage() + " while processing component: " + extension.getComponent().getName().getName(),
+                        e);
+            }
             extension.setContributions(contribs);
         }
         return contribs;

@@ -197,4 +197,7 @@ public class Author {
 
     }
 
+    @XNode("@class")
+    Class<?> klass;
+
 }

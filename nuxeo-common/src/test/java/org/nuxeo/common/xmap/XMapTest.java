@@ -25,6 +25,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.net.URL;
 
@@ -112,4 +113,19 @@ public class XMapTest {
         assertEquals("test2", author.aliases[0].name);
         assertEquals("text to be < unescaped", author.aliases[0].description);
     }
+
+    @Test
+    public void testInvalidClass() throws Exception {
+        XMap xmap = new XMap();
+        xmap.register(Author.class);
+
+        URL url = Thread.currentThread().getContextClassLoader().getResource("test-xmap-invalid-class.xml");
+        try {
+            xmap.load(url);
+            fail("Should not allow loading with invalid class");
+        } catch (XMapException e) {
+            assertEquals("Cannot load class: this-is-not-a-class", e.getMessage());
+        }
+    }
+
 }

@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<document>
+  <author id="test1" class="this-is-not-a-class" />
+</document>
