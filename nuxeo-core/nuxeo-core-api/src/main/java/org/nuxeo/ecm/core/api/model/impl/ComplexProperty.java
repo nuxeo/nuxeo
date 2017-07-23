@@ -218,11 +218,13 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
             throw new InvalidPropertyValueException(getPath());
         }
 
-        // completely clear this property before adding new values
-        for (Property child : children.values()) {
-            child.remove();
+        if (getRoot().getClearComplexPropertyBeforeSet()) {
+            // completely clear this property before adding new values
+            for (Property child : children.values()) {
+                child.remove();
+            }
+            children.clear();
         }
-        children.clear();
 
         Map<String, Object> map = (Map<String, Object>) value;
         for (Entry<String, Object> entry : map.entrySet()) {
