@@ -89,4 +89,12 @@ public interface SchemaManager extends TypeProvider {
      */
     PropertyDeprecationHandler getRemovedProperties();
 
+    /**
+     * Whether or not to ignore any previous values when setting complex properties.
+     *
+     * @return {@code true} if setting a complex property ignores any previous values
+     * @since 9.3
+     */
+    boolean getClearComplexPropertyBeforeSet();
+
 }
