@@ -22,8 +22,10 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyDiff;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,9 +36,13 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
 
     protected Schema schema;
 
+    protected boolean clearComplexPropertyBeforeSet;
+
     public DocumentPartImpl(Schema schema) {
         super(null);
         this.schema = schema;
+        // we pre-read this flag only once to avoid looking up and calling the SchemaManager many times
+        clearComplexPropertyBeforeSet = Framework.getService(SchemaManager.class).getClearComplexPropertyBeforeSet();
     }
 
     @Override
@@ -91,6 +97,11 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
     @Override
     public Property createProperty(Property parent, Field field, int flags) {
         return PropertyFactory.createProperty(parent, field, flags);
+    }
+
+    @Override
+    public boolean getClearComplexPropertyBeforeSet() {
+        return clearComplexPropertyBeforeSet;
     }
 
     @Override

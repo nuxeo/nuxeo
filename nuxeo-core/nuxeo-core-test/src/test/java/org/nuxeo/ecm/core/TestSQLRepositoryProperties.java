@@ -1391,6 +1391,7 @@ public class TestSQLRepositoryProperties {
      * from {"foo": "foo1", "bar": "bar1"}
      * write {"foo": "foo2"}
      * => {"foo": "foo2", "bar": null}
+     * COMPAT {"foo": "foo2", "bar": "bar1"}
      * </pre>
      */
     @SuppressWarnings("unchecked")
@@ -1408,7 +1409,12 @@ public class TestSQLRepositoryProperties {
 
         // check
         Map<String, Serializable> updatedMap = (Map<String, Serializable>) doc.getPropertyValue("cpx:complex");
-        Map<String, Serializable> expectedMap = map("foo", "foo2", "bar", null);
+        Map<String, Serializable> expectedMap;
+        if (schemaManager.getClearComplexPropertyBeforeSet()) {
+            expectedMap = map("foo", "foo2", "bar", null);
+        } else {
+            expectedMap = map("foo", "foo2", "bar", "bar1");
+        }
         assertEquals(expectedMap, updatedMap);
 
         // update again
@@ -1426,6 +1432,7 @@ public class TestSQLRepositoryProperties {
      * from {"foo": "foo1", "bar": "bar1"}
      * write {"foo": null}
      * => {"foo": null, "bar": null}
+     * COMPAT: {"foo": null, "bar": "bar1"}
      * </pre>
      */
     @Test
@@ -1443,7 +1450,12 @@ public class TestSQLRepositoryProperties {
         // check
         @SuppressWarnings("unchecked")
         Map<String, Serializable> updatedMap = (Map<String, Serializable>) doc.getPropertyValue("cpx:complex");
-        Map<String, Serializable> expectedMap = map("foo", null, "bar", null);
+        Map<String, Serializable> expectedMap;
+        if (schemaManager.getClearComplexPropertyBeforeSet()) {
+            expectedMap = map("foo", null, "bar", null);
+        } else {
+            expectedMap = map("foo", null, "bar", "bar1");
+        }
         assertEquals(expectedMap, updatedMap);
     }
 
@@ -1452,6 +1464,7 @@ public class TestSQLRepositoryProperties {
      * from [{"foo": "foo1", "bar": "bar1"}]
      * write [{"foo": "foo2"}]
      * => [{"foo": "foo2", "bar": null}]
+     * COMPAT: [{"foo": "foo2", "bar": "bar1"}]
      * </pre>
      */
     @Test
@@ -1471,7 +1484,12 @@ public class TestSQLRepositoryProperties {
         @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> updatedList = (List<Map<String, Serializable>>) doc.getPropertyValue(
                 "cpxl:complexList");
-        List<Map<String, Serializable>> expectedList = Arrays.asList(map("foo", "foo2", "bar", null));
+        List<Map<String, Serializable>> expectedList;
+        if (schemaManager.getClearComplexPropertyBeforeSet()) {
+            expectedList = Arrays.asList(map("foo", "foo2", "bar", null));
+        } else {
+            expectedList = Arrays.asList(map("foo", "foo2", "bar", "bar1"));
+        }
         assertEquals(expectedList, updatedList);
     }
 
