@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -460,8 +461,8 @@ public class TestDocument {
     @Test
     public void testClearComplexPropertyBeforeSetDefault() throws Exception {
         boolean clearComplexPropertyBeforeSet = schemaManager.getClearComplexPropertyBeforeSet();
-        // test the platform default behavior
-        assertTrue(clearComplexPropertyBeforeSet);
+        // test the platform default behavior which is the COMPAT mode
+        assertFalse(clearComplexPropertyBeforeSet);
     }
 
     @Test
