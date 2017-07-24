@@ -36,7 +36,7 @@
       <!--prefetch>common, dublincore</prefetch-->
       <prefetch>common.icon, dc:title, dc:description, dc:created, dc:modified,
         dc:lastContributor, dc:creator</prefetch>
-      <clearComplexPropertyBeforeSet>true</clearComplexPropertyBeforeSet>
+      <clearComplexPropertyBeforeSet>false</clearComplexPropertyBeforeSet> <!-- COMPAT -->
     </configuration>
   </extension>
 
