@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 public class JSONStringBlobDecoder implements JSONBlobDecoder {
     @Override
     public Blob getBlobFromJSON(ObjectNode jsonObject) {
-        Blob blob = null;
+        Blob blob;
 
         String filename = null;
         if (jsonObject.has("filename")) {
@@ -65,7 +65,7 @@ public class JSONStringBlobDecoder implements JSONBlobDecoder {
         if (data == null) {
             return null;
         } else {
-            blob = Blobs.createBlob(data, mimetype, encoding);
+            blob = Blobs.createBlob(data, mimetype, encoding, filename);
         }
         return blob;
     }
