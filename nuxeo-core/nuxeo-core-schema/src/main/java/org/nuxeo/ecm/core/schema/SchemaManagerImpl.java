@@ -123,7 +123,7 @@ public class SchemaManagerImpl implements SchemaManager {
      * Default used for clearComplexPropertyBeforeSet if there is no XML configuration found.
      * @since 9.3
      */
-    public static final boolean CLEAR_COMPLEX_PROP_BEFORE_SET_DEFAULT = true;
+    public static final boolean CLEAR_COMPLEX_PROP_BEFORE_SET_DEFAULT = false; // COMPAT
 
     public SchemaManagerImpl() {
         schemaDir = new File(System.getProperty("java.io.tmpdir"), SCHEMAS_DIR_NAME);
