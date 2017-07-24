@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -35,8 +36,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -45,6 +50,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -75,8 +81,21 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
 
     private static final String DOCS_WITH_MISSING_TYPE_CSV = "docs_with_missing_type.csv";
 
+    private static final String DOCS_WITH_BLOBS_CSV = "docs_with_blobs.csv";
+
     @Inject
     protected CoreFeature coreFeature;
+
+    @Before
+    public void before() {
+        String blobsFolder = FileUtils.getResourcePathFromContext("files");
+        Framework.getProperties().put(CSVImporterWork.NUXEO_CSV_BLOBS_FOLDER, blobsFolder);
+    }
+
+    @After
+    public void after() {
+        Framework.getProperties().remove(CSVImporterWork.NUXEO_CSV_BLOBS_FOLDER);
+    }
 
     @SuppressWarnings("unchecked")
     @Test
@@ -150,6 +169,7 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         expectedMap.put("arrayProp", new String[] { "1" });
         expectedMap.put("intProp", null);
         expectedMap.put("floatProp", null);
+        expectedMap.put("contentProp", null);
         Map<String, Object> resultMap = (Map<String, Object>) doc.getPropertyValue("complexTest:complexItem");
         assertEquals("1", ((String[]) resultMap.get("arrayProp"))[0]);
         expectedMap.put("arrayProp", null);
@@ -498,6 +518,52 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         assertTrue(contributors.contains("contributor2"));
         assertTrue(contributors.contains("leela"));
         assertTrue(contributors.contains("Administrator"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldImportCSVFileWithBlobs() throws InterruptedException, IOException {
+        CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
+        TransactionHelper.commitOrRollbackTransaction();
+
+        String importId = csvImporter.launchImport(session, "/", getCSVBlob(DOCS_WITH_BLOBS_CSV), options);
+
+        workManager.awaitCompletion(10000, TimeUnit.SECONDS);
+        TransactionHelper.startTransaction();
+
+        List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
+        assertEquals(2, importLogs.size());
+        CSVImportLog importLog = importLogs.get(0);
+        assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
+        importLog = importLogs.get(1);
+        assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
+
+        assertTrue(session.exists(new PathRef("/textfile")));
+        DocumentModel doc = session.getDocument(new PathRef("/textfile"));
+        assertEquals("a simple file", doc.getTitle());
+        Blob blob = (Blob) doc.getPropertyValue("file:content");
+        assertNotNull(blob);
+        assertEquals("text_file.txt", blob.getFilename());
+        assertEquals("A simple text file", blob.getString());
+        List<Map<String, Serializable>> files = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
+        assertNotNull(files);
+        assertEquals(1, files.size());
+        Map<String, Serializable> map = files.get(0);
+        assertNotNull(map);
+        blob = (Blob) map.get("file");
+        assertEquals("text_file.txt", blob.getFilename());
+        assertEquals("A simple text file", blob.getString());
+
+        assertTrue(session.exists(new PathRef("/complexfile")));
+        doc = session.getDocument(new PathRef("/complexfile"));
+        assertEquals("a complex file", doc.getTitle());
+        Map<String, Serializable> complexItem = (Map<String, Serializable>) doc.getPropertyValue(
+                "complexTest:complexItem");
+        assertNotNull(complexItem);
+        blob = (Blob) complexItem.get("contentProp");
+        assertNotNull(blob);
+        assertEquals("foo.txt", blob.getFilename());
+        assertEquals("A simple text file", blob.getString());
     }
 
     public CoreSession openSessionAs(String username) {
