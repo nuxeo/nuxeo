@@ -3,6 +3,8 @@
   targetNamespace="http://nuxeo.ecm.csv.test/schemas/complex/"
   xmlns:complexTest="http://nuxeo.ecm.csv.test/schemas/complex/">
 
+  <xs:include schemaLocation="core-types.xsd" />
+
   <xs:simpleType name="stringArray">
     <xs:list itemType="xs:string" />
   </xs:simpleType>
@@ -24,6 +26,7 @@
       <xs:element name="floatProp" type="xs:float"/>
       <xs:element name="enumProp" type="complexTest:enumValue"/>
       <xs:element name="arrayProp" type="complexTest:stringArray"/>
+      <xs:element name="contentProp" type="complexTest:content"/>
     </xs:sequence>
   </xs:complexType>
 

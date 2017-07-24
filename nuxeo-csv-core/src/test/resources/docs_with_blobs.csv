@@ -1,0 +1,3 @@
+"name","type","dc:title","file:content","files:files","complexTest:complexItem"
+"textfile","File","a simple file","text_file.txt","[{\"file\":{\"mime-type\":\"text/plain\",\"content\":\"text_file.txt\"}}]",
+"complexfile","ComplexFile","a complex file",,,"{\"contentProp\":{\"name\":\"foo.txt\",\"mime-type\":\"text/plain\",\"content\":\"text_file.txt\"}}"

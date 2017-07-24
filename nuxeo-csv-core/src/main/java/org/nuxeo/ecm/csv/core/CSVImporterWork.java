@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
@@ -441,6 +442,7 @@ public class CSVImporterWork extends TransientStoreWork {
         return values;
     }
 
+    @SuppressWarnings("unchecked")
     protected Serializable convertValue(CompositeType compositeType, String fieldName, String headerValue,
             String stringValue, long lineNumber) {
         if (compositeType.hasField(fieldName)) {
@@ -451,12 +453,8 @@ public class CSVImporterWork extends TransientStoreWork {
                     Type fieldType = field.getType();
                     if (fieldType.isComplexType()) {
                         if (fieldType.getName().equals(CONTENT_FILED_TYPE_NAME)) {
-                            String blobsFolderPath = Framework.getProperty(NUXEO_CSV_BLOBS_FOLDER);
-                            String path = FilenameUtils.normalize(blobsFolderPath + "/" + stringValue);
-                            File file = new File(path);
-                            if (file.exists()) {
-                                fieldValue = (Serializable) Blobs.createBlob(file);
-                            } else {
+                            fieldValue = (Serializable) createBlobFromFilePath(stringValue);
+                            if (fieldValue == null) {
                                 logError(lineNumber, "The file '%s' does not exist",
                                         LABEL_CSV_IMPORTER_NOT_EXISTING_FILE, stringValue);
                                 return null;
@@ -464,6 +462,7 @@ public class CSVImporterWork extends TransientStoreWork {
                         } else {
                             fieldValue = (Serializable) ComplexTypeJSONDecoder.decode((ComplexType) fieldType,
                                     stringValue);
+                            replaceBlobs((Map<String, Object>) fieldValue);
                         }
                     } else {
                         if (fieldType.isListType()) {
@@ -479,6 +478,7 @@ public class CSVImporterWork extends TransientStoreWork {
                                  */
                                 fieldValue = (Serializable) ComplexTypeJSONDecoder.decodeList((ListType) fieldType,
                                         stringValue);
+                                replaceBlobs((List<Object>) fieldValue);
                             }
                         } else {
                             /*
@@ -517,6 +517,87 @@ public class CSVImporterWork extends TransientStoreWork {
                     headerValue, compositeType.getName());
         }
         return null;
+    }
+
+    /**
+     * Creates a {@code Blob} from a relative file path. The File will be looked up in the folder registered by the
+     * {@code nuxeo.csv.blobs.folder} property.
+     *
+     * @since 9.3
+     */
+    protected Blob createBlobFromFilePath(String fileRelativePath) throws IOException {
+        String blobsFolderPath = Framework.getProperty(NUXEO_CSV_BLOBS_FOLDER);
+        String path = FilenameUtils.normalize(blobsFolderPath + "/" + fileRelativePath);
+        File file = new File(path);
+        if (file.exists()) {
+            return Blobs.createBlob(file, null, null, FilenameUtils.getName(fileRelativePath));
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Creates a {@code Blob} from a {@code StringBlob}. Assume that the {@code StringBlob} content is the relative file
+     * path. The File will be looked up in the folder registered by the {@code nuxeo.csv.blobs.folder} property.
+     *
+     * @since 9.3
+     */
+    protected Blob createBlobFromStringBlob(Blob stringBlob) throws IOException {
+        String fileRelativePath = stringBlob.getString();
+        Blob blob = createBlobFromFilePath(fileRelativePath);
+        if (blob == null) {
+            throw new IOException(String.format("File %s does not exist", fileRelativePath));
+        }
+
+        blob.setMimeType(stringBlob.getMimeType());
+        blob.setEncoding(stringBlob.getEncoding());
+        String filename = stringBlob.getFilename();
+        if (filename != null) {
+            blob.setFilename(filename);
+        }
+        return blob;
+    }
+
+    /**
+     * Recursively replaces all {@code Blob}s with {@code Blob}s created from Files stored in the folder registered by
+     * the {@code nuxeo.csv.blobs.folder} property.
+     *
+     * @since 9.3
+     */
+    @SuppressWarnings("unchecked")
+    protected void replaceBlobs(Map<String, Object> map) throws IOException {
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            Object value = entry.getValue();
+            if (value instanceof Blob) {
+                Blob blob = (Blob) value;
+                entry.setValue(createBlobFromStringBlob(blob));
+            } else if (value instanceof List) {
+                replaceBlobs((List<Object>) value);
+            } else if (value instanceof Map) {
+                replaceBlobs((Map<String, Object>) value);
+            }
+        }
+    }
+
+    /**
+     * Recursively replaces all {@code Blob}s with {@code Blob}s created from Files stored in the folder registered by
+     * the {@code nuxeo.csv.blobs.folder} property.
+     *
+     * @since 9.3
+     */
+    @SuppressWarnings("unchecked")
+    protected void replaceBlobs(List<Object> list) throws IOException {
+        for (ListIterator<Object> it = list.listIterator(); it.hasNext();) {
+            Object value = it.next();
+            if (value instanceof Blob) {
+                Blob blob = (Blob) value;
+                it.set(createBlobFromStringBlob(blob));
+            } else if (value instanceof List) {
+                replaceBlobs((List<Object>) value);
+            } else if (value instanceof Map) {
+                replaceBlobs((Map<String, Object>) value);
+            }
+        }
     }
 
     protected DateFormat getDateFormat() {
