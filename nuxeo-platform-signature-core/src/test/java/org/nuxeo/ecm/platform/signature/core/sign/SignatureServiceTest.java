@@ -46,6 +46,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -69,11 +70,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.lowagie.text.pdf.PdfReader;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.runtime.management", //
-        "org.nuxeo.ecm.directory", //
-        "org.nuxeo.ecm.directory.sql", //
         "org.nuxeo.ecm.platform.usermanager", //
         "org.nuxeo.ecm.platform.usermanager.api", //
         "org.nuxeo.ecm.platform.convert", //

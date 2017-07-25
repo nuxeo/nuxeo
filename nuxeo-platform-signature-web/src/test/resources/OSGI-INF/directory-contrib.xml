@@ -1,20 +1,14 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.signature.directory.test">
 
-  <implementation class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor"/>
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
 
-  <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
-
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
-
-    <directory name="userDirectory">
+    <directory name="userDirectory" extends="template-directory">
 
       <schema>user</schema>
       <types>
         <type>system</type>
       </types>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <table>users</table>
       <idField>username</idField>
       <passwordField>password</passwordField>
 
@@ -23,20 +17,18 @@
       <createTablePolicy>always</createTablePolicy>
 
       <references>
-        <tableReference field="groups" directory="groupDirectory" table="user2group" sourceColumn="userId"
-          targetColumn="groupId" dataFile="user2group.csv" master="true"/>
+        <reference field="groups" directory="groupDirectory" name="user2group" source="userId" target="groupId"
+          dataFile="user2group.csv"/>
       </references>
 
     </directory>
 
-    <directory name="groupDirectory">
+    <directory name="groupDirectory" extends="template-directory">
 
       <schema>group</schema>
       <types>
         <type>system</type>
       </types>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <table>groups</table>
       <idField>groupname</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>groups.csv</dataFile>
@@ -44,8 +36,8 @@
 
       <references>
         <inverseReference field="members" directory="userDirectory" dualReferenceField="groups"/>
-        <tableReference field="subGroups" directory="groupDirectory" table="group2group" sourceColumn="childGroupId"
-          targetColumn="parentGroupId"/>
+        <reference field="subGroups" directory="groupDirectory" name="group2group" source="childGroupId"
+          target="parentGroupId"/>
         <inverseReference field="parentGroups" directory="groupDirectory" dualReferenceField="subGroups"/>
       </references>
 
@@ -53,15 +45,11 @@
 
     <directory name="certificate" remove="true"></directory>
 
-    <directory name="certificate">
+    <directory name="certificate" extends="template-directory">
       <schema>cert</schema>
       <types>
         <type>system</type>
       </types>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>cert</table>
       <idField>userid</idField>
       <passwordField>keypassword</passwordField>
       <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>

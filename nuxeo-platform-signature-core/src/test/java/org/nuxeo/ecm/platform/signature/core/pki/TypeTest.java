@@ -38,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
@@ -56,11 +57,10 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api", "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory",
-        "org.nuxeo.common", "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.signature.core",
-        "org.nuxeo.ecm.platform.signature.core.test" })
+@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api", "org.nuxeo.runtime.management", "org.nuxeo.common",
+        "org.nuxeo.ecm.platform.signature.core", "org.nuxeo.ecm.platform.signature.core.test" })
 public class TypeTest {
 
     @Inject

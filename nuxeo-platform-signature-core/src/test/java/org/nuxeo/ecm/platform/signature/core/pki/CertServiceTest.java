@@ -38,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
@@ -51,10 +52,9 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api", "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.signature.core",
-        "org.nuxeo.ecm.platform.signature.core.test" })
+@Features({ CoreFeature.class, DirectoryFeature.class })
+@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api", "org.nuxeo.runtime.management",
+        "org.nuxeo.ecm.platform.signature.core", "org.nuxeo.ecm.platform.signature.core.test" })
 public class CertServiceTest {
 
     @Inject
