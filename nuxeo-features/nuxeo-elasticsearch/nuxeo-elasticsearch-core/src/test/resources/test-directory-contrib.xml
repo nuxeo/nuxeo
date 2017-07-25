@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <component name="test-directory-contrib">
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
-    point="directories">
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
 
     <directory name="l10nsubjects">
       <schema>l10nxvocabulary</schema>

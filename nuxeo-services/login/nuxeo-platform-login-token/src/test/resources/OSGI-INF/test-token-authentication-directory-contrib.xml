@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.login.token.directory.contrib.test">
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
-    point="directories">
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
 
     <directory name="authTokens">
       <dataSource>java:/nxsqldirectory</dataSource>

@@ -2,8 +2,7 @@
 
 <component name="org.nuxeo.ecm.webapp.directory.directoryUI.sql.tests">
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
-    point="directories">
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
 
     <directory name="country">
       <schema>xvocabulary</schema>
@@ -28,17 +27,15 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager"
-    point="directories">
+  <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager" point="directories">
 
     <directory name="continent" layout="vocabulary" sortField="label">
-      <deleteConstraint
-        class="org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint">
+      <deleteConstraint class="org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint">
         <property name="targetDirectory">country</property>
         <property name="targetDirectoryField">parent</property>
       </deleteConstraint>
     </directory>
-    <directory name="country" layout="country_vocabulary" sortField="parent" />
+    <directory name="country" layout="country_vocabulary" sortField="parent"/>
 
   </extension>
 
