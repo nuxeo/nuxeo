@@ -20,6 +20,7 @@ package org.nuxeo.ecm.automation.core.test.directory;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -48,11 +49,9 @@ import static org.junit.Assert.assertTrue;
  * @since 8.3
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-    "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.actions", "org.nuxeo.ecm.automation.core",
-    "org.nuxeo.ecm.automation.features" })
+@Deploy({ "org.nuxeo.ecm.actions", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
 @LocalDeploy("org.nuxeo.ecm.automation.features:test-vocabularies-contrib.xml")
 public class CreateVocabularyEntryTest {
 

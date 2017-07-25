@@ -40,6 +40,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
@@ -67,7 +68,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 5.7.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class })
+@Features({ RestServerFeature.class, DirectoryFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(init = RestServerInit.class, cleanup = Granularity.METHOD)
 @LocalDeploy("org.nuxeo.ecm.platform.restapi.test:test-directory-contrib.xml")

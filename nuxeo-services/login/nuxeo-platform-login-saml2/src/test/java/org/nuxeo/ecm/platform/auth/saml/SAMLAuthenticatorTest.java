@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
@@ -82,11 +83,10 @@ import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.platform.usermanager",
-        "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.platform.login.saml2" })
+@Deploy({ "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.web.common",
+        "org.nuxeo.ecm.platform.login.saml2" })
 @LocalDeploy("org.nuxeo.ecm.platform.auth.saml:OSGI-INF/test-sql-directory.xml")
 public class SAMLAuthenticatorTest {
 

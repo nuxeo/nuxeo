@@ -19,46 +19,38 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
 
-    <directory name="testdir">
+    <directory name="testdir" extends="template-directory">
       <schema>vocabulary</schema>
       <types>
         <type>system</type>
         <type>tata</type>
       </types>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>testdir</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>always</createTablePolicy>
       <dataFile>testdir.csv</dataFile>
     </directory>
 
-    <directory name="country">
+    <directory name="country" extends="template-directory">
       <schema>xvocabulary</schema>
       <types>
         <type>toto</type>
       </types>
       <parentDirectory>continent</parentDirectory>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <table>country</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>country.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
-    <directory name="continent">
+    <directory name="continent" extends="template-directory">
       <schema>vocabulary</schema>
       <types>
         <type>pouet</type>
         <type>poum</type>
       </types>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <table>continent</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>continent.csv</dataFile>

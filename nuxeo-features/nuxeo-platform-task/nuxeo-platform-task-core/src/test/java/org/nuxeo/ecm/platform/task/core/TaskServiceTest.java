@@ -35,6 +35,7 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -57,12 +58,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, DirectoryFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.content.template", //
-        "org.nuxeo.ecm.directory", //
         "org.nuxeo.ecm.platform.usermanager", //
-        "org.nuxeo.ecm.directory.types.contrib", //
-        "org.nuxeo.ecm.directory.sql", //
         "org.nuxeo.ecm.platform.query.api", //
         "org.nuxeo.ecm.platform.task.core", //
 })

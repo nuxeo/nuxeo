@@ -30,6 +30,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.directory.Session;
@@ -47,10 +48,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @author Anahide Tchertchian
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, DirectoryFeature.class })
 @Deploy({
-// deploy directory service + sql factory
-        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.directory.types.contrib",
         // deploy directory ui service
         "org.nuxeo.ecm.actions", "org.nuxeo.ecm.directory.web" })
 // deploy test dirs + ui config
