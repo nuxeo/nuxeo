@@ -120,7 +120,9 @@ public class MongoDBReference extends AbstractReference {
                                               .map(targetId -> buildDoc(sourceId, targetId))
                                               .filter(doc -> coll.count(doc) == 0)
                                               .collect(Collectors.toList());
-            coll.insertMany(newDocs);
+            if (!newDocs.isEmpty()) {
+                coll.insertMany(newDocs);
+            }
         } catch (MongoWriteException e) {
             throw new DirectoryException(e);
         }

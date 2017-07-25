@@ -34,6 +34,7 @@ import org.codehaus.jackson.JsonNode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
@@ -73,7 +74,7 @@ import com.sun.jersey.api.client.ClientResponse;
  * @since 5.9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class, RepositoryElasticSearchFeature.class })
+@Features({ RestServerFeature.class, RepositoryElasticSearchFeature.class, DirectoryFeature.class })
 @Jetty(port = 18090)
 @Deploy({ "org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.ws" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml",

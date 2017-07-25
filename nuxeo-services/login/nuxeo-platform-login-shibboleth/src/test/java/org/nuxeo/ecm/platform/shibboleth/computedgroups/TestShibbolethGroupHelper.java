@@ -30,6 +30,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -38,8 +39,8 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Reference;
+import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.sql.SQLSession;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethGroupHelper;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -48,11 +49,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.platform.dublincore",
-        "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.login.shibboleth" })
+        "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.login.shibboleth" })
 @LocalDeploy("org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-sql-directory.xml")
 public class TestShibbolethGroupHelper {
 
@@ -116,7 +116,7 @@ public class TestShibbolethGroupHelper {
         Directory dir = directoryService.getDirectory(userManager.getGroupDirectoryName());
         assertNotNull(dir.getReference(userManager.getGroupSubGroupsField()));
 
-        SQLSession ses = (SQLSession) directoryService.open(userManager.getGroupDirectoryName());
+        Session ses = directoryService.open(userManager.getGroupDirectoryName());
         DocumentModel tmp = ses.getEntry("testRef");
         @SuppressWarnings("unchecked")
         List<String> subs = (List<String>) tmp.getProperty(userManager.getGroupSchemaName(),

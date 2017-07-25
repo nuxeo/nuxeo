@@ -48,7 +48,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
-import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
+import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.PasswordHelper;
@@ -115,6 +115,36 @@ public class MongoDBSession extends BaseSession {
             }
         }
         try {
+
+            for (Map.Entry<String, Field> entry : schemaFieldMap.entrySet()) {
+                Field field = entry.getValue();
+                if (field != null) {
+                    String fieldName = field.getName().getPrefixedName();
+                    Object value = newDocMap.get(fieldName);
+                    Type type = field.getType();
+                    if (value instanceof String) {
+                        String v = (String) value;
+                        if (type instanceof IntegerType) {
+                            newDocMap.put(fieldName, Integer.valueOf(v));
+                        } else if (type instanceof LongType) {
+                            newDocMap.put(fieldName, Long.valueOf(v));
+                        }
+                    } else if (value instanceof Number) {
+                        if (type instanceof LongType && value instanceof Integer) {
+                            newDocMap.put(fieldName, Long.valueOf((Integer) value));
+                        } else if (type instanceof StringType) {
+                            newDocMap.put(fieldName, value.toString());
+                        }
+                    }
+                    // Load default values if defined and not present in the map
+                    if (!newDocMap.containsKey(fieldName)) {
+                        Object defaultValue = field.getDefaultValue();
+                        if (defaultValue != null) {
+                            newDocMap.put(fieldName, defaultValue);
+                        }
+                    }
+                }
+            }
             Document bson = MongoDBSerializationHelper.fieldMapToBson(newDocMap);
             String password = (String) newDocMap.get(getPasswordField());
             if (password != null && !PasswordHelper.isHashed(password)) {
@@ -283,6 +313,9 @@ public class MongoDBSession extends BaseSession {
             String key = entry.getKey();
             if (fulltext != null && fulltext.contains(key)) {
                 String val = String.valueOf(value);
+                if (val != null) {
+                    val = val.replaceAll("%+", ".*");
+                }
                 switch (substringMatchType) {
                 case subany:
                     addField(bson, key, Pattern.compile(val, Pattern.CASE_INSENSITIVE));

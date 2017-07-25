@@ -26,6 +26,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -39,7 +40,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @since 5.9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ UserProfileFeature.class })
+@Features({ UserProfileFeature.class, DirectoryFeature.class })
 @RepositoryConfig
 @LocalDeploy({ "org.nuxeo.ecm.user.center.profile:OSGI-INF/test-sql-directories-contrib.xml",
         "org.nuxeo.ecm.user.center.profile:OSGI-INF/test-core-types-contrib.xml",

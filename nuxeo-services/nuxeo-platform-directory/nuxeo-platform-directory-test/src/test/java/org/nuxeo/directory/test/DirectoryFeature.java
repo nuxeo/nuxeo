@@ -35,6 +35,7 @@ import org.nuxeo.ecm.directory.DirectoryDeleteConstraintException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.multi.MultiDirectory;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -108,7 +109,8 @@ public class DirectoryFeature extends SimpleFeature {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
 
         for (Directory dir : directoryService.getDirectories()) {
-            if (dir.isReadOnly()) {
+            // Do not save multi-directories as subdirectories will be saved
+            if (dir.isReadOnly() || dir instanceof MultiDirectory) {
                 continue;
             }
             try (Session session = dir.getSession()) {
@@ -145,7 +147,8 @@ public class DirectoryFeature extends SimpleFeature {
             do {
                 isAllClear = true;
                 for (Directory dir : directoryService.getDirectories()) {
-                    if (dir.isReadOnly()) {
+                    // Do not purge multi-directories as subdirectories will be purged
+                    if (dir.isReadOnly() || dir instanceof MultiDirectory) {
                         continue;
                     }
                     try (Session session = dir.getSession()) {

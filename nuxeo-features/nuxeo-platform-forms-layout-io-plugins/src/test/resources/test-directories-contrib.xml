@@ -1,63 +1,43 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.directories.test">
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
-    <directory name="country">
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+    <directory name="country" extends="template-directory">
       <schema>xvocabulary</schema>
       <parentDirectory>continent</parentDirectory>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>country</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/country.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
-    <directory name="continent">
+    <directory name="continent" extends="template-directory">
       <schema>vocabulary</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>continent</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/continent.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
-    <directory name="subtopic">
+    <directory name="subtopic" extends="template-directory">
       <schema>xvocabulary</schema>
       <parentDirectory>topic</parentDirectory>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>subtopic</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/subtopic.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
-    <directory name="topic">
+    <directory name="topic" extends="template-directory">
       <schema>vocabulary</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>topic</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/topic.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
-    <directory name="nature">
+    <directory name="nature" extends="template-directory">
       <schema>vocabulary</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>nature</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/nature.csv</dataFile>

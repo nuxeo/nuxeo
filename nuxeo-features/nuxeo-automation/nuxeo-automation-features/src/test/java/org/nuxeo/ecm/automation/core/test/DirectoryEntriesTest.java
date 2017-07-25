@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -53,11 +54,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io",
-        "org.nuxeo.ecm.automation.features" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.features" })
 @LocalDeploy("org.nuxeo.ecm.automation.features:test-directories-sql-contrib.xml")
 public class DirectoryEntriesTest {
 

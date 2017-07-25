@@ -27,6 +27,7 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -63,7 +64,7 @@ import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 @RunWith(FeaturesRunner.class)
-@Features(UserMapperFeature.class)
+@Features({ UserMapperFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.login.saml2" })
 @LocalDeploy({"org.nuxeo.ecm.platform.auth.saml:OSGI-INF/test-sql-directory.xml","org.nuxeo.ecm.platform.auth.saml:OSGI-INF/usermapper-contribs.xml"})
