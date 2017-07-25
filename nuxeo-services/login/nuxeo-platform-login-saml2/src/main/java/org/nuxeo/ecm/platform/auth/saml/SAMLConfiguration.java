@@ -116,6 +116,15 @@ public class SAMLConfiguration {
         descriptor.setEntityID(getEntityId());
 
         // SPSSO Descriptor
+        descriptor.getRoleDescriptors().add(getSPSSODescriptor(baseURL));
+
+        return descriptor;
+    }
+
+    /**
+     * Returns the {@link SPSSODescriptor} for the Nuxeo Service Provider
+     */
+    public static SPSSODescriptor getSPSSODescriptor(String baseURL) {
         SPSSODescriptor spDescriptor = build(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
         spDescriptor.setAuthnRequestsSigned(getAuthnRequestsSigned());
         spDescriptor.setWantAssertionsSigned(getWantAssertionsSigned());
@@ -158,10 +167,7 @@ public class SAMLConfiguration {
         logoutService.setLocation(baseURL);
         logoutService.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
         spDescriptor.getSingleLogoutServices().add(logoutService);
-
-        descriptor.getRoleDescriptors().add(spDescriptor);
-
-        return descriptor;
+        return spDescriptor;
     }
 
     private static KeyDescriptor buildKeyDescriptor(UsageType type, KeyInfo key) {
