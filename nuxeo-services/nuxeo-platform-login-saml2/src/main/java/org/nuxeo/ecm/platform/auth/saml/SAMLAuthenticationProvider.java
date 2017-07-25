@@ -34,10 +34,12 @@ import org.nuxeo.ecm.platform.auth.saml.user.UserMapperBasedResolver;
 import org.nuxeo.ecm.platform.auth.saml.user.AbstractUserResolver;
 import org.nuxeo.ecm.platform.auth.saml.user.UserResolver;
 import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
+import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.usermapper.service.UserMapperService;
 import org.opensaml.DefaultBootstrap;
@@ -282,7 +284,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
 
         // Create and populate the context
         SAMLMessageContext context = new BasicSAMLMessageContext();
-        populateLocalContext(context);
+        populateLocalContext(context, request);
 
         // Store the requested URL in the Relay State
         String requestedUrl = getRequestedUrl(request);
@@ -363,7 +365,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
         SAMLMessageContext context = new BasicSAMLMessageContext();
         context.setInboundMessageTransport(inTransport);
         context.setOutboundMessageTransport(outTransport);
-        populateLocalContext(context);
+        populateLocalContext(context, request);
 
         // Decode the message
         try {
@@ -489,10 +491,17 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
         return null;
     }
 
-    private void populateLocalContext(SAMLMessageContext context) {
+    private void populateLocalContext(SAMLMessageContext context, HttpServletRequest request) {
         // Set local info
         context.setLocalEntityId(SAMLConfiguration.getEntityId());
         context.setLocalEntityRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
+
+        // Set local entity role metadata
+        String baseURL = VirtualHostHelper.getBaseURL(request);
+        baseURL += (baseURL.endsWith("/") ? "" : "/") + NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
+        SPSSODescriptor descriptor = SAMLConfiguration.getSPSSODescriptor(baseURL);
+        context.setLocalEntityRoleMetadata(descriptor);
+
         context.setMetadataProvider(metadataProvider);
 
         // Set the signing key
@@ -527,7 +536,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
 
         // Create and populate the context
         SAMLMessageContext context = new BasicSAMLMessageContext();
-        populateLocalContext(context);
+        populateLocalContext(context, request);
 
         try {
             LogoutRequest logoutRequest = slo.buildLogoutRequest(context, credential);
