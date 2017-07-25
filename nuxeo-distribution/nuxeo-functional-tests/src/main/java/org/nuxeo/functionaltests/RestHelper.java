@@ -182,11 +182,11 @@ public class RestHelper {
         String json = buildUserJSON(username, password, firstName, lastName, company, finalEmail, group);
 
         Response response = CLIENT.post(AbstractTest.NUXEO_URL + "/api/v1/user", json);
-        if (!response.isSuccessful()) {
-            throw new RuntimeException(String.format("Unable to create user '%s'", username));
-        }
-
         try (ResponseBody responseBody = response.body()) {
+            if (!response.isSuccessful()) {
+                throw new RuntimeException(String.format("Unable to create user '%s'", username));
+            }
+
             JsonNode jsonNode = MAPPER.readTree(responseBody.charStream());
             String id = jsonNode.get("id").getTextValue();
             usersToDelete.add(id);
@@ -428,11 +428,11 @@ public class RestHelper {
     public static String createDirectoryEntry(String directoryName, Map<String, String> properties) {
         Response response = CLIENT.post(NUXEO_URL + "/api/v1/directory/" + directoryName,
                 buildDirectoryEntryJSON(directoryName, properties));
-        if (!response.isSuccessful()) {
-            throw new NuxeoClientException(
-                    String.format("Unable to create entry for directory %s: %s", directoryName, properties));
-        }
         try (ResponseBody responseBody = response.body()) {
+            if (!response.isSuccessful()) {
+                throw new NuxeoClientException(
+                        String.format("Unable to create entry for directory %s: %s", directoryName, properties));
+            }
             JsonNode jsonNode = MAPPER.readTree(responseBody.charStream());
             String entryId = jsonNode.get("properties").get("id").getValueAsText();
             addDirectoryEntryToDelete(directoryName, entryId);
@@ -444,11 +444,11 @@ public class RestHelper {
 
     public static Map<String, Object> fetchDirectoryEntry(String directoryName, String entryId) {
         Response response = CLIENT.get(NUXEO_URL + "/api/v1/directory/" + directoryName + "/" + entryId);
-        if (!response.isSuccessful()) {
-            throw new NuxeoClientException(
-                    String.format("Unable to fetch entry for directory %s/%s", directoryName, entryId));
-        }
         try (ResponseBody responseBody = response.body(); Reader reader = responseBody.charStream()) {
+            if (!response.isSuccessful()) {
+                throw new NuxeoClientException(
+                        String.format("Unable to fetch entry for directory %s/%s", directoryName, entryId));
+            }
             return MAPPER.readValue(reader, new TypeReference<HashMap<String, Object>>() {
             });
         } catch (IOException e) {
@@ -461,7 +461,7 @@ public class RestHelper {
      */
     public static void deleteDirectoryEntry(String directoryName, String entryId) {
         // Work around JAVACLIENT-133 by passing an empty string
-        CLIENT.delete(NUXEO_URL + "/api/v1/directory/" + directoryName + "/" + entryId, "");
+        executeHTTP(() -> CLIENT.delete(NUXEO_URL + "/api/v1/directory/" + directoryName + "/" + entryId, ""));
     }
 
     protected static String buildDirectoryEntryJSON(String directoryName, Map<String, String> properties) {
@@ -502,8 +502,9 @@ public class RestHelper {
     }
 
     public static void logOnServer(String level, String message) {
-        CLIENT.get(String.format("%s/restAPI/systemLog?token=dolog&level=%s&message=----- RestHelper: %s",
-                AbstractTest.NUXEO_URL, level, URIUtils.quoteURIPathComponent(message, true)));
+        executeHTTP(
+                () -> CLIENT.get(String.format("%s/restAPI/systemLog?token=dolog&level=%s&message=----- RestHelper: %s",
+                        AbstractTest.NUXEO_URL, level, URIUtils.quoteURIPathComponent(message, true))));
     }
 
     // -------------
@@ -515,8 +516,8 @@ public class RestHelper {
      *
      * @since 9.3
      */
-    public static boolean get(String url) {
-        return CLIENT.get(NUXEO_URL + "/" + url).isSuccessful();
+    public static boolean get(String path) {
+        return executeHTTP(() -> CLIENT.get(NUXEO_URL + path));
     }
 
     /**
@@ -525,7 +526,16 @@ public class RestHelper {
      * @since 9.3
      */
     public static boolean post(String path, String body) {
-        return CLIENT.post(NUXEO_URL + path, body).isSuccessful();
+        return executeHTTP(() -> CLIENT.post(NUXEO_URL + path, body));
+    }
+
+    /**
+     * @since 9.3
+     */
+    protected static boolean executeHTTP(Supplier<Response> fetcher) {
+        Response response = fetcher.get();
+        response.body().close();
+        return response.isSuccessful();
     }
 
     /**
