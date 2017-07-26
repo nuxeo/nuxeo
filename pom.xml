@@ -128,7 +128,7 @@
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
     <ant.assembly.version>2.0.6</ant.assembly.version>
     <nuxeo.ftest.version>1.8.3-SNAPSHOT</nuxeo.ftest.version>
-    <nuxeo.java.client.version>2.2</nuxeo.java.client.version>
+    <nuxeo.java.client.version>3.0.0-SNAPSHOT</nuxeo.java.client.version>
 
     <jsf.version>2.2.6</jsf.version>
     <nxjsf.version>2.2.6-NX01</nxjsf.version>
@@ -4809,7 +4809,6 @@
         <artifactId>jettison</artifactId>
         <version>1.3.7</version>
       </dependency>
-      <!-- NXP-20847: to be removed to avoid build dependency cycle -->
       <dependency>
         <groupId>org.nuxeo.client</groupId>
         <artifactId>nuxeo-java-client</artifactId>

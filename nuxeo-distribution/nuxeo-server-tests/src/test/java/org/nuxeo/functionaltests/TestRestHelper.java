@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ import org.junit.Test;
 
 /**
  * Tests the {@link RestHelper}.
+ * <p />
+ * We need to have this test here in {@code nuxeo-server-tests} because {@link RestHelper} statically try to connect to
+ * a remote Nuxeo server since upgrade of {@code nuxeo-java-client} to 3.0.0.
  *
  * @since 9.2
  */
