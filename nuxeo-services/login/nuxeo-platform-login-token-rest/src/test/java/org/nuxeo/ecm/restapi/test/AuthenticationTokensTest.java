@@ -53,7 +53,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
-@Deploy({ "org.nuxeo.ecm.platform.login.token", "org.nuxeo.ecm.platform.restapi.server.login.tokenauth"})
+@Deploy({ "org.nuxeo.ecm.platform.login.token", "org.nuxeo.ecm.platform.restapi.server.login.tokenauth" })
 public class AuthenticationTokensTest extends BaseTest {
 
     @Inject
@@ -159,4 +159,3 @@ public class AuthenticationTokensTest extends BaseTest {
         TransactionHelper.startTransaction();
     }
 }
-

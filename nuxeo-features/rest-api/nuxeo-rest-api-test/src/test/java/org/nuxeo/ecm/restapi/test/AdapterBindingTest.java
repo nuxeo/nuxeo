@@ -74,9 +74,10 @@ public class AdapterBindingTest extends BaseTest {
     public void iCanSaveAnAdapter() throws Exception {
         // Given a note and a modified business object representation
         DocumentModel note = RestServerInit.getNote(1, session);
-        String ba = String.format("{\"entity-type\":\"BusinessBeanAdapter\",\"value\":{\"type\""
-                + ":\"Note\",\"id\":\"%s\","
-                + "\"note\":\"Note 1\",\"title\":\"Note 1\",\"description\":\"description\"}}", note.getId());
+        String ba = String.format(
+                "{\"entity-type\":\"BusinessBeanAdapter\",\"value\":{\"type\"" + ":\"Note\",\"id\":\"%s\","
+                        + "\"note\":\"Note 1\",\"title\":\"Note 1\",\"description\":\"description\"}}",
+                note.getId());
         assertTrue(StringUtils.isBlank((String) note.getPropertyValue("dc:description")));
 
         // When i do a put request on it
@@ -116,8 +117,8 @@ public class AdapterBindingTest extends BaseTest {
         DocumentModel folder = RestServerInit.getFolder(1, session);
 
         // When i adapt the children of the folder with a BusinessBeanAdapter
-        JsonNode node = getResponseAsJson(RequestType.GET, "/id/" + folder.getId() + "/@children/@" + BOAdapter.NAME
-                + "/BusinessBeanAdapter");
+        JsonNode node = getResponseAsJson(RequestType.GET,
+                "/id/" + folder.getId() + "/@children/@" + BOAdapter.NAME + "/BusinessBeanAdapter");
 
         // Then i receive a list of businessBeanAdapter
         assertEquals("adapters", node.get("entity-type").getValueAsText());
@@ -128,7 +129,6 @@ public class AdapterBindingTest extends BaseTest {
         JsonNode jsonNote = entries.get(0);
         assertEquals("BusinessBeanAdapter", jsonNote.get("entity-type").getValueAsText());
         assertEquals("Note", jsonNote.get("value").get("type").getValueAsText());
-
     }
 
     @Test
@@ -143,8 +143,8 @@ public class AdapterBindingTest extends BaseTest {
         queryParams.putSingle("sortOrder", "DESC");
 
         // When i adapt the children of the folder with a BusinessBeanAdapter
-        JsonNode node = getResponseAsJson(RequestType.GET, "/id/" + folder.getId() + "/@children/@" + BOAdapter.NAME
-                + "/BusinessBeanAdapter", queryParams);
+        JsonNode node = getResponseAsJson(RequestType.GET,
+                "/id/" + folder.getId() + "/@children/@" + BOAdapter.NAME + "/BusinessBeanAdapter", queryParams);
 
         // Then i receive a list of businessBeanAdapter
         assertEquals("adapters", node.get("entity-type").getValueAsText());
@@ -161,8 +161,8 @@ public class AdapterBindingTest extends BaseTest {
         queryParams.putSingle("sortBy", "dc:description,dc:title");
         queryParams.putSingle("sortOrder", "asc,desc");
 
-        node = getResponseAsJson(RequestType.GET, "/id/" + folder.getId() + "/@children/@" + BOAdapter.NAME
-                + "/BusinessBeanAdapter", queryParams);
+        node = getResponseAsJson(RequestType.GET,
+                "/id/" + folder.getId() + "/@children/@" + BOAdapter.NAME + "/BusinessBeanAdapter", queryParams);
 
         // Then i receive a list of businessBeanAdapter
         assertEquals("adapters", node.get("entity-type").getValueAsText());

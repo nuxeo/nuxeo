@@ -92,6 +92,7 @@ public class DirectoryTest extends BaseTest {
         dirSession = ds.open(TESTDIRNAME);
     }
 
+    @Override
     @After
     public void doAfter() throws Exception {
         if (dirSession != null) {
@@ -204,7 +205,6 @@ public class DirectoryTest extends BaseTest {
         assertEquals(DirectoryEntryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
         ArrayNode jsonEntries = (ArrayNode) node.get("entries");
         assertEquals(entries.size(), jsonEntries.size());
-
     }
 
     @Test
@@ -366,7 +366,6 @@ public class DirectoryTest extends BaseTest {
         JsonNode node = getResponseAsJson(RequestType.GET, "/directory/" + userDirectoryName + "/user1");
 
         assertEquals("", node.get("properties").get("password").getValueAsText());
-
     }
 
     @Test

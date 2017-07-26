@@ -84,8 +84,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * <li>POST /upload, see {@link #initBatch()}</li>
  * <li>GET /upload/{batchId}/{fileIdx}, see {@link #getFileInfo(String, String)}</li>
  * </ul>
- * Largely inspired by the excellent Google Drive REST API documentation about <a
- * href="https://developers.google.com/drive/web/manage-uploads#resumable">resumable upload</a>.
+ * Largely inspired by the excellent Google Drive REST API documentation about
+ * <a href="https://developers.google.com/drive/web/manage-uploads#resumable">resumable upload</a>.
  *
  * @since 7.4
  */
@@ -266,8 +266,8 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
     @GET
     @Path("{batchId}/{fileIdx}")
-    public Response getFileInfo(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx)
-            throws IOException {
+    public Response getFileInfo(@PathParam(REQUEST_BATCH_ID) String batchId,
+            @PathParam(REQUEST_FILE_IDX) String fileIdx) throws IOException {
         BatchManager bm = Framework.getService(BatchManager.class);
         if (!bm.hasBatch(batchId)) {
             return buildEmptyResponse(Status.NOT_FOUND);
@@ -301,7 +301,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     @DELETE
     @Path("{batchId}/{fileIdx}")
     public Response removeFile(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx)
-        throws IOException {
+            throws IOException {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         if (!bm.removeFileEntry(batchId, fileIdx)) {
             return buildEmptyResponse(Status.NOT_FOUND);
@@ -310,7 +310,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     @Context
-   protected  HttpServletRequest request;
+    protected HttpServletRequest request;
 
     @Context
     protected HttpServletResponse response;
@@ -327,16 +327,16 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     @Produces("application/json")
     @Path("{batchId}/{fileIdx}/execute/{operationId}")
     public Object execute(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx,
-            @PathParam(OPERATION_ID) String operationId, ExecutionRequest xreq)
-            throws UnsupportedEncodingException {
+            @PathParam(OPERATION_ID) String operationId, ExecutionRequest xreq) throws UnsupportedEncodingException {
         return executeBatch(batchId, fileIdx, operationId, request, xreq);
     }
 
     protected Object executeBatch(String batchId, String fileIdx, String operationId, HttpServletRequest request,
             ExecutionRequest xreq) throws UnsupportedEncodingException {
 
+
         if (!Boolean.parseBoolean(
-            RequestContext.getActiveContext(request).getRequest().getHeader(BatchManagerConstants.NO_DROP_FLAG))) {
+                RequestContext.getActiveContext(request).getRequest().getHeader(BatchManagerConstants.NO_DROP_FLAG))) {
             RequestContext.getActiveContext(request).addRequestCleanupHandler(req -> {
                 BatchManager bm = Framework.getService(BatchManager.class);
                 bm.clean(batchId);

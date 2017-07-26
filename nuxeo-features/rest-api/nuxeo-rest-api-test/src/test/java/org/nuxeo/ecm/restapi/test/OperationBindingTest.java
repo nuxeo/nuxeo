@@ -124,7 +124,6 @@ public class OperationBindingTest extends BaseTest {
         parameters = trace.getCalls().get(1).getParameters();
         assertEquals(4L, parameters.get("two"));
         assertEquals("Two", parameters.get("one"));
-
     }
 
     @Test
@@ -175,8 +174,7 @@ public class OperationBindingTest extends BaseTest {
      * @since 7.1
      */
     @Test
-    public void itShouldReturnCustomHttpStatusWhenSuccess()
-            throws Exception {
+    public void itShouldReturnCustomHttpStatusWhenSuccess() throws Exception {
         String param = "{\"params\":{\"isFailing\":\"false\"}}";
         try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
                 "@" + OperationAdapter.NAME + "/Test.HttpStatus", param)) {
@@ -188,8 +186,7 @@ public class OperationBindingTest extends BaseTest {
      * @since 7.1
      */
     @Test
-    public void itShouldReturnCustomHttpStatusWhenFailure()
-            throws Exception {
+    public void itShouldReturnCustomHttpStatusWhenFailure() throws Exception {
         String param = "{\"params\":{\"isFailing\":\"true\"}}";
         try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
                 "@" + OperationAdapter.NAME + "/Test.HttpStatus", param)) {
