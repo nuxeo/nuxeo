@@ -62,15 +62,13 @@ import org.nuxeo.ecm.platform.tag.io.TagsJsonEnricher;
 import org.nuxeo.ecm.platform.thumbnail.io.ThumbnailJsonEnricher;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.DocumentModelJsonReaderLegacy;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 
 /**
  * Test the CRUD rest API
@@ -94,12 +92,11 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i do a GET Request
-        ClientResponse response = getResponse(RequestType.GET, "path" + note.getPathAsString());
-
-        // Then i get a document
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        assertEntityEqualsDoc(response.getEntityInputStream(), note);
-
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "path" + note.getPathAsString())) {
+            // Then i get a document
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertEntityEqualsDoc(response.getEntityInputStream(), note);
+        }
     }
 
     @Test
@@ -108,12 +105,11 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i do a GET Request
-        ClientResponse response = getResponse(RequestType.GET, "id/" + note.getId());
-
-        // The i get the document as Json
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        assertEntityEqualsDoc(response.getEntityInputStream(), note);
-
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + note.getId())) {
+            // The i get the document as Json
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertEntityEqualsDoc(response.getEntityInputStream(), note);
+        }
     }
 
     @Test
@@ -126,65 +122,67 @@ public class DocumentBrowsingTest extends BaseTest {
         TransactionHelper.startTransaction();
 
         // When i call a GET on the children for that doc
-        ClientResponse response = getResponse(RequestType.GET, "id/" + folder.getId() + "/@children");
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + folder.getId() + "/@children")) {
+            // Then i get the only document of the folder
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            Iterator<JsonNode> elements = node.get("entries").getElements();
+            node = elements.next();
 
-        // Then i get the only document of the folder
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        Iterator<JsonNode> elements = node.get("entries").getElements();
-        node = elements.next();
-
-        assertNodeEqualsDoc(node, child);
-
+            assertNodeEqualsDoc(node, child);
+        }
     }
 
     @Test
     public void iCanUpdateADocument() throws Exception {
+        JSONDocumentNode jsonDoc;
 
         // Given a document
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(RequestType.GET, "id/" + note.getId());
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + note.getId())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
+        }
 
         // When i do a PUT request on the document with modified data
         // and the same change token
-        JSONDocumentNode jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
         String changeToken = jsonDoc.node.get("changeToken").getTextValue();
         assertNotNull(changeToken);
         jsonDoc.setPropertyValue("dc:title", "New title");
-        response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson());
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-
-        // Then the document is updated
-        fetchInvalidations();
-        note = RestServerInit.getNote(0, session);
-        assertEquals("New title", note.getTitle());
-
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            // Then the document is updated
+            fetchInvalidations();
+            note = RestServerInit.getNote(0, session);
+            assertEquals("New title", note.getTitle());
+        }
     }
 
     @Test
     public void iCannotUpdateADocumentWithOldChangeToken() throws Exception {
+        JSONDocumentNode jsonDoc;
 
         // Given a document
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(RequestType.GET, "id/" + note.getId());
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + note.getId())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
+        }
 
         // When i do a PUT request on the document with modified data
         // and pass an old/invalid change token
-        JSONDocumentNode jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
         jsonDoc.setPropertyValue("dc:title", "New title");
         jsonDoc.node.put("changeToken", "9999-1234"); // old/invalid change token
-        response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson())) {
 
-        // Then we get a 409 CONFLICT
-        assertEquals(Response.Status.CONFLICT.getStatusCode(), response.getStatus());
+            // Then we get a 409 CONFLICT
+            assertEquals(Response.Status.CONFLICT.getStatusCode(), response.getStatus());
 
-        // And the document is NOT updated
-        fetchInvalidations();
-        note = RestServerInit.getNote(0, session);
-        assertEquals("Note 0", note.getTitle()); // still old title
-
+            // And the document is NOT updated
+            fetchInvalidations();
+            note = RestServerInit.getNote(0, session);
+            assertEquals("Note 0", note.getTitle()); // still old title
+        }
     }
 
     @Test
@@ -197,9 +195,9 @@ public class DocumentBrowsingTest extends BaseTest {
         doc = session.createDocument(doc);
         fetchInvalidations();
 
-        ClientResponse response = getResponse(RequestType.GET, "id/" + doc.getId());
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + doc.getId())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
         String payload = "{  " +
                 "         \"entity-type\": \"document\"," +
                 "         \"name\": \"myFile\"," +
@@ -213,64 +211,68 @@ public class DocumentBrowsingTest extends BaseTest {
                 "     }";
 
 
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(), payload)) {
+            // Then the document is updated
+            fetchInvalidations();
 
-        response = getResponse(RequestType.PUT, "id/" + doc.getId(), payload);
-
-        // Then the document is updated
-        fetchInvalidations();
-
-        doc = session.getDocument(new IdRef(doc.getId()));
-        assertEquals("New title", doc.getTitle());
-        Blob value = (Blob) doc.getPropertyValue("file:content");
-        assertNotNull(value);
-        assertEquals("test.txt", value.getFilename());
-
+            doc = session.getDocument(new IdRef(doc.getId()));
+            assertEquals("New title", doc.getTitle());
+            Blob value = (Blob) doc.getPropertyValue("file:content");
+            assertNotNull(value);
+            assertEquals("test.txt", value.getFilename());
+        }
     }
 
     @Test
     public void iCanUpdateDocumentVersion() throws Exception {
+        JSONDocumentNode jsonDoc;
+
         // Given a document
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(RequestType.GET, "id/" + note.getId());
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + note.getId())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        // Check the current version of the live document
-        // it's a note - version at creation and for each updates
-        assertEquals("0.1", note.getVersionLabel());
+            // Check the current version of the live document
+            // it's a note - version at creation and for each updates
+            assertEquals("0.1", note.getVersionLabel());
+
+            jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
+        }
 
         // When i do a PUT request on the document with modified version in the header
-        JSONDocumentNode jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
         jsonDoc.setPropertyValue("dc:title", "New title !");
         Map<String, String> headers = new HashMap<>();
         headers.put(RestConstants.X_VERSIONING_OPTION, VersioningOption.MAJOR.toString());
         headers.put(HEADER_PREFIX + FETCH_PROPERTIES + "." + ENTITY_TYPE, "versionLabel");
-        response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson(), headers);
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson(),
+                headers)) {
 
-        // Check if the version of the document has been returned
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("1.0", node.get("versionLabel").getValueAsText());
+            // Check if the version of the document has been returned
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("1.0", node.get("versionLabel").getValueAsText());
 
-        // Check if the original document is still not versioned.
-        note = RestServerInit.getNote(0, session);
-        assertEquals("0.1", note.getVersionLabel());
+            // Check if the original document is still not versioned.
+            note = RestServerInit.getNote(0, session);
+            assertEquals("0.1", note.getVersionLabel());
+        }
     }
 
     @Test
     public void itCanUpdateADocumentWithoutSpecifyingIdInJSONPayload() throws Exception {
         // Given a document
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(RequestType.GET, "path" + note.getPathAsString());
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "path" + note.getPathAsString())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
 
         // When i do a PUT request on the document with modified data
-        response = getResponse(RequestType.PUT, "id/" + note.getId(),
-                "{\"entity-type\":\"document\",\"properties\":{\"dc:title\":\"Other New title\"}}");
-
-        // Then the document is updated
-        fetchInvalidations();
-        note = RestServerInit.getNote(0, session);
-        assertEquals("Other New title", note.getTitle());
-
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(),
+                "{\"entity-type\":\"document\",\"properties\":{\"dc:title\":\"Other New title\"}}");) {
+            // Then the document is updated
+            fetchInvalidations();
+            note = RestServerInit.getNote(0, session);
+            assertEquals("Other New title", note.getTitle());
+        }
     }
 
     @Test
@@ -283,15 +285,14 @@ public class DocumentBrowsingTest extends BaseTest {
         fetchInvalidations();
 
         // When i do a PUT request on the document with modified data
-        getResponse(RequestType.PUT, "id/" + note.getId(),
-                "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":null}}");
-
-        // Then the document is updated
-        fetchInvalidations();
-        note = RestServerInit.getNote(0, session);
-        assertEquals(null, note.getPropertyValue("dc:format"));
-        assertEquals("a value that that must not be resetted", note.getPropertyValue("dc:language"));
-
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(),
+                "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":null}}");) {
+            // Then the document is updated
+            fetchInvalidations();
+            note = RestServerInit.getNote(0, session);
+            assertEquals(null, note.getPropertyValue("dc:format"));
+            assertEquals("a value that that must not be resetted", note.getPropertyValue("dc:language"));
+        }
     }
 
     @Test
@@ -303,16 +304,16 @@ public class DocumentBrowsingTest extends BaseTest {
         fetchInvalidations();
 
         // When i do a PUT request on the document with modified data
-        getResponse(RequestType.PUT, "id/" + note.getId(),
-                "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":\"\"}}");
-
-        // Then the document is updated
-        fetchInvalidations();
-        note = RestServerInit.getNote(0, session);
-        Serializable value = note.getPropertyValue("dc:format");
-        if (!"".equals(value)) {
-            // will be NULL for Oracle, where empty string and NULL are the same thing
-            assertNull(value);
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(),
+                "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":\"\"}}")) {
+            // Then the document is updated
+            fetchInvalidations();
+            note = RestServerInit.getNote(0, session);
+            Serializable value = note.getPropertyValue("dc:format");
+            if (!"".equals(value)) {
+                // will be NULL for Oracle, where empty string and NULL are the same thing
+                assertNull(value);
+            }
         }
     }
 
@@ -327,41 +328,41 @@ public class DocumentBrowsingTest extends BaseTest {
         // When i do a PUT request on the document with modified data
         Map<String, String> headers = new HashMap<>();
         headers.put(DocumentModelJsonReaderLegacy.HEADER_DOCUMENT_JSON_LEGACY, Boolean.TRUE.toString());
-        getResponse(RequestType.PUT, "id/" + note.getId(),
-                "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":\"\"}}", headers);
-
-        // Then the document is updated
-        fetchInvalidations();
-        note = RestServerInit.getNote(0, session);
-        assertEquals(null, note.getPropertyValue("dc:format"));
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(),
+                "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":\"\"}}", headers)) {
+            // Then the document is updated
+            fetchInvalidations();
+            note = RestServerInit.getNote(0, session);
+            assertEquals(null, note.getPropertyValue("dc:format"));
+        }
     }
 
     @Test
     public void iCanCreateADocument() throws Exception {
+        JsonNode node;
 
         // Given a folder and a Rest Creation request
         DocumentModel folder = RestServerInit.getFolder(0, session);
 
         String data = "{\"entity-type\": \"document\",\"type\": \"File\",\"name\":\"newName\",\"properties\": {\"dc:title\":\"My title\",\"dc:description\":\" \"}}";
 
-        ClientResponse response = getResponse(RequestType.POST, "path" + folder.getPathAsString(), data);
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "path" + folder.getPathAsString(), data)) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            node = mapper.readTree(response.getEntityInputStream());
 
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            // Then the create document is returned
+            assertEquals("My title", node.get("title").getValueAsText());
+            assertEquals(" ", node.get("properties").get("dc:description").getTextValue());
+            String id = node.get("uid").getValueAsText();
+            assertTrue(StringUtils.isNotBlank(id));
 
-        // Then the create document is returned
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("My title", node.get("title").getValueAsText());
-        assertEquals(" ", node.get("properties").get("dc:description").getTextValue());
-        String id = node.get("uid").getValueAsText();
-        assertTrue(StringUtils.isNotBlank(id));
-
-        // Then a document is created in the database
-        fetchInvalidations();
-        DocumentModel doc = session.getDocument(new IdRef(id));
-        assertEquals(folder.getPathAsString() + "/newName", doc.getPathAsString());
-        assertEquals("My title", doc.getTitle());
-        assertEquals("File", doc.getType());
-
+            // Then a document is created in the database
+            fetchInvalidations();
+            DocumentModel doc = session.getDocument(new IdRef(id));
+            assertEquals(folder.getPathAsString() + "/newName", doc.getPathAsString());
+            assertEquals("My title", doc.getTitle());
+            assertEquals("File", doc.getType());
+        }
     }
 
     @Test
@@ -370,13 +371,13 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel doc = RestServerInit.getNote(0, session);
 
         // When I do a DELETE request
-        ClientResponse response = getResponse(RequestType.DELETE, "path" + doc.getPathAsString());
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE, "path" + doc.getPathAsString())) {
+            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
 
-        fetchInvalidations();
-        // Then the doc is deleted
-        assertTrue(!session.exists(doc.getRef()));
-
+            fetchInvalidations();
+            // Then the doc is deleted
+            assertTrue(!session.exists(doc.getRef()));
+        }
     }
 
     @Test
@@ -385,14 +386,13 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel doc = RestServerInit.getNote(0, session);
 
         // When I do a DELETE request
-        WebResource wr = service.path("path" + doc.getPathAsString());
-        ClientResponse response = wr.delete(ClientResponse.class);
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE, "path" + doc.getPathAsString())) {
+            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
 
-        fetchInvalidations();
-        // Then the doc is deleted
-        assertTrue(!session.exists(doc.getRef()));
-
+            fetchInvalidations();
+            // Then the doc is deleted
+            assertTrue(!session.exists(doc.getRef()));
+        }
     }
 
     @Test
@@ -401,19 +401,21 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i do a GET Request on the note repository
-        ClientResponse response = getResponse(RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString())) {
 
-        // Then i get a document
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        assertEntityEqualsDoc(response.getEntityInputStream(), note);
+            // Then i get a document
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertEntityEqualsDoc(response.getEntityInputStream(), note);
+        }
 
         // When i do a GET Request on a non existent repository
-        response = getResponse(RequestType.GET, "repo/nonexistentrepo/path" + note.getPathAsString());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/nonexistentrepo/path" + note.getPathAsString())) {
 
-        // Then i receive a 404
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
-
+            // Then i receive a 404
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
@@ -422,14 +424,14 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i do a GET Request on the note repository
-        ClientResponse response = getResponse(RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString() + "/@acl");
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString() + "/@acl")) {
 
-        // Then i get a the ACL
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(ACPJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
-
+            // Then i get a the ACL
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(ACPJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+        }
     }
 
     @Test
@@ -440,15 +442,15 @@ public class DocumentBrowsingTest extends BaseTest {
         headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", ACLJsonEnricher.NAME);
 
         // When i do a GET Request on the note repository
-        ClientResponse response = getResponse(RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers)) {
 
-        // Then i get a the ACL
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("inherited",
-                node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("acls").get(0).get("name").getTextValue());
-
+            // Then i get a the ACL
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("inherited",
+                    node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("acls").get(0).get("name").getTextValue());
+        }
     }
 
     @Test
@@ -480,14 +482,16 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i do a GET Request on the note without any image
-        ClientResponse response = getResponse(RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers)) {
 
-        // Then i get no result for valid thumbnail url as expected but still
-        // thumbnail entry from the contributor
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertNotNull(node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get("url").getTextValue());
+            // Then i get no result for valid thumbnail url as expected but still
+            // thumbnail entry from the contributor
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertNotNull(
+                    node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get("url").getTextValue());
+        }
     }
 
     /**
@@ -501,17 +505,21 @@ public class DocumentBrowsingTest extends BaseTest {
 
         DocumentModel note = RestServerInit.getNote(0, session);
 
-        ClientResponse response = getResponse(RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers)) {
 
-        // The above GET will force the creation of the user workspace if it did not exist yet.
-        // Force to refresh current transaction context.
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
+            // The above GET will force the creation of the user workspace if it did not exist yet.
+            // Force to refresh current transaction context.
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
 
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertFalse(node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(FavoritesJsonEnricher.NAME).get(FavoritesJsonEnricher.IS_FAVORITE).getBooleanValue());
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertFalse(node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
+                            .get(FavoritesJsonEnricher.NAME)
+                            .get(FavoritesJsonEnricher.IS_FAVORITE)
+                            .getBooleanValue());
+        }
 
         FavoritesManager favoritesManager = Framework.getService(FavoritesManager.class);
         favoritesManager.addToFavorites(note, session);
@@ -519,12 +527,16 @@ public class DocumentBrowsingTest extends BaseTest {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        response = getResponse(RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers)) {
 
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertTrue(node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(FavoritesJsonEnricher.NAME).get(FavoritesJsonEnricher.IS_FAVORITE).getBooleanValue());
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertTrue(node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
+                           .get(FavoritesJsonEnricher.NAME)
+                           .get(FavoritesJsonEnricher.IS_FAVORITE)
+                           .getBooleanValue());
+        }
     }
 
     /**
@@ -538,17 +550,18 @@ public class DocumentBrowsingTest extends BaseTest {
 
         DocumentModel note = RestServerInit.getNote(0, session);
 
-        ClientResponse response = getResponse(RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers)) {
 
-        // The above GET will force the creation of the user workspace if it did not exist yet.
-        // Force to refresh current transaction context.
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
+            // The above GET will force the creation of the user workspace if it did not exist yet.
+            // Force to refresh current transaction context.
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
 
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(0, node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(TagsJsonEnricher.NAME).size());
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(0, node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(TagsJsonEnricher.NAME).size());
+        }
 
         TagService tagService = Framework.getService(TagService.class);
         tagService.tag(session, note.getId(), "pouet", null);
@@ -556,15 +569,16 @@ public class DocumentBrowsingTest extends BaseTest {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        response = getResponse(RequestType.GET, "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(),
-                headers);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers)) {
 
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        JsonNode tags = node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(TagsJsonEnricher.NAME);
-        if (tags.size() != 0) { // XXX NXP-17670 tags not implemented for MongoDB
-            assertEquals(1, tags.size());
-            assertEquals("pouet", tags.get(0).getTextValue());
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode tags = node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(TagsJsonEnricher.NAME);
+            if (tags.size() != 0) { // XXX NXP-17670 tags not implemented for MongoDB
+                assertEquals(1, tags.size());
+                assertEquals("pouet", tags.get(0).getTextValue());
+            }
         }
     }
 
@@ -579,31 +593,36 @@ public class DocumentBrowsingTest extends BaseTest {
 
         DocumentModel note = RestServerInit.getNote(0, session);
 
-        ClientResponse response = getResponse(RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers)) {
 
-        // The above GET will force the creation of the user workspace if it did not exist yet.
-        // Force to refresh current transaction context.
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
+            // The above GET will force the creation of the user workspace if it did not exist yet.
+            // Force to refresh current transaction context.
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
 
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(0, ((ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(CollectionsJsonEnricher.NAME)).size());
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(0, ((ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
+                                             .get(CollectionsJsonEnricher.NAME)).size());
+        }
+
         CollectionManager collectionManager = Framework.getService(CollectionManager.class);
         collectionManager.addToNewCollection("dummyCollection", null, note, session);
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        response = getResponse(RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers)) {
 
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        ArrayNode collections = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(CollectionsJsonEnricher.NAME);
-        assertEquals(1, collections.size());
-        assertEquals("dummyCollection", collections.get(0).get("title").getTextValue());
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            ArrayNode collections = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
+                                                    .get(CollectionsJsonEnricher.NAME);
+            assertEquals(1, collections.size());
+            assertEquals("dummyCollection", collections.get(0).get("title").getTextValue());
+        }
     }
 
     @Test
@@ -614,15 +633,16 @@ public class DocumentBrowsingTest extends BaseTest {
         headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", BasePermissionsJsonEnricher.NAME);
 
         // When i do a GET Request on the note repository
-        ClientResponse response = getResponse(RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers)) {
 
-        // Then i get a list of permissions
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        JsonNode permissions = node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("permissions");
-        assertNotNull(permissions);
-        assertTrue(permissions.isArray());
+            // Then i get a list of permissions
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode permissions = node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("permissions");
+            assertNotNull(permissions);
+            assertTrue(permissions.isArray());
+        }
     }
 
     @Test
@@ -633,15 +653,16 @@ public class DocumentBrowsingTest extends BaseTest {
         headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", PreviewJsonEnricher.NAME);
 
         // When i do a GET Request on the note repository
-        ClientResponse response = getResponse(RequestType.GET,
-                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers)) {
 
-        // Then i get a preview url
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        JsonNode preview = node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("preview");
-        assertNotNull(preview);
-        StringUtils.endsWith(preview.get("url").getTextValue(), "/default/");
+            // Then i get a preview url
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode preview = node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("preview");
+            assertNotNull(preview);
+            StringUtils.endsWith(preview.get("url").getTextValue(), "/default/");
+        }
     }
 
     @Test
@@ -653,42 +674,49 @@ public class DocumentBrowsingTest extends BaseTest {
         TransactionHelper.startTransaction();
 
         // When i do a GET Request on the note repository
-        ClientResponse response = getResponse(RequestType.GET, "repo/" + note.getRepositoryName() + "/path"
-                + note.getPathAsString().replace(" ", "%20"));
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString().replace(" ", "%20"))) {
 
-        // Then i get a the ACL
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            // Then i get a the ACL
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
 
         // When i do a GET Request on the note repository
-        response = getResponse(RequestType.GET, "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString())) {
 
-        // Then i get a the ACL
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-
+            // Then i get a the ACL
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
     public void itCanModifyArrayTypes() throws Exception {
+        JSONDocumentNode jsonDoc;
+
         // Given a document
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(RequestType.GET, "id/" + note.getId());
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + note.getId())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
+        }
 
         // When i do a PUT request on the document with modified data
-        JSONDocumentNode jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
+
         jsonDoc.setPropertyValue("dc:title", "New title");
         jsonDoc.setPropertyArray("dc:contributors", "system");
-        response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson())) {
 
-        // Then the document is updated
-        fetchInvalidations();
-        note = RestServerInit.getNote(0, session);
-        assertEquals("New title", note.getTitle());
+            // Then the document is updated
+            fetchInvalidations();
+            note = RestServerInit.getNote(0, session);
+            assertEquals("New title", note.getTitle());
 
-        List<String> contributors = Arrays.asList((String[]) note.getPropertyValue("dc:contributors"));
-        assertTrue(contributors.contains("system"));
-        assertTrue(contributors.contains("Administrator"));
-        assertEquals(2, contributors.size());
+            List<String> contributors = Arrays.asList((String[]) note.getPropertyValue("dc:contributors"));
+            assertTrue(contributors.contains("system"));
+            assertTrue(contributors.contains("Administrator"));
+            assertEquals(2, contributors.size());
+        }
     }
 
 }

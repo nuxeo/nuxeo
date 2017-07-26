@@ -36,27 +36,27 @@ import javax.ws.rs.core.Response;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.After;
 import org.junit.Before;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
+import org.nuxeo.jaxrs.test.JerseyClientHelper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.multipart.MultiPart;
-import com.sun.jersey.multipart.impl.MultiPartWriter;
+import com.sun.jersey.multipart.MultiPartMediaTypes;
 
 /**
  * @since 5.7.2
  */
 public class BaseTest {
 
-    private static final Integer TIMEOUT = Integer.valueOf(1000 * 60 * 5); // 5min
+    protected static final String REST_API_URL = "http://localhost:18090/api/v1/";
 
     protected static enum RequestType {
         GET, POST, DELETE, PUT, POSTREQUEST, GETES
@@ -71,62 +71,77 @@ public class BaseTest {
     @Before
     public void doBefore() throws Exception {
         service = getServiceFor("Administrator", "Administrator");
-
         mapper = new ObjectMapper();
+    }
 
+    @After
+    public void doAfter() throws Exception {
+        client.destroy();
     }
 
     /**
-     * @param user
-     * @param password
-     * @return
+     * Returns a {@link WebResource} to perform REST API calls with the given credentials.
+     * <p>
+     * Since 9.3, uses the Apache HTTP client, more reliable and much more configurable than the one from the JDK.
+     *
      * @since 5.7.3
      */
-    protected WebResource getServiceFor(String user, String password) {
-        ClientConfig config = new DefaultClientConfig();
-        config.getClasses().add(MultiPartWriter.class);
-        client = Client.create(config);
-        client.setConnectTimeout(TIMEOUT);
-        client.setReadTimeout(TIMEOUT);
-        client.addFilter(new HTTPBasicAuthFilter(user, password));
+    protected WebResource getServiceFor(String username, String password) {
+        return getServiceFor(REST_API_URL, username, password);
+    }
 
-        return client.resource("http://localhost:18090/api/v1/");
+    /**
+     * Returns a {@link WebResource} to perform calls on the given resource with the given credentials.
+     * <p>
+     * Uses the Apache HTTP client, more reliable and much more configurable than the one from the JDK.
+     *
+     * @since 9.3
+     */
+    protected WebResource getServiceFor(String resource, String username, String password) {
+        if (client != null) {
+            client.destroy();
+        }
+        client = JerseyClientHelper.clientBuilder().setCredentials(username, password).build();
+        return client.resource(resource);
     }
 
     @Inject
     public CoreSession session;
 
-    protected ClientResponse getResponse(RequestType requestType, String path) {
+    protected CloseableClientResponse getResponse(RequestType requestType, String path) {
         return getResponse(requestType, path, null, null, null, null);
     }
 
-    protected ClientResponse getResponse(RequestType requestType, String path, Map<String, String> headers) {
+    protected CloseableClientResponse getResponse(RequestType requestType, String path, Map<String, String> headers) {
         return getResponse(requestType, path, null, null, null, headers);
     }
 
-    protected ClientResponse getResponse(RequestType requestType, String path, MultiPart mp) {
+    protected CloseableClientResponse getResponse(RequestType requestType, String path, MultiPart mp) {
         return getResponse(requestType, path, null, null, mp, null);
     }
 
-    protected ClientResponse getResponse(RequestType requestType, String path, MultiPart mp, Map<String, String> headers) {
+    protected CloseableClientResponse getResponse(RequestType requestType, String path, MultiPart mp,
+            Map<String, String> headers) {
         return getResponse(requestType, path, null, null, mp, headers);
     }
 
-    protected ClientResponse getResponse(RequestType requestType, String path,
+    protected CloseableClientResponse getResponse(RequestType requestType, String path,
             MultivaluedMap<String, String> queryParams) {
         return getResponse(requestType, path, null, queryParams, null, null);
     }
 
-    protected ClientResponse getResponse(RequestType requestType, String path, String data) {
+    protected CloseableClientResponse getResponse(RequestType requestType, String path, String data) {
         return getResponse(requestType, path, data, null, null, null);
     }
 
-    protected ClientResponse getResponse(RequestType requestType, String path, String data, Map<String, String> headers) {
+    protected CloseableClientResponse getResponse(RequestType requestType, String path, String data,
+            Map<String, String> headers) {
         return getResponse(requestType, path, data, null, null, headers);
     }
 
-    protected ClientResponse getResponse(RequestType requestType, String path, String data,
+    protected CloseableClientResponse getResponse(RequestType requestType, String path, String data,
             MultivaluedMap<String, String> queryParams, MultiPart mp, Map<String, String> headers) {
+
         WebResource wr = service.path(path);
 
         if (queryParams != null && !queryParams.isEmpty()) {
@@ -138,17 +153,6 @@ public class BaseTest {
         } else {
             builder = wr.accept(MediaType.APPLICATION_JSON).header("X-NXDocumentProperties", "dublincore");
         }
-        if (mp != null) {
-            builder = wr.type(MediaType.MULTIPART_FORM_DATA_TYPE);
-        }
-
-        if (headers == null || !(headers.containsKey("Content-Type"))) {
-            if (requestType == RequestType.POSTREQUEST) {
-                builder.header("Content-Type", "application/json+nxrequest");
-            } else {
-                builder.header("Content-Type", "application/json+nxentity");
-            }
-        }
 
         // Adding some headers if needed
         if (headers != null && !headers.isEmpty()) {
@@ -156,32 +160,55 @@ public class BaseTest {
                 builder.header(headerKey, headers.get(headerKey));
             }
         }
+        ClientResponse response = null;
         switch (requestType) {
         case GET:
         case GETES:
-            return builder.get(ClientResponse.class);
+            response = builder.get(ClientResponse.class);
+            break;
         case POST:
         case POSTREQUEST:
             if (mp != null) {
-                return builder.post(ClientResponse.class, mp);
+                response = builder.type(MultiPartMediaTypes.createFormData()).post(ClientResponse.class, mp);
+            } else if (data != null) {
+                setJSONContentTypeIfAbsent(builder, headers);
+                response = builder.post(ClientResponse.class, data);
             } else {
-                return builder.post(ClientResponse.class, data);
+                response = builder.post(ClientResponse.class);
             }
+            break;
         case PUT:
             if (mp != null) {
-                return builder.put(ClientResponse.class, mp);
+                response = builder.type(MultiPartMediaTypes.createFormData()).put(ClientResponse.class, mp);
+            } else if (data != null) {
+                setJSONContentTypeIfAbsent(builder, headers);
+                response = builder.put(ClientResponse.class, data);
             } else {
-                return builder.put(ClientResponse.class, data);
+                response = builder.put(ClientResponse.class);
             }
+            break;
         case DELETE:
-            return builder.delete(ClientResponse.class, data);
+            response = builder.delete(ClientResponse.class, data);
+            break;
         default:
             throw new RuntimeException();
         }
+
+        // Make the ClientResponse AutoCloseable by wrapping it in a CloseableClientResponse.
+        // This is to strongly encourage the caller to use a try-with-resources block to make sure the response is
+        // closed and avoid leaking connections.
+        return CloseableClientResponse.of(response);
     }
 
-    protected JsonNode getResponseAsJson(RequestType responseType, String url) throws IOException,
-            JsonProcessingException {
+    /** @since 9.3 */
+    protected void setJSONContentTypeIfAbsent(Builder builder, Map<String, String> headers) {
+        if (headers == null || !(headers.containsKey("Content-Type"))) {
+            builder.type(MediaType.APPLICATION_JSON);
+        }
+    }
+
+    protected JsonNode getResponseAsJson(RequestType responseType, String url)
+            throws IOException, JsonProcessingException {
         return getResponseAsJson(responseType, url, null);
     }
 
@@ -196,9 +223,10 @@ public class BaseTest {
      */
     protected JsonNode getResponseAsJson(RequestType responseType, String url,
             MultivaluedMap<String, String> queryParams) throws JsonProcessingException, IOException {
-        ClientResponse response = getResponse(responseType, url, queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        return mapper.readTree(response.getEntityInputStream());
+        try (CloseableClientResponse response = getResponse(responseType, url, queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            return mapper.readTree(response.getEntityInputStream());
+        }
     }
 
     /**

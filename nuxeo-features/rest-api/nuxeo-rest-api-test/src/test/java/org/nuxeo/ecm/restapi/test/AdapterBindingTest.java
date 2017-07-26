@@ -36,11 +36,11 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.BOAdapter;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
-import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -59,15 +59,15 @@ public class AdapterBindingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(1, session);
 
         // When i browse the adapter
-        ClientResponse response = getResponse(RequestType.GET, "/id/" + note.getId() + "/@" + BOAdapter.NAME
-                + "/BusinessBeanAdapter");
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "/id/" + note.getId() + "/@" + BOAdapter.NAME + "/BusinessBeanAdapter")) {
 
-        // Then i receive a formatted response
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("BusinessBeanAdapter", node.get("entity-type").getValueAsText());
-        assertEquals(note.getPropertyValue("note:note"), node.get("value").get("note").getValueAsText());
-
+            // Then i receive a formatted response
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("BusinessBeanAdapter", node.get("entity-type").getValueAsText());
+            assertEquals(note.getPropertyValue("note:note"), node.get("value").get("note").getValueAsText());
+        }
     }
 
     @Test
@@ -80,15 +80,15 @@ public class AdapterBindingTest extends BaseTest {
         assertTrue(StringUtils.isBlank((String) note.getPropertyValue("dc:description")));
 
         // When i do a put request on it
-        ClientResponse response = getResponse(RequestType.PUT, "/id/" + note.getId() + "/@" + BOAdapter.NAME
-                + "/BusinessBeanAdapter", ba);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                "/id/" + note.getId() + "/@" + BOAdapter.NAME + "/BusinessBeanAdapter", ba)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        // Then it modifies the description
-        fetchInvalidations();
-        note = session.getDocument(note.getRef());
-        assertEquals("description", note.getAdapter(BusinessBeanAdapter.class).getDescription());
-
+            // Then it modifies the description
+            fetchInvalidations();
+            note = session.getDocument(note.getRef());
+            assertEquals("description", note.getAdapter(BusinessBeanAdapter.class).getDescription());
+        }
     }
 
     @Test
@@ -100,13 +100,14 @@ public class AdapterBindingTest extends BaseTest {
         assertTrue(session.getChildren(folder.getRef()).isEmpty());
 
         // When i do a put request on it
-        ClientResponse response = getResponse(RequestType.POST, "/id/" + folder.getId() + "/@" + BOAdapter.NAME
-                + "/BusinessBeanAdapter/note2", ba);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.POST,
+                "/id/" + folder.getId() + "/@" + BOAdapter.NAME + "/BusinessBeanAdapter/note2", ba)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        // Then it modifies the description
-        fetchInvalidations();
-        assertFalse(session.getChildren(folder.getRef()).isEmpty());
+            // Then it modifies the description
+            fetchInvalidations();
+            assertFalse(session.getChildren(folder.getRef()).isEmpty());
+        }
     }
 
     @Test

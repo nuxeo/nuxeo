@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
-import com.sun.jersey.api.client.ClientResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -27,6 +26,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -61,8 +61,12 @@ public class PreviewAdapterTest extends BaseTest {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        assertEquals(200, getPreview(doc).getStatus());
-        assertEquals(200, getPreview(doc, "file:content").getStatus());
+        try (CloseableClientResponse response = getPreview(doc)) {
+            assertEquals(200, response.getStatus());
+        }
+        try (CloseableClientResponse response = getPreview(doc, "file:content")) {
+            assertEquals(200, response.getStatus());
+        }
     }
 
     @Test
@@ -76,7 +80,9 @@ public class PreviewAdapterTest extends BaseTest {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        assertEquals(200, getPreview(doc, "files/0/file").getStatus());
+        try (CloseableClientResponse response = getPreview(doc, "files/0/file")) {
+            assertEquals(200, response.getStatus());
+        }
     }
 
     @Test
@@ -88,21 +94,25 @@ public class PreviewAdapterTest extends BaseTest {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        assertEquals(200, getPreview(doc).getStatus());
-        assertEquals(200, getPreview(doc, "note:note").getStatus());
+        try (CloseableClientResponse response = getPreview(doc)) {
+            assertEquals(200, response.getStatus());
+        }
+        try (CloseableClientResponse response = getPreview(doc, "note:note")) {
+            assertEquals(200, response.getStatus());
+        }
     }
 
-    protected ClientResponse getPreview(DocumentModel doc) {
+    protected CloseableClientResponse getPreview(DocumentModel doc) {
         return getPreview(doc, null);
     }
 
-    protected ClientResponse getPreview(DocumentModel doc, String xpath) {
+    protected CloseableClientResponse getPreview(DocumentModel doc, String xpath) {
         StringJoiner path = new StringJoiner("/").add("id").add(doc.getId());
         if (xpath != null) {
             path.add("@blob").add(xpath);
         }
         path.add("@preview");
-        ClientResponse response = getResponse(RequestType.GET, path.toString());
+        CloseableClientResponse response = getResponse(RequestType.GET, path.toString());
         assertEquals(200, response.getStatus());
         return response;
     }

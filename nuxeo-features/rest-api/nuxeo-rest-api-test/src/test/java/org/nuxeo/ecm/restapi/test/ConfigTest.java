@@ -34,11 +34,11 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.io.marshallers.json.types.SchemaJsonWriter;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
-import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -103,10 +103,11 @@ public class ConfigTest extends BaseTest {
      */
     @Test
     public void itCanRetrieveAllSchemas() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET, "/schema");
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertTrue(node.isArray());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/schema")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertTrue(node.isArray());
+        }
     }
 
     /**
@@ -114,10 +115,11 @@ public class ConfigTest extends BaseTest {
      */
     @Test
     public void itCanRetrieveAllFacets() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET, "/facet");
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertTrue(node.isArray());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/facet")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertTrue(node.isArray());
+        }
     }
 
     /**
@@ -125,10 +127,11 @@ public class ConfigTest extends BaseTest {
      */
     @Test
     public void itCanRetrieveAllDocTypes() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET, "/docType");
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertTrue(node.isObject());
-        assertTrue(node.has("doctypes"));
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/docType")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertTrue(node.isObject());
+            assertTrue(node.has("doctypes"));
+        }
     }
 }

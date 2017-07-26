@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -76,8 +77,9 @@ public class ConverterTest extends BaseTest {
             path += "@blob/file:content/";
         }
         path += "@convert";
-        ClientResponse response = getResponse(RequestType.GET, path, queryParams);
-        assertEquals(200, response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, path, queryParams)) {
+            assertEquals(200, response.getStatus());
+        }
     }
 
     protected DocumentModel createDummyDocument() {
@@ -113,53 +115,61 @@ public class ConverterTest extends BaseTest {
     public void doAsynchronousConversion(String paramName, String paramValue) throws IOException {
         DocumentModel doc = createDummyDocument();
 
+        String pollingURL;
+        String computedResultURL;
+
         MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
         formData.add(paramName, paramValue);
         formData.add("async", "true");
         WebResource wr = service.path("path" + doc.getPathAsString() + "/@convert");
-        ClientResponse response = wr.getRequestBuilder().post(ClientResponse.class, formData);
-
-        assertEquals(202, response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertNotNull(node);
-        assertEquals("conversionScheduled", node.get("entity-type").getTextValue());
-        String id = node.get("conversionId").getTextValue();
-        assertNotNull(id);
-        String pollingURL = node.get("pollingURL").getTextValue();
-        String computedPollingURL = String.format("http://localhost:18090/api/v1/conversions/%s/poll", id);
-        assertEquals(computedPollingURL, pollingURL);
-        String resultURL = node.get("resultURL").getTextValue();
-        String computedResultURL = String.format("http://localhost:18090/api/v1/conversions/%s/result", id);
-        assertEquals(computedResultURL, resultURL);
+        try (CloseableClientResponse response = CloseableClientResponse.of(
+                wr.getRequestBuilder().post(ClientResponse.class, formData))) {
+            assertEquals(202, response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertNotNull(node);
+            assertEquals("conversionScheduled", node.get("entity-type").getTextValue());
+            String id = node.get("conversionId").getTextValue();
+            assertNotNull(id);
+            pollingURL = node.get("pollingURL").getTextValue();
+            String computedPollingURL = String.format("http://localhost:18090/api/v1/conversions/%s/poll", id);
+            assertEquals(computedPollingURL, pollingURL);
+            String resultURL = node.get("resultURL").getTextValue();
+            computedResultURL = String.format("http://localhost:18090/api/v1/conversions/%s/result", id);
+            assertEquals(computedResultURL, resultURL);
+        }
 
         wr = client.resource(pollingURL);
-        response = wr.get(ClientResponse.class);
-        assertEquals(200, response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertNotNull(node);
-        assertEquals("conversionStatus", node.get("entity-type").getTextValue());
-        id = node.get("conversionId").getTextValue();
-        assertNotNull(id);
-        resultURL = node.get("resultURL").getTextValue();
-        assertEquals(computedResultURL, resultURL);
-        String status = node.get("status").getTextValue();
-        assertTrue(status.equals("running") || status.equals("completed"));
+        try (CloseableClientResponse response = CloseableClientResponse.of(wr.get(ClientResponse.class))) {
+            assertEquals(200, response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertNotNull(node);
+            assertEquals("conversionStatus", node.get("entity-type").getTextValue());
+            String id = node.get("conversionId").getTextValue();
+            assertNotNull(id);
+            String resultURL = node.get("resultURL").getTextValue();
+            assertEquals(computedResultURL, resultURL);
+            String status = node.get("status").getTextValue();
+            assertTrue(status.equals("running") || status.equals("completed"));
+        }
 
         // wait for the conversion to finish
         eventService.waitForAsyncCompletion();
 
         // polling URL should redirect to the result URL when done
+        String resultURL;
         wr = client.resource(pollingURL);
-        response = wr.get(ClientResponse.class);
-        assertEquals(200, response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        resultURL = node.get("resultURL").getTextValue();
-        assertEquals(computedResultURL, resultURL);
+        try (CloseableClientResponse response = CloseableClientResponse.of(wr.get(ClientResponse.class))) {
+            assertEquals(200, response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            resultURL = node.get("resultURL").getTextValue();
+            assertEquals(computedResultURL, resultURL);
+        }
 
         // retrieve the converted blob
         wr = client.resource(resultURL);
-        response = wr.get(ClientResponse.class);
-        assertEquals(200, response.getStatus());
+        try (CloseableClientResponse response = CloseableClientResponse.of(wr.get(ClientResponse.class))) {
+            assertEquals(200, response.getStatus());
+        }
     }
 
     @Test
@@ -179,8 +189,10 @@ public class ConverterTest extends BaseTest {
         MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
         formData.add("converter", "any2pdf");
         WebResource wr = service.path("path" + doc.getPathAsString() + "/@convert");
-        ClientResponse response = wr.getRequestBuilder().post(ClientResponse.class, formData);
-        assertEquals(200, response.getStatus());
+        try (CloseableClientResponse response = CloseableClientResponse.of(
+                wr.getRequestBuilder().post(ClientResponse.class, formData))) {
+            assertEquals(200, response.getStatus());
+        }
     }
 
 }

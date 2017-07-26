@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
-import com.sun.jersey.api.client.ClientResponse;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +25,7 @@ import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -97,30 +97,33 @@ public class OAuth2ObjectTest extends BaseTest {
 
     @Test
     public void iCanGetProviders() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET, PROVIDER_PATH);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(OAUTH2_PROVIDERS_TYPE, node.get("entity-type").getTextValue());
-        assertNotNull(node.get("entries"));
-        assertEquals(2, node.get("entries").size());
-        verifyProvider(node.get("entries").get(0), TEST_OAUTH2_PROVIDER, true);
-        verifyProvider(node.get("entries").get(1), TEST_OAUTH2_PROVIDER_2, false);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, PROVIDER_PATH)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(OAUTH2_PROVIDERS_TYPE, node.get("entity-type").getTextValue());
+            assertNotNull(node.get("entries"));
+            assertEquals(2, node.get("entries").size());
+            verifyProvider(node.get("entries").get(0), TEST_OAUTH2_PROVIDER, true);
+            verifyProvider(node.get("entries").get(1), TEST_OAUTH2_PROVIDER_2, false);
+        }
     }
 
     @Test
     public void iCanGetProvider() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET, getProviderPath(TEST_OAUTH2_PROVIDER));
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        verifyProvider(node, TEST_OAUTH2_PROVIDER, true);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, getProviderPath(TEST_OAUTH2_PROVIDER))) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            verifyProvider(node, TEST_OAUTH2_PROVIDER, true);
+        }
     }
 
     @Test
     public void iCantGetInvalidProvider() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET, getProviderPath("fake"));
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("Invalid provider: fake", getErrorMessage(node));
+        try (CloseableClientResponse response = getResponse(RequestType.GET, getProviderPath("fake"))) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("Invalid provider: fake", getErrorMessage(node));
+        }
     }
 
     @Test
@@ -141,23 +144,26 @@ public class OAuth2ObjectTest extends BaseTest {
             "    \"serviceName\": \"myservice\",\n" +
             "    \"tokenServerURL\": \"https://test.oauth2.provider/token\"\n" +
             "}";
-        ClientResponse response = getResponse(RequestType.POST, PROVIDER_PATH, data);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        verifyProvider(node, serviceName, false);
+        try (CloseableClientResponse response = getResponse(RequestType.POST, PROVIDER_PATH, data)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            verifyProvider(node, serviceName, false);
+        }
 
         service = getServiceFor("user1", "user1");
-        response = getResponse(RequestType.POST, PROVIDER_PATH, data);
-        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.POST, PROVIDER_PATH, data)) {
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
     public void iCanUpdateProvider() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET, getProviderPath(TEST_OAUTH2_PROVIDER_2));
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("clientId", node.get("clientId").getTextValue());
-        assertTrue(node.get("clientSecret").isNull());
-        assertFalse(node.get("isEnabled").getBooleanValue());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, getProviderPath(TEST_OAUTH2_PROVIDER_2))) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("clientId", node.get("clientId").getTextValue());
+            assertTrue(node.get("clientSecret").isNull());
+            assertFalse(node.get("isEnabled").getBooleanValue());
+        }
         String data =
             "{\n" +
                 "    \"authorizationServerURL\": \"https://test.oauth2.provider/authorization\",\n" +
@@ -173,16 +179,20 @@ public class OAuth2ObjectTest extends BaseTest {
                 "    \"serviceName\": \"test-oauth2-provider-2\",\n" +
                 "    \"tokenServerURL\": \"https://test.oauth2.provider/token\"\n" +
                 "}";
-        response = getResponse(RequestType.PUT, getProviderPath(TEST_OAUTH2_PROVIDER_2), data);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("myId", node.get("clientId").getTextValue());
-        assertEquals("123secret321", node.get("clientSecret").getTextValue());
-        assertTrue(node.get("isEnabled").getBooleanValue());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, getProviderPath(TEST_OAUTH2_PROVIDER_2),
+                data)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("myId", node.get("clientId").getTextValue());
+            assertEquals("123secret321", node.get("clientSecret").getTextValue());
+            assertTrue(node.get("isEnabled").getBooleanValue());
+        }
 
         service = getServiceFor("user1", "user1");
-        response = getResponse(RequestType.PUT, getProviderPath(TEST_OAUTH2_PROVIDER_2), data);
-        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, getProviderPath(TEST_OAUTH2_PROVIDER_2),
+                data)) {
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
@@ -202,42 +212,49 @@ public class OAuth2ObjectTest extends BaseTest {
                 "    \"serviceName\": \"test-oauth2-provider-2\",\n" +
                 "    \"tokenServerURL\": \"https://test.oauth2.provider/token\"\n" +
                 "}";
-        ClientResponse response = getResponse(RequestType.PUT, getProviderPath("fake"), data);
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, getProviderPath("fake"), data)) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
     public void iCanDeleteProvider() throws IOException {
-        ClientResponse response = getResponse(RequestType.DELETE, getProviderPath(TEST_OAUTH2_PROVIDER_2));
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE,
+                getProviderPath(TEST_OAUTH2_PROVIDER_2))) {
+            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        }
 
         service = getServiceFor("user1", "user1");
-        response = getResponse(RequestType.DELETE, getProviderPath(TEST_OAUTH2_PROVIDER));
-        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE, getProviderPath(TEST_OAUTH2_PROVIDER))) {
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
     public void iCantDeleteInvalidProvider() throws IOException {
-        ClientResponse response = getResponse(RequestType.DELETE, getProviderPath("fake"));
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE, getProviderPath("fake"))) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        }
     }
 
     // test oauth2/provider/{provider}/token
 
     @Test
     public void iCanGetProviderToken() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET, getTokenPath(TEST_OAUTH2_PROVIDER));
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(TEST_OAUTH2_ACCESS_TOKEN, node.get("token").getTextValue());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, getTokenPath(TEST_OAUTH2_PROVIDER))) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(TEST_OAUTH2_ACCESS_TOKEN, node.get("token").getTextValue());
+        }
     }
 
     @Test
     public void iCantGetTokenInvalidProvider() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET, getTokenPath("fake"));
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("Invalid provider: fake", getErrorMessage(node));
+        try (CloseableClientResponse response = getResponse(RequestType.GET, getTokenPath("fake"))) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("Invalid provider: fake", getErrorMessage(node));
+        }
     }
 
     protected void verifyProvider(JsonNode node, String serviceName, Boolean checkToken) {
@@ -256,34 +273,38 @@ public class OAuth2ObjectTest extends BaseTest {
     // test oauth2/token
     @Test
     public void iCanGetTokens() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET, TOKEN_PATH);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(OAUTH2_TOKENS_TYPE, node.get("entity-type").getTextValue());
-        assertNotNull(node.get("entries"));
-        assertEquals(2, node.get("entries").size());
-        verifyToken(node.get("entries"), TEST_OAUTH2_PROVIDER, "Administrator", "2017-05-09 11:11:11");
-        verifyToken(node.get("entries"), TEST_OAUTH2_PROVIDER, "user1", "2017-05-09 11:11:11");
+        try (CloseableClientResponse response = getResponse(RequestType.GET, TOKEN_PATH)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(OAUTH2_TOKENS_TYPE, node.get("entity-type").getTextValue());
+            assertNotNull(node.get("entries"));
+            assertEquals(2, node.get("entries").size());
+            verifyToken(node.get("entries"), TEST_OAUTH2_PROVIDER, "Administrator", "2017-05-09 11:11:11");
+            verifyToken(node.get("entries"), TEST_OAUTH2_PROVIDER, "user1", "2017-05-09 11:11:11");
+        }
 
         service = getServiceFor("user1", "user1");
-        response = getResponse(RequestType.GET, TOKEN_PATH);
-        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, TOKEN_PATH)) {
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        }
     }
-
-
 
     // test oauth2/token/{provider}/{user}
     @Test
     public void iCanGetToken() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET, TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1");
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(OAUTH2_TOKEN_TYPE, node.get("entity-type").getTextValue());
-        verifyToken(node, TEST_OAUTH2_PROVIDER, "user1", "2017-05-09 11:11:11");
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(OAUTH2_TOKEN_TYPE, node.get("entity-type").getTextValue());
+            verifyToken(node, TEST_OAUTH2_PROVIDER, "user1", "2017-05-09 11:11:11");
+        }
 
         service = getServiceFor("user1", "user1");
-        response = getResponse(RequestType.GET, TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1");
-        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1")) {
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
@@ -300,28 +321,38 @@ public class OAuth2ObjectTest extends BaseTest {
             "   \"sharedWith\":[  \n" +
             "   ]\n" +
             "}";
-        ClientResponse response = getResponse(RequestType.PUT, TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1", data);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(OAUTH2_TOKEN_TYPE, node.get("entity-type").getTextValue());
-        verifyToken(node, TEST_OAUTH2_PROVIDER, "user1", "2017-05-10 11:11:11");
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1", data)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(OAUTH2_TOKEN_TYPE, node.get("entity-type").getTextValue());
+            verifyToken(node, TEST_OAUTH2_PROVIDER, "user1", "2017-05-10 11:11:11");
+        }
 
         service = getServiceFor("user1", "user1");
-        response = getResponse(RequestType.PUT, TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1", data);
-        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1", data)) {
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
     public void iCanDeleteToken() {
         service = getServiceFor("user1", "user1");
-        ClientResponse response = getResponse(RequestType.DELETE, TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1");
-        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE,
+                TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1")) {
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        }
 
         service = getServiceFor("Administrator", "Administrator");
-        response = getResponse(RequestType.DELETE, TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1");
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
-        response = getResponse(RequestType.GET, TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1");
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE,
+                TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1")) {
+            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        }
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1")) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        }
     }
 
     protected void verifyToken(JsonNode node, String serviceName, String nxuser, String creationDate) {

@@ -40,12 +40,12 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -72,15 +72,15 @@ public class UserGroupTest extends BaseUserTest {
         // Given the user1
 
         // When I call the Rest endpoint
-        ClientResponse response = getResponse(RequestType.GET, "/user/user1");
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/user/user1")) {
 
-        // Then it returns the Json
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            // Then it returns the Json
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
 
-        assertEqualsUser("user1", "John", "Lennon", node);
-
+            assertEqualsUser("user1", "John", "Lennon", node);
+        }
     }
 
     @Test
@@ -88,11 +88,11 @@ public class UserGroupTest extends BaseUserTest {
         // Given a non existent user
 
         // When I call the Rest endpoint
-        ClientResponse response = getResponse(RequestType.GET, "/user/nonexistentuser");
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/user/nonexistentuser")) {
 
-        // Then it returns the Json
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
-
+            // Then it returns the Json
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
@@ -104,19 +104,19 @@ public class UserGroupTest extends BaseUserTest {
         String userJson = getPrincipalAsJson(user);
 
         // When I call a PUT on the Rest endpoint
-        ClientResponse response = getResponse(RequestType.PUT, "/user/user1", userJson);
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/user/user1", userJson)) {
 
-        // Then it changes the user
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            // Then it changes the user
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEqualsUser("user1", "Paul", "McCartney", node);
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEqualsUser("user1", "Paul", "McCartney", node);
 
-        nextTransaction(); // see committed changes
-        user = um.getPrincipal("user1");
-        assertEquals("Paul", user.getFirstName());
-        assertEquals("McCartney", user.getLastName());
-
+            nextTransaction(); // see committed changes
+            user = um.getPrincipal("user1");
+            assertEquals("Paul", user.getFirstName());
+            assertEquals("McCartney", user.getLastName());
+        }
     }
 
     @Test
@@ -125,15 +125,15 @@ public class UserGroupTest extends BaseUserTest {
         NuxeoPrincipal user = um.getPrincipal("user1");
 
         // When I call a DELETE on the Rest endpoint
-        ClientResponse response = getResponse(RequestType.DELETE, "/user/user1");
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE, "/user/user1")) {
 
-        // Then the user is deleted
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+            // Then the user is deleted
+            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
 
-        nextTransaction(); // see committed changes
-        user = um.getPrincipal("user1");
-        assertNull(user);
-
+            nextTransaction(); // see committed changes
+            user = um.getPrincipal("user1");
+            assertNull(user);
+        }
     }
 
     @Test
@@ -146,18 +146,19 @@ public class UserGroupTest extends BaseUserTest {
         principal.setEmail("test@nuxeo.com");
 
         // When i POST it on the user endpoint
-        ClientResponse response = getResponse(RequestType.POST, "/user", getPrincipalAsJson(principal));
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/user", getPrincipalAsJson(principal))) {
 
-        // Then a user is created
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEqualsUser("newuser", "test", "user", node);
+            // Then a user is created
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEqualsUser("newuser", "test", "user", node);
 
-        principal = um.getPrincipal("newuser");
-        assertEquals("test", principal.getFirstName());
-        assertEquals("user", principal.getLastName());
-        assertEquals("nuxeo", principal.getCompany());
-        assertEquals("test@nuxeo.com", principal.getEmail());
+            principal = um.getPrincipal("newuser");
+            assertEquals("test", principal.getFirstName());
+            assertEquals("user", principal.getLastName());
+            assertEquals("nuxeo", principal.getCompany());
+            assertEquals("test@nuxeo.com", principal.getEmail());
+        }
 
         um.deleteUser("newuser");
         assertNull(um.getPrincipal("newuser"));
@@ -169,13 +170,13 @@ public class UserGroupTest extends BaseUserTest {
         NuxeoGroup group = um.getGroup("group1");
 
         // When i GET on the API
-        ClientResponse response = getResponse(RequestType.GET, "/group/" + group.getName());
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/group/" + group.getName())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        // Then i GET the Group
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEqualsGroup(group.getName(), group.getLabel(), node);
-
+            // Then i GET the Group
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEqualsGroup(group.getName(), group.getLabel(), node);
+        }
     }
 
     @Test
@@ -187,26 +188,29 @@ public class UserGroupTest extends BaseUserTest {
         group.setMemberGroups(Arrays.asList(new String[] { "group2" }));
 
         // When i PUT this group
-        ClientResponse response = getResponse(RequestType.PUT, "/group/" + group.getName(), getGroupAsJson(group));
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/group/" + group.getName(),
+                getGroupAsJson(group))) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        // Then the group is modified server side
-        nextTransaction(); // see committed changes
-        group = um.getGroup("group1");
-        assertEquals("modifiedGroup", group.getLabel());
-        assertEquals(2, group.getMemberUsers().size());
-        assertEquals(1, group.getMemberGroups().size());
+            // Then the group is modified server side
+            nextTransaction(); // see committed changes
+            group = um.getGroup("group1");
+            assertEquals("modifiedGroup", group.getLabel());
+            assertEquals(2, group.getMemberUsers().size());
+            assertEquals(1, group.getMemberGroups().size());
+        }
     }
 
     @Test
     public void itCanDeleteGroup() throws Exception {
 
         // When i DELETE on a group resources
-        ClientResponse response = getResponse(RequestType.DELETE, "/group/group1");
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE, "/group/group1")) {
+            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
 
-        // Then the group is deleted
-        assertNull(um.getGroup("group1"));
+            // Then the group is deleted
+            assertNull(um.getGroup("group1"));
+        }
     }
 
     @Test
@@ -218,14 +222,15 @@ public class UserGroupTest extends BaseUserTest {
         group.setMemberGroups(Arrays.asList(new String[] { "group2" }));
 
         // When i POST this group
-        ClientResponse response = getResponse(RequestType.POST, "/group/", getGroupAsJson(group));
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/group/", getGroupAsJson(group))) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
-        // Then the group is modified server side
-        group = um.getGroup("newGroup");
-        assertEquals("a new group", group.getLabel());
-        assertEquals(2, group.getMemberUsers().size());
-        assertEquals(1, group.getMemberGroups().size());
+            // Then the group is modified server side
+            group = um.getGroup("newGroup");
+            assertEquals("a new group", group.getLabel());
+            assertEquals(2, group.getMemberUsers().size());
+            assertEquals(1, group.getMemberGroups().size());
+        }
 
         um.deleteGroup("newGroup");
         assertNull(um.getGroup("newGroup"));
@@ -239,15 +244,15 @@ public class UserGroupTest extends BaseUserTest {
         assertFalse(principal.isMemberOf(group.getName()));
 
         // When i POST this group
-        ClientResponse response = getResponse(RequestType.POST,
-                "/user/" + principal.getName() + "/group/" + group.getName());
+        try (CloseableClientResponse response = getResponse(RequestType.POST,
+                "/user/" + principal.getName() + "/group/" + group.getName())) {
 
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
-        nextTransaction(); // see committed changes
-        principal = um.getPrincipal(principal.getName());
-        assertTrue(principal.isMemberOf(group.getName()));
-
+            nextTransaction(); // see committed changes
+            principal = um.getPrincipal(principal.getName());
+            assertTrue(principal.isMemberOf(group.getName()));
+        }
     }
 
     @Test
@@ -258,14 +263,15 @@ public class UserGroupTest extends BaseUserTest {
         assertFalse(principal.isMemberOf(group.getName()));
 
         // When i POST this group
-        ClientResponse response = getResponse(RequestType.POST,
-                "/group/" + group.getName() + "/user/" + principal.getName());
+        try (CloseableClientResponse response = getResponse(RequestType.POST,
+                "/group/" + group.getName() + "/user/" + principal.getName())) {
 
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
-        nextTransaction(); // see committed changes
-        principal = um.getPrincipal(principal.getName());
-        assertTrue(principal.isMemberOf(group.getName()));
+            nextTransaction(); // see committed changes
+            principal = um.getPrincipal(principal.getName());
+            assertTrue(principal.isMemberOf(group.getName()));
+        }
     }
 
     @Test
@@ -283,14 +289,14 @@ public class UserGroupTest extends BaseUserTest {
         TransactionHelper.startTransaction();
 
         // When i POST this group
-        ClientResponse response = getResponse(RequestType.DELETE,
-                "/user/" + principal.getName() + "/group/" + group.getName());
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE,
+                "/user/" + principal.getName() + "/group/" + group.getName())) {
 
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        principal = um.getPrincipal(principal.getName());
-        assertFalse(principal.isMemberOf(group.getName()));
-
+            principal = um.getPrincipal(principal.getName());
+            assertFalse(principal.isMemberOf(group.getName()));
+        }
     }
 
     @Test
@@ -299,15 +305,15 @@ public class UserGroupTest extends BaseUserTest {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("q", "Steve");
 
-        ClientResponse response = getResponse(RequestType.GET, "/user/search", queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/user/search", queryParams)) {
 
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("null", node.get("errorMessage").getValueAsText());
-        ArrayNode entries = (ArrayNode) node.get("entries");
-        assertEquals(1, entries.size());
-        assertEquals("user0", entries.get(0).get("id").getValueAsText());
-
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("null", node.get("errorMessage").getValueAsText());
+            ArrayNode entries = (ArrayNode) node.get("entries");
+            assertEquals(1, entries.size());
+            assertEquals("user0", entries.get(0).get("id").getValueAsText());
+        }
     }
 
     @Test
@@ -331,15 +337,15 @@ public class UserGroupTest extends BaseUserTest {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("q", "Lannister");
 
-        ClientResponse response = getResponse(RequestType.GET, "/group/search", queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/group/search", queryParams)) {
 
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("null", node.get("errorMessage").getValueAsText());
-        ArrayNode entries = (ArrayNode) node.get("entries");
-        assertEquals(1, entries.size());
-        assertEquals("Lannister", entries.get(0).get("grouplabel").getValueAsText());
-
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("null", node.get("errorMessage").getValueAsText());
+            ArrayNode entries = (ArrayNode) node.get("entries");
+            assertEquals(1, entries.size());
+            assertEquals("Lannister", entries.get(0).get("grouplabel").getValueAsText());
+        }
     }
 
     @Test

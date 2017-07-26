@@ -33,11 +33,11 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.io.marshallers.json.types.SchemaJsonWriter;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
-import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -49,7 +49,6 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @RepositoryConfig(init = RestServerInit.class, cleanup = Granularity.METHOD)
 public class SchemaTest extends BaseTest {
 
-
     @Test
     public void testFieldsWithConstraintsFetch() throws IOException {
         // Given the dublincore
@@ -57,42 +56,42 @@ public class SchemaTest extends BaseTest {
         // When I call the schema Rest endpoint
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("fetch." + SchemaJsonWriter.ENTITY_TYPE, SchemaJsonWriter.FETCH_FIELDS);
-        ClientResponse response = getResponse(RequestType.GET, "/schema/dublincore", queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/schema/dublincore", queryParams)) {
 
-        // Then it returns the dublincore schema Json with constraints
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            // Then it returns the dublincore schema Json with constraints
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        JsonNode fields = node.get("fields");
-        assertNotNull(fields);
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode fields = node.get("fields");
+            assertNotNull(fields);
 
-        JsonNode creator = fields.get("creator");
-        assertNotNull(creator);
+            JsonNode creator = fields.get("creator");
+            assertNotNull(creator);
 
-        JsonNode type = creator.get("type");
-        assertNotNull(type);
-        assertEquals("string", type.getTextValue());
+            JsonNode type = creator.get("type");
+            assertNotNull(type);
+            assertEquals("string", type.getTextValue());
 
-        JsonNode constraints = creator.get("constraints");
-        assertNotNull(constraints);
-        assertTrue(constraints.isArray());
-        assertTrue(constraints.size() > 0);
+            JsonNode constraints = creator.get("constraints");
+            assertNotNull(constraints);
+            assertTrue(constraints.isArray());
+            assertTrue(constraints.size() > 0);
 
-        JsonNode contributors = fields.get("contributors");
-        assertNotNull(contributors);
+            JsonNode contributors = fields.get("contributors");
+            assertNotNull(contributors);
 
-        type = contributors.get("type");
-        assertNotNull(type);
-        assertEquals("string[]", type.getTextValue());
+            type = contributors.get("type");
+            assertNotNull(type);
+            assertEquals("string[]", type.getTextValue());
 
-        constraints = contributors.get("constraints");
-        assertNotNull(constraints);
-        assertTrue(constraints.isArray());
+            constraints = contributors.get("constraints");
+            assertNotNull(constraints);
+            assertTrue(constraints.isArray());
 
-        JsonNode itemConstraints = contributors.get("itemConstraints");
-        assertNotNull(itemConstraints);
-        assertTrue(itemConstraints.isArray());
-        assertTrue(itemConstraints.size() > 0);
-
+            JsonNode itemConstraints = contributors.get("itemConstraints");
+            assertNotNull(itemConstraints);
+            assertTrue(itemConstraints.isArray());
+            assertTrue(itemConstraints.size() > 0);
+        }
     }
 }

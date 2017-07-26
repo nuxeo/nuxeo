@@ -40,18 +40,15 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.OperationAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.blob.BlobAdapter;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 /**
  * @since 5.7.2 - Test the Rest binding to run operations
@@ -62,8 +59,6 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class OperationBindingTest extends BaseTest {
-
-    private static final Integer TIMEOUT = Integer.valueOf(1000 * 60 * 5); // 5min
 
     private static String PARAMS = "{\"params\":{\"one\":\"1\",\"two\": 2}}";
 
@@ -87,20 +82,21 @@ public class OperationBindingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i call the REST binding on the document resource
-        ClientResponse response = getResponse(RequestType.POSTREQUEST, "id/" + note.getId() + "/@"
-                + OperationAdapter.NAME + "/testOp", PARAMS);
+        try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
+                "id/" + note.getId() + "/@" + OperationAdapter.NAME + "/testOp", PARAMS)) {
 
-        // Then the operation is called on the document
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        // Then the operation is called on all children documents
-        Trace trace = factory.getTrace("testOp");
-        assertEquals(1, trace.getCalls().size());
+            // Then the operation is called on the document
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            // Then the operation is called on all children documents
+            Trace trace = factory.getTrace("testOp");
+            assertEquals(1, trace.getCalls().size());
 
-        Map<?, ?> parameters = trace.getCalls().get(0).getVariables();
+            Map<?, ?> parameters = trace.getCalls().get(0).getVariables();
 
-        assertEquals("1", parameters.get("one"));
-        assertEquals(2, parameters.get("two"));
-        assertEquals(note.getId(), ((DocumentModel) trace.getOutput()).getId());
+            assertEquals("1", parameters.get("one"));
+            assertEquals(2, parameters.get("two"));
+            assertEquals(note.getId(), ((DocumentModel) trace.getOutput()).getId());
+        }
     }
 
     @Test
@@ -109,12 +105,12 @@ public class OperationBindingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i call the REST binding on the document resource
-        ClientResponse response = getResponse(RequestType.POSTREQUEST, "id/" + note.getId() + "/@"
-                + OperationAdapter.NAME + "/testChain", "{}");
+        try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
+                "id/" + note.getId() + "/@" + OperationAdapter.NAME + "/testChain", "{}")) {
 
-        // Then the operation is called twice on the document
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-
+            // Then the operation is called twice on the document
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
         // Then the operation is called on all children documents
         Trace trace = factory.getTrace("testChain");
         assertEquals(2, trace.getCalls().size());
@@ -138,15 +134,15 @@ public class OperationBindingTest extends BaseTest {
 
         // When i call the REST binding on the children resource
 
-        getResponse(RequestType.POSTREQUEST, "id/" + folder.getId() + "/@children/@" + OperationAdapter.NAME
-                + "/testOp", PARAMS);
+        try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
+                "id/" + folder.getId() + "/@children/@" + OperationAdapter.NAME + "/testOp", PARAMS)) {
 
-        // Then the operation is called on all children documents
-        Trace trace = factory.getTrace("testOp");
-        assertEquals(1, trace.getCalls().size());
-        assertEquals(session.getChildren(folder.getRef()).size(),
-                ((PaginableDocumentModelList) trace.getOutput()).size());
-
+            // Then the operation is called on all children documents
+            Trace trace = factory.getTrace("testOp");
+            assertEquals(1, trace.getCalls().size());
+            assertEquals(session.getChildren(folder.getRef()).size(),
+                    ((PaginableDocumentModelList) trace.getOutput()).size());
+        }
     }
 
     @Test
@@ -155,27 +151,24 @@ public class OperationBindingTest extends BaseTest {
         DocumentModel file = RestServerInit.getFile(1, session);
 
         // When i call the REST binding on the blob resource
-        getResponse(RequestType.POSTREQUEST, "id/" + file.getId() + "/@" + BlobAdapter.NAME + "/file:content/@"
-                + OperationAdapter.NAME + "/testOp", PARAMS);
+        try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
+                "id/" + file.getId() + "/@" + BlobAdapter.NAME + "/file:content/@" + OperationAdapter.NAME + "/testOp",
+                PARAMS)) {
 
-        // Then the operation is called on a document blob
-        Trace trace = factory.getTrace("testOp");
-        assertTrue(trace.getOutput() instanceof Blob);
+            // Then the operation is called on a document blob
+            Trace trace = factory.getTrace("testOp");
+            assertTrue(trace.getOutput() instanceof Blob);
+        }
     }
 
     @Test
     public void automationResourceIsAlsoAvailableBehindAPIRoot() throws Exception {
-        ClientConfig config = new DefaultClientConfig();
-        Client client = Client.create(config);
-        client.setConnectTimeout(TIMEOUT);
-        client.setReadTimeout(TIMEOUT);
-        client.addFilter(new HTTPBasicAuthFilter("Administrator", "Administrator"));
-        WebResource wr = client.resource("http://localhost:18090/api/v1/automation/doc");
-
+        WebResource wr = getServiceFor("http://localhost:18090/api/v1/automation/doc", "Administrator",
+                "Administrator");
         Builder builder = wr.accept(MediaType.TEXT_HTML);
-        ClientResponse response = builder.get(ClientResponse.class);
-
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = CloseableClientResponse.of(builder.get(ClientResponse.class))) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
     }
 
     /**
@@ -185,9 +178,10 @@ public class OperationBindingTest extends BaseTest {
     public void itShouldReturnCustomHttpStatusWhenSuccess()
             throws Exception {
         String param = "{\"params\":{\"isFailing\":\"false\"}}";
-        ClientResponse response = getResponse(RequestType.POSTREQUEST,
-                "@" + OperationAdapter.NAME + "/Test.HttpStatus", param);
-        assertEquals(206, response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
+                "@" + OperationAdapter.NAME + "/Test.HttpStatus", param)) {
+            assertEquals(206, response.getStatus());
+        }
     }
 
     /**
@@ -197,8 +191,9 @@ public class OperationBindingTest extends BaseTest {
     public void itShouldReturnCustomHttpStatusWhenFailure()
             throws Exception {
         String param = "{\"params\":{\"isFailing\":\"true\"}}";
-        ClientResponse response = getResponse(RequestType.POSTREQUEST,
-                "@" + OperationAdapter.NAME + "/Test.HttpStatus", param);
-        assertEquals(405, response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
+                "@" + OperationAdapter.NAME + "/Test.HttpStatus", param)) {
+            assertEquals(405, response.getStatus());
+        }
     }
 }

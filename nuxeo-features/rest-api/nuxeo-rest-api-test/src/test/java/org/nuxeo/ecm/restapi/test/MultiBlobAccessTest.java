@@ -43,13 +43,13 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
 import com.sun.jersey.multipart.file.StreamDataBodyPart;
@@ -83,36 +83,42 @@ public class MultiBlobAccessTest extends BaseTest {
 
     @Test
     public void itDoesNotUpdateBlobsThroughDocEndpoint() throws Exception {
+        String docJsonIN;
         Map<String, String> headers = new HashMap<>();
         headers.put("properties", "multiblob");
-        ClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString(), headers);
-        String docJsonIN = IOUtils.toString(response.getEntityInputStream());
-        response = getResponse(RequestType.PUT, "path" + doc.getPathAsString(), docJsonIN, headers);
-        DocumentModel doc = session.getDocument(new PathRef("/testBlob"));
-        assertEquals(2, ((List<?>) doc.getProperty("mb:blobs").getValue()).size());
-        Blob blob1 = (Blob) doc.getProperty("mb:blobs/0/content").getValue();
-        assertNotNull(blob1);
-        assertEquals("one", blob1.getString());
-        Blob blob2 = (Blob) doc.getProperty("mb:blobs/1/content").getValue();
-        assertNotNull(blob2);
-        assertEquals("two", blob2.getString());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString(), headers)) {
+            docJsonIN = IOUtils.toString(response.getEntityInputStream());
+        }
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "path" + doc.getPathAsString(), docJsonIN,
+                headers)) {
+            DocumentModel doc = session.getDocument(new PathRef("/testBlob"));
+            assertEquals(2, ((List<?>) doc.getProperty("mb:blobs").getValue()).size());
+            Blob blob1 = (Blob) doc.getProperty("mb:blobs/0/content").getValue();
+            assertNotNull(blob1);
+            assertEquals("one", blob1.getString());
+            Blob blob2 = (Blob) doc.getProperty("mb:blobs/1/content").getValue();
+            assertNotNull(blob2);
+            assertEquals("two", blob2.getString());
+        }
     }
 
     @Test
     public void itCanAccessBlobs() throws Exception {
         // When i call the rest api
-        ClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString()
-                + "/@blob/mb:blobs/0/content");
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "path" + doc.getPathAsString() + "/@blob/mb:blobs/0/content")) {
 
-        // Then i receive the content of the blob
-        assertEquals(Status.OK.getStatusCode(), response.getStatus());
-        assertEquals("one", response.getEntity(String.class));
+            // Then i receive the content of the blob
+            assertEquals(Status.OK.getStatusCode(), response.getStatus());
+            assertEquals("one", response.getEntity(String.class));
+        }
 
-        response = getResponse(RequestType.GET, "path" + doc.getPathAsString() + "/@blob/mb:blobs/1/content");
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "path" + doc.getPathAsString() + "/@blob/mb:blobs/1/content")) {
 
-        assertEquals(Status.OK.getStatusCode(), response.getStatus());
-        assertEquals("two", response.getEntity(String.class));
-
+            assertEquals(Status.OK.getStatusCode(), response.getStatus());
+            assertEquals("two", response.getEntity(String.class));
+        }
     }
 
     @Test
@@ -120,17 +126,18 @@ public class MultiBlobAccessTest extends BaseTest {
         // Given a doc with a blob
 
         // When i send a PUT with a new value on the blob
-        FormDataMultiPart form = new FormDataMultiPart();
-        BodyPart fdp = new StreamDataBodyPart("content", new ByteArrayInputStream("modifiedData".getBytes()));
-        form.bodyPart(fdp);
-        getResponse(RequestType.PUT, "path" + doc.getPathAsString() + "/@blob/mb:blobs/0/content", form);
-        form.close();
-
-        // The the blob is updated
-        fetchInvalidations();
-        doc = getTestBlob();
-        Blob blob = (Blob) doc.getPropertyValue("mb:blobs/0/content");
-        assertEquals("modifiedData", blob.getString());
+        try (FormDataMultiPart form = new FormDataMultiPart()) {
+            BodyPart fdp = new StreamDataBodyPart("content", new ByteArrayInputStream("modifiedData".getBytes()));
+            form.bodyPart(fdp);
+            try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                    "path" + doc.getPathAsString() + "/@blob/mb:blobs/0/content", form)) {
+                // The the blob is updated
+                fetchInvalidations();
+                doc = getTestBlob();
+                Blob blob = (Blob) doc.getPropertyValue("mb:blobs/0/content");
+                assertEquals("modifiedData", blob.getString());
+            }
+        }
     }
 
     @Test
@@ -138,13 +145,15 @@ public class MultiBlobAccessTest extends BaseTest {
         // Given a doc with a blob
 
         // When i send A DELETE command on its blob
-        getResponse(RequestType.DELETE, "path" + doc.getPathAsString() + "/@blob/mb:blobs/0/content");
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE,
+                "path" + doc.getPathAsString() + "/@blob/mb:blobs/0/content")) {
 
-        // The the blob is reset
-        fetchInvalidations();
-        doc = getTestBlob();
-        Blob blob = (Blob) doc.getPropertyValue("mb:blobs/0/content");
-        assertNull(blob);
+            // The the blob is reset
+            fetchInvalidations();
+            doc = getTestBlob();
+            Blob blob = (Blob) doc.getPropertyValue("mb:blobs/0/content");
+            assertNull(blob);
+        }
     }
 
     private DocumentModel getTestBlob() {
@@ -170,21 +179,27 @@ public class MultiBlobAccessTest extends BaseTest {
         TransactionHelper.startTransaction();
 
         // When i call the rest api
-        ClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString() + "/@blob/blobholder:0");
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "path" + doc.getPathAsString() + "/@blob/blobholder:0")) {
 
-        // Then i receive the content of the blob
-        assertEquals(Status.OK.getStatusCode(), response.getStatus());
-        assertEquals("main", response.getEntity(String.class));
+            // Then i receive the content of the blob
+            assertEquals(Status.OK.getStatusCode(), response.getStatus());
+            assertEquals("main", response.getEntity(String.class));
+        }
 
-        response = getResponse(RequestType.GET, "path" + doc.getPathAsString() + "/@blob/blobholder:1");
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "path" + doc.getPathAsString() + "/@blob/blobholder:1")) {
 
-        assertEquals(Status.OK.getStatusCode(), response.getStatus());
-        assertEquals("one", response.getEntity(String.class));
+            assertEquals(Status.OK.getStatusCode(), response.getStatus());
+            assertEquals("one", response.getEntity(String.class));
+        }
 
-        response = getResponse(RequestType.GET, "path" + doc.getPathAsString() + "/@blob/blobholder:2");
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "path" + doc.getPathAsString() + "/@blob/blobholder:2")) {
 
-        assertEquals(Status.OK.getStatusCode(), response.getStatus());
-        assertEquals("two", response.getEntity(String.class));
+            assertEquals(Status.OK.getStatusCode(), response.getStatus());
+            assertEquals("two", response.getEntity(String.class));
+        }
     }
 
 }

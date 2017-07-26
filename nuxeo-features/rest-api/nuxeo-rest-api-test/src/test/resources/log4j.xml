@@ -19,20 +19,13 @@
     </layout>
   </appender>
 
-  <category name="org.nuxeo.ecm.core.transientstore" additivity="false">
-    <priority value="TRACE" />
-    <appender-ref ref="FILE" />
-  </category>
-
-  <category name="org.nuxeo.ecm.core.redis" additivity="false">
-    <priority value="TRACE" />
-    <appender-ref ref="FILE" />
-  </category>
-
+  <!-- Uncomment to log the Apache HTTP client traffic -->
+  <!--
   <category name="org.apache.http" additivity="false">
     <priority value="TRACE" />
     <appender-ref ref="FILE" />
   </category>
+  -->
 
   <root>
     <priority value="WARN" />

@@ -30,11 +30,10 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-
-import com.sun.jersey.api.client.ClientResponse;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
@@ -44,95 +43,101 @@ public class IntrospectionTests extends BaseTest {
 
     @Test
     public void itCanFetchSchemas() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET, "/config/schemas");
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        Assert.assertTrue(node.size() > 0);
-        boolean dcFound = false;
-        for (int i = 0; i < node.size(); i++) {
-            if ("dublincore".equals(node.get(i).get("name").getValueAsText())) {
-                dcFound = true;
-                break;
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/config/schemas")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            Assert.assertTrue(node.size() > 0);
+            boolean dcFound = false;
+            for (int i = 0; i < node.size(); i++) {
+                if ("dublincore".equals(node.get(i).get("name").getValueAsText())) {
+                    dcFound = true;
+                    break;
+                }
             }
+            Assert.assertTrue(dcFound);
         }
-        Assert.assertTrue(dcFound);
     }
 
     @Test
     public void itCanFetchASchema() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET, "/config/schemas/dublincore");
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/config/schemas/dublincore")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        String json = IOUtils.toString(response.getEntityInputStream());
-        JsonAssert jsonAssert = JsonAssert.on(json);
+            String json = IOUtils.toString(response.getEntityInputStream());
+            JsonAssert jsonAssert = JsonAssert.on(json);
 
-        jsonAssert.has("name").isEquals("dublincore");
-        jsonAssert.has("@prefix").isEquals("dc");
-        jsonAssert.has("fields.creator").isEquals("string");
-        jsonAssert.has("fields.contributors").isEquals("string[]");
+            jsonAssert.has("name").isEquals("dublincore");
+            jsonAssert.has("@prefix").isEquals("dc");
+            jsonAssert.has("fields.creator").isEquals("string");
+            jsonAssert.has("fields.contributors").isEquals("string[]");
+        }
     }
 
     @Test
     public void itCanFetchFacets() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET, "/config/facets");
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        Assert.assertTrue(node.size() > 0);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/config/facets")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            Assert.assertTrue(node.size() > 0);
 
-        boolean found = false;
-        for (int i = 0; i < node.size(); i++) {
-            if ("HasRelatedText".equals(node.get(i).get("name").getValueAsText())) {
-                found = true;
-                break;
+            boolean found = false;
+            for (int i = 0; i < node.size(); i++) {
+                if ("HasRelatedText".equals(node.get(i).get("name").getValueAsText())) {
+                    found = true;
+                    break;
+                }
             }
+            Assert.assertTrue(found);
         }
-        Assert.assertTrue(found);
     }
 
     @Test
     public void itCanFetchAFacet() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET, "/config/facets/HasRelatedText");
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/config/facets/HasRelatedText")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
 
-        Assert.assertEquals("HasRelatedText", node.get("name").getValueAsText());
-        Assert.assertEquals("relatedtext", node.get("schemas").get(0).get("name").getValueAsText());
+            Assert.assertEquals("HasRelatedText", node.get("name").getValueAsText());
+            Assert.assertEquals("relatedtext", node.get("schemas").get(0).get("name").getValueAsText());
+        }
     }
 
     @Test
     public void itCanFetchTypes() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET, "/config/types");
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/config/types")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
 
-        // the export is done as a compound object rather than an array !
+            // the export is done as a compound object rather than an array !
 
-        Assert.assertTrue(node.has("doctypes"));
-        Assert.assertTrue(node.has("schemas"));
+            Assert.assertTrue(node.has("doctypes"));
+            Assert.assertTrue(node.has("schemas"));
 
-        Assert.assertTrue(node.get("doctypes").has("File"));
-        Assert.assertTrue(node.get("schemas").has("dublincore"));
+            Assert.assertTrue(node.get("doctypes").has("File"));
+            Assert.assertTrue(node.get("schemas").has("dublincore"));
+        }
     }
 
     @Test
     public void itCanFetchAType() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET, "/config/types/File");
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/config/types/File")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
 
-        // the export is done as a compound object rather than an array !
+            // the export is done as a compound object rather than an array !
 
-        Assert.assertEquals("Document", node.get("parent").getValueAsText());
+            Assert.assertEquals("Document", node.get("parent").getValueAsText());
 
-        boolean dcFound = false;
-        JsonNode schemas = node.get("schemas");
-        for (int i = 0; i < schemas.size(); i++) {
-            if ("dublincore".equals(schemas.get(i).get("name").getValueAsText())) {
-                dcFound = true;
-                break;
+            boolean dcFound = false;
+            JsonNode schemas = node.get("schemas");
+            for (int i = 0; i < schemas.size(); i++) {
+                if ("dublincore".equals(schemas.get(i).get("name").getValueAsText())) {
+                    dcFound = true;
+                    break;
+                }
             }
+            Assert.assertTrue(dcFound);
         }
-        Assert.assertTrue(dcFound);
     }
 
 }

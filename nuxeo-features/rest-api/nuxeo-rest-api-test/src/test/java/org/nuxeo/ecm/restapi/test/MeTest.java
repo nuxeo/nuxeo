@@ -28,11 +28,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-
-import com.sun.jersey.api.client.ClientResponse;
 
 /**
  * @since 9.1
@@ -61,37 +60,42 @@ public class MeTest extends BaseUserTest {
     @Test
     public void testUserCanChangePasswordWithCorrectPassword() {
         // When I change password
-        ClientResponse response = getResponse(RequestType.PUT, "/me/changepassword",
-                "{\"oldPassword\": \"" + PASSWORD + "\", \"newPassword\": \"" + NEW_PASSWORD + "\"}");
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/me/changepassword",
+                "{\"oldPassword\": \"" + PASSWORD + "\", \"newPassword\": \"" + NEW_PASSWORD + "\"}")) {
 
-        // Then it returns a OK
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            // Then it returns a OK
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
 
         // And I cannot access current user with old password
-        response = getResponse(RequestType.GET, "/me");
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/me")) {
+            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        }
 
         // When I change I restore password using new password
         service = getServiceFor("user1", NEW_PASSWORD);
-        response = getResponse(RequestType.PUT, "/me/changepassword",
-                "{\"oldPassword\": \"" + NEW_PASSWORD + "\", \"newPassword\": \"" + PASSWORD + "\"}");
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/me/changepassword",
+                "{\"oldPassword\": \"" + NEW_PASSWORD + "\", \"newPassword\": \"" + PASSWORD + "\"}")) {
 
-        // Then it returns a OK
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            // Then it returns a OK
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
     public void testUserCannotChangePasswordWithIncorrectPassword() {
         // When I change password
-        ClientResponse response = getResponse(RequestType.PUT, "/me/changepassword",
-                "{\"oldPassword\": \"" + DUMMY_PASSWORD + "\", \"newPassword\": \"" + NEW_PASSWORD + "\"}");
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/me/changepassword",
+                "{\"oldPassword\": \"" + DUMMY_PASSWORD + "\", \"newPassword\": \"" + NEW_PASSWORD + "\"}")) {
 
-        // Then it returns a UNAUTHORIZED
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            // Then it returns a UNAUTHORIZED
+            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        }
 
         // And the password is unchanged and I can get current user
-        response = getResponse(RequestType.GET, "/me");
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/me")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
     }
 
 }

@@ -54,13 +54,13 @@ import org.nuxeo.ecm.directory.io.DirectoryEntryJsonWriter;
 import org.nuxeo.ecm.directory.io.DirectoryEntryListJsonWriter;
 import org.nuxeo.ecm.directory.io.DirectoryListJsonWriter;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -168,9 +168,10 @@ public class DirectoryTest extends BaseTest {
     @Test
     public void itCannotDeleteDirectoryEntryWithConstraints() throws Exception {
         // When I try to delete an entry which has contraints
-        ClientResponse response = getResponse(RequestType.DELETE, "/directory/continent/europe");
-        // It should fail
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE, "/directory/continent/europe")) {
+            // It should fail
+            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        }
 
         // When I remove all the contraints
         JsonNode node = getResponseAsJson(RequestType.GET, "/directory/country");
@@ -179,13 +180,16 @@ public class DirectoryTest extends BaseTest {
         while (it.hasNext()) {
             JsonNode props = it.next().get("properties");
             if ("europe".equals(props.get("parent").getTextValue())) {
-                response = getResponse(RequestType.DELETE, "/directory/country/" + props.get("id").getTextValue());
-                assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+                try (CloseableClientResponse response = getResponse(RequestType.DELETE,
+                        "/directory/country/" + props.get("id").getTextValue())) {
+                    assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+                }
             }
         }
         // I should be able to delete the entry
-        response = getResponse(RequestType.DELETE, "/directory/continent/europe");
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE, "/directory/continent/europe")) {
+            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
@@ -211,11 +215,11 @@ public class DirectoryTest extends BaseTest {
         String jsonEntry = getDirectoryEntryAsJson(docEntry);
 
         // When i do an update request on the entry endpoint
-        ClientResponse response = getResponse(RequestType.PUT, "/directory/" + TESTDIRNAME + "/" + docEntry.getId(),
-                jsonEntry);
-
-        // Then the entry is updated
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                "/directory/" + TESTDIRNAME + "/" + docEntry.getId(), jsonEntry)) {
+            // Then the entry is updated
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
 
         nextTransaction(); // see committed changes
         docEntry = dirSession.getEntry("test1");
@@ -223,8 +227,10 @@ public class DirectoryTest extends BaseTest {
 
         // update an entry without the `id` field at the root
         String compatJSONEntry = "{\"entity-type\":\"directoryEntry\",\"directoryName\":\"testdir\",\"properties\":{\"id\":\"test1\",\"label\":\"another label\"}}";
-        response = getResponse(RequestType.PUT, "/directory/" + TESTDIRNAME + "/" + docEntry.getId(), compatJSONEntry);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                "/directory/" + TESTDIRNAME + "/" + docEntry.getId(), compatJSONEntry)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
 
         nextTransaction(); // see committed changes
         docEntry = dirSession.getEntry(docEntry.getId());
@@ -241,9 +247,10 @@ public class DirectoryTest extends BaseTest {
 
             docEntry.setPropertyValue("intIdSchema:label", "new label");
             String jsonEntry = getDirectoryEntryAsJson(INT_ID_TEST_DIR_NAME, docEntry);
-            ClientResponse response = getResponse(RequestType.PUT,
-                    "/directory/" + INT_ID_TEST_DIR_NAME + "/" + docEntry.getId(), jsonEntry);
-            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                    "/directory/" + INT_ID_TEST_DIR_NAME + "/" + docEntry.getId(), jsonEntry)) {
+                assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            }
 
             nextTransaction(); // see committed changes
             docEntry = dirSession.getEntry(docEntry.getId());
@@ -261,10 +268,10 @@ public class DirectoryTest extends BaseTest {
         String jsonEntry = getDirectoryEntryAsJson(docEntry);
 
         // When i do an update request on the entry endpoint
-        ClientResponse response = getResponse(RequestType.POST, "/directory/" + TESTDIRNAME, jsonEntry);
-
-        // Then the entry is updated
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/directory/" + TESTDIRNAME, jsonEntry)) {
+            // Then the entry is updated
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        }
 
         nextTransaction(); // see committed changes
         docEntry = dirSession.getEntry("newtest");
@@ -279,24 +286,27 @@ public class DirectoryTest extends BaseTest {
         assertNotNull(docEntry);
 
         // When i do a DELETE request on the entry endpoint
-        getResponse(RequestType.DELETE, "/directory/" + TESTDIRNAME + "/" + docEntry.getId());
-
-        // Then the entry is deleted
-        nextTransaction(); // see committed changes
-        assertNull(dirSession.getEntry("test2"));
-
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE,
+                "/directory/" + TESTDIRNAME + "/" + docEntry.getId())) {
+            // Then the entry is deleted
+            nextTransaction(); // see committed changes
+            assertNull(dirSession.getEntry("test2"));
+        }
     }
 
     @Test
     public void itSends404OnnotExistentDirectory() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET, "/directory/nonexistendirectory");
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/directory/nonexistendirectory")) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
     public void itSends404OnnotExistentDirectoryEntry() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET, "/directory/" + TESTDIRNAME + "/nonexistententry");
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "/directory/" + TESTDIRNAME + "/nonexistententry")) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
@@ -309,21 +319,24 @@ public class DirectoryTest extends BaseTest {
         String jsonEntry = getDirectoryEntryAsJson(docEntry);
 
         // When i do an update request on the entry endpoint
-        ClientResponse response = getResponse(RequestType.PUT, "/directory/" + TESTDIRNAME + "/" + docEntry.getId(),
-                jsonEntry);
-        // Then it is unauthorized
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                "/directory/" + TESTDIRNAME + "/" + docEntry.getId(), jsonEntry)) {
+            // Then it is unauthorized
+            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        }
 
         // When i do an create request on the entry endpoint
-        response = getResponse(RequestType.POST, "/directory/" + TESTDIRNAME, jsonEntry);
-        // Then it is unauthorized
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/directory/" + TESTDIRNAME, jsonEntry)) {
+            // Then it is unauthorized
+            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        }
 
         // When i do an delete request on the entry endpoint
-        response = getResponse(RequestType.DELETE, "/directory/" + TESTDIRNAME + "/" + docEntry.getId());
-        // Then it is unauthorized
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
-
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE,
+                "/directory/" + TESTDIRNAME + "/" + docEntry.getId())) {
+            // Then it is unauthorized
+            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
@@ -336,10 +349,11 @@ public class DirectoryTest extends BaseTest {
         String jsonEntry = getDirectoryEntryAsJson(userDirectoryName, model);
 
         // When i do an update request on it
-        ClientResponse response = getResponse(RequestType.POST, "/directory/" + userDirectoryName, jsonEntry);
-        // Then it is unauthorized
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
-
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/directory/" + userDirectoryName,
+                jsonEntry)) {
+            // Then it is unauthorized
+            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
@@ -365,10 +379,11 @@ public class DirectoryTest extends BaseTest {
         String jsonEntry = getDirectoryEntryAsJson(groupDirectoryName, model);
 
         // When i do an create request on it
-        ClientResponse response = getResponse(RequestType.POST, "/directory/" + groupDirectoryName, jsonEntry);
-        // Then it is unauthorized
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
-
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/directory/" + groupDirectoryName,
+                jsonEntry)) {
+            // Then it is unauthorized
+            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        }
     }
 
     private String getDirectoryEntryAsJson(DocumentModel dirEntry) throws IOException, JsonGenerationException {

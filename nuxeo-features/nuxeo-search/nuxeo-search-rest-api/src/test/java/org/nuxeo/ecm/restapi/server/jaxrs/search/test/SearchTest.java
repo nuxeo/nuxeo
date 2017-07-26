@@ -45,6 +45,7 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.restapi.server.jaxrs.search.QueryExecutor;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -98,12 +99,13 @@ public class SearchTest extends BaseTest {
         // Given a repository, when I perform a query in NXQL on it
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("query", "SELECT * FROM Document WHERE ecm:isVersion = 0");
-        ClientResponse response = getResponse(RequestType.GET, QUERY_EXECUTE_PATH, queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, QUERY_EXECUTE_PATH, queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(20, getLogEntries(node).size());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(20, getLogEntries(node).size());
+        }
 
         // Given parameters as page size and ordered parameters
         queryParams.clear();
@@ -112,12 +114,13 @@ public class SearchTest extends BaseTest {
         queryParams.add("query", "select * from Document where " + "dc:creator = ?");
 
         // Given a repository, when I perform a query in NXQL on it
-        response = getResponse(RequestType.GET, QUERY_EXECUTE_PATH, queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, QUERY_EXECUTE_PATH, queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     @Test
@@ -134,12 +137,13 @@ public class SearchTest extends BaseTest {
         queryParams.add("note1", "Note 1");
         queryParams.add("note2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());
-        ClientResponse response = getResponse(RequestType.GET, QUERY_EXECUTE_PATH, queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, QUERY_EXECUTE_PATH, queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     @Test
@@ -148,18 +152,19 @@ public class SearchTest extends BaseTest {
         DocumentModel folder = RestServerInit.getFolder(1, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("queryParams", folder.getId());
-        ClientResponse response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP"),
-                queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP"),
+                queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        List<JsonNode> entries = getLogEntries(node);
-        assertEquals(2, entries.size());
-        JsonNode jsonNode = entries.get(0);
-        assertEquals("Note 2", jsonNode.get("title").getValueAsText());
-        jsonNode = entries.get(1);
-        assertEquals("Note 1", jsonNode.get("title").getValueAsText());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            List<JsonNode> entries = getLogEntries(node);
+            assertEquals(2, entries.size());
+            JsonNode jsonNode = entries.get(0);
+            assertEquals("Note 2", jsonNode.get("title").getValueAsText());
+            jsonNode = entries.get(1);
+            assertEquals("Note 1", jsonNode.get("title").getValueAsText());
+        }
     }
 
     /**
@@ -167,31 +172,35 @@ public class SearchTest extends BaseTest {
      */
     @Test
     public void iCanPerformPageProviderOnRepositoryWithOffset() throws IOException {
+        ArrayNode notes;
         // Given a repository, when I fetched the first page
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add(QueryExecutor.CURRENT_PAGE_OFFSET, "0");
         queryParams.add(QueryExecutor.PAGE_SIZE, "" + RestServerInit.MAX_FILE);
-        ClientResponse response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP_ALL_NOTE"),
-                queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("TEST_PP_ALL_NOTE"), queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        ArrayNode notes = (ArrayNode) node.get("entries");
-        assertEquals(RestServerInit.MAX_FILE, notes.size());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            notes = (ArrayNode) node.get("entries");
+            assertEquals(RestServerInit.MAX_FILE, notes.size());
+        }
 
         // Then I can retrieve the same result using offset
         for (int i = 0; i < RestServerInit.MAX_FILE; i++) {
             queryParams = new MultivaluedMapImpl();
             queryParams.add(QueryExecutor.CURRENT_PAGE_OFFSET, i + "");
             queryParams.add(QueryExecutor.PAGE_SIZE, "1");
-            response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP_ALL_NOTE"), queryParams);
+            try (CloseableClientResponse response = getResponse(RequestType.GET,
+                    getSearchPageProviderExecutePath("TEST_PP_ALL_NOTE"), queryParams)) {
 
-            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            node = mapper.readTree(response.getEntityInputStream());
-            assertEquals(1, getLogEntries(node).size());
-            String retrievedTitle = ((ArrayNode) node.get("entries")).get(0).get("title").getTextValue();
-            assertEquals(notes.get(i).get("title").getTextValue(), retrievedTitle);
+                assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+                JsonNode node = mapper.readTree(response.getEntityInputStream());
+                assertEquals(1, getLogEntries(node).size());
+                String retrievedTitle = ((ArrayNode) node.get("entries")).get(0).get("title").getTextValue();
+                assertEquals(notes.get(i).get("title").getTextValue(), retrievedTitle);
+            }
         }
 
         // Then I can retrieve the same result using offset and NXQL
@@ -200,13 +209,14 @@ public class SearchTest extends BaseTest {
             queryParams.add(QueryExecutor.CURRENT_PAGE_OFFSET, i + "");
             queryParams.add(QueryExecutor.PAGE_SIZE, "1");
             queryParams.putSingle("query", "SELECT * FROM Note WHERE ecm:isVersion = 0 ORDER BY dc:title ASC");
-            response = getResponse(RequestType.GET, QUERY_EXECUTE_PATH, queryParams);
+            try (CloseableClientResponse response = getResponse(RequestType.GET, QUERY_EXECUTE_PATH, queryParams)) {
 
-            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            node = mapper.readTree(response.getEntityInputStream());
-            assertEquals(1, getLogEntries(node).size());
-            String retrievedTitle = ((ArrayNode) node.get("entries")).get(0).get("title").getTextValue();
-            assertEquals(notes.get(i).get("title").getTextValue(), retrievedTitle);
+                assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+                JsonNode node = mapper.readTree(response.getEntityInputStream());
+                assertEquals(1, getLogEntries(node).size());
+                String retrievedTitle = ((ArrayNode) node.get("entries")).get(0).get("title").getTextValue();
+                assertEquals(notes.get(i).get("title").getTextValue(), retrievedTitle);
+            }
         }
     }
 
@@ -218,18 +228,19 @@ public class SearchTest extends BaseTest {
         queryParams.add("queryParams", folder.getId());
         queryParams.add("sortBy", "dc:title");
         queryParams.add("sortOrder", "asc");
-        ClientResponse response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP"),
-                queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP"),
+                queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        List<JsonNode> entries = getLogEntries(node);
-        assertEquals(2, entries.size());
-        JsonNode jsonNode = entries.get(0);
-        assertEquals("Note 1", jsonNode.get("title").getValueAsText());
-        jsonNode = entries.get(1);
-        assertEquals("Note 2", jsonNode.get("title").getValueAsText());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            List<JsonNode> entries = getLogEntries(node);
+            assertEquals(2, entries.size());
+            JsonNode jsonNode = entries.get(0);
+            assertEquals("Note 1", jsonNode.get("title").getValueAsText());
+            jsonNode = entries.get(1);
+            assertEquals("Note 2", jsonNode.get("title").getValueAsText());
+        }
     }
 
     @Test
@@ -240,13 +251,14 @@ public class SearchTest extends BaseTest {
         queryParams.add("note1", "Note 1");
         queryParams.add("note2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());
-        ClientResponse response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP_PARAM"),
-                queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("TEST_PP_PARAM"), queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     @Test
@@ -256,20 +268,21 @@ public class SearchTest extends BaseTest {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("quickFilters", "testQF,testQF2");
         queryParams.add("parentIdVar", folder.getId());
-        ClientResponse response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP_QUICK_FILTER"),
-                queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("TEST_PP_QUICK_FILTER"), queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
 
-        assertTrue(node.get("quickFilters").isArray());
-        assertEquals(3, node.get("quickFilters").size());
-        for (JsonNode qf : node.get("quickFilters")) {
-            String name = qf.get("name").getTextValue();
-            boolean active = qf.get("active").getBooleanValue();
-            assertEquals("testQF".equals(name) || "testQF2".equals(name), active);
+            assertTrue(node.get("quickFilters").isArray());
+            assertEquals(3, node.get("quickFilters").size());
+            for (JsonNode qf : node.get("quickFilters")) {
+                String name = qf.get("name").getTextValue();
+                boolean active = qf.get("active").getBooleanValue();
+                assertEquals("testQF".equals(name) || "testQF2".equals(name), active);
+            }
         }
     }
 
@@ -281,19 +294,22 @@ public class SearchTest extends BaseTest {
         // Given a repository, when I perform a pageprovider on it
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("quickFilters", "testQF,testQF2");
-        ClientResponse response = getResponse(RequestType.GET,
-                getSearchPageProviderExecutePath("TEST_PP_QUICK_FILTER2"), queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("TEST_PP_QUICK_FILTER2"), queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
 
-        response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP_QUICK_FILTER2"));
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("TEST_PP_QUICK_FILTER2"))) {
 
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(20, getLogEntries(node).size());
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(20, getLogEntries(node).size());
+        }
     }
 
     /**
@@ -301,96 +317,108 @@ public class SearchTest extends BaseTest {
      */
     @Test
     public void iCanUseAssociativeQuickFilter() throws IOException {
+        int nbResults;
         // Given a repository, when I perform a pageprovider on it with quick filters
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("quickFilters", "testQF4,testQF");
-        ClientResponse response = getResponse(RequestType.GET,
-                getSearchPageProviderExecutePath("TEST_PP_QUICK_FILTER2"), queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("TEST_PP_QUICK_FILTER2"), queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        int nbResult = getLogEntries(node).size();
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            nbResults = getLogEntries(node).size();
+        }
 
-        // When I set the quick filtes the toeher way around
+        // When I set the quick filters the other way around
         queryParams = new MultivaluedMapImpl();
         queryParams.add("quickFilters", "testQF,testQF4");
-        response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP_QUICK_FILTER2"), queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("TEST_PP_QUICK_FILTER2"), queryParams)) {
 
-        // Then I expect the same number of result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(nbResult, getLogEntries(node).size());
+            // Then I expect the same number of result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(nbResults, getLogEntries(node).size());
+        }
     }
 
     @Test
     public void iCanPerformPageProviderWithNamedParametersInvalid() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET,
-                getSearchPageProviderExecutePath("namedParamProviderInvalid"));
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(
-                "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38",
-                getErrorMessage(node));
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("namedParamProviderInvalid"))) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(
+                    "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38",
+                    getErrorMessage(node));
+        }
     }
 
     @Test
     public void iCanPerformPageProviderWithNamedParametersAndDoc() throws Exception {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("np:title", "Folder 0");
-        ClientResponse response = getResponse(RequestType.GET,
-                getSearchPageProviderExecutePath("namedParamProviderWithDoc"), queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("namedParamProviderWithDoc"), queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, getLogEntries(node).size());
+        }
     }
 
     @Test
     public void iCanPerformPageProviderWithNamedParametersAndDocInvalid() throws Exception {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("np:title", "Folder 0");
-        ClientResponse response = getResponse(RequestType.GET,
-                getSearchPageProviderExecutePath("namedParamProviderWithDocInvalid"), queryParams);
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(
-                "Failed to execute query: SELECT * FROM Document where dc:title=:foo, Lexical Error: Illegal character <:> at offset 38",
-                getErrorMessage(node));
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("namedParamProviderWithDocInvalid"), queryParams)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(
+                    "Failed to execute query: SELECT * FROM Document where dc:title=:foo, Lexical Error: Illegal character <:> at offset 38",
+                    getErrorMessage(node));
+        }
     }
 
     @Test
     public void iCanPerformPageProviderWithNamedParametersInWhereClause() throws Exception {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("parameter1", "Folder 0");
-        ClientResponse response = getResponse(RequestType.GET,
-                getSearchPageProviderExecutePath("namedParamProviderWithWhereClause"), queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("namedParamProviderWithWhereClause"), queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, getLogEntries(node).size());
+        }
 
         // retry without params
-        response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("namedParamProviderWithWhereClause"));
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("namedParamProviderWithWhereClause"))) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     @Test
     public void iCanPerformPageProviderWithNamedParametersInWhereClauseWithDoc() throws Exception {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("np:title", "Folder 0");
-        ClientResponse response = getResponse(RequestType.GET,
-                getSearchPageProviderExecutePath("namedParamProviderWithWhereClauseWithDoc"), queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("namedParamProviderWithWhereClauseWithDoc"), queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, getLogEntries(node).size());
+        }
 
         // retry without params
-        response = getResponse(RequestType.GET,
-                getSearchPageProviderExecutePath("namedParamProviderWithWhereClauseWithDoc"));
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("namedParamProviderWithWhereClauseWithDoc"))) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     @Test
@@ -400,37 +428,43 @@ public class SearchTest extends BaseTest {
         queryParams.add("np:isCheckedIn", Boolean.FALSE.toString());
         queryParams.add("np:dateMin", "2007-01-30 01:02:03+04:00");
         queryParams.add("np:dateMax", "2007-03-23 01:02:03+04:00");
-        ClientResponse response = getResponse(RequestType.GET,
-                getSearchPageProviderExecutePath("namedParamProviderComplex"), queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("namedParamProviderComplex"), queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, getLogEntries(node).size());
+        }
 
         // remove filter on dates
         queryParams.remove("np:dateMin");
         queryParams.remove("np:dateMax");
-        response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("namedParamProviderComplex"),
-                queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("namedParamProviderComplex"), queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, getLogEntries(node).size());
+
+        }
 
         queryParams.remove("parameter1");
-        response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("namedParamProviderComplex"),
-                queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("namedParamProviderComplex"), queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     @Test
     public void iCanGetPageProviderDefinition() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET, getSearchPageProviderPath("namedParamProviderComplex"));
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
-        PageProviderDefinition def = pageProviderService.getPageProviderDefinition("namedParamProviderComplex");
-        assertEquals(def.getName(), node.get("name").getTextValue());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderPath("namedParamProviderComplex"))) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
+            PageProviderDefinition def = pageProviderService.getPageProviderDefinition("namedParamProviderComplex");
+            assertEquals(def.getName(), node.get("name").getTextValue());
+        }
     }
 
     @Test
@@ -440,16 +474,17 @@ public class SearchTest extends BaseTest {
                 + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"2\"\n," + "  \"contentViewData\": \"{"
                 + "\\\"viewVar\\\": \\\"value\\\"" + "}\"\n" + "}";
 
-        ClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("savedSearch", node.get("entity-type").getTextValue());
-        assertEquals("search by query", node.get("title").getTextValue());
-        assertEquals("select * from Document where dc:creator = ?", node.get("query").getTextValue());
-        assertEquals("NXQL", node.get("queryLanguage").getTextValue());
-        assertEquals("$currentUser", node.get("queryParams").getTextValue());
-        assertEquals("2", node.get("pageSize").getTextValue());
-        assertEquals("{\"viewVar\": \"value\"}", node.get("contentViewData").getTextValue());
+        try (CloseableClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("savedSearch", node.get("entity-type").getTextValue());
+            assertEquals("search by query", node.get("title").getTextValue());
+            assertEquals("select * from Document where dc:creator = ?", node.get("query").getTextValue());
+            assertEquals("NXQL", node.get("queryLanguage").getTextValue());
+            assertEquals("$currentUser", node.get("queryParams").getTextValue());
+            assertEquals("2", node.get("pageSize").getTextValue());
+            assertEquals("{\"viewVar\": \"value\"}", node.get("contentViewData").getTextValue());
+        }
     }
 
     @Test
@@ -459,14 +494,15 @@ public class SearchTest extends BaseTest {
                 + "  \"pageProviderName\": \"TEST_PP\",\n" + "  \"queryParams\": \"" + folder.getId() + "\",\n"
                 + "  \"contentViewData\": \"{" + "\\\"viewVar\\\": \\\"value\\\"" + "}\"\n" + "}";
 
-        ClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("savedSearch", node.get("entity-type").getTextValue());
-        assertEquals("search by page provider", node.get("title").getTextValue());
-        assertEquals("TEST_PP", node.get("pageProviderName").getTextValue());
-        assertEquals(folder.getId(), node.get("queryParams").getTextValue());
-        assertEquals("{\"viewVar\": \"value\"}", node.get("contentViewData").getTextValue());
+        try (CloseableClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("savedSearch", node.get("entity-type").getTextValue());
+            assertEquals("search by page provider", node.get("title").getTextValue());
+            assertEquals("TEST_PP", node.get("pageProviderName").getTextValue());
+            assertEquals(folder.getId(), node.get("queryParams").getTextValue());
+            assertEquals("{\"viewVar\": \"value\"}", node.get("contentViewData").getTextValue());
+        }
     }
 
     @Test
@@ -477,19 +513,20 @@ public class SearchTest extends BaseTest {
                 + "  \"contentViewData\": \"{" + "\\\"viewVar\\\": \\\"value\\\"" + "}\"\n" + "}";
         Map<String, String> headers = new HashMap<>();
         headers.put("x-nxdocumentproperties", "default_search");
-        ClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data, headers);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("savedSearch", node.get("entity-type").getTextValue());
-        assertEquals("search by page provider 2", node.get("title").getTextValue());
-        assertEquals("default_search", node.get("pageProviderName").getTextValue());
-        assertEquals("2", node.get("pageSize").getTextValue());
-        assertEquals("{\"viewVar\": \"value\"}", node.get("contentViewData").getTextValue());
-        assertTrue(node.has("params"));
-        node = node.get("params");
-        assertEquals("Note*", node.get("defaults:ecm_fulltext").getTextValue());
-        assertEquals(1, node.get("defaults:dc_modified_agg").size());
-        assertEquals("last24h", node.get("defaults:dc_modified_agg").get(0).getTextValue());
+        try (CloseableClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data, headers)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("savedSearch", node.get("entity-type").getTextValue());
+            assertEquals("search by page provider 2", node.get("title").getTextValue());
+            assertEquals("default_search", node.get("pageProviderName").getTextValue());
+            assertEquals("2", node.get("pageSize").getTextValue());
+            assertEquals("{\"viewVar\": \"value\"}", node.get("contentViewData").getTextValue());
+            assertTrue(node.has("params"));
+            node = node.get("params");
+            assertEquals("Note*", node.get("defaults:ecm_fulltext").getTextValue());
+            assertEquals(1, node.get("defaults:dc_modified_agg").size());
+            assertEquals("last24h", node.get("defaults:dc_modified_agg").get(0).getTextValue());
+        }
     }
 
     @Test
@@ -497,80 +534,90 @@ public class SearchTest extends BaseTest {
         String data = "{\n" + "  \"entity-type\": \"savedSearch\",\n"
                 + "  \"query\": \"select * from Document where dc:creator = ?\",\n" + "  \"queryLanguage\": \"NXQL\",\n"
                 + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"2\"\n" + "}";
-        ClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data);
-        assertInvalidTitle(response);
+        try (CloseableClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data)) {
+            assertInvalidTitle(response);
 
-        data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
-                + "  \"query\": \"select * from Document where dc:creator = ?\",\n" + "  \"queryLanguage\": \"NXQL\",\n"
-                + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"2\",\n"
-                + "  \"pageProviderName\": \"TEST_PP\"\n" + "}";
-        response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data);
-        assertMixedQueryAndPageProvider(response);
+            data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
+                    + "  \"query\": \"select * from Document where dc:creator = ?\",\n"
+                    + "  \"queryLanguage\": \"NXQL\",\n" + "  \"queryParams\": \"$currentUser\",\n"
+                    + "  \"pageSize\": \"2\",\n" + "  \"pageProviderName\": \"TEST_PP\"\n" + "}";
+        }
+        try (CloseableClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data)) {
+            assertMixedQueryAndPageProvider(response);
+        }
 
         data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
                 + "  \"query\": \"select * from Document where dc:creator = ?\",\n"
                 + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"2\",\n"
                 + "  \"pageProviderName\": \"TEST_PP\"\n" + "}";
-        response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data);
-        assertMixedQueryAndPageProvider(response);
+        try (CloseableClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data)) {
+            assertMixedQueryAndPageProvider(response);
+        }
 
         data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
                 + "  \"queryLanguage\": \"NXQL\",\n" + "  \"queryParams\": \"$currentUser\",\n"
                 + "  \"pageSize\": \"2\",\n" + "  \"pageProviderName\": \"TEST_PP\"\n" + "}";
-        response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data);
-        assertMixedQueryAndPageProvider(response);
+        try (CloseableClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data)) {
+            assertMixedQueryAndPageProvider(response);
+        }
 
         data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
                 + "  \"query\": \"select * from Document where dc:creator = ?\",\n"
                 + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"2\"\n" + "}";
-        response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data);
-        assertMissingQueryLanguage(response);
+        try (CloseableClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data)) {
+            assertMissingQueryLanguage(response);
+        }
 
         data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
                 + "  \"queryLanguage\": \"NXQL\",\n" + "  \"queryParams\": \"$currentUser\",\n"
                 + "  \"pageSize\": \"2\"\n" + "}";
-        response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data);
-        assertMissingQuery(response);
+        try (CloseableClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data)) {
+            assertMissingQuery(response);
+        }
 
         data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
                 + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"2\"\n" + "}";
-        response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data);
-        assertMissingParams(response);
+        try (CloseableClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data)) {
+            assertMissingParams(response);
+        }
     }
 
     @Test
     public void iCanGetSavedSearchByQuery() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET,
-                getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)));
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("savedSearch", node.get("entity-type").getTextValue());
-        assertEquals("my saved search 1", node.get("title").getTextValue());
-        assertEquals("select * from Document where dc:creator = ?", node.get("query").getTextValue());
-        assertEquals("NXQL", node.get("queryLanguage").getTextValue());
-        assertEquals("$currentUser", node.get("queryParams").getTextValue());
-        assertEquals("2", node.get("pageSize").getTextValue());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)))) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("savedSearch", node.get("entity-type").getTextValue());
+            assertEquals("my saved search 1", node.get("title").getTextValue());
+            assertEquals("select * from Document where dc:creator = ?", node.get("query").getTextValue());
+            assertEquals("NXQL", node.get("queryLanguage").getTextValue());
+            assertEquals("$currentUser", node.get("queryParams").getTextValue());
+            assertEquals("2", node.get("pageSize").getTextValue());
+        }
     }
 
     @Test
     public void iCanGetSavedSearchByPageProvider() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET,
-                getSavedSearchPath(RestServerInit.getSavedSearchId(2, session)));
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("savedSearch", node.get("entity-type").getTextValue());
-        assertEquals("my saved search 2", node.get("title").getTextValue());
-        assertEquals("TEST_PP", node.get("pageProviderName").getTextValue());
-        DocumentModel folder = RestServerInit.getFolder(1, session);
-        assertEquals(folder.getId(), node.get("queryParams").getTextValue());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSavedSearchPath(RestServerInit.getSavedSearchId(2, session)))) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("savedSearch", node.get("entity-type").getTextValue());
+            assertEquals("my saved search 2", node.get("title").getTextValue());
+            assertEquals("TEST_PP", node.get("pageProviderName").getTextValue());
+            DocumentModel folder = RestServerInit.getFolder(1, session);
+            assertEquals(folder.getId(), node.get("queryParams").getTextValue());
+        }
     }
 
     @Test
     public void iCantGetSavedSearchInvalidId() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET, getSavedSearchPath("-1"));
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("unknown id: -1", getErrorMessage(node));
+        try (CloseableClientResponse response = getResponse(RequestType.GET, getSavedSearchPath("-1"))) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("unknown id: -1", getErrorMessage(node));
+        }
     }
 
     @Test
@@ -580,18 +627,19 @@ public class SearchTest extends BaseTest {
                 + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"1\",\n" + "  \"contentViewData\": \"{"
                 + "\\\"viewVar\\\": \\\"another value\\\"" + "}\"\n" + "}";
 
-        ClientResponse response = getResponse(RequestType.PUT,
-                getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
 
-        assertEquals("savedSearch", node.get("entity-type").getTextValue());
-        assertEquals("my search 1", node.get("title").getTextValue());
-        assertEquals("select * from Document where dc:creator = ?", node.get("query").getTextValue());
-        assertEquals("NXQL", node.get("queryLanguage").getTextValue());
-        assertEquals("$currentUser", node.get("queryParams").getTextValue());
-        assertEquals("1", node.get("pageSize").getTextValue());
-        assertEquals("{\"viewVar\": \"another value\"}", node.get("contentViewData").getTextValue());
+            assertEquals("savedSearch", node.get("entity-type").getTextValue());
+            assertEquals("my search 1", node.get("title").getTextValue());
+            assertEquals("select * from Document where dc:creator = ?", node.get("query").getTextValue());
+            assertEquals("NXQL", node.get("queryLanguage").getTextValue());
+            assertEquals("$currentUser", node.get("queryParams").getTextValue());
+            assertEquals("1", node.get("pageSize").getTextValue());
+            assertEquals("{\"viewVar\": \"another value\"}", node.get("contentViewData").getTextValue());
+        }
     }
 
     @Test
@@ -600,15 +648,16 @@ public class SearchTest extends BaseTest {
                 + "  \"pageProviderName\": \"TEST_PP\",\n" + "  \"contentViewData\": \"{"
                 + "\\\"viewVar\\\": \\\"another value\\\"" + "}\"\n" + "}";
 
-        ClientResponse response = getResponse(RequestType.PUT,
-                getSavedSearchPath(RestServerInit.getSavedSearchId(2, session)), data);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("savedSearch", node.get("entity-type").getTextValue());
-        assertEquals("my search 2", node.get("title").getTextValue());
-        assertEquals("TEST_PP", node.get("pageProviderName").getTextValue());
-        assertNull(node.get("queryParams").getTextValue());
-        assertEquals("{\"viewVar\": \"another value\"}", node.get("contentViewData").getTextValue());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                getSavedSearchPath(RestServerInit.getSavedSearchId(2, session)), data)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("savedSearch", node.get("entity-type").getTextValue());
+            assertEquals("my search 2", node.get("title").getTextValue());
+            assertEquals("TEST_PP", node.get("pageProviderName").getTextValue());
+            assertNull(node.get("queryParams").getTextValue());
+            assertEquals("{\"viewVar\": \"another value\"}", node.get("contentViewData").getTextValue());
+        }
     }
 
     @Test
@@ -618,10 +667,11 @@ public class SearchTest extends BaseTest {
                 + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"1\",\n" + "  \"contentViewData\": \"{"
                 + "\\\"viewVar\\\": \\\"another value\\\"" + "}\"\n" + "}";
 
-        ClientResponse response = getResponse(RequestType.PUT, getSavedSearchPath("-1"), data);
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("unknown id: -1", getErrorMessage(node));
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, getSavedSearchPath("-1"), data)) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("unknown id: -1", getErrorMessage(node));
+        }
     }
 
     @Test
@@ -629,88 +679,106 @@ public class SearchTest extends BaseTest {
         String data = "{\n" + "  \"entity-type\": \"savedSearch\",\n"
                 + "  \"query\": \"select * from Document where dc:creator = ?\",\n" + "  \"queryLanguage\": \"NXQL\",\n"
                 + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"1\"\n" + "}";
-        ClientResponse response = getResponse(RequestType.PUT,
-                getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data);
-        assertInvalidTitle(response);
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data)) {
+            assertInvalidTitle(response);
+        }
 
         data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
                 + "  \"query\": \"select * from Document where dc:creator = ?\",\n" + "  \"queryLanguage\": \"NXQL\",\n"
                 + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"2\",\n"
                 + "  \"pageProviderName\": \"TEST_PP\"\n" + "}";
-        response = getResponse(RequestType.PUT, getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data);
-        assertMixedQueryAndPageProvider(response);
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data)) {
+            assertMixedQueryAndPageProvider(response);
+        }
 
         data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
                 + "  \"query\": \"select * from Document where dc:creator = ?\",\n"
                 + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"2\",\n"
                 + "  \"pageProviderName\": \"TEST_PP\"\n" + "}";
-        response = getResponse(RequestType.PUT, getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data);
-        assertMixedQueryAndPageProvider(response);
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data)) {
+            assertMixedQueryAndPageProvider(response);
+        }
 
         data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
                 + "  \"queryLanguage\": \"NXQL\",\n" + "  \"queryParams\": \"$currentUser\",\n"
                 + "  \"pageSize\": \"2\",\n" + "  \"pageProviderName\": \"TEST_PP\"\n" + "}";
-        response = getResponse(RequestType.PUT, getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data);
-        assertMixedQueryAndPageProvider(response);
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data)) {
+            assertMixedQueryAndPageProvider(response);
+        }
 
         data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
                 + "  \"query\": \"select * from Document where dc:creator = ?\",\n"
                 + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"2\"\n" + "}";
-        response = getResponse(RequestType.PUT, getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data);
-        assertMissingQueryLanguage(response);
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data)) {
+            assertMissingQueryLanguage(response);
+        }
 
         data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
                 + "  \"queryLanguage\": \"NXQL\",\n" + "  \"queryParams\": \"$currentUser\",\n"
                 + "  \"pageSize\": \"2\"\n" + "}";
-        response = getResponse(RequestType.PUT, getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data);
-        assertMissingQuery(response);
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data)) {
+            assertMissingQuery(response);
+        }
 
         data = "{\n" + "  \"entity-type\": \"savedSearch\",\n" + "  \"title\": \"search by query\",\n"
                 + "  \"queryParams\": \"$currentUser\",\n" + "  \"pageSize\": \"2\"\n" + "}";
-        response = getResponse(RequestType.PUT, getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data);
-        assertMissingParams(response);
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)), data)) {
+            assertMissingParams(response);
+        }
     }
 
     @Test
     public void iCanDeleteSearch() throws IOException {
-        ClientResponse response = getResponse(RequestType.DELETE,
-                getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)));
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE,
+                getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)))) {
+            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
     public void iCantDeleteSearchInvalidId() throws IOException {
-        ClientResponse response = getResponse(RequestType.DELETE, getSavedSearchPath("-1"));
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE, getSavedSearchPath("-1"))) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
     public void iCanExecuteSavedSearchByQuery() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET,
-                getSavedSearchExecutePath(RestServerInit.getSavedSearchId(1, session)));
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSavedSearchExecutePath(RestServerInit.getSavedSearchId(1, session)))) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     @Test
     public void iCanExecuteSavedSearchByQueryWithParams() throws IOException {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("pageSize", "5");
-        ClientResponse response = getResponse(RequestType.GET,
-                getSavedSearchExecutePath(RestServerInit.getSavedSearchId(1, session)), queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(5, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSavedSearchExecutePath(RestServerInit.getSavedSearchId(1, session)), queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(5, getLogEntries(node).size());
+        }
     }
 
     @Test
     public void iCanExecuteSavedSearchByPageProvider() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET,
-                getSavedSearchExecutePath(RestServerInit.getSavedSearchId(2, session)));
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSavedSearchExecutePath(RestServerInit.getSavedSearchId(2, session)))) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     @Test
@@ -718,40 +786,43 @@ public class SearchTest extends BaseTest {
         // this saved search uses ecm:fulltext so some databases doing async fulltext indexing will need a pause
         coreFeature.getStorageConfiguration().waitForFulltextIndexing();
 
-        ClientResponse response = getResponse(RequestType.GET,
-                getSavedSearchExecutePath(RestServerInit.getSavedSearchId(3, session)));
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSavedSearchExecutePath(RestServerInit.getSavedSearchId(3, session)))) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     @Test
     public void iCanSearchSavedSearches() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET, SAVED_SEARCH_PATH);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertTrue(node.isContainerNode());
-        assertTrue(node.has("entries"));
-        assertTrue(node.get("entries").isArray());
-        assertEquals(3, node.get("entries").size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, SAVED_SEARCH_PATH)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertTrue(node.isContainerNode());
+            assertTrue(node.has("entries"));
+            assertTrue(node.get("entries").isArray());
+            assertEquals(3, node.get("entries").size());
+        }
     }
 
     @Test
     public void iCanSearchSavedSearchesParamPageProvider() throws IOException {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("pageProvider", "TEST_PP");
-        ClientResponse response = getResponse(RequestType.GET, SAVED_SEARCH_PATH, queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertTrue(node.isContainerNode());
-        assertTrue(node.has("entries"));
-        assertTrue(node.get("entries").isArray());
-        assertEquals(1, node.get("entries").size());
-        node = node.get("entries").get(0);
-        assertEquals("my saved search 2", node.get("title").getTextValue());
-        assertEquals("TEST_PP", node.get("pageProviderName").getTextValue());
-        DocumentModel folder = RestServerInit.getFolder(1, session);
-        assertEquals(folder.getId(), node.get("queryParams").getTextValue());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, SAVED_SEARCH_PATH, queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertTrue(node.isContainerNode());
+            assertTrue(node.has("entries"));
+            assertTrue(node.get("entries").isArray());
+            assertEquals(1, node.get("entries").size());
+            node = node.get("entries").get(0);
+            assertEquals("my saved search 2", node.get("title").getTextValue());
+            assertEquals("TEST_PP", node.get("pageProviderName").getTextValue());
+            DocumentModel folder = RestServerInit.getFolder(1, session);
+            assertEquals(folder.getId(), node.get("queryParams").getTextValue());
+        }
     }
 
     private void assertInvalidTitle(ClientResponse response) throws IOException {

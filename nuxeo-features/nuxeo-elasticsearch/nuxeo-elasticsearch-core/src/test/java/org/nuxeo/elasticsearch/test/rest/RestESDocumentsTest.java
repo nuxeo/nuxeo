@@ -57,6 +57,7 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.io.marshallers.json.AggregateJsonWriter;
 import org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -64,8 +65,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import com.sun.jersey.api.client.ClientResponse;
 
 /**
  * Test the various ways to get elasticsearch Json output.
@@ -102,13 +101,14 @@ public class RestESDocumentsTest extends BaseTest {
         DocumentModel doc = RestServerInit.getNote(0, session);
 
         // When i do a GET Request
-        ClientResponse response = getResponse(RequestType.GETES, "id/" + doc.getId());
+        try (CloseableClientResponse response = getResponse(RequestType.GETES, "id/" + doc.getId())) {
 
-        // Then I get the document as Json will all the properties
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        // System.err.println(node.toString());
-        assertEquals("Note 0", node.get("note:note").getTextValue());
+            // Then I get the document as Json will all the properties
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            // System.err.println(node.toString());
+            assertEquals("Note 0", node.get("note:note").getTextValue());
+        }
     }
 
     @Test
@@ -121,16 +121,17 @@ public class RestESDocumentsTest extends BaseTest {
         esa.refresh();
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
         // Given a repository, when I perform a ESQL pageprovider on it
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/aggregates_2");
+        try (CloseableClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/aggregates_2")) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        // Verify results
-        assertEquals(20, getLogEntries(node).size());
-        // And verify contributed aggregates
-        assertEquals("terms", node.get("aggregations").get("coverage").get("type").getTextValue());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            // Verify results
+            assertEquals(20, getLogEntries(node).size());
+            // And verify contributed aggregates
+            assertEquals("terms", node.get("aggregations").get("coverage").get("type").getTextValue());
+        }
     }
 
     /**
@@ -203,34 +204,35 @@ public class RestESDocumentsTest extends BaseTest {
         esa.refresh();
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
         // Given a repository, when I perform a ESQL pageprovider on it
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/aggregates_3", null, null, null,
-                headers);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/aggregates_3", null,
+                null, null, headers)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
 
-        // And verify contributed aggregates
-        assertEquals("terms", node.get("aggregations").get("coverage").get("type").getTextValue());
-        JsonNode bucket = node.get("aggregations").get("coverage").get("buckets").get(0);
-        int docCount = bucket.get("docCount").getIntValue();
-        assertEquals(RestServerInit.MAX_NOTE, docCount);
-        // Check that the key of the bucket which is a l10ncoverage vocabulary entry has been fetch
-        String keyText = bucket.get("key").getTextValue();
-        assertEquals("europe/France", keyText);
-        String fetchedkeyIdText = bucket.get("fetchedKey").get("properties").get("id").getTextValue();
-        assertEquals("France", fetchedkeyIdText);
+            // And verify contributed aggregates
+            assertEquals("terms", node.get("aggregations").get("coverage").get("type").getTextValue());
+            JsonNode bucket = node.get("aggregations").get("coverage").get("buckets").get(0);
+            int docCount = bucket.get("docCount").getIntValue();
+            assertEquals(RestServerInit.MAX_NOTE, docCount);
+            // Check that the key of the bucket which is a l10ncoverage vocabulary entry has been fetch
+            String keyText = bucket.get("key").getTextValue();
+            assertEquals("europe/France", keyText);
+            String fetchedkeyIdText = bucket.get("fetchedKey").get("properties").get("id").getTextValue();
+            assertEquals("France", fetchedkeyIdText);
 
-        // And verify contributed aggregates
-        assertEquals("terms", node.get("aggregations").get("subjects").get("type").getTextValue());
-        JsonNode firstBucket = node.get("aggregations").get("subjects").get("buckets").get(0);
-        docCount = firstBucket.get("docCount").getIntValue();
-        assertEquals(RestServerInit.MAX_NOTE, docCount);
-        // Check that the key of the bucket which is a l10nsubjects vocabulary entry has been fetch
-        keyText = firstBucket.get("key").getTextValue();
-        assertEquals("art/cinema", keyText);
-        fetchedkeyIdText = firstBucket.get("fetchedKey").get("properties").get("id").getTextValue();
-        assertEquals("cinema", fetchedkeyIdText);
+            // And verify contributed aggregates
+            assertEquals("terms", node.get("aggregations").get("subjects").get("type").getTextValue());
+            JsonNode firstBucket = node.get("aggregations").get("subjects").get("buckets").get(0);
+            docCount = firstBucket.get("docCount").getIntValue();
+            assertEquals(RestServerInit.MAX_NOTE, docCount);
+            // Check that the key of the bucket which is a l10nsubjects vocabulary entry has been fetch
+            keyText = firstBucket.get("key").getTextValue();
+            assertEquals("art/cinema", keyText);
+            fetchedkeyIdText = firstBucket.get("fetchedKey").get("properties").get("id").getTextValue();
+            assertEquals("cinema", fetchedkeyIdText);
+        }
     }
 }

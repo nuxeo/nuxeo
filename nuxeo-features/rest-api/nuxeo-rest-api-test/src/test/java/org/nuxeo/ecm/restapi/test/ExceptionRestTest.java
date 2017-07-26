@@ -32,12 +32,11 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-
-import com.sun.jersey.api.client.ClientResponse;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
@@ -51,16 +50,16 @@ public class ExceptionRestTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i do a wrong GET Request
-        ClientResponse response = getResponse(RequestType.GET, "wrongpath" + note.getPathAsString());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "wrongpath" + note.getPathAsString())) {
 
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
 
-        // Then i get an exception and parse it to check json payload
-        assertEquals("exception", node.get("entity-type").getTextValue());
-        assertEquals(TypeNotFoundException.class.getCanonicalName(), node.get("code").getTextValue());
-        assertEquals(500, node.get("status").getIntValue());
-        assertEquals("Type not found: wrongpath",
-                node.get("message").getTextValue());
+            // Then i get an exception and parse it to check json payload
+            assertEquals("exception", node.get("entity-type").getTextValue());
+            assertEquals(TypeNotFoundException.class.getCanonicalName(), node.get("code").getTextValue());
+            assertEquals(500, node.get("status").getIntValue());
+            assertEquals("Type not found: wrongpath", node.get("message").getTextValue());
+        }
     }
 
     @Test
@@ -71,17 +70,18 @@ public class ExceptionRestTest extends BaseTest {
         }
 
         // When I do a request with a wrong document ID
-        ClientResponse response = getResponse(RequestType.GET, "path" + "/wrongID");
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "path" + "/wrongID")) {
 
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
 
-        // Then i get an exception and parse it to check json payload
-        assertEquals("exception", node.get("entity-type").getTextValue());
-        assertEquals(DocumentNotFoundException.class.getCanonicalName(), node.get("code").getTextValue());
-        assertEquals(404, node.get("status").getIntValue());
-        assertEquals("/wrongID", node.get("message").getTextValue());
-        assertNotNull(node.get("stacktrace").getTextValue());
-        assertEquals(DocumentNotFoundException.class.getCanonicalName(),
-                node.get("exception").get("className").getTextValue());
+            // Then i get an exception and parse it to check json payload
+            assertEquals("exception", node.get("entity-type").getTextValue());
+            assertEquals(DocumentNotFoundException.class.getCanonicalName(), node.get("code").getTextValue());
+            assertEquals(404, node.get("status").getIntValue());
+            assertEquals("/wrongID", node.get("message").getTextValue());
+            assertNotNull(node.get("stacktrace").getTextValue());
+            assertEquals(DocumentNotFoundException.class.getCanonicalName(),
+                    node.get("exception").get("className").getTextValue());
+        }
     }
 }

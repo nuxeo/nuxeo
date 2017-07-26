@@ -38,13 +38,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -65,10 +65,11 @@ public class AuthenticationTokensTest extends BaseTest {
     @Test
     public void itCanQueryTokens() throws Exception {
         // Check empty token list
-        ClientResponse response = getResponse(RequestType.GET, "/token");
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(0, getEntries("tokens", node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/token")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(0, getEntries("tokens", node).size());
+        }
 
         // acquire some tokens
         String token1 = tokenAuthenticationService.acquireToken("Administrator", "app1", "device1", "", "rw");
@@ -96,8 +97,9 @@ public class AuthenticationTokensTest extends BaseTest {
         nextTransaction();
 
         // delete it
-        ClientResponse response = getResponse(RequestType.DELETE, "/token/" + token1);
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE, "/token/" + token1)) {
+            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        }
 
         // check no tokens
         List<JsonNode> tokens = getTokens();
@@ -111,10 +113,11 @@ public class AuthenticationTokensTest extends BaseTest {
         params.put("application", Collections.singletonList("app"));
         params.put("deviceId", Collections.singletonList("device"));
         params.put("permission", Collections.singletonList("rw"));
-        ClientResponse response = getResponse(RequestType.POST, "/token", null, params, null, null);
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-        String tokenId = response.getEntity(String.class);
-        assertFalse(tokenId.isEmpty());
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/token", null, params, null, null)) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            String tokenId = response.getEntity(String.class);
+            assertFalse(tokenId.isEmpty());
+        }
 
         // check tokens for current user
         List<JsonNode> tokens = getTokens();
