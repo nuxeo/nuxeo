@@ -14,13 +14,12 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import com.sun.jersey.api.client.ClientResponse;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
@@ -32,10 +31,11 @@ public class RestApiTargetPlatformTest extends BaseTest {
 
     @Test
     public void doGetPublic() throws IOException {
-        ClientResponse response = getResponse(RequestType.GET, "target-platforms/public");
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "target-platforms/public")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertTrue(node.isArray());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertTrue(node.isArray());
+        }
     }
 }
