@@ -39,7 +39,6 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateBlob;
@@ -71,7 +70,6 @@ import com.sun.jersey.multipart.file.StreamDataBodyPart;
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @LocalDeploy("org.nuxeo.ecm.platform.restapi.test:multiblob-doctype.xml")
-@Ignore
 public class BatchUploadFixture extends BaseTest {
 
     @Inject
