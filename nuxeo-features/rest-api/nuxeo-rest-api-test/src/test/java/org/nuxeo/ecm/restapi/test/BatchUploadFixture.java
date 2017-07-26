@@ -28,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -158,7 +159,7 @@ public class BatchUploadFixture extends BaseTest {
         String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", "UTF-8");
         String mimeType = "text/plain";
         String data1 = "Contenu accentué du premier fichier";
-        String fileSize1 = String.valueOf(data1.getBytes().length);
+        String fileSize1 = String.valueOf(getUTF8Bytes(data1).length);
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "text/plain");
         headers.put("X-Upload-Type", "normal");
@@ -181,7 +182,7 @@ public class BatchUploadFixture extends BaseTest {
         // Upload a file in multipart
         String fileName2 = "Fichier accentué 2.txt";
         String data2 = "Contenu accentué du deuxième fichier";
-        String fileSize2 = String.valueOf(data2.getBytes().length);
+        String fileSize2 = String.valueOf(getUTF8Bytes(data2).length);
         headers = new HashMap<>();
         headers.put("X-File-Size", fileSize2);
         headers.put("X-File-Type", mimeType);
@@ -294,7 +295,7 @@ public class BatchUploadFixture extends BaseTest {
         // Upload a file in multipart, first without the X-File-Type header, the second with
         String fileName1 = "No header.txt";
         String data1 = "File without explicit file type";
-        String fileSize1 = String.valueOf(data1.getBytes().length);
+        String fileSize1 = String.valueOf(getUTF8Bytes(data1).length);
         headers = new HashMap<>();
         headers.put("X-File-Size", fileSize1);
 
@@ -310,7 +311,7 @@ public class BatchUploadFixture extends BaseTest {
         String mimeType = "text/plain";
         String fileName2 = "With header.txt";
         String data2 = "File with explicit X-File-Type header";
-        String fileSize2 = String.valueOf(data2.getBytes().length);
+        String fileSize2 = String.valueOf(getUTF8Bytes(data2).length);
         headers = new HashMap<>();
         headers.put("X-File-Size", fileSize2);
         headers.put("X-File-Type", mimeType);
@@ -388,7 +389,7 @@ public class BatchUploadFixture extends BaseTest {
         String fileName = URLEncoder.encode("Fichier accentué.txt", "UTF-8");
         String mimeType = "text/plain";
         String data = "Contenu accentué";
-        String fileSize = String.valueOf(data.getBytes().length);
+        String fileSize = String.valueOf(getUTF8Bytes(data).length);
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "text/plain");
         headers.put("X-Upload-Type", "normal");
@@ -491,7 +492,7 @@ public class BatchUploadFixture extends BaseTest {
         String fileName = URLEncoder.encode("Fichier accentué.txt", "UTF-8");
         String mimeType = "text/plain";
         String fileContent = "Contenu accentué composé de 3 chunks";
-        String fileSize = String.valueOf(fileContent.getBytes().length);
+        String fileSize = String.valueOf(getUTF8Bytes(fileContent).length);
         String chunk1 = "Contenu accentu";
         String chunk2 = "é composé de ";
         String chunk3 = "3 chunks";
@@ -669,7 +670,7 @@ public class BatchUploadFixture extends BaseTest {
         String fileName = URLEncoder.encode("Fichier accentué.txt", "UTF-8");
         String mimeType = "text/plain";
         String fileContent = "Contenu accentué composé de 2 chunks";
-        String fileSize = String.valueOf(fileContent.getBytes().length);
+        String fileSize = String.valueOf(getUTF8Bytes(fileContent).length);
         String chunk1 = "Contenu accentué compo";
         String chunk2 = "sé de 2 chunks";
 
@@ -769,7 +770,7 @@ public class BatchUploadFixture extends BaseTest {
         String fileName = URLEncoder.encode("file.pdf", "UTF-8");
         String badMimeType = "pdf";
         String data = "Empty and wrong pdf data";
-        String fileSize = String.valueOf(data.getBytes().length);
+        String fileSize = String.valueOf(getUTF8Bytes(data).length);
         Map<String, String> headers = new HashMap<>();
         // impossible to test a bad content-type as the client will parse it
         headers.put("Content-Type", "text/plain");
@@ -936,7 +937,7 @@ public class BatchUploadFixture extends BaseTest {
             fileName = URLEncoder.encode("Test File " + Integer.toString(i + 1) + ".txt", "UTF-8");
             data = "Test Content " + Integer.toString(i + 1);
             if (fileSize == null) {
-                fileSize = String.valueOf(data.getBytes().length);
+                fileSize = String.valueOf(getUTF8Bytes(data).length);
                 headers.put("Content-Type", "text/plain");
                 headers.put("X-Upload-Type", "normal");
                 headers.put("X-File-Size", fileSize);
@@ -995,6 +996,9 @@ public class BatchUploadFixture extends BaseTest {
         }
     }
 
+    protected byte[] getUTF8Bytes(String data) {
+        return data.getBytes(StandardCharsets.UTF_8);
+    }
 
     protected void assertBatchExists(String batchId) {
         try (CloseableClientResponse response = getResponse(RequestType.GET, "upload/" + batchId)) {
