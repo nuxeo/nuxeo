@@ -23,11 +23,8 @@ package org.nuxeo.functionaltests;
 import static org.nuxeo.functionaltests.AbstractTest.NUXEO_URL;
 import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,39 +32,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-import org.nuxeo.client.api.NuxeoClient;
-import org.nuxeo.client.api.objects.Document;
-import org.nuxeo.client.api.objects.Documents;
-import org.nuxeo.client.api.objects.acl.ACE;
-import org.nuxeo.client.api.objects.operation.DocRef;
-import org.nuxeo.client.api.objects.user.Group;
-import org.nuxeo.client.api.objects.workflow.Workflow;
-import org.nuxeo.client.api.objects.workflow.Workflows;
-import org.nuxeo.client.internals.spi.NuxeoClientException;
-import org.nuxeo.common.utils.URIUtils;
+import org.nuxeo.client.NuxeoClient;
+import org.nuxeo.client.objects.Document;
+import org.nuxeo.client.objects.Documents;
+import org.nuxeo.client.objects.acl.ACE;
+import org.nuxeo.client.objects.directory.DirectoryEntry;
+import org.nuxeo.client.objects.operation.DocRef;
+import org.nuxeo.client.objects.user.Group;
+import org.nuxeo.client.objects.user.User;
+import org.nuxeo.client.objects.workflow.Workflow;
+import org.nuxeo.client.objects.workflow.Workflows;
+import org.nuxeo.client.spi.NuxeoClientException;
 
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 /**
  * @since 8.3
  */
 public class RestHelper {
 
-    private static final NuxeoClient CLIENT = new NuxeoClient(NUXEO_URL, ADMINISTRATOR, ADMINISTRATOR);
-    static {
-        // by default timeout is 10s, hot reload needs a bit more
-        CLIENT.timeout(120);
-    }
+    private static final NuxeoClient CLIENT = new NuxeoClient.Builder().url(NUXEO_URL)
+                                                                       .authentication(ADMINISTRATOR, ADMINISTRATOR)
+                                                                       // by default timeout is 10s, hot reload needs a
+                                                                       // bit more
+                                                                       .timeout(120)
+                                                                       .connect();
 
     private static final String USER_WORKSPACE_PATH_FORMAT = "/default-domain/UserWorkspaces/%s";
 
@@ -86,9 +80,6 @@ public class RestHelper {
     protected static final Map<String, Set<String>> directoryEntryIdsToDelete = new HashMap<>();
 
     protected static final Log log = LogFactory.getLog(RestHelper.class);
-
-    // @yannis : temporary fix for setting user password before JAVACLIENT-91
-    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private RestHelper() {
         // helper class
@@ -178,56 +169,27 @@ public class RestHelper {
 
         String finalEmail = StringUtils.isBlank(email) ? DEFAULT_USER_EMAIL : email;
 
-        // @yannis : temporary fix for setting user password before JAVACLIENT-91
-        String json = buildUserJSON(username, password, firstName, lastName, company, finalEmail, group);
+        User user = new User();
+        user.setUserName(username);
+        user.setPassword(password);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setCompany(company);
+        user.setEmail(finalEmail);
+        if (StringUtils.isNotBlank(group)) {
+            user.setGroups(Collections.singletonList(group));
+        }
 
-        Response response = CLIENT.post(AbstractTest.NUXEO_URL + "/api/v1/user", json);
-        try (ResponseBody responseBody = response.body()) {
-            if (!response.isSuccessful()) {
-                throw new RuntimeException(String.format("Unable to create user '%s'", username));
-            }
+        user = CLIENT.userManager().createUser(user);
 
-            JsonNode jsonNode = MAPPER.readTree(responseBody.charStream());
-            String id = jsonNode.get("id").getTextValue();
-            usersToDelete.add(id);
-            return id;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static String buildUserJSON(String username, String password, String firstName, String lastName,
-            String company, String email, String group) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"entity-type\": \"user\"").append(",\n");
-        sb.append("\"id\": \"").append(username).append("\",\n");
-        sb.append("\"properties\": {").append("\n");
-        if (firstName != null) {
-            sb.append("\"firstName\": \"").append(firstName).append("\",\n");
-        }
-        if (lastName != null) {
-            sb.append("\"lastName\": \"").append(lastName).append("\",\n");
-        }
-        if (email != null) {
-            sb.append("\"email\": \"").append(email).append("\",\n");
-        }
-        if (company != null) {
-            sb.append("\"company\": \"").append(company).append("\",\n");
-        }
-        if (group != null) {
-            sb.append("\"groups\": [\"").append(group).append("\"]").append(",\n");
-        }
-        sb.append("\"username\": \"").append(username).append("\",\n");
-        sb.append("\"password\": \"").append(password).append("\"\n");
-        sb.append("}").append("\n");
-        sb.append("}");
-        return sb.toString();
+        String userId = user.getId();
+        usersToDelete.add(userId);
+        return userId;
     }
 
     public static void deleteUser(String username) {
         try {
-            CLIENT.getUserManager().deleteUser(username);
+            CLIENT.userManager().deleteUser(username);
         } catch (NuxeoClientException e) {
             if (HttpStatus.SC_NOT_FOUND == e.getStatus()) {
                 log.warn(String.format("User %s not deleted because not found", username));
@@ -241,7 +203,7 @@ public class RestHelper {
      * @since 9.3
      */
     public static boolean userExists(String username) {
-        return exists(() -> CLIENT.getUserManager().fetchUser(username));
+        return exists(() -> CLIENT.userManager().fetchUser(username));
     }
 
     public static void createGroup(String name, String label) {
@@ -259,13 +221,13 @@ public class RestHelper {
             group.setMemberGroups(Arrays.asList(subGroups));
         }
 
-        CLIENT.getUserManager().createGroup(group);
+        CLIENT.userManager().createGroup(group);
         groupsToDelete.add(name);
     }
 
     public static void deleteGroup(String name) {
         try {
-            CLIENT.getUserManager().deleteGroup(name);
+            CLIENT.userManager().deleteGroup(name);
         } catch (NuxeoClientException e) {
             if (HttpStatus.SC_NOT_FOUND == e.getStatus()) {
                 log.warn(String.format("Group %s not deleted because not found", name));
@@ -279,7 +241,7 @@ public class RestHelper {
      * @since 9.3
      */
     public static boolean groupExists(String groupName) {
-        return exists(() -> CLIENT.getUserManager().fetchGroup(groupName));
+        return exists(() -> CLIENT.userManager().fetchGroup(groupName));
     }
 
     // -----------------
@@ -307,7 +269,7 @@ public class RestHelper {
      * @since 9.3
      */
     public static String createDocument(String idOrPath, String type, String title, Map<String, Object> props) {
-        Document document = new Document(title, type);
+        Document document = Document.createWithName(title, type);
         Map<String, Object> properties = new HashMap<>();
         if (props != null) {
             properties.putAll(props);
@@ -328,7 +290,6 @@ public class RestHelper {
     }
 
     public static void deleteDocument(String idOrPath) {
-        // TODO change that by proper deleteDocument(String)
         if (idOrPath.startsWith("/")) {
             // @yannis : temporary way to avoid DocumentNotFoundException in server log before NXP-19658
             Documents documents = CLIENT.repository().query(String.format(DOCUMENT_QUERY_BY_PATH_BASE, idOrPath));
@@ -336,7 +297,7 @@ public class RestHelper {
                 CLIENT.repository().deleteDocument(documents.getDocument(0));
             }
         } else {
-            CLIENT.repository().deleteDocument(CLIENT.repository().fetchDocumentById(idOrPath));
+            CLIENT.repository().deleteDocument(idOrPath);
         }
     }
 
@@ -344,13 +305,6 @@ public class RestHelper {
         ACE ace = new ACE();
         ace.setUsername(username);
         ace.setPermission(permission);
-
-        // @yannis : temporary fix for setting permission before JAVACLIENT-90 is done
-        Calendar beginDate = Calendar.getInstance();
-        ace.setBegin(beginDate);
-        Calendar endDate = Calendar.getInstance();
-        endDate.add(Calendar.YEAR, 1);
-        ace.setEnd(endDate);
 
         fetchDocumentByIdOrPath(idOrPath).addPermission(ace);
     }
@@ -363,7 +317,7 @@ public class RestHelper {
      * @since 9.3
      */
     public static void followLifecycleTransition(String idOrPath, String transitionName) {
-        CLIENT.automation("Document.FollowLifecycleTransition")
+        CLIENT.operation("Document.FollowLifecycleTransition")
               .input(new DocRef(idOrPath))
               .param("value", transitionName)
               .execute();
@@ -396,9 +350,7 @@ public class RestHelper {
         if (idOrPath.startsWith("/")) {
             workflows = CLIENT.repository().fetchWorkflowInstancesByDocPath(idOrPath);
         } else {
-            // TODO replace this call by CLIENT.repository().fetchWorkflowInstancesByDocId(idOrPath) once RepositoryAPI
-            // interface will be fixed (fetchWorkflowInstancesByDocId doesn't exist in the interface)
-            workflows = fetchDocumentByIdOrPath(idOrPath).fetchWorkflowInstances();
+            workflows = CLIENT.repository().fetchWorkflowInstancesByDocId(idOrPath);
         }
         return workflows.size() > 0;
     }
@@ -426,61 +378,27 @@ public class RestHelper {
      * @since 9.2
      */
     public static String createDirectoryEntry(String directoryName, Map<String, String> properties) {
-        Response response = CLIENT.post(NUXEO_URL + "/api/v1/directory/" + directoryName,
-                buildDirectoryEntryJSON(directoryName, properties));
-        try (ResponseBody responseBody = response.body()) {
-            if (!response.isSuccessful()) {
-                throw new NuxeoClientException(
-                        String.format("Unable to create entry for directory %s: %s", directoryName, properties));
-            }
-            JsonNode jsonNode = MAPPER.readTree(responseBody.charStream());
-            String entryId = jsonNode.get("properties").get("id").getValueAsText();
-            addDirectoryEntryToDelete(directoryName, entryId);
-            return entryId;
-        } catch (IOException e) {
-            throw new NuxeoClientException(e);
-        }
+        DirectoryEntry entry = new DirectoryEntry();
+        entry.setProperties(properties);
+        entry = CLIENT.directoryManager().directory(directoryName).createEntry(entry);
+
+        String entryId = entry.getId();
+        addDirectoryEntryToDelete(directoryName, entryId);
+        return entryId;
     }
 
-    public static Map<String, Object> fetchDirectoryEntry(String directoryName, String entryId) {
-        Response response = CLIENT.get(NUXEO_URL + "/api/v1/directory/" + directoryName + "/" + entryId);
-        try (ResponseBody responseBody = response.body(); Reader reader = responseBody.charStream()) {
-            if (!response.isSuccessful()) {
-                throw new NuxeoClientException(
-                        String.format("Unable to fetch entry for directory %s/%s", directoryName, entryId));
-            }
-            return MAPPER.readValue(reader, new TypeReference<HashMap<String, Object>>() {
-            });
-        } catch (IOException e) {
-            throw new NuxeoClientException(e);
-        }
+    /**
+     * @since 9.3
+     */
+    public static Map<String, Object> fetchDirectoryEntryProperties(String directoryName, String entryId) {
+        return CLIENT.directoryManager().directory(directoryName).fetchEntry(entryId).getProperties();
     }
 
     /**
      * @since 9.2
      */
     public static void deleteDirectoryEntry(String directoryName, String entryId) {
-        // Work around JAVACLIENT-133 by passing an empty string
-        executeHTTP(() -> CLIENT.delete(NUXEO_URL + "/api/v1/directory/" + directoryName + "/" + entryId, ""));
-    }
-
-    protected static String buildDirectoryEntryJSON(String directoryName, Map<String, String> properties) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"entity-type\": \"directoryEntry\"").append(",\n");
-        sb.append("\"directoryName\": \"").append(directoryName).append("\",\n");
-        sb.append("\"properties\": {").append("\n");
-        sb.append(properties.keySet()
-                            .stream()
-                            .map(key -> new StringBuilder().append("\"")
-                                                           .append(key)
-                                                           .append("\": \"")
-                                                           .append(properties.get(key))
-                                                           .append("\""))
-                            .collect(Collectors.joining(",\n")));
-        sb.append("\n").append("}").append("\n");
-        sb.append("}");
-        return sb.toString();
+        CLIENT.directoryManager().directory(directoryName).deleteEntry(entryId);
     }
 
     // ------------------
@@ -491,20 +409,37 @@ public class RestHelper {
      * @since 9.3
      */
     public static void operation(String operationId, Map<String, Object> parameters) {
-        CLIENT.automation(operationId).parameters(parameters).execute();
+        CLIENT.operation(operationId).parameters(parameters).execute();
     }
 
     /**
+     * Logs on server with <code>RestHelper</code> as source and <code>warn</code> as level.
+     *
      * @since 9.3
      */
     public static void logOnServer(String message) {
-        logOnServer("WARN", message);
+        logOnServer("warn", message);
     }
 
+    /**
+     * Logs on server with <code>RestHelper</code> as source.
+     */
     public static void logOnServer(String level, String message) {
-        executeHTTP(
-                () -> CLIENT.get(String.format("%s/restAPI/systemLog?token=dolog&level=%s&message=----- RestHelper: %s",
-                        AbstractTest.NUXEO_URL, level, URIUtils.quoteURIPathComponent(message, true))));
+        logOnServer("RestHelper", level, message);
+    }
+
+    /**
+     * @param source the logger source, usually RestHelper or WebDriver
+     * @param level the log level
+     * @since 9.3
+     */
+    public static void logOnServer(String source, String level, String message) {
+        CLIENT.operation("Log")
+              // For compatibility
+              .param("category", RestHelper.class.getName())
+              .param("level", level)
+              .param("message", String.format("----- %s: %s", source, message))
+              .execute();
     }
 
     // -------------

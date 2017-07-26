@@ -86,11 +86,8 @@ public class ITDevHotReloadTest {
     @Test
     public void testHotReloadVocabulary() {
         deployDevBundle();
-        // test fetch create entry
-        Map<String, Object> entry = RestHelper.fetchDirectoryEntry("hierarchical", "child2");
-        assertNotNull(entry);
-        @SuppressWarnings("unchecked")
-        Map<String, Object> properties = (Map<String, Object>) entry.get("properties");
+        // test fetch created entry
+        Map<String, Object> properties = RestHelper.fetchDirectoryEntryProperties("hierarchical", "child2");
         assertNotNull(properties);
         assertEquals("root1", properties.get("parent"));
         assertEquals("child2", properties.get("label"));
