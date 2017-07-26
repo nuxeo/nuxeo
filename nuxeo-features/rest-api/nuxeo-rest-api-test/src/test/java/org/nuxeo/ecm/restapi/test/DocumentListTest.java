@@ -42,6 +42,7 @@ import org.nuxeo.ecm.restapi.server.jaxrs.QueryObject;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.ChildrenAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.PageProviderAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -50,7 +51,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.common.base.Joiner;
-import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -74,12 +74,14 @@ public class DocumentListTest extends BaseTest {
         DocumentModel folder = RestServerInit.getFolder(1, session);
 
         // When I query for it children
-        ClientResponse response = getResponse(RequestType.GET, "id/" + folder.getId() + "/@" + ChildrenAdapter.NAME);
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "id/" + folder.getId() + "/@" + ChildrenAdapter.NAME)) {
 
-        // Then I get its children as JSON
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(session.getChildren(folder.getRef()).size(), getLogEntries(node).size());
+            // Then I get its children as JSON
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(session.getChildren(folder.getRef()).size(), getLogEntries(node).size());
+        }
     }
 
     @Test
@@ -99,13 +101,14 @@ public class DocumentListTest extends BaseTest {
         // When I search for "nuxeo"
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("fullText", "nuxeo");
-        ClientResponse response = getResponse(RequestType.GET, "path/@" + SearchAdapter.NAME, queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "path/@" + SearchAdapter.NAME,
+                queryParams)) {
 
-        // Then I get the document in the result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, getLogEntries(node).size());
-
+            // Then I get the document in the result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, getLogEntries(node).size());
+        }
     }
 
     @Test
@@ -113,20 +116,23 @@ public class DocumentListTest extends BaseTest {
         // Given a repository, when I perform a query in NXQL on it
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("query", "SELECT * FROM Document");
-        ClientResponse response = getResponse(RequestType.GET, "query", queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "query", queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(20, getLogEntries(node).size());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(20, getLogEntries(node).size());
+        }
 
         // Given a repository, when I perform a query in NXQL on it
-        response = getResponse(RequestType.GET, QueryObject.PATH + "/" + QueryObject.NXQL, queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/" + QueryObject.NXQL,
+                queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(20, getLogEntries(node).size());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(20, getLogEntries(node).size());
+        }
 
         // Given parameters as page size and ordered parameters
         queryParams.clear();
@@ -135,12 +141,14 @@ public class DocumentListTest extends BaseTest {
         queryParams.add("query", "select * from Document where dc:creator = ?");
 
         // Given a repository, when I perform a query in NXQL on it
-        response = getResponse(RequestType.GET, QueryObject.PATH + "/" + QueryObject.NXQL, queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/" + QueryObject.NXQL,
+                queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     @Test
@@ -156,12 +164,13 @@ public class DocumentListTest extends BaseTest {
         queryParams.add("note1", "Note 1");
         queryParams.add("note2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH, queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, QueryObject.PATH, queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     @Test
@@ -177,12 +186,13 @@ public class DocumentListTest extends BaseTest {
         queryParams.add("title", "Note 1");
         queryParams.add("title2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH, queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, QueryObject.PATH, queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     @Test
@@ -191,12 +201,14 @@ public class DocumentListTest extends BaseTest {
         DocumentModel folder = RestServerInit.getFolder(1, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("queryParams", folder.getId());
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/TEST_PP", queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/TEST_PP",
+                queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     @Test
@@ -207,12 +219,14 @@ public class DocumentListTest extends BaseTest {
         queryParams.add("note1", "Note 1");
         queryParams.add("note2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/TEST_PP_PARAM", queryParams);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/TEST_PP_PARAM",
+                queryParams)) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     /**
@@ -220,12 +234,14 @@ public class DocumentListTest extends BaseTest {
      */
     @Test
     public void iCanPerformPageProviderWithNamedParametersInvalid() throws Exception {
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderInvalid");
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(
-                "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38",
-                getErrorMessage(node));
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                QueryObject.PATH + "/namedParamProviderInvalid")) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(
+                    "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38",
+                    getErrorMessage(node));
+        }
     }
 
     /**
@@ -235,11 +251,12 @@ public class DocumentListTest extends BaseTest {
     public void iCanPerformPageProviderWithNamedParametersAndDoc() throws Exception {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("np:title", "Folder 0");
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderWithDoc",
-                queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                QueryObject.PATH + "/namedParamProviderWithDoc", queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, getLogEntries(node).size());
+        }
     }
 
     /**
@@ -249,13 +266,14 @@ public class DocumentListTest extends BaseTest {
     public void iCanPerformPageProviderWithNamedParametersAndDocInvalid() throws Exception {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("np:title", "Folder 0");
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderWithDocInvalid",
-                queryParams);
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(
-                "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38",
-                getErrorMessage(node));
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                QueryObject.PATH + "/namedParamProviderWithDocInvalid", queryParams)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(
+                    "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38",
+                    getErrorMessage(node));
+        }
     }
 
     /**
@@ -265,17 +283,20 @@ public class DocumentListTest extends BaseTest {
     public void iCanPerformPageProviderWithNamedParametersInWhereClause() throws Exception {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("parameter1", "Folder 0");
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderWithWhereClause",
-                queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                QueryObject.PATH + "/namedParamProviderWithWhereClause", queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, getLogEntries(node).size());
+        }
 
         // retry without params
-        response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderWithWhereClause");
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                QueryObject.PATH + "/namedParamProviderWithWhereClause")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     /**
@@ -285,17 +306,20 @@ public class DocumentListTest extends BaseTest {
     public void iCanPerformPageProviderWithNamedParametersInWhereClauseWithDoc() throws Exception {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("np:title", "Folder 0");
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH
-                + "/namedParamProviderWithWhereClauseWithDoc", queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                QueryObject.PATH + "/namedParamProviderWithWhereClauseWithDoc", queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, getLogEntries(node).size());
+        }
 
         // retry without params
-        response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderWithWhereClauseWithDoc");
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                QueryObject.PATH + "/namedParamProviderWithWhereClauseWithDoc")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     /**
@@ -305,11 +329,12 @@ public class DocumentListTest extends BaseTest {
     public void iCanPerformPageProviderWithNamedParametersWithQuickFilter() throws Exception {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("quickFilters", "testQuickFilter");
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderWithQuickFilter",
-                queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                QueryObject.PATH + "/namedParamProviderWithQuickFilter", queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, getLogEntries(node).size());
+        }
     }
 
     /**
@@ -322,25 +347,30 @@ public class DocumentListTest extends BaseTest {
         queryParams.add("np:isCheckedIn", Boolean.FALSE.toString());
         queryParams.add("np:dateMin", "2007-01-30 01:02:03+04:00");
         queryParams.add("np:dateMax", "2007-03-23 01:02:03+04:00");
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderComplex",
-                queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                QueryObject.PATH + "/namedParamProviderComplex", queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, getLogEntries(node).size());
+        }
 
         // remove filter on dates
         queryParams.remove("np:dateMin");
         queryParams.remove("np:dateMax");
-        response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderComplex", queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                QueryObject.PATH + "/namedParamProviderComplex", queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, getLogEntries(node).size());
+        }
 
         queryParams.remove("parameter1");
-        response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderComplex", queryParams);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                QueryObject.PATH + "/namedParamProviderComplex", queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     @Test
@@ -362,14 +392,14 @@ public class DocumentListTest extends BaseTest {
         DocumentModel folder = RestServerInit.getFolder(1, session);
 
         // When I search for "nuxeo"
-        ClientResponse response = getResponse(RequestType.GET, "path" + folder.getPathAsString() + "/@"
-                + PageProviderAdapter.NAME + "/TEST_PP");
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "path" + folder.getPathAsString() + "/@" + PageProviderAdapter.NAME + "/TEST_PP")) {
 
-        // Then I get the two document in the result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getLogEntries(node).size());
-
+            // Then I get the two document in the result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(2, getLogEntries(node).size());
+        }
     }
 
     @Test
@@ -381,15 +411,15 @@ public class DocumentListTest extends BaseTest {
         // When i call a bulk delete
         String data = Joiner.on(";").join(
                 Arrays.asList(new String[] { "id=" + note1.getId(), "id=" + folder0.getId() }));
-        ClientResponse response = getResponse(RequestType.DELETE, "/bulk;" + data);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.DELETE, "/bulk;" + data)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        // Then the documents are removed from repository
-        fetchInvalidations();
+            // Then the documents are removed from repository
+            fetchInvalidations();
 
-        assertFalse(session.exists(note1.getRef()));
-        assertFalse(session.exists(folder0.getRef()));
-
+            assertFalse(session.exists(note1.getRef()));
+            assertFalse(session.exists(folder0.getRef()));
+        }
     }
 
     @Test
@@ -403,16 +433,16 @@ public class DocumentListTest extends BaseTest {
 
         // When i call a bulk update
         String ids = Joiner.on(";").join(Arrays.asList(new String[] { "id=" + note1.getId(), "id=" + note2.getId() }));
-        ClientResponse response = getResponse(RequestType.PUT, "/bulk;" + ids, data);
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/bulk;" + ids, data);) {
 
-        // Then the documents are updated accordingly
-        fetchInvalidations();
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        for (int i : new int[] { 1, 2 }) {
-            note1 = RestServerInit.getNote(i, session);
-            assertEquals("bulk description", note1.getPropertyValue("dc:description"));
+            // Then the documents are updated accordingly
+            fetchInvalidations();
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            for (int i : new int[] { 1, 2 }) {
+                note1 = RestServerInit.getNote(i, session);
+                assertEquals("bulk description", note1.getPropertyValue("dc:description"));
+            }
         }
-
     }
 
     /**
@@ -422,17 +452,19 @@ public class DocumentListTest extends BaseTest {
     public void iCanPerformPageProviderWithDefinitionDefaultSorting() throws IOException {
         // Given a repository, when I perform a pageprovider on it with
         // default sorting in its definition on dc:title desc
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/TEST_NOTE_PP_WITH_TITLE_ORDER");
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                QueryObject.PATH + "/TEST_NOTE_PP_WITH_TITLE_ORDER")) {
 
-        // Then I get document listing as result
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        List<JsonNode> noteNodes = getLogEntries(node);
-        assertEquals(RestServerInit.MAX_NOTE, noteNodes.size());
-        for (int i = 0; i < noteNodes.size(); i++) {
-            assertEquals("Note " + (RestServerInit.MAX_NOTE - (i + 1)), noteNodes.get(i).get("title").getTextValue());
+            // Then I get document listing as result
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            List<JsonNode> noteNodes = getLogEntries(node);
+            assertEquals(RestServerInit.MAX_NOTE, noteNodes.size());
+            for (int i = 0; i < noteNodes.size(); i++) {
+                assertEquals("Note " + (RestServerInit.MAX_NOTE - (i + 1)),
+                        noteNodes.get(i).get("title").getTextValue());
+            }
         }
-
     }
 
 }

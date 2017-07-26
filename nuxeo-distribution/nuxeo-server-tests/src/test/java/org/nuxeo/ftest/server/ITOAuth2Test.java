@@ -46,6 +46,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.common.utils.URIUtils;
@@ -54,6 +55,8 @@ import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.LoginPage;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
+import org.nuxeo.jaxrs.test.JerseyClientHelper;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -87,7 +90,7 @@ public class ITOAuth2Test extends AbstractTest {
 
     public static final String ATOM_CMIS10_PATH = "/atom/cmis10";
 
-    protected Client client = Client.create();
+    protected Client client;
 
     @BeforeClass
     public static void beforeClass() {
@@ -105,9 +108,15 @@ public class ITOAuth2Test extends AbstractTest {
         RestHelper.cleanup();
     }
 
+    @Before
+    public void before() {
+        client = JerseyClientHelper.DEFAULT_CLIENT;
+    }
+
     @After
     public void after() {
         logoutSimply();
+        client.destroy();
     }
 
     @Test
@@ -247,11 +256,12 @@ public class ITOAuth2Test extends AbstractTest {
             formData.add(entry.getKey(), entry.getValue());
         }
 
-        ClientResponse cr = wr.post(ClientResponse.class, formData);
-        String json = cr.getEntity(String.class);
-        ObjectMapper obj = new ObjectMapper();
-        Map<?, ?> token = obj.readValue(json, Map.class);
-        return new OAuth2Token((String) token.get("access_token"), (String) token.get("refresh_token"));
+        try (CloseableClientResponse cr = CloseableClientResponse.of(wr.post(ClientResponse.class, formData))) {
+            String json = cr.getEntity(String.class);
+            ObjectMapper obj = new ObjectMapper();
+            Map<?, ?> token = obj.readValue(json, Map.class);
+            return new OAuth2Token((String) token.get("access_token"), (String) token.get("refresh_token"));
+        }
     }
 
     protected OAuth2Token refreshOAuth2Token(String refreshToken) throws IOException {
@@ -264,26 +274,35 @@ public class ITOAuth2Test extends AbstractTest {
 
     protected void checkAuthorizationWithValidAccessToken(String path, String accessToken) {
         WebResource wr = client.resource(NUXEO_URL).path(path);
-        ClientResponse cr = wr.get(ClientResponse.class);
-        assertEquals(401, cr.getStatus());
+        try (CloseableClientResponse cr = CloseableClientResponse.of(wr.get(ClientResponse.class))) {
+            assertEquals(401, cr.getStatus());
+        }
 
         wr = client.resource(NUXEO_URL).path(path);
-        cr = wr.queryParam("access_token", accessToken).get(ClientResponse.class);
-        assertEquals(200, cr.getStatus());
+        try (CloseableClientResponse cr = CloseableClientResponse.of(
+                wr.queryParam("access_token", accessToken).get(ClientResponse.class))) {
+            assertEquals(200, cr.getStatus());
+        }
 
         wr = client.resource(NUXEO_URL).path(path);
-        cr = wr.header("Authorization", "Bearer " + accessToken).get(ClientResponse.class);
-        assertEquals(200, cr.getStatus());
+        try (CloseableClientResponse cr = CloseableClientResponse.of(
+                wr.header("Authorization", "Bearer " + accessToken).get(ClientResponse.class))) {
+            assertEquals(200, cr.getStatus());
+        }
     }
 
     protected void checkAuthorizationWithInvalidAccessToken(String path, String accessToken) {
         WebResource wr = client.resource(NUXEO_URL).path(path);
-        ClientResponse cr = wr.queryParam("access_token", accessToken).get(ClientResponse.class);
-        assertEquals(401, cr.getStatus());
+        try (CloseableClientResponse cr = CloseableClientResponse.of(
+                wr.queryParam("access_token", accessToken).get(ClientResponse.class))) {
+            assertEquals(401, cr.getStatus());
+        }
 
         wr = client.resource(NUXEO_URL).path(path);
-        cr = wr.header("Authorization", "Bearer " + accessToken).get(ClientResponse.class);
-        assertEquals(401, cr.getStatus());
+        try (CloseableClientResponse cr = CloseableClientResponse.of(
+                wr.header("Authorization", "Bearer " + accessToken).get(ClientResponse.class))) {
+            assertEquals(401, cr.getStatus());
+        }
     }
 
     protected OAuth2ErrorPage getOAuth2ErrorPage(String resource) {

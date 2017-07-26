@@ -48,12 +48,11 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import com.sun.jersey.api.client.ClientResponse;
 
 /**
  * @since 9.1
@@ -68,21 +67,25 @@ public class DocumentAutoVersioningTest extends BaseTest {
     @LocalDeploy("org.nuxeo.ecm.restapi.test:source-based-versioning-contrib.xml")
     public void iCanUpdateDocumentWithSourceCondition() throws Exception {
 
+        JSONDocumentNode jsonDoc;
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(RequestType.GET, "id/" + note.getId());
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + note.getId())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        assertEquals("0.1", note.getVersionLabel());
+            assertEquals("0.1", note.getVersionLabel());
+            jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
+        }
 
-        JSONDocumentNode jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
         jsonDoc.setPropertyValue("dc:title", "New title !");
         Map<String, String> headers = new HashMap<>();
         headers.put(RestConstants.SOURCE, "REST");
-        getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson(), headers);
-        fetchInvalidations();
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson(),
+                headers)) {
+            fetchInvalidations();
 
-        note = RestServerInit.getNote(0, session);
-        assertEquals("1.0", note.getVersionLabel());
+            note = RestServerInit.getNote(0, session);
+            assertEquals("1.0", note.getVersionLabel());
+        }
     }
 
     @Test
@@ -90,6 +93,7 @@ public class DocumentAutoVersioningTest extends BaseTest {
         // This test should check the default behaviour which is collaborative versioning
         // meaning the minor version should increment if the last contributor has changed
 
+        String id;
         DocumentModel folder = RestServerInit.getFolder(0, session);
 
         String data = "{ "
@@ -101,12 +105,13 @@ public class DocumentAutoVersioningTest extends BaseTest {
                 + "     }"
                 + "}";
 
-        ClientResponse response = getResponse(POST, "path" + folder.getPathAsString(), data);
-        fetchInvalidations();
+        try (CloseableClientResponse response = getResponse(POST, "path" + folder.getPathAsString(), data)) {
+            fetchInvalidations();
 
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        String id = node.get("uid").getValueAsText();
-        assertTrue(StringUtils.isNotBlank(id));
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            id = node.get("uid").getValueAsText();
+            assertTrue(StringUtils.isNotBlank(id));
+        }
 
         // Add 'Everything' permission for user0
         ACPImpl acp = new ACPImpl();
@@ -135,23 +140,24 @@ public class DocumentAutoVersioningTest extends BaseTest {
                 "     }";
 
         service = getServiceFor("user0", "user0");
-        getResponse(PUT, "id/" + doc.getId(), payload);
-        fetchInvalidations();
+        try (CloseableClientResponse response = getResponse(PUT, "id/" + doc.getId(), payload)) {
+            fetchInvalidations();
 
-        doc = session.getDocument(idRef);
-        DocumentModel lastVersion = session.getLastDocumentVersion(idRef);
-        assertFalse(lastVersion.isCheckedOut());
-        assertEquals("0.1", lastVersion.getVersionLabel());
-        assertTrue(doc.isCheckedOut());
-        assertEquals("user0", doc.getPropertyValue("dc:lastContributor"));
-        assertEquals("0.1+", doc.getVersionLabel());
-
+            doc = session.getDocument(idRef);
+            DocumentModel lastVersion = session.getLastDocumentVersion(idRef);
+            assertFalse(lastVersion.isCheckedOut());
+            assertEquals("0.1", lastVersion.getVersionLabel());
+            assertTrue(doc.isCheckedOut());
+            assertEquals("user0", doc.getPropertyValue("dc:lastContributor"));
+            assertEquals("0.1+", doc.getVersionLabel());
+        }
     }
 
     @Test
     @LocalDeploy("org.nuxeo.ecm.restapi.test:time-based-versioning-contrib.xml")
     public void iCanDoTimeBasedVersioning() throws IOException, InterruptedException {
 
+        String id;
         DocumentModel folder = RestServerInit.getFolder(0, session);
 
         String data = "{ "
@@ -163,12 +169,13 @@ public class DocumentAutoVersioningTest extends BaseTest {
                 + "     }"
                 + "}";
 
-        ClientResponse response = getResponse(POST, "path" + folder.getPathAsString(), data);
-        fetchInvalidations();
+        try (CloseableClientResponse response = getResponse(POST, "path" + folder.getPathAsString(), data)) {
+            fetchInvalidations();
 
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        String id = node.get("uid").getValueAsText();
-        assertTrue(StringUtils.isNotBlank(id));
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            id = node.get("uid").getValueAsText();
+            assertTrue(StringUtils.isNotBlank(id));
+        }
 
         Thread.sleep(1000);
 
@@ -183,13 +190,13 @@ public class DocumentAutoVersioningTest extends BaseTest {
                 "         }" +
                 "     }";
 
-        getResponse(PUT, "id/" + id, payload);
-        fetchInvalidations();
+        try (CloseableClientResponse response = getResponse(PUT, "id/" + id, payload)) {
+            fetchInvalidations();
 
-        DocumentRef idRef = new IdRef(id);
-        DocumentModel doc = session.getDocument(idRef);
-        assertEquals("1.0", doc.getVersionLabel());
-
+            DocumentRef idRef = new IdRef(id);
+            DocumentModel doc = session.getDocument(idRef);
+            assertEquals("1.0", doc.getVersionLabel());
+        }
     }
 
     @Test
@@ -207,21 +214,21 @@ public class DocumentAutoVersioningTest extends BaseTest {
                 + "     }"
                 + "}";
 
-        ClientResponse response = getResponse(POST, "path" + folder.getPathAsString(), data);
-        fetchInvalidations();
+        try (CloseableClientResponse response = getResponse(POST, "path" + folder.getPathAsString(), data)) {
+            fetchInvalidations();
 
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        String id = node.get("uid").getValueAsText();
-        assertTrue(StringUtils.isNotBlank(id));
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            String id = node.get("uid").getValueAsText();
+            assertTrue(StringUtils.isNotBlank(id));
 
-        DocumentRef idRef = new IdRef(id);
-        DocumentModel doc = session.getDocument(idRef);
-        doc.followTransition("approve");
-        session.saveDocument(doc);
-        fetchInvalidations();
+            DocumentRef idRef = new IdRef(id);
+            DocumentModel doc = session.getDocument(idRef);
+            doc.followTransition("approve");
+            session.saveDocument(doc);
+            fetchInvalidations();
 
-        doc = session.getDocument(idRef);
-        assertEquals("0.1", doc.getVersionLabel());
-
+            doc = session.getDocument(idRef);
+            assertEquals("0.1", doc.getVersionLabel());
+        }
     }
 }

@@ -44,8 +44,8 @@ import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -129,8 +129,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
             @PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx)
             throws IOException {
 
-        BatchManager bm = Framework.getService(BatchManager.class);
-        if (!bm.hasBatch(batchId)) {
+        if (!Framework.getService(BatchManager.class).hasBatch(batchId)) {
             return buildEmptyResponse(Status.NOT_FOUND);
         }
 
@@ -139,75 +138,65 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
             return buildTextResponse(Status.BAD_REQUEST, "fileIdx request path parameter must be a number");
         }
 
-        boolean isMultipart = false;
-
         // Parameters are passed as request header, the request body is the stream
         String contentType = request.getHeader("Content-Type");
         String uploadType = request.getHeader("X-Upload-Type");
-        String contentLength = request.getHeader("Content-Length");
-        String uploadChunkIndex = request.getHeader("X-Upload-Chunk-Index");
-        String chunkCount = request.getHeader("X-Upload-Chunk-Count");
-        String fileName = request.getHeader("X-File-Name");
-        String fileSize = request.getHeader("X-File-Size");
-        String mimeType = request.getHeader("X-File-Type");
-        InputStream is = null;
-
-        BatchFileEntry fileEntry = null;
-        String uploadedSize = "0";
-        long contentLengthAsLong = -1;
-        if (contentLength != null) {
-            contentLengthAsLong = Long.valueOf(contentLength);
+        // Use non chunked mode by default if X-Upload-Type header is not provided
+        if (!UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
+            uploadType = UPLOAD_TYPE_NORMAL;
         }
-        if (contentLengthAsLong > -1) {
-            uploadedSize = contentLength;
-            // Handle multipart case: mainly MSIE with jQueryFileupload
-            if (contentType != null && contentType.contains("multipart")) {
-                isMultipart = true;
-                FormData formData = new FormData(request);
-                Blob blob = formData.getFirstBlob();
-                if (blob != null) {
-                    is = blob.getStream();
-                    if (!UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
-                        fileName = blob.getFilename();
-                    }
-                    // Don't change the mime-type if it was forced via the X-File-Type header
-                    if (mimeType == null || mimeType.isEmpty()) {
-                        mimeType = blob.getMimeType();
-                    }
-                    uploadedSize = String.valueOf(blob.getLength());
-                }
-            } else {
-                if (fileName != null) {
-                    fileName = URLDecoder.decode(fileName, "UTF-8");
-                }
-                is = request.getInputStream();
-            }
+        String uploadChunkIndexHeader = request.getHeader("X-Upload-Chunk-Index");
+        String chunkCountHeader = request.getHeader("X-Upload-Chunk-Count");
+        String fileName = request.getHeader("X-File-Name");
+        String fileSizeHeader = request.getHeader("X-File-Size");
+        String mimeType = request.getHeader("X-File-Type");
 
-            if (UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
-                try {
-                    log.debug(String.format("Uploading chunk [index=%s / total=%s] (%sb) for file %s",
-                            uploadChunkIndex, chunkCount, uploadedSize, fileName));
-                    bm.addStream(batchId, fileIdx, is, Integer.parseInt(chunkCount),
-                            Integer.parseInt(uploadChunkIndex), fileName, mimeType, Long.parseLong(fileSize));
-                } catch (NumberFormatException e) {
-                    return buildTextResponse(Status.BAD_REQUEST,
-                            "X-Upload-Chunk-Index, X-Upload-Chunk-Count and X-File-Size headers must be numbers");
-                }
-            } else {
-                // Use non chunked mode by default if X-Upload-Type header is not provided
-                uploadType = UPLOAD_TYPE_NORMAL;
-                log.debug(String.format("Uploading file %s (%sb)", fileName, uploadedSize));
-                bm.addStream(batchId, fileIdx, is, fileName, mimeType);
+        int chunkCount = -1;
+        int uploadChunkIndex = -1;
+        long fileSize = -1;
+        if (UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
+            try {
+                chunkCount = Integer.parseInt(chunkCountHeader);
+                uploadChunkIndex = Integer.parseInt(uploadChunkIndexHeader);
+                fileSize = Long.parseLong(fileSizeHeader);
+            } catch (NumberFormatException e) {
+                return buildTextResponse(Status.BAD_REQUEST,
+                        "X-Upload-Chunk-Index, X-Upload-Chunk-Count and X-File-Size headers must be numbers");
+            }
+        }
+
+        // TODO NXP-18247: should be set to the actual number of bytes uploaded instead of relying on the Content-Length
+        // header which is not necessarily set
+        long uploadedSize = getUploadedSize(request);
+        boolean isMultipart = contentType != null && contentType.contains("multipart");
+
+        // Handle multipart case: mainly MSIE with jQueryFileupload
+        if (isMultipart) {
+            FormData formData = new FormData(request);
+            Blob blob = formData.getFirstBlob();
+            if (blob == null) {
+                throw new NuxeoException("Cannot upload in multipart with no blobs");
+            }
+            if (!UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
+                fileName = blob.getFilename();
+            }
+            // Don't change the mime-type if it was forced via the X-File-Type header
+            if (StringUtils.isBlank(mimeType)) {
+                mimeType = blob.getMimeType();
+            }
+            uploadedSize = blob.getLength();
+            try (InputStream is = blob.getStream()) {
+                addStream(uploadType, batchId, fileIdx, is, fileName, mimeType, uploadedSize, chunkCount,
+                        uploadChunkIndex, fileSize);
             }
         } else {
-            fileEntry = bm.getFileEntry(batchId, fileIdx);
-            if (fileEntry == null) {
-                return buildEmptyResponse(Status.NOT_FOUND);
+            if (fileName != null) {
+                fileName = URLDecoder.decode(fileName, "UTF-8");
             }
-        }
-
-        if (fileEntry == null && UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
-            fileEntry = bm.getFileEntry(batchId, fileIdx);
+            try (InputStream is = request.getInputStream()) {
+                addStream(uploadType, batchId, fileIdx, is, fileName, mimeType, uploadedSize, chunkCount,
+                        uploadChunkIndex, fileSize);
+            }
         }
 
         StatusType status = Status.CREATED;
@@ -215,18 +204,46 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         result.put("uploaded", "true");
         result.put("batchId", batchId);
         result.put("fileIdx", fileIdx);
-        result.put("uploadedSize", uploadedSize);
-        if (fileEntry != null && fileEntry.isChunked()) {
-            result.put("uploadType", UPLOAD_TYPE_CHUNKED);
-            result.put("uploadedChunkIds", fileEntry.getOrderedChunkIndexes());
-            result.put("chunkCount", fileEntry.getChunkCount());
-            if (!fileEntry.isChunksCompleted()) {
-                status = new ResumeIncompleteStatusType();
+        result.put("uploadType", uploadType);
+        result.put("uploadedSize", String.valueOf(uploadedSize));
+        if (UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
+            BatchFileEntry fileEntry = Framework.getService(BatchManager.class).getFileEntry(batchId, fileIdx);
+            if (fileEntry != null) {
+                result.put("uploadedChunkIds", fileEntry.getOrderedChunkIndexes());
+                result.put("chunkCount", fileEntry.getChunkCount());
+                if (!fileEntry.isChunksCompleted()) {
+                    status = new ResumeIncompleteStatusType();
+                }
             }
-        } else {
-            result.put("uploadType", UPLOAD_TYPE_NORMAL);
         }
         return buildResponse(status, result, isMultipart);
+    }
+
+    protected long getUploadedSize(HttpServletRequest request) {
+        String contentLength = request.getHeader("Content-Length");
+        if (contentLength == null) {
+            return -1;
+        }
+        return Long.parseLong(contentLength);
+    }
+
+    protected void addStream(String uploadType, String batchId, String fileIdx, InputStream is, String fileName,
+            String mimeType, long uploadedSize, int chunkCount, int uploadChunkIndex, long fileSize)
+            throws IOException {
+        String uploadedSizeDisplay = uploadedSize > -1 ? uploadedSize + "b" : "unknown size";
+        if (UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Uploading chunk [index=%d / total=%d] (%s) for file %s", uploadChunkIndex,
+                        chunkCount, uploadedSizeDisplay, fileName));
+            }
+            Framework.getService(BatchManager.class).addStream(batchId, fileIdx, is, chunkCount, uploadChunkIndex,
+                    fileName, mimeType, fileSize);
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Uploading file %s (%s)", fileName, uploadedSizeDisplay));
+            }
+            Framework.getService(BatchManager.class).addStream(batchId, fileIdx, is, fileName, mimeType);
+        }
     }
 
     @GET

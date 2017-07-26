@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -73,29 +74,33 @@ public class DocumentValidationTest extends BaseTest {
     @Test
     public void testCreateValidDocumentEndpointId() {
         DocumentModel root = session.getDocument(new PathRef("/"));
-        ClientResponse response = getResponse(RequestType.POST, "id/" + root.getId(), VALID_DOC);
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + root.getId(), VALID_DOC)) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
     public void testCreateValidDocumentEndpointPath() {
-        ClientResponse response = getResponse(RequestType.POST, "path/", VALID_DOC);
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "path/", VALID_DOC)) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
     public void testCreateDocumentWithViolationEndpointId() throws Exception {
         DocumentModel root = session.getDocument(new PathRef("/"));
-        ClientResponse response = getResponse(RequestType.POST, "id/" + root.getId(), INVALID_DOC);
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        checkResponseHasErrors(response);
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + root.getId(), INVALID_DOC)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            checkResponseHasErrors(response);
+        }
     }
 
     @Test
     public void testCreateDocumentWithViolationEndpointPath() throws Exception {
-        ClientResponse response = getResponse(RequestType.POST, "path/", INVALID_DOC);
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        checkResponseHasErrors(response);
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "path/", INVALID_DOC)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            checkResponseHasErrors(response);
+        }
     }
 
     @Test
@@ -103,8 +108,9 @@ public class DocumentValidationTest extends BaseTest {
         DocumentModel doc = session.createDocumentModel("/", "doc1", "ValidatedDocument");
         doc = session.createDocument(doc);
         fetchInvalidations();
-        ClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(), VALID_DOC);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(), VALID_DOC)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
@@ -112,8 +118,9 @@ public class DocumentValidationTest extends BaseTest {
         DocumentModel doc = session.createDocumentModel("/", "doc1", "ValidatedDocument");
         doc = session.createDocument(doc);
         fetchInvalidations();
-        ClientResponse response = getResponse(RequestType.PUT, "path/doc1", VALID_DOC);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "path/doc1", VALID_DOC)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
     }
 
     @Test
@@ -121,9 +128,10 @@ public class DocumentValidationTest extends BaseTest {
         DocumentModel doc = session.createDocumentModel("/", "doc1", "ValidatedDocument");
         doc = session.createDocument(doc);
         fetchInvalidations();
-        ClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(), INVALID_DOC);
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        checkResponseHasErrors(response);
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(), INVALID_DOC)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            checkResponseHasErrors(response);
+        }
     }
 
     @Test
@@ -131,9 +139,10 @@ public class DocumentValidationTest extends BaseTest {
         DocumentModel doc = session.createDocumentModel("/", "doc1", "ValidatedDocument");
         doc = session.createDocument(doc);
         fetchInvalidations();
-        ClientResponse response = getResponse(RequestType.PUT, "path/doc1", INVALID_DOC);
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        checkResponseHasErrors(response);
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "path/doc1", INVALID_DOC)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            checkResponseHasErrors(response);
+        }
     }
 
     @Test
@@ -142,10 +151,14 @@ public class DocumentValidationTest extends BaseTest {
         doc.getProperty("userRefs").addValue("user:Administrator");
         doc = session.createDocument(doc);
         fetchInvalidations();
-        ClientResponse response = service.path("path/doc1").queryParam("embed", "*").header(EMBED_PROPERTIES,
-                WILDCARD_VALUE).get(ClientResponse.class);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        IOUtils.copy(response.getEntityInputStream(), System.out);
+        try (CloseableClientResponse response = CloseableClientResponse.of(
+                service.path("path/doc1")
+                       .queryParam("embed", "*")
+                       .header(EMBED_PROPERTIES, WILDCARD_VALUE)
+                       .get(ClientResponse.class))) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            IOUtils.copy(response.getEntityInputStream(), System.out);
+        }
     }
 
     private void checkResponseHasErrors(ClientResponse response) throws IOException, JsonProcessingException {
