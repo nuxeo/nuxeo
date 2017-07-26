@@ -84,8 +84,8 @@ public class RoutingRestBaseTest extends BaseTest {
             throws IOException {
         String jsonBody = "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\","
                 + "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
-                + DateParser.formatW3CDateTime(dueDate) + "\","
-                + "\"participants\": [\"" + assignee + "\"]," + "\"assignees\": [\"" + assignee + "\"]" + "}" + "}";
+                + DateParser.formatW3CDateTime(dueDate) + "\"," + "\"participants\": [\"" + assignee + "\"],"
+                + "\"assignees\": [\"" + assignee + "\"]" + "}" + "}";
         return jsonBody;
     }
 

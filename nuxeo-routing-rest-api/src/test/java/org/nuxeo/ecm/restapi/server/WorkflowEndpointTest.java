@@ -73,7 +73,6 @@ import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.TaskAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.WorkflowAdapter;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -704,7 +703,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
      * @since 8.3
      */
     @Test
-    public void testFethWfInitiator() throws IOException {
+    public void testFetchWfInitiator() throws IOException {
 
         final String createdWorflowInstanceId;
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
@@ -867,7 +866,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
     /**
      * Trigger the escalation rule that resumes a ParallelDocumentReview workflow instance of which all attached
      * documents have been deleted.
-     *
+     * <p>
      * The expected behaviour is that workflow instance is cancelled.
      *
      * @throws InterruptedException
@@ -954,10 +953,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         awaitCleanupWorks();
 
-        cancelled = session.query(
-                "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'");
+        cancelled = session.query("SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'");
         assertTrue(cancelled.isEmpty());
-
     }
 
     /**
