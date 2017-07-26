@@ -276,8 +276,7 @@ public class BatchUploadFixture extends BaseTest {
     }
 
     /**
-     * tests if the X-File-Type header is obeyed on multipart file upload
-     * (NXP-22408)
+     * tests if the X-File-Type header is obeyed on multipart file upload (NXP-22408)
      */
     @Test
     public void testObeyFileTypeHeader() throws IOException {

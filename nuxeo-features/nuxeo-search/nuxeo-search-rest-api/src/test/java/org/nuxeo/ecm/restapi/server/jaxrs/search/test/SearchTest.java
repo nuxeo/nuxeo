@@ -152,8 +152,8 @@ public class SearchTest extends BaseTest {
         DocumentModel folder = RestServerInit.getFolder(1, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("queryParams", folder.getId());
-        try (CloseableClientResponse response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP"),
-                queryParams)) {
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("TEST_PP"), queryParams)) {
 
             // Then I get document listing as result
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -228,8 +228,8 @@ public class SearchTest extends BaseTest {
         queryParams.add("queryParams", folder.getId());
         queryParams.add("sortBy", "dc:title");
         queryParams.add("sortOrder", "asc");
-        try (CloseableClientResponse response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP"),
-                queryParams)) {
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("TEST_PP"), queryParams)) {
 
             // Then I get document listing as result
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());

@@ -320,7 +320,7 @@ public class UserGroupTest extends BaseUserTest {
     public void itCanPaginateUsers() throws Exception {
 
         String[][] expectedPages = new String[][] { new String[] { "Administrator", "Guest", "user0" },
-                new String[] { "user1", "user2", "user3" }, new String[] {"user4"} };
+                new String[] { "user1", "user2", "user3" }, new String[] { "user4" } };
 
         for (int i = 0; i < expectedPages.length; i++) {
             JsonNode node = getResponseAsJson(RequestType.GET, "/user/search", getQueryParamsForPage(i));
@@ -370,7 +370,7 @@ public class UserGroupTest extends BaseUserTest {
     public void itCanPaginateGroupMembers() throws Exception {
 
         String[][] expectedResults = new String[][] { new String[] { "dummy", "dummy", "dummy" },
-                new String[] { "dummy" }};
+                new String[] { "dummy" } };
 
         for (int i = 0; i < expectedResults.length; i++) {
             JsonNode node = getResponseAsJson(RequestType.GET, "/group/group1/@users", getQueryParamsForPage(i));

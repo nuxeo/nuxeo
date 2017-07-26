@@ -157,10 +157,11 @@ public class DocumentListTest extends BaseTest {
         // NXQL on it
         DocumentModel folder = RestServerInit.getFolder(1, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.add("query", "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
-                + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:note1,:note2)\n"
-                + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:currentLifeCycleState !=\n"
-                + "        'deleted'");
+        queryParams.add("query",
+                "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
+                        + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:note1,:note2)\n"
+                        + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:currentLifeCycleState !=\n"
+                        + "        'deleted'");
         queryParams.add("note1", "Note 1");
         queryParams.add("note2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());
@@ -179,10 +180,11 @@ public class DocumentListTest extends BaseTest {
         // NXQL on it
         DocumentModel folder = RestServerInit.getFolder(1, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.add("query", "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
-                + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:title,:title2)\n"
-                + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:currentLifeCycleState !=\n"
-                + "        'deleted'");
+        queryParams.add("query",
+                "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
+                        + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:title,:title2)\n"
+                        + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:currentLifeCycleState !=\n"
+                        + "        'deleted'");
         queryParams.add("title", "Note 1");
         queryParams.add("title2", "Note 2");
         queryParams.add("parentIdVar", folder.getId());
@@ -409,8 +411,8 @@ public class DocumentListTest extends BaseTest {
         DocumentModel folder0 = RestServerInit.getFolder(0, session);
 
         // When i call a bulk delete
-        String data = Joiner.on(";").join(
-                Arrays.asList(new String[] { "id=" + note1.getId(), "id=" + folder0.getId() }));
+        String data = Joiner.on(";")
+                            .join(Arrays.asList(new String[] { "id=" + note1.getId(), "id=" + folder0.getId() }));
         try (CloseableClientResponse response = getResponse(RequestType.DELETE, "/bulk;" + data)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 

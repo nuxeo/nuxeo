@@ -96,14 +96,9 @@ public class DocumentAutoVersioningTest extends BaseTest {
         String id;
         DocumentModel folder = RestServerInit.getFolder(0, session);
 
-        String data = "{ "
-                + "     \"entity-type\": \"document\","
-                + "     \"type\": \"File\","
-                + "     \"name\":\"myFile\","
-                + "     \"properties\": {"
-                + "         \"dc:title\":\"My title\""
-                + "     }"
-                + "}";
+        String data = "{ " + "     \"entity-type\": \"document\"," + "     \"type\": \"File\","
+                + "     \"name\":\"myFile\"," + "     \"properties\": {" + "         \"dc:title\":\"My title\""
+                + "     }" + "}";
 
         try (CloseableClientResponse response = getResponse(POST, "path" + folder.getPathAsString(), data)) {
             fetchInvalidations();
@@ -128,16 +123,10 @@ public class DocumentAutoVersioningTest extends BaseTest {
         assertEquals("Administrator", doc.getPropertyValue("dc:lastContributor"));
         assertEquals("0.0", doc.getVersionLabel());
 
-        String payload = "{  " +
-                "         \"entity-type\": \"document\"," +
-                "         \"name\": \"myFile\"," +
-                "         \"type\": \"File\"," +
-                "         \"state\": \"project\"," +
-                "         \"title\": \"New title\"," +
-                "         \"properties\": {" +
-                "             \"dc:description\":\"myDesc\"" +
-                "         }" +
-                "     }";
+        String payload = "{  " + "         \"entity-type\": \"document\"," + "         \"name\": \"myFile\","
+                + "         \"type\": \"File\"," + "         \"state\": \"project\","
+                + "         \"title\": \"New title\"," + "         \"properties\": {"
+                + "             \"dc:description\":\"myDesc\"" + "         }" + "     }";
 
         service = getServiceFor("user0", "user0");
         try (CloseableClientResponse response = getResponse(PUT, "id/" + doc.getId(), payload)) {
@@ -160,14 +149,9 @@ public class DocumentAutoVersioningTest extends BaseTest {
         String id;
         DocumentModel folder = RestServerInit.getFolder(0, session);
 
-        String data = "{ "
-                + "     \"entity-type\": \"document\","
-                + "     \"type\": \"File\","
-                + "     \"name\":\"myFile\","
-                + "     \"properties\": {"
-                + "         \"dc:title\":\"My title\""
-                + "     }"
-                + "}";
+        String data = "{ " + "     \"entity-type\": \"document\"," + "     \"type\": \"File\","
+                + "     \"name\":\"myFile\"," + "     \"properties\": {" + "         \"dc:title\":\"My title\""
+                + "     }" + "}";
 
         try (CloseableClientResponse response = getResponse(POST, "path" + folder.getPathAsString(), data)) {
             fetchInvalidations();
@@ -179,16 +163,10 @@ public class DocumentAutoVersioningTest extends BaseTest {
 
         Thread.sleep(1000);
 
-        String payload = "{  " +
-                "         \"entity-type\": \"document\"," +
-                "         \"name\": \"myFile\"," +
-                "         \"type\": \"File\"," +
-                "         \"state\": \"project\"," +
-                "         \"title\": \"New title\"," +
-                "         \"properties\": {" +
-                "             \"dc:description\":\"myDesc\"" +
-                "         }" +
-                "     }";
+        String payload = "{  " + "         \"entity-type\": \"document\"," + "         \"name\": \"myFile\","
+                + "         \"type\": \"File\"," + "         \"state\": \"project\","
+                + "         \"title\": \"New title\"," + "         \"properties\": {"
+                + "             \"dc:description\":\"myDesc\"" + "         }" + "     }";
 
         try (CloseableClientResponse response = getResponse(PUT, "id/" + id, payload)) {
             fetchInvalidations();
@@ -205,14 +183,9 @@ public class DocumentAutoVersioningTest extends BaseTest {
 
         DocumentModel folder = RestServerInit.getFolder(0, session);
 
-        String data = "{ "
-                + "     \"entity-type\": \"document\","
-                + "     \"type\": \"File\","
-                + "     \"name\":\"myFile\","
-                + "     \"properties\": {"
-                + "         \"dc:title\":\"My title\""
-                + "     }"
-                + "}";
+        String data = "{ " + "     \"entity-type\": \"document\"," + "     \"type\": \"File\","
+                + "     \"name\":\"myFile\"," + "     \"properties\": {" + "         \"dc:title\":\"My title\""
+                + "     }" + "}";
 
         try (CloseableClientResponse response = getResponse(POST, "path" + folder.getPathAsString(), data)) {
             fetchInvalidations();

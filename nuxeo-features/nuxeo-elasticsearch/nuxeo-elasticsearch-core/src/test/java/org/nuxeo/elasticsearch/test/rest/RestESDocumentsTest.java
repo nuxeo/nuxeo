@@ -40,7 +40,6 @@ import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOpe
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -91,9 +90,6 @@ public class RestESDocumentsTest extends BaseTest {
 
     @Inject
     AutomationService automationService;
-
-    @Inject
-    private SchemaManager schemaManager;
 
     @Test
     public void iCanBrowseTheRepoByItsId() throws Exception {

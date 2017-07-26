@@ -81,9 +81,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy({ "org.nuxeo.ecm.platform.thumbnail:OSGI-INF/marshallers-contrib.xml",
         "org.nuxeo.ecm.platform.preview:OSGI-INF/marshallers-contrib.xml",
-        "org.nuxeo.ecm.permissions:OSGI-INF/marshallers-contrib.xml",
-        "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.platform.userworkspace.types"})
+        "org.nuxeo.ecm.permissions:OSGI-INF/marshallers-contrib.xml", "org.nuxeo.ecm.platform.collections.core",
+        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.userworkspace.types" })
 public class DocumentBrowsingTest extends BaseTest {
 
     @Test
@@ -198,18 +197,12 @@ public class DocumentBrowsingTest extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + doc.getId())) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         }
-        String payload = "{  " +
-                "         \"entity-type\": \"document\"," +
-                "         \"name\": \"myFile\"," +
-                "         \"type\": \"File\"," +
-                "         \"state\": \"project\"," +
-                "         \"title\": \"New title\"," +
-                "         \"properties\": {" +
-                "             \"dc:description\":\"blabla\"," +
-                "             \"dc:title\":\"New title\"" +
-                "         }" +
-                "     }";
 
+        String payload = "{  " + "         \"entity-type\": \"document\"," + "         \"name\": \"myFile\","
+                + "         \"type\": \"File\"," + "         \"state\": \"project\","
+                + "         \"title\": \"New title\"," + "         \"properties\": {"
+                + "             \"dc:description\":\"blabla\"," + "             \"dc:title\":\"New title\""
+                + "         }" + "     }";
 
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(), payload)) {
             // Then the document is updated

@@ -18,6 +18,15 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+
+import javax.ws.rs.core.Response;
+
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,27 +40,17 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import javax.ws.rs.core.Response;
-
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @since 8.4
  */
 @RunWith(FeaturesRunner.class)
-@Features({RestServerFeature.class, CoreFeature.class, DirectoryFeature.class})
+@Features({ RestServerFeature.class, CoreFeature.class, DirectoryFeature.class })
 @Jetty(port = 18090)
-@Deploy({ "org.nuxeo.ecm.platform.oauth",
-          "org.nuxeo.ecm.directory.api",
-          "org.nuxeo.ecm.directory",
-          "org.nuxeo.ecm.directory.types.contrib" })
-@LocalDeploy({"org.nuxeo.ecm.platform.restapi.test:test-oauth2provider-config.xml",
-              "org.nuxeo.ecm.platform.restapi.test:test-oauth2-directory-contrib.xml"})
+@Deploy({ "org.nuxeo.ecm.platform.oauth", "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory",
+        "org.nuxeo.ecm.directory.types.contrib" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.restapi.test:test-oauth2provider-config.xml",
+        "org.nuxeo.ecm.platform.restapi.test:test-oauth2-directory-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class OAuth2ObjectTest extends BaseTest {
 
@@ -129,21 +128,14 @@ public class OAuth2ObjectTest extends BaseTest {
     @Test
     public void iCanCreateProvider() throws IOException {
         String serviceName = "myservice";
-        String data =
-            "{\n" +
-            "    \"authorizationServerURL\": \"https://test.oauth2.provider/authorization\",\n" +
-            "    \"clientId\": \"clientId\",\n" +
-            "    \"clientSecret\": \"123secret321\",\n" +
-            "    \"description\": \"My Service\",\n" +
-            "    \"entity-type\": \"nuxeoOAuth2ServiceProvider\",\n" +
-            "    \"isEnabled\": true,\n" +
-            "    \"scopes\": [\n" +
-            "        \"https://test.oauth2.provider/scopes/scope0\",\n" +
-            "        \"https://test.oauth2.provider/scopes/scope1\"\n" +
-            "    ],\n" +
-            "    \"serviceName\": \"myservice\",\n" +
-            "    \"tokenServerURL\": \"https://test.oauth2.provider/token\"\n" +
-            "}";
+        String data = "{\n" + "    \"authorizationServerURL\": \"https://test.oauth2.provider/authorization\",\n"
+                + "    \"clientId\": \"clientId\",\n" + "    \"clientSecret\": \"123secret321\",\n"
+                + "    \"description\": \"My Service\",\n" + "    \"entity-type\": \"nuxeoOAuth2ServiceProvider\",\n"
+                + "    \"isEnabled\": true,\n" + "    \"scopes\": [\n"
+                + "        \"https://test.oauth2.provider/scopes/scope0\",\n"
+                + "        \"https://test.oauth2.provider/scopes/scope1\"\n" + "    ],\n"
+                + "    \"serviceName\": \"myservice\",\n"
+                + "    \"tokenServerURL\": \"https://test.oauth2.provider/token\"\n" + "}";
         try (CloseableClientResponse response = getResponse(RequestType.POST, PROVIDER_PATH, data)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -164,21 +156,15 @@ public class OAuth2ObjectTest extends BaseTest {
             assertTrue(node.get("clientSecret").isNull());
             assertFalse(node.get("isEnabled").getBooleanValue());
         }
-        String data =
-            "{\n" +
-                "    \"authorizationServerURL\": \"https://test.oauth2.provider/authorization\",\n" +
-                "    \"clientId\": \"myId\",\n" +
-                "    \"clientSecret\": \"123secret321\",\n" +
-                "    \"description\": \"Test OAuth2 Provider 2\",\n" +
-                "    \"entity-type\": \"nuxeoOAuth2ServiceProvider\",\n" +
-                "    \"isEnabled\": true,\n" +
-                "    \"scopes\": [\n" +
-                "        \"https://test.oauth2.provider/scopes/scope0\",\n" +
-                "        \"https://test.oauth2.provider/scopes/scope1\"\n" +
-                "    ],\n" +
-                "    \"serviceName\": \"test-oauth2-provider-2\",\n" +
-                "    \"tokenServerURL\": \"https://test.oauth2.provider/token\"\n" +
-                "}";
+
+        String data = "{\n" + "    \"authorizationServerURL\": \"https://test.oauth2.provider/authorization\",\n"
+                + "    \"clientId\": \"myId\",\n" + "    \"clientSecret\": \"123secret321\",\n"
+                + "    \"description\": \"Test OAuth2 Provider 2\",\n"
+                + "    \"entity-type\": \"nuxeoOAuth2ServiceProvider\",\n" + "    \"isEnabled\": true,\n"
+                + "    \"scopes\": [\n" + "        \"https://test.oauth2.provider/scopes/scope0\",\n"
+                + "        \"https://test.oauth2.provider/scopes/scope1\"\n" + "    ],\n"
+                + "    \"serviceName\": \"test-oauth2-provider-2\",\n"
+                + "    \"tokenServerURL\": \"https://test.oauth2.provider/token\"\n" + "}";
         try (CloseableClientResponse response = getResponse(RequestType.PUT, getProviderPath(TEST_OAUTH2_PROVIDER_2),
                 data)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -197,21 +183,14 @@ public class OAuth2ObjectTest extends BaseTest {
 
     @Test
     public void iCantUpdateInvalidProvider() throws IOException {
-        String data =
-            "{\n" +
-                "    \"authorizationServerURL\": \"https://test.oauth2.provider/authorization\",\n" +
-                "    \"clientId\": \"myId\",\n" +
-                "    \"clientSecret\": \"123secret321\",\n" +
-                "    \"description\": \"Test OAuth2 Provider 2\",\n" +
-                "    \"entity-type\": \"nuxeoOAuth2ServiceProvider\",\n" +
-                "    \"isEnabled\": true,\n" +
-                "    \"scopes\": [\n" +
-                "        \"https://test.oauth2.provider/scopes/scope0\",\n" +
-                "        \"https://test.oauth2.provider/scopes/scope1\"\n" +
-                "    ],\n" +
-                "    \"serviceName\": \"test-oauth2-provider-2\",\n" +
-                "    \"tokenServerURL\": \"https://test.oauth2.provider/token\"\n" +
-                "}";
+        String data = "{\n" + "    \"authorizationServerURL\": \"https://test.oauth2.provider/authorization\",\n"
+                + "    \"clientId\": \"myId\",\n" + "    \"clientSecret\": \"123secret321\",\n"
+                + "    \"description\": \"Test OAuth2 Provider 2\",\n"
+                + "    \"entity-type\": \"nuxeoOAuth2ServiceProvider\",\n" + "    \"isEnabled\": true,\n"
+                + "    \"scopes\": [\n" + "        \"https://test.oauth2.provider/scopes/scope0\",\n"
+                + "        \"https://test.oauth2.provider/scopes/scope1\"\n" + "    ],\n"
+                + "    \"serviceName\": \"test-oauth2-provider-2\",\n"
+                + "    \"tokenServerURL\": \"https://test.oauth2.provider/token\"\n" + "}";
         try (CloseableClientResponse response = getResponse(RequestType.PUT, getProviderPath("fake"), data)) {
             assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
         }
@@ -261,10 +240,11 @@ public class OAuth2ObjectTest extends BaseTest {
         assertEquals(OAUTH2_PROVIDER_TYPE, node.get("entity-type").getTextValue());
         assertEquals(serviceName, node.get("serviceName").getTextValue());
         assertEquals(TEST_OAUTH2_CLIENTID, node.get("clientId").getTextValue());
-        assertEquals(AUTHORIZATION_SERVER_URL + "?client_id=" + TEST_OAUTH2_CLIENTID +
-                "&redirect_uri=http://localhost:18090/site/oauth2/" + serviceName + "/callback" +
-                "&response_type=code&scope=" + getScopeUrl(0) + "%20" + getScopeUrl(1),
-            node.get("authorizationURL").getTextValue());
+        assertEquals(
+                AUTHORIZATION_SERVER_URL + "?client_id=" + TEST_OAUTH2_CLIENTID
+                        + "&redirect_uri=http://localhost:18090/site/oauth2/" + serviceName + "/callback"
+                        + "&response_type=code&scope=" + getScopeUrl(0) + "%20" + getScopeUrl(1),
+                node.get("authorizationURL").getTextValue());
         if (checkToken) {
             assertEquals(TEST_OAUTH2_SERVICE_USERID, node.get("userId").getTextValue());
         }
@@ -309,18 +289,10 @@ public class OAuth2ObjectTest extends BaseTest {
 
     @Test
     public void iCanUpdateToken() throws IOException {
-        String data =
-            "{  \n" +
-            "   \"entity-type\":\"nuxeoOAuth2Token\",\n" +
-            "   \"clientId\":null,\n" +
-            "   \"creationDate\":\"2017-05-10 11:11:11\",\n" +
-            "   \"isShared\":false,\n" +
-            "   \"nuxeoLogin\":\"user1\",\n" +
-            "   \"serviceLogin\":\"my1@mail\",\n" +
-            "   \"serviceName\":\"test-oauth2-provider\",\n" +
-            "   \"sharedWith\":[  \n" +
-            "   ]\n" +
-            "}";
+        String data = "{  \n" + "   \"entity-type\":\"nuxeoOAuth2Token\",\n" + "   \"clientId\":null,\n"
+                + "   \"creationDate\":\"2017-05-10 11:11:11\",\n" + "   \"isShared\":false,\n"
+                + "   \"nuxeoLogin\":\"user1\",\n" + "   \"serviceLogin\":\"my1@mail\",\n"
+                + "   \"serviceName\":\"test-oauth2-provider\",\n" + "   \"sharedWith\":[  \n" + "   ]\n" + "}";
         try (CloseableClientResponse response = getResponse(RequestType.PUT,
                 TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1", data)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -359,10 +331,15 @@ public class OAuth2ObjectTest extends BaseTest {
         if (node.isArray()) {
             JsonNode token = null;
             for (int i = 0; i < node.size(); i++) {
-                if (node.get(i).get("entity-type").getTextValue().equals(OAUTH2_TOKEN_TYPE) &&
-                    node.get(i).get("serviceName").getTextValue().equals(serviceName) &&
-                    node.get(i).get("nuxeoLogin").getTextValue().equals(nxuser)  &&
-                    node.get(i).get("creationDate").getTextValue().equals(creationDate)) {
+                if (node.get(i).get("entity-type").getTextValue().equals(OAUTH2_TOKEN_TYPE)
+                        && node.get(i).get("serviceName").getTextValue().equals(serviceName) && node.get(i)
+                                                                                                    .get("nuxeoLogin")
+                                                                                                    .getTextValue()
+                                                                                                    .equals(nxuser)
+                        && node.get(i)
+                               .get("creationDate")
+                               .getTextValue()
+                               .equals(creationDate)) {
                     token = node.get(i);
                 }
             }
