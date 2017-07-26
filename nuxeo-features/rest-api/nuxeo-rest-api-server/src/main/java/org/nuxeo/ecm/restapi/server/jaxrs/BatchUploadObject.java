@@ -334,6 +334,9 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     protected Object executeBatch(String batchId, String fileIdx, String operationId, HttpServletRequest request,
             ExecutionRequest xreq) throws UnsupportedEncodingException {
 
+        if (!Framework.getService(BatchManager.class).hasBatch(batchId)) {
+            return buildEmptyResponse(Status.NOT_FOUND);
+        }
 
         if (!Boolean.parseBoolean(
                 RequestContext.getActiveContext(request).getRequest().getHeader(BatchManagerConstants.NO_DROP_FLAG))) {

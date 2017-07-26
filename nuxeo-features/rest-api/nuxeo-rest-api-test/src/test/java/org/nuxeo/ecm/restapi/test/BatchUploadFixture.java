@@ -460,7 +460,16 @@ public class BatchUploadFixture extends BaseTest {
             }
 
             service = getServiceFor("Administrator", "Administrator");
-
+            // Batch has been cleaned up by the previous call
+            try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
+                    "upload/" + batchId + "/execute/Blob.CreateFromURL", json)) {
+                assertEquals(Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            }
+            // Create a new batch
+            try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
+                JsonNode node = mapper.readTree(response.getEntityInputStream());
+                batchId = node.get("batchId").getValueAsText();
+            }
             try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
                     "upload/" + batchId + "/execute/Blob.CreateFromURL", json)) {
                 assertEquals(Status.OK.getStatusCode(), response.getStatus());
