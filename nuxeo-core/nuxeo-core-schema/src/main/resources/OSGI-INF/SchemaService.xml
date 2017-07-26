@@ -29,6 +29,7 @@
           <clearComplexPropertyBeforeSet>true</clearComplexPropertyBeforeSet>
         </configuration>
       </code>
+      Note that setting clearComplexPropertyBeforeSet to false is DEPRECATED since 9.3.
     </documentation>
 
     <object
