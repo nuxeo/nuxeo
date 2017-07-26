@@ -72,7 +72,7 @@ public class RetryPostTest {
 
         // POST retry is disabled by default by the JettyFeature, the call should fail
         try {
-            webResource.post(ClientResponse.class);
+            webResource.post(ClientResponse.class).close();
             fail("A SocketException should have been thrown since retryPostProp is disabled by the JettyFeature");
         } catch (ClientHandlerException e) {
             Throwable cause = e.getCause();
@@ -89,8 +89,15 @@ public class RetryPostTest {
         sendInitialGetRequest();
 
         // POST retry is enabled, the call should succeed
-        ClientResponse response = webResource.post(ClientResponse.class);
-        assertEquals(200, response.getStatus());
+        ClientResponse response = null;
+        try {
+            response = webResource.post(ClientResponse.class);
+            assertEquals(200, response.getStatus());
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
     }
 
     /**
