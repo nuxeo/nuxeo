@@ -241,8 +241,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
             throw new NuxeoException(String.format("Could not resolve page provider with name '%s'", name));
         }
         return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, currentOffset, properties,
-                highlights,
-                quickFilters, parameters);
+                highlights, quickFilters, parameters);
     }
 
     @Override

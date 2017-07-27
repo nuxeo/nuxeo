@@ -39,9 +39,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class RestServerInit implements RepositoryInit {
 
-    /**
-     * @since 9.3
-     */
     protected static final int MAX_FILE = 5;
 
     @Override
