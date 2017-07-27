@@ -42,16 +42,19 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml" })
 public class TestMultiTenantHelper {
 
-    @Inject protected CoreSession session;
+    @Inject
+    protected CoreSession session;
 
-    @Inject protected UserManager userManager;
+    @Inject
+    protected UserManager userManager;
 
     /**
      * just to test it does not throw an exception.
      *
      * @throws Exception
      */
-    @Test public void testGetCurrentTenantId() throws Exception {
+    @Test
+    public void testGetCurrentTenantId() throws Exception {
         MultiTenantHelper.getCurrentTenantId(new SystemPrincipal("nobody"));
     }
 
@@ -60,7 +63,8 @@ public class TestMultiTenantHelper {
      *
      * @throws Exception
      */
-    @Test public void testGetTenantId() throws Exception {
+    @Test
+    public void testGetTenantId() throws Exception {
         MultiTenantHelper.getTenantId("nobody");
     }
 

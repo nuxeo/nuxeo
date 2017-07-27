@@ -479,8 +479,7 @@ public class TestMultiTenantService {
         return powerUsers.getId();
     }
 
-    protected NuxeoPrincipal createUser(String username, boolean isPowerUser, String tenant) throws
-            LoginException {
+    protected NuxeoPrincipal createUser(String username, boolean isPowerUser, String tenant) throws LoginException {
         DocumentModel user = userManager.getBareUserModel();
         user.setPropertyValue("user:username", username);
         user.setPropertyValue("user:tenantId", tenant);
