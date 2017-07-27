@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANTS_DIRECTORY;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ADMINISTRATORS_PROPERTY;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_CONFIG_FACET;
@@ -43,6 +44,7 @@ import javax.security.auth.login.LoginException;
 import junit.framework.Assert;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -104,6 +106,11 @@ public class TestMultiTenantService {
 
     @Inject
     protected TrashService trashService;
+
+    @Before
+    public void before() {
+        assumeTrue("DBS does not support multi-tenant", !coreFeature.getStorageConfiguration().isDBS());
+    }
 
     @After
     public void deleteAllUsersAndGroups() {
