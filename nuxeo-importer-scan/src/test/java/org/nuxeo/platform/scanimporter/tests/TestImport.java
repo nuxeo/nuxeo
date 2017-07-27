@@ -42,6 +42,12 @@ public class TestImport extends ImportTestCase {
 
     private static final Log log = LogFactory.getLog(TestImport.class);
 
+    // MySQL needs to commit the transaction to see the updated state
+    protected void nextTransaction() {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+    }
+
     @Test
     @LocalDeploy("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib3.xml")
     public void testImport() throws Exception {
@@ -61,10 +67,7 @@ public class TestImport extends ImportTestCase {
 
         importer.doImport(new File(testPath), config);
 
-        // MySQL needs to commit the transaction to see the updated state
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-
+        nextTransaction();
         DocumentModelList alldocs = session.query("select * from File order by ecm:path");
 
         for (DocumentModel doc : alldocs) {
@@ -105,20 +108,14 @@ public class TestImport extends ImportTestCase {
         // Import once
         importer.doImport(new File(testPath), config);
 
-        // MySQL needs to commit the transaction to see the updated state
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-
+        nextTransaction();
         DocumentModelList alldocs = session.query("select * from Folder");
         assertEquals(1, alldocs.size());
 
         // Import twice
         importer.doImport(new File(testPath), config);
 
-        // MySQL needs to commit the transaction to see the updated state
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-
+        nextTransaction();
         alldocs = session.query("select * from Folder");
         assertEquals(2, alldocs.size());
     }
@@ -142,13 +139,15 @@ public class TestImport extends ImportTestCase {
 
         // Import once
         importer.doImport(new File(testPath), config);
-        session.save();
+
+        nextTransaction();
         DocumentModelList alldocs = session.query("select * from Folder");
         assertEquals(1, alldocs.size());
 
         // Import twice
         importer.doImport(new File(testPath), config);
-        session.save();
+
+        nextTransaction();
         alldocs = session.query("select * from Folder");
         assertEquals(1, alldocs.size());
     }
@@ -171,8 +170,9 @@ public class TestImport extends ImportTestCase {
 
         importer.doImport(new File(testPath), config);
 
-        session.save();
+        nextTransaction();
         DocumentModelList alldocs = session.query("select * from File order by ecm:path");
+        assertEquals(1, alldocs.size());
         assertEquals("/testFile.txt", alldocs.get(0).getPathAsString());
 
     }
@@ -195,8 +195,7 @@ public class TestImport extends ImportTestCase {
 
         importer.doImport(new File(testPath), config);
 
-        session.save();
-
+        nextTransaction();
         DocumentModelList alldocs = session.query("select * from Picture order by ecm:path");
 
         for (DocumentModel doc : alldocs) {
@@ -227,8 +226,7 @@ public class TestImport extends ImportTestCase {
 
         importer.doImport(new File(testPath), config);
 
-        session.save();
-
+        nextTransaction();
         DocumentModelList alldocs = session.query("select * from Picture order by ecm:path");
 
         for (DocumentModel doc : alldocs) {
