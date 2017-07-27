@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.jaxrs.Util;
 
@@ -72,20 +73,18 @@ public class FileResource extends ExistingResource {
 
     @GET
     public Object get() {
-        Blob content = null;
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
-        if (bh != null) {
-            content = bh.getBlob();
-        }
-        if (content == null) {
+        Blob blob = bh == null ? null : bh.getBlob();
+        if (blob == null) {
             return Response.ok("").build();
-        } else {
-            String mimeType = content.getMimeType();
-            if ("???".equals(mimeType)) {
-                mimeType = "application/octet-stream";
-            }
-            return Response.ok(content).type(mimeType).build();
         }
+        String mimeType = blob.getMimeType();
+        if (mimeType.equals("???")) {
+            mimeType = "application/octet-stream";
+        }
+        // provide full DocumentBlobHolder context if possible, to give more info when calling the DownloadService
+        Object entity = bh instanceof DocumentBlobHolder ? bh : blob;
+        return Response.ok(entity).type(mimeType).build();
     }
 
     @PUT

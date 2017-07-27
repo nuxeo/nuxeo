@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webdav;
 
 import org.nuxeo.ecm.webdav.resource.RootResource;
 import org.nuxeo.ecm.webengine.model.io.BlobWriter;
+import org.nuxeo.ecm.webengine.model.io.DocumentBlobHolderWriter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -42,6 +43,7 @@ public class Application extends javax.ws.rs.core.Application {
         Set<Object> singletons = new HashSet<Object>();
         singletons.add(new ExceptionHandler());
         singletons.add(new WebDavContextResolver());
+        singletons.add(new DocumentBlobHolderWriter());
         singletons.add(new BlobWriter());
         return singletons;
     }
