@@ -65,7 +65,8 @@ public class ModuleImpl implements Module {
 
     protected final Object typeLock = new Object();
 
-    protected TypeRegistry typeReg;
+    // volatile for double-checked locking
+    protected volatile TypeRegistry typeReg;
 
     protected final ModuleConfiguration configuration;
 
