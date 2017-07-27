@@ -35,6 +35,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.restapi.test.BaseTest;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -83,8 +84,8 @@ public class RoutingRestBaseTest extends BaseTest {
             throws IOException {
         String jsonBody = "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\","
                 + "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
-                + DateParser.formatW3CDateTime(dueDate) + "\","
-                + "\"participants\": [\"" + assignee + "\"]," + "\"assignees\": [\"" + assignee + "\"]" + "}" + "}";
+                + DateParser.formatW3CDateTime(dueDate) + "\"," + "\"participants\": [\"" + assignee + "\"],"
+                + "\"assignees\": [\"" + assignee + "\"]" + "}" + "}";
         return jsonBody;
     }
 
@@ -127,17 +128,18 @@ public class RoutingRestBaseTest extends BaseTest {
      */
     protected JsonNode getCurrentTask(final String createdWorflowInstanceId, MultivaluedMap<String, String> queryParams,
             Map<String, String> headers) throws IOException, JsonProcessingException {
-        ClientResponse response;
         JsonNode node;
         if (queryParams == null) {
             queryParams = new MultivaluedMapImpl();
         }
         queryParams.put("workflowInstanceId", Arrays.asList(new String[] { createdWorflowInstanceId }));
-        response = getResponse(RequestType.GET, "/task", null, queryParams, null, headers);
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, node.get("entries").size());
-        Iterator<JsonNode> elements = node.get("entries").getElements();
-        return elements.next();
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/task", null, queryParams, null,
+                headers)) {
+            node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, node.get("entries").size());
+            Iterator<JsonNode> elements = node.get("entries").getElements();
+            return elements.next();
+        }
     }
 
 }
