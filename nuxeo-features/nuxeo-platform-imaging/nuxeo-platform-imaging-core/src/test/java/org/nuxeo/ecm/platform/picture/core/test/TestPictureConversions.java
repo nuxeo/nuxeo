@@ -258,7 +258,7 @@ public class TestPictureConversions {
 
         // Fetch the picture views
         MultiviewPicture multiviewPicture = picture.getAdapter(MultiviewPicture.class);
-        assertEquals(5, multiviewPicture.getViews().length);
+        assertEquals(4, multiviewPicture.getViews().length);
         for (PictureView pictureView : multiviewPicture.getViews()) {
             assertEquals("jpg", FilenameUtils.getExtension(pictureView.getFilename()));
             assertTrue(StringUtils.containsIgnoreCase(pictureView.getFilename(), "cat"));
