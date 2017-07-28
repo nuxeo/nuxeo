@@ -55,9 +55,8 @@ public class ScimServerInit implements RepositoryInit {
         UserManager um = Framework.getLocalService(UserManager.class);
         // Create some users
         if (um != null) {
-            createUsersAndGroups(um);
+            Framework.doPrivileged(() -> createUsersAndGroups(um));
         }
-
     }
 
     private void createUsersAndGroups(UserManager um) throws ClientException, UserAlreadyExistsException,

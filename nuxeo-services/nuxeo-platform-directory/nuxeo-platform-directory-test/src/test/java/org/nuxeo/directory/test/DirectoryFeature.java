@@ -76,6 +76,8 @@ public class DirectoryFeature extends SimpleFeature {
 
     protected Map<String, Map<String, Map<String, Object>>> allDirectoryData;
 
+    protected LoginStack loginStack;
+
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
         granularity = runner.getFeature(CoreFeature.class).getGranularity();
@@ -108,23 +110,31 @@ public class DirectoryFeature extends SimpleFeature {
         allDirectoryData = new HashMap<>();
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
 
-        for (Directory dir : directoryService.getDirectories()) {
-            // Do not save multi-directories as subdirectories will be saved
-            if (dir.isReadOnly() || dir instanceof MultiDirectory) {
-                continue;
+        loginStack = ClientLoginModule.getThreadLocalLogin();
+        loginStack.push(new SystemPrincipal(null), null, null);
+
+        try {
+            for (Directory dir : directoryService.getDirectories()) {
+                // Do not save multi-directories as subdirectories will be saved
+                if (dir.isReadOnly() || dir instanceof MultiDirectory) {
+                    continue;
+                }
+                try (Session session = dir.getSession()) {
+                    session.setReadAllColumns(true); // needs to fetch the password too
+                    List<DocumentModel> entries = session.query(Collections.emptyMap(), Collections.emptySet(),
+                            Collections.emptyMap(), true); // fetch references
+                    Map<String, Map<String, Object>> data = entries.stream().collect(
+                            Collectors.toMap(DocumentModel::getId, entry -> entry.getProperties(dir.getSchema())));
+                    allDirectoryData.put(dir.getName(), data);
+                }
             }
-            try (Session session = dir.getSession()) {
-                session.setReadAllColumns(true); // needs to fetch the password too
-                List<DocumentModel> entries = session.query(Collections.emptyMap(), Collections.emptySet(),
-                        Collections.emptyMap(), true); // fetch references
-                Map<String, Map<String, Object>> data = entries.stream().collect(
-                        Collectors.toMap(DocumentModel::getId, entry -> entry.getProperties(dir.getSchema())));
-                allDirectoryData.put(dir.getName(), data);
+            if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                TransactionHelper.commitOrRollbackTransaction();
+                TransactionHelper.startTransaction();
             }
-        }
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
+        } catch (Exception e) {
+            loginStack.pop();
+            throw e;
         }
     }
 
@@ -137,9 +147,7 @@ public class DirectoryFeature extends SimpleFeature {
             // failure (exception or assumption failed) before any method was run
             return;
         }
-        // system user to bypass directory security
-        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
-        loginStack.push(new SystemPrincipal(null), null, null);
+
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try {
             // clear all directories

@@ -18,12 +18,16 @@
  */
 package org.nuxeo.ecm.directory.multi;
 
+import org.nuxeo.ecm.core.api.SystemPrincipal;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
+import org.nuxeo.ecm.core.api.local.LoginStack;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
@@ -39,4 +43,16 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @LocalDeploy("org.nuxeo.ecm.directory.multi.tests:schemas-config.xml")
 public class MultiDirectoryFeature extends SimpleFeature {
 
+    protected LoginStack loginStack;
+
+    @Override
+    public void beforeSetup(FeaturesRunner runner) throws Exception {
+        loginStack = ClientLoginModule.getThreadLocalLogin();
+        loginStack.push(new SystemPrincipal(null), null, null);
+    }
+
+    @Override
+    public void afterTeardown(FeaturesRunner runner) throws Exception {
+        loginStack.pop();
+    }
 }

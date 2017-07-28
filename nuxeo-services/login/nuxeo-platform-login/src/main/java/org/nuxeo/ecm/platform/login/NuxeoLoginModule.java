@@ -24,6 +24,7 @@ package org.nuxeo.ecm.platform.login;
 import java.io.IOException;
 import java.security.Principal;
 import java.security.acl.Group;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -267,7 +268,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             if (manager == null) {
                 principal = new NuxeoPrincipalImpl(username);
             } else {
-                principal = manager.getPrincipal(username);
+                principal = Framework.doPrivileged(() -> manager.getPrincipal(username));
                 if (principal == null) {
                     throw new LoginException(String.format("principal %s does not exist", username));
                 }

@@ -84,7 +84,7 @@ public class RestServerInit implements RepositoryInit {
                 cal.set(Calendar.DAY_OF_MONTH, 17);
                 doc.setPropertyValue("dc:issued", cal);
             }
-            doc = session.createDocument(doc);
+            Framework.doPrivileged(() -> session.createDocument(doc));
         }
 
         for (int i = 0; i < MAX_NOTE; i++) {
@@ -94,7 +94,7 @@ public class RestServerInit implements RepositoryInit {
             doc.setPropertyValue("dc:nature", "Nature" + i % 2);
             doc.setPropertyValue("dc:coverage", "Coverage" + i % 3);
             doc.setPropertyValue("note:note", "Note " + i);
-            doc = session.createDocument(doc);
+            Framework.doPrivileged(() -> session.createDocument(doc));
         }
 
         // Create a file
@@ -125,9 +125,8 @@ public class RestServerInit implements RepositoryInit {
         UserManager um = Framework.getLocalService(UserManager.class);
         // Create some users
         if (um != null) {
-            createUsersAndGroups(um);
+            Framework.doPrivileged(() -> createUsersAndGroups(um));
         }
-
     }
 
     private void createUsersAndGroups(UserManager um) throws UserAlreadyExistsException,

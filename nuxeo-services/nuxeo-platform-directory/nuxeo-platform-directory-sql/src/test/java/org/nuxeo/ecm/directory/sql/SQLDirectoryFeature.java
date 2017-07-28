@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
+import org.nuxeo.ecm.core.api.SystemPrincipal;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
+import org.nuxeo.ecm.core.api.local.LoginStack;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
@@ -38,9 +41,22 @@ public class SQLDirectoryFeature extends SimpleFeature {
 
     protected Granularity granularity;
 
+    protected LoginStack loginStack;
+
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
         granularity = runner.getFeature(CoreFeature.class).getGranularity();
+    }
+
+    @Override
+    public void beforeSetup(FeaturesRunner runner) throws Exception {
+        loginStack = ClientLoginModule.getThreadLocalLogin();
+        loginStack.push(new SystemPrincipal(null), null, null);
+    }
+
+    @Override
+    public void afterTeardown(FeaturesRunner runner) throws Exception {
+        loginStack.pop();
     }
 
 }

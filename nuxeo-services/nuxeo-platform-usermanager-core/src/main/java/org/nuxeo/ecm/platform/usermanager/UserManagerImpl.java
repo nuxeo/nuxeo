@@ -416,7 +416,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
             boolean authenticated = userDir.authenticate(username, password);
             if (authenticated) {
-                syncDigestAuthPassword(username, password);
+                Framework.doPrivileged(() -> syncDigestAuthPassword(username, password));
             }
             return authenticated;
         }
