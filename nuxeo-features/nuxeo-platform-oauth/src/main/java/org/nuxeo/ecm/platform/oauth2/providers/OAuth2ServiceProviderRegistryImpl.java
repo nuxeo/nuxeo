@@ -103,7 +103,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
             DocumentModel creationEntry = BaseSession.createEntryModel(null, SCHEMA, null, null);
-            DocumentModel entry = session.createEntry(creationEntry);
+            DocumentModel entry = Framework.doPrivileged(() -> session.createEntry(creationEntry));
             entry.setProperty(SCHEMA, "serviceName", serviceName);
             entry.setProperty(SCHEMA, "description", description);
             entry.setProperty(SCHEMA, "authorizationServerURL", authorizationServerURL);
@@ -118,7 +118,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
                 log.info("OAuth2 provider for " + serviceName
                         + " is disabled because clientId and/or clientSecret are empty");
             }
-            session.updateEntry(entry);
+            Framework.doPrivileged(() -> session.updateEntry(entry));
             return getProvider(serviceName);
         }
     }
