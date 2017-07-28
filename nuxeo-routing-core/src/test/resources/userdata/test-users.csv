@@ -1,8 +1,6 @@
 username, password, firstName, lastName, company, email
 "Administrator","Administrator","","","blabla","devnull@nuxeo.com"
-"user","password","User","Lambda","mycomp","my@mail"
-"user1","password1","User1","Lambda","mycomp","my1@mail"
-"user2","password2","User2","Lambda","mycomp","my2@mail"
-"user3","password3","User3","Lambda","mycomp","my3@mail"
-"nulrich","nulrich","nicolas","ulrich","nuxeo/starship","nulrich@nuxeo.com"
-"ldoguin","ldoguin","laurent","O'doguin","nuxeo/reponseD","ldoguin@nuxeo.com"
+"myuser1","mypass1","myfirst1","mylast1","mycomp1","my@mail1"
+"myuser2","mypass2","myfirst2","mylast2","mycomp2","my@mail1"
+"myuser3","mypass3","myfirst3","mylast3","mycomp3","my@mail1"
+"myuser4","mypass4","myfirst4","mylast4","mycomp4","my@mail1"

@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -54,14 +55,10 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @Deprecated
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.content.template", //
-        "org.nuxeo.ecm.directory.api", //
-        "org.nuxeo.ecm.directory", //
         "org.nuxeo.ecm.platform.usermanager", //
-        "org.nuxeo.ecm.directory.types.contrib", //
-        "org.nuxeo.ecm.directory.sql", //
         "org.nuxeo.ecm.platform.task.core", //
         "org.nuxeo.ecm.platform.routing.core", //
         "org.nuxeo.ecm.platform.test", //

@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -51,14 +52,11 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @Ignore
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.content.template", //
         "org.nuxeo.ecm.automation.core", //
-        "org.nuxeo.ecm.directory", //
         "org.nuxeo.ecm.platform.usermanager", //
-        "org.nuxeo.ecm.directory.types.contrib", //
-        "org.nuxeo.ecm.directory.sql", //
         "org.nuxeo.ecm.platform.userworkspace.core", //
         "org.nuxeo.ecm.platform.userworkspace.types", //
         "org.nuxeo.ecm.platform.types.api", //
