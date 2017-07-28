@@ -46,7 +46,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
 
     private final Map<String, ContentFactoryDescriptor> factories = new HashMap<>();
 
-    private final Map<String, FactoryBindingDescriptor> factoryBindings = new HashMap<>();
+    private FactoryBindingRegistry factoryBindings;
 
     private PostContentCreationHandlerRegistry postContentCreationHandlers;
 
@@ -58,6 +58,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
         initializationHandler = new RepositoryInitializationListener();
         initializationHandler.install();
 
+        factoryBindings = new FactoryBindingRegistry();
         postContentCreationHandlers = new PostContentCreationHandlerRegistry();
     }
 
@@ -78,25 +79,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
             // store factories binding to types
             FactoryBindingDescriptor descriptor = (FactoryBindingDescriptor) contribution;
             if (factories.containsKey(descriptor.getFactoryName())) {
-                String targetType = descriptor.getTargetType();
-                String targetFacet = descriptor.getTargetFacet();
-
-                // merge binding
-                if (descriptor.getAppend()) {
-                    descriptor = mergeFactoryBindingDescriptor(descriptor);
-                }
-
-                // check instantiation errors
-                if (getFactoryInstance(descriptor) == null) {
-                    return;
-                }
-
-                // store binding
-                if (null != targetType) {
-                    factoryBindings.put(targetType, descriptor);
-                } else {
-                    factoryBindings.put(targetFacet, descriptor);
-                }
+                factoryBindings.addContribution(descriptor);
             } else {
                 log.error("Factory Binding" + descriptor.getName() + " can not be registered since Factory "
                         + descriptor.getFactoryName() + " is not registered");
@@ -107,24 +90,18 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
         }
     }
 
-    private FactoryBindingDescriptor mergeFactoryBindingDescriptor(FactoryBindingDescriptor newOne) {
-        FactoryBindingDescriptor old;
-        if (null != newOne.getTargetType()) {
-            old = factoryBindings.get(newOne.getTargetType());
-        } else {
-            old = factoryBindings.get(newOne.getTargetFacet());
+    @Override
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (extensionPoint.equals(FACTORY_DECLARATION_EP)) {
+            ContentFactoryDescriptor descriptor = (ContentFactoryDescriptor) contribution;
+            factories.remove(descriptor.getName());
+        } else if (extensionPoint.equals(FACTORY_BINDING_EP)) {
+            FactoryBindingDescriptor descriptor = (FactoryBindingDescriptor) contribution;
+            factoryBindings.removeContribution(descriptor);
+        } else if (POST_CONTENT_CREATION_HANDLERS_EP.equals(extensionPoint)) {
+            PostContentCreationHandlerDescriptor descriptor = (PostContentCreationHandlerDescriptor) contribution;
+            postContentCreationHandlers.removeContribution(descriptor);
         }
-
-        if (old != null) {
-            log.info("FactoryBinding " + old.getName() + " is merging with " + newOne.getName());
-            old.getOptions().putAll(newOne.getOptions());
-            old.getRootAcl().addAll(newOne.getRootAcl());
-            old.getTemplate().addAll(newOne.getTemplate());
-
-            return old;
-        }
-
-        return newOne;
     }
 
     /*
@@ -133,7 +110,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
      */
     @Override
     public ContentFactory getFactoryForType(String documentType) {
-        FactoryBindingDescriptor descriptor = factoryBindings.get(documentType);
+        FactoryBindingDescriptor descriptor = factoryBindings.getContribution(documentType);
         if (descriptor == null || !documentType.equals(descriptor.getTargetType())) {
             return null;
         }
@@ -145,7 +122,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
      * their root.
      */
     public ContentFactory getFactoryForFacet(String facet) {
-        FactoryBindingDescriptor descriptor = factoryBindings.get(facet);
+        FactoryBindingDescriptor descriptor = factoryBindings.getContribution(facet);
         if (descriptor == null || !facet.equals(descriptor.getTargetFacet())) {
             return null;
         }
@@ -197,7 +174,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
     }
 
     public Map<String, FactoryBindingDescriptor> getFactoryBindings() {
-        return factoryBindings;
+        return factoryBindings.toMap();
     }
 
 }
