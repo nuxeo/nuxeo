@@ -41,7 +41,7 @@ import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterExcepti
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features({ LogCaptureFeature.class, CoreFeature.class })
+@Features({ LogCaptureFeature.class, CoreFeature.class, SQLDirectoryFeature.class })
 @Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core", "org.nuxeo.ecm.directory",
         "org.nuxeo.ecm.directory.sql" })
 @LocalDeploy({ "org.nuxeo.ecm.directory:test-sql-directories-schema-override.xml",
