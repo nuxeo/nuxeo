@@ -118,6 +118,12 @@ public class ITDevHotReloadTest {
         // test Folder creation trigger a child of type File
         RestHelper.createDocument("/", "Folder", "folder");
         assertTrue(RestHelper.documentExists("/folder/File"));
+
+        // undeploy the bundle
+        postToDevBundles("# Remove previous bundle for test");
+        // test the opposite
+        RestHelper.createDocument("/folder", "Folder", "child");
+        assertFalse(RestHelper.documentExists("/folder/child/File"));
     }
 
     @Test

@@ -36,6 +36,16 @@ public class ACEDescriptor {
     @XNode("@permission")
     private String permission;
 
+    public ACEDescriptor() {
+        // default constructor
+    }
+
+    public ACEDescriptor(ACEDescriptor toCopy) {
+        this.granted = toCopy.granted;
+        this.principal = toCopy.principal;
+        this.permission = toCopy.permission;
+    }
+
     public boolean getGranted() {
         return granted;
     }

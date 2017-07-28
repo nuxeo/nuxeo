@@ -22,7 +22,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -33,6 +36,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 @XObject(value = "factoryBinding")
 public class FactoryBindingDescriptor {
+
+    private static final Log log = LogFactory.getLog(FactoryBindingDescriptor.class);
 
     @XNode("@name")
     private String name;
@@ -59,12 +64,37 @@ public class FactoryBindingDescriptor {
     @XNodeList(value = "acl/ace", type = ArrayList.class, componentType = ACEDescriptor.class)
     private List<ACEDescriptor> rootAcl;
 
+    public FactoryBindingDescriptor() {
+        // default constructor
+        this.options = new HashMap<>();
+        this.template = new ArrayList<>();
+        this.rootAcl = new ArrayList<>();
+    }
+
+    public FactoryBindingDescriptor(FactoryBindingDescriptor toCopy) {
+        this.name = toCopy.name;
+        this.factoryName = toCopy.factoryName;
+        this.targetType = toCopy.targetType;
+        this.targetFacet = toCopy.targetFacet;
+        this.options = new HashMap<>(toCopy.options);
+        this.template = toCopy.template.stream().map(TemplateItemDescriptor::new).collect(Collectors.toList());
+        this.rootAcl = toCopy.rootAcl.stream().map(ACEDescriptor::new).collect(Collectors.toList());
+    }
+
     public String getFactoryName() {
         return factoryName;
     }
 
+    protected void setFactoryName(String factoryName) {
+        this.factoryName = factoryName;
+    }
+
     public String getName() {
         return name;
+    }
+
+    protected void setName(String name) {
+        this.name = name;
     }
 
     public Map<String, String> getOptions() {
@@ -75,8 +105,16 @@ public class FactoryBindingDescriptor {
         return targetType;
     }
 
+    protected void setTargetType(String targetType) {
+        this.targetType = targetType;
+    }
+
     public String getTargetFacet() {
         return targetFacet;
+    }
+
+    protected void setTargetFacet(String targetFacet) {
+        this.targetFacet = targetFacet;
     }
 
     public List<TemplateItemDescriptor> getTemplate() {
@@ -94,4 +132,26 @@ public class FactoryBindingDescriptor {
     public void setAppend(Boolean append) {
         this.append = append;
     }
+
+    public void merge(FactoryBindingDescriptor src) {
+        if (Boolean.TRUE.equals(src.getAppend())) {
+            if (log.isInfoEnabled()) {
+                log.info("FactoryBinding " + name + " is merging with " + src.getName());
+            }
+        } else {
+            // this needs to be overridden by src
+            factoryName = src.getFactoryName();
+            name = src.getName();
+            targetType = src.getTargetType();
+            targetFacet = src.getTargetFacet();
+            append = Boolean.FALSE;
+            options.clear();
+            rootAcl.clear();
+            template.clear();
+        }
+        options.putAll(src.getOptions());
+        rootAcl.addAll(src.getRootAcl());
+        template.addAll(src.getTemplate());
+    }
+
 }

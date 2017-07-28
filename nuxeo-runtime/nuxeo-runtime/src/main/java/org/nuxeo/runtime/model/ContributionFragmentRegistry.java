@@ -20,6 +20,8 @@ package org.nuxeo.runtime.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * This is a contribution registry that is managing contribution fragments and merge them as needed. The implementation
@@ -249,6 +251,13 @@ public abstract class ContributionFragmentRegistry<T> {
             return head;
         }
         return null;
+    }
+
+    /**
+     * @since 9.3
+     */
+    public synchronized Map<String, T> toMap() {
+        return contribs.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().merge(this)));
     }
 
     public static class FragmentList<T> extends Fragment<T> {
