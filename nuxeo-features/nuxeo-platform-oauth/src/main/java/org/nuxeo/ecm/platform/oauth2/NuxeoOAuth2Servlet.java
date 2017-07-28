@@ -24,9 +24,15 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.nuxeo.ecm.platform.oauth2.Constants.AUTHORIZATION_CODE_GRANT_TYPE;
 import static org.nuxeo.ecm.platform.oauth2.Constants.AUTHORIZATION_CODE_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CLIENT_ID_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_CHALLENGE_METHOD_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_CHALLENGE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_VERIFIER_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.GRANT_TYPE_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.REDIRECT_URI_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.REFRESH_TOKEN_GRANT_TYPE;
+import static org.nuxeo.ecm.platform.oauth2.Constants.RESPONSE_TYPE_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.SCOPE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.STATE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.TOKEN_SERVICE;
 
@@ -68,8 +74,6 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
     public static final String ENDPOINT_TOKEN = "token";
 
     public static final String ENDPOINT_AUTH_SUBMIT = "authorize_submit";
-
-    public static final String AUTHORIZATION_KEY = "authorization_key";
 
     public static final String ERROR_PARAM = "error";
 
@@ -120,14 +124,28 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             return;
         }
 
-        AuthorizationRequest.store(authRequest.getAuthorizationKey(), authRequest);
-        OAuth2ClientService clientService = Framework.getService(OAuth2ClientService.class);
-        request.setAttribute(AUTHORIZATION_KEY, authRequest.getAuthorizationKey());
-        request.setAttribute(CLIENT_NAME, clientService.getClient(authRequest.getClientId()).getName());
+        request.setAttribute(RESPONSE_TYPE_PARAM, authRequest.getResponseType());
+        request.setAttribute(CLIENT_ID_PARAM, authRequest.getClientId());
+        String redirectURI = authRequest.getRedirectURI();
+        if (StringUtils.isNotBlank(redirectURI)) {
+            request.setAttribute(REDIRECT_URI_PARAM, redirectURI);
+        }
+        String scope = authRequest.getScope();
+        if (StringUtils.isNotBlank(scope)) {
+            request.setAttribute(SCOPE_PARAM, scope);
+        }
         String state = request.getParameter(STATE_PARAM);
         if (StringUtils.isNotBlank(state)) {
             request.setAttribute(STATE_PARAM, state);
         }
+        String codeChallenge = authRequest.getCodeChallenge();
+        String codeChallengeMethod = authRequest.getCodeChallengeMethod();
+        if (codeChallenge != null && codeChallengeMethod != null) {
+            request.setAttribute(CODE_CHALLENGE_PARAM, codeChallenge);
+            request.setAttribute(CODE_CHALLENGE_METHOD_PARAM, codeChallengeMethod);
+        }
+        request.setAttribute(CLIENT_NAME,
+                Framework.getService(OAuth2ClientService.class).getClient(authRequest.getClientId()).getName());
 
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(GRANT_JSP_PAGE_PATH);
         requestDispatcher.forward(request, response);
@@ -135,16 +153,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     protected void doPostAuthorizeSubmit(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        String authKeyForm = request.getParameter(AUTHORIZATION_KEY);
-        AuthorizationRequest authRequest = AuthorizationRequest.get(authKeyForm);
-        if (authRequest == null) {
-            handleError(OAuth2Error.invalidRequest(String.format("Invalid %s: %s.", AUTHORIZATION_KEY, authKeyForm)),
-                    request, response);
-            return;
-        }
-
-        AuthorizationRequest.remove(authRequest.getAuthorizationKey());
-
+        AuthorizationRequest authRequest = AuthorizationRequest.fromRequest(request);
         OAuth2Error error = authRequest.checkError();
         if (error != null) {
             handleError(error, request, response);
@@ -197,7 +206,8 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         String grantType = tokenRequest.getGrantType();
         // Process Authorization code
         if (AUTHORIZATION_CODE_GRANT_TYPE.equals(grantType)) {
-            AuthorizationRequest authRequest = AuthorizationRequest.get(tokenRequest.getCode());
+            String authorizationCode = tokenRequest.getCode();
+            AuthorizationRequest authRequest = AuthorizationRequest.get(authorizationCode);
             OAuth2Error error = null;
             if (authRequest == null) {
                 error = OAuth2Error.invalidGrant("Invalid authorization code");
@@ -241,7 +251,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             }
 
             if (authRequest != null) {
-                AuthorizationRequest.remove(authRequest.getAuthorizationCode());
+                AuthorizationRequest.remove(authorizationCode);
             }
 
             if (error != null) {

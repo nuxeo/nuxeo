@@ -8,6 +8,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%
 String context = request.getContextPath();
 
@@ -141,8 +142,21 @@ String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl()
       <fmt:param value="<%=productName%>"/>
     </fmt:message>
 
-    <input name="authorization_key" type="hidden" value="${authorization_key}"/>
-    <input name="state" type="hidden" value="${state}"/>
+    <input name="response_type" type="hidden" value="${fn:escapeXml(response_type)}"/>
+    <input name="client_id" type="hidden" value="${fn:escapeXml(client_id)}"/>
+    <% if (request.getAttribute("redirect_uri") != null) { %>
+    <input name="redirect_uri" type="hidden" value="${fn:escapeXml(redirect_uri)}"/>
+    <% } %>
+    <% if (request.getAttribute("scope") != null) { %>
+    <input name="scope" type="hidden" value="${fn:escapeXml(scope)}"/>
+    <% } %>
+    <% if (request.getAttribute("state") != null) { %>
+    <input name="state" type="hidden" value="${fn:escapeXml(state)}"/>
+    <% } %>
+    <% if (request.getAttribute("code_challenge") != null && request.getAttribute("code_challenge_method") != null) { %>
+    <input name="code_challenge" type="hidden" value="${fn:escapeXml(code_challenge)}"/>
+    <input name="code_challenge_method" type="hidden" value="${fn:escapeXml(code_challenge_method)}"/>
+    <% } %>
 
     <div class="buttons">
       <button class="button" name="deny_access" value="1">

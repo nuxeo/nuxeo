@@ -29,7 +29,6 @@ import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_RESPONSE_TYPE;
 import static org.nuxeo.ecm.platform.oauth2.Constants.REDIRECT_URI_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.RESPONSE_TYPE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.STATE_PARAM;
-import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.AUTHORIZATION_KEY;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ENDPOINT_TOKEN;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_DESCRIPTION_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_PARAM;
@@ -38,6 +37,7 @@ import static org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest.MISSING
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -166,18 +166,103 @@ public class ITOAuth2Test extends AbstractTest {
     }
 
     @Test
+    public void testOAuth2GrantPage() {
+        // Send only the required parameters
+        getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD).build();
+
+        // Send extra parameters
+        Map<String, String> extraParameters = new HashMap<>();
+        extraParameters.put("redirect_uri", "http://localhost:8080/nuxeo/home.html");
+        extraParameters.put("state", "1234");
+        extraParameters.put("code_challenge", "myCodeChallenge");
+        extraParameters.put("code_challenge_method", "plain");
+        getOAuth2GrantPageBuilder().setExtraParameters(extraParameters).build();
+    }
+
+    @Test
     public void testAuthorizationSubmitErrors() {
-        OAuth2GrantPage grantPage = getOAuth2GrantPage();
-        // Simulate an invalid authorization_key parameter
-        grantPage.setAuthorizationKey(driver, "unknown");
+        // Simulate an empty client_id parameter
+        OAuth2GrantPage grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD).build();
+        grantPage.setFieldValue("client_id", "");
         grantPage.grant();
         OAuth2ErrorPage errorPage = asPage(OAuth2ErrorPage.class);
-        errorPage.checkDescription(String.format("Invalid %s: unknown.", AUTHORIZATION_KEY));
+        errorPage.checkDescription(String.format(MISSING_REQUIRED_FIELD_MESSAGE, CLIENT_ID_PARAM));
+
+        // Simulate an empty response_type parameter
+        grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD).build();
+        grantPage.setFieldValue("response_type", "");
+        grantPage.grant();
+        errorPage = asPage(OAuth2ErrorPage.class);
+        errorPage.checkDescription(String.format(MISSING_REQUIRED_FIELD_MESSAGE, RESPONSE_TYPE_PARAM));
+
+        // Simulate an invalid response_type parameter
+        grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD).build();
+        grantPage.setFieldValue("response_type", "unknown");
+        grantPage.grant();
+        errorPage = asPage(OAuth2ErrorPage.class);
+        errorPage.checkDescription(String.format("Unknown %s: got \"unknown\", expecting \"%s\".", RESPONSE_TYPE_PARAM,
+                CODE_RESPONSE_TYPE));
+
+        // Simulate an invalid client_id parameter
+        grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD).build();
+        grantPage.setFieldValue("client_id", "unknown");
+        grantPage.grant();
+        errorPage = asPage(OAuth2ErrorPage.class);
+        errorPage.checkDescription(String.format("Invalid %s: unknown.", CLIENT_ID_PARAM));
+
+        // Simulate an invalid redirect_uri parameter
+        Map<String, String> extraParameters = new HashMap<>();
+        extraParameters.put("redirect_uri", "http://localhost:8080/nuxeo/home.html");
+        grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD)
+                                               .setExtraParameters(extraParameters)
+                                               .build();
+        grantPage.setFieldValue("redirect_uri", "unknown");
+        grantPage.grant();
+        errorPage = asPage(OAuth2ErrorPage.class);
+        errorPage.checkDescription(String.format(
+                "Invalid %s parameter: unknown. It must exactly match one of the redirect URIs configured for the app.",
+                REDIRECT_URI_PARAM));
+
+        // Simulate invalid PKCE parameters
+        extraParameters.put("code_challenge", "myCodeChallenge");
+        extraParameters.put("code_challenge_method", "S256");
+        grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD)
+                                               .setExtraParameters(extraParameters)
+                                               .build();
+        grantPage.removeField("code_challenge_method");
+        grantPage.grant();
+        errorPage = asPage(OAuth2ErrorPage.class);
+        errorPage.checkDescription(
+                String.format("Invalid PKCE parameters: either both %s and %s parameters must be sent or none of them.",
+                        CODE_CHALLENGE_PARAM, CODE_CHALLENGE_METHOD_PARAM));
+
+        grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD)
+                                               .setExtraParameters(extraParameters)
+                                               .build();
+        grantPage.removeField("code_challenge");
+        grantPage.grant();
+        errorPage = asPage(OAuth2ErrorPage.class);
+        errorPage.checkDescription(
+                String.format("Invalid PKCE parameters: either both %s and %s parameters must be sent or none of them.",
+                        CODE_CHALLENGE_PARAM, CODE_CHALLENGE_METHOD_PARAM));
+
+        grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD)
+                                               .setExtraParameters(extraParameters)
+                                               .build();
+        grantPage.setFieldValue("code_challenge_method", "unknown");
+        grantPage.grant();
+        errorPage = asPage(OAuth2ErrorPage.class);
+        errorPage.checkDescription(String.format(
+                "Invalid %s parameter: transform algorithm unknown not supported. The server only supports %s.",
+                CODE_CHALLENGE_METHOD_PARAM, CODE_CHALLENGE_METHODS_SUPPORTED));
     }
 
     @Test
     public void testAuthorizationDenied() throws MalformedURLException {
-        OAuth2GrantPage grantPage = getOAuth2GrantPage();
+        OAuth2GrantPage grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD)
+                                                               .setExtraParameters(
+                                                                       Collections.singletonMap("state", "1234"))
+                                                               .build();
         grantPage.deny();
         String currentURL = driver.getCurrentUrl();
         assertEquals("http://localhost:8080/nuxeo/home.html", URIUtils.getURIPath(currentURL));
@@ -190,7 +275,10 @@ public class ITOAuth2Test extends AbstractTest {
 
     @Test
     public void testAuthorizationGranted() throws MalformedURLException {
-        OAuth2GrantPage grantPage = getOAuth2GrantPage();
+        OAuth2GrantPage grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD)
+                                                               .setExtraParameters(
+                                                                       Collections.singletonMap("state", "1234"))
+                                                               .build();
         grantPage.grant();
         String currentURL = driver.getCurrentUrl();
         assertEquals("http://localhost:8080/nuxeo/home.html", URIUtils.getURIPath(currentURL));
@@ -235,7 +323,8 @@ public class ITOAuth2Test extends AbstractTest {
     }
 
     protected OAuth2Token getOAuth2Token() throws IOException {
-        OAuth2GrantPage grantPage = getOAuth2GrantPage("Administrator", "Administrator");
+        OAuth2GrantPage grantPage = getOAuth2GrantPageBuilder().setCredentials("Administrator", "Administrator")
+                                                               .build();
         grantPage.grant();
         String currentURL = driver.getCurrentUrl();
         Map<String, String> parameters = URIUtils.getRequestParameters(currentURL);
@@ -312,19 +401,58 @@ public class ITOAuth2Test extends AbstractTest {
         return loginPage.login(TEST_USERNAME, TEST_PASSWORD, OAuth2ErrorPage.class);
     }
 
-    protected OAuth2GrantPage getOAuth2GrantPage() {
-        return getOAuth2GrantPage(TEST_USERNAME, TEST_PASSWORD);
+    protected OAuth2GrantPageBuilder getOAuth2GrantPageBuilder() {
+        return new OAuth2GrantPageBuilder();
     }
 
-    protected OAuth2GrantPage getOAuth2GrantPage(String username, String password) {
-        driver.get(NUXEO_URL + "/oauth2/authorize?client_id=test-client&response_type=code&state=1234");
-        // First need to authenticate
-        LoginPage loginPage = asPage(LoginPage.class);
-        OAuth2GrantPage grantPage = loginPage.login(username, password, OAuth2GrantPage.class);
-        grantPage.checkClientName("Test Client");
-        grantPage.checkAuthorizationKey();
-        grantPage.checkState("1234");
-        return grantPage;
+    public static class OAuth2GrantPageBuilder {
+
+        protected Map<String, String> extraParameters;
+
+        protected String username;
+
+        protected String password;
+
+        protected OAuth2GrantPageBuilder() {
+        }
+
+        public OAuth2GrantPageBuilder setExtraParameters(final Map<String, String> extraParameters) {
+            this.extraParameters = extraParameters;
+            return this;
+        }
+
+        public OAuth2GrantPageBuilder setCredentials(final String username, final String password) {
+            this.username = username;
+            this.password = password;
+            return this;
+        }
+
+        public OAuth2GrantPage build() {
+            OAuth2GrantPage grantPage;
+            String url = NUXEO_URL + "/oauth2/authorize?client_id=test-client&response_type=code";
+            if (extraParameters != null) {
+                url = URIUtils.addParametersToURIQuery(url, extraParameters);
+            }
+            driver.get(url);
+            if (username != null && password != null) {
+                // First need to authenticate
+                LoginPage loginPage = asPage(LoginPage.class);
+                grantPage = loginPage.login(username, password, OAuth2GrantPage.class);
+            } else {
+                grantPage = asPage(OAuth2GrantPage.class);
+            }
+            grantPage.checkClientName("Test Client");
+            grantPage.checkResponseType("code");
+            grantPage.checkClientId("test-client");
+            int fieldCount = 2;
+            if (extraParameters != null) {
+                extraParameters.forEach(grantPage::checkExtraParameter);
+                fieldCount += extraParameters.size();
+            }
+            grantPage.checkFieldCount(fieldCount);
+            return grantPage;
+        }
+
     }
 
 }

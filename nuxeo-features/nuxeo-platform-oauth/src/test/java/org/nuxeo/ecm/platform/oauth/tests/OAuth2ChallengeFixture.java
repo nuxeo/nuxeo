@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.platform.oauth.tests;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
@@ -134,7 +133,6 @@ public class OAuth2ChallengeFixture {
         params.put(STATE_PARAM, STATE);
         try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
             assertEquals(200, cr.getStatus());
-            assertStoreContainsSingleKey();
         }
     }
 
@@ -147,7 +145,6 @@ public class OAuth2ChallengeFixture {
         params.put(STATE_PARAM, STATE);
         try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
             assertEquals(400, cr.getStatus());
-            assertStoreIsEmpty();
         }
     }
 
@@ -161,14 +158,12 @@ public class OAuth2ChallengeFixture {
         params.put(CLIENT_ID_PARAM, "no-redirect-uri");
         try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
             assertEquals(400, cr.getStatus());
-            assertStoreIsEmpty();
         }
 
         // Invalid: no redirect_uri parameter with invalid first registered redirect URI: not starting with https
         params.put(CLIENT_ID_PARAM, "not-https");
         try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
             assertEquals(400, cr.getStatus());
-            assertStoreIsEmpty();
         }
 
         // Invalid: no redirect_uri parameter with invalid first registered redirect URI: starting with http://localhost
@@ -176,22 +171,18 @@ public class OAuth2ChallengeFixture {
         params.put(CLIENT_ID_PARAM, "localhost-domain-name");
         try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
             assertEquals(400, cr.getStatus());
-            assertStoreIsEmpty();
         }
 
         // Valid: no redirect_uri parameter with valid first registered redirect URI: starting with https
         params.put(CLIENT_ID_PARAM, CLIENT_ID);
         try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
             assertEquals(200, cr.getStatus());
-            assertStoreContainsSingleKey();
-            store.removeAll();
         }
 
         // Invalid: redirect_uri parameter not matching any of the registered redirect URIs
         params.put(REDIRECT_URI_PARAM, "https://unknown.uri");
         try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
             assertEquals(400, cr.getStatus());
-            assertStoreIsEmpty();
         }
 
         // Invalid: redirect_uri parameter matching one of the registered redirect URIs not starting with https
@@ -199,7 +190,6 @@ public class OAuth2ChallengeFixture {
         params.put(REDIRECT_URI_PARAM, "http://redirect.uri");
         try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
             assertEquals(400, cr.getStatus());
-            assertStoreIsEmpty();
         }
 
         // Valid: redirect_uri parameter matching one of the registered redirect URIs starting with https
@@ -207,8 +197,6 @@ public class OAuth2ChallengeFixture {
         params.put(REDIRECT_URI_PARAM, REDIRECT_URI);
         try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
             assertEquals(200, cr.getStatus());
-            assertStoreContainsSingleKey();
-            store.removeAll();
         }
 
         // Valid: redirect_uri parameter matching one of the registered redirect URIs starting with http://localhost
@@ -216,15 +204,12 @@ public class OAuth2ChallengeFixture {
         params.put(REDIRECT_URI_PARAM, "http://localhost:8080/nuxeo");
         try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
             assertEquals(200, cr.getStatus());
-            assertStoreContainsSingleKey();
-            store.removeAll();
         }
 
         // Valid: redirect_uri parameter matching one of the registered redirect URIs not starting with http
         params.put(REDIRECT_URI_PARAM, "nuxeo://authorize");
         try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
             assertEquals(200, cr.getStatus());
-            assertStoreContainsSingleKey();
         }
     }
 
@@ -243,7 +228,6 @@ public class OAuth2ChallengeFixture {
         params.put(CODE_CHALLENGE_METHOD_PARAM, CODE_CHALLENGE_METHOD_S256);
         try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
             assertEquals(400, cr.getStatus());
-            assertStoreIsEmpty();
         }
 
         // Invalid: code_challenge but no code_challenge_method
@@ -251,43 +235,27 @@ public class OAuth2ChallengeFixture {
         params.put(CODE_CHALLENGE_PARAM, "myCodeChallenge");
         try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
             assertEquals(400, cr.getStatus());
-            assertStoreIsEmpty();
         }
 
         // Invalid: code_challenge_method not supported
         params.put(CODE_CHALLENGE_METHOD_PARAM, "unknown");
         try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
             assertEquals(400, cr.getStatus());
-            assertStoreIsEmpty();
         }
 
         // Valid: code_challenge and supported code_challenge_method
         params.put(CODE_CHALLENGE_METHOD_PARAM, "S256");
         try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
             assertEquals(200, cr.getStatus());
-            assertStoreContainsSingleKey();
         }
     }
 
-    @Test
-    public void authorizeShouldValidateKey() {
-        Map<String, String> params = new HashMap<>();
-        params.put(NuxeoOAuth2Servlet.AUTHORIZATION_KEY, "invalidKey");
-        try (CloseableClientResponse cr = responseFromPostAuthorizeWith(params)) {
-            assertEquals(400, cr.getStatus());
-            assertStoreIsEmpty();
-        }
-    }
-
-    @Test
     public void authorizeShouldDenyAccess() throws UnsupportedEncodingException {
-        AuthorizationRequest authorizationRequest = initValidAuthorizeRequestCall(STATE);
-        String key = authorizationRequest.getAuthorizationKey();
+        initValidAuthorizeRequestCall(STATE);
 
         // missing "grant_access" parameter to grant access
         Map<String, String> params = new HashMap<>();
         params.put(STATE_PARAM, STATE);
-        params.put(NuxeoOAuth2Servlet.AUTHORIZATION_KEY, key);
         try (CloseableClientResponse cr = responseFromPostAuthorizeWith(params)) {
             assertEquals(302, cr.getStatus());
             String redirect = cr.getHeaders().get("Location").get(0);
@@ -298,7 +266,7 @@ public class OAuth2ChallengeFixture {
                     errorDescription);
             String state = extractParameter(redirect, STATE_PARAM);
             assertEquals(STATE, state);
-            // ensure authorization request has been removed
+            // ensure no authorization request has been stored
             assertStoreIsEmpty();
         }
     }
@@ -334,9 +302,8 @@ public class OAuth2ChallengeFixture {
         }
 
         // invalid client_id parameter
-        AuthorizationRequest authorizationRequest = initValidAuthorizeRequestCall(null);
-        String key = authorizationRequest.getAuthorizationKey();
-        String code = getAuthorizationCode(key, null);
+        initValidAuthorizeRequestCall();
+        String code = getAuthorizationCode();
         params.put(AUTHORIZATION_CODE_PARAM, code);
         params.put(CLIENT_ID_PARAM, "unknown");
         try (CloseableClientResponse cr = responseFromTokenWith(params)) {
@@ -349,9 +316,8 @@ public class OAuth2ChallengeFixture {
         }
 
         // invalid client_secret parameter
-        authorizationRequest = initValidAuthorizeRequestCall(null);
-        key = authorizationRequest.getAuthorizationKey();
-        code = getAuthorizationCode(key, null);
+        initValidAuthorizeRequestCall();
+        code = getAuthorizationCode();
         params.put(AUTHORIZATION_CODE_PARAM, code);
         params.put(CLIENT_ID_PARAM, CLIENT_ID);
         params.put(CLIENT_SECRET_PARAM, "invalidSecret");
@@ -365,9 +331,8 @@ public class OAuth2ChallengeFixture {
         }
 
         // check that the redirect_uri parameter is required when included in the authorization request
-        authorizationRequest = initValidAuthorizeRequestCall(null);
-        key = authorizationRequest.getAuthorizationKey();
-        code = getAuthorizationCode(key, null);
+        initValidAuthorizeRequestCall();
+        code = getAuthorizationCode();
         params.put(AUTHORIZATION_CODE_PARAM, code);
         params.put(CLIENT_SECRET_PARAM, CLIENT_SECRET);
         try (CloseableClientResponse cr = responseFromTokenWith(params)) {
@@ -500,16 +465,52 @@ public class OAuth2ChallengeFixture {
         }
     }
 
-    protected AuthorizationRequest initValidAuthorizeRequestCall(String state) {
-        return initValidAuthorizeRequestCall(state, null, null);
+    protected void initValidAuthorizeRequestCall() {
+        initValidAuthorizeRequestCall(null);
     }
 
-    protected AuthorizationRequest initValidAuthorizeRequestCall(String state, String codeChallenge,
+    protected void initValidAuthorizeRequestCall(String state) {
+        initValidAuthorizeRequestCall(state, null, null);
+    }
+
+    protected void initValidAuthorizeRequestCall(String state, String codeChallenge, String codeChallengeMethod) {
+        Map<String, String> params = getAuthorizationRequestParams(state, codeChallenge, codeChallengeMethod);
+        try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
+            assertEquals(200, cr.getStatus());
+        }
+    }
+
+    protected String getAuthorizationCode() {
+        return getAuthorizationCode(null, null, null);
+    }
+
+    protected String getAuthorizationCode(String state, String codeChallenge, String codeChallengeMethod) {
+        Map<String, String> params = getAuthorizationRequestParams(state, codeChallenge, codeChallengeMethod);
+        params.put(NuxeoOAuth2Servlet.GRANT_ACCESS_PARAM, "true");
+        try (CloseableClientResponse cr = responseFromPostAuthorizeWith(params)) {
+            assertEquals(302, cr.getStatus());
+            String redirect = cr.getHeaders().get("Location").get(0);
+            if (state != null) {
+                String redirectState = extractParameter(redirect, STATE_PARAM);
+                assertEquals(state, redirectState);
+            }
+            String code = extractParameter(redirect, AUTHORIZATION_CODE_PARAM);
+
+            // ensure we have only one authorization request and its key is the returned code
+            Set<String> keys = store.keySet();
+            assertEquals(1, keys.size());
+            assertTrue(keys.contains(code));
+
+            return code;
+        }
+    }
+
+    protected Map<String, String> getAuthorizationRequestParams(String state, String codeChallenge,
             String codeChallengeMethod) {
         Map<String, String> params = new HashMap<>();
-        params.put(REDIRECT_URI_PARAM, REDIRECT_URI);
-        params.put(CLIENT_ID_PARAM, CLIENT_ID);
         params.put(RESPONSE_TYPE_PARAM, CODE_RESPONSE_TYPE);
+        params.put(CLIENT_ID_PARAM, CLIENT_ID);
+        params.put(REDIRECT_URI_PARAM, REDIRECT_URI);
         if (state != null) {
             params.put(STATE_PARAM, STATE);
         }
@@ -519,44 +520,7 @@ public class OAuth2ChallengeFixture {
         if (codeChallengeMethod != null) {
             params.put(CODE_CHALLENGE_METHOD_PARAM, codeChallengeMethod);
         }
-
-        try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
-            assertEquals(200, cr.getStatus());
-        }
-
-        // get back the authorization request from the store for the needed authorization key
-        Set<String> keys = store.keySet();
-        assertEquals(1, keys.size());
-        String key = keys.toArray(new String[0])[0];
-        return AuthorizationRequest.get(key);
-    }
-
-    protected String getAuthorizationCode(String key, String state) {
-        // get an authorization code
-        Map<String, String> params = new HashMap<>();
-        params.put(NuxeoOAuth2Servlet.AUTHORIZATION_KEY, key);
-        params.put(NuxeoOAuth2Servlet.GRANT_ACCESS_PARAM, "true");
-        if (state != null) {
-            params.put(STATE_PARAM, STATE);
-        }
-        String code;
-        try (CloseableClientResponse cr = responseFromPostAuthorizeWith(params)) {
-            assertEquals(302, cr.getStatus());
-            String redirect = cr.getHeaders().get("Location").get(0);
-            if (state != null) {
-                String redirectState = extractParameter(redirect, STATE_PARAM);
-                assertEquals(state, redirectState);
-            }
-            code = extractParameter(redirect, AUTHORIZATION_CODE_PARAM);
-        }
-
-        // ensure we have only one authorization request
-        Set<String> keys = store.keySet();
-        assertEquals(1, keys.size());
-        assertTrue(keys.contains(code));
-        assertFalse(keys.contains(key));
-
-        return code;
+        return params;
     }
 
     protected CloseableClientResponse getTokenResponse(String state) {
@@ -565,10 +529,8 @@ public class OAuth2ChallengeFixture {
 
     protected CloseableClientResponse getTokenResponse(String state, String codeChallenge, String codeChallengeMethod,
             String codeVerifier) {
-        AuthorizationRequest authorizationRequest = initValidAuthorizeRequestCall(state, codeChallenge,
-                codeChallengeMethod);
-        String key = authorizationRequest.getAuthorizationKey();
-        String code = getAuthorizationCode(key, state);
+        initValidAuthorizeRequestCall(state, codeChallenge, codeChallengeMethod);
+        String code = getAuthorizationCode(state, codeChallenge, codeChallengeMethod);
         Map<String, String> params = new HashMap<>();
         params.put(GRANT_TYPE_PARAM, AUTHORIZATION_CODE_GRANT_TYPE);
         params.put(AUTHORIZATION_CODE_PARAM, code);
@@ -627,10 +589,6 @@ public class OAuth2ChallengeFixture {
 
     protected void assertStoreIsEmpty() {
         assertEquals(0, store.keySet().size());
-    }
-
-    protected void assertStoreContainsSingleKey() {
-        assertEquals(1, store.keySet().size());
     }
 
 }

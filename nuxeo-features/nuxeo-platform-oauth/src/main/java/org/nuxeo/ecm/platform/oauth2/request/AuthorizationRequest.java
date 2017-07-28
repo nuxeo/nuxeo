@@ -72,8 +72,6 @@ public class AuthorizationRequest extends OAuth2Request {
 
     protected String authorizationCode;
 
-    protected String authorizationKey;
-
     protected String username;
 
     protected String codeChallenge;
@@ -122,7 +120,6 @@ public class AuthorizationRequest extends OAuth2Request {
         }
 
         creationDate = new Date();
-        authorizationKey = RandomStringUtils.random(6, true, false);
 
         codeChallenge = request.getParameter(CODE_CHALLENGE_PARAM);
         codeChallengeMethod = request.getParameter(CODE_CHALLENGE_METHOD_PARAM);
@@ -135,7 +132,6 @@ public class AuthorizationRequest extends OAuth2Request {
         scope = (String) map.get("scope");
         creationDate = (Date) map.get("creationDate");
         authorizationCode = (String) map.get("authorizationCode");
-        authorizationKey = (String) map.get("authorizationKey");
         username = (String) map.get("username");
         codeChallenge = (String) map.get("codeChallenge");
         codeChallengeMethod = (String) map.get("codeChallengeMethod");
@@ -232,6 +228,14 @@ public class AuthorizationRequest extends OAuth2Request {
         return new Date().getTime() - creationDate.getTime() > 10 * 60 * 1000;
     }
 
+    public String getResponseType() {
+        return responseType;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -241,10 +245,6 @@ public class AuthorizationRequest extends OAuth2Request {
             authorizationCode = RandomStringUtils.random(10, true, true);
         }
         return authorizationCode;
-    }
-
-    public String getAuthorizationKey() {
-        return authorizationKey;
     }
 
     public String getCodeChallenge() {
@@ -274,9 +274,6 @@ public class AuthorizationRequest extends OAuth2Request {
         }
         if (authorizationCode != null) {
             map.put("authorizationCode", authorizationCode);
-        }
-        if (authorizationKey != null) {
-            map.put("authorizationKey", authorizationKey);
         }
         if (username != null) {
             map.put("username", username);
