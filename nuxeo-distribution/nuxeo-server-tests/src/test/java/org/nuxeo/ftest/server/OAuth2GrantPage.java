@@ -19,11 +19,11 @@
 package org.nuxeo.ftest.server;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -36,19 +36,20 @@ import org.openqa.selenium.support.FindBy;
  */
 public class OAuth2GrantPage extends AbstractPage {
 
-    protected final static String AUTHORIZATION_KEY_INPUT_NAME = "authorization_key";
-
     @Required
     @FindBy(tagName = "form")
     WebElement form;
 
     @Required
-    @FindBy(name = AUTHORIZATION_KEY_INPUT_NAME)
-    WebElement authorizationKey;
+    @FindBy(name = "response_type")
+    WebElement responseType;
 
     @Required
-    @FindBy(name = "state")
-    WebElement state;
+    @FindBy(name = "client_id")
+    WebElement clientId;
+
+    @FindBy(name = "redirect_uri")
+    WebElement redirectURI;
 
     @Required
     @FindBy(name = "deny_access")
@@ -66,17 +67,29 @@ public class OAuth2GrantPage extends AbstractPage {
         assertTrue(form.getText().contains(name));
     }
 
-    public void checkAuthorizationKey() {
-        assertNotNull(authorizationKey.getAttribute("value"));
+    public void checkResponseType(String expected) {
+        assertEquals(expected, responseType.getAttribute("value"));
     }
 
-    public void checkState(String expectedState) {
-        assertEquals(expectedState, state.getAttribute("value"));
+    public void checkClientId(String expected) {
+        assertEquals(expected, clientId.getAttribute("value"));
     }
 
-    public void setAuthorizationKey(RemoteWebDriver driver, String key) {
-        driver.executeScript(
-                String.format("document.getElementsByName('%s')[0].value = '%s' ;", AUTHORIZATION_KEY_INPUT_NAME, key));
+    public void checkExtraParameter(String name, String expected) {
+        assertEquals(expected, driver.findElement(By.name(name)).getAttribute("value"));
+    }
+
+    public void checkFieldCount(int count) {
+        assertEquals(count, driver.findElements(By.tagName("input")).size());
+    }
+
+    public void setFieldValue(String name, String value) {
+        ((RemoteWebDriver) driver).executeScript(
+                String.format("document.getElementsByName('%s')[0].value = '%s' ;", name, value));
+    }
+
+    public void removeField(String name) {
+        ((RemoteWebDriver) driver).executeScript(String.format("document.getElementsByName('%s')[0].remove() ;", name));
     }
 
     public void deny() {
