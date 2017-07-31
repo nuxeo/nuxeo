@@ -5,7 +5,6 @@
 <%@ page import="java.util.List"%>
 <%@ page import="org.joda.time.DateTime"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper"%>
-<%@ page import="org.nuxeo.ecm.platform.web.common.MobileBannerHelper"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLink"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig"%>
@@ -76,10 +75,6 @@ String currentYear = new DateTime().toString("Y");
 boolean hasVideos = screenConfig.hasVideos();
 String muted = screenConfig.getVideoMuted() ? "muted " : "";
 String loop = screenConfig.getVideoLoop() ? "loop " : "";
-
-String androidApplicationURL = MobileBannerHelper.getURLForAndroidApplication(request);
-String iOSApplicationURL = MobileBannerHelper.getURLForIOSApplication(request);
-String appStoreURL = MobileBannerHelper.getAppStoreURL();
 %>
 
 <html>
@@ -96,7 +91,6 @@ if (selectedLanguage != null) { %>
 <link rel="shortcut icon" type="image/x-icon" href="<%=context%>/icons/favicon.ico" />
 <script type="text/javascript" src="<%=context%>/scripts/detect_timezone.js"></script>
 <script type="text/javascript" src="<%=context%>/scripts/nxtimezone.js"></script>
-<script type="text/javascript" src="<%=context%>/scripts/mobile-banner.js"></script>
 <script type="text/javascript">
   nxtz.resetTimeZoneCookieIfNotSet();
 </script>
@@ -335,32 +329,6 @@ input:-webkit-autofill:focus {
   background-color: rgba(255,255,255,0);
 }
 
-/* =Mobile Banner */
-#mobileBanner {
-  /* set to flex to display the mobile banner */
-  display: none;
-  justify-content: flex-end;
-  position: fixed;
-  z-index: 500;
-  bottom: 0;
-  left:0;
-  right: 0;
-  height: 3em;
-  background-color: rgba(255, 255, 255, .8);
-  padding: .6em;
-}
-
-a.mobileAppLink,
-a.mobileAppLink:hover {
-  display: inline-block;
-  background-color: #00adff;
-  border-radius: 3em;
-  padding: .2em 1.5em .5em;
-  color: #fff;
-  line-height: 1.4em;
-  text-decoration: none;
-}
-
 /* Mobile devices */
 @media all and (max-width: 850px) {
   body {
@@ -522,20 +490,9 @@ a.mobileAppLink:hover {
     <%=productVersion%>
   </footer>
 </div>
-<div id="mobileBanner">
-  <a id="androidAppLink" class="mobileAppLink" href="<%=androidApplicationURL%>">
-    <fmt:message bundle="${messages}" key="label.mobile.openInApp" />
-  </a>
-  <a id="iOSAppLink" class="mobileAppLink"
-    data-action="<%=iOSApplicationURL%>"
-    onclick="nuxeo.mobile.openIOSAppOrAppStore(this.getAttribute('data-action'), '<%=appStoreURL%>');">
-    <fmt:message bundle="${messages}" key="label.mobile.openInApp" />
-  </a>
-</div>
 
 <script type="text/javascript">
   // Since the #! part of an URL is not sent to the server, ensure it is part of the requested URL
-  // and the mobile app links
   // Required for the Web UI
   var indexOfHash = window.location.href.indexOf('#!');
   if (indexOfHash > -1) {
@@ -543,23 +500,7 @@ a.mobileAppLink:hover {
     // or lastPart = #!/doc/f6fa9686-3618-47a8-9419-ff1cc76fc857
     var lastPart = window.location.href.substring(indexOfHash);
     document.getElementById('requestedUrl').value += lastPart;
-
-    var docPart;
-    var parts = lastPart.split('/');
-    if (parts.length === 3) {
-      // no server in URL
-      docPart = "default/id/" + parts[2];
-    } else if (parts.length === 4) {
-      docPart = parts[2] + "/id/" + parts[3];
-    }
-    if(docPart) {
-      var androidAppLink = document.getElementById('androidAppLink');
-      var iOSAppLink = document.getElementById('iOSAppLink');
-      androidAppLink.href += docPart;
-      iOSAppLink.setAttribute('data-action', iOSAppLink.getAttribute('data-action') + docPart);
-    }
   }
-  nuxeo.mobile.displayMobileBanner('mobileBanner', 'flex', 'androidAppLink', 'iOSAppLink');
 
   document.getElementById('username').focus();
 
