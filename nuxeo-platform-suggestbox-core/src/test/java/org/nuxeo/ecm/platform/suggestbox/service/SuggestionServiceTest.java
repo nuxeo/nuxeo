@@ -46,6 +46,8 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectoryDescriptor;
+import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
+import org.nuxeo.ecm.platform.login.test.DummyNuxeoLoginModule;
 import org.nuxeo.ecm.platform.suggestbox.service.suggesters.I18nHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -54,7 +56,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, ClientLoginFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.query.api", //
         "org.nuxeo.ecm.platform.types.api", //
@@ -73,6 +75,9 @@ public class SuggestionServiceTest {
 
     @Inject
     protected CoreFeature coreFeature;
+
+    @Inject
+    protected ClientLoginFeature loginFeature;
 
     @Inject
     protected CoreSession session;
@@ -111,8 +116,13 @@ public class SuggestionServiceTest {
         // create some documents to be looked up
         makeSomeDocuments();
 
+        loginFeature.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
         // create some users and groups
-        makeSomeUsersAndGroups();
+        try {
+            makeSomeUsersAndGroups();
+        } finally {
+            loginFeature.logout();
+        }
 
         suggestionService = Framework.getService(SuggestionService.class);
         assertNotNull(suggestionService);
@@ -255,15 +265,17 @@ public class SuggestionServiceTest {
         assumeTrue("No multiple fulltext indexes",
                 coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
-        try (Session userSession = userdir.getSession()) {
-            for (int i = 0; i < 10; i++) {
-                Map<String, Object> user = new HashMap<String, Object>();
-                user.put("username", String.format("user%d", i));
-                user.put("firstName", "Nemo");
-                user.put("lastName", "Homonym");
-                userSession.createEntry(user);
+        Framework.doPrivileged(() -> {
+            try (Session userSession = userdir.getSession()) {
+                for (int i = 0; i < 10; i++) {
+                    Map<String, Object> user = new HashMap<String, Object>();
+                    user.put("username", String.format("user%d", i));
+                    user.put("firstName", "Nemo");
+                    user.put("lastName", "Homonym");
+                    userSession.createEntry(user);
+                }
             }
-        }
+        });
 
         // build a suggestion context
         NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
