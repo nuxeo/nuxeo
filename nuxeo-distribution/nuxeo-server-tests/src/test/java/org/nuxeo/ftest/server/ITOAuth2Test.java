@@ -120,7 +120,10 @@ public class ITOAuth2Test extends AbstractTest {
     }
 
     @Test
-    public void testAuhorizationErrors() {
+    public void testAuthorizationErrors() {
+        LoginPage loginPage = getLoginPage();
+        loginPage.login(TEST_USERNAME, TEST_PASSWORD);
+
         // No client_id parameter
         OAuth2ErrorPage errorPage = getOAuth2ErrorPage("/oauth2/authorize");
         assertTrue(driver.getTitle().endsWith("400"));
@@ -167,8 +170,11 @@ public class ITOAuth2Test extends AbstractTest {
 
     @Test
     public void testOAuth2GrantPage() {
+        LoginPage loginPage = getLoginPage();
+        loginPage.login(TEST_USERNAME, TEST_PASSWORD);
+
         // Send only the required parameters
-        getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD).build();
+        getOAuth2GrantPageBuilder().build();
 
         // Send extra parameters
         Map<String, String> extraParameters = new HashMap<>();
@@ -181,22 +187,25 @@ public class ITOAuth2Test extends AbstractTest {
 
     @Test
     public void testAuthorizationSubmitErrors() {
+        LoginPage loginPage = getLoginPage();
+        loginPage.login(TEST_USERNAME, TEST_PASSWORD);
+
         // Simulate an empty client_id parameter
-        OAuth2GrantPage grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD).build();
+        OAuth2GrantPage grantPage = getOAuth2GrantPageBuilder().build();
         grantPage.setFieldValue("client_id", "");
         grantPage.grant();
         OAuth2ErrorPage errorPage = asPage(OAuth2ErrorPage.class);
         errorPage.checkDescription(String.format(MISSING_REQUIRED_FIELD_MESSAGE, CLIENT_ID_PARAM));
 
         // Simulate an empty response_type parameter
-        grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD).build();
+        grantPage = getOAuth2GrantPageBuilder().build();
         grantPage.setFieldValue("response_type", "");
         grantPage.grant();
         errorPage = asPage(OAuth2ErrorPage.class);
         errorPage.checkDescription(String.format(MISSING_REQUIRED_FIELD_MESSAGE, RESPONSE_TYPE_PARAM));
 
         // Simulate an invalid response_type parameter
-        grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD).build();
+        grantPage = getOAuth2GrantPageBuilder().build();
         grantPage.setFieldValue("response_type", "unknown");
         grantPage.grant();
         errorPage = asPage(OAuth2ErrorPage.class);
@@ -204,7 +213,7 @@ public class ITOAuth2Test extends AbstractTest {
                 CODE_RESPONSE_TYPE));
 
         // Simulate an invalid client_id parameter
-        grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD).build();
+        grantPage = getOAuth2GrantPageBuilder().build();
         grantPage.setFieldValue("client_id", "unknown");
         grantPage.grant();
         errorPage = asPage(OAuth2ErrorPage.class);
@@ -213,9 +222,7 @@ public class ITOAuth2Test extends AbstractTest {
         // Simulate an invalid redirect_uri parameter
         Map<String, String> extraParameters = new HashMap<>();
         extraParameters.put("redirect_uri", "http://localhost:8080/nuxeo/home.html");
-        grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD)
-                                               .setExtraParameters(extraParameters)
-                                               .build();
+        grantPage = getOAuth2GrantPageBuilder().setExtraParameters(extraParameters).build();
         grantPage.setFieldValue("redirect_uri", "unknown");
         grantPage.grant();
         errorPage = asPage(OAuth2ErrorPage.class);
@@ -226,9 +233,7 @@ public class ITOAuth2Test extends AbstractTest {
         // Simulate invalid PKCE parameters
         extraParameters.put("code_challenge", "myCodeChallenge");
         extraParameters.put("code_challenge_method", "S256");
-        grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD)
-                                               .setExtraParameters(extraParameters)
-                                               .build();
+        grantPage = getOAuth2GrantPageBuilder().setExtraParameters(extraParameters).build();
         grantPage.removeField("code_challenge_method");
         grantPage.grant();
         errorPage = asPage(OAuth2ErrorPage.class);
@@ -236,9 +241,7 @@ public class ITOAuth2Test extends AbstractTest {
                 String.format("Invalid PKCE parameters: either both %s and %s parameters must be sent or none of them.",
                         CODE_CHALLENGE_PARAM, CODE_CHALLENGE_METHOD_PARAM));
 
-        grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD)
-                                               .setExtraParameters(extraParameters)
-                                               .build();
+        grantPage = getOAuth2GrantPageBuilder().setExtraParameters(extraParameters).build();
         grantPage.removeField("code_challenge");
         grantPage.grant();
         errorPage = asPage(OAuth2ErrorPage.class);
@@ -246,9 +249,7 @@ public class ITOAuth2Test extends AbstractTest {
                 String.format("Invalid PKCE parameters: either both %s and %s parameters must be sent or none of them.",
                         CODE_CHALLENGE_PARAM, CODE_CHALLENGE_METHOD_PARAM));
 
-        grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD)
-                                               .setExtraParameters(extraParameters)
-                                               .build();
+        grantPage = getOAuth2GrantPageBuilder().setExtraParameters(extraParameters).build();
         grantPage.setFieldValue("code_challenge_method", "unknown");
         grantPage.grant();
         errorPage = asPage(OAuth2ErrorPage.class);
@@ -259,10 +260,11 @@ public class ITOAuth2Test extends AbstractTest {
 
     @Test
     public void testAuthorizationDenied() throws MalformedURLException {
-        OAuth2GrantPage grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD)
-                                                               .setExtraParameters(
-                                                                       Collections.singletonMap("state", "1234"))
-                                                               .build();
+        LoginPage loginPage = getLoginPage();
+        loginPage.login(TEST_USERNAME, TEST_PASSWORD);
+
+        OAuth2GrantPage grantPage = getOAuth2GrantPageBuilder().setExtraParameters(
+                Collections.singletonMap("state", "1234")).build();
         grantPage.deny();
         String currentURL = driver.getCurrentUrl();
         assertEquals("http://localhost:8080/nuxeo/home.html", URIUtils.getURIPath(currentURL));
@@ -275,10 +277,11 @@ public class ITOAuth2Test extends AbstractTest {
 
     @Test
     public void testAuthorizationGranted() throws MalformedURLException {
-        OAuth2GrantPage grantPage = getOAuth2GrantPageBuilder().setCredentials(TEST_USERNAME, TEST_PASSWORD)
-                                                               .setExtraParameters(
-                                                                       Collections.singletonMap("state", "1234"))
-                                                               .build();
+        LoginPage loginPage = getLoginPage();
+        loginPage.login(TEST_USERNAME, TEST_PASSWORD);
+
+        OAuth2GrantPage grantPage = getOAuth2GrantPageBuilder().setExtraParameters(
+                Collections.singletonMap("state", "1234")).build();
         grantPage.grant();
         String currentURL = driver.getCurrentUrl();
         assertEquals("http://localhost:8080/nuxeo/home.html", URIUtils.getURIPath(currentURL));
@@ -291,6 +294,7 @@ public class ITOAuth2Test extends AbstractTest {
     @Test
     public void testAuthorizationOnRestAPI() throws IOException {
         OAuth2Token token = getOAuth2Token();
+        logoutSimply();
 
         checkAuthorizationWithValidAccessToken(DOC_PATH, token.accessToken);
 
@@ -323,8 +327,10 @@ public class ITOAuth2Test extends AbstractTest {
     }
 
     protected OAuth2Token getOAuth2Token() throws IOException {
-        OAuth2GrantPage grantPage = getOAuth2GrantPageBuilder().setCredentials("Administrator", "Administrator")
-                                                               .build();
+        LoginPage loginPage = getLoginPage();
+        loginPage.login("Administrator", "Administrator");
+
+        OAuth2GrantPage grantPage = getOAuth2GrantPageBuilder().build();
         grantPage.grant();
         String currentURL = driver.getCurrentUrl();
         Map<String, String> parameters = URIUtils.getRequestParameters(currentURL);
@@ -396,9 +402,7 @@ public class ITOAuth2Test extends AbstractTest {
 
     protected OAuth2ErrorPage getOAuth2ErrorPage(String resource) {
         driver.get(NUXEO_URL + resource);
-        // First need to authenticate
-        LoginPage loginPage = asPage(LoginPage.class);
-        return loginPage.login(TEST_USERNAME, TEST_PASSWORD, OAuth2ErrorPage.class);
+        return asPage(OAuth2ErrorPage.class);
     }
 
     protected OAuth2GrantPageBuilder getOAuth2GrantPageBuilder() {
@@ -409,21 +413,11 @@ public class ITOAuth2Test extends AbstractTest {
 
         protected Map<String, String> extraParameters;
 
-        protected String username;
-
-        protected String password;
-
         protected OAuth2GrantPageBuilder() {
         }
 
         public OAuth2GrantPageBuilder setExtraParameters(final Map<String, String> extraParameters) {
             this.extraParameters = extraParameters;
-            return this;
-        }
-
-        public OAuth2GrantPageBuilder setCredentials(final String username, final String password) {
-            this.username = username;
-            this.password = password;
             return this;
         }
 
@@ -434,13 +428,7 @@ public class ITOAuth2Test extends AbstractTest {
                 url = URIUtils.addParametersToURIQuery(url, extraParameters);
             }
             driver.get(url);
-            if (username != null && password != null) {
-                // First need to authenticate
-                LoginPage loginPage = asPage(LoginPage.class);
-                grantPage = loginPage.login(username, password, OAuth2GrantPage.class);
-            } else {
-                grantPage = asPage(OAuth2GrantPage.class);
-            }
+            grantPage = asPage(OAuth2GrantPage.class);
             grantPage.checkClientName("Test Client");
             grantPage.checkResponseType("code");
             grantPage.checkClientId("test-client");

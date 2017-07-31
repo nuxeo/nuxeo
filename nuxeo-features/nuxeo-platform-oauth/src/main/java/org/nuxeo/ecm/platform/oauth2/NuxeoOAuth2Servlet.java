@@ -303,7 +303,6 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
     protected void handleError(OAuth2Error error, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         log.warn(String.format("OAuth2 authorization request error: %s", error));
-        request.getSession().invalidate();
         response.reset();
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         request.setAttribute("error", error);
@@ -327,7 +326,6 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     protected void sendRedirect(HttpServletRequest request, HttpServletResponse response, String redirectURI,
             Map<String, String> params) throws IOException {
-        request.getSession().invalidate();
         if (redirectURI == null) {
             response.sendError(SC_BAD_REQUEST, "No redirect URI");
             return;
