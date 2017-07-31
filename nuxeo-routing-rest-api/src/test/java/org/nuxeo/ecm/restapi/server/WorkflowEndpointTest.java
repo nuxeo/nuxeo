@@ -942,6 +942,11 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
                 assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
             }
         }
+
+        // Starts a new transaction for visibility on db that use repeatable read isolation (mysql, mariadb)
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
         DocumentModelList cancelled = session.query(
                 "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'");
         assertEquals(max, cancelled.size());
