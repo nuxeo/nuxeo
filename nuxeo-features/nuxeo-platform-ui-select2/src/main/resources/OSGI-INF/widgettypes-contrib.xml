@@ -87,8 +87,8 @@
           ID of the Automation Operation that will be
           used to
           fetch the suggestions.
-          If unsed,
-          Document.PageProvider will be used.
+          If unset,
+          Repository.PageProvider (or Document.PageProvider for Nuxeo Platform 6.0) will be used.
         </label>
       </helpLabels>
       <fields>
