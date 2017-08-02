@@ -79,17 +79,23 @@
       class="org.nuxeo.targetplatforms.core.descriptors.ServiceConfigurationDescriptor" />
   </extension-point>
 
-  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
 
     <documentation>
       Default override directory used to change some target
       platforms values live.
     </documentation>
 
-    <directory name="targetPlatformOverrides" extends="template-directory">
+    <directory name="targetPlatformOverrides">
       <schema>target_platform_override</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>targetPlatformOverrides</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
   </extension>

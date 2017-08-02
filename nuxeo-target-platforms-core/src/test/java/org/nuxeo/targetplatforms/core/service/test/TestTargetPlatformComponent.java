@@ -27,7 +27,6 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -44,10 +43,11 @@ import org.nuxeo.targetplatforms.core.service.DirectoryUpdater;
  */
 
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, DirectoryFeature.class })
+@Features(RuntimeFeature.class)
 @Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.schema",
-        "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.io",
-        "org.nuxeo.ecm.platform.el", "org.nuxeo.targetplatforms.core" })
+        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.event",
+        "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.platform.el",
+        "org.nuxeo.targetplatforms.core" })
 @LocalDeploy({ "org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml",
         "org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml" })
 public class TestTargetPlatformComponent {
