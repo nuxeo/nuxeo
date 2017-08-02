@@ -26,13 +26,6 @@
   <implementation
     class="org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl" />
 
-  <extension target="org.nuxeo.runtime.EventService" point="listeners">
-    <listener
-      class="org.nuxeo.drive.service.impl.FileSystemItemFactoryReloadListener">
-      <topic>org.nuxeo.runtime.reload</topic>
-    </listener>
-  </extension>
-
   <extension-point name="fileSystemItemFactory">
 
     <documentation>

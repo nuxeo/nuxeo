@@ -52,7 +52,7 @@ public class NuxeoDriveSetActiveFactories {
     @OperationMethod
     public boolean run() throws Exception {
         NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
-        String contrib = null;
+        String contrib;
         if ("userworkspace".equals(profile)) {
             contrib = "/OSGI-INF/nuxeodrive-hierarchy-userworkspace-contrib.xml";
         } else if ("permission".equals(profile)) {
@@ -71,7 +71,8 @@ public class NuxeoDriveSetActiveFactories {
         } finally {
             Framework.getRuntime().getComponentManager().unstash();
         }
-        FileSystemItemAdapterServiceImpl fileSystemItemAdapterService = (FileSystemItemAdapterServiceImpl) Framework.getService(FileSystemItemAdapterService.class);
+        FileSystemItemAdapterServiceImpl fileSystemItemAdapterService = (FileSystemItemAdapterServiceImpl) Framework.getService(
+                FileSystemItemAdapterService.class);
         fileSystemItemAdapterService.setActiveFactories();
         return true;
     }

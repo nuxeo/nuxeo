@@ -66,7 +66,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Tests the {@link FileSystemItemAdapterService}.
@@ -429,12 +428,7 @@ public class TestFileSystemItemAdapterService {
     public void testContribOverride() throws Exception {
         assumeFalse("Cannot test reload for in-memory repository", coreFeature.getStorageConfiguration().isDBSMem());
 
-        TransactionHelper.commitOrRollbackTransaction();
-        try {
-            deployer.deploy("org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
-        } finally {
-            TransactionHelper.startTransaction();
-        }
+        deployer.deploy("org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
 
         registerRootAndCreateSomeDocs();
 

@@ -138,11 +138,21 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
      * Sorts the contributed factories according to their order and initializes the {@link #scrollBatchSemaphore}.
      */
     @Override
-    public void applicationStarted(ComponentContext context) {
-        setActiveFactories();
+    public void start(ComponentContext context) {
+        topLevelFolderItemFactory = topLevelFolderItemFactoryRegistry.getActiveFactory(
+                activeTopLevelFolderItemFactoryRegistry.activeFactory);
+        fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedActiveFactories(
+                activeFileSystemItemFactoryRegistry.activeFactories);
         int concurrentScrollBatchLimit = Integer.parseInt(Framework.getService(ConfigurationService.class).getProperty(
                 CONCURRENT_SCROLL_BATCH_LIMIT, CONCURRENT_SCROLL_BATCH_LIMIT_DEFAULT));
         scrollBatchSemaphore = new Semaphore(concurrentScrollBatchLimit, false);
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        topLevelFolderItemFactory = null;
+        fileSystemItemFactories = null;
+        scrollBatchSemaphore = null;
     }
 
     /*------------------------ FileSystemItemAdapterService -----------------------*/
@@ -274,6 +284,12 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
         return null;
     }
 
+    /**
+     * @deprecated since 9.3 this is method is not needed anymore with hot reload and standby strategy, but kept due to
+     *             some issues in operation NuxeoDriveSetActiveFactories which freeze Jetty in unit tests when wanting
+     *             to use standby strategy
+     */
+    @Deprecated
     public void setActiveFactories() {
         topLevelFolderItemFactory = topLevelFolderItemFactoryRegistry.getActiveFactory(
                 activeTopLevelFolderItemFactoryRegistry.activeFactory);
