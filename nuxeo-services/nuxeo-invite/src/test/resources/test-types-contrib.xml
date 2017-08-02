@@ -16,6 +16,9 @@
   <extension target="org.nuxeo.ecm.user.invite.UserInvitationService"
              point="configuration">
 
+    <configuration remove="true">
+    </configuration>
+
     <configuration>
       <requestDocType>TestRegistration</requestDocType>
       <container>
