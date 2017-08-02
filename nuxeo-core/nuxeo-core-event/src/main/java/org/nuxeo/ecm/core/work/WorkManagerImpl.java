@@ -528,10 +528,21 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             Thread thread = new Thread(group, r, name);
             // do not set daemon
             thread.setPriority(Thread.NORM_PRIORITY);
-            thread.setUncaughtExceptionHandler((t,
-                    e) -> LogFactory.getLog(WorkManagerImpl.class).error("Uncaught error on thread " + t.getName(), e));
+            thread.setUncaughtExceptionHandler(this::handleUncaughtException);
             return thread;
         }
+
+        protected void handleUncaughtException(Thread t, Throwable e) {
+            Log logLocal = LogFactory.getLog(WorkManagerImpl.class);
+            if (e instanceof RejectedExecutionException) {
+                // we are responsible of this exception, we use it during shutdown phase to not run the task taken just
+                // before shutdown due to race condition, so log it as WARN
+                logLocal.warn("Rejected execution error on thread " + t.getName(), e);
+            } else {
+                logLocal.error("Uncaught error on thread " + t.getName(), e);
+            }
+        }
+
     }
 
     /**
