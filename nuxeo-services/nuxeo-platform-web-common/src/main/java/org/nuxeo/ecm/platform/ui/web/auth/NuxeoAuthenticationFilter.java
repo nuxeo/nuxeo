@@ -449,6 +449,9 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         NuxeoAuthenticationPropagator.CleanupCallback propagatedAuthCb = null;
 
+        String forceAnonymousLoginParam = httpRequest.getParameter(FORCE_ANONYMOUS_LOGIN);
+        boolean forceAnonymousLogin = Boolean.parseBoolean(forceAnonymousLoginParam)
+
         try {
             if (principal == null) {
                 log.debug("Principal not found inside Request via getUserPrincipal");
@@ -463,27 +466,34 @@ public class NuxeoAuthenticationFilter implements Filter {
                     log.debug("Principal cache is NOT activated");
                 }
 
-                if (cachableUserIdent != null && cachableUserIdent.getUserInfo() != null
-                        && service.needResetLogin(request)) {
-                    HttpSession session = httpRequest.getSession(false);
-                    if (session != null) {
-                        session.removeAttribute(USERIDENT_KEY);
-                    }
-                    // first propagate the login because invalidation may
-                    // require
-                    // an authenticated session
-                    propagatedAuthCb = service.propagateUserIdentificationInformation(cachableUserIdent);
-                    // invalidate Session !
-                    try {
-                        service.invalidateSession(request);
-                    } finally {
-                        if (propagatedAuthCb != null) {
-                            propagatedAuthCb.cleanup();
-                            propagatedAuthCb = null;
+                if (cachableUserIdent != null && cachableUserIdent.getUserInfo() != null) {
+                    if (cachableUserIdent.getUserInfo().getUserName().equals(getAnonymousId())) {
+                        if (forceAnonymousLogin) {
+                            cachableUserIdent = null;
                         }
                     }
-                    // TODO perform logout?
-                    cachableUserIdent = null;
+
+                    if (service.needResetLogin(request)) {
+                        HttpSession session = httpRequest.getSession(false);
+                        if (session != null) {
+                            session.removeAttribute(USERIDENT_KEY);
+                        }
+                        // first propagate the login because invalidation may
+                        // require
+                        // an authenticated session
+                        propagatedAuthCb = service.propagateUserIdentificationInformation(cachableUserIdent);
+                        // invalidate Session !
+                        try {
+                            service.invalidateSession(request);
+                        } finally {
+                            if (propagatedAuthCb != null) {
+                                propagatedAuthCb.cleanup();
+                                propagatedAuthCb = null;
+                            }
+                        }
+                        // TODO perform logout?
+                        cachableUserIdent = null;
+                    }
                 }
 
                 // identity found in cache
@@ -518,8 +528,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                     UserIdentificationInfo userIdent = handleRetrieveIdentity(httpRequest, httpResponse);
                     if (userIdent != null && userIdent.containsValidIdentity()
                             && userIdent.getUserName().equals(getAnonymousId())) {
-                        String forceAuth = httpRequest.getParameter(FORCE_ANONYMOUS_LOGIN);
-                        if (forceAuth != null && forceAuth.equals("true")) {
+                        if (forceAnonymousLogin) {
                             userIdent = null;
                         }
                     }
