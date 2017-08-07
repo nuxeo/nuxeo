@@ -3,11 +3,31 @@
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
     point="event">
     <event name="auditLogRoute" />
-    <event name="workflowTaskAssigned" />
-    <event name="workflowTaskReassigned" />
-    <event name="workflowTaskCompleted" />
+    <event name="workflowTaskAssigned">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.taskInstance.directive}" key="directive" />
+        <extendedInfo expression="${message.properties.taskInstance.dueDate}" key="dueDate" />
+      </extendedInfos>
+    </event>
+    <event name="workflowTaskReassigned">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.taskInstance.directive}" key="directive" />
+        <extendedInfo expression="${message.properties.taskInstance.dueDate}" key="dueDate" />
+      </extendedInfos>
+    </event>
+    <event name="workflowTaskCompleted">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.taskInstance.directive}" key="directive" />
+        <extendedInfo expression="${message.properties.taskInstance.dueDate}" key="dueDate" />
+      </extendedInfos>
+    </event>
     <event name="workflowCanceled" />
-    <event name="workflowTaskDelegated" />
+    <event name="workflowTaskDelegated">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.taskInstance.directive}" key="directive" />
+        <extendedInfo expression="${message.properties.taskInstance.dueDate}" key="dueDate" />
+      </extendedInfos>
+    </event>
     <event name="afterWorkflowStarted">
       <extendedInfos>
         <extendedInfo expression="${message.properties.modelId}" key="modelId" />
