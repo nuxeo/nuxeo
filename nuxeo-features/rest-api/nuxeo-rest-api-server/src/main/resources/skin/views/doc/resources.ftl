@@ -79,6 +79,18 @@
             "description": "Browse and complete task"
         },
         {
+            "path": "/facet.{format}",
+            "description": "Facet Configurations"
+        },
+        {
+            "path": "/docType.{format}",
+            "description": "Document Type Configurations"
+        },
+        {
+            "path": "/schema.{format}",
+            "description": "Schema Configurations"
+        },
+        {
             "path": "/token.{format}",
             "description": "Authentication token"
         },
