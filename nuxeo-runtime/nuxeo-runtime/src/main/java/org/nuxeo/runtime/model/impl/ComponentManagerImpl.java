@@ -81,7 +81,7 @@ public class ComponentManagerImpl implements ComponentManager {
      */
     private Listeners listeners;
 
-    private final ConcurrentMap<String, RegistrationInfoImpl> services;
+    private final ConcurrentMap<String, RegistrationInfo> services;
 
     protected volatile Set<String> blacklist;
 
@@ -91,7 +91,7 @@ public class ComponentManagerImpl implements ComponentManager {
      *
      * @since 9.2
      */
-    protected volatile List<RegistrationInfoImpl> started;
+    protected volatile List<RegistrationInfo> started;
 
     /**
      * The list of standby components (sorted according to the start order) This list is null if component were not yet
@@ -101,7 +101,7 @@ public class ComponentManagerImpl implements ComponentManager {
      *
      * @since 9.2
      */
-    protected volatile List<RegistrationInfoImpl> standby;
+    protected volatile List<RegistrationInfo> standby;
 
     /**
      * A list of registrations that were deployed while the manager was started.
@@ -236,8 +236,7 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     @Override
-    public synchronized void register(RegistrationInfo regInfo) {
-        RegistrationInfoImpl ri = (RegistrationInfoImpl) regInfo;
+    public synchronized void register(RegistrationInfo ri) {
         ComponentName name = ri.getName();
         if (blacklist.contains(name.getName())) {
             log.warn("Component " + name.getName() + " was blacklisted. Ignoring.");
@@ -277,7 +276,10 @@ public class ComponentManagerImpl implements ComponentManager {
             changed = true;
         }
 
-        ri.attach(this);
+        // TODO it is just about giving manager to RegistrationInfo, do we need that ?
+        if (ri.useFormerLifecycleManagement()) {
+            ((RegistrationInfoImpl) ri).attach(this);
+        }
 
         try {
             log.info("Registering component: " + name);
@@ -352,7 +354,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
     @Override
     public ComponentInstance getComponentProvidingService(Class<?> serviceClass) {
-        RegistrationInfoImpl ri = services.get(serviceClass.getName());
+        RegistrationInfo ri = services.get(serviceClass.getName());
         if (ri == null) {
             return null;
         }
@@ -402,13 +404,13 @@ public class ComponentManagerImpl implements ComponentManager {
 
     public synchronized void registerExtension(Extension extension) {
         ComponentName name = extension.getTargetComponent();
-        RegistrationInfoImpl ri = registry.getComponent(name);
-        if (ri != null && ri.component != null) {
+        RegistrationInfo ri = registry.getComponent(name);
+        if (ri != null && ri.getComponent() != null) {
             if (log.isDebugEnabled()) {
                 log.debug("Register contributed extension: " + extension);
             }
             loadContributions(ri, extension);
-            ri.component.registerExtension(extension);
+            ri.getComponent().registerExtension(extension);
             sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_REGISTERED,
                     ((ComponentInstanceImpl) extension.getComponent()).ri, extension));
         } else {
@@ -416,12 +418,8 @@ public class ComponentManagerImpl implements ComponentManager {
             if (log.isDebugEnabled()) {
                 log.debug("Enqueue contributed extension to pending queue: " + extension);
             }
-            Set<Extension> extensions = pendingExtensions.get(name);
-            if (extensions == null) {
-                extensions = new LinkedHashSet<>(); // must keep order in which extensions are contributed
-                pendingExtensions.put(name, extensions);
-            }
-            extensions.add(extension);
+            // must keep order in which extensions are contributed
+            pendingExtensions.computeIfAbsent(name, key -> new LinkedHashSet<>()).add(extension);
             sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_PENDING,
                     ((ComponentInstanceImpl) extension.getComponent()).ri, extension));
         }
@@ -453,34 +451,43 @@ public class ComponentManagerImpl implements ComponentManager {
                 ((ComponentInstanceImpl) extension.getComponent()).ri, extension));
     }
 
-    public static void loadContributions(RegistrationInfoImpl ri, Extension xt) {
-        ExtensionPointImpl xp = ri.getExtensionPoint(xt.getExtensionPoint());
-        if (xp != null && xp.contributions != null) {
-            try {
-                Object[] contribs = xp.loadContributions(ri, xt);
-                xt.setContributions(contribs);
-            } catch (RuntimeException e) {
-                handleError("Failed to load contributions for component " + xt.getComponent().getName(), e);
-            }
+    public static void loadContributions(RegistrationInfo ri, Extension xt) {
+        // in new java based system contributions don't need to be loaded, this is a XML specificity reflected by
+        // ExtensionPointImpl coming from XML deserialization
+        if (ri.useFormerLifecycleManagement()) {
+            // Extension point needing to load contribution are ExtensionPointImpl
+            ri.getExtensionPoint(xt.getExtensionPoint())
+              .filter(xp -> xp.getContributions() != null)
+              .map(ExtensionPointImpl.class::cast)
+              .ifPresent(xp -> {
+                  try {
+                      Object[] contribs = xp.loadContributions(ri, xt);
+                      xt.setContributions(contribs);
+                  } catch (RuntimeException e) {
+                      handleError("Failed to load contributions for component " + xt.getComponent().getName(), e);
+                  }
+              });
         }
     }
 
-    public synchronized void registerServices(RegistrationInfoImpl ri) {
-        if (ri.serviceDescriptor == null) {
+    public synchronized void registerServices(RegistrationInfo ri) {
+        String[] serviceNames = ri.getProvidedServiceNames();
+        if (serviceNames == null) {
             return;
         }
-        for (String service : ri.serviceDescriptor.services) {
-            log.info("Registering service: " + service);
-            services.put(service, ri);
+        for (String serviceName : serviceNames) {
+            log.info("Registering service: " + serviceName);
+            services.put(serviceName, ri);
             // TODO: send notifications
         }
     }
 
-    public synchronized void unregisterServices(RegistrationInfoImpl ri) {
-        if (ri.serviceDescriptor == null) {
+    public synchronized void unregisterServices(RegistrationInfo ri) {
+        String[] serviceNames = ri.getProvidedServiceNames();
+        if (serviceNames == null) {
             return;
         }
-        for (String service : ri.serviceDescriptor.services) {
+        for (String service : serviceNames) {
             services.remove(service);
             // TODO: send notifications
         }
@@ -502,19 +509,19 @@ public class ComponentManagerImpl implements ComponentManager {
      * @return the list of the activated components in the activation order
      * @since 9.2
      */
-    protected List<RegistrationInfoImpl> activateComponents() {
+    protected List<RegistrationInfo> activateComponents() {
         Watch watch = new Watch();
         watch.start();
         listeners.beforeActivation();
         // make sure we start with a clean pending registry
         pendingExtensions.clear();
 
-        List<RegistrationInfoImpl> ris = new ArrayList<>();
+        List<RegistrationInfo> ris = new ArrayList<>();
         // first activate resolved components
-        for (RegistrationInfoImpl ri : registry.getResolvedRegistrationInfo()) {
+        for (RegistrationInfo ri : registry.getResolvedRegistrationInfo()) {
             // TODO catch and handle errors
             watch.start(ri.getName().getName());
-            ri.activate();
+            activateComponent(ri);
             ris.add(ri);
             watch.stop(ri.getName().getName());
         }
@@ -530,31 +537,143 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     /**
+     * Activates the given {@link RegistrationInfo}. This step will activate the component, register extensions and then
+     * register services.
+     *
+     * @since 9.3
+     */
+    protected void activateComponent(RegistrationInfo ri) {
+        if (ri.useFormerLifecycleManagement()) {
+            ((RegistrationInfoImpl) ri).activate();
+            return;
+        }
+        // TODO should be synchronized on ri ? test without it for now
+        if (ri.getState() != RegistrationInfo.RESOLVED) {
+            return;
+        }
+        ri.setState(RegistrationInfo.ACTIVATING);
+
+        ComponentInstance component = ri.getComponent();
+        component.activate();
+        log.info("Component activated: " + ri.getName());
+
+        // register contributed extensions if any
+        Extension[] extensions = ri.getExtensions();
+        if (extensions != null) {
+            for (Extension xt : extensions) {
+                xt.setComponent(component);
+                try {
+                    registerExtension(xt);
+                } catch (RuntimeException e) {
+                    String msg = "Failed to register extension to: " + xt.getTargetComponent() + ", xpoint: "
+                            + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
+                    log.error(msg, e);
+                    msg += " (" + e.toString() + ')';
+                    Framework.getRuntime().getErrors().add(msg);
+                }
+            }
+        }
+
+        // register pending extensions if any
+        Set<ComponentName> aliases = ri.getAliases();
+        List<ComponentName> names = new ArrayList<>(1 + aliases.size());
+        names.add(ri.getName());
+        names.addAll(aliases);
+        for (ComponentName n : names) {
+            Set<Extension> pendingExt = pendingExtensions.remove(n);
+            if (pendingExt == null) {
+                continue;
+            }
+            for (Extension xt : pendingExt) {
+                try {
+                    component.registerExtension(xt);
+                } catch (RuntimeException e) {
+                    String msg = "Failed to register extension to: " + xt.getTargetComponent() + ", xpoint: "
+                            + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
+                    log.error(msg, e);
+                    msg += " (" + e.toString() + ')';
+                    Framework.getRuntime().getErrors().add(msg);
+                }
+            }
+        }
+
+        // register services
+        registerServices(ri);
+
+        ri.setState(RegistrationInfo.ACTIVATED);
+    }
+
+    /**
      * Deactivate all active components in the reverse resolve order
      *
      * @since 9.2
      */
-    protected void deactivateComponents() {
+    protected void deactivateComponents(boolean isShutdown) {
         Watch watch = new Watch();
         watch.start();
         listeners.beforeDeactivation();
-        Collection<RegistrationInfoImpl> resolved = registry.getResolvedRegistrationInfo();
-        List<RegistrationInfoImpl> reverseResolved = new ArrayList<>(resolved);
+        Collection<RegistrationInfo> resolved = registry.getResolvedRegistrationInfo();
+        List<RegistrationInfo> reverseResolved = new ArrayList<>(resolved);
         Collections.reverse(reverseResolved);
-        for (RegistrationInfoImpl ri : reverseResolved) {
+        for (RegistrationInfo ri : reverseResolved) {
             if (ri.isActivated()) {
                 watch.start(ri.getName().getName());
-                ri.deactivate(false);
+                deactivateComponent(ri, isShutdown);
                 watch.stop(ri.getName().getName());
             }
         }
         // make sure the pending extension map is empty since we didn't unregistered extensions by calling
-        // ri.deactivate(false)
+        // ri.deactivate(true)
         pendingExtensions.clear();
         listeners.afterDeactivation();
         watch.stop();
 
+        if (infoLog.isInfoEnabled()) {
+            infoLog.info("Components deactivated in " + watch.total.formatSeconds() + " sec.");
+        }
         writeDevMetrics(watch, "deactivate");
+    }
+
+    /**
+     * Deactivates the given {@link RegistrationInfo}. This step will unregister the services, unregister the extensions
+     * and then deactivate the component.
+     *
+     * @since 9.3
+     */
+    protected void deactivateComponent(RegistrationInfo ri, boolean isShutdown) {
+        if (ri.useFormerLifecycleManagement()) {
+            // don't unregister extension if server is shutdown
+            ((RegistrationInfoImpl) ri).deactivate(!isShutdown);
+            return;
+        }
+        int state = ri.getState();
+        if (state != RegistrationInfo.ACTIVATED && state != RegistrationInfo.START_FAILURE) {
+            return;
+        }
+
+        ri.setState(RegistrationInfo.DEACTIVATING);
+        // TODO no unregisters before, try to do it in new implementation
+        // unregister services
+        unregisterServices(ri);
+
+        // unregister contributed extensions if any
+        Extension[] extensions = ri.getExtensions();
+        if (extensions != null) {
+            for (Extension xt : extensions) {
+                try {
+                    unregisterExtension(xt);
+                } catch (RuntimeException e) {
+                    String message = "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
+                            + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint();
+                    log.error(message, e);
+                    Framework.getRuntime().getErrors().add(message);
+                }
+            }
+        }
+
+        ComponentInstance component = ri.getComponent();
+        component.deactivate();
+        ri.setState(RegistrationInfo.RESOLVED);
     }
 
     /**
@@ -562,21 +681,48 @@ public class ComponentManagerImpl implements ComponentManager {
      *
      * @since 9.2
      */
-    protected void startComponents(List<RegistrationInfoImpl> ris, boolean isResume) {
+    protected void startComponents(List<RegistrationInfo> ris, boolean isResume) {
         Watch watch = new Watch();
         watch.start();
         listeners.beforeStart(isResume);
-        for (RegistrationInfoImpl ri : ris) {
+        for (RegistrationInfo ri : ris) {
             watch.start(ri.getName().getName());
-            ri.start();
+            startComponent(ri);
             watch.stop(ri.getName().getName());
         }
         this.started = ris;
         listeners.afterStart(isResume);
         watch.stop();
 
-        infoLog.info("Components started in " + watch.total.formatSeconds() + " sec.");
+        if (infoLog.isInfoEnabled()) {
+            infoLog.info("Components started in " + watch.total.formatSeconds() + " sec.");
+        }
         writeDevMetrics(watch, "start");
+    }
+
+    /**
+     * Starts the given {@link RegistrationInfo}. This step will start the component.
+     *
+     * @since 9.3
+     */
+    protected void startComponent(RegistrationInfo ri) {
+        if (ri.useFormerLifecycleManagement()) {
+            ((RegistrationInfoImpl) ri).start();
+            return;
+        }
+        if (ri.getState() != RegistrationInfo.ACTIVATED) {
+            return;
+        }
+        try {
+            ri.setState(RegistrationInfo.STARTING);
+            ComponentInstance component = ri.getComponent();
+            component.start();
+            ri.setState(RegistrationInfo.STARTED);
+        } catch (RuntimeException e) {
+            log.error(String.format("Component %s notification of application started failed: %s", ri.getName(),
+                    e.getMessage()), e);
+            ri.setState(RegistrationInfo.START_FAILURE);
+        }
     }
 
     /**
@@ -586,30 +732,48 @@ public class ComponentManagerImpl implements ComponentManager {
      */
     protected void stopComponents(boolean isStandby) {
         try {
-            doStopComppnents(isStandby);
+            Watch watch = new Watch();
+            watch.start();
+            listeners.beforeStop(isStandby);
+            List<RegistrationInfo> list = this.started;
+            for (int i = list.size() - 1; i >= 0; i--) {
+                RegistrationInfo ri = list.get(i);
+                if (ri.isStarted()) {
+                    watch.start(ri.getName().getName());
+                    stopComponent(ri);
+                    watch.stop(ri.getName().getName());
+                }
+            }
+            listeners.afterStop(isStandby);
+            watch.stop();
+
+            if (infoLog.isInfoEnabled()) {
+                infoLog.info("Components stopped in " + watch.total.formatSeconds() + " sec.");
+            }
+            writeDevMetrics(watch, "stop");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Interrupted while stopping components", e);
         }
     }
 
-    private void doStopComppnents(boolean isStandby) throws InterruptedException {
-        Watch watch = new Watch();
-        watch.start();
-        listeners.beforeStop(isStandby);
-        List<RegistrationInfoImpl> list = this.started;
-        for (int i = list.size() - 1; i >= 0; i--) {
-            RegistrationInfoImpl ri = list.get(i);
-            if (ri.isStarted()) {
-                watch.start(ri.getName().getName());
-                ri.stop();
-                watch.stop(ri.getName().getName());
-            }
+    /**
+     * Stops the given {@link RegistrationInfo}. This step will stop the component.
+     *
+     * @since 9.3
+     */
+    protected void stopComponent(RegistrationInfo ri) throws InterruptedException {
+        if (ri.useFormerLifecycleManagement()) {
+            ((RegistrationInfoImpl) ri).stop();
+            return;
         }
-        listeners.afterStop(isStandby);
-        watch.stop();
-
-        writeDevMetrics(watch, "stop");
+        if (ri.getState() != RegistrationInfo.STARTED) {
+            return;
+        }
+        ri.setState(RegistrationInfo.STOPPING);
+        ComponentInstance component = ri.getComponent();
+        component.stop();
+        ri.setState(RegistrationInfo.RESOLVED);
     }
 
     @Override
@@ -620,7 +784,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
         infoLog.info("Starting Nuxeo Components");
 
-        List<RegistrationInfoImpl> ris = activateComponents();
+        List<RegistrationInfo> ris = activateComponents();
 
         // TODO we sort using the old start order sorter (see OSGiRuntimeService.RIApplicationStartedComparator)
         Collections.sort(ris, new RIApplicationStartedComparator());
@@ -642,7 +806,7 @@ public class ComponentManagerImpl implements ComponentManager {
         try {
             stopComponents(false);
             // now deactivate all active components
-            deactivateComponents();
+            deactivateComponents(true);
         } finally {
             this.started = null;
         }
@@ -798,7 +962,7 @@ public class ComponentManagerImpl implements ComponentManager {
             for (ComponentName name : stash.toRemove) {
                 unregister(name);
             }
-            for (RegistrationInfoImpl ri : stash.toAdd) {
+            for (RegistrationInfo ri : stash.toAdd) {
                 register(ri);
             }
         } finally {
@@ -824,47 +988,47 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     private void applyStashWhenRunning(Stash stash) throws InterruptedException {
-        List<RegistrationInfoImpl> toRemove = stash.getRegistrationsToRemove(registry);
+        List<RegistrationInfo> toRemove = stash.getRegistrationsToRemove(registry);
         if (isStarted()) {
-            for (RegistrationInfoImpl ri : toRemove) {
+            for (RegistrationInfo ri : toRemove) {
                 this.started.remove(ri);
-                ri.stop();
+                stopComponent(ri);
             }
         }
-        for (RegistrationInfoImpl ri : toRemove) {
+        for (RegistrationInfo ri : toRemove) {
             if (isStandby()) {
                 this.standby.remove(ri);
             }
-            ri.deactivate();
+            deactivateComponent(ri, false);
         }
 
         applyStash(stash);
 
         // activate the new components
-        for (RegistrationInfoImpl ri : stash.toAdd) {
+        for (RegistrationInfo ri : stash.toAdd) {
             if (ri.isResolved()) {
-                ri.activate();
+                activateComponent(ri);
             }
         }
         if (isStandby()) {
             // activate the new components
-            for (RegistrationInfoImpl ri : stash.toAdd) {
+            for (RegistrationInfo ri : stash.toAdd) {
                 if (ri.isResolved()) {
-                    ri.activate();
+                    activateComponent(ri);
                     // add new components to standby list
                     this.standby.add(ri);
                 }
             }
         } else if (isStarted()) {
             // start the new components and add them to the started list
-            for (RegistrationInfoImpl ri : stash.toAdd) {
+            for (RegistrationInfo ri : stash.toAdd) {
                 if (ri.isResolved()) {
-                    ri.activate();
+                    activateComponent(ri);
                 }
             }
-            for (RegistrationInfoImpl ri : stash.toAdd) {
+            for (RegistrationInfo ri : stash.toAdd) {
                 if (ri.isActivated()) {
-                    ri.start();
+                    startComponent(ri);
                     this.started.add(ri);
                 }
             }
@@ -991,7 +1155,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
     protected static class Stash {
 
-        protected volatile List<RegistrationInfoImpl> toAdd;
+        protected volatile List<RegistrationInfo> toAdd;
 
         protected volatile Set<ComponentName> toRemove;
 
@@ -1000,7 +1164,7 @@ public class ComponentManagerImpl implements ComponentManager {
             toRemove = new HashSet<>();
         }
 
-        public void add(RegistrationInfoImpl ri) {
+        public void add(RegistrationInfo ri) {
             this.toAdd.add(ri);
         }
 
@@ -1012,10 +1176,10 @@ public class ComponentManagerImpl implements ComponentManager {
             return toAdd.isEmpty() && toRemove.isEmpty();
         }
 
-        public List<RegistrationInfoImpl> getRegistrationsToRemove(ComponentRegistry reg) {
-            ArrayList<RegistrationInfoImpl> ris = new ArrayList<>();
+        public List<RegistrationInfo> getRegistrationsToRemove(ComponentRegistry reg) {
+            List<RegistrationInfo> ris = new ArrayList<>();
             for (ComponentName name : toRemove) {
-                RegistrationInfoImpl ri = reg.getComponent(name);
+                RegistrationInfo ri = reg.getComponent(name);
                 if (ri != null) {
                     ris.add(ri);
                 }

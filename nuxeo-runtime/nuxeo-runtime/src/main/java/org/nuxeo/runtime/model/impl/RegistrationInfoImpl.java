@@ -199,7 +199,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     /**
      * Reload the underlying component if reload is supported
+     *
+     * @deprecated since 9.3, but in fact since 5.6, see only usage in LiveInstallTask#reloadComponent
      */
+    @Deprecated
     public synchronized void reload() {
         if (component != null) {
             component.reload();
@@ -216,15 +219,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return properties;
     }
 
-    public ExtensionPointImpl getExtensionPoint(String name) {
-        for (ExtensionPointImpl xp : extensionPoints) {
-            if (xp.name.equals(name)) {
-                return xp;
-            }
-        }
-        return null;
-    }
-
     @Override
     public int getState() {
         return state;
@@ -232,6 +226,12 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     @Override
     public Extension[] getExtensions() {
+        if (!useFormerLifecycleManagement()) {
+            // we shouldn't check extension points here because it is done each time we get the extensions
+            // do it like that for new system for now (which will be used only when we will switch xml contributions to
+            // new component lifecycle system)
+            checkExtensions();
+        }
         return extensions;
     }
 
@@ -293,6 +293,47 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         state = UNREGISTERED;
         manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_UNREGISTERED, this));
         destroy();
+    }
+
+    @Override
+    public void setState(int state) {
+        this.state = state;
+        int componentEvent = -1;
+        switch (state) {
+        case UNREGISTERED:
+            componentEvent = ComponentEvent.COMPONENT_UNREGISTERED;
+            break;
+        case REGISTERED:
+            componentEvent = ComponentEvent.COMPONENT_REGISTERED;
+            break;
+        case RESOLVED:
+            componentEvent = ComponentEvent.COMPONENT_RESOLVED;
+            break;
+        case ACTIVATING:
+            componentEvent = ComponentEvent.ACTIVATING_COMPONENT;
+            break;
+        case ACTIVATED:
+            this.state = ACTIVATED;
+            componentEvent = ComponentEvent.ACTIVATING_COMPONENT;
+            break;
+        case STARTING:
+            componentEvent = ComponentEvent.STARTING_COMPONENT;
+            break;
+        case STARTED:
+            componentEvent = ComponentEvent.COMPONENT_STARTED;
+            break;
+        case START_FAILURE:
+            break;
+        case STOPPING:
+            componentEvent = ComponentEvent.STOPPING_COMPONENT;
+            break;
+        case DEACTIVATING:
+            componentEvent = ComponentEvent.DEACTIVATING_COMPONENT;
+            break;
+        }
+        if (componentEvent > -1) {
+            manager.sendEvent(new ComponentEvent(componentEvent, this));
+        }
     }
 
     protected ComponentInstance createComponentInstance() {
@@ -579,6 +620,16 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+
+    /**
+     * Use former way for {@link RegistrationInfoImpl}.
+     *
+     * @since 9.3
+     */
+    @Override
+    public boolean useFormerLifecycleManagement() {
+        return true;
     }
 
 }

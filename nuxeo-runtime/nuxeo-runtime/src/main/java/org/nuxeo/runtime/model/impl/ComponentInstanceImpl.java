@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -37,6 +38,7 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.Property;
+import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.service.TimestampedService;
 import org.osgi.framework.Bundle;
@@ -52,13 +54,13 @@ public class ComponentInstanceImpl implements ComponentInstance {
 
     protected Object instance;
 
-    protected RegistrationInfoImpl ri;
+    protected RegistrationInfo ri;
 
     protected List<OSGiServiceFactory> factories;
 
-    public ComponentInstanceImpl(RegistrationInfoImpl ri) {
+    public ComponentInstanceImpl(RegistrationInfo ri) {
         this.ri = ri;
-        if (ri.implementation == null) {
+        if (ri.getImplementation() == null) {
             // TODO: should be an extension component
             instance = this;
         } else {
@@ -73,7 +75,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
     }
 
     public void create() {
-        if (ri.implementation == null) {
+        if (ri.getImplementation() == null) {
             instance = this; // should be an extension component
         } else {
             // TODO: load class only once when creating the reshgitration info
@@ -83,7 +85,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
 
     protected Object createInstance() {
         try {
-            return ri.context.loadClass(ri.implementation).newInstance();
+            return ri.getContext().loadClass(ri.getImplementation()).newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeServiceException(e);
         }
@@ -99,12 +101,12 @@ public class ComponentInstanceImpl implements ComponentInstance {
 
     @Override
     public RuntimeContext getContext() {
-        return ri.context;
+        return ri.getContext();
     }
 
     @Override
     public ComponentName getName() {
-        return ri.name;
+        return ri.getName();
     }
 
     // TODO: cache info about implementation to avoid computing it each time
@@ -148,6 +150,30 @@ public class ComponentInstanceImpl implements ComponentInstance {
         }
     }
 
+    /**
+     * @since 9.3
+     */
+    @Override
+    public void start() {
+        if (instance instanceof Component) {
+            ((Component) instance).start(this);
+        }
+    }
+
+    /**
+     * @since 9.3
+     */
+    @Override
+    public void stop() throws InterruptedException {
+        if (instance instanceof Component) {
+            ((Component) instance).stop(this);
+        }
+    }
+
+    /**
+     * @deprecated since 9.3, but in fact since 5.6, only usage in {@link RegistrationInfoImpl}
+     */
+    @Deprecated
     @Override
     public void reload() {
         // activate the implementation instance
@@ -168,12 +194,13 @@ public class ComponentInstanceImpl implements ComponentInstance {
         // if this the target extension point is extending another extension
         // point from another component
         // then delegate the registration to the that component component
-        ExtensionPoint xp = ri.getExtensionPoint(extension.getExtensionPoint());
-        if (xp != null) {
-            String superCo = xp.getSuperComponent();
+        Optional<ExtensionPoint> optXp = ri.getExtensionPoint(extension.getExtensionPoint());
+        if (optXp.isPresent()) {
+            String superCo = optXp.get().getSuperComponent();
             if (superCo != null) {
+                // we don't implement extension point overriding for now in new implementation of RegistrationInfo
                 ((ExtensionImpl) extension).target = new ComponentName(superCo);
-                ri.manager.registerExtension(extension);
+                ((RegistrationInfoImpl) ri).manager.registerExtension(extension);
                 return;
             }
             // this extension is for us - register it
