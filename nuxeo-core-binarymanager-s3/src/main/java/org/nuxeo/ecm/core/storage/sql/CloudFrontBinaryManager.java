@@ -72,6 +72,7 @@ public class CloudFrontBinaryManager extends S3BinaryManager {
 
         protocol = Protocol.valueOf(getProperty(PROTOCOL_PROPERTY, "https"));
         distributionDomain = getProperty(DISTRIB_DOMAIN_PROPERTY);
+        directDownload = Boolean.parseBoolean(getProperty(DIRECTDOWNLOAD_PROPERTY, Boolean.TRUE.toString()));
 
         try {
             String privateKeyPath = getProperty(PRIVATE_KEY_PROPERTY);
