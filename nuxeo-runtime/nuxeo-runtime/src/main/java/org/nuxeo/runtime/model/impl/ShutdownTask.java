@@ -35,13 +35,13 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 public class ShutdownTask {
 
     final static void shutdown(ComponentManagerImpl mgr) {
-        RegistrationInfoImpl[] ris = mgr.registry.getComponentsArray();
-        for (RegistrationInfoImpl ri : ris) {
+        RegistrationInfo[] ris = mgr.registry.getComponentsArray();
+        for (RegistrationInfo ri : ris) {
             shutdown(mgr, ri);
         }
     }
 
-    private static void shutdown(ComponentManagerImpl mgr, RegistrationInfoImpl ri) {
+    private static void shutdown(ComponentManagerImpl mgr, RegistrationInfo ri) {
         ComponentName name = ri.getName();
         if (name == null) {
             return; // already destroyed
@@ -56,7 +56,7 @@ public class ShutdownTask {
         if (reqs != null && !reqs.isEmpty()) {
             // there are some components depending on me - cannot shutdown
             for (ComponentName req : reqs.toArray(new ComponentName[reqs.size()])) {
-                RegistrationInfoImpl parentRi = mgr.registry.components.get(req);
+                RegistrationInfo parentRi = mgr.registry.getComponent(req);
                 if (parentRi != null) {
                     shutdown(mgr, parentRi);
                 }

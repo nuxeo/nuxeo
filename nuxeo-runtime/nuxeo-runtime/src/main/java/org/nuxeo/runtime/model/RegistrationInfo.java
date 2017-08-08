@@ -21,9 +21,12 @@ package org.nuxeo.runtime.model;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.nuxeo.runtime.Version;
+import org.nuxeo.runtime.model.impl.ComponentRegistry;
 
 /**
  * The component registration info.
@@ -134,6 +137,17 @@ public interface RegistrationInfo extends Serializable {
     ExtensionPoint[] getExtensionPoints();
 
     /**
+     * Gets the defined extension points with name.
+     *
+     * @param name the extension point name to retrieve
+     * @return the defined extension points with name
+     * @since 9.3
+     */
+    default Optional<ExtensionPoint> getExtensionPoint(String name) {
+        return Stream.of(getExtensionPoints()).filter(xp -> xp.getName().equals(name)).findFirst();
+    }
+
+    /**
      * Gets the extensions contributed by this component.
      *
      * @return the contributed extensions
@@ -241,5 +255,28 @@ public interface RegistrationInfo extends Serializable {
      * @since 5.6
      */
     int getApplicationStartedOrder();
+
+    /**
+     * DON'T USE THIS METHOD - INTERNAL API.
+     *
+     * @param state the state to set in this registration info
+     * @since 9.3
+     */
+    void setState(int state);
+
+    /**
+     * DON'T USE THIS METHOD - INTERNAL API.
+     * <p />
+     * This flag is used to introduce a new component lifecycle mechanism in order to introduce java pojo contribution.
+     * This allow us to rework how component manager handles the component, without changing how it handles component
+     * created by XML contributions (current behavior).
+     *
+     * @return whether or not {@link ComponentManager} or {@link ComponentRegistry} should use the former way to manage
+     *         component lifecycle.
+     * @since 9.3
+     */
+    default boolean useFormerLifecycleManagement() {
+        return false;
+    }
 
 }

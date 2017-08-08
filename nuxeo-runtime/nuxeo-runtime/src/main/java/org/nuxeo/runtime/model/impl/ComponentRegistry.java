@@ -45,7 +45,7 @@ public class ComponentRegistry {
      * All registered components including unresolved ones. You can check the state of a component for getting the
      * unresolved ones.
      */
-    protected Map<ComponentName, RegistrationInfoImpl> components;
+    protected Map<ComponentName, RegistrationInfo> components;
 
     /**
      * The list of resolved components. We need to use a linked hash map preserve the resolve order. We don't use a
@@ -53,7 +53,7 @@ public class ComponentRegistry {
      *
      * @since 9.2
      */
-    protected LinkedHashMap<ComponentName, RegistrationInfoImpl> resolved;
+    protected LinkedHashMap<ComponentName, RegistrationInfo> resolved;
 
     /** Map of aliased name to canonical name. */
     protected Map<ComponentName, ComponentName> aliases;
@@ -115,15 +115,20 @@ public class ComponentRegistry {
     /**
      * @return true if the component was resolved, false if the component is pending
      */
-    public synchronized boolean addComponent(RegistrationInfoImpl ri) {
+    public synchronized boolean addComponent(RegistrationInfo ri) {
         ComponentName name = ri.getName();
         Set<ComponentName> al = ri.getAliases();
         String aliasInfo = al.isEmpty() ? "" : ", aliases=" + al;
         log.info("Registering component: " + name + aliasInfo);
-        ri.register();
+        if (ri.useFormerLifecycleManagement()) {
+            ((RegistrationInfoImpl) ri).register();
+        } else {
+            ri.setState(RegistrationInfo.REGISTERED);
+        }
         // map the source id with the component name - see ComponentManager.unregisterByLocation
-        if (ri.sourceId != null) {
-            deployedFiles.put(ri.sourceId, ri.getName());
+        String sourceId = ri.getSourceId();
+        if (sourceId != null) {
+            deployedFiles.put(sourceId, ri.getName());
         }
         components.put(name, ri);
         for (ComponentName n : al) {
@@ -137,31 +142,27 @@ public class ComponentRegistry {
         return false;
     }
 
-    public synchronized RegistrationInfoImpl removeComponent(ComponentName name) {
-        RegistrationInfoImpl ri = components.remove(name);
+    public synchronized RegistrationInfo removeComponent(ComponentName name) {
+        RegistrationInfo ri = components.remove(name);
         if (ri != null) {
             try {
                 unresolveComponent(ri);
             } finally {
-                ri.unregister();
+                if (ri.useFormerLifecycleManagement()) {
+                    ((RegistrationInfoImpl) ri).unregister();
+                } else {
+                    ri.setState(RegistrationInfo.UNREGISTERED);
+                }
             }
         }
         return ri;
     }
 
     /**
-     * @return an unmodifiable map of resolved registration info by component name, sorted by {@link LinkedHashMap}.
-     * @since 9.2
-     */
-    public synchronized Map<ComponentName, RegistrationInfoImpl> getResolvedMap() {
-        return Collections.unmodifiableMap(resolved);
-    }
-
-    /**
      * @return an unmodifiable collection of resolved registration infos, sorted by {@link LinkedHashMap}
      * @since 9.2
      */
-    public synchronized Collection<RegistrationInfoImpl> getResolvedRegistrationInfo() {
+    public synchronized Collection<RegistrationInfo> getResolvedRegistrationInfo() {
         return Collections.unmodifiableCollection(resolved.values());
     }
 
@@ -183,8 +184,10 @@ public class ComponentRegistry {
 
     /**
      * Get the registration info for the given component name or null if none was registered.
+     *
+     * @since 9.2
      */
-    public synchronized RegistrationInfoImpl getComponent(ComponentName name) {
+    public synchronized RegistrationInfo getComponent(ComponentName name) {
         return components.get(unaliased(name));
     }
 
@@ -212,8 +215,8 @@ public class ComponentRegistry {
     /**
      * Get a copy of the registered components as an array.
      */
-    public synchronized RegistrationInfoImpl[] getComponentsArray() {
-        return components.values().toArray(new RegistrationInfoImpl[components.size()]);
+    public synchronized RegistrationInfo[] getComponentsArray() {
+        return components.values().toArray(new RegistrationInfo[components.size()]);
     }
 
     /**
@@ -249,13 +252,17 @@ public class ComponentRegistry {
         return hasUnresolvedDependencies;
     }
 
-    protected void resolveComponent(RegistrationInfoImpl ri) {
+    protected void resolveComponent(RegistrationInfo ri) {
         ComponentName riName = ri.getName();
         Set<ComponentName> names = new HashSet<>();
         names.add(riName);
         names.addAll(ri.getAliases());
 
-        ri.resolve();
+        if (ri.useFormerLifecycleManagement()) {
+            ((RegistrationInfoImpl) ri).resolve();
+        } else {
+            ri.setState(RegistrationInfo.RESOLVED);
+        }
         resolved.put(ri.getName(), ri); // track resolved components
 
         // try to resolve pending components that are waiting the newly
@@ -276,16 +283,20 @@ public class ComponentRegistry {
             }
             Set<ComponentName> set = pendings.get(name);
             if (set == null || set.isEmpty()) {
-                RegistrationInfoImpl waitingRi = components.get(name);
+                RegistrationInfo waitingRi = components.get(name);
                 resolveComponent(waitingRi);
             }
         }
     }
 
-    protected void unresolveComponent(RegistrationInfoImpl ri) {
+    protected void unresolveComponent(RegistrationInfo ri) {
         Set<ComponentName> reqs = ri.getRequiredComponents();
         ComponentName name = ri.getName();
-        ri.unresolve();
+        if (ri.useFormerLifecycleManagement()) {
+            ((RegistrationInfoImpl) ri).unresolve();
+        } else {
+            ri.setState(RegistrationInfo.REGISTERED);
+        }
         resolved.remove(name);
         pendings.remove(name);
         if (reqs != null) {
@@ -296,7 +307,7 @@ public class ComponentRegistry {
         Set<ComponentName> set = requirements.get(name); // unaliased
         if (set != null && !set.isEmpty()) {
             for (ComponentName dep : set.toArray(new ComponentName[set.size()])) {
-                RegistrationInfoImpl depRi = components.get(dep);
+                RegistrationInfo depRi = components.get(dep);
                 if (depRi != null) {
                     unresolveComponent(depRi);
                 }

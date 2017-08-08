@@ -56,6 +56,20 @@ public interface ComponentInstance extends ComponentContext, Extensible, Adaptab
     void activate();
 
     /**
+     * Starts the implementation instance.
+     *
+     * @since 9.3
+     */
+    void start();
+
+    /**
+     * Stops the implementation instance.
+     *
+     * @since 9.3
+     */
+    void stop() throws InterruptedException;
+
+    /**
      * Deactivates the implementation instance.
      */
     void deactivate();
@@ -67,7 +81,11 @@ public interface ComponentInstance extends ComponentContext, Extensible, Adaptab
 
     /**
      * Reload the component. All the extensions and registries are reloaded.
+     *
+     * @deprecated since 9.3, but in fact since 5.6, only usage in
+     *             {@link org.nuxeo.runtime.model.impl.RegistrationInfoImpl}
      */
+    @Deprecated
     void reload();
 
     /**
