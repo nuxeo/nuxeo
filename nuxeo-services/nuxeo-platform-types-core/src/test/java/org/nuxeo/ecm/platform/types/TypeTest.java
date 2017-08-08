@@ -331,8 +331,7 @@ public class TypeTest extends NXRuntimeTestCase {
 
         // undeploy original ecm contribution to override types
         undeployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-types-bundle.xml");
-        runtime.getComponentManager().unstash();
-        postSetUp();
+        applyInlineDeployments();
 
         assertSubtypes("MyDocType", Collections.emptyList());
         assertSubtypes("MyDocType2", testMyDocType2Subtypes3, Collections.emptyList());
