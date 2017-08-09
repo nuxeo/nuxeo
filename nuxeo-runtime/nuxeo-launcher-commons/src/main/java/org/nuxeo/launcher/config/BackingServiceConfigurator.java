@@ -38,16 +38,16 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import net.jodah.failsafe.Failsafe;
-import net.jodah.failsafe.FailsafeException;
-import net.jodah.failsafe.RetryPolicy;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.launcher.config.backingservices.BackingChecker;
 import org.nuxeo.launcher.config.backingservices.DBCheck;
+
+import net.jodah.failsafe.Failsafe;
+import net.jodah.failsafe.FailsafeException;
+import net.jodah.failsafe.RetryPolicy;
 
 /**
  * Calls backing services checks to verify that they are ready to use before starting Nuxeo.

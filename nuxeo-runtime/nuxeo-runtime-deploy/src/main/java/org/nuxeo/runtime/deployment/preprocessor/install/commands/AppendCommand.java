@@ -30,7 +30,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.utils.FileNamePattern;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;

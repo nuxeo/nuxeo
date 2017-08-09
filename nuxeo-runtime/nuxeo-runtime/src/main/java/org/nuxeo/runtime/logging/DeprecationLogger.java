@@ -19,7 +19,7 @@
  */
 package org.nuxeo.runtime.logging;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
@@ -37,7 +37,7 @@ public class DeprecationLogger {
 
     public static void log(String message, String deprecatedVersion) {
         StringBuilder finalMessage = new StringBuilder();
-        if (!StringUtils.isBlank(deprecatedVersion)) {
+        if (StringUtils.isNotBlank(deprecatedVersion)) {
             finalMessage.append("Since version ").append(deprecatedVersion).append(": ");
         }
         finalMessage.append(message);

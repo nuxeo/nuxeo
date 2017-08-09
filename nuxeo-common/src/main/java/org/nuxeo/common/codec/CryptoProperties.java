@@ -41,8 +41,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
@@ -113,7 +113,7 @@ public class CryptoProperties extends Properties {
                 getProperty(Environment.JAVA_DEFAULT_KEYSTORE));
         if (keyAlias != null && keystorePath != null) {
             String keystorePass = getProperty(Environment.CRYPT_KEYSTORE_PASS);
-            if (!StringUtils.isEmpty(keystorePass)) {
+            if (StringUtils.isNotEmpty(keystorePass)) {
                 keystorePass = new String(Base64.decodeBase64(keystorePass));
             } else {
                 keystorePass = getProperty(Environment.JAVA_DEFAULT_KEYSTORE_PASS, "changeit");
@@ -127,7 +127,7 @@ public class CryptoProperties extends Properties {
         }
 
         String secretKey = new String(Base64.decodeBase64(getProperty(Environment.CRYPT_KEY, "")));
-        if (!StringUtils.isEmpty(secretKey)) {
+        if (StringUtils.isNotEmpty(secretKey)) {
             try (BufferedReader in = new BufferedReader(new InputStreamReader(new URL(secretKey).openStream()))) {
                 secretKey = in.readLine();
             } catch (MalformedURLException e) {
