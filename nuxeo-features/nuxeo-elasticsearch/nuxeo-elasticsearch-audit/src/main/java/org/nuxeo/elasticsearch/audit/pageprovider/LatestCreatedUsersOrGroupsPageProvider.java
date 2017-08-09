@@ -21,6 +21,7 @@ package org.nuxeo.elasticsearch.audit.pageprovider;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -61,7 +62,6 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
             if (entries != null) {
                 UserManager um = Framework.getService(UserManager.class);
                 DirectoryService directoryService = Framework.getService(DirectoryService.class);
-                String schema = directoryService.getDirectorySchema(um.getUserDirectoryName());
                 try (Session userDir = directoryService.open(um.getUserDirectoryName(), null)) {
                     for (LogEntry e : entries) {
                         String id = (String) e.getExtendedInfos().get("id").getSerializableValue();
@@ -72,14 +72,14 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
                             } else if (UserManagerImpl.USERCREATED_EVENT_ID.equals(e.getEventId())) {
                                 doc = um.getUserModel(id);
                                 if (doc == null) {
-                                    break;
+                                    continue;
                                 }
                             } else {
-                                break;
+                                continue;
                             }
                             if (doc == null) {
                                 // probably user/group does not exist anymore
-                                break;
+                                continue;
                             }
                             currentPage.add(doc);
                         }
