@@ -164,10 +164,16 @@ public class TestUserGroupAudit {
                 DocumentModel newUser = userManager.getBareUserModel();
                 newUser.setProperty("user", "username", userName + i);
                 newUser = userManager.createUser(newUser);
+                if (i == 0) {
+                    userManager.deleteUser(newUser);
+                }
             } else {
                 DocumentModel groupModel = userManager.getBareGroupModel();
                 groupModel.setProperty("group", "groupname", groupName + i);
                 groupModel = userManager.createGroup(groupModel);
+                if (i == LIMIT - 1) {
+                    userManager.deleteGroup(groupModel);
+                }
             }
         }
 
@@ -182,7 +188,7 @@ public class TestUserGroupAudit {
 
         List<DocumentModel> latestCreatedUsers = (List<DocumentModel>) pp.getCurrentPage();
 
-        assertEquals(LIMIT, latestCreatedUsers.size());
+        assertEquals(LIMIT - 2, latestCreatedUsers.size());
     }
 
 }
