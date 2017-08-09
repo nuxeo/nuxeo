@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,14 @@
  *     Bogdan Stefanescu
  *     Ian Smith
  *     Florent Guillaume
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
-
 package org.nuxeo.runtime.osgi;
 
 import java.util.IllegalFormatException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.Bundle;
@@ -131,7 +130,7 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
      * @return printable version of bits that are on
      */
     public static String bundleStateAsString(int state) {
-        List<String> list = new LinkedList<String>();
+        List<String> list = new LinkedList<>();
         if ((state & Bundle.UNINSTALLED) != 0) {
             list.add("UNINSTALLED");
         }
@@ -150,7 +149,7 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
         if ((state & Bundle.ACTIVE) != 0) {
             list.add("ACTIVE");
         }
-        return '[' + StringUtils.join(list, ',') + ']';
+        return '[' + String.join(",", list) + ']';
     }
 
     /**

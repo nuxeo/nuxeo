@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     jcarsique
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.common.codec;
 
@@ -30,11 +31,11 @@ import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
+import java.security.KeyStore.PasswordProtection;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
-import java.security.KeyStore.PasswordProtection;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,9 +91,6 @@ public class Crypto {
 
     private final byte[] digest;
 
-    /**
-     * @param secretKey
-     */
     public Crypto(byte[] secretKey) {
         this.secretKey = secretKey;
         digest = getSHA1DigestOrEmpty(secretKey);
@@ -159,7 +157,7 @@ public class Crypto {
         public void clear() {
             // NO OP
         }
-    };
+    }
 
     public static final Crypto NO_OP = new NO_OP();
 
@@ -204,10 +202,6 @@ public class Crypto {
         return aDigest;
     }
 
-    /**
-     * @param bytesToEncrypt
-     * @throws GeneralSecurityException
-     */
     public String encrypt(byte[] bytesToEncrypt) throws GeneralSecurityException {
         return encrypt(null, bytesToEncrypt);
     }
@@ -217,7 +211,6 @@ public class Crypto {
      *            section in the <a
      *            href=http://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#Cipher>Java
      *            Cryptography Architecture Standard Algorithm Name Documentation</a>.
-     * @param bytesToEncrypt
      * @throws NoSuchPaddingException if {@code algorithm} contains a padding scheme that is not available.
      * @throws NoSuchAlgorithmException if {@code algorithm} is in an invalid or not supported format.
      * @throws GeneralSecurityException
@@ -241,7 +234,6 @@ public class Crypto {
      * recognized as a crypted string or if the decryption fails. The return value is a byte array for security purpose,
      * it is your responsibility to convert it then to a String or not (use of {@code char[]} is recommended).
      *
-     * @param strToDecrypt
      * @return the decrypted {@code strToDecrypt} as an array of bytes, never {@code null}
      * @see #getChars(byte[])
      */
@@ -258,8 +250,7 @@ public class Crypto {
             }
             decipher = Cipher.getInstance(algorithm);
             decipher.init(Cipher.DECRYPT_MODE, getSecretKey(algorithm, secretKey));
-            final byte[] decryptedString = decipher.doFinal(Base64.decodeBase64(matcher.group("value")));
-            return decryptedString;
+            return decipher.doFinal(Base64.decodeBase64(matcher.group("value")));
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             log.trace("Available algorithms: " + Security.getAlgorithms("Cipher"));
             log.trace("Available security providers: " + Arrays.asList(Security.getProviders()));
@@ -291,7 +282,6 @@ public class Crypto {
      * destroyed and the object is made unusable.<br>
      * Use that method to check if some code is allowed to request that Crypto object.
      *
-     * @param candidateDigest
      * @return true if {@code candidateDigest} matches the one used on creation.
      * @see #clear()
      * @see #verifyKey(char[])
@@ -309,7 +299,6 @@ public class Crypto {
      * destroyed and the object is made unusable.<br>
      * Use that method to check if some code is allowed to request that Crypto object.
      *
-     * @param candidateDigest
      * @return true if {@code candidateDigest} matches the one used on creation.
      * @see #clear()
      * @see #verifyKey(byte[])
@@ -349,7 +338,6 @@ public class Crypto {
     }
 
     /**
-     * @param value
      * @return true if the given {@code value} is encrypted
      */
     public static boolean isEncrypted(String value) {
@@ -395,7 +383,6 @@ public class Crypto {
      * @param keyAlias Key alias prefix. It must be suffixed with the algorithm ({@link SecretKey#getAlgorithm()} is
      *            fine).
      * @param keyPass Key password
-     * @param key
      * @throws GeneralSecurityException
      * @throws IOException
      * @see #IMPLEMENTED_ALGOS

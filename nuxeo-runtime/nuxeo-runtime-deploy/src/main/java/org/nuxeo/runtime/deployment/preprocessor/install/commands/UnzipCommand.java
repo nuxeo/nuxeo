@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
-
 package org.nuxeo.runtime.deployment.preprocessor.install.commands;
 
 import java.io.File;
@@ -81,8 +79,8 @@ public class UnzipCommand implements Command {
         }
 
         if (dstFile.isFile()) {
-            throw new IllegalArgumentException("When unziping the destination file must be a directory: "
-                    + dstFile.getAbsolutePath());
+            throw new IllegalArgumentException(
+                    "When unziping the destination file must be a directory: " + dstFile.getAbsolutePath());
         }
 
         if (!dstFile.exists()) {

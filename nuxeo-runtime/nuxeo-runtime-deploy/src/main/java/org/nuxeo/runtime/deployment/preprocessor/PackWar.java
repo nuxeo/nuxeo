@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
  *     Bogdan Stefanescu
  *     Julien Carsique
  *     Florent Guillaume
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.runtime.deployment.preprocessor;
 
@@ -26,7 +27,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,14 +50,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.TomcatConfigurator;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.deployment.NuxeoStarter;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -94,9 +92,7 @@ public class PackWar {
             "mysql-connector-java", // MySQL
             "nuxeo-core-storage-sql-extensions", // for Derby/H2
             "lucene", // for H2
-            "xercesImpl",
-            "xml-apis",
-            "elasticsearch");
+            "xercesImpl", "xml-apis", "elasticsearch");
 
     private static final String ZIP_LIB = "lib/";
 
@@ -136,8 +132,6 @@ public class PackWar {
     protected File tomcat;
 
     protected File zip;
-
-    private ConfigurationGenerator cg;
 
     private TomcatConfigurator tomcatConfigurator;
 
@@ -179,7 +173,7 @@ public class PackWar {
         if (System.getProperty(ConfigurationGenerator.NUXEO_CONF) == null) {
             System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(tomcat, "bin/nuxeo.conf").getPath());
         }
-        cg = new ConfigurationGenerator();
+        ConfigurationGenerator cg = new ConfigurationGenerator();
         cg.run();
         tomcatConfigurator = ((TomcatConfigurator) cg.getServerConfigurator());
     }
@@ -199,8 +193,8 @@ public class PackWar {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             bout.write(README_BEGIN.getBytes("UTF-8"));
             ServerXmlProcessor.INSTANCE.process(newFile(tomcat, "conf/server.xml"), bout);
-            bout.write(README_END.replace("webapps/nuxeo", "webapps/" + tomcatConfigurator.getContextName()).getBytes(
-                    "UTF-8"));
+            bout.write(README_END.replace("webapps/nuxeo", "webapps/" + tomcatConfigurator.getContextName())
+                                 .getBytes("UTF-8"));
             zipBytes(ZIP_README, bout.toByteArray(), zout);
 
             File nuxeoXml = new File(tomcat, tomcatConfigurator.getTomcatConfig());
@@ -228,12 +222,7 @@ public class PackWar {
      */
     private File listNuxeoBundles() throws IOException {
         File nuxeoBundles = Framework.createTempFile(NuxeoStarter.NUXEO_BUNDLES_LIST, "");
-        File[] bundles = new File(nxserver, "bundles").listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".jar");
-            }
-        });
+        File[] bundles = new File(nxserver, "bundles").listFiles((dir, name) -> name.endsWith(".jar"));
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(nuxeoBundles))) {
             for (File bundle : bundles) {
                 writer.write(bundle.getName());
@@ -325,11 +314,8 @@ public class PackWar {
 
         @Override
         public void process(File file, OutputStream out) throws IOException {
-            FileInputStream in = new FileInputStream(file);
-            try {
+            try (FileInputStream in = new FileInputStream(file)) {
                 IOUtils.copy(in, out);
-            } finally {
-                in.close();
             }
         }
     }
@@ -347,16 +333,13 @@ public class PackWar {
 
         @Override
         public void process(File file, OutputStream out) throws IOException {
-            FileInputStream in = new FileInputStream(file);
-            try {
+            try (FileInputStream in = new FileInputStream(file)) {
                 List<String> lines = IOUtils.readLines(in, "UTF-8");
                 List<String> outLines = new ArrayList<>();
                 for (String line : lines) {
                     outLines.add(line.replace(target, replacement));
                 }
                 IOUtils.writeLines(outLines, null, out, "UTF-8");
-            } finally {
-                in.close();
             }
         }
     }
@@ -371,8 +354,7 @@ public class PackWar {
             } catch (ParserConfigurationException e) {
                 throw (IOException) new IOException().initCause(e);
             }
-            InputStream in = new FileInputStream(file);
-            try {
+            try (InputStream in = new FileInputStream(file)) {
                 Document doc = parser.parse(in);
                 doc.setStrictErrorChecking(false);
                 process(doc);
@@ -380,12 +362,8 @@ public class PackWar {
                 trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
                 trans.setOutputProperty(OutputKeys.INDENT, "yes");
                 trans.transform(new DOMSource(doc), new StreamResult(out));
-            } catch (SAXException e) {
+            } catch (SAXException | TransformerException e) {
                 throw (IOException) new IOException().initCause(e);
-            } catch (TransformerException e) {
-                throw (IOException) new IOException().initCause(e);
-            } finally {
-                in.close();
             }
         }
 
@@ -408,8 +386,8 @@ public class PackWar {
                     // insert initial listener
                     Element listener = doc.createElement(LISTENER);
                     n.insertBefore(listener, n);
-                    listener.appendChild(doc.createElement(LISTENER_CLASS)).appendChild(
-                            doc.createTextNode(NuxeoStarter.class.getName()));
+                    listener.appendChild(doc.createElement(LISTENER_CLASS))
+                            .appendChild(doc.createTextNode(NuxeoStarter.class.getName()));
                     break;
                 }
                 n = n.getNextSibling();
@@ -465,8 +443,7 @@ public class PackWar {
             } catch (ParserConfigurationException e) {
                 throw (IOException) new IOException().initCause(e);
             }
-            InputStream in = new FileInputStream(file);
-            try {
+            try (InputStream in = new FileInputStream(file)) {
                 Document doc = parser.parse(in);
                 doc.setStrictErrorChecking(false);
                 Element root = doc.getDocumentElement();
@@ -491,12 +468,8 @@ public class PackWar {
                 trans.setOutputProperty(OutputKeys.INDENT, "no");
                 trans.transform(new DOMSource(resourceElement), // only resource
                         new StreamResult(out));
-            } catch (SAXException e) {
+            } catch (SAXException | TransformerException e) {
                 throw (IOException) new IOException().initCause(e);
-            } catch (TransformerException e) {
-                throw (IOException) new IOException().initCause(e);
-            } finally {
-                in.close();
             }
         }
 
@@ -514,9 +487,9 @@ public class PackWar {
     public static void main(String[] args) {
         if (args.length < 2 || args.length > 3
                 || (args.length == 3 && !Arrays.asList(COMMAND_PREPROCESSING, COMMAND_PACKAGING).contains(args[2]))) {
-            fail(String.format("Usage: %s <nxserver_dir> <target_zip> [command]\n"
-                    + "    command may be empty or '%s' or '%s'", PackWar.class.getSimpleName(), COMMAND_PREPROCESSING,
-                    COMMAND_PACKAGING));
+            fail(String.format(
+                    "Usage: %s <nxserver_dir> <target_zip> [command]\n" + "    command may be empty or '%s' or '%s'",
+                    PackWar.class.getSimpleName(), COMMAND_PREPROCESSING, COMMAND_PACKAGING));
         }
 
         File nxserver = new File(args[0]).getAbsoluteFile();

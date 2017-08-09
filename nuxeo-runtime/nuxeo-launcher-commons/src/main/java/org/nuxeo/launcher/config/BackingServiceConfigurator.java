@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors: Nuxeo team
- *
+ * Contributors:
+ *     Nuxeo team
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.launcher.config;
 
@@ -37,16 +38,16 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import net.jodah.failsafe.Failsafe;
+import net.jodah.failsafe.FailsafeException;
+import net.jodah.failsafe.RetryPolicy;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.launcher.config.backingservices.BackingChecker;
 import org.nuxeo.launcher.config.backingservices.DBCheck;
-
-import net.jodah.failsafe.Failsafe;
-import net.jodah.failsafe.FailsafeException;
-import net.jodah.failsafe.RetryPolicy;
 
 /**
  * Calls backing services checks to verify that they are ready to use before starting Nuxeo.
@@ -162,7 +163,6 @@ public class BackingServiceConfigurator {
      * form ${nuxeo.home}/nxserver/bundles/...
      *
      * @param template The name of the template
-     * @return
      */
     // VisibleForTesting
     String getClasspathForTemplate(String template) {

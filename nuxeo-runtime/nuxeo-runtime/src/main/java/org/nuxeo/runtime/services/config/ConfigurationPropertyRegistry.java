@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *      Andre Justo
  *      Anahide Tchertchian
+ *      Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.runtime.services.config;
 
@@ -54,8 +55,8 @@ public class ConfigurationPropertyRegistry extends SimpleContributionRegistry<Co
             return;
         }
         if (Framework.getProperties().containsKey(key)) {
-            String message = String.format("Property '" + key + "' should now be contributed to extension "
-                    + "point 'org.nuxeo.runtime.ConfigurationService', using target 'configuration'");
+            String message = "Property '" + key + "' should now be contributed to extension "
+                    + "point 'org.nuxeo.runtime.ConfigurationService', using target 'configuration'";
             DeprecationLogger.log(message, "7.4");
             Framework.getRuntime().getWarnings().add(message);
         }

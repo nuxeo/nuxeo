@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
-
 package org.nuxeo.runtime.services.event;
 
 import java.util.HashMap;
@@ -27,7 +26,6 @@ import java.util.Map;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
@@ -45,15 +43,10 @@ public class EventService extends DefaultComponent {
 
     private final Map<String, ListenerList> topics;
 
-    // private final Map<String, Collection<Event>> pendingEvents;
-
     private final Map<String, Object[]> contributions;
-
-    // private Executor threadPool = Executors.newCachedThreadPool();
 
     public EventService() {
         topics = new HashMap<>();
-        // pendingEvents = new HashMap<String, Collection<Event>>();
         contributions = new Hashtable<>();
     }
 
@@ -100,7 +93,6 @@ public class EventService extends DefaultComponent {
     public void sendEvent(Event event) {
         ListenerList list = topics.get(event.getTopic());
         if (list == null) {
-            // enqeueEvent(event);
             if (log.isTraceEnabled()) {
                 log.trace("Event sent to topic " + event.getTopic() + ". Ingnoring");
             }
@@ -114,13 +106,6 @@ public class EventService extends DefaultComponent {
         if (list == null) {
             list = new ListenerList();
             topics.put(topic, list);
-            // check if any event is pending
-            // Collection<Event> events = pendingEvents.remove(topic);
-            // if (events != null) {
-            // for (Event event : events) {
-            // sendEvent(list, event);
-            // }
-            // }
         }
         list.add(listener);
     }
@@ -141,25 +126,6 @@ public class EventService extends DefaultComponent {
             ((EventListener) listener).handleEvent(event);
         }
     }
-
-    // private void enqeueEvent(Event event) {
-    // Collection<Event> events = pendingEvents.get(event.getTopic());
-    // if (events != null) {
-    // events.add(event);
-    // } else {
-    // events = new ArrayList<Event>();
-    // events.add(event);
-    // pendingEvents.put(event.getTopic(), events);
-    // }
-    // }
-
-    // public void sendAsync(final Event event) {
-    // threadPool.execute(new Runnable() {
-    // public void run() {
-    // sendEvent(event);
-    // }
-    // });
-    // }
 
     @Override
     @SuppressWarnings("unchecked")

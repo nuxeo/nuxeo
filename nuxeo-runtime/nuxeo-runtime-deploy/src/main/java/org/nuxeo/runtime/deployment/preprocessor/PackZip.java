@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu, jcarsique
+ *     bstefanescu
+ *     jcarsique
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.runtime.deployment.preprocessor;
 
@@ -66,12 +68,12 @@ public class PackZip {
 
     public PackZip(File nuxeoEar, File target) {
         if (!nuxeoEar.isDirectory()) {
-            throw new IllegalArgumentException("Invalid build - no exploded nuxeo.ear found at "
-                    + nuxeoEar.getAbsolutePath());
+            throw new IllegalArgumentException(
+                    "Invalid build - no exploded nuxeo.ear found at " + nuxeoEar.getAbsolutePath());
         }
         if (!target.isDirectory()) {
-            throw new IllegalArgumentException("Invalid configuration - no target directory found at "
-                    + nuxeoEar.getAbsolutePath());
+            throw new IllegalArgumentException(
+                    "Invalid configuration - no target directory found at " + nuxeoEar.getAbsolutePath());
         }
         this.nuxeoEar = nuxeoEar;
         this.target = target;
@@ -117,8 +119,8 @@ public class PackZip {
         FileUtils.copyFileToDirectory(dsFile, target);
     }
 
-    public void execute(String order) throws ConfigurationException, IOException, ParserConfigurationException,
-            SAXException {
+    public void execute(String order)
+            throws ConfigurationException, IOException, ParserConfigurationException, SAXException {
         if (ORDER_PREPROCESSING.equals(order) || StringUtils.isBlank(order)) {
             executePreprocessing();
         }
@@ -156,7 +158,7 @@ public class PackZip {
         Document doc = docBuilder.parse(in);
         Element root = doc.getDocumentElement();
         NodeList list = root.getElementsByTagName("module");
-        Collection<String> paths = new ArrayList<String>();
+        Collection<String> paths = new ArrayList<>();
         for (int i = 0; i < list.getLength(); i++) {
             Element el = (Element) list.item(i);
             Node n = el.getFirstChild();
@@ -212,8 +214,8 @@ public class PackZip {
         System.exit(1);
     }
 
-    public static void main(String[] args) throws IOException, ConfigurationException, ParserConfigurationException,
-            SAXException {
+    public static void main(String[] args)
+            throws IOException, ConfigurationException, ParserConfigurationException, SAXException {
         if (args.length < 2) {
             fail("Usage: PackZip nuxeo_ear_directory target_directory [order]");
         }
