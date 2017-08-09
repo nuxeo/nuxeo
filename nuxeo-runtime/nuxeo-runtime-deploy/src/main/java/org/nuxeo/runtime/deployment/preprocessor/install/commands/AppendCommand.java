@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.runtime.deployment.preprocessor.install.commands;
 

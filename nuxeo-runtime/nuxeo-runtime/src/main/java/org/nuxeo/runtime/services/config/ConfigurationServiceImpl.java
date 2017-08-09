@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *      Andre Justo
  *      Anahide Tchertchian
+ *      Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.runtime.services.config;
 
@@ -58,10 +59,7 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
     @Override
     public boolean isBooleanPropertyFalse(String key) {
         String value = getProperty(key);
-        if (StringUtils.isBlank(value)) {
-            return false;
-        }
-        return !Boolean.parseBoolean(value);
+        return StringUtils.isNotBlank(value) && !Boolean.parseBoolean(value);
     }
 
     @Override

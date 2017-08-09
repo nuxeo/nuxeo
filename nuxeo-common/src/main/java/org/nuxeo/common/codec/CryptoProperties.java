@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     jcarsique
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.common.codec;
 
@@ -44,7 +45,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.Environment;
 
 /**
@@ -52,7 +52,8 @@ import org.nuxeo.common.Environment;
  * The cryptographic algorithms depend on:
  * <ul>
  * <li>Environment.SERVER_STATUS_KEY</li>
- * <li>Environment.CRYPT_KEYALIAS && Environment.CRYPT_KEYSTORE_PATH || getProperty(Environment.JAVA_DEFAULT_KEYSTORE)</li>
+ * <li>Environment.CRYPT_KEYALIAS && Environment.CRYPT_KEYSTORE_PATH || getProperty(Environment.JAVA_DEFAULT_KEYSTORE)
+ * </li>
  * <li>Environment.CRYPT_KEY</li>
  * </ul>
  * Changing one of those parameters will affect the ability to read encrypted values.
@@ -65,9 +66,9 @@ public class CryptoProperties extends Properties {
 
     private Crypto crypto = Crypto.NO_OP;
 
-    private static final List<String> CRYPTO_PROPS = Arrays.asList(new String[] { Environment.SERVER_STATUS_KEY,
+    private static final List<String> CRYPTO_PROPS = Arrays.asList(Environment.SERVER_STATUS_KEY,
             Environment.CRYPT_KEYALIAS, Environment.CRYPT_KEYSTORE_PATH, Environment.JAVA_DEFAULT_KEYSTORE,
-            Environment.CRYPT_KEYSTORE_PASS, Environment.JAVA_DEFAULT_KEYSTORE_PASS, Environment.CRYPT_KEY });
+            Environment.CRYPT_KEYSTORE_PASS, Environment.JAVA_DEFAULT_KEYSTORE_PASS, Environment.CRYPT_KEY);
 
     private byte[] cryptoID;
 
@@ -80,8 +81,7 @@ public class CryptoProperties extends Properties {
     private Map<String, String> encrypted = new ConcurrentHashMap<>();
 
     /**
-     * @param defaults
-     * @inherited {@link Properties#Properties(Properties)}
+     * {@link Properties#Properties(Properties)}
      */
     public CryptoProperties(Properties defaults) {
         super(defaults);
@@ -322,7 +322,6 @@ public class CryptoProperties extends Properties {
     }
 
     /**
-     * @param key
      * @return the "raw" property: not decrypted if it was provided encrypted
      */
     public String getRawProperty(String key) {
@@ -334,8 +333,6 @@ public class CryptoProperties extends Properties {
      * list, the default property list, and its defaults, recursively, are then checked. The method returns the default
      * value argument if the property is not found.
      *
-     * @param key
-     * @param defaultValue
      * @return the "raw" property (not decrypted if it was provided encrypted) or the {@code defaultValue} if not found
      * @see #setProperty
      */
@@ -350,9 +347,8 @@ public class CryptoProperties extends Properties {
     }
 
     /**
-     * @param key
-     * @param raw if the encrypted values must be returned encrypted ({@code raw==true}) or decrypted ({@code raw==false}
-     *            )
+     * @param raw if the encrypted values must be returned encrypted ({@code raw==true}) or decrypted (
+     *            {@code raw==false} )
      * @return the property value or null
      */
     public String getProperty(String key, boolean raw) {
