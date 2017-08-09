@@ -7,26 +7,10 @@
     <version>9.3-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-test</artifactId>
   <name>Nuxeo Runtime Tests</name>
   <description>Nuxeo Runtime: Nuxeo Runtime Tests. This module must only be used
   with a test scope (except in [module]-test where you may use compile scope).</description>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>**/ContributionTest*.java</exclude>
-            <exclude>**/MyTestComponent.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
   <dependencies>
     <dependency>
@@ -63,7 +47,7 @@
       <artifactId>nuxeo-runtime-management</artifactId>
     </dependency>
 
-    
+
     <dependency>
       <groupId>org.javasimon</groupId>
       <artifactId>javasimon-core</artifactId>
@@ -234,5 +218,20 @@
       <artifactId>nuxeo-runtime-jtajca</artifactId>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/ContributionTest*.java</exclude>
+            <exclude>**/MyTestComponent.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

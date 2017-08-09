@@ -68,7 +68,7 @@ public final class URIUtils {
                                 URLEncoder.encode(value, "UTF-8")));
                     }
                 }
-                query = org.apache.commons.lang.StringUtils.join(items, "&");
+                query = String.join("&", items);
             } catch (UnsupportedEncodingException e) {
                 log.error("Failed to get uri query", e);
             }

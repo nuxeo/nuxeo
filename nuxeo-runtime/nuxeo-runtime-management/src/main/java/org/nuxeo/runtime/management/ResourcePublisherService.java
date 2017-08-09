@@ -33,7 +33,7 @@ import javax.management.ObjectName;
 import javax.management.modelmbean.InvalidTargetObjectTypeException;
 import javax.management.modelmbean.RequiredModelMBean;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
@@ -158,7 +158,7 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
             Resource resource = doResolveServiceDescriptor(descriptor);
             doRegisterResource(resource);
             String shortName = descriptor.getName();
-            if (!StringUtils.isEmpty(shortName)) {
+            if (StringUtils.isNotEmpty(shortName)) {
                 shortcutsRegistry.doRegisterShortcut(shortName, resource.getManagementName());
             }
         }
@@ -262,7 +262,7 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
             ObjectName objectName = doResolveServiceName(descriptor);
             doUnregisterResource(objectName);
             String shortName = descriptor.getName();
-            if (!StringUtils.isEmpty(shortName)) {
+            if (StringUtils.isNotEmpty(shortName)) {
                 shortcutsRegistry.unregisterShortcut(shortName);
             }
         }
