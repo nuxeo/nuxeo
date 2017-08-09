@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -49,9 +50,13 @@ import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.context.JavaRuntimeDeployer;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.model.RuntimeDeployer;
 import org.nuxeo.runtime.model.impl.ComponentPersistence;
+import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 import org.nuxeo.runtime.model.impl.RegistrationInfoImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -103,6 +108,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
 
     final ComponentPersistence persistence;
 
+    protected RuntimeDeployer[] deployers;
+
     public OSGiRuntimeService(BundleContext context) {
         this(new OSGiRuntimeContext(context.getBundle()), context);
     }
@@ -134,6 +141,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         workingDir.mkdirs();
         persistence = new ComponentPersistence(this);
         log.debug("Working directory: " + workingDir);
+        deployers = new RuntimeDeployer[] { new JavaRuntimeDeployer(this) };
     }
 
     @Override
@@ -209,6 +217,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         if (list == null) {
             return;
         }
+        boolean newComponents = false;
         StringTokenizer tok = new StringTokenizer(list, ", \t\n\r\f");
         while (tok.hasMoreTokens()) {
             String path = tok.nextToken();
@@ -223,9 +232,31 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                     throw new RuntimeServiceException("Cannot deploy: " + url, e);
                 }
             } else {
-                String message = "Unknown component '" + path + "' referenced by bundle '" + name + "'";
-                log.error(message + ". Check the MANIFEST.MF");
-                errors.add(message);
+                // check if a deployer could handle this component
+                // we currently proceed as it in order to not slow down default behavior while developing new mechanisms
+                if (Stream.of(deployers).noneMatch(deployer -> deployer.accept(path))) {
+                    String message = "Unknown component '" + path + "' referenced by bundle '" + name + "'";
+                    log.error(message + ". Check the MANIFEST.MF");
+                    errors.add(message);
+                } else {
+                    newComponents = true;
+                }
+            }
+        }
+        // for now, run the new mechanism only if we identify a component candidate
+        if (newComponents) {
+            tok = new StringTokenizer(list, ", \t\n\r\f");
+            while (tok.hasMoreTokens()) {
+                String component = tok.nextToken();
+                for (RuntimeDeployer deployer : deployers) {
+                    if (deployer.accept(component)) {
+                        // deployer found, deploy the component and perform next one
+                        RegistrationInfo ri = deployer.deploy(component);
+                        // TODO shouldn't be needed in future
+                        ((DefaultRuntimeContext) ctx).addComponent(ri.getName());
+                        break;
+                    }
+                }
             }
         }
     }

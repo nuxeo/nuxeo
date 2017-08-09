@@ -36,6 +36,15 @@ public class ConfigurationPropertyDescriptor {
     @XNode
     protected String value;
 
+    public ConfigurationPropertyDescriptor() {
+
+    }
+
+    public ConfigurationPropertyDescriptor(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+
     public String getName() {
         return name;
     }

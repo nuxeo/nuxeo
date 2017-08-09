@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.context.JavaRuntimeDeployer;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
@@ -104,6 +105,15 @@ public class DefaultRuntimeContext implements RuntimeContext {
     @Override
     public ComponentName[] getComponents() {
         return components.toArray(new ComponentName[components.size()]);
+    }
+
+    /**
+     * Temporary hack to add a component coming from {@link JavaRuntimeDeployer}.
+     *
+     * @since 9.3
+     */
+    public void addComponent(ComponentName componentName) {
+        components.add(componentName);
     }
 
     @Override
