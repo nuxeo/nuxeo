@@ -15,6 +15,7 @@
  *
  * Contributors:
  *      Stephane Lacoin (Nuxeo EP Software Engineer)
+ *      Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.runtime.management;
 
@@ -93,7 +94,7 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
 
     protected class FactoriesRegistry {
 
-        protected final Map<Class<? extends ResourceFactory>, ResourceFactory> registry = new HashMap<Class<? extends ResourceFactory>, ResourceFactory>();
+        protected final Map<Class<? extends ResourceFactory>, ResourceFactory> registry = new HashMap<>();
 
         protected void doRegisterFactory(ResourceFactoryDescriptor descriptor) {
             ResourceFactory factory;
@@ -112,14 +113,12 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
         }
 
         protected void doRegisterResources() {
-            for (ResourceFactory factory : registry.values()) {
-                factory.registerResources();
-            }
+            registry.values().forEach(ResourceFactory::registerResources);
         }
     }
 
     protected class ShortcutsRegistry {
-        protected final Map<String, ObjectName> registry = new TreeMap<String, ObjectName>();
+        protected final Map<String, ObjectName> registry = new TreeMap<>();
 
         protected void doRegisterShortcut(ShortcutDescriptor descriptor) {
             doRegisterShortcut(descriptor.getShortName(), descriptor.getQualifiedName());

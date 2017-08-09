@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Julien Carsique
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.launcher.config;
 
@@ -673,7 +674,7 @@ public class ConfigurationGenerator {
     }
 
     private String replaceEnvironmentVariables(String value) {
-        if(StringUtils.isBlank(value)) {
+        if (StringUtils.isBlank(value)) {
             return value;
         }
 
@@ -1582,7 +1583,7 @@ public class ConfigurationGenerator {
             // current db template is explicit => replace it
             templatesList.set(dbIdx, dbTemplate);
         }
-        return replaceEnvironmentVariables(StringUtils.join(templatesList, TEMPLATE_SEPARATOR));
+        return replaceEnvironmentVariables(String.join(TEMPLATE_SEPARATOR, templatesList));
     }
 
     /**
@@ -1654,7 +1655,7 @@ public class ConfigurationGenerator {
         List<String> templatesList = getTemplateList();
         List<String> templatesToAddList = Arrays.asList(templatesToAdd.split(TEMPLATE_SEPARATOR));
         if (templatesList.addAll(templatesToAddList)) {
-            String newTemplatesStr = StringUtils.join(templatesList, TEMPLATE_SEPARATOR);
+            String newTemplatesStr = String.join(TEMPLATE_SEPARATOR, templatesList);
             HashMap<String, String> parametersToSave = new HashMap<>();
             parametersToSave.put(PARAM_TEMPLATES_NAME, newTemplatesStr);
             saveFilteredConfiguration(parametersToSave);
@@ -1664,14 +1665,14 @@ public class ConfigurationGenerator {
 
     /**
      * Return the list of templates.
-     * @return
+     *
      * @since 9.2
      */
     public List<String> getTemplateList() {
         String currentTemplatesStr = userConfig.getProperty(PARAM_TEMPLATES_NAME);
 
         return Stream.of(replaceEnvironmentVariables(currentTemplatesStr).split(TEMPLATE_SEPARATOR))
-                .collect(Collectors.toList());
+                     .collect(Collectors.toList());
 
     }
 
@@ -1686,8 +1687,8 @@ public class ConfigurationGenerator {
         List<String> templatesList = getTemplateList();
         List<String> templatesToRmList = Arrays.asList(templatesToRm.split(TEMPLATE_SEPARATOR));
         if (templatesList.removeAll(templatesToRmList)) {
-            String newTemplatesStr = StringUtils.join(templatesList, TEMPLATE_SEPARATOR);
-            HashMap<String, String> parametersToSave = new HashMap<>();
+            String newTemplatesStr = String.join(TEMPLATE_SEPARATOR, templatesList);
+            Map<String, String> parametersToSave = new HashMap<>();
             parametersToSave.put(PARAM_TEMPLATES_NAME, newTemplatesStr);
             saveFilteredConfiguration(parametersToSave);
             changeTemplates(newTemplatesStr);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.nuxeo.runtime.jtajca;
 
 import java.util.Date;
@@ -58,10 +57,12 @@ import org.slf4j.LoggerFactory;
  * @since 8.3
  */
 public class NuxeoConnectionManager extends AbstractConnectionManager {
+
     private static final long serialVersionUID = 1L;
+
     protected static final Logger log = LoggerFactory.getLogger(NuxeoConnectionManager.class);
 
-    final NuxeoConnectionTrackingCoordinator coordinator;
+    protected final NuxeoConnectionTrackingCoordinator coordinator;
 
     public NuxeoConnectionManager(int activettl, NuxeoValidationSupport validationSupport,
             TransactionSupport transactionSupport, PoolingSupport pooling, SubjectSource subjectSource,
@@ -77,7 +78,9 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
     static class InterceptorsImpl implements AbstractConnectionManager.Interceptors {
 
         private final ConnectionInterceptor stack;
+
         private final ConnectionInterceptor recoveryStack;
+
         private final PoolingSupport poolingSupport;
 
         /**
@@ -160,7 +163,6 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
     }
 
     /**
-     *
      * @see ActiveMonitor#killTimedoutConnections
      * @since 8.4
      */
@@ -169,8 +171,7 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
     }
 
     /**
-     *
-     * @see NuxeoConnectionTrackingCoordinator#k
+     * @see ActiveMonitor#killedCount
      * @since 8.4
      */
     public long getKilledConnectionCount() {
@@ -219,7 +220,8 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
                 ConnectionInfo connectionInfo, boolean reassociate) throws ResourceException {
             int delay = ttl();
             if (delay > 0) {
-                ttls.put(connectionInfo, new TimeToLive(connectionInfo, Thread.currentThread().getName(), System.currentTimeMillis(), delay));
+                ttls.put(connectionInfo, new TimeToLive(connectionInfo, Thread.currentThread().getName(),
+                        System.currentTimeMillis(), delay));
             }
         }
 
@@ -231,14 +233,12 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
 
         @Override
         public void setEnvironment(ConnectionInfo connectionInfo, String key) {
-            return;
         }
 
         /**
          * Kill active connection that have timed out relative to the given {@code clock}.
          *
          * @return information about the killed connections
-         * @param clock
          * @since 8.4
          */
         public synchronized List<TimeToLive> killTimedoutConnections(long clock) {
@@ -259,7 +259,6 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
         /**
          * Logs active connections
          *
-         *
          * @since 8.4
          */
         public void log() {
@@ -268,10 +267,8 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
             }
         }
 
-
         /**
          * List active connections
-         *
          *
          * @since 8.4
          */
@@ -306,11 +303,11 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
                         throw error;
                     }
                     LogFactory.getLog(NuxeoConnectionTrackingCoordinator.class)
-                            .error("Caught error while killing " + info, error);
+                              .error("Caught error while killing " + info, error);
                 } finally {
                     killedCount += 1;
                     LogFactory.getLog(NuxeoConnectionTrackingCoordinator.class)
-                            .error("Killed " + message(new StringBuilder()), info.getTrace());
+                              .error("Killed " + message(new StringBuilder()), info.getTrace());
                 }
             }
 
@@ -325,8 +322,13 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
             }
 
             public StringBuilder message(StringBuilder builder) {
-                return builder.append(info).append(",  was obtained by ").append(threadName).append(" at ")
-                        .append(new Date(obtained)).append(" and timed out at ").append(new Date(deadline));
+                return builder.append(info)
+                              .append(",  was obtained by ")
+                              .append(threadName)
+                              .append(" at ")
+                              .append(new Date(obtained))
+                              .append(" and timed out at ")
+                              .append(new Date(deadline));
             }
 
             @Override
@@ -339,7 +341,7 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
 
         public void enter(int delay) {
             context.set(delay);
-        };
+        }
 
         public void exit() {
             context.remove();
@@ -390,11 +392,11 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
 
         }
 
-        final ThreadLocal<Boolean> noSharingHolder = new ThreadLocal<Boolean>();
+        final ThreadLocal<Boolean> noSharingHolder = new ThreadLocal<>();
 
         @Override
         public void setEnvironment(ConnectionInfo connectionInfo, String key) {
-            connectionInfo.setUnshareable(noSharingHolder.get() == null ? false : true);
+            connectionInfo.setUnshareable(noSharingHolder.get() != null);
         }
 
         void enter() {

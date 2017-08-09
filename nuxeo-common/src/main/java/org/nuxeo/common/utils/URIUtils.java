@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
  * Contributors:
  *     Anahide Tchertchian
  *     Florent Guillaume
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
-
 package org.nuxeo.common.utils;
 
 import java.io.UnsupportedEncodingException;
@@ -56,7 +56,7 @@ public final class URIUtils {
         String query = null;
         if (parameters != null) {
             try {
-                List<String> items = new ArrayList<String>();
+                List<String> items = new ArrayList<>();
                 for (Map.Entry<String, String> paramInfo : parameters.entrySet()) {
                     String key = paramInfo.getKey();
                     String value = paramInfo.getValue();
@@ -106,17 +106,15 @@ public final class URIUtils {
                     strippedQuery = uriQuery;
                 }
                 String[] items = strippedQuery.split("&");
-                if (items != null && items.length > 0) {
-                    parameters = new LinkedHashMap<String, String>();
+                if (items.length > 0) {
+                    parameters = new LinkedHashMap<>();
                     for (String item : items) {
                         String[] param = item.split("=");
-                        if (param != null) {
-                            if (param.length == 2) {
-                                parameters.put(URLDecoder.decode(param[0], "UTF-8"),
-                                        URLDecoder.decode(param[1], "UTF-8"));
-                            } else if (param.length == 1) {
-                                parameters.put(URLDecoder.decode(param[0], "UTF-8"), null);
-                            }
+                        if (param.length == 2) {
+                            parameters.put(URLDecoder.decode(param[0], "UTF-8"),
+                                    URLDecoder.decode(param[1], "UTF-8"));
+                        } else if (param.length == 1) {
+                            parameters.put(URLDecoder.decode(param[0], "UTF-8"), null);
                         }
                     }
                 }
@@ -134,10 +132,10 @@ public final class URIUtils {
         String uriPath = getURIPath(uriString);
         Map<String, String> existingParams = getRequestParameters(uriString.substring(uriPath.length()));
         if (existingParams == null) {
-            existingParams = new LinkedHashMap<String, String>();
+            existingParams = new LinkedHashMap<>();
         }
         existingParams.putAll(parameters);
-        String res = null;
+        String res;
         if (!existingParams.isEmpty()) {
             String newQuery = getURIQuery(existingParams);
             res = uriPath + '?' + newQuery;
@@ -155,7 +153,7 @@ public final class URIUtils {
      * Quotes a URI path component, with ability to quote "/" and "@" characters or not depending on the URI path
      *
      * @since 5.6
-     * @param the uri path to quote
+     * @param s the uri path to quote
      * @param quoteSlash true if "/" character should be quoted and replaced by %2F
      * @param quoteAt true if "@" character should be quoted and replaced by %40
      */
@@ -167,7 +165,7 @@ public final class URIUtils {
      * Quotes a URI path token. For example, a blob filename. It replaces "/" by "-".
      *
      * @since 7.3
-     * @param the uri path token to quote
+     * @param s the uri path token to quote
      */
     public static String quoteURIPathToken(String s) {
         return quoteURIPathComponent(s, "-", "%40");
@@ -177,7 +175,7 @@ public final class URIUtils {
      * Quotes a URI path component, with ability to quote "/" and "@" characters or not depending on the URI path
      *
      * @since 5.6
-     * @param the uri path to quote
+     * @param s the uri path to quote
      * @param slashSequence if null, do not quote "/", otherwise, replace "/" by the given sequence
      * @param atSequence if null, do not quote "@", otherwise, replace "@" by the given sequence
      */
