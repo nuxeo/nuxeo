@@ -13,7 +13,8 @@
 
   <nxu:set var="contentView"
     value="#{contentViewActions.getContentViewWithProvider(widgetProperty_contentViewName)}"
-    cache="true">
+    cache="true"
+    useAlias="true">
     <nxu:set var="resolvedAjaxReRender"
       value="#{nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender)}"
       cache="false">
