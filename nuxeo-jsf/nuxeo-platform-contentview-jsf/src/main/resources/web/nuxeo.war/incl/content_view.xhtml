@@ -79,13 +79,16 @@
   value="#{nxu:test(empty contentViewSortInfos, null, contentViewSortInfos)}">
 <nxu:set var="contentView"
   value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, finalSortInfos, finalDefaultPageSize, -1, -1)}"
-  cache="true">
+  cache="true"
+  useAlias="true">
 <nxu:set var="aggregates"
   value="#{contentView.pageProvider.hasAggregateSupport() ? contentView.pageProvider.aggregates : null}"
-  cache="true">
+  cache="true"
+  useAlias="true">
 <nxu:set var="selectedResultLayoutColumns"
   value="#{nxu:test(selectedResultLayoutColumns == null, contentView.currentResultLayoutColumns, selectedResultLayoutColumns)}"
-  cache="true">
+  cache="true"
+  useAlias="true">
 
 <c:if test="#{contentView != null}">
 
