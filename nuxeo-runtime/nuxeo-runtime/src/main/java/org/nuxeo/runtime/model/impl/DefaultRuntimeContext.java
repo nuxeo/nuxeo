@@ -22,10 +22,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.codec.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -218,7 +218,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
     }
 
     public RegistrationInfoImpl createRegistrationInfo(StreamRef ref) throws IOException {
-        String source = IOUtils.toString(ref.getStream(), Charsets.UTF_8);
+        String source = IOUtils.toString(ref.getStream(), StandardCharsets.UTF_8);
         String expanded = Framework.expandVars(source);
         try (InputStream in = new ByteArrayInputStream(expanded.getBytes())) {
             return createRegistrationInfo(in);

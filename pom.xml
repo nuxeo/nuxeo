@@ -171,6 +171,7 @@
     <box.api.version>1.1.0</box.api.version>
     <onedrive.api.version>1.0</onedrive.api.version>
     <selenium.version>2.53.0</selenium.version>
+    <htmlunit.version>2.20</htmlunit.version>
     <cxf.version>3.1.3</cxf.version>
     <cxf.nx.version>3.1.3-NX2</cxf.nx.version>
     <pdfbox.version>1.8.9</pdfbox.version>
@@ -2547,6 +2548,13 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jsp-api-2.1</artifactId>
         <version>6.1.6</version>
+        <exclusions>
+          <!-- we use official javax.servlet:javax.servlet-api instead -->
+          <exclusion>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>servlet-api-2.5</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
@@ -3774,7 +3782,12 @@
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>htmlunit-driver</artifactId>
-        <version>2.20</version>
+        <version>${htmlunit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sourceforge.htmlunit</groupId>
+        <artifactId>htmlunit</artifactId>
+        <version>${htmlunit.version}</version>
       </dependency>
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
@@ -4892,6 +4905,10 @@
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
 
     <!-- test scope -->
     <dependency>
@@ -5203,10 +5220,16 @@
           <artifactId>maven-dependency-plugin</artifactId>
           <version>2.10</version>
           <configuration>
+            <ignoredUsedUndeclaredDependencies>
+              <!-- since Java 5, these APIs have been included into JDK, but we still rely on them due to xerces -->
+              <!-- then the plugin could mismatch the two classes, so ignore them-->
+              <ignoredUsedUndeclaredDependency>xml-apis:xml-apis</ignoredUsedUndeclaredDependency>
+            </ignoredUsedUndeclaredDependencies>
             <ignoredUnusedDeclaredDependencies>
+              <artifact>commons-logging:commons-logging</artifact>
+              <artifact>javax.inject:javax.inject</artifact>
               <artifact>log4j:log4j</artifact>
               <artifact>junit:junit</artifact>
-              <artifact>commons-logging:commons-logging</artifact>
             </ignoredUnusedDeclaredDependencies>
           </configuration>
         </plugin>

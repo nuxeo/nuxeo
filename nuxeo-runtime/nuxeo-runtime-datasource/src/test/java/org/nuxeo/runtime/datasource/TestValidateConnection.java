@@ -16,18 +16,21 @@
 
 package org.nuxeo.runtime.datasource;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.geronimo.connector.outbound.ConnectionInfo;
 import org.apache.geronimo.connector.outbound.GeronimoConnectionEventListener;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
-import org.assertj.core.api.Assertions;
 import org.h2.tools.Server;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
@@ -64,7 +67,7 @@ public class TestValidateConnection {
             testPooled("no-valid", CaughtSite.onUse);
             throw new AssertionError("didn't caught connection error");
         } catch (ReportException cause) {
-            Assert.assertEquals(cause.site, CaughtSite.onUse);
+            assertEquals(cause.site, CaughtSite.onUse);
         }
     }
 
@@ -121,7 +124,9 @@ public class TestValidateConnection {
         } finally {
             server.stop();
         }
-        Assertions.assertThat(NuxeoContainer.getConnectionManager(jdbcName).listActive()).hasSize(0);
+        Set<ConnectionInfo> connectionInfos = NuxeoContainer.getConnectionManager(jdbcName).listActive();
+        assertNotNull("Connection infos can not be null", connectionInfos);
+        assertEquals(0, connectionInfos.size());
     }
 
     static class ReportException extends Exception {

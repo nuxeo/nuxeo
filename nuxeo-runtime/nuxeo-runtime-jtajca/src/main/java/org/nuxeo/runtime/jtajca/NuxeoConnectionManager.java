@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import javax.resource.ResourceException;
 import javax.transaction.TransactionManager;
 
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
 import org.apache.geronimo.connector.outbound.ConnectionHandleInterceptor;
@@ -47,8 +48,6 @@ import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PoolingSup
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.TransactionSupport;
 import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTracker;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Setups a connection according to the pooling attributes, mainly duplicated from {@link GenericConnectionManager} for
@@ -60,7 +59,7 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
 
     private static final long serialVersionUID = 1L;
 
-    protected static final Logger log = LoggerFactory.getLogger(NuxeoConnectionManager.class);
+    protected static final Log log = LogFactory.getLog(NuxeoConnectionManager.class);
 
     protected final NuxeoConnectionTrackingCoordinator coordinator;
 
