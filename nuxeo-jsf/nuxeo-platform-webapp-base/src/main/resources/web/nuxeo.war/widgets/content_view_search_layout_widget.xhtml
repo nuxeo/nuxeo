@@ -15,7 +15,7 @@
       <nxu:set var="contentView"
         value="#{contentViewActions.getContentViewWithProvider(contentViewName)}"
         cache="true"
-        useAlias="true">
+        useAlias="#{!configurationService.isBooleanPropertyTrue('nuxeo.jsf.removeAliasOptimsReloaded')}">
         <nxu:set var="resolvedAjaxReRender"
           value="#{nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender)}"
           cache="false">

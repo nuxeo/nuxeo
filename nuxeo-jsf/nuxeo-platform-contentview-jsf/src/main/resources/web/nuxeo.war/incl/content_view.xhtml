@@ -80,15 +80,15 @@
 <nxu:set var="contentView"
   value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, finalSortInfos, finalDefaultPageSize, -1, -1)}"
   cache="true"
-  useAlias="true">
+  useAlias="#{!configurationService.isBooleanPropertyTrue('nuxeo.jsf.removeAliasOptimsReloaded')}">
 <nxu:set var="aggregates"
   value="#{contentView.pageProvider.hasAggregateSupport() ? contentView.pageProvider.aggregates : null}"
   cache="true"
-  useAlias="true">
+  useAlias="#{!configurationService.isBooleanPropertyTrue('nuxeo.jsf.removeAliasOptimsReloaded')}">
 <nxu:set var="selectedResultLayoutColumns"
   value="#{nxu:test(selectedResultLayoutColumns == null, contentView.currentResultLayoutColumns, selectedResultLayoutColumns)}"
   cache="true"
-  useAlias="true">
+  useAlias="#{!configurationService.isBooleanPropertyTrue('nuxeo.jsf.removeAliasOptimsReloaded')}">
 
 <c:if test="#{contentView != null}">
 
