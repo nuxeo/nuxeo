@@ -41,6 +41,14 @@
       <pageSize>2</pageSize>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="namedParamProviderWithList">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:primaryType IN :types
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
+
     <coreQueryPageProvider name="namedParamProviderWithWhereClause">
       <whereClause>
         <predicate parameter="dc:title" operator="=">
