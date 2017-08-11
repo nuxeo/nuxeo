@@ -51,6 +51,13 @@ public class SearchResultsSubPage extends AbstractPage {
         super(driver);
     }
 
+    /**
+     * @since 9.3
+     */
+    public String getSearchViewTitle() {
+        return searchViewTitle.getText();
+    }
+
     public int getNumberOfDocumentInCurrentPage() {
         return getContentView().getItems().size();
     }
