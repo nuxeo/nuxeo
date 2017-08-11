@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Anahide Tchertchian
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.ecm.platform.query.core;
 
@@ -23,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +48,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 7.3
@@ -54,8 +55,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({"org.nuxeo.ecm.platform.query.api"})
-@LocalDeploy("org.nuxeo.ecm.platform.query.api:test-pageprovider-namedparams-contrib.xml")
+@Deploy({ "org.nuxeo.ecm.platform.query.api",
+        "org.nuxeo.ecm.platform.query.api:test-pageprovider-namedparams-contrib.xml" })
 public class TestPageProviderNamedParameters {
 
     @Inject
@@ -89,9 +90,7 @@ public class TestPageProviderNamedParameters {
     }
 
     protected Map<String, Serializable> getPageProviderProps() {
-        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (AbstractSession) session);
-        return props;
+        return Collections.singletonMap(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (AbstractSession) session);
     }
 
     protected DocumentModel getSearchDocWithNamedParam(String propName, String propValue) {
@@ -100,7 +99,7 @@ public class TestPageProviderNamedParameters {
             if (propName.contains(":")) {
                 doc.setPropertyValue(propName, propValue);
             } else {
-                HashMap<String, Object> params = new HashMap<String, Object>();
+                HashMap<String, Object> params = new HashMap<>();
                 params.put(propName, propValue);
                 doc.putContextData(PageProviderService.NAMED_PARAMETERS, params);
             }
@@ -228,7 +227,7 @@ public class TestPageProviderNamedParameters {
     @Test
     public void testPageProviderWithNamedParametersComplex() throws Exception {
         DocumentModel searchDoc = DocumentModelFactory.createDocumentModel("NamedParamDoc");
-        HashMap<String, Object> params = new HashMap<String, Object>();
+        HashMap<String, Object> params = new HashMap<>();
         params.put("parameter1", "Document number2");
         searchDoc.putContextData(PageProviderService.NAMED_PARAMETERS, params);
         searchDoc.setPropertyValue("np:isCheckedIn", Boolean.FALSE.toString());

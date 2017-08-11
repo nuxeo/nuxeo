@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Anahide Tchertchian
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.ecm.platform.query.nxql;
 
@@ -30,8 +31,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -62,8 +61,6 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public class NXQLQueryBuilder {
 
-    private static final Log log = LogFactory.getLog(NXQLQueryBuilder.class);
-
     // @since 5.9.2
     public static final String DEFAULT_SELECT_STATEMENT = "SELECT * FROM Document";
 
@@ -79,6 +76,9 @@ public class NXQLQueryBuilder {
     private NXQLQueryBuilder() {
     }
 
+    /**
+     * @return the built sort clause from input parameters, always non null
+     */
     public static String getSortClause(SortInfo... sortInfos) {
         StringBuilder queryBuilder = new StringBuilder();
         if (sortInfos != null) {
@@ -113,11 +113,10 @@ public class NXQLQueryBuilder {
             selectStatement = DEFAULT_SELECT_STATEMENT;
         }
         queryBuilder.append(selectStatement);
-        if (whereClause != null) {
-            queryBuilder.append(getQueryElement(model, whereClause, quickFiltersClause, params));
-        }
+        queryBuilder.append(getQueryElement(model, whereClause, quickFiltersClause, params));
+
         String sortClause = getSortClause(sortInfos);
-        if (sortClause != null && sortClause.length() > 0) {
+        if (sortClause.length() > 0) {
             queryBuilder.append(" ");
             queryBuilder.append(sortClause);
         }
@@ -133,7 +132,7 @@ public class NXQLQueryBuilder {
      */
     public static String getQueryElement(DocumentModel model, WhereClauseDefinition whereClause,
             String quickFiltersClause, Object[] params) {
-        List<String> elements = new ArrayList<String>();
+        List<String> elements = new ArrayList<>();
         PredicateDefinition[] predicates = whereClause.getPredicates();
         if (predicates != null) {
             Escaper escaper = null;
@@ -213,7 +212,7 @@ public class NXQLQueryBuilder {
             query = query.replaceAll(REGEXP_EXCLUDE_QUOTE, StringUtils.EMPTY);
             Pattern p1 = Pattern.compile(REGEXP_NAMED_PARAMETER);
             Matcher m1 = p1.matcher(query);
-            List<String> matches = new ArrayList<String>();
+            List<String> matches = new ArrayList<>();
             while (m1.find()) {
                 matches.add(m1.group().substring(m1.group().indexOf(":") + 1));
             }
@@ -241,7 +240,7 @@ public class NXQLQueryBuilder {
                     if (quoteParameters) {
                         pattern = buildPattern(pattern, key, "'" + parameter + "'");
                     } else {
-                        pattern = buildPattern(pattern, key, parameter != null ? parameter.toString() : null);
+                        pattern = buildPattern(pattern, key, parameter.toString());
                     }
                 }
             }
@@ -295,11 +294,11 @@ public class NXQLQueryBuilder {
         if (addParentheses) {
             queryBuilder.append('(');
         }
-        List<String> result = new ArrayList<String>(listParam.size());
+        List<String> result = new ArrayList<>(listParam.size());
         for (Object param : listParam) {
             result.add(prepareStringLiteral(param.toString(), quoteParameters, escape));
         }
-        queryBuilder.append(StringUtils.join(result, ", "));
+        queryBuilder.append(String.join(", ", result));
         if (addParentheses) {
             queryBuilder.append(')');
         }
@@ -307,7 +306,7 @@ public class NXQLQueryBuilder {
 
     public static String replaceStringList(String pattern, List<?> listParams, boolean quoteParameters, boolean escape,
             String key) {
-        List<String> result = new ArrayList<String>(listParams.size());
+        List<String> result = new ArrayList<>(listParams.size());
         for (Object param : listParams) {
             result.add(prepareStringLiteral(param.toString(), quoteParameters, escape));
         }
@@ -510,14 +509,6 @@ public class NXQLQueryBuilder {
         return ret;
     }
 
-    /**
-     * Prepares a statement for a fulltext field by converting FULLTEXT virtual operators to a syntax that the search
-     * syntax accepts.
-     *
-     * @param value
-     * @return the serialized statement
-     */
-
     public static final String DEFAULT_SPECIAL_CHARACTERS_REGEXP = "!#$%&'()+,./\\\\:-@{|}`^~";
 
     public static final String IGNORED_CHARS_KEY = "org.nuxeo.query.builder.ignored.chars";
@@ -541,17 +532,17 @@ public class NXQLQueryBuilder {
         value = value.replaceAll("[" + ignoredChars + "]", " ");
         value = value.trim();
         String[] tokens = value.split("[\\s]+");
-        for (int i = 0; i < tokens.length; i++) {
-            if ("-".equals(tokens[i]) || "*".equals(tokens[i]) || "*-".equals(tokens[i]) || "-*".equals(tokens[i])) {
+        for (String token : tokens) {
+            if ("-".equals(token) || "*".equals(token) || "*-".equals(token) || "-*".equals(token)) {
                 continue;
             }
             if (res.length() > 0) {
                 res += " ";
             }
-            if (tokens[i].startsWith("-") || tokens[i].endsWith("*")) {
-                res += tokens[i];
+            if (token.startsWith("-") || token.endsWith("*")) {
+                res += token;
             } else {
-                res += tokens[i].replace("-", " ").replace("*", " ");
+                res += token.replace("-", " ").replace("*", " ");
             }
         }
         return res.trim();
@@ -707,7 +698,7 @@ public class NXQLQueryBuilder {
         if (rawValue == null) {
             return null;
         }
-        List<String> values = new ArrayList<String>();
+        List<String> values = new ArrayList<>();
         if (rawValue instanceof ArrayList) {
             rawValue = ((ArrayList<Object>) rawValue).toArray();
         }
