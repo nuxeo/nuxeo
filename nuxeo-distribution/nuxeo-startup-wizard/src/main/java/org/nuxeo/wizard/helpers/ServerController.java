@@ -24,12 +24,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
-
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
 import org.nuxeo.wizard.context.Context;
@@ -72,7 +70,7 @@ public class ServerController {
         Process p1;
         try {
             if (log.isDebugEnabled()) {
-                log.debug("Restart command: " + StringUtils.join(cmd, " "));
+                log.debug("Restart command: " + String.join(" ", cmd));
             }
             ProcessBuilder pb = new ProcessBuilder(cmd);
             p1 = pb.start();

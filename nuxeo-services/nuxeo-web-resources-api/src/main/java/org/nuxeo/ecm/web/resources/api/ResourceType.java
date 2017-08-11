@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.web.resources.api;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @since 7.3

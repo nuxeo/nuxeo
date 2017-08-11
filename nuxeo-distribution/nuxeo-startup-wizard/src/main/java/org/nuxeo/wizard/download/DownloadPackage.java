@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Tiry (tdelprat@nuxeo.com)
@@ -232,7 +232,7 @@ public class DownloadPackage {
      * @since 7.1
      */
     public boolean isLaterDownload() {
-        return StringUtils.isBlank(getDownloadUrl()) || getFilename() == null || "".equals(getFilename());
+        return StringUtils.isBlank(getDownloadUrl()) || StringUtils.isEmpty(getFilename());
     }
 
 }
