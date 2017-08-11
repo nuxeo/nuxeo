@@ -16,9 +16,11 @@ Hello <strong>${Context.principal.name}</strong>! This is the root of your web s
   </ul>
 </div>
 
+<#if Context.principal.isAdministrator()>
 <div class="tip">
 Your web root is <pre>${env.installDir}</pre>.
 </div>
+</#if>
 </@block>
 
 </@extends>
