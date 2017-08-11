@@ -223,9 +223,9 @@ public class NXQLQueryBuilder {
                 }
                 key = ":" + key;
                 if (parameter instanceof String[]) {
-                    replaceStringList(pattern, Arrays.asList((String[]) parameter), quoteParameters, escape, key);
+                    pattern = replaceStringList(pattern, Arrays.asList((String[]) parameter), quoteParameters, escape, key);
                 } else if (parameter instanceof List) {
-                    replaceStringList(pattern, (List<?>) parameter, quoteParameters, escape, key);
+                    pattern = replaceStringList(pattern, (List<?>) parameter, quoteParameters, escape, key);
                 } else if (parameter instanceof Boolean) {
                     pattern = buildPattern(pattern, key, ((Boolean) parameter) ? "1" : "0");
                 } else if (parameter instanceof Number) {

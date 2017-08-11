@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -93,7 +94,7 @@ public class TestPageProviderNamedParameters {
         return Collections.singletonMap(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (AbstractSession) session);
     }
 
-    protected DocumentModel getSearchDocWithNamedParam(String propName, String propValue) {
+    protected DocumentModel getSearchDocWithNamedParam(String propName, Serializable propValue) {
         DocumentModel doc = DocumentModelFactory.createDocumentModel("NamedParamDoc");
         if (propName != null) {
             if (propName.contains(":")) {
@@ -171,6 +172,29 @@ public class TestPageProviderNamedParameters {
         assertEquals(
                 "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38",
                 pp.getErrorMessage());
+    }
+
+    /*
+     * NXP-22829
+     */
+    @Test
+    public void testPageProviderWithNamedParametersAndList() throws Exception {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        Map<String, Serializable> ppp = getPageProviderProps();
+        // test with an array
+        DocumentModel searchDoc = getSearchDocWithNamedParam("types", new String[] { "File", "Folder" });
+        PageProvider<?> pp = pps.getPageProvider("namedParamProviderWithList", searchDoc, null, null, null, ppp);
+        assertNotNull(pp);
+        List<?> p = pp.getCurrentPage();
+        assertNotNull(p);
+        assertEquals(5, p.size()); // root + 4 created folder
+        // test with a list
+        searchDoc = getSearchDocWithNamedParam("types", (Serializable) Arrays.asList("File", "Folder"));
+        pp = pps.getPageProvider("namedParamProviderWithList", searchDoc, null, null, null, ppp);
+        assertNotNull(pp);
+        p = pp.getCurrentPage();
+        assertNotNull(p);
+        assertEquals(5, p.size()); // root + 4 created folder
     }
 
     /**
