@@ -35,8 +35,6 @@ import org.openqa.selenium.support.FindBy;
  */
 public class SearchResultsSubPage extends AbstractPage {
 
-    private static final String SEARCH_RESULTS_XPATH = "//div[contains(@class,'bubbleBox')]";
-
     private static final String CONTENT_VIEW_XPATH = "//div[@id='nxw_searchContentView']//div[contains(@id, 'nxw_searchContentView_panel')]";
 
     @Required
