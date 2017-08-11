@@ -20,8 +20,6 @@
 
 package org.nuxeo.wizard.context;
 
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -31,6 +29,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
@@ -115,7 +114,7 @@ public class ParamCollector {
             if (name.startsWith("org.nuxeo.") || name.startsWith("nuxeo.") || name.startsWith("mail.")) {
                 String value = req.getParameter(name);
                 if (!value.isEmpty() || (value.isEmpty() && configurationParams.containsKey(name))) {
-                    addConfigurationParam(name, escapeHtml(value));
+                    addConfigurationParam(name, StringEscapeUtils.escapeHtml4(value));
                 }
             }
         }

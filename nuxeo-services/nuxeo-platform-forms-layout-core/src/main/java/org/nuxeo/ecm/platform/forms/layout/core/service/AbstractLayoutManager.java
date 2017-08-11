@@ -20,7 +20,7 @@ package org.nuxeo.ecm.platform.forms.layout.core.service;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
