@@ -3,6 +3,7 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page language="java"%>
 <%@ page import="java.util.List"%>
+<%@ page import="java.util.Locale"%>
 <%@ page import="org.joda.time.DateTime"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants"%>
@@ -29,22 +30,8 @@ if (httpSession!=null && httpSession.getAttribute(NXAuthConstants.USERIDENT_KEY)
   response.sendRedirect(context + "/" + NuxeoAuthenticationFilter.DEFAULT_START_PAGE);
 }
 
-// Read Seam locale cookie
-String localeCookieName = "org.jboss.seam.core.Locale";
-Cookie localeCookie = null;
-Cookie cookies[] = request.getCookies();
-if (cookies != null) {
-  for (int i = 0; i < cookies.length; i++) {
-    if (localeCookieName.equals(cookies[i].getName())) {
-      localeCookie = cookies[i];
-      break;
-    }
-  }
-}
-String selectedLanguage = null;
-if (localeCookie != null) {
-    selectedLanguage = localeCookie.getValue();
-}
+Locale locale = request.getLocale();
+String selectedLanguage = locale.getLanguage();
 
 boolean maintenanceMode = AdminStatusHelper.isInstanceInMaintenanceMode();
 String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();
