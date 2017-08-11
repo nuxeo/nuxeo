@@ -105,7 +105,7 @@ public class ITSearchTabTest extends AbstractTest {
                 permissionsSubPage.grantPermissionForUser("Manage everything", TEST_USERNAME);
             }
             // Create test File
-            FileDocumentBasePage filePage = createFile(workspacePage, "Test file", "Test File description", false, null,
+            FileDocumentBasePage filePage = createFile(workspacePage, "ITSearchTabTest file", "Test File description", false, null,
                     null, null);
             EditTabSubPage editTabSubPage = filePage.getEditTab();
 
@@ -120,6 +120,21 @@ public class ITSearchTabTest extends AbstractTest {
             coverageWidget.selectValue(COVERAGE);
             editTabSubPage.save();
         }
+    }
+
+    protected void saveSearch(String title) {
+        String saveAsPath = "//input[contains(@id, 'nxw_searchResultsActions_saveSearch_link')]";
+        assertEquals(1, driver.findElements(By.xpath(saveAsPath)).size());
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
+        driver.findElement(By.xpath(saveAsPath)).click();
+        arm.end();
+
+        WebElement fancybox = Locator.findElementWithTimeout(By.id("nxw_searchResultsActions_saveSearch_box"));
+        fancybox.findElement(By.xpath(".//input[@type='text']")).sendKeys(title);
+        arm.begin();
+        fancybox.findElement(By.xpath(".//input[@value='Save']")).click();
+        arm.end();
     }
 
     @Test
@@ -179,19 +194,8 @@ public class ITSearchTabTest extends AbstractTest {
         assertEquals(MY_FAVORITES_COLLECTION, selectedCollections.get(0));
 
         // save this search
-        String saveAsPath = "//input[contains(@id, 'nxw_searchResultsActions_saveSearch_link')]";
-        assertEquals(1, driver.findElements(By.xpath(saveAsPath)).size());
-        AjaxRequestManager arm = new AjaxRequestManager(driver);
-        arm.begin();
-        driver.findElement(By.xpath(saveAsPath)).click();
-        arm.end();
-
-        WebElement fancybox = Locator.findElementWithTimeout(By.id("nxw_searchResultsActions_saveSearch_box"));
         String ssTitle = "Test Saved Search " + new Date().getTime();
-        fancybox.findElement(By.xpath(".//input[@type='text']")).sendKeys(ssTitle);
-        arm.begin();
-        fancybox.findElement(By.xpath(".//input[@value='Save']")).click();
-        arm.end();
+        saveSearch(ssTitle);
 
         SearchPage sp = asPage(SearchPage.class);
         assertEquals(ssTitle, sp.getSelectedSearch());
@@ -205,6 +209,45 @@ public class ITSearchTabTest extends AbstractTest {
         // check home tab context is ok
         HomePage hp = asPage(HomePage.class);
         assertTrue(hp.isMainTabSelected(hp.homePageLink));
+
+        // non regression test for NXP-21937 use case
+        searchPage = hp.goToSearchPage();
+        searchPage.getDefaultSearch().clearButton.click();
+        searchPage = asPage(SearchPage.class);
+
+        // Test fulltext result and save it
+        searchLayoutSubPage.getFullTextElement().setInputValue("ITSearchTabTest");
+        searchLayoutSubPage.filter();
+        String ssTitle1 = "TestSearch1 " + new Date().getTime();
+        saveSearch(ssTitle1);
+
+        searchLayoutSubPage = asPage(SearchPage.class).getDefaultSearch();
+        searchLayoutSubPage.getFullTextElement().setInputValue("foo");
+        searchLayoutSubPage.filter();
+        String ssTitle2 = "TestSearch2 " + new Date().getTime();
+        saveSearch(ssTitle2);
+
+        // reproduce issue by logging out first and then switching between searches
+        logout();
+        searchPage = loginAsTestUser().goToSearchPage();
+        // first saved search
+        DefaultSearchSubPage saved1 = searchPage.getSearch(ssTitle1, DefaultSearchSubPage.class);
+        assertEquals("ITSearchTabTest", saved1.getFullTextElement().getInputValue());
+        SearchResultsSubPage resultSubPage1 = searchPage.getSearchResultsSubPage();
+        assertEquals(ssTitle1, resultSubPage1.getSearchViewTitle());
+        assertEquals(1, resultSubPage1.getNumberOfDocumentInCurrentPage());
+        // second saved search
+        DefaultSearchSubPage saved2 = searchPage.getSearch(ssTitle2, DefaultSearchSubPage.class);
+        assertEquals("foo", saved2.getFullTextElement().getInputValue());
+        SearchResultsSubPage resultSubPage2 = searchPage.getSearchResultsSubPage();
+        assertEquals(ssTitle2, resultSubPage2.getSearchViewTitle());
+        assertEquals(0, resultSubPage2.getNumberOfDocumentInCurrentPage());
+        // switch again
+        saved1 = searchPage.getSearch(ssTitle1, DefaultSearchSubPage.class);
+        assertEquals("ITSearchTabTest", saved1.getFullTextElement().getInputValue());
+        resultSubPage1 = searchPage.getSearchResultsSubPage();
+        assertEquals(ssTitle1, resultSubPage1.getSearchViewTitle());
+        assertEquals(1, resultSubPage1.getNumberOfDocumentInCurrentPage());
 
         logout();
         tearDown();

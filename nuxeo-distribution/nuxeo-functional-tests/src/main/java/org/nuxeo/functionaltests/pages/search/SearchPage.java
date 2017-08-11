@@ -109,4 +109,14 @@ public class SearchPage extends DocumentBasePage {
         am.waitForAjaxRequests();
     }
 
+    /**
+     * @since 7.10-HF31
+     */
+    public <T extends AbstractSearchSubPage> T getSearch(String searchLabel, Class<T> clazz) {
+        if (!isSearchSelected(searchLabel)) {
+            selectSearch(searchLabel);
+        }
+        return asPage(clazz);
+    }
+
 }
