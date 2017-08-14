@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Mathieu Guillaume
+ *     Yannis JULIENNE
  */
 package org.nuxeo.connect.update.util;
 
@@ -67,6 +68,8 @@ public class PackageBuilder {
 
     protected final List<PackageDependency> dependencies;
 
+    protected final List<PackageDependency> optionalDependencies;
+
     protected final List<PackageDependency> conflicts;
 
     protected final List<PackageDependency> provides;
@@ -77,6 +80,7 @@ public class PackageBuilder {
         def = new PackageDefinitionImpl();
         platforms = new ArrayList<>();
         dependencies = new ArrayList<>();
+        optionalDependencies = new ArrayList<>();
         conflicts = new ArrayList<>();
         provides = new ArrayList<>();
         entries = new LinkedHashMap<>();
@@ -241,6 +245,14 @@ public class PackageBuilder {
         return this;
     }
 
+    /**
+     * @since 6.0-HF33
+     */
+    public PackageBuilder optionalDependency(String expr) {
+        optionalDependencies.add(new PackageDependency(expr));
+        return this;
+    }
+
     public PackageBuilder conflict(String expr) {
         conflicts.add(new PackageDependency(expr));
         return this;
@@ -313,6 +325,9 @@ public class PackageBuilder {
         }
         if (!dependencies.isEmpty()) {
             def.setDependencies(dependencies.toArray(new PackageDependency[dependencies.size()]));
+        }
+        if (!optionalDependencies.isEmpty()) {
+            def.setOptionalDependencies(optionalDependencies.toArray(new PackageDependency[optionalDependencies.size()]));
         }
         if (!conflicts.isEmpty()) {
             def.setConflicts(conflicts.toArray(new PackageDependency[conflicts.size()]));

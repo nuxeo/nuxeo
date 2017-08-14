@@ -305,13 +305,18 @@ public class PackageDefinitionImpl implements PackageDefinition {
     }
 
     @Override
+    public void setDependencies(PackageDependency[] dependencies) {
+        this.dependencies = PackageDescriptor.addPackageDependencies(this.dependencies, dependencies);
+    }
+
+    @Override
     public PackageDependency[] getOptionalDependencies() {
         return optionalDependencies;
     }
 
     @Override
-    public void setDependencies(PackageDependency[] dependencies) {
-        this.dependencies = PackageDescriptor.addPackageDependencies(this.dependencies, dependencies);
+    public void setOptionalDependencies(PackageDependency[] optionalDependencies) {
+        this.optionalDependencies = optionalDependencies;
     }
 
     @Override
@@ -446,6 +451,15 @@ public class PackageDefinitionImpl implements PackageDefinition {
                 writer.element("package", dep.toString());
             }
             writer.end("dependencies");
+        }
+
+        if (optionalDependencies != null) {
+            writer.start("optional-dependencies");
+            writer.startContent();
+            for (PackageDependency dep : optionalDependencies) {
+                writer.element("package", dep.toString());
+            }
+            writer.end("optional-dependencies");
         }
 
         if (installer != null) {
