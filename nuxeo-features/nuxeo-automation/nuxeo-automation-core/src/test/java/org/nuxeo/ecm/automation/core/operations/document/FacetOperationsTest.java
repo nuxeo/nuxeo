@@ -135,7 +135,7 @@ public class FacetOperationsTest {
         assertTrue("New doc should have the facet.", docWithFacet.hasFacet(THE_FACET));
 
         OperationContext ctx = new OperationContext(session);
-        ctx.setInput(docNoFacet);
+        ctx.setInput(docWithFacet);
         OperationChain chain = new OperationChain("testRemoveFacet");
         chain.add(RemoveFacet.ID).set("facet", THE_FACET);
         DocumentModel resultDoc = (DocumentModel)service.run(ctx, chain);
