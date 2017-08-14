@@ -32,10 +32,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * Operation that adds a facet to the document.
  *
- * IMPORTANT: This requires the document to be saved immediately.
  * @since 8.3
  */
-@Operation(id = AddFacet.ID, category = Constants.CAT_DOCUMENT, label = "Add Facet", description = "Adds the facet to the document. Notice: The operation saves the document.", aliases = { "Document.AddFacet" })
+@Operation(id = AddFacet.ID, category = Constants.CAT_DOCUMENT, label = "Add Facet", description = "Adds the facet to the document. Saves the document if 'save' parameter is true (Notice: default value is true for compatibility reason).", aliases = { "Document.AddFacet" })
 public class AddFacet {
 
     public static final String ID = "Document.AddFacet";
@@ -43,13 +42,18 @@ public class AddFacet {
     @Param(name = "facet", required = true)
     protected String facet = "";
 
+    @Param(name = "save", required = false, values = { "true" })
+    protected boolean save = true;
+
     @Context
     protected CoreSession session;
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel input) {
         input.addFacet(facet);
-        input = session.saveDocument(input);
+        if(save) {
+            input = session.saveDocument(input);
+        }
         return input;
     }
 
