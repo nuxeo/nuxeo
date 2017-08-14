@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,10 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu, mguillaume, jcarsique
+ *     bstefanescu
+ *     mguillaume
+ *     jcarsique
+ *     Yannis JULIENNE
  */
 package org.nuxeo.connect.update.xml;
 
@@ -98,6 +101,15 @@ public class XmlSerializer extends XmlWriter {
                 element("package", dep.toString());
             }
             end("dependencies");
+        }
+
+        if (def.getOptionalDependencies() != null && def.getOptionalDependencies().length > 0) {
+            start("optional-dependencies");
+            startContent();
+            for (PackageDependency dep : def.getOptionalDependencies()) {
+                element("package", dep.toString());
+            }
+            end("optional-dependencies");
         }
 
         try {
