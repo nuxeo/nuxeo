@@ -30,10 +30,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * IMPORTANT: This requires the document to be saved immediately.
  * @since 8.3
  */
-@Operation(id = RemoveFacet.ID, category = Constants.CAT_DOCUMENT, label = "Remove Facet", description = "Removes the facet from the document. Notice: The operation saves the document.", aliases = { "Document.RemoveFacet" })
+@Operation(id = RemoveFacet.ID, category = Constants.CAT_DOCUMENT, label = "Remove Facet", description = "Removes the facet from the document. Saves the document if 'save' parameter is true (Notice: default value is true for compatibility reason).", aliases = { "Document.RemoveFacet" })
 public class RemoveFacet {
 
     public static final String ID = "Document.RemoveFacet";
@@ -41,13 +40,18 @@ public class RemoveFacet {
     @Param(name = "facet", required = true)
     protected String facet = "";
 
+    @Param(name = "save", required = false, values = { "true" })
+    protected boolean save = true;
+
     @Context
     protected CoreSession session;
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel input) {
         input.removeFacet(facet);
-        input = session.saveDocument(input);
+        if (save) {
+            input = session.saveDocument(input);
+        }
         return input;
     }
 

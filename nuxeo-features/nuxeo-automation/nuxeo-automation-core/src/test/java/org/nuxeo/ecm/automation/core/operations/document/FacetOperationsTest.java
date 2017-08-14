@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Ricardo Dias
+ *     Thibaud Arguillere
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
@@ -156,6 +157,46 @@ public class FacetOperationsTest {
         DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
         assertFalse(resultDoc.hasFacet("UnknownFacet"));
 
+    }
+
+    @Test
+    public void testAddFacetNoSave() throws OperationException {
+
+        assertNotNull(docNoFacet);
+        assertFalse("New doc should not have the facet.", docNoFacet.hasFacet(THE_FACET));
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(docNoFacet);
+        OperationChain chain = new OperationChain("testAddFacet");
+        chain.add(AddFacet.ID).set("facet", THE_FACET).set("save", false);
+        DocumentModel resultDoc = (DocumentModel)service.run(ctx, chain);
+
+        assertNotNull(resultDoc);
+        assertTrue("The doc should now have the facet.", resultDoc.hasFacet(THE_FACET));
+        
+        resultDoc.refresh();
+        assertFalse("Doc should not have the facet after refresh", resultDoc.hasFacet(THE_FACET));
+
+    }
+
+    @Test
+    public void testRemoveFacetNoSave() throws OperationException {
+
+        //remove from a document with facet
+        assertNotNull(docWithFacet);
+        assertTrue("New doc should have the facet.", docWithFacet.hasFacet(THE_FACET));
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(docWithFacet);
+        OperationChain chain = new OperationChain("testRemoveFacet");
+        chain.add(RemoveFacet.ID).set("facet", THE_FACET).set("save",  false);
+        DocumentModel resultDoc = (DocumentModel)service.run(ctx, chain);
+
+        assertNotNull(resultDoc);
+        assertFalse("The doc should not have the facet.", resultDoc.hasFacet(THE_FACET));
+        
+        resultDoc.refresh();
+        assertTrue("Doc should have the facet after refresh", resultDoc.hasFacet(THE_FACET));
     }
 
 }
