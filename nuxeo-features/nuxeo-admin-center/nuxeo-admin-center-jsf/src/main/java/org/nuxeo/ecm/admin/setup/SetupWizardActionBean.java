@@ -324,9 +324,8 @@ public class SetupWizardActionBean implements Serializable {
         String dbName = (String) dbNameComp.getLocalValue();
         String dbUser = (String) dbUserComp.getLocalValue();
         String dbPwd = (String) dbPwdComp.getLocalValue();
-        String dbHost = (String) dbHostComp.getLocalValue();
-        Long dbPortLong = ((BigDecimal) dbPortComp.getLocalValue()).longValue();
-        String dbPort = dbPortLong.toString();
+        String dbHost = (String) dbHostComp.getLocalValue();        
+        String dbPort = dbPortComp.getLocalValue().toString();
 
         if (StringUtils.isEmpty(dbPwd)) {
             dbPwd = (String) parameters.get("nuxeo.db.password");
