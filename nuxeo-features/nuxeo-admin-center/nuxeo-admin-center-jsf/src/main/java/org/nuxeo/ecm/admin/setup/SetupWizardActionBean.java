@@ -39,7 +39,6 @@ import static org.nuxeo.launcher.config.ConfigurationGenerator.SECRET_KEYS;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -325,8 +324,8 @@ public class SetupWizardActionBean implements Serializable {
         String dbUser = (String) dbUserComp.getLocalValue();
         String dbPwd = (String) dbPwdComp.getLocalValue();
         String dbHost = (String) dbHostComp.getLocalValue();
-        Long dbPortLong = ((BigDecimal) dbPortComp.getLocalValue()).longValue();
-        String dbPort = dbPortLong.toString();
+        // widget is of type int but we can get Integer/Long/BigDecimal so cast to Number
+        String dbPort = Long.toString(((Number) dbPortComp.getLocalValue()).longValue());
 
         if (StringUtils.isEmpty(dbPwd)) {
             dbPwd = (String) parameters.get("nuxeo.db.password");
