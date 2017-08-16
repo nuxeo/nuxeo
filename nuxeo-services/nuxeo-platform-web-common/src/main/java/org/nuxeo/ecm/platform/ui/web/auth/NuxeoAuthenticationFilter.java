@@ -450,7 +450,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         NuxeoAuthenticationPropagator.CleanupCallback propagatedAuthCb = null;
 
         String forceAnonymousLoginParam = httpRequest.getParameter(FORCE_ANONYMOUS_LOGIN);
-        boolean forceAnonymousLogin = Boolean.parseBoolean(forceAnonymousLoginParam)
+        boolean forceAnonymousLogin = Boolean.parseBoolean(forceAnonymousLoginParam);
 
         try {
             if (principal == null) {
