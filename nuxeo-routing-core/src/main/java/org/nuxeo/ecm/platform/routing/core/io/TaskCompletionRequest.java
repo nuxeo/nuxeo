@@ -48,7 +48,13 @@ public class TaskCompletionRequest {
     }
 
     public String getComment() {
-        return comment;
+        if (StringUtils.isNotBlank(comment)) {
+            return comment;
+        }
+
+        // otherwise get the comment from the variables, if any,
+        // so that it will be logged by the audit
+        return (String) variables.get(GraphNode.NODE_VARIABLE_COMMENT);
     }
 
     public Map<String, Object> getDataMap() {
