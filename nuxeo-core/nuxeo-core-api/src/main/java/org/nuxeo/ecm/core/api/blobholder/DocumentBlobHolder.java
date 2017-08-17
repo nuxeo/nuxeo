@@ -21,6 +21,7 @@
 package org.nuxeo.ecm.core.api.blobholder;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 
 /**
@@ -45,17 +47,25 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
 
     protected List<Blob> blobList = null;
 
+    public DocumentBlobHolder(DocumentModel doc, String xPath) {
+        if (xPath == null) {
+            throw new IllegalArgumentException("Invalid null xpath for document: " + doc);
+        }
+        this.doc = doc;
+        this.xPath = xPath;
+    }
+
+    protected DocumentBlobHolder(DocumentModel doc, String xPath, List<Blob> blobList) {
+        this(doc, xPath);
+        this.blobList = blobList;
+    }
+
     /**
      * Constructor with filename property for compatibility (when filename was not stored on blob object)
      */
     public DocumentBlobHolder(DocumentModel doc, String xPath, String xPathFilename) {
-        this.doc = doc;
-        this.xPath = xPath;
+        this(doc, xPath);
         this.xPathFilename = xPathFilename;
-    }
-
-    public DocumentBlobHolder(DocumentModel doc, String xPath) {
-        this(doc, xPath, null);
     }
 
     @Override
@@ -115,30 +125,80 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
     @Override
     public List<Blob> getBlobs() {
         if (blobList == null) {
-            List<Blob> blobs = new BlobsExtractor().getBlobs(doc);
-            Blob main = getBlob();
-            if (main != null) {
-                // be sure the "main" blob is always in first position
-                Iterator<Blob> bi = blobs.iterator();
-                while (bi.hasNext()) {
-                    Blob blob = bi.next();
-                    if (blob.getDigest() != null) {
-                        if (blob.getDigest().equals(main.getDigest())) {
-                            bi.remove();
-                            break;
-                        }
-                    } else if (blob.getFilename() != null) {
-                        if (blob.getFilename().equals(main.getFilename())) {
-                            bi.remove();
-                            break;
-                        }
-                    }
-                }
-                blobs.add(0, main);
-            }
-            blobList = blobs;
+            computeBlobList();
         }
         return blobList;
+    }
+
+    /**
+     * Returns a new {@link DocumentBlobHolder} for the blob at the given {@code index} where {@link #getBlob} and
+     * {@link #getXpath} will return information about the blob.
+     *
+     * @param index the blob index
+     * @return the new blob holder
+     * @throws IndexOutOfBoundsException if the index is invalid
+     * @since 9.3
+     */
+    public DocumentBlobHolder asDirectBlobHolder(int index) throws IndexOutOfBoundsException {
+        List<Property> properties = computeBlobList();
+        // find real xpath for the property at that index in the list
+        String xpath = getFullXPath(properties.get(index));
+        // keep the same blobList, even though its first element doesn't correspond to the xpath anymore
+        return new DocumentBlobHolder(doc, xpath, blobList);
+    }
+
+    /**
+     * Computes the blob list, with the main blob first.
+     *
+     * @return the blob properties
+     * @since 9.3
+     */
+    protected List<Property> computeBlobList() {
+        List<Property> properties = new BlobsExtractor().getBlobsProperties(doc);
+        // be sure that the "main" blob is always in first position
+        Iterator<Property> it = properties.iterator();
+        boolean hasMainBlob = false;
+        while (it.hasNext()) {
+            Property property = it.next();
+            if (getFullXPath(property).equals(xPath)) {
+                it.remove();
+                properties.add(0, property);
+                hasMainBlob = true;
+                break;
+            }
+        }
+        if (!hasMainBlob) {
+            // the main blob may not be coming from a blob property in subclasses, find its property anyway
+            Property property = doc.getProperty(xPath);
+            properties.add(0, property);
+        }
+        blobList = new ArrayList<>(properties.size());
+        for (int i = 0; i < properties.size(); i++) {
+            if (i == 0) {
+                // the main blob may be computed differently in subclasses, always call getBlob()
+                Blob mainBlob = getBlob();
+                if (mainBlob != null) {
+                    blobList.add(mainBlob);
+                }
+            } else {
+                blobList.add((Blob) properties.get(i).getValue());
+            }
+        }
+        return properties;
+    }
+
+    /**
+     * Gets the full xpath for a property, including schema prefix in all cases.
+     *
+     * @since 9.3
+     */
+    protected String getFullXPath(Property property) {
+        String xpath = property.getXPath();
+        if (xpath.indexOf(':') < 0) {
+            // add schema name as prefix
+            xpath = property.getSchema().getName() + ':' + xpath;
+        }
+        return xpath;
     }
 
     /**

@@ -76,7 +76,7 @@ public class PreviewAdapterTest extends BaseTest {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        assertEquals(200, getPreview(doc, "files/0/file").getStatus());
+        assertEquals(200, getPreview(doc, "files:files/0/file").getStatus());
     }
 
     @Test

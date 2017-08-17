@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.restapi.server.jaxrs.blob.BlobObject;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
@@ -149,18 +150,13 @@ public class PreviewAdapter extends DefaultAdapter {
     }
 
     private DocumentBlobHolder getBlobHolderToPreview() {
-        DocumentModel doc;
+        Resource target = getTarget();
         if (isBlobTarget()) {
-            BlobObject target = (BlobObject) getTarget();
-            doc = target.getDocument();
-            if (!isBlobHolder(doc, target.getXpath())) {
-                return  new DocumentBlobHolder(doc, target.getXpath());
-            }
+            return ((BlobObject) target).getBlobHolder();
         } else {
-            doc = getTarget().getAdapter(DocumentModel.class);
+            DocumentModel doc = target.getAdapter(DocumentModel.class);
+            return (DocumentBlobHolder) doc.getAdapter(BlobHolder.class);
         }
-
-        return (DocumentBlobHolder) doc.getAdapter(BlobHolder.class);
     }
 
     private boolean isBlobTarget() {

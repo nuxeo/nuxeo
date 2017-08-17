@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
  * limitations under the License.
  *
  * Contributors:
- *     dmetzler
+ *     Damien Metzler
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.blob;
 
@@ -31,12 +32,12 @@ import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.webengine.WebException;
@@ -51,83 +52,107 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 @WebObject(type = "blob")
 public class BlobObject extends DefaultObject {
 
-    private String fieldPath;
+    protected DocumentModel doc;
 
-    private DocumentModel doc;
+    protected DocumentBlobHolder blobHolder;
 
-    private BlobHolder bh;
+    // null if blob is not directly from a property
+    protected String xpath;
 
     @Override
     protected void initialize(Object... args) {
         super.initialize(args);
-        if (args.length == 2) {
-            fieldPath = (String) args[0];
-            doc = (DocumentModel) args[1];
-
-            if (fieldPath == null) {
-                if (bh == null && doc.hasSchema("file")) {
-                    fieldPath = "file:content";
-                } else {
-                    throw new IllegalArgumentException("No xpath specified and document does not have 'file' schema");
-                }
+        if (args.length != 2) {
+            throw new IllegalArgumentException("BlobObject takes 2 parameters");
+        }
+        String path = (String) args[0];
+        doc = (DocumentModel) args[1];
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        if (path == null) {
+            // use default blob holder
+            if (bh == null) {
+                throw new WebResourceNotFoundException("No BlobHolder found");
+            }
+            if (!(bh instanceof DocumentBlobHolder)) {
+                throw new WebResourceNotFoundException("Unknown BlobHolder class: " + bh.getClass().getName());
+            }
+            blobHolder = (DocumentBlobHolder) bh;
+        } else if (path.startsWith(BLOBHOLDER_PREFIX)) {
+            // use index in default blob holder
+            // decoding logic from DownloadServiceImpl
+            if (bh == null) {
+                throw new WebResourceNotFoundException("No BlobHolder found");
+            }
+            if (!(bh instanceof DocumentBlobHolder)) {
+                throw new WebResourceNotFoundException("Unknown BlobHolder class: " + bh.getClass().getName());
+            }
+            // suffix check
+            String suffix = path.substring(BLOBHOLDER_PREFIX.length());
+            int index;
+            try {
+                index = Integer.parseInt(suffix);
+            } catch (NumberFormatException e) {
+                throw new WebResourceNotFoundException("Invalid xpath: " + path);
+            }
+            if (!suffix.equals(Integer.toString(index))) {
+                // attempt to use a non-canonical integer, could be used to bypass
+                // a permission function checking just "blobholder:1" and receiving "blobholder:01"
+                throw new WebResourceNotFoundException("Invalid xpath: " + path);
+            }
+            // find best BlobHolder to use
+            if (index == 0) {
+                blobHolder = (DocumentBlobHolder) bh;
             } else {
-                if (fieldPath.startsWith(BLOBHOLDER_PREFIX)) {
-                    bh = doc.getAdapter(BlobHolder.class);
-                    if (bh != null) {
-                        fieldPath = fieldPath.replace(BLOBHOLDER_PREFIX, "");
-                    } else {
-                        throw new WebResourceNotFoundException("No BlobHolder found");
-                    }
+                blobHolder = ((DocumentBlobHolder) bh).asDirectBlobHolder(index);
+            }
+        } else {
+            // use xpath
+            // if the default adapted blob holder is the one with the same xpath, use it
+            if (bh instanceof DocumentBlobHolder && ((DocumentBlobHolder) bh).getXpath().equals(path)) {
+                blobHolder = (DocumentBlobHolder) bh;
+            } else {
+                // checking logic from DownloadServiceImpl
+                if (!path.contains(":")) {
+                    // attempt to use a xpath not prefix-qualified, could be used to bypass
+                    // a permission function checking just "file:content" and receiving "content"
+                    throw new WebResourceNotFoundException("Invalid xpath: " + path);
                 }
+                blobHolder = new DocumentBlobHolder(doc, path);
             }
         }
+        xpath = blobHolder.getXpath();
     }
 
     @Override
     public <A> A getAdapter(Class<A> adapter) {
-        if (adapter.isAssignableFrom(Blob.class)) {
-            return adapter.cast(getBlob());
+        if (Blob.class.isAssignableFrom(adapter)) {
+            return adapter.cast(blobHolder.getBlob());
+        }
+        if (BlobHolder.class.isAssignableFrom(adapter)) {
+            return adapter.cast(blobHolder);
         }
         return super.getAdapter(adapter);
     }
 
-    protected Blob getBlob() {
-        if (bh != null) {
-            if (StringUtils.isBlank(fieldPath) || fieldPath.equals("0")) {
-                return bh.getBlob();
-            } else {
-                int index = Integer.parseInt(fieldPath);
-                return bh.getBlobs().get(index);
-            }
-        }
-        return (Blob) doc.getPropertyValue(fieldPath);
-    }
-
-    public BlobHolder getBlobHolder() {
-        return bh;
-    }
-
-    /**
-     * @since 8.2
-     */
-    public DocumentModel getDocument() {
-        return doc;
-    }
-
-    /**
-     * @since 8.2
-     */
-    public String getXpath() {
-        return fieldPath;
+    public DocumentBlobHolder getBlobHolder() {
+        return blobHolder;
     }
 
     @GET
     public Object doGet(@Context Request request) {
-        Blob blob = getBlob();
-        if (blob == null) {
-            throw new WebResourceNotFoundException("No attached file at " + fieldPath);
+        if (blobHolder instanceof DocumentBlobHolder) {
+            // managed by DocumentBlobHolderWriter
+            return blobHolder;
+        } else {
+            // managed by BlobWriter
+            Blob blob;
+            try {
+                blob = blobHolder.getBlob();
+            } catch (PropertyNotFoundException e) {
+                throw new WebResourceNotFoundException("Invalid xpath");
+            }
+            return blob;
         }
-        return blob;
     }
 
     /**
@@ -160,17 +185,14 @@ public class BlobObject extends DefaultObject {
 
     @DELETE
     public Response doDelete() {
-        if (bh != null) {
-            throw new IllegalArgumentException("Cannot modify a Blob using a BlobHolder");
-        }
         try {
-            doc.getProperty(fieldPath).remove();
-        } catch (PropertyException e) {
-            throw WebException.wrap("Failed to delete attached file into property: " + fieldPath, e);
+            doc.getProperty(xpath).remove();
+        } catch (PropertyNotFoundException e) {
+            throw WebException.wrap("Failed to delete attached file into property: " + xpath, e);
         }
         CoreSession session = ctx.getCoreSession();
         session.saveDocument(doc);
-            session.save();
+        session.save();
         return Response.noContent().build();
     }
 
@@ -181,12 +203,9 @@ public class BlobObject extends DefaultObject {
         if (blob == null) {
             throw new IllegalArgumentException("Could not find any uploaded file");
         }
-        if (bh != null) {
-            throw new IllegalArgumentException("Cannot modify a Blob using a BlobHolder");
-        }
         try {
-            doc.setPropertyValue(fieldPath, (Serializable) blob);
-        } catch (PropertyException e) {
+            doc.setPropertyValue(xpath, (Serializable) blob);
+        } catch (PropertyNotFoundException e) {
             throw WebException.wrap("Failed to attach file", e);
         }
         // make snapshot
