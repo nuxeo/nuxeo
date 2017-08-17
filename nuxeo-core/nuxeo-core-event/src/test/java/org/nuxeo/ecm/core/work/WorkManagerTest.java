@@ -407,8 +407,6 @@ public class WorkManagerTest {
         final File file = feature.resolveAndCreate(new File("pfouh"));
         service.schedule(new CreateFile(file));
         service.awaitCompletion(5, TimeUnit.SECONDS);
-        // TODO randomly fails if not waiting for the create file task - why service.awaitCompletion isn't enough?
-        Thread.sleep(10);
     }
 
     @Test
