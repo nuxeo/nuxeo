@@ -614,7 +614,8 @@ public class LDAPReference extends AbstractReference {
 
                 // step #2.2: find the list of entries that hold candidate
                 // dynamic links in the source directory
-                SearchControls sctls = sourceDirectory.getSearchControls(true);
+                SearchControls sctls = new SearchControls();
+                sctls.setSearchScope(sourceDirectory.getConfig().getSearchScope());
                 sctls.setReturningAttributes(new String[] {
                         sourceSession.idAttribute, dynamicAttributeId });
                 String filterExpr = String.format("%s=*", dynamicAttributeId);
