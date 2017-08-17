@@ -80,7 +80,7 @@ public class PreviewAdapterTest extends BaseTest {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CloseableClientResponse response = getPreview(doc, "files/0/file")) {
+        try (CloseableClientResponse response = getPreview(doc, "files:files/0/file")) {
             assertEquals(200, response.getStatus());
         }
     }
