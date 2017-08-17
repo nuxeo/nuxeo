@@ -22,13 +22,9 @@ package org.nuxeo.ecm.webapp.seam;
 import java.lang.reflect.Field;
 import java.util.Set;
 
-import javax.management.InstanceNotFoundException;
 import javax.management.JMException;
-import javax.management.MBeanException;
 import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-import javax.management.ReflectionException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -53,8 +49,7 @@ public class SeamHotReloadHelper {
     public static final String SEAM_HOT_RELOAD_SYSTEM_PROP = ConfigurationGenerator.SEAM_DEBUG_SYSTEM_PROP;
 
     public static boolean isHotReloadEnabled() {
-        String sysProp = System.getProperty(ConfigurationGenerator.SEAM_DEBUG_SYSTEM_PROP, "false");
-        return Boolean.TRUE.equals(Boolean.valueOf(sysProp));
+        return Framework.isBooleanPropertyTrue(ConfigurationGenerator.SEAM_DEBUG_SYSTEM_PROP);
     }
 
     public static void flush() {

@@ -36,6 +36,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.core.Init;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -56,11 +57,7 @@ public class SeamConfigurator implements Serializable {
     transient Init init;
 
     public boolean isDebugEnabled() {
-        String prop = System.getProperty(ConfigurationGenerator.SEAM_DEBUG_SYSTEM_PROP);
-        if (prop == null) {
-            return false;
-        }
-        return Boolean.parseBoolean(prop);
+        return Framework.isBooleanPropertyTrue(ConfigurationGenerator.SEAM_DEBUG_SYSTEM_PROP);
     }
 
     @Create
