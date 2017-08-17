@@ -62,6 +62,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 import static org.junit.Assume.assumeFalse;
 
 import java.io.ByteArrayInputStream;
@@ -3034,6 +3035,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/comment-listener-contrib.xml")
     public void testCheckInWithChanges() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
@@ -3045,13 +3047,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         ContentStream cs = new ContentStreamImpl("test.txt", BigInteger.valueOf(bytes.length), "text/plain", in);
 
         Holder<String> idHolder = new Holder<>(id);
-        deployer.deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/comment-listener-contrib.xml");
-        try {
-            CommentListener.clearComments();
-            verService.checkIn(repositoryId, idHolder, Boolean.TRUE, props, cs, "comment", null, null, null, null);
-        } finally {
-            deployer.reset();
-        }
+        CommentListener.clearComments();
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, props, cs, "comment", null, null, null, null);
         List<String> comments = CommentListener.getComments();
         assertEquals(Arrays.asList("documentModified:comment=comment,checkInComment=null",
                 "documentCheckedIn:comment=1.0 comment,checkInComment=comment",
@@ -3543,7 +3540,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
-    public void testQueryWithSecurityPolicy() throws Exception {
+    public void testQueryWithSecurityPolicyBaseline() throws Exception {
         DocumentModel doc = coreSession.getDocument(new PathRef("/testfolder1/testfile1"));
         doc.setPropertyValue("dc:title", "SECRET should not be listed");
         coreSession.saveDocument(doc);
@@ -3557,37 +3554,69 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // manually check
         res = query("SELECT cmis:objectId FROM File WHERE dc:title NOT LIKE 'SECRET%'");
         assertEquals(2, res.getNumItems().intValue());
+    }
 
-        if (!supportsNXQLQueryTransformers()) {
-            // deploy a security policy with a non-trivial query transformer
-            // that has no CMISQL equivalent
-            deployer.deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/security-policy-contrib.xml");
-            // check that queries now fail
-            try {
-                query("SELECT cmis:objectId FROM File");
-                fail("Should be denied due to security policy");
-            } catch (CmisRuntimeException e) {
-                String msg = e.getMessage();
-                assertTrue(msg, msg.contains("Security policy"));
-            } finally {
-                deployer.reset();
-            }
+    @Test
+    // deploy a security policy with a query transformer not expressible as a query
+    @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/security-policy-contrib.xml")
+    public void testQueryWithSecurityPolicyNotExpressibleInQuery() throws Exception {
+        assumeFalse("Testing case where NXQL query transformers are not supported", supportsNXQLQueryTransformers());
 
-            // without it it works again
-            res = query("SELECT cmis:objectId FROM File");
-            assertEquals(3, res.getNumItems().intValue());
+        DocumentModel doc = coreSession.getDocument(new PathRef("/testfolder1/testfile1"));
+        doc.setPropertyValue("dc:title", "SECRET should not be listed");
+        coreSession.saveDocument(doc);
+        coreSession.save();
+        nextTransaction();
+        waitForIndexing();
+
+        // check that queries fail
+        try {
+            query("SELECT cmis:objectId FROM File");
+            fail("Should be denied due to security policy");
+        } catch (CmisRuntimeException e) {
+            String msg = e.getMessage();
+            assertTrue(msg, msg.contains("Security policy"));
         }
+    }
 
-        if (!useElasticsearch()) {
-            // deploy a security policy with a transformer
-            String contrib = supportsNXQLQueryTransformers() ? "OSGI-INF/security-policy-contrib3.xml"
-                    : "OSGI-INF/security-policy-contrib2.xml";
-            deployer.deploy("org.nuxeo.ecm.core.opencmis.tests.tests:"+contrib);
-            res = query("SELECT cmis:objectId FROM File");
-            assertEquals(2, res.getNumItems().intValue());
-            res = query("SELECT cmis:objectId FROM File WHERE dc:title <> 'something'");
-            assertEquals(2, res.getNumItems().intValue());
-        }
+    @Test
+    // deploy a security policy with a CMISQL query transformer
+    @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/security-policy-contrib2.xml")
+    public void testQueryWithSecurityPolicyAndCMISQLQueryTransformer() throws Exception {
+        assumeFalse("Testing case where Elasticsearch is not used", useElasticsearch());
+        assumeFalse("Testing case where NXQL query transformers are not supported", supportsNXQLQueryTransformers());
+
+        DocumentModel doc = coreSession.getDocument(new PathRef("/testfolder1/testfile1"));
+        doc.setPropertyValue("dc:title", "SECRET should not be listed");
+        coreSession.saveDocument(doc);
+        coreSession.save();
+        nextTransaction();
+        waitForIndexing();
+
+        ObjectList res = query("SELECT cmis:objectId FROM File");
+        assertEquals(2, res.getNumItems().intValue());
+        res = query("SELECT cmis:objectId FROM File WHERE dc:title <> 'something'");
+        assertEquals(2, res.getNumItems().intValue());
+    }
+
+    @Test
+    // deploy a security policy with a NXQL query transformer
+    @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/security-policy-contrib3.xml")
+    public void testQueryWithSecurityPolicyAndNXQLQueryTransformer() throws Exception {
+        assumeFalse("Testing case where Elasticsearch is not used", useElasticsearch());
+        assumeTrue("Testing case where NXQL query transformers are supported", supportsNXQLQueryTransformers());
+
+        DocumentModel doc = coreSession.getDocument(new PathRef("/testfolder1/testfile1"));
+        doc.setPropertyValue("dc:title", "SECRET should not be listed");
+        coreSession.saveDocument(doc);
+        coreSession.save();
+        nextTransaction();
+        waitForIndexing();
+
+        ObjectList res = query("SELECT cmis:objectId FROM File");
+        assertEquals(2, res.getNumItems().intValue());
+        res = query("SELECT cmis:objectId FROM File WHERE dc:title <> 'something'");
+        assertEquals(2, res.getNumItems().intValue());
     }
 
     /** Get ACL, using * suffix on username to denote non-direct. */
