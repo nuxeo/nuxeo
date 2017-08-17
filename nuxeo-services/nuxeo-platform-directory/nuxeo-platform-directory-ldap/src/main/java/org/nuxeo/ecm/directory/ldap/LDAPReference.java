@@ -546,7 +546,8 @@ public class LDAPReference extends AbstractReference implements Cloneable {
 
                 // step #2.2: find the list of entries that hold candidate
                 // dynamic links in the source directory
-                SearchControls sctls = ldapSourceDirectory.getSearchControls();
+                SearchControls sctls = new SearchControls();
+                sctls.setSearchScope(ldapSourceDirectory.getDescriptor().getSearchScope());
                 sctls.setReturningAttributes(new String[] { sourceSession.idAttribute, dynamicAttributeId });
                 String filterExpr = String.format("%s=*", dynamicAttributeId);
 
