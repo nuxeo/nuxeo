@@ -21,6 +21,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -55,6 +56,8 @@ public class TestUserProfileImporterOk extends AbstractUserProfileImporterTest {
 
     @Test
     public void userProfileImportsShouldSucceed() throws Exception {
+        // we use hot redeploy, which restarts the repository, so DBS Mem (which has no persistence) cannot be used
+        assumeFalse("Cannot test on DBS Mem", coreFeature.getStorageConfiguration().isDBSMem());
 
         assertNotNull(userProfileService);
 
