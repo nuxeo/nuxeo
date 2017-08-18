@@ -30,6 +30,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
@@ -182,6 +183,10 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
         assertNotNull(packageSelectiondPage);
         assertEquals("Select Modules", packageSelectiondPage.getTitle());
+
+        AbstractPage.findElementWithTimeout(By.id("pkg_nuxeo-no-ui"));
+        AbstractPage.findElementWithTimeout(By.id("pkg_nuxeo-web-ui"));
+        AbstractPage.findElementWithTimeout(By.id("pkg_nuxeo-jsf-ui"));
 
         // **************************
         // Package Download Screen
