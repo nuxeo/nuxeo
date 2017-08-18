@@ -63,7 +63,6 @@ import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
@@ -93,9 +92,6 @@ public class TestThreeDRenditions {
 
     @Inject
     protected RenditionService renditionService;
-
-    @Inject
-    protected HotDeployer deployer;
 
     @Inject
     protected ThreeDService threeDService;
@@ -166,14 +162,12 @@ public class TestThreeDRenditions {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.platform.threed.core.test:OSGI-INF/threed-service-contrib-override.xml")
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void shouldExposeOnlyExposedAsRenditions() throws Exception {
         ThreeD threeD = getTestThreeD();
         DocumentModel doc = session.createDocumentModel("/", "threed", "ThreeD");
         doc = session.createDocument(doc);
-        String docId = doc.getId();
-        deployer.deploy("org.nuxeo.ecm.platform.threed.core.test:OSGI-INF/threed-service-contrib-override.xml");
-        doc = session.getDocument(new IdRef(docId));
 
         assertEquals(0, getThreeDRenditionDefinitions(doc).size());
         Date timeBefore = new Date();
@@ -201,10 +195,10 @@ public class TestThreeDRenditions {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.platform.threed.core.test:OSGI-INF/threed-service-contrib-override.xml")
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testBatchConverterHelper() throws Exception {
         ThreeD threeD = getTestThreeD();
-        deployer.deploy("org.nuxeo.ecm.platform.threed.core.test:OSGI-INF/threed-service-contrib-override.xml");
         BlobHolder results = threeDService.batchConvert(threeD);
         List<ThreeDRenderView> renderviews = BatchConverterHelper.getRenders(results);
         List<BlobHolder> resources = BatchConverterHelper.getResources(results);
