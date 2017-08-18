@@ -38,6 +38,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.webengine.WebException;
@@ -45,6 +47,7 @@ import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.8
@@ -115,6 +118,22 @@ public class BlobObject extends DefaultObject {
                 if (!path.contains(":")) {
                     // attempt to use a xpath not prefix-qualified, could be used to bypass
                     // a permission function checking just "file:content" and receiving "content"
+                    // try to add prefix
+                    SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+                    // TODO precompute this in SchemaManagerImpl
+                    int slash = path.indexOf('/');
+                    String first = slash == -1 ? path : path.substring(0, slash);
+                    for (Schema schema : schemaManager.getSchemas()) {
+                        if (!schema.getNamespace().hasPrefix()) {
+                            // schema without prefix, try it
+                            if (schema.getField(first) != null) {
+                                path = schema.getName() + ":" + path;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!path.contains(":")) {
                     throw new WebResourceNotFoundException("Invalid xpath: " + path);
                 }
                 blobHolder = new DocumentBlobHolder(doc, path);

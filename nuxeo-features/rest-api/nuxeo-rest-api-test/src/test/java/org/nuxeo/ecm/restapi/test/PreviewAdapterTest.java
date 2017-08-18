@@ -77,6 +77,8 @@ public class PreviewAdapterTest extends BaseTest {
         TransactionHelper.startTransaction();
 
         assertEquals(200, getPreview(doc, "files:files/0/file").getStatus());
+        // works also without schema prefix (COMPAT)
+        assertEquals(200, getPreview(doc, "files/0/file").getStatus());
     }
 
     @Test
