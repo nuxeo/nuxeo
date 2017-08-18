@@ -83,6 +83,10 @@ public class PreviewAdapterTest extends BaseTest {
         try (CloseableClientResponse response = getPreview(doc, "files:files/0/file")) {
             assertEquals(200, response.getStatus());
         }
+        // works also without schema prefix (COMPAT)
+        try (CloseableClientResponse response = getPreview(doc, "files/0/file")) {
+            assertEquals(200, response.getStatus());
+        }
     }
 
     @Test
