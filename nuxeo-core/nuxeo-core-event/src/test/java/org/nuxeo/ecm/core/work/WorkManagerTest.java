@@ -327,10 +327,17 @@ public class WorkManagerTest {
 
     @Test
     public void testWorkManagerConfigDisableAllAfterStart() throws Exception {
-        service.enableProcessing(false);
-        assertFalse(service.isProcessingEnabled());
-        service.enableProcessing("SleepWork", true);
-        assertTrue(service.isProcessingEnabled());
+        try {
+            service.enableProcessing(false);
+            assertFalse(service.isProcessingEnabled());
+            service.enableProcessing("SleepWork", true);
+            assertTrue(service.isProcessingEnabled());
+        } finally {
+            // first disable SleepWork queue, otherwise work manager will register again metrics
+            service.enableProcessing("SleepWork", false);
+            // now re-enable all queues
+            service.enableProcessing(true);
+        }
     }
 
     @Ignore("NXP-15680")
