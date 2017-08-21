@@ -21,7 +21,7 @@
          function run(input, params) {
            if (params.lang === "fr") {
              return "Bonjour " + input;
-           } 
+           }
            return "Hello " + input;
          }
        </script>
@@ -405,7 +405,7 @@
         }
       ]]></script>
     </scriptedOperation>
-  
+
     <scriptedOperation id="Scripting.LogScript">
       <inputType>void</inputType>
       <outputType>void</outputType>
@@ -535,7 +535,7 @@
         <param type="string" name="mvel">expr:Foo @{myvar}</param>
       </operation>
     </chain>
-  
+
     <chain id="Scripting.ChainWithScripting">
       <operation id="Context.FetchDocument"/>
       <operation id="Scripting.LogScript"/>

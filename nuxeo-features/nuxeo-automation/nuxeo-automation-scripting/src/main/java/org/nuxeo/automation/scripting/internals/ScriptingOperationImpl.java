@@ -49,11 +49,12 @@ public class ScriptingOperationImpl {
 
     public interface Runnable {
         Object run(Object input, Map<String, Object> parameters);
-    };
+    }
 
     public Object run() throws Exception {
         try (Session session = Framework.getService(AutomationScriptingService.class).get(ctx)) {
-            return session.handleof(new ByteArrayInputStream(script.getBytes(Charset.forName("UTF-8"))), Runnable.class).run(ctx.getInput(), args);
+            return session.handleof(new ByteArrayInputStream(script.getBytes(Charset.forName("UTF-8"))), Runnable.class)
+                          .run(ctx.getInput(), args);
         } catch (ScriptException e) {
             throw new OperationException(e);
         }
