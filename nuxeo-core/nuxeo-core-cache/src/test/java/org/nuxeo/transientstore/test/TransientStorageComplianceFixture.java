@@ -309,42 +309,42 @@ public class TransientStorageComplianceFixture {
 
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
-        putEntry(ts, "XXX");
+        putEntry(ts, "foobar");
 
         // check that entry is stored
-        assertTrue(ts.exists("XXX"));
+        assertTrue(ts.exists("foobar"));
         if (ts instanceof SimpleTransientStore) {
-            assertNotNull(((SimpleTransientStore) ts).getL1Cache().getIfPresent("XXX"));
+            assertNotNull(((SimpleTransientStore) ts).getL1Cache().getIfPresent("foobar"));
         }
 
         // move to deletable entries
         // check that still here
-        ts.release("XXX");
+        ts.release("foobar");
 
-        assertTrue(ts.exists("XXX"));
+        assertTrue(ts.exists("foobar"));
         if (ts instanceof SimpleTransientStore) {
-            assertNull(((SimpleTransientStore) ts).getL1Cache().getIfPresent("XXX"));
-            assertNotNull(((SimpleTransientStore) ts).getL2Cache().getIfPresent("XXX"));
+            assertNull(((SimpleTransientStore) ts).getL1Cache().getIfPresent("foobar"));
+            assertNotNull(((SimpleTransientStore) ts).getL2Cache().getIfPresent("foobar"));
         }
 
         // do GC
         ts.doGC();
 
         // check still here
-        assertTrue(ts.exists("XXX"));
+        assertTrue(ts.exists("foobar"));
 
         // empty the L2 cache for the in-memory implementation or remove entry for the Redis one
         if (ts instanceof SimpleTransientStore) {
-            ((SimpleTransientStore) ts).getL2Cache().invalidate("XXX");
+            ((SimpleTransientStore) ts).getL2Cache().invalidate("foobar");
         } else {
-            ts.remove("XXX");
+            ts.remove("foobar");
         }
 
         // do GC
         ts.doGC();
 
         // check no longer there
-        assertFalse(ts.exists("XXX"));
+        assertFalse(ts.exists("foobar"));
     }
 
     @Test
