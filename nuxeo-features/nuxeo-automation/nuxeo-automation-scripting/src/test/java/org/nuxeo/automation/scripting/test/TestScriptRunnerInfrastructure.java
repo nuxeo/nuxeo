@@ -565,4 +565,13 @@ public class TestScriptRunnerInfrastructure {
         }
     }
 
+    @Test
+    public void testInputAdaptedAsDocument() throws OperationException {
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput("/default-domain");
+            DocumentModel doc = (DocumentModel) automationService.run(ctx, "Scripting.TestInputAdaptedAsDocument");
+            assertTrue(doc.getPathAsString().equals("/default-domain"));
+        }
+    }
+
 }

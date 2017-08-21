@@ -18,6 +18,7 @@
  */
 package org.nuxeo.automation.scripting.internals;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,13 +42,14 @@ public class ScriptingOperationTypeImpl implements OperationType {
 
     protected final ScriptingOperationDescriptor desc;
 
-    protected final InvokableMethod method = runMethod();
+    protected final InvokableMethod method;
 
     public ScriptingOperationTypeImpl(AutomationScriptingServiceImpl scripting, AutomationService automation,
             ScriptingOperationDescriptor desc) {
         this.scripting = scripting;
         this.automation = automation;
         this.desc = desc;
+        this.method = runMethod(this, desc.getInputType());
     }
 
     @Override
@@ -90,6 +92,11 @@ public class ScriptingOperationTypeImpl implements OperationType {
     }
 
     @Override
+    public String getInputType() {
+        return desc.getInputType();
+    }
+
+    @Override
     public AutomationService getService() {
         return automation;
     }
@@ -104,9 +111,14 @@ public class ScriptingOperationTypeImpl implements OperationType {
         return Collections.singletonList(method);
     }
 
-    protected InvokableMethod runMethod() {
+    /**
+     * Returns the right {@code run} method according to whether the input type exists or not.
+     */
+    protected static InvokableMethod runMethod(ScriptingOperationTypeImpl op, String inputType) {
         try {
-            return new InvokableMethod(this, ScriptingOperationImpl.class.getMethod("run"));
+            Method method = inputType == null ? ScriptingOperationImpl.class.getMethod("run")
+                    : ScriptingOperationImpl.class.getMethod("run", Object.class);
+            return new InvokableMethod(op, method);
         } catch (ReflectiveOperationException cause) {
             throw new Error("Cannot reference run method of " + ScriptingOperationImpl.class);
         }
