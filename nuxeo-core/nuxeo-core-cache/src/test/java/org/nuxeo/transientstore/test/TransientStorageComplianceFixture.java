@@ -314,7 +314,7 @@ public class TransientStorageComplianceFixture {
         // check that entry is stored
         assertTrue(ts.exists("XXX"));
         if (ts instanceof SimpleTransientStore) {
-            assertNotNull(((SimpleTransientStore) ts).getL1Cache().get("XXX"));
+            assertNotNull(((SimpleTransientStore) ts).getL1Cache().getIfPresent("XXX"));
         }
 
         // move to deletable entries
@@ -323,8 +323,8 @@ public class TransientStorageComplianceFixture {
 
         assertTrue(ts.exists("XXX"));
         if (ts instanceof SimpleTransientStore) {
-            assertNull(((SimpleTransientStore) ts).getL1Cache().get("XXX"));
-            assertNotNull(((SimpleTransientStore) ts).getL2Cache().get("XXX"));
+            assertNull(((SimpleTransientStore) ts).getL1Cache().getIfPresent("XXX"));
+            assertNotNull(((SimpleTransientStore) ts).getL2Cache().getIfPresent("XXX"));
         }
 
         // do GC
