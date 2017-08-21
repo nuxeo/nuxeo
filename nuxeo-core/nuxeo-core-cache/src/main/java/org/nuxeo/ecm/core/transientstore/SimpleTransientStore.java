@@ -26,20 +26,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.cache.Cache;
-import org.nuxeo.ecm.core.cache.CacheDescriptor;
-import org.nuxeo.ecm.core.cache.CacheService;
-import org.nuxeo.ecm.core.cache.CacheServiceImpl;
-import org.nuxeo.ecm.core.cache.InMemoryCacheImpl;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig;
-import org.nuxeo.runtime.api.Framework;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * Default implementation (i.e., not cluster aware) of the {@link TransientStore}. Uses {@link StorageEntry} as a
@@ -51,13 +49,9 @@ public class SimpleTransientStore extends AbstractTransientStore {
 
     protected Log log = LogFactory.getLog(SimpleTransientStore.class);
 
-    protected Cache l1Cache;
+    protected Cache<String, Serializable> l1Cache;
 
-    protected Cache l2Cache;
-
-    protected CacheDescriptor l1cd;
-
-    protected CacheDescriptor l2cd;
+    protected Cache<String, Serializable> l2Cache;
 
     protected AtomicLong storageSize = new AtomicLong(0);
 
@@ -68,45 +62,25 @@ public class SimpleTransientStore extends AbstractTransientStore {
     public void init(TransientStoreConfig config) {
         log.debug("Initializing SimpleTransientStore: " + config.getName());
         super.init(config);
-        CacheService cs = Framework.getService(CacheService.class);
-        if (cs == null) {
-            throw new UnsupportedOperationException("Cache service is required");
-        }
-        // register the caches
-        l1cd = getL1CacheConfig();
-        l2cd = getL2CacheConfig();
-        ((CacheServiceImpl) cs).registerCache(l1cd);
-        ((CacheServiceImpl) cs).registerCache(l2cd);
-
-        // get caches
-        l1Cache = cs.getCache(l1cd.name);
-        l2Cache = cs.getCache(l2cd.name);
+        l1Cache = CacheBuilder.newBuilder().expireAfterWrite(config.getFirstLevelTTL(), TimeUnit.MINUTES).build();
+        l2Cache = CacheBuilder.newBuilder().expireAfterWrite(config.getSecondLevelTTL(), TimeUnit.MINUTES).build();
     }
 
     @Override
     public void shutdown() {
         log.debug("Shutting down SimpleTransientStore: " + config.getName());
-        CacheService cs = Framework.getService(CacheService.class);
-        if (cs != null) {
-            if (l1cd != null) {
-                ((CacheServiceImpl) cs).unregisterCache(l1cd);
-            }
-            if (l2cd != null) {
-                ((CacheServiceImpl) cs).unregisterCache(l2cd);
-            }
-        }
     }
 
     @Override
     public boolean exists(String key) {
-        return getL1Cache().hasEntry(key) || getL2Cache().hasEntry(key);
+        return getL1Cache().getIfPresent(key) != null || getL2Cache().getIfPresent(key) != null;
     }
 
     @Override
     public Set<String> keySet() {
         Set<String> keys = new HashSet<>();
-        keys.addAll(getL1Cache().keySet());
-        keys.addAll(getL2Cache().keySet());
+        keys.addAll(getL1Cache().asMap().keySet());
+        keys.addAll(getL2Cache().asMap().keySet());
         return keys;
     }
 
@@ -225,9 +199,9 @@ public class SimpleTransientStore extends AbstractTransientStore {
     @Override
     public void remove(String key) {
         synchronized (this) {
-            StorageEntry entry = (StorageEntry) getL1Cache().get(key);
+            StorageEntry entry = (StorageEntry) getL1Cache().getIfPresent(key);
             if (entry == null) {
-                entry = (StorageEntry) getL2Cache().get(key);
+                entry = (StorageEntry) getL2Cache().getIfPresent(key);
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Invalidating StorageEntry stored at key %s form L2 cache", key));
                 }
@@ -250,7 +224,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
 
     @Override
     public void release(String key) {
-        StorageEntry entry = (StorageEntry) getL1Cache().get(key);
+        StorageEntry entry = (StorageEntry) getL1Cache().getIfPresent(key);
         if (entry != null) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Invalidating StorageEntry stored at key %s form L1 cache", key));
@@ -331,34 +305,12 @@ public class SimpleTransientStore extends AbstractTransientStore {
         getL2Cache().invalidateAll();
     }
 
-    public Cache getL1Cache() {
+    public Cache<String, Serializable> getL1Cache() {
         return l1Cache;
     }
 
-    public Cache getL2Cache() {
+    public Cache<String, Serializable> getL2Cache() {
         return l2Cache;
-    }
-
-    protected CacheDescriptor getL1CacheConfig() {
-        return new TransientCacheConfig(config.getName() + "L1", config.getFirstLevelTTL());
-    }
-
-    protected CacheDescriptor getL2CacheConfig() {
-        return new TransientCacheConfig(config.getName() + "L2", config.getSecondLevelTTL());
-    }
-
-    protected class TransientCacheConfig extends CacheDescriptor {
-
-        TransientCacheConfig(String name, int ttl) {
-            super();
-            super.name = name;
-            super.implClass = getCacheImplClass();
-            super.ttl = ttl;
-        }
-    }
-
-    protected Class<? extends Cache> getCacheImplClass() {
-        return InMemoryCacheImpl.class;
     }
 
     /**
@@ -366,9 +318,9 @@ public class SimpleTransientStore extends AbstractTransientStore {
      * exist.
      */
     protected StorageEntry getStorageEntry(String key) {
-        StorageEntry entry = (StorageEntry) getL1Cache().get(key);
+        StorageEntry entry = (StorageEntry) getL1Cache().getIfPresent(key);
         if (entry == null) {
-            entry = (StorageEntry) getL2Cache().get(key);
+            entry = (StorageEntry) getL2Cache().getIfPresent(key);
         }
         return entry;
     }
