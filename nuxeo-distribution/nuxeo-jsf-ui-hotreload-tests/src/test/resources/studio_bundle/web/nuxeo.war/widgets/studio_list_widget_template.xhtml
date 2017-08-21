@@ -1,0 +1,78 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
+<c:if test="false">
+  Override of default list template to hide labels by default.
+</c:if>
+
+  <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
+    <nxu:inputList value="#{field_0}" id="#{widget.id}_table" model="model"
+      rendered="#{not empty field_0}">
+      <nxl:subWidget>
+        <div class="studio_listItem">
+         <nxl:widget widget="#{widget}"
+            mode="#{widget.mode}" value="#{model.rowData}" />
+        </div>
+      </nxl:subWidget>
+    </nxu:inputList>	
+  </c:if>
+
+  <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
+
+    <a4j:region renderRegionOnly="true" id="#{widget.id}_region">
+      <a4j:outputPanel ajaxRendered="true" layout="block">
+
+        <c:set value="#{widget.fieldDefinitions[0].propertyName}"
+          var="propValueForTemplate"/>
+
+        <nxu:inputList value="#{field_0}" id="#{widget.id}_input" model="model"
+          template="#{nxd:propertyDefaultValue(propValueForTemplate)}"
+          required="#{widgetProperty_required}">
+
+          <h:panelGrid columns="2">
+            <a4j:commandLink immediate="true"
+              actionListener="#{editableListBean.performAction}"
+              id="#{widget.id}_delete" render="#{widget.id}_input"
+              bypassUpdates="true">
+              <h:graphicImage value="/icons/action_delete.gif" />
+              <f:param name="for" value="#{widget.id}_input" />
+              <f:param name="index" value="#{model.rowIndex}" />
+              <f:param name="type" value="remove" />
+            </a4j:commandLink>
+
+            <h:panelGroup>
+              <h:panelGrid columns="1">
+
+                <nxl:subWidget>
+                  <nxl:widget widget="#{widget}" mode="#{widget.mode}"
+                    value="#{model.rowData}" />
+                </nxl:subWidget>
+
+              </h:panelGrid>
+
+            </h:panelGroup>
+
+          </h:panelGrid>
+
+        </nxu:inputList>
+        <h:message styleClass="errorMessage" for="#{widget.id}_input"
+          id="#{widget.id}_message" />
+      </a4j:outputPanel>
+
+      <a4j:commandLink immediate="true"
+        actionListener="#{editableListBean.performAction}" id="#{widget.id}_add">
+        <f:param name="for" value="#{widget.id}_input" />
+        <f:param name="type" value="add" />
+        <h:graphicImage value="/widgets/img/action_add.gif" />
+        <h:outputText value="#{messages['command.add']}" />
+      </a4j:commandLink>
+
+    </a4j:region>
+
+  </c:if>
+
+</f:subview>

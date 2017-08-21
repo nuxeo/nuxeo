@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/project/schemas/test/testdocument" xmlns:nxsv="http://www.nuxeo.org/ecm/schemas/core/validation/" xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/" targetNamespace="http://www.nuxeo.org/ecm/project/schemas/test/testdocument">  
+  <!-- helper XSD definitions for list types -->  
+  <xs:complexType name="content"> 
+    <xs:sequence> 
+      <xs:element name="encoding" type="xs:string"/>  
+      <xs:element name="mime-type" type="xs:string"/>  
+      <xs:element name="data" type="xs:base64Binary"/>  
+      <xs:element name="name" type="xs:string"/>  
+      <xs:element name="length" type="xs:long"/>  
+      <xs:element name="digest" type="xs:string"/> 
+    </xs:sequence> 
+  </xs:complexType>  
+  <xs:simpleType name="stringList"> 
+    <xs:list itemType="xs:string"/> 
+  </xs:simpleType>  
+  <xs:simpleType name="doubleList"> 
+    <xs:list itemType="xs:double"/> 
+  </xs:simpleType>  
+  <xs:simpleType name="dateList"> 
+    <xs:list itemType="xs:date"/> 
+  </xs:simpleType>  
+  <xs:simpleType name="integerList"> 
+    <xs:list itemType="xs:integer"/> 
+  </xs:simpleType>  
+  <xs:simpleType name="booleanList"> 
+    <xs:list itemType="xs:boolean"/> 
+  </xs:simpleType>  
+  <xs:complexType name="blobList"> 
+    <xs:sequence> 
+      <xs:element name="item" type="nxs:content" minOccurs="0" maxOccurs="unbounded"/> 
+    </xs:sequence> 
+  </xs:complexType>  
+  <xs:element name="complex" type="nxs:testdocument_complexType"/>
+  <xs:complexType name="testdocument_complexType">
+    <xs:sequence>
+      <xs:element name="complexString" type="xs:string"/>
+      <xs:element name="complexDate" type="xs:date"/>
+      <xs:element name="complexMultiString" type="nxs:stringList"/>
+      <xs:element name="complexBlob" type="nxs:content"/>
+      <xs:element name="complexMultiBlob" type="nxs:blobList"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="multiBlob" type="nxs:blobList"/>
+  <xs:element name="multiComplex" type="nxs:testdocument_multiComplexListType"/>
+  <xs:complexType name="testdocument_multiComplexListType">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:testdocument_multiComplexType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="testdocument_multiComplexType">
+    <xs:sequence>
+      <xs:element name="complexListString" type="xs:string"/>
+      <xs:element name="complexListMultiString" type="nxs:stringList"/>
+      <xs:element name="complexListDate" type="xs:date"/>
+      <xs:element name="complexListBlob" type="nxs:content"/>
+      <xs:element name="complexListMultiBlob" type="nxs:blobList"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="multiDate" type="nxs:dateList"/>
+  <xs:element name="multiString" type="nxs:stringList"/>
+  <xs:element name="simpleBlob" type="nxs:content"/>
+  <xs:element name="simpleDate" type="xs:date"/>
+  <xs:element name="simpleString" type="xs:string"/>
+</xs:schema>

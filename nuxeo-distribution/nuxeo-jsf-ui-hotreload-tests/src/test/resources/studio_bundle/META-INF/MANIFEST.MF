@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Require-Bundle: org.nuxeo.runtime
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Bundle-Name: Nuxeo Studio Extension - studio.extensions.test
+Nuxeo-Component: OSGI-INF/extensions.xml
+Bundle-ManifestVersion: 2
+Created-By: Nuxeo Studio
+Bundle-SymbolicName: studio.extensions.test
+
