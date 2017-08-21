@@ -1,0 +1,44 @@
+<project name="nuxeo-jsf-ui-hotreload-tests"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <property name="out.dir" value="${maven.project.build.directory}" />
+  <property name="wizard.preset" value="none" />
+  <property name="nuxeo.wizard.done" value="true" />
+  <property name="mail.transport.port" value="2525" />
+  <property name="mail.transport.host" value="127.0.0.1" />
+  <property name="mp.install" value="${out.dir}/nuxeo-marketplace-jsf-ui-${maven.project.version}.zip" />
+
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
+
+  <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat">
+    <!-- enable dev mode, needed by dev hot reload tests -->
+    <antcall target="set-conf">
+      <param name="name" value="org.nuxeo.dev" />
+      <param name="value" value="true" />
+    </antcall>
+    <!-- enable sdk template, needed by dev hot reload tests -->
+    <antcall target="append-template-conf">
+      <param name="value" value="sdk" />
+    </antcall>
+    <!-- disable reload timer in order to control hot reload -->
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.server.sdkInstallReloadTimer" />
+      <param name="value" value="false" />
+    </antcall>
+  </target>
+
+  <target name="copy-packages">
+    <copy todir="${out.dir}">
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-marketplace-jsf-ui::zip" />
+    </copy>
+  </target>
+
+</project>
