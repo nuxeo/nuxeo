@@ -52,12 +52,20 @@ public class ScriptingOperationImpl {
     }
 
     public Object run() throws Exception {
+        return run(ctx.getInput());
+    }
+
+    /**
+     * {@code run} method accepting an input as first argument.
+     *
+     * @since 9.3
+     */
+    public Object run(Object input) throws Exception {
         try (Session session = Framework.getService(AutomationScriptingService.class).get(ctx)) {
             return session.handleof(new ByteArrayInputStream(script.getBytes(Charset.forName("UTF-8"))), Runnable.class)
-                          .run(ctx.getInput(), args);
+                          .run(input, args);
         } catch (ScriptException e) {
             throw new OperationException(e);
         }
     }
-
 }
