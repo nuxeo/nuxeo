@@ -560,7 +560,7 @@ public class TestScriptRunnerInfrastructure {
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.put("today", new MvelExpression("CurrentDate.date"));
             ctx.put("tomorrow", new MvelExpression("CurrentDate.days(1).date"));
-            DataModelProperties props = (DataModelProperties)automationService.run(ctx, "Scripting.TestParams");
+            DataModelProperties props = (DataModelProperties) automationService.run(ctx, "Scripting.TestParams");
             Assertions.assertThat(props.getMap()).containsOnlyKeys("today");
         }
     }
