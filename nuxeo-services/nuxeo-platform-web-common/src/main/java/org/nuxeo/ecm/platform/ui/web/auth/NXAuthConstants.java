@@ -71,6 +71,10 @@ public final class NXAuthConstants {
 
     public static final String START_PAGE_SAVE_KEY = "Nuxeo5_Start_Page";
 
+    /**
+     * @deprecated since 9.3
+     */
+    @Deprecated
     public static final String LANGUAGE_PARAMETER = "language";
 
     public static final String SESSION_TIMEOUT = "nxtimeout";
