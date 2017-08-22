@@ -20,6 +20,7 @@ package org.nuxeo.functionaltests;
 
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.openqa.selenium.WebDriver;
@@ -40,6 +41,8 @@ public class JavaScriptErrorCollector {
         this.driver = driver;
     }
 
+    protected List<String> IGNORED_PATTERN = Arrays.asList("mutating the [[Prototype]] of an object");
+
     /**
      * Throws an {@link AssertionError} when JavaScript errors are detected on current page.
      */
@@ -51,8 +54,13 @@ public class JavaScriptErrorCollector {
                 int i = 0;
                 for (JavaScriptError jsError : jsErrors) {
                     String error = jsError.getErrorMessage();
-                    // skip error which is actually a warning for FF 42
-                    if (error != null && error.startsWith("mutating the [[Prototype]] of an object")) {
+                    if (!jsError.getSourceName().startsWith(AbstractTest.NUXEO_URL)) {
+                        // Skip External lib
+                        continue;
+                    }
+
+                    // skip errors as well which are actually warnings for FF 42
+                    if (IGNORED_PATTERN.stream().anyMatch(error::startsWith)) {
                         continue;
                     }
                     if (i != 0) {
