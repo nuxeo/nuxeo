@@ -423,8 +423,8 @@ public abstract class AbstractWork implements Work {
     @Override
     public void cleanUp(boolean ok, Exception e) {
         if (!ok) {
-            if (e instanceof InterruptedException) {
-                log.debug("Suspended work: " + this);
+            if (isInterrupted(e)) {
+                log.debug("Interrupted work: " + this);
             } else {
                 if (!(e instanceof ConcurrentUpdateException)) {
                     if (!isSuspending()) {
@@ -446,6 +446,17 @@ public abstract class AbstractWork implements Work {
         } catch (LoginException le) {
             throw new NuxeoException(le);
         }
+    }
+
+    protected boolean isInterrupted(Exception e) {
+        Throwable exc = e;
+        while (exc != null) {
+            if (exc instanceof InterruptedException) {
+                return true;
+            }
+            exc = exc.getCause();
+        }
+        return false;
     }
 
     @Override
