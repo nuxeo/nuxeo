@@ -18,27 +18,17 @@
  */
 package org.nuxeo.ecm.core.pubsub;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Serializable;
-
 /**
  * Generic interface for serializable invalidations.
  *
- * @since 9.1
+ * @since 9.3
  */
-public interface SerializableInvalidations extends Serializable {
+public interface SerializableAccumulableInvalidations extends SerializableMessage {
 
     /** Checks if this contains no invalidations. */
     boolean isEmpty();
 
     /** Adds other invalidations to this one. */
-    void add(SerializableInvalidations other);
-
-    /**
-     * Serializes this to an output stream. The deserialization is handled by
-     * {@link AbstractPubSubInvalidator#deserialize}.
-     */
-    void serialize(OutputStream out) throws IOException;
+    void add(SerializableAccumulableInvalidations other);
 
 }

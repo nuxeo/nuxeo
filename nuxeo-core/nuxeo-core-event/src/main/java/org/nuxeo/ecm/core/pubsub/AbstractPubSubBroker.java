@@ -22,25 +22,27 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Encapsulates invalidations management through the {@link PubSubService}.
+ * Encapsulates message sending and receiving through the {@link PubSubService}.
  * <p>
- * All nodes that use the same topic will share the same invalidations.
+ * All nodes that use the same topic will receive the same messages. The discriminator is used to distinguish nodes
+ * between one another, and to avoid that a node receives the messages it send itself.
  * <p>
- * The discriminator is used to distinguish nodes between one another, and to avoid that a node receives the
- * invalidations it send itself.
+ * An actual implementation must implement the method {@link #deserialize} (usually by delegating to a static method in
+ * the {@link T} message class), and the {@link #receivedMessage} callback.
+ * <p>
+ * The public API is {@link #sendMessage}, and the {@link #receivedMessage} callback.
  *
- * @since 9.1
+ * @since 9.3
  */
-public abstract class AbstractPubSubInvalidator<T extends SerializableInvalidations> {
+public abstract class AbstractPubSubBroker<T extends SerializableMessage> {
 
-    private static final Log log = LogFactory.getLog(AbstractPubSubInvalidator.class);
+    private static final Log log = LogFactory.getLog(AbstractPubSubBroker.class);
 
     private static final String UTF_8 = "UTF-8";
 
@@ -48,16 +50,11 @@ public abstract class AbstractPubSubInvalidator<T extends SerializableInvalidati
 
     protected byte[] discriminatorBytes;
 
-    protected volatile T bufferedInvalidations;
-
-    /** Constructs new empty invalidations, of type {@link T}. */
-    public abstract T newInvalidations();
-
-    /** Deserializes an {@link InputStream} into invalidations, or {@code null}. */
+    /** Deserializes an {@link InputStream} into a message, or {@code null}. */
     public abstract T deserialize(InputStream in) throws IOException;
 
     /**
-     * Initializes the invalidator.
+     * Initializes the broker.
      *
      * @param topic the topic
      * @param discriminator the discriminator
@@ -66,7 +63,7 @@ public abstract class AbstractPubSubInvalidator<T extends SerializableInvalidati
         this.topic = topic;
         try {
             discriminatorBytes = discriminator.getBytes(UTF_8);
-        } catch (UnsupportedEncodingException e) {
+        } catch (IOException e) { // cannot happen
             throw new IllegalArgumentException(e);
         }
         for (byte b : discriminatorBytes) {
@@ -75,29 +72,26 @@ public abstract class AbstractPubSubInvalidator<T extends SerializableInvalidati
                         + (char) DISCRIMINATOR_SEP + "': " + discriminator);
             }
         }
-        bufferedInvalidations = newInvalidations();
         PubSubService pubSubService = Framework.getService(PubSubService.class);
         pubSubService.registerSubscriber(topic, this::subscriber);
     }
 
     /**
-     * Closes this invalidator and releases resources.
+     * Closes this broker and releases resources.
      */
     public void close() {
         PubSubService pubSubService = Framework.getService(PubSubService.class);
         pubSubService.unregisterSubscriber(topic, this::subscriber);
-        // not null to avoid crashing subscriber thread still in flight
-        bufferedInvalidations = newInvalidations();
     }
 
     protected static final byte DISCRIMINATOR_SEP = ':';
 
     /**
-     * Sends invalidations to other nodes.
+     * Sends a message to other nodes.
      */
-    public void sendInvalidations(T invalidations) {
+    public void sendMessage(T message) {
         if (log.isTraceEnabled()) {
-            log.trace("Sending invalidations: " + invalidations);
+            log.trace("Sending message: " + message);
         }
         ByteArrayOutputStream baout = new ByteArrayOutputStream();
         try {
@@ -108,45 +102,50 @@ public abstract class AbstractPubSubInvalidator<T extends SerializableInvalidati
         }
         baout.write(DISCRIMINATOR_SEP);
         try {
-            invalidations.serialize(baout);
+            message.serialize(baout);
         } catch (IOException e) {
-            log.error("Failed to serialize invalidations", e);
+            log.error("Failed to serialize message", e);
             // don't crash for this
             return;
         }
-        byte[] message = baout.toByteArray();
+        byte[] bytes = baout.toByteArray();
         PubSubService pubSubService = Framework.getService(PubSubService.class);
-        pubSubService.publish(topic, message);
+        pubSubService.publish(topic, bytes);
     }
 
     /**
      * PubSubService subscriber, called from a separate thread.
      */
-    protected void subscriber(String topic, byte[] message) {
-        int start = scanDiscriminator(message);
+    protected void subscriber(String topic, byte[] bytes) {
+        int start = scanDiscriminator(bytes);
         if (start == -1) {
             // same discriminator or invalid message
             return;
         }
-        InputStream bain = new ByteArrayInputStream(message, start, message.length - start);
-        T invalidations;
+        InputStream bain = new ByteArrayInputStream(bytes, start, bytes.length - start);
+        T message;
         try {
-            invalidations = deserialize(bain);
+            message = deserialize(bain);
         } catch (IOException e) {
-            log.error("Failed to deserialize invalidations", e);
+            log.error("Failed to deserialize message", e);
             // don't crash for this
             return;
         }
-        if (invalidations == null || invalidations.isEmpty()) {
+        if (message == null) {
             return;
         }
         if (log.isTraceEnabled()) {
-            log.trace("Receiving invalidations: " + invalidations);
+            log.trace("Received message: " + message);
         }
-        synchronized (this) {
-            bufferedInvalidations.add(invalidations);
-        }
+        receivedMessage(message);
     }
+
+    /**
+     * Callback implementing the delivery of a message from another node.
+     *
+     * @param message the received message
+     */
+    public abstract void receivedMessage(T message);
 
     /**
      * Scans for the discriminator and returns the payload start offset.
@@ -181,22 +180,6 @@ public abstract class AbstractPubSubInvalidator<T extends SerializableInvalidati
             return -1;
         }
         return start; // may be -1 if separator was never found (invalid message)
-    }
-
-    /**
-     * Receives invalidations from other nodes.
-     */
-    public T receiveInvalidations() {
-        T newInvalidations = newInvalidations();
-        T invalidations;
-        synchronized (this) {
-            invalidations = bufferedInvalidations;
-            bufferedInvalidations = newInvalidations;
-        }
-        if (log.isTraceEnabled()) {
-            log.trace("Received invalidations: " + invalidations);
-        }
-        return invalidations;
     }
 
 }

@@ -21,14 +21,14 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.nuxeo.ecm.core.pubsub.AbstractPubSubInvalidator;
+import org.nuxeo.ecm.core.pubsub.AbstractPubSubInvalidationsAccumulator;
 
 /**
  * PubSub implementation of the VCS {@link ClusterInvalidator}.
  *
  * @since 9.1
  */
-public class VCSPubSubInvalidator extends AbstractPubSubInvalidator<Invalidations> implements ClusterInvalidator {
+public class VCSPubSubInvalidator extends AbstractPubSubInvalidationsAccumulator<Invalidations> implements ClusterInvalidator {
 
     @Override
     public Invalidations newInvalidations() {
