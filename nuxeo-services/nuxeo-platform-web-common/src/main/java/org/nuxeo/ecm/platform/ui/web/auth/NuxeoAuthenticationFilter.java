@@ -803,16 +803,6 @@ public class NuxeoAuthenticationFilter implements Filter {
             session.removeAttribute(START_PAGE_SAVE_KEY);
         }
 
-        // add locale if not in the URL params
-        String localeStr = httpRequest.getParameter(NXAuthConstants.LANGUAGE_PARAMETER);
-        if (requestedPage != null && !"".equals(requestedPage) && localeStr != null) {
-            Map<String, String> params = new HashMap<String, String>();
-            if (!URIUtils.getRequestParameters(requestedPage).containsKey(NXAuthConstants.LANGUAGE_PARAMETER)) {
-                params.put(NXAuthConstants.LANGUAGE_PARAMETER, localeStr);
-            }
-            return URIUtils.addParametersToURIQuery(requestedPage, params);
-        }
-
         return requestedPage;
     }
 
