@@ -26,6 +26,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.cache.CacheServiceImpl.CachePubSubInvalidator;
 
 /**
  * Descriptor of cache contrib
@@ -107,7 +108,7 @@ public class CacheDescriptor {
         return name + ": " + klass + ": " + ttl + ": " + options;
     }
 
-    protected CacheManagement newInstance() {
+    protected CacheManagement newInstance(CachePubSubInvalidator invalidator) {
         CacheManagement cache;
         if (klass == null) {
             cache = new InMemoryCacheImpl(this); // default cache implementation
@@ -118,9 +119,12 @@ public class CacheDescriptor {
                 throw new NuxeoException("Failed to instantiate class: " + klass + " for cache: " + name, e);
             }
         }
-        // wrap with checker and metrics
+        // wrap with checker, metrics and invalidator
         cache = new CacheAttributesChecker(cache);
         cache = new CacheMetrics(cache);
+        if (invalidator != null) {
+            cache = new CacheInvalidator(cache, invalidator);
+        }
         return cache;
     }
 
