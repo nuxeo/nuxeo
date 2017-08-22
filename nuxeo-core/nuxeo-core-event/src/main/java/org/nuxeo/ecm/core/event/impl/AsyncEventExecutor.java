@@ -21,6 +21,12 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
@@ -37,12 +43,6 @@ import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Executor of async listeners passing them to the WorkManager.
@@ -222,7 +222,7 @@ public class AsyncEventExecutor {
         public void cleanUp(boolean ok, Exception e) {
             super.cleanUp(ok, e);
             bundle.disconnect();
-            if (e != null && !(e instanceof InterruptedException) && !(e instanceof ConcurrentUpdateException)) {
+            if (e != null && !isInterrupted(e) && !(e instanceof ConcurrentUpdateException)) {
                 log.error("Failed to execute async event " + bundle.getName() + " on listener " + listenerName, e);
             }
             if (listener != null) {
