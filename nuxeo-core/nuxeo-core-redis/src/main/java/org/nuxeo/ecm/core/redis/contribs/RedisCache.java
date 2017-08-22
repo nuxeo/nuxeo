@@ -152,8 +152,8 @@ public class RedisCache extends AbstractCache {
                 try {
                     byte[] bkey = bytes(formatKey(key));
                     jedis.set(bkey, serializeValue(value));
-                    // Redis set in second ttl but descriptor set as mn
-                    int ttlKey = ttl * 60;
+                    // Redis set in second ttl but descriptor set as minutes
+                    int ttlKey = (int) ttl * 60;
                     jedis.expire(bkey, ttlKey);
                     return null;
                 } catch (IOException e) {

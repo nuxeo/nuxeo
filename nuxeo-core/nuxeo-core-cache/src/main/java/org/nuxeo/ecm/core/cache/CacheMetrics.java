@@ -28,21 +28,21 @@ import com.codahale.metrics.SharedMetricRegistries;
 
 public class CacheMetrics extends CacheWrapper {
 
-    protected final MetricRegistry registry;
+    protected MetricRegistry registry;
 
-    protected final Counter read;
+    protected Counter read;
 
-    protected final Counter read_hit;
+    protected Counter read_hit;
 
-    protected final Counter read_miss;
+    protected Counter read_miss;
 
-    protected final RatioGauge read_hit_ratio;
+    protected RatioGauge read_hit_ratio;
 
-    protected final Counter write;
+    protected Counter write;
 
-    protected final Counter invalidation;
+    protected Counter invalidation;
 
-    protected final Gauge<Long> size;
+    protected Gauge<Long> size;
 
     protected final String READ_HIT_NAME = nameOf("read-hit-counter");
 
@@ -58,8 +58,16 @@ public class CacheMetrics extends CacheWrapper {
 
     protected final String SIZE_NAME = nameOf("size");
 
-    public CacheMetrics(Cache cache) {
+    protected String nameOf(String name) {
+        return MetricRegistry.name("nuxeo", "cache", getName(), name);
+    }
+
+    public CacheMetrics(CacheManagement cache) {
         super(cache);
+    }
+
+    @Override
+    public void start() {
         registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
         read = registry.counter(READ_NAME);
         read_hit = registry.counter(READ_HIT_NAME);
@@ -78,22 +86,17 @@ public class CacheMetrics extends CacheWrapper {
 
             @Override
             public Long getValue() {
-                return Long.valueOf(cache.getSize());
+                return Long.valueOf(getSize());
             }
-
         });
     }
 
-    protected String nameOf(String name) {
-        return MetricRegistry.name("nuxeo", "cache", cache.getName(), name);
-    }
-
     @Override
-    protected void onStop() {
+    public void stop() {
         registry.remove(READ_NAME);
         registry.remove(READ_HIT_NAME);
-        registry.remove(READ_HIT_RATIO_NAME);
         registry.remove(READ_MISS_NAME);
+        registry.remove(READ_HIT_RATIO_NAME);
         registry.remove(WRITE_NAME);
         registry.remove(INVALIDATE_ALL_NAME);
         registry.remove(SIZE_NAME);
@@ -101,9 +104,9 @@ public class CacheMetrics extends CacheWrapper {
 
     @Override
     public Serializable get(String key) {
-        Serializable value = cache.get(key);
+        Serializable value = super.get(key);
         read.inc();
-        if (value != null || cache.hasEntry(key)) {
+        if (value != null || super.hasEntry(key)) {
             read_hit.inc();
         } else {
             read_miss.inc();
@@ -121,22 +124,12 @@ public class CacheMetrics extends CacheWrapper {
     }
 
     @Override
-    public void invalidate(String key) {
-        cache.invalidate(key);
-    }
-
-    @Override
     public void invalidateAll() {
         try {
-            cache.invalidateAll();
+            super.invalidateAll();
         } finally {
             invalidation.inc();
         }
-    }
-
-    @Override
-    public long getSize() {
-        return cache.getSize();
     }
 
 }

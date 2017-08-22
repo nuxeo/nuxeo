@@ -19,7 +19,11 @@
  */
 package org.nuxeo.ecm.core.cache;
 
+import static org.nuxeo.ecm.core.cache.CacheDescriptor.OPTION_CONCURRENCY_LEVEL;
+import static org.nuxeo.ecm.core.cache.CacheDescriptor.OPTION_MAX_SIZE;
+
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -36,31 +40,22 @@ import com.google.common.cache.CacheBuilder;
  */
 public class InMemoryCacheImpl extends AbstractCache {
 
-    public InMemoryCacheImpl(CacheDescriptor desc) {
-        super(desc);
-        CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
-        builder = builder.expireAfterWrite(desc.ttl, TimeUnit.MINUTES);
-        if (desc.options.containsKey("concurrencyLevel")) {
-            builder = builder.concurrencyLevel(Integer.valueOf(desc.options.get("concurrencyLevel")).intValue());
-        }
-        if (desc.options.containsKey("maxSize")) {
-            builder = builder.maximumSize(Integer.valueOf(desc.options.get("maxSize")).intValue());
-        }
-        cache = builder.build();
-    }
-
-    protected static final Log log = LogFactory.getLog(InMemoryCacheImpl.class);
+    private static final Log log = LogFactory.getLog(InMemoryCacheImpl.class);
 
     protected final Cache<String, Serializable> cache;
 
-    /**
-     * Get the instance cache
-     *
-     * @return the Guava instance cache used in this nuxeo cache
-     * @since 6.0
-     */
-    public Cache<String, Serializable> getGuavaCache() {
-        return cache;
+    public InMemoryCacheImpl(CacheDescriptor desc) {
+        super(desc);
+        CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
+        builder = builder.expireAfterWrite(desc.getTTL(), TimeUnit.MINUTES);
+        Map<String, String> options = desc.options;
+        if (options.containsKey(OPTION_CONCURRENCY_LEVEL)) {
+            builder = builder.concurrencyLevel(Integer.parseInt(options.get(OPTION_CONCURRENCY_LEVEL)));
+        }
+        if (options.containsKey(OPTION_MAX_SIZE)) {
+            builder = builder.maximumSize(Integer.parseInt(options.get(OPTION_MAX_SIZE)));
+        }
+        cache = builder.build();
     }
 
     @Override

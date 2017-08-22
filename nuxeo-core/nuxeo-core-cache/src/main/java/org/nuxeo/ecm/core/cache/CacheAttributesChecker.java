@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public class CacheAttributesChecker extends CacheWrapper {
 
-    protected CacheAttributesChecker(CacheDescriptor desc, Cache cache) {
+    public CacheAttributesChecker(CacheManagement cache) {
         super(cache);
     }
 
@@ -39,12 +39,12 @@ public class CacheAttributesChecker extends CacheWrapper {
         if (key == null) {
             return null;
         }
-        return cache.get(key);
+        return super.get(key);
     }
 
     @Override
     public Set<String> keySet() {
-        return cache.keySet();
+        return super.keySet();
     }
 
     @Override
@@ -52,12 +52,12 @@ public class CacheAttributesChecker extends CacheWrapper {
         if (key == null) {
             throw new IllegalArgumentException(String.format("Can't invalidate a null key for the cache '%s'!", cache.getName()));
         }
-        cache.invalidate(key);
+        super.invalidate(key);
     }
 
     @Override
     public void invalidateAll() {
-        cache.invalidateAll();
+        super.invalidateAll();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class CacheAttributesChecker extends CacheWrapper {
         if (key == null) {
             throw new IllegalArgumentException(String.format("Can't put a null key for the cache '%s'!", cache.getName()));
         }
-        cache.put(key, value);
+        super.put(key, value);
     }
 
     @Override
@@ -73,11 +73,11 @@ public class CacheAttributesChecker extends CacheWrapper {
         if (key == null) {
             return false;
         }
-        return cache.hasEntry(key);
+        return super.hasEntry(key);
     }
 
     @Override
     public long getSize() {
-        return cache.getSize();
+        return super.getSize();
     }
 }
