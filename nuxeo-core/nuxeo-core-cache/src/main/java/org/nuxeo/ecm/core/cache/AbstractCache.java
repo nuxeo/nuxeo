@@ -25,15 +25,15 @@ package org.nuxeo.ecm.core.cache;
  *
  * @since 6.0
  */
-public abstract class AbstractCache implements Cache {
+public abstract class AbstractCache implements CacheManagement {
 
     protected final String name;
 
-    protected final int ttl;
+    public final long ttl;
 
     protected AbstractCache(CacheDescriptor desc) {
         name = desc.name;
-        ttl = desc.ttl;
+        ttl = desc.getTTL();
     }
 
     @Override
@@ -42,9 +42,18 @@ public abstract class AbstractCache implements Cache {
     }
 
     @Override
-    public boolean hasEntry(String key) {
-        // dummy implementation to avoid breaking compatibility
-        return get(key) != null;
+    public void start() {
+        // nothing
+    }
+
+    @Override
+    public void stop() {
+        // nothing
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + name + ")";
     }
 
 }

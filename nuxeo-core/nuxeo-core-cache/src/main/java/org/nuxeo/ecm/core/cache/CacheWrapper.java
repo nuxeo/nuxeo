@@ -22,22 +22,12 @@ import java.util.Set;
 /**
  * @since 9.1
  */
-public abstract class CacheWrapper implements Cache {
+public class CacheWrapper implements CacheManagement {
 
-    public final Cache cache;
+    public final CacheManagement cache;
 
-    protected CacheWrapper(Cache cache) {
+    protected CacheWrapper(CacheManagement cache) {
         this.cache = cache;
-    }
-
-    public void stop() {
-        if (cache instanceof CacheWrapper) {
-            ((CacheWrapper) cache).stop();
-        }
-        onStop();
-    }
-
-    protected void onStop() {
     }
 
     @Override
@@ -73,6 +63,26 @@ public abstract class CacheWrapper implements Cache {
     @Override
     public boolean hasEntry(String key) {
         return cache.hasEntry(key);
+    }
+
+    @Override
+    public void start() {
+        cache.start();
+    }
+
+    @Override
+    public void stop() {
+        cache.stop();
+    }
+
+    @Override
+    public long getSize() {
+        return cache.getSize();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + cache + ")";
     }
 
 }

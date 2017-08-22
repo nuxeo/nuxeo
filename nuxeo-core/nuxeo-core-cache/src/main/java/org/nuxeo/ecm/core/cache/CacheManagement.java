@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo(http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,34 @@
  * limitations under the License.
  *
  * Contributors:
- *     Maxime Hilaire
- *     Thierry Martins
- *
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.cache;
 
 /**
- * Nuxeo cache interface
+ * Management-related APIs for a {@link Cache}.
  *
- * @since 6.0
+ * @since 9.3
  */
-public interface CacheService {
+public interface CacheManagement extends Cache {
 
     /**
-     * Gets the cache with the given name.
-     *
-     * @param name the cache name
-     * @return the cache, or {@code null} if it does not exist
+     * Starts this cache.
      */
-    public Cache getCache(String name);
+    void start();
 
     /**
-     * Programmatically registers a cache with the given characteristics.
-     *
-     * @param name the cache name
-     * @param size the maximum number of elements
-     * @param timeout the entry timeout (in minutes)
-     * @since 8.2
+     * Stops this cache and releases related resources.
      */
-    public void registerCache(String name, int size, int timeout);
+    void stop();
+
+    /**
+     * Returns this cache size (approximate number of entries), or {@code -1} if the number of entries is unknown or too
+     * expensive to compute.
+     *
+     * @return the approximate number of entries, or {@code -1}
+     * @since 9.1
+     */
+    long getSize();
+
 }

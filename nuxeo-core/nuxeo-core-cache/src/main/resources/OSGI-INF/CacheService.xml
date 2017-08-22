@@ -10,7 +10,6 @@
 
   <service>
     <provide interface="org.nuxeo.ecm.core.cache.CacheService" />
-    <provide interface="org.nuxeo.ecm.core.cache.CacheRegistry" />
   </service>
 
   <extension-point name="caches">

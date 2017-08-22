@@ -19,10 +19,15 @@
  */
 package org.nuxeo.ecm.core.cache;
 
+import static org.nuxeo.ecm.core.cache.CacheDescriptor.OPTION_MAX_SIZE;
+
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +36,6 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Extension;
 
 /**
  * Cache service implementation to manage nuxeo cache
@@ -49,29 +53,92 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     private static final Log log = LogFactory.getLog(CacheServiceImpl.class);
 
-    protected final CacheRegistry cacheRegistry = new CacheRegistry();
+    protected final CacheDescriptorRegistry registry = new CacheDescriptorRegistry();
 
-    /**
-     * Contains the names of all caches which have not been registered from an extension
-     */
-    protected final List<String> autoregisteredCacheNames = new ArrayList<>();
+    /** Currently registered caches. */
+    protected final Map<String, CacheManagement> caches = new ConcurrentHashMap<>();
 
-    @Override
-    public Cache getCache(String name) {
-        return cacheRegistry.getCache(name);
+    // SimpleContributionRegistry is overkill and does not deal well with a "remove" feature
+    protected static class CacheDescriptorRegistry {
+
+        protected Map<String, List<CacheDescriptor>> allDescriptors = new HashMap<>();
+
+        protected Map<String, CacheDescriptor> effectiveDescriptors = new HashMap<>();
+
+        public void addContribution(CacheDescriptor descriptor) {
+            String name = descriptor.name;
+            allDescriptors.computeIfAbsent(name, n -> new ArrayList<>()).add(descriptor);
+            recompute(name);
+        }
+
+        public void removeContribution(CacheDescriptor descriptor) {
+            String name = descriptor.name;
+            allDescriptors.getOrDefault(name, Collections.emptyList()).remove(descriptor);
+            recompute(name);
+        }
+
+        protected void recompute(String name) {
+            CacheDescriptor desc = null;
+            for (CacheDescriptor d : allDescriptors.getOrDefault(name, Collections.emptyList())) {
+                if (d.remove) {
+                    desc = null;
+                } else {
+                    if (desc == null) {
+                        desc = d.clone();
+                    } else {
+                        desc.merge(d);
+                    }
+                }
+            }
+            if (desc == null) {
+                effectiveDescriptors.remove(name);
+            } else {
+                effectiveDescriptors.put(name, desc);
+            }
+        }
+
+        public CacheDescriptor getCacheDescriptor(String name) {
+            return effectiveDescriptors.get(name);
+        }
+
+        public Collection<CacheDescriptor> getCacheDescriptors() {
+            return effectiveDescriptors.values();
+        }
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        if (cacheRegistry.caches.size() > 0) {
-            Map<String, CacheDescriptor> descriptors = new HashMap<>(cacheRegistry.caches);
-            for (CacheDescriptor desc : descriptors.values()) {
-                cacheRegistry.contributionRemoved(desc.name, desc);
-                if (!autoregisteredCacheNames.remove(desc.name)) {
-                    log.warn("Unregistery leaked contribution " + desc.name);
-                }
-            }
-        }
+    public void registerContribution(Object contrib, String extensionPoint, ComponentInstance contributor) {
+        registerCacheDescriptor((CacheDescriptor) contrib);
+    }
+
+    @Override
+    public void registerCache(String name, int maxSize, int timeout) {
+        // start from default or empty
+        CacheDescriptor defaultDescriptor = registry.getCacheDescriptor(DEFAULT_CACHE_ID);
+        CacheDescriptor desc = defaultDescriptor == null ? new CacheDescriptor() : defaultDescriptor.clone();
+        // add explicit configuration
+        desc.name = name;
+        desc.ttl = Long.valueOf(timeout);
+        desc.options.put(OPTION_MAX_SIZE, String.valueOf(maxSize));
+        // add to registry (merging if needed)
+        registerCacheDescriptor(desc);
+        // start if needed
+        maybeStart(name);
+    }
+
+    public void registerCacheDescriptor(CacheDescriptor descriptor) {
+        registry.addContribution(descriptor);
+        log.info("Cache registered: " + descriptor.name);
+    }
+
+    @Override
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        unregisterCacheDescriptor((CacheDescriptor) contribution);
+    }
+
+    public void unregisterCacheDescriptor(CacheDescriptor descriptor) {
+        registry.removeContribution(descriptor);
+        log.info("Cache unregistered: " + descriptor.name);
     }
 
     @Override
@@ -86,65 +153,39 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     @Override
     public void start(ComponentContext context) {
-        cacheRegistry.start();
+        for (CacheDescriptor desc : registry.getCacheDescriptors()) {
+            CacheManagement cache = desc.newInstance();
+            cache.start();
+            caches.put(desc.name, cache);
+        }
     }
 
     @Override
     public void stop(ComponentContext context) {
-        cacheRegistry.stop();
+        for (CacheManagement cache : caches.values()) {
+            cache.stop();
+        }
+        caches.clear();
     }
+
+    protected void maybeStart(String name) {
+        if (!Framework.getRuntime().getComponentManager().isStarted()) {
+            return;
+        }
+        CacheManagement cache = caches.get(name);
+        if (cache != null) {
+            cache.stop();
+        }
+        cache = registry.getCacheDescriptor(name).newInstance();
+        cache.start();
+        caches.put(name, cache);
+    }
+
+    // --------------- API ---------------
 
     @Override
-    public void registerExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            CacheDescriptor descriptor = (CacheDescriptor) contrib;
-            registerCache(descriptor);
-        }
+    public Cache getCache(String name) {
+        return caches.get(name);
     }
 
-    public void registerCache(CacheDescriptor descriptor) {
-        cacheRegistry.addContribution(descriptor);
-    }
-
-    @Override
-    public void registerCache(String name, int maxSize, int timeout) {
-        CacheDescriptor desc;
-        if (cacheRegistry.caches.get(DEFAULT_CACHE_ID) != null) {
-            desc = new CacheDescriptor(cacheRegistry.caches.get(DEFAULT_CACHE_ID));
-        } else {
-            desc = new CacheDescriptor();
-        }
-        desc.name = name;
-        desc.ttl = timeout;
-        desc.options.put("maxSize", String.valueOf(maxSize));
-        if (cacheRegistry.caches.get(name) == null) {
-            registerCache(desc);
-            autoregisteredCacheNames.add(name);
-        } else {
-            CacheDescriptor oldDesc = cacheRegistry.caches.get(name);
-            cacheRegistry.merge(oldDesc, desc);
-        }
-    }
-
-    @Override
-    public void unregisterExtension(Extension extension) throws RuntimeException {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            CacheDescriptor descriptor = (CacheDescriptor) contrib;
-            cacheRegistry.removeContribution(descriptor);
-        }
-    }
-
-    public void unregisterCache(CacheDescriptor descriptor) {
-        cacheRegistry.removeContribution(descriptor);
-    }
-
-    @Override
-    public <T> T getAdapter(Class<T> adapter) {
-        if (adapter.isAssignableFrom(CacheRegistry.class)) {
-            return adapter.cast(cacheRegistry);
-        }
-        return super.getAdapter(adapter);
-    }
 }
