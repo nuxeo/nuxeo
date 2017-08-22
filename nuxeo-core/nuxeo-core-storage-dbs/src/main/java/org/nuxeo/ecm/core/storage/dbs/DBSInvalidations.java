@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.pubsub.SerializableInvalidations;
+import org.nuxeo.ecm.core.pubsub.SerializableAccumulableInvalidations;
 
 /**
  * A set of invalidations for a given repository.
@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.pubsub.SerializableInvalidations;
  *
  * @since 8.10
  */
-public class DBSInvalidations implements SerializableInvalidations {
+public class DBSInvalidations implements SerializableAccumulableInvalidations {
 
     private static final long serialVersionUID = 1L;
 
@@ -82,7 +82,7 @@ public class DBSInvalidations implements SerializableInvalidations {
     }
 
     @Override
-    public void add(SerializableInvalidations o) {
+    public void add(SerializableAccumulableInvalidations o) {
         DBSInvalidations other = (DBSInvalidations) o;
         if (other == null) {
             return;

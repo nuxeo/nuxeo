@@ -27,14 +27,14 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.pubsub.SerializableInvalidations;
+import org.nuxeo.ecm.core.pubsub.SerializableAccumulableInvalidations;
 
 /**
  * A set of invalidations.
  * <p>
  * Records both modified and deleted fragments, as well as "parents modified" fragments.
  */
-public class Invalidations implements SerializableInvalidations {
+public class Invalidations implements SerializableAccumulableInvalidations {
 
     private static final long serialVersionUID = 1L;
 
@@ -117,7 +117,7 @@ public class Invalidations implements SerializableInvalidations {
     }
 
     @Override
-    public void add(SerializableInvalidations o) {
+    public void add(SerializableAccumulableInvalidations o) {
         Invalidations other = (Invalidations) o;
         if (other == null) {
             return;

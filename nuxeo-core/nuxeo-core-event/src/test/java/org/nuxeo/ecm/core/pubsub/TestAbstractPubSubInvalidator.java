@@ -54,7 +54,7 @@ public class TestAbstractPubSubInvalidator {
         doNothing().when(pubSubService).registerSubscriber(anyString(), any());
     }
 
-    public static class DummyInvalidations implements SerializableInvalidations {
+    public static class DummyInvalidations implements SerializableAccumulableInvalidations {
 
         private static final long serialVersionUID = 1L;
 
@@ -65,7 +65,7 @@ public class TestAbstractPubSubInvalidator {
         }
 
         @Override
-        public void add(SerializableInvalidations o) {
+        public void add(SerializableAccumulableInvalidations o) {
             DummyInvalidations other = (DummyInvalidations) o;
             inval = inval || other.inval;
         }
@@ -91,7 +91,7 @@ public class TestAbstractPubSubInvalidator {
         }
     }
 
-    public static class DummyInvalidator extends AbstractPubSubInvalidator<DummyInvalidations> {
+    public static class DummyInvalidator extends AbstractPubSubInvalidationsAccumulator<DummyInvalidations> {
 
         @Override
         public DummyInvalidations newInvalidations() {

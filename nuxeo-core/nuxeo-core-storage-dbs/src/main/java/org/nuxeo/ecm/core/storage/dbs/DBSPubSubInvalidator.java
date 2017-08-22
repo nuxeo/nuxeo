@@ -21,14 +21,14 @@ package org.nuxeo.ecm.core.storage.dbs;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.nuxeo.ecm.core.pubsub.AbstractPubSubInvalidator;
+import org.nuxeo.ecm.core.pubsub.AbstractPubSubInvalidationsAccumulator;
 
 /**
  * PubSub implementation of {@link DBSClusterInvalidator}.
  *
  * @since 9.1
  */
-public class DBSPubSubInvalidator extends AbstractPubSubInvalidator<DBSInvalidations> implements DBSClusterInvalidator {
+public class DBSPubSubInvalidator extends AbstractPubSubInvalidationsAccumulator<DBSInvalidations> implements DBSClusterInvalidator {
 
     @Override
     public DBSInvalidations newInvalidations() {
