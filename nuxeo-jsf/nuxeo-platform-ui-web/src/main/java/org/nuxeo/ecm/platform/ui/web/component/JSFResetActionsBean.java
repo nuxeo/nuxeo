@@ -122,7 +122,6 @@ public class JSFResetActionsBean {
                 for (String item : split) {
                     if (!StringUtils.isBlank(item)) {
                         UIComponent anchor = ComponentRenderUtils.getComponent(component, item);
-                        log.error(anchor);
                         resetComponentResursive(anchor);
                     }
                 }
