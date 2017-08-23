@@ -244,7 +244,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
             try {
                 awsCredentialsProvider.getCredentials();
             } catch (AmazonClientException e) {
-                throw new RuntimeException("Missing AWS credentials and no instance role found");
+                throw new RuntimeException("Missing AWS credentials and no instance role found", e);
             }
         } else {
             awsCredentialsProvider = new BasicAWSCredentialsProvider(awsID, awsSecret);
