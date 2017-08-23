@@ -20,6 +20,7 @@ package org.nuxeo.functionaltests;
 
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,49 +37,94 @@ public class JavaScriptErrorCollector {
 
     protected final WebDriver driver;
 
+    protected List<JavaScriptErrorIgnoreRule> ignores;
+
     public JavaScriptErrorCollector(WebDriver driver) {
         super();
         this.driver = driver;
+        ignores = new ArrayList<>();
+        // Add this error per default which are actually a warning for FF 42
+        ignore(JavaScriptErrorIgnoreRule.startsWith("mutating the [[Prototype]] of an object"));
     }
 
-    protected List<String> IGNORED_PATTERN = Arrays.asList("mutating the [[Prototype]] of an object");
+    /**
+     * @since 9.3
+     */
+    public static JavaScriptErrorCollector from(WebDriver driver) {
+        return new JavaScriptErrorCollector(driver);
+    }
+
+    /**
+     * @since 9.3
+     */
+    public JavaScriptErrorCollector ignore(JavaScriptErrorIgnoreRule... ignores) {
+        this.ignores.addAll(Arrays.asList(ignores));
+        return this;
+    }
 
     /**
      * Throws an {@link AssertionError} when JavaScript errors are detected on current page.
      */
     public void checkForErrors() {
-        if (driver != null) {
-            List<JavaScriptError> jsErrors = JavaScriptError.readErrors(driver);
-            if (jsErrors != null && !jsErrors.isEmpty()) {
-                StringBuilder msg = new StringBuilder();
-                int i = 0;
-                for (JavaScriptError jsError : jsErrors) {
-                    String error = jsError.getErrorMessage();
-                    if (!jsError.getSourceName().startsWith(AbstractTest.NUXEO_URL)) {
-                        // Skip External lib
-                        continue;
-                    }
-
-                    // skip errors as well which are actually warnings for FF 42
-                    if (IGNORED_PATTERN.stream().anyMatch(error::startsWith)) {
-                        continue;
-                    }
-                    if (i != 0) {
-                        msg.append(", ");
-                    }
-                    i++;
-                    msg.append("\"").append(error).append("\"");
-                    msg.append(" at ").append(jsError.getSourceName());
-                    msg.append(" line ").append(jsError.getLineNumber());
-                }
-                if (i > 0) {
-                    msg.append("]");
-                    msg.insert(0, jsErrors.size() + " Javascript error(s) detected: " + "[");
-                    fail(msg.toString());
-                }
-            }
+        if (driver == null) {
+            return;
         }
 
+        List<JavaScriptError> jsErrors = JavaScriptError.readErrors(driver);
+        if (jsErrors != null && !jsErrors.isEmpty()) {
+            StringBuilder msg = new StringBuilder();
+            int i = 0;
+            for (JavaScriptError jsError : jsErrors) {
+                // skip errors that match an ignored rule
+                if (ignores.stream().anyMatch(e -> e.isIgnored(jsError))) {
+                    continue;
+                }
+                if (i != 0) {
+                    msg.append(", ");
+                }
+                i++;
+                msg.append("\"").append(jsError.getErrorMessage()).append("\"");
+                msg.append(" at ").append(jsError.getSourceName());
+                msg.append(" line ").append(jsError.getLineNumber());
+            }
+            if (i > 0) {
+                msg.append("]");
+                msg.insert(0, jsErrors.size() + " Javascript error(s) detected: " + "[");
+                fail(msg.toString());
+            }
+        }
     }
 
+    /**
+     * @since 9.3
+     */
+    public static class JavaScriptErrorIgnoreRule {
+        protected String text = "";
+
+        protected String source = "";
+
+        protected JavaScriptErrorIgnoreRule(String text) {
+            this.text = text;
+        }
+
+        /**
+         * Ensure that error has to be ignored or not.
+         */
+        protected boolean isIgnored(JavaScriptError error) {
+            if (error.getErrorMessage().startsWith(text)) {
+                return error.getSourceName().startsWith(source);
+            }
+
+            return false;
+        }
+
+        public JavaScriptErrorIgnoreRule withSource(String source) {
+            this.source = source;
+            return this;
+        }
+
+        public static JavaScriptErrorIgnoreRule startsWith(String text) {
+            return new JavaScriptErrorIgnoreRule(text);
+        }
+    }
 }
