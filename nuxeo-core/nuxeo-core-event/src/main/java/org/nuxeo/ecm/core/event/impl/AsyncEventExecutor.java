@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.exception.InterruptedExceptions;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -222,7 +223,8 @@ public class AsyncEventExecutor {
         public void cleanUp(boolean ok, Exception e) {
             super.cleanUp(ok, e);
             bundle.disconnect();
-            if (e != null && !isInterrupted(e) && !(e instanceof ConcurrentUpdateException)) {
+            if (e != null && !InterruptedExceptions.hasInterruptedCause(e)
+                    && !(e instanceof ConcurrentUpdateException)) {
                 log.error("Failed to execute async event " + bundle.getName() + " on listener " + listenerName, e);
             }
             if (listener != null) {
