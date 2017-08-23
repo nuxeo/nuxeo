@@ -51,9 +51,10 @@ public abstract class NuxeoITCase extends NuxeoITCaseHelper {
     private static final String PASSWD = "gudule1";
 
     @Before()
-    public void before() {
+    public void before() throws UserNotConnectedException {
         RestHelper.createUser(USERNAME, PASSWD, "firstname1", "lastname1", "company1", "email1", "members");
         RestHelper.addPermission(WORKSPACES_PATH, USERNAME, "Write");
+        login(USERNAME, PASSWD);
     }
 
     @After
@@ -74,13 +75,8 @@ public abstract class NuxeoITCase extends NuxeoITCaseHelper {
         return d;
     }
 
-    protected void doLog() throws UserNotConnectedException {
-        login(USERNAME, PASSWD);
-    }
-
     @Test
     public void testCreateStudioDocument() throws Exception {
-        doLog();
         getOrCreateTestWorkspace().getContentTab().getDocumentCreatePage("My test document", StudioDocumentPage.class);
 
         StudioDocumentPage page = getTestStudioDocument();
@@ -99,7 +95,6 @@ public abstract class NuxeoITCase extends NuxeoITCaseHelper {
 
     @Test
     public void testEditStudioDocument() throws Exception {
-        doLog();
         getOrCreateTestWorkspace().getContentTab().getDocumentCreatePage("My test document", StudioDocumentPage.class);
 
         StudioDocumentPage page = getTestStudioDocument();
@@ -118,8 +113,6 @@ public abstract class NuxeoITCase extends NuxeoITCaseHelper {
 
     @Test
     public void testStudioTab() throws Exception {
-        doLog();
-
         // create an invoice doc
         getOrCreateTestWorkspace().getContentTab().getDocumentCreatePage("Invoice", FileCreationFormPage.class);
 
@@ -162,7 +155,6 @@ public abstract class NuxeoITCase extends NuxeoITCaseHelper {
 
     @Test
     public void testWorkflow() throws Exception {
-        doLog();
         getOrCreateTestWorkspace().getContentTab().getDocumentCreatePage("My test document", StudioDocumentPage.class);
         StudioDocumentPage page = getTestStudioDocument();
         page.createDocument("My creation title", true)
@@ -175,8 +167,6 @@ public abstract class NuxeoITCase extends NuxeoITCaseHelper {
 
     @Test
     public void testCustomFilterSearch() throws Exception {
-        doLog();
-
         SearchPage searchPage = asPage(DocumentBasePage.class).goToSearchPage();
         String selectedCV = searchPage.getSelectedSearch();
         Assert.assertEquals(SearchPage.DEFAULT_SEARCH, selectedCV);
@@ -185,8 +175,6 @@ public abstract class NuxeoITCase extends NuxeoITCaseHelper {
         searchPage.selectSearch("testSearch");
         arm.end();
         Assert.assertEquals("testSearch", asPage(SearchPage.class).getSelectedSearch());
-
-        logout();
     }
 
 }
