@@ -370,6 +370,17 @@ public class RestHelper {
         }
     }
 
+    /**
+     * Runs a page provider on Nuxeo instance and return the total size of documents.
+     *
+     * @return the total size of documents
+     * @since 9.3
+     */
+    public static int countQueryPageProvider(String providerName) {
+        Documents result = CLIENT.repository().queryByProvider(providerName, "1", "0", "-1", "dc:title", "ASC", null);
+        return result.getTotalSize();
+    }
+
     // ------------------
     // Directory Services
     // ------------------

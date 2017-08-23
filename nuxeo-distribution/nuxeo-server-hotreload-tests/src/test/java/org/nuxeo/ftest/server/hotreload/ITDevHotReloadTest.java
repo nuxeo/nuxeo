@@ -187,6 +187,15 @@ public class ITDevHotReloadTest {
         RestHelper.addGroupToDelete("groupTest");
     }
 
+    @Test
+    public void testHotReloadPageProvider() {
+        deployDevBundle();
+        // test fetch result of page provider - SELECT * FROM File
+        RestHelper.createDocument("/", "File", "file");
+        int nbDocs = RestHelper.countQueryPageProvider("SIMPLE_NXQL_FOR_HOT_RELOAD_PAGE_PROVIDER");
+        assertEquals(1, nbDocs);
+    }
+
     /**
      * Deploys the dev bundle located under src/test/resources/ITDevHotReloadTest/${testName}.
      */
