@@ -101,11 +101,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     private static final Log log = LogFactory.getLog(MongoDBRepository.class);
 
-    public static final Long ZERO = Long.valueOf(0);
+    public static final Long LONG_ZERO = Long.valueOf(0);
 
-    public static final Long ONE = Long.valueOf(1);
+    public static final Double ZERO = Double.valueOf(0);
 
-    public static final Long MINUS_ONE = Long.valueOf(-1);
+    public static final Double ONE = Double.valueOf(1);
+
+    public static final Double MINUS_ONE = Double.valueOf(-1);
 
     public static final String DB_DEFAULT = "nuxeo";
 
@@ -294,7 +296,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             // create the id counter
             DBObject idCounter = new BasicDBObject();
             idCounter.put(MONGODB_ID, COUNTER_NAME_UUID);
-            idCounter.put(COUNTER_FIELD, ZERO);
+            idCounter.put(COUNTER_FIELD, LONG_ZERO);
             countersColl.insert(idCounter);
         }
         initRoot();

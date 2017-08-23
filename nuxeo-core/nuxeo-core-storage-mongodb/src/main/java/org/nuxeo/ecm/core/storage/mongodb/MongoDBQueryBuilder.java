@@ -94,11 +94,13 @@ import com.mongodb.QueryOperators;
  */
 public class MongoDBQueryBuilder {
 
-    private static final Long ZERO = Long.valueOf(0);
+    public static final Long LONG_ZERO = Long.valueOf(0);
 
-    private static final Long ONE = Long.valueOf(1);
+    public static final Long LONG_ONE = Long.valueOf(1);
 
-    private static final Long MINUS_ONE = Long.valueOf(-1);
+    public static final Double ONE = Double.valueOf(1);
+
+    public static final Double MINUS_ONE = Double.valueOf(-1);
 
     protected static final String DATE_CAST = "DATE";
 
@@ -610,9 +612,9 @@ public class MongoDBQueryBuilder {
         if (fieldInfo.isBoolean()) {
             // convert 0 / 1 to actual booleans
             if (right instanceof Long) {
-                if (ZERO.equals(right)) {
+                if (LONG_ZERO.equals(right)) {
                     right = fieldInfo.isTrueOrNullBoolean ? null : FALSE;
-                } else if (ONE.equals(right)) {
+                } else if (LONG_ONE.equals(right)) {
                     right = TRUE;
                 } else {
                     throw new QueryParseException("Invalid boolean: " + right);
