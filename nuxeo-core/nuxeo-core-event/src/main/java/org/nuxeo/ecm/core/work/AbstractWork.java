@@ -329,6 +329,11 @@ public abstract class AbstractWork implements Work {
                 log.debug("Retrying work due to concurrent update (" + i + "): " + this);
                 log.trace("Concurrent update", suppressed);
             }
+            if (InterruptedExceptions.hasInterruptedCause(suppressed)) {
+                // if we're here suppressed != null so we destroy SequenceTracer
+                log.debug("No need to retry the work with id=" + getId() + ", work manager is shutting down");
+                break;
+            }
             try {
                 runWorkWithTransaction();
                 SequenceTracer.stop("Work done " + (completionTime - startTime) + " ms");
