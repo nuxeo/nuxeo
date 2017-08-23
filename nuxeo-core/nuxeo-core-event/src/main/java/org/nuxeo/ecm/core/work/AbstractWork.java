@@ -30,6 +30,7 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.exception.InterruptedExceptions;
 import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -423,7 +424,7 @@ public abstract class AbstractWork implements Work {
     @Override
     public void cleanUp(boolean ok, Exception e) {
         if (!ok) {
-            if (isInterrupted(e)) {
+            if (InterruptedExceptions.hasInterruptedCause(e)) {
                 log.debug("Interrupted work: " + this);
             } else {
                 if (!(e instanceof ConcurrentUpdateException)) {
@@ -446,17 +447,6 @@ public abstract class AbstractWork implements Work {
         } catch (LoginException le) {
             throw new NuxeoException(le);
         }
-    }
-
-    protected boolean isInterrupted(Exception e) {
-        Throwable exc = e;
-        while (exc != null) {
-            if (exc instanceof InterruptedException) {
-                return true;
-            }
-            exc = exc.getCause();
-        }
-        return false;
     }
 
     @Override
