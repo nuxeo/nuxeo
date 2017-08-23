@@ -30,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.functionaltests.RestHelper;
+import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -55,7 +56,7 @@ public class ITDevJSFHotReloadTest extends NuxeoITCase {
     };
 
     @Before
-    public void before() {
+    public void before() throws UserNotConnectedException {
         super.before();
         deployDevBundle();
     }
