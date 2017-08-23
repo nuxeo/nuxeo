@@ -8,7 +8,8 @@
 <c:when test="#{!removeActionOptims}">
   <nxu:set var="contentViewState"
     value="#{contentViewRestActions.getContentViewState(contentView)}"
-    cache="true">
+    cache="true"
+    useAlias="true">
 
     <nxd:restDocumentLink document="#{currentDocument}"
       view="#{widgetProperty_view}" addTabInfo="false"
