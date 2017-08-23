@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
@@ -47,6 +48,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
+import org.nuxeo.functionaltests.JavaScriptErrorCollector.JavaScriptErrorIgnoreRule;
 import org.nuxeo.functionaltests.drivers.ChromeDriverProvider;
 import org.nuxeo.functionaltests.drivers.FirefoxDriverProvider;
 import org.nuxeo.functionaltests.drivers.RemoteFirefoxDriverProvider;
@@ -254,13 +256,23 @@ public abstract class AbstractTest {
     }
 
     /**
+     * @since 9.3
+     */
+    protected JavaScriptErrorIgnoreRule[] ignores = new JavaScriptErrorIgnoreRule[0];
+
+    /**
+     * @since 9.3
+     */
+    public void addAfterTestIgnores(JavaScriptErrorIgnoreRule... ignores) {
+        this.ignores = ArrayUtils.addAll(this.ignores, ignores);
+    }
+
+    /**
      * @since 7.1
      */
     @After
     public void checkJavascriptError() {
-        if (driver != null) {
-            new JavaScriptErrorCollector(driver).checkForErrors();
-        }
+        JavaScriptErrorCollector.from(driver).ignore(ignores).checkForErrors();
     }
 
     @AfterClass
@@ -278,10 +290,8 @@ public abstract class AbstractTest {
         }
     }
 
-    public static <T> T get(String url, Class<T> pageClassToProxy) {
-        if (driver != null) {
-            new JavaScriptErrorCollector(driver).checkForErrors();
-        }
+    public static <T> T get(String url, Class<T> pageClassToProxy, JavaScriptErrorIgnoreRule... ignores) {
+        JavaScriptErrorCollector.from(driver).ignore(ignores).checkForErrors();
         driver.get(url);
         return asPage(pageClassToProxy);
     }
@@ -291,10 +301,8 @@ public abstract class AbstractTest {
      *
      * @since 8.3
      */
-    public static void open(String url) {
-        if (driver != null) {
-            new JavaScriptErrorCollector(driver).checkForErrors();
-        }
+    public static void open(String url, JavaScriptErrorIgnoreRule... ignores) {
+        JavaScriptErrorCollector.from(driver).ignore(ignores).checkForErrors();
         driver.get(NUXEO_URL + url + "?conversationId=0NXMAIN");
     }
 
