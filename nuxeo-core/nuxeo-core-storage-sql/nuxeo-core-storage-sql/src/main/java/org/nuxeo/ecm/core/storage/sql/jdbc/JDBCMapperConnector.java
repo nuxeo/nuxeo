@@ -47,14 +47,6 @@ public class JDBCMapperConnector implements InvocationHandler {
         defaultRunner = noSharing ? TransactionHelper::runInNewTransaction : TransactionHelper::runInTransaction;
     }
 
-    protected Object doInvoke(Method method, Object[] args) throws Throwable {
-        try {
-            return method.invoke(mapper, args);
-        } catch (InvocationTargetException cause) {
-            return cause.getTargetException();
-        }
-    }
-
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String name = method.getName();
@@ -62,7 +54,7 @@ public class JDBCMapperConnector implements InvocationHandler {
             if (Arrays.asList("start", "end", "prepare", "commit", "rollback").contains(name)) {
                 throw new SystemException("wrong tx management invoke on managed connection");
             }
-            return doInvoke(method, args);
+            return doDirectInvoke(method, args);
         }
         // should not operate with tx mamagement (managed connection)
         if ("start".equals(name)) {
@@ -81,15 +73,21 @@ public class JDBCMapperConnector implements InvocationHandler {
             return null;
         }
         if ("clearCache".equals(name)) {
-            return doInvoke(method, args);
+            return doDirectInvoke(method, args);
         }
         if ("receiveInvalidations".equals(name)) {
-            return doInvoke(method, args);
+            return doDirectInvoke(method, args);
         }
         if ("sendInvalidations".equals(name)) {
-            return doInvoke(method, args);
+            return doDirectInvoke(method, args);
         }
         return doConnectAndInvoke(method, args);
+    }
+
+    protected Object doDirectInvoke(Method method, Object[] args) throws Throwable {
+        Object result = doInvoke(method, args);
+        throwIfThrowable(result);
+        return result;
     }
 
     protected Object doConnectAndInvoke(Method method, Object[] args) throws Throwable {
@@ -97,24 +95,34 @@ public class JDBCMapperConnector implements InvocationHandler {
         Object result = runnerOf(name).apply(() -> {
             mapper.connect(noSharingOf(name));
             try {
-                try {
-                    return doInvoke(method, args);
-                } catch (Throwable cause) {
-                    return cause;
-                }
+                return doInvoke(method, args);
             } finally {
                 if (mapper.isConnected()) {
                     mapper.disconnect();
                 }
             }
         });
+        throwIfThrowable(result);
+        return result;
+    }
+
+    protected Object doInvoke(Method method, Object[] args) {
+        try {
+            return method.invoke(mapper, args);
+        } catch (InvocationTargetException cause) {
+            return cause.getTargetException();
+        } catch (Exception e) { // no need to catch Error
+            return e;
+        }
+    }
+
+    protected static void throwIfThrowable(Object result) throws Throwable {
         if (result instanceof Throwable) {
             if (result instanceof Exception) {
                 ExceptionUtils.checkInterrupt((Exception) result);
             }
             throw (Throwable) result;
         }
-        return result;
     }
 
     protected Function<Supplier<Object>, Object> runnerOf(String name) {
