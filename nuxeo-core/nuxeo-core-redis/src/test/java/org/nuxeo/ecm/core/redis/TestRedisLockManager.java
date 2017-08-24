@@ -29,7 +29,6 @@ import java.util.Calendar;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Lock;
-import org.nuxeo.ecm.core.cache.CacheFeature;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.runtime.api.Framework;
@@ -37,7 +36,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CacheFeature.class, RedisFeature.class })
+@Features(RedisFeature.class)
 public class TestRedisLockManager {
 
     protected static void assertTimeEquals(Calendar expected, Lock lock) {

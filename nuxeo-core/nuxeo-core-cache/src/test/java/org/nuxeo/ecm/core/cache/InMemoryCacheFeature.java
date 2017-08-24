@@ -37,11 +37,6 @@ public class InMemoryCacheFeature extends SimpleFeature {
     public static final String MAXSIZE_TEST_CACHE_NAME = "maxsize-test-cache";
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
-        runner.getFeature(CacheFeature.class).enable();
-    }
-
-    @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         binder.bind(Cache.class).annotatedWith(Names.named(MAXSIZE_TEST_CACHE_NAME)).toProvider(new Provider<Cache>() {
 
