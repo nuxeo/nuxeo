@@ -45,17 +45,6 @@ public class CacheFeature extends SimpleFeature {
 
     public static final String VAL = "val1";
 
-    boolean enabled = false;
-
-    public void enable() {
-        enabled = true;
-    }
-
-    @Override
-    public void start(FeaturesRunner runner) throws Exception {
-        Assume.assumeTrue(enabled);
-    }
-
     @Override
     public void configure(final FeaturesRunner runner, Binder binder) {
         bindCache(binder, DEFAULT_TEST_CACHE_NAME);

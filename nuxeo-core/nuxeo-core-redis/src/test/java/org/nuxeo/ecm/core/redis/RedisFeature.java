@@ -25,7 +25,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.core.cache.CacheFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.test.runner.Defaults;
@@ -37,7 +36,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import redis.clients.jedis.Protocol;
 
-@Features({ CacheFeature.class })
+@Features({ RuntimeFeature.class })
 public class RedisFeature extends SimpleFeature {
 
     /**
@@ -200,7 +199,6 @@ public class RedisFeature extends SimpleFeature {
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
         config = runner.getConfig(Config.class);
-        runner.getFeature(CacheFeature.class).enable();
     }
 
     @Override
