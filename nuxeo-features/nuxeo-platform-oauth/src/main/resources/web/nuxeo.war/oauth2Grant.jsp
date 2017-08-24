@@ -113,6 +113,10 @@ String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl()
     font-weight: bold;
   }
 
+  button.disabled {
+    cursor: not-allowed;
+  }
+
   @media all and (min-width: 500px) {
     form {
       padding: 2.5em;
@@ -129,7 +133,7 @@ String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl()
   <img width="<%=logoWidth%>" height="<%=logoHeight%>" alt="<%=logoAlt%>" src="<%=logoUrl%>" />
 </header>
 <div class="container">
-  <form action="<%=context%>/oauth2/authorize_submit" method="POST">
+  <form id="oauth2Form" action="<%=context%>/oauth2/authorize_submit" method="POST">
     <!-- To prevent caching -->
     <%
       response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
@@ -168,6 +172,22 @@ String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl()
     </div>
   </form>
 </div>
+
+<script type="text/javascript">
+  var submitted = false;
+  var oauth2Form = document.getElementById("oauth2Form");
+  oauth2Form.onsubmit = function(evt) {
+    if (submitted) {
+      evt.preventDefault();
+    } else {
+      [].slice.call(oauth2Form.getElementsByTagName("button")).forEach(function(elt) {
+        elt.classList.add("disabled");
+      });
+      submitted = true;
+    }
+    return true;
+  };
+</script>
 
 </body>
 </html>
