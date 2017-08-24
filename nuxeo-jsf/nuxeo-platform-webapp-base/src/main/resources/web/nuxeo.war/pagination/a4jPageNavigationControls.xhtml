@@ -12,6 +12,7 @@
  Parameters :
   - contentIdToBeReRendered: mandatory id(s) of components to re-render. if
     empty, actions will not be displayed.
+  - controlsId: unique id used to render buttons ids
 </ui:remove>
 
 <a4j:region>
@@ -20,12 +21,14 @@
     rendered="#{provider.nextPageAvailable or provider.previousPageAvailable}">
 
     <a4j:commandButton action="#{provider.rewind}"
+                     id="#{controlsId}_rewind"
                      alt="#{messages['command.navigation.rewind']}"
                      image="/icons/navigation_first.png"
                      render="#{contentIdToBeReRendered}" >
       <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
     </a4j:commandButton>
     <a4j:commandButton action="#{provider.previous}"
+                     id="#{controlsId}_prev"
                      alt="#{messages['command.navigation.previous']}"
                      image="/icons/navigation_previous.png"
                      render="#{contentIdToBeReRendered}" >
@@ -34,10 +37,12 @@
 
     <h:panelGroup styleClass="currentPageStatus">
         <h:outputText
-         value="#{(provider.resultsCount ge 0 or provider.currentPageIndex ge provider.pageLimit) ? provider.currentPageStatus : nxu:translate('command.navigation.status.unknownPageAmount', provider.currentPageIndex + 1, provider.pageLimit)}" />
+          id="#{controlsId}_status"
+          value="#{(provider.resultsCount ge 0 or provider.currentPageIndex ge provider.pageLimit) ? provider.currentPageStatus : nxu:translate('command.navigation.status.unknownPageAmount', provider.currentPageIndex + 1, provider.pageLimit)}" />
     </h:panelGroup>
 
     <a4j:commandButton action="#{provider.next}"
+                     id="#{controlsId}_next"
                      alt="#{messages['command.navigation.next']}"
                      image="/icons/navigation_next.png"
                      render="#{contentIdToBeReRendered}" >
@@ -45,13 +50,14 @@
     </a4j:commandButton>
 
     <a4j:commandButton action="#{provider.last}"
+                     id="#{controlsId}_last"
                      alt="#{messages['command.navigation.fastforward']}"
                      image="/icons/navigation_last.png"
                      render="#{contentIdToBeReRendered}" >
       <f:attribute name="disabled" value="#{not provider.lastPageAvailable}"/>
     </a4j:commandButton>
 
-    <a4j:status>
+    <a4j:status id="#{controlsId}_a4j_status">
       <f:facet name="start">
         <h:graphicImage value="/img/standart_waiter.gif" />
       </f:facet>
