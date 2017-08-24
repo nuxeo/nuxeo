@@ -29,10 +29,14 @@
   <c:if test="#{not hideTopPaginationControls}">
     <c:choose>
       <c:when test="#{useAjaxPagination == null or useAjaxPagination}">
-        <ui:include src="/pagination/a4jPageNavigationControls.xhtml" />
+        <ui:include src="/pagination/a4jPageNavigationControls.xhtml">
+          <ui:param name="controlsId" value="#{formId}_nav_top" />
+        </ui:include>
       </c:when>
       <c:otherwise>
-        <ui:include src="/pagination/pageNavigationControls.xhtml" />
+        <ui:include src="/pagination/pageNavigationControls.xhtml">
+          <ui:param name="controlsId" value="#{formId}_nav_top" />
+        </ui:include>
       </c:otherwise>
     </c:choose>
   </c:if>
@@ -135,10 +139,14 @@
   <ui:insert name="pageNavigationControls">
     <c:choose>
       <c:when test="#{useAjaxPagination == null or useAjaxPagination}">
-        <ui:include src="/pagination/a4jPageNavigationControls.xhtml" />
+        <ui:include src="/pagination/a4jPageNavigationControls.xhtml">
+          <ui:param name="controlsId" value="#{formId}_nav_bottom" />
+        </ui:include>
       </c:when>
       <c:otherwise>
-        <ui:include src="/pagination/pageNavigationControls.xhtml" />
+        <ui:include src="/pagination/pageNavigationControls.xhtml">
+          <ui:param name="controlsId" value="#{formId}_nav_bottom" />
+        </ui:include>
       </c:otherwise>
     </c:choose>
   </ui:insert>
