@@ -129,7 +129,7 @@ public class LocaleStartup implements Serializable {
         boolean set = false;
         if (ctx != null) {
             Locale jsfDefault = ctx.getApplication().getDefaultLocale();
-            if (jsfDefault != null && jsfDefault.getLanguage().equals(locale)) {
+            if (jsfDefault != null && jsfDefault.equals(locale)) {
                 set = true;
             } else {
                 Iterator<Locale> it = ctx.getApplication().getSupportedLocales();
