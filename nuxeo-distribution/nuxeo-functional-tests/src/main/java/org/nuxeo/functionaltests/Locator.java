@@ -432,6 +432,14 @@ public class Locator {
     }
 
     /**
+     * @since 9.3
+     */
+    public static void waitUntilWindowClosed(final String windowHandle) {
+        Wait<WebDriver> wait = getFluentWait();
+        wait.until(driver -> !driver.getWindowHandles().contains(windowHandle));
+    }
+
+    /**
      * Fluent wait for an element to be present, checking every 100 ms.
      *
      * @since 5.7.2

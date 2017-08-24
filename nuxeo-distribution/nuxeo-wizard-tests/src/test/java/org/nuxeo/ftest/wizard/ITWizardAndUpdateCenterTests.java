@@ -239,15 +239,15 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         AbstractTest.switchToPopup("sso");
         driver.findElement(By.id("username")).sendKeys(CONNECT_LOGIN);
         driver.findElement(By.id("password")).sendKeys(getTestPassword());
+        String windowHandle = driver.getWindowHandle();
         driver.findElement(By.cssSelector(".btn-submit")).click();
-//        driver.findElement(By.id("navToCB")).click();
+        Locator.waitUntilWindowClosed(windowHandle);
 
         // select the associated project
         switchToPopup("site/connect/wizardInstanceRegistration");
 
         connectSignIn.selectOption("project", CONNECT_PROJECT_SELECTOR_UUID);
         connectSignIn.submit();
-//        driver.findElement(By.id("navToCB")).click();
 
         driver.switchTo().window(mainWindowsHandle);
         Thread.sleep(1000);
@@ -351,7 +351,8 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         SystemHomePage systemHomePage = adminHome.getSystemHomePage();
         systemHomePage.selectSubTab("Nuxeo distribution");
 
-        WebElement bundle = Locator.findElementWithTimeout(By.xpath("//td[text()[normalize-space()='org.nuxeo.ecm.platform.audit.web.access']]"));
+        WebElement bundle = Locator.findElementWithTimeout(
+                By.xpath("//td[text()[normalize-space()='org.nuxeo.ecm.platform.audit.web.access']]"));
         assertNotNull(bundle);
 
         // Need to make HeaderLinksSubPage#logout work and use it
