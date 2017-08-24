@@ -3,11 +3,11 @@
 
   <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
 
-    <cache name="entry-cache" class="org.nuxeo.ecm.core.redis.contribs.RedisCache">
+    <cache name="entry-cache">
       <ttl>1</ttl><!-- minutes -->
     </cache>
 
-    <cache name="entry-cache-without-references" class="org.nuxeo.ecm.core.redis.contribs.RedisCache">
+    <cache name="entry-cache-without-references">
       <ttl>1</ttl><!-- minutes -->
     </cache>
 

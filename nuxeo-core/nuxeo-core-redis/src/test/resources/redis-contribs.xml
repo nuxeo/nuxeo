@@ -11,7 +11,7 @@
       class="org.nuxeo.ecm.core.redis.contribs.RedisLockManager" />
   </extension>
   <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
-    <cache name="default-test-cache" class="org.nuxeo.ecm.core.redis.contribs.RedisCache">
+    <cache name="default-test-cache">
       <ttl>1</ttl>
     </cache>
   </extension>

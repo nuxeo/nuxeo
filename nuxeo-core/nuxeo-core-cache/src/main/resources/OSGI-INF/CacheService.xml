@@ -21,20 +21,9 @@
         <option name="maxSize">10</option>
         <option name="concurrencyLevel">10</option>
       </cache>
-      The class attribute must link a class that implements the
-      CoreCache
-      interface. The default implementation 'org.nuxeo.ecm.core.cache.CacheImpl'
-      is based on
-      Google Guava
-      implementation that does not support distributed
-      cache
-      You can use the 'org.nuxeo.ecm.core.redis.contribs.RedisCache' for the
-      implementation on top of redis that allow distributed cache (make sure
-      that a contrib to RedisService define a redis server)
-      You can also create
-      your own implementation
-      by extending the AsbtractCache class and then use
-      it as an implementation class
+      The class attribute may specify a class that implements the CacheManagement interface.
+      The default implementation 'org.nuxeo.ecm.core.cache.InMemoryCacheImpl'
+      is based on Google Guava.
       <p />
       The max size set the max number of elements contained in the cache
       <p />
