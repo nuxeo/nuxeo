@@ -1048,18 +1048,13 @@
 
       <!-- MQueues -->
       <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
+        <groupId>org.nuxeo.lib.core</groupId>
         <artifactId>nuxeo-mqueues-core</artifactId>
         <version>${nuxeo.mqueues.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-mqueues-importer</artifactId>
-        <version>${nuxeo.mqueues.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-mqueues-automation</artifactId>
+        <artifactId>nuxeo-mqueues-contribs</artifactId>
         <version>${nuxeo.mqueues.version}</version>
       </dependency>
 
