@@ -174,6 +174,11 @@ public class ITSearchTabTest extends AbstractTest {
         driver.switchTo().alert().accept();
     }
 
+    protected void checkURL(String searchName) {
+        assertTrue("URL is " + driver.getCurrentUrl(),
+                driver.getCurrentUrl().contains("search?contentViewName=" + searchName));
+    }
+
     @Test
     public void testSearch() throws UserNotConnectedException, IOException {
         DocumentBasePage documentBasePage = loginAsTestUser();
@@ -286,11 +291,14 @@ public class ITSearchTabTest extends AbstractTest {
         // save this search
         String ssTitle = "Test Saved Search " + new Date().getTime();
         saveSearch(ssTitle);
+        checkURL("simple_search");
 
         // get default search
         searchPage.getDefaultSearch();
+        checkURL("default_search");
         // get saved search
         quickSearch = searchPage.getSearch(ssTitle, QuickSearchSubPage.class);
+        checkURL("simple_search");
         resultSubPage = searchPage.getSearchResultsSubPage();
 
         assertEquals(ResultLayout.LISTING, resultSubPage.getContentView().getResultLayout());
@@ -303,7 +311,7 @@ public class ITSearchTabTest extends AbstractTest {
     }
 
     /**
-     * Non-regression test for NXP-21937 use case.
+     * Non-regression test for NXP-21937 and NXP-22976 use cases.
      */
     @Test
     public void testSavedSearchSelection() throws UserNotConnectedException, IOException {
@@ -341,18 +349,21 @@ public class ITSearchTabTest extends AbstractTest {
         SearchResultsSubPage resultSubPage1 = searchPage.getSearchResultsSubPage();
         assertEquals(ssTitle1, resultSubPage1.getSearchViewTitle());
         assertEquals(4, resultSubPage1.getNumberOfDocumentInCurrentPage());
+        checkURL("default_search");
         // second saved search
         DefaultSearchSubPage saved2 = searchPage.getSearch(ssTitle2, DefaultSearchSubPage.class);
         assertEquals("foo", saved2.getFullTextElement().getInputValue());
         SearchResultsSubPage resultSubPage2 = searchPage.getSearchResultsSubPage();
         assertEquals(ssTitle2, resultSubPage2.getSearchViewTitle());
         assertEquals(0, resultSubPage2.getNumberOfDocumentInCurrentPage());
+        checkURL("default_search");
         // switch again
         saved1 = searchPage.getSearch(ssTitle1, DefaultSearchSubPage.class);
         assertEquals("ITSearchTabTest", saved1.getFullTextElement().getInputValue());
         resultSubPage1 = searchPage.getSearchResultsSubPage();
         assertEquals(ssTitle1, resultSubPage1.getSearchViewTitle());
         assertEquals(4, resultSubPage1.getNumberOfDocumentInCurrentPage());
+        checkURL("default_search");
 
         deleteSavedSearches(asPage(SearchPage.class));
         logout();
@@ -392,6 +403,22 @@ public class ITSearchTabTest extends AbstractTest {
         logout();
 
         RestHelper.removePermissions("/", testgroup);
+    }
+
+    /**
+     * Non-regression test for NXP-22976 use case.
+     */
+    @Test
+    public void testSearchURLUpdateOnSelection() throws UserNotConnectedException {
+        loginAsTestUser().goToSearchPage();
+        checkURL("default_search");
+        asPage(SearchPage.class).getQuickSearch();
+        checkURL("simple_search");
+        asPage(SearchPage.class).getNXQLSearch();
+        checkURL("nxql_search");
+        asPage(SearchPage.class).getDefaultSearch();
+        checkURL("default_search");
+        logout();
     }
 
 }
