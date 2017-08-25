@@ -30,8 +30,8 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.exception.InterruptedExceptions;
 import org.nuxeo.common.logging.SequenceTracer;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -329,7 +329,7 @@ public abstract class AbstractWork implements Work {
                 log.debug("Retrying work due to concurrent update (" + i + "): " + this);
                 log.trace("Concurrent update", suppressed);
             }
-            if (InterruptedExceptions.hasInterruptedCause(suppressed)) {
+            if (ExceptionUtils.hasInterruptedCause(suppressed)) {
                 // if we're here suppressed != null so we destroy SequenceTracer
                 log.debug("No need to retry the work with id=" + getId() + ", work manager is shutting down");
                 break;
@@ -429,7 +429,7 @@ public abstract class AbstractWork implements Work {
     @Override
     public void cleanUp(boolean ok, Exception e) {
         if (!ok) {
-            if (InterruptedExceptions.hasInterruptedCause(e)) {
+            if (ExceptionUtils.hasInterruptedCause(e)) {
                 log.debug("Interrupted work: " + this);
             } else {
                 if (!(e instanceof ConcurrentUpdateException)) {

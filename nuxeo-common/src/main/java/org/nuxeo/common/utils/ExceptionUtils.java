@@ -23,6 +23,7 @@ package org.nuxeo.common.utils;
 
 import java.io.InterruptedIOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.channels.ClosedByInterruptException;
 
 /**
  * Provides utility methods for manipulating and examining exceptions in a generic way.
@@ -66,7 +67,7 @@ public final class ExceptionUtils {
      * @since 7.1
      */
     public static void checkInterrupt(Exception e) {
-        if (e instanceof InterruptedException || e instanceof InterruptedIOException) {
+        if (isInterrupted(e)) {
             // reset interrupted status
             Thread.currentThread().interrupt();
             // continue interrupt
@@ -127,6 +128,34 @@ public final class ExceptionUtils {
         } else {
             return new RuntimeException(e);
         }
+    }
+
+    /**
+     * DON'T USE THIS METHOD - INTERNAL API.
+     * <p />
+     * This helper method is used to detect if an exception is caused by an {@link InterruptedException} or something
+     * equivalent (for example {@link ClosedByInterruptException}. This is a temporary method, we should rely on the
+     * {@link Thread#isInterrupted()} status in the future.
+     * 
+     * @since 9.3
+     */
+    public static boolean hasInterruptedCause(Throwable e) {
+        Throwable t = e;
+        while (t != null) {
+            if (isInterrupted(t)) {
+                return true;
+            }
+            t = t.getCause();
+        }
+        return false;
+    }
+
+    /**
+     * @since 9.3
+     */
+    public static boolean isInterrupted(Throwable t) {
+        return t instanceof InterruptedException || t instanceof InterruptedIOException
+                || t instanceof ClosedByInterruptException;
     }
 
 }

@@ -44,8 +44,8 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.exception.InterruptedExceptions;
 import org.nuxeo.common.logging.SequenceTracer;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.EventServiceComponent;
 import org.nuxeo.ecm.core.work.WorkQueuing.Listener;
@@ -539,7 +539,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 // we are responsible of this exception, we use it during shutdown phase to not run the task taken just
                 // before shutdown due to race condition, so log it as WARN
                 logLocal.warn("Rejected execution error on thread " + t.getName(), e);
-            } else if (InterruptedExceptions.hasInterruptedCause(e)) {
+            } else if (ExceptionUtils.hasInterruptedCause(e)) {
                 logLocal.warn("Interrupted error on thread" + t.getName(), e);
             } else {
                 logLocal.error("Uncaught error on thread " + t.getName(), e);
