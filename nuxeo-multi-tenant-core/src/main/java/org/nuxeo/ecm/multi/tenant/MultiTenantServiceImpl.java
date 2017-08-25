@@ -151,7 +151,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
             m.put("id", getTenantIdForTenant(doc));
             m.put("label", doc.getTitle());
             m.put("docId", doc.getId());
-            return session.createEntry(m);
+            return Framework.doPrivileged(() -> session.createEntry(m));
         }
     }
 
@@ -202,7 +202,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     private void unregisterTenant(DocumentModel doc) {
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
         try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
-            session.deleteEntry(getTenantIdForTenant(doc));
+            Framework.doPrivileged(() -> session.deleteEntry(getTenantIdForTenant(doc)));
         }
     }
 
