@@ -63,13 +63,13 @@ public class MultiTenantRepositoryInit implements RepositoryInit {
         user.setPropertyValue("user:password", username);
         user.setPropertyValue("user:tenantId", tenant);
         try {
-            userManager.createUser(user);
+            Framework.doPrivileged(() -> userManager.createUser(user));
         } catch (UserAlreadyExistsException e) {
             // do nothing
         } finally {
             session.save();
         }
-        return userManager.getPrincipal(username);
+        return Framework.doPrivileged(() -> userManager.getPrincipal(username));
     }
 
 }
