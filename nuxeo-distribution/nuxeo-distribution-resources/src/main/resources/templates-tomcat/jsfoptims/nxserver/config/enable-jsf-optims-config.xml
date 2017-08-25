@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.enable.jsf.optims.config">
+
+  <require>org.nuxeo.ecm.platform.actions.actionwidgettypes</require>
+  <require>org.nuxeo.ecm.platform.forms.layout.properties</require>
+  <require>org.nuxeo.ecm.platform.ui.web.configuration.default</require>
+  <require>org.nuxeo.ecm.platform.webapp.base.properties</require>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService"
+    point="configuration">
+    <property name="nuxeo.jsf.actions.removeActionOptims">false</property>
+    <property name="nuxeo.jsf.layout.removeAliasOptims">false</property>
+    <property name="nuxeo.jsf.removeAliasOptimsReloaded">false</property>
+    <property name="nuxeo.jsf.listings.useRepeatRenderTime">true</property>
+  </extension>
+
+</component>
