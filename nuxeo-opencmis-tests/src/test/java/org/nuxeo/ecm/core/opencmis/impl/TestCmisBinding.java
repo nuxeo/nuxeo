@@ -192,9 +192,6 @@ public class TestCmisBinding extends TestCmisBindingBase {
     public static final String COMPLEX_TITLE = "Is this my/your caf\u00e9?";
 
     @Inject
-    protected HotDeployer deployer;
-
-    @Inject
     protected CoreSession coreSession;
 
     @Inject
@@ -3770,10 +3767,10 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
+    // listener that will cause a RecoverableClientException to be thrown
+    // when a doc whose name starts with "throw" is created
+    @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/recoverable-exc-listener-contrib.xml")
     public void testRecoverableException() throws Exception {
-        // listener that will cause a RecoverableClientException to be thrown
-        // when a doc whose name starts with "throw" is created
-        deployer.deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/recoverable-exc-listener-contrib.xml");
         try {
             createDocument("throw_foo", rootFolderId, "File");
             fail("should throw RecoverableClientException");
