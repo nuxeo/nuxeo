@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
 
-    <cache name="dropbox" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+    <cache name="dropbox">
       <option name="maxSize">1000</option>
       <option name="concurrencyLevel">10</option>
       <ttl>60</ttl>
