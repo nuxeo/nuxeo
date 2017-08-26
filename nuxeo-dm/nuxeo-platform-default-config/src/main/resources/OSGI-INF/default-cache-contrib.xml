@@ -4,25 +4,25 @@
   <extension target="org.nuxeo.ecm.core.cache.CacheService"
              point="caches">
 
-    <cache name="cache-vocabulary" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+    <cache name="cache-vocabulary">
       <ttl>60</ttl><!-- minutes -->
       <option name="maxSize">1000</option>
       <option name="concurrencyLevel">10</option>
     </cache>
 
-    <cache name="cache-xvocabulary" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+    <cache name="cache-xvocabulary">
       <ttl>60</ttl><!-- minutes -->
       <option name="maxSize">1000</option>
       <option name="concurrencyLevel">10</option>
     </cache>
 
-    <cache name="cache-l10nxvocabulary" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+    <cache name="cache-l10nxvocabulary">
       <ttl>60</ttl><!-- minutes -->
       <option name="maxSize">1000</option>
       <option name="concurrencyLevel">10</option>
     </cache>
 
-    <cache name="cache-documentsLists" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+    <cache name="cache-documentsLists">
       <ttl>60</ttl><!-- minutes -->
       <option name="maxSize">1000</option>
       <option name="concurrencyLevel">10</option>

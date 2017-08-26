@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.core.cache.CacheService"
     point="caches">
-    <cache name="users" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+    <cache name="users">
       <ttl>1</ttl><!-- minutes -->
       <option name="maxSize">10</option>
       <option name="concurrencyLevel">500</option>

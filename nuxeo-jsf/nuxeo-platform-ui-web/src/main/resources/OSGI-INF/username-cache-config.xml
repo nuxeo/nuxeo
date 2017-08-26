@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.ui.web.tag.fn.cache">
-  
+
   <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
-  
-    <cache name="userDisplayName" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+
+    <cache name="userDisplayName">
       <option name="maxSize">1000</option>
       <option name="concurrencyLevel">10</option>
       <ttl>30</ttl>

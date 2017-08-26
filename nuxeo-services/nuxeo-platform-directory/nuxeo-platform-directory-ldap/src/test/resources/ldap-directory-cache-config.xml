@@ -3,13 +3,13 @@
 
   <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
 
-    <cache name="ldap-entry-cache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+    <cache name="ldap-entry-cache">
       <option name="maxSize">100</option>
       <ttl>1</ttl><!-- minutes -->
       <option name="concurrencyLevel">1</option>
     </cache>
 
-    <cache name="ldap-entry-cache-without-references" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+    <cache name="ldap-entry-cache-without-references">
       <option name="maxSize">100</option>
       <ttl>1</ttl><!-- minutes -->
       <option name="concurrencyLevel">1</option>

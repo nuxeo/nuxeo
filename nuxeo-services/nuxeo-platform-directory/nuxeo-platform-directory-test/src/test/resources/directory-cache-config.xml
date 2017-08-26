@@ -3,13 +3,13 @@
 
   <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
 
-    <cache name="entry-cache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+    <cache name="entry-cache">
       <maxSize>100</maxSize>
       <ttl>1</ttl><!-- minutes -->
       <concurrencyLevel>1</concurrencyLevel>
     </cache>
 
-    <cache name="entry-cache-without-references" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+    <cache name="entry-cache-without-references">
       <maxSize>100</maxSize>
       <ttl>1</ttl><!-- minutes -->
       <concurrencyLevel>1</concurrencyLevel>
