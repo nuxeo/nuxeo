@@ -3,13 +3,13 @@
 
   <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
 
-    <cache name="driveSyncRoot" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+    <cache name="driveSyncRoot">
       <option name="maxSize">10000</option>
       <option name="concurrencyLevel">4</option>
       <ttl>1</ttl>
     </cache>
 
-    <cache name="driveCollectionSyncRootMember" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+    <cache name="driveCollectionSyncRootMember">
       <option name="maxSize">10000</option>
       <option name="concurrencyLevel">4</option>
       <ttl>1</ttl>
