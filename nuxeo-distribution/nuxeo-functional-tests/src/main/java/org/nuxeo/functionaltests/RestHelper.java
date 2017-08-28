@@ -69,9 +69,12 @@ public class RestHelper {
 
     private static final String DOCUMENT_QUERY_BY_PATH_BASE = "SELECT * FROM Document WHERE ecm:path = '%s'";
 
-    private static final List<String> documentIdsToDelete = new ArrayList<>();
-
-    private static final List<String> documentPathsToDelete = new ArrayList<>();
+    /**
+     * Documents to delete in cleanup step. Key is the document id and value is its path.
+     *
+     * @since 9.3
+     */
+    private static final Map<String, String> documentsToDelete = new HashMap<>();
 
     private static final List<String> usersToDelete = new ArrayList<>();
 
@@ -93,9 +96,9 @@ public class RestHelper {
     }
 
     public static void cleanupDocuments() {
-        documentIdsToDelete.forEach(RestHelper::deleteDocument);
-        documentIdsToDelete.clear();
-        documentPathsToDelete.clear();
+        // delete by ids
+        documentsToDelete.keySet().forEach(RestHelper::deleteDocument);
+        documentsToDelete.clear();
     }
 
     public static void cleanupUsers() {
@@ -130,9 +133,19 @@ public class RestHelper {
      */
     public static void addDocumentToDelete(String id, String path) {
         // do we already have to delete one parent?
-        if (documentPathsToDelete.stream().noneMatch(path::startsWith)) {
-            documentIdsToDelete.add(id);
-            documentPathsToDelete.add(path);
+        if (documentsToDelete.values().stream().noneMatch(path::startsWith)) {
+            documentsToDelete.put(id, path);
+        }
+    }
+
+    /**
+     * @since 9.3
+     */
+    public static void removeDocumentToDelete(String idOrPath) {
+        if (idOrPath.startsWith("/")) {
+            documentsToDelete.values().remove(idOrPath);
+        } else {
+            documentsToDelete.remove(idOrPath);
         }
     }
 
