@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
@@ -47,6 +48,7 @@ import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.nuxeo.elasticsearch.api.ESClientInitializationService;
@@ -64,7 +66,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     private static final Log log = LogFactory.getLog(ElasticSearchAdminImpl.class);
 
-    private static final String TIMEOUT_WAIT_FOR_CLUSTER = "30s";
+    protected static final String TIMEOUT_WAIT_FOR_CLUSTER = "30s";
+
+    protected static final TimeValue TIMEOUT_DELETE = new TimeValue(5, TimeUnit.MINUTES);
 
     final AtomicInteger totalCommandProcessed = new AtomicInteger(0);
 
@@ -441,7 +445,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                             "Initializing index: %s, type: %s with " + "dropIfExists flag, deleting an existing index",
                             conf.getName(), conf.getType()));
                 }
-                getClient().admin().indices().delete(new DeleteIndexRequest(conf.getName())).actionGet();
+                getClient().admin().indices().delete(new DeleteIndexRequest(conf.getName())
+                        .timeout(TIMEOUT_DELETE).masterNodeTimeout(TIMEOUT_DELETE)).actionGet();
                 indexExists = false;
             }
         }
