@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ftest.server.dev.hot.reload.contrib" version="1.0">
+
+  <extension point="permissions" target="org.nuxeo.ecm.core.security.SecurityService">
+
+    <permission name="HotReloadRemove">
+      <include>Read</include>
+      <include>Remove</include>
+    </permission>
+
+  </extension>
+
+
+</component>

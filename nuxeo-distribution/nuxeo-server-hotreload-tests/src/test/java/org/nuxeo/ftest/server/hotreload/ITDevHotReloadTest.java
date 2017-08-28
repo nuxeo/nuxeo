@@ -23,6 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.nuxeo.functionaltests.AbstractTest.NUXEO_URL;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,6 +32,9 @@ import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.nuxeo.client.NuxeoClient.Builder;
+import org.nuxeo.client.objects.Repository;
+import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.functionaltests.RestHelper;
 
 /**
@@ -151,6 +156,35 @@ public class ITDevHotReloadTest {
         RestHelper.createDocument("/", "File", "file");
         int nbDocs = RestHelper.countQueryPageProvider("SIMPLE_NXQL_FOR_HOT_RELOAD_PAGE_PROVIDER");
         assertEquals(1, nbDocs);
+    }
+
+    @Test
+    public void testHotReloadPermission() {
+        RestHelper.createUser("john", "doe");
+        String docId = RestHelper.createDocument("/", "File", "file");
+        // there's no existence check when adding a permission, so we will test to hot reload a new permission which
+        // brings the Remove one, add it for john user on /file document and try to delete it
+        // in order to be able to do that, john needs to have the RemoveChildren permission on the parent and as
+        // CoreSession will resolve the parent, john also needs to have the Read permission on the parent
+        RestHelper.addPermission("/", "john", "Read");
+        RestHelper.addPermission("/", "john", "RemoveChildren");
+        // it's better to keep all NuxeoClient usage in RestHelper, but adding a way to perform requests as another user
+        // than Administrator may add complexity to RestHelper class
+        // as it's the only usage currently, keep it as it for now
+        Repository repository = new Builder().url(NUXEO_URL).authentication("john", "doe").connect().repository();
+        try {
+            repository.deleteDocument(docId);
+            fail("User shouldn't be able to delete the document");
+        } catch (NuxeoClientException nce) {
+            assertEquals(403, nce.getStatus());
+            assertEquals(String.format(
+                    "Permission denied: cannot remove document %s, Missing permission 'Remove' on document %s", docId,
+                    docId), nce.getThrowable().getMessage());
+        }
+        // there's no check on adding a permission try to delete the file
+        RestHelper.addPermission("/file", "john", "HotReloadRemove");
+        repository.deleteDocument(docId);
+        RestHelper.removeDocumentToDelete(docId);
     }
 
 }
