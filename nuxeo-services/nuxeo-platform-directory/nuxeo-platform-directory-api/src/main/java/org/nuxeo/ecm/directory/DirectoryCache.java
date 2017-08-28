@@ -152,10 +152,17 @@ public class DirectoryCache {
         if (isCacheEnabled()) {
             synchronized (this) {
                 for (String entryId : entryIds) {
-                    getEntryCache().invalidate(entryId);
-                    getEntryCacheWithoutReferences().invalidate(entryId);
                     sizeCounter.dec();
                     invalidationsCounter.inc();
+                    // caches may be null if we're called for invalidation during a hot-reload
+                    Cache cache = getEntryCache();
+                    if (cache != null) {
+                        cache.invalidate(entryId);
+                    }
+                    cache = getEntryCacheWithoutReferences();
+                    if (cache != null) {
+                        cache.invalidate(entryId);
+                    }
                 }
             }
         }
@@ -171,8 +178,15 @@ public class DirectoryCache {
                 long count = sizeCounter.getCount();
                 sizeCounter.dec(count);
                 invalidationsCounter.inc(count);
-                getEntryCache().invalidateAll();
-                getEntryCacheWithoutReferences().invalidateAll();
+                // caches may be null if we're called for invalidation during a hot-reload
+                Cache cache = getEntryCache();
+                if (cache != null) {
+                    cache.invalidateAll();
+                }
+                cache = getEntryCacheWithoutReferences();
+                if (cache != null) {
+                    cache.invalidateAll();
+                }
             }
         }
     }
