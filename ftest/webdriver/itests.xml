@@ -14,6 +14,12 @@
     <copy todir="${nuxeo.nxserver}/bundles/">
       <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-forms-layout-demo" />
     </copy>
+    <nx:profile name="jsfoptims">
+      <antcall target="set-conf">
+        <param name="name" value="nuxeo.templates" />
+        <param name="value" value="default,jsfoptims" />
+      </antcall>
+    </nx:profile>
   </target>
 
 </project>

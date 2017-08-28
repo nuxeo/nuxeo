@@ -129,6 +129,9 @@
         <activeByDefault>true</activeByDefault>
       </activation>
     </profile>
+    <profile>
+      <id>jsfoptims</id>
+    </profile>
   </profiles>
 
 </project>
