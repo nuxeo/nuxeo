@@ -166,6 +166,9 @@
     <profile>
       <id>mysql</id>
     </profile>
+    <profile>
+      <id>jsfoptims</id>
+    </profile>
   </profiles>
 
 </project>
