@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -55,6 +56,8 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     public static final ComponentName NAME = new ComponentName(CacheServiceImpl.class.getName());
 
+    protected static final Random RANDOM = new Random();
+
     /**
      * @since 8.2
      */
@@ -62,6 +65,13 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     /** @since 9.3 */
     public static final String CACHE_INVAL_PUBSUB_TOPIC = "cacheinval";
+
+    /**
+     * Framework property defining whether clustering is enabled.
+     *
+     * @since 9.3
+     */
+    public static final String CLUSTERING_ENABLED_PROP = "repository.clustering.enabled";
 
     /**
      * Framework property containing the node id.
@@ -241,14 +251,22 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     @Override
     public void start(ComponentContext context) {
-        // register cache invalidator
-        String nodeId = Framework.getProperty(NODE_ID_PROP);
-        if (StringUtils.isBlank(nodeId)) {
-            log.info("No cache invalidator registered");
-        } else {
+        if (Framework.isBooleanPropertyTrue(CLUSTERING_ENABLED_PROP)) {
+            // register cache invalidator
+            String nodeId = Framework.getProperty(NODE_ID_PROP);
+            if (StringUtils.isBlank(nodeId)) {
+                nodeId = String.valueOf(RANDOM.nextLong());
+                log.warn("Missing cluster node id configuration, please define it explicitly "
+                        + "(usually through repository.clustering.id). Using random cluster node id instead: "
+                        + nodeId);
+            } else {
+                nodeId = nodeId.trim();
+            }
             invalidator = new CachePubSubInvalidator();
             invalidator.initialize(CACHE_INVAL_PUBSUB_TOPIC, nodeId);
             log.info("Registered cache invalidator for node: " + nodeId);
+        } else {
+            log.info("Not registering a cache invalidator because clustering is not enabled");
         }
         // create and starts caches
         registry.getCacheDescriptors().forEach(this::startCacheDescriptor);

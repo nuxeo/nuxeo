@@ -74,6 +74,7 @@ public class TestCacheInvalidation {
         }
 
         public static void setClusterId() {
+            Framework.getProperties().put(CacheServiceImpl.CLUSTERING_ENABLED_PROP, "true");
             Framework.getProperties().put(CacheServiceImpl.NODE_ID_PROP, NODE1);
         }
     }
