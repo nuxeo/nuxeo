@@ -61,7 +61,6 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
@@ -750,14 +749,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     }
 
     protected static NuxeoPrincipal getPrincipal() {
-        NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
-        if (principal == null) {
-            if (!Framework.isTestModeSet()) {
-                throw new NuxeoException("Missing security context, login() not done");
-            }
-            principal = new SystemPrincipal(null);
-        }
-        return principal;
+        return ClientLoginModule.getCurrentPrincipal();
     }
 
 }
