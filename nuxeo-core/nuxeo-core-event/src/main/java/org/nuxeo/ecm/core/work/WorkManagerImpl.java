@@ -242,7 +242,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     void activateQueueMetrics(String queueId) {
         NuxeoMetricSet queueMetrics = new NuxeoMetricSet("nuxeo", "works", "total", queueId);
-        queueMetrics.putGauge(() -> getMetrics(queueId).scheduled, "scheduled", "count");
+        queueMetrics.putGauge(() -> getMetrics(queueId).scheduled, "scheduled");
         queueMetrics.putGauge(() -> getMetrics(queueId).running, "running");
         queueMetrics.putGauge(() -> getMetrics(queueId).completed, "completed");
         queueMetrics.putGauge(() -> getMetrics(queueId).canceled, "canceled");
