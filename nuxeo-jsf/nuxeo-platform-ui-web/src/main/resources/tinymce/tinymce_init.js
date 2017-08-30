@@ -88,7 +88,12 @@ function addTinyMCE(id) {
 }
 
 function resetTinyMCE(id) {
-  removeTinyMCE(id);
+  var instance = tinyMCE.get(id);
+  if (instance) {
+    removeTinyMCE(id);
+    // reinitialize TinyMCE with proper settings
+    tinyMCE.init(instance.settings);
+  }
   addTinyMCE(id);
 }
 
