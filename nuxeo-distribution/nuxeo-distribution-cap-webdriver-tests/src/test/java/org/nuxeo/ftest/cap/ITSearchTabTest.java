@@ -105,8 +105,8 @@ public class ITSearchTabTest extends AbstractTest {
                 permissionsSubPage.grantPermissionForUser("Manage everything", TEST_USERNAME);
             }
             // Create test File
-            FileDocumentBasePage filePage = createFile(workspacePage, "ITSearchTabTest file", "Test File description", false, null,
-                    null, null);
+            FileDocumentBasePage filePage = createFile(workspacePage, "ITSearchTabTest file", "Test File description",
+                    false, null, null, null);
             EditTabSubPage editTabSubPage = filePage.getEditTab();
 
             Select2WidgetElement subjectsWidget = new Select2WidgetElement(driver,
@@ -123,14 +123,24 @@ public class ITSearchTabTest extends AbstractTest {
     }
 
     protected void saveSearch(String title) {
-        String saveAsPath = "//input[contains(@id, 'nxw_searchResultsActions_saveSearch_link')]";
+        String saveAsPath;
+        if (JSF_OPTIMS_ENABLED) {
+            saveAsPath = "//input[@id='nxl_gridSearchLayout:nxw_saveSearch_form:nxw_saveSearch_link']";
+        } else {
+            saveAsPath = "//input[contains(@id, 'nxw_searchResultsActions_saveSearch_link')]";
+        }
         assertEquals(1, driver.findElements(By.xpath(saveAsPath)).size());
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.begin();
         driver.findElement(By.xpath(saveAsPath)).click();
         arm.end();
 
-        WebElement fancybox = Locator.findElementWithTimeout(By.id("nxw_searchResultsActions_saveSearch_box"));
+        WebElement fancybox;
+        if (JSF_OPTIMS_ENABLED) {
+            fancybox = Locator.findElementWithTimeout(By.id("nxw_saveSearch_after_view_box"));
+        } else {
+            fancybox = Locator.findElementWithTimeout(By.id("nxw_searchResultsActions_saveSearch_box"));
+        }
         fancybox.findElement(By.xpath(".//input[@type='text']")).sendKeys(title);
         arm.begin();
         fancybox.findElement(By.xpath(".//input[@value='Save']")).click();

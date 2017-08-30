@@ -89,7 +89,7 @@ public class ITContextualActionsTest extends AbstractTest {
         Assert.assertTrue(states.contains(DOCUMENT_LOCKED));
 
         // Test permalink action
-        actions = actions.clickOnButton(actions.permaButton);
+        actions = actions.clickOnButton(driver.findElement(By.id(ContextualActions.PERM_ACTION_ID)));
         // wait for element to be shown to close it, otherwise DOM may not be
         // updated yet
         Locator.findElementWithTimeout(By.className(actions.permaBoxFocusName), 20 * 1000);

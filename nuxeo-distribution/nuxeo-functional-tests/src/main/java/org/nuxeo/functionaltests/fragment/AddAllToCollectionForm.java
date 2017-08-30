@@ -37,11 +37,31 @@ public class AddAllToCollectionForm extends AddToCollectionForm {
 
     private final static String ADD_BUTTON_ID = "document_content_buttons:nxw_cvButton_addSelectedToCollectionAction_fancy_subview:nxw_cvButton_addSelectedToCollectionAction_fancyform:addAll";
 
+    /**
+     * @since 7.10-HF31
+     */
+    private final static String ADD_BUTTON_ID_OPTIMS = "document_content_buttons:nxw_addSelectedToCollectionAction_after_view_fancy_subview:nxw_addSelectedToCollectionAction_after_view_fancyform:addAll";
+
     private final static String S2_CHOOSE_COLLECTION_ID = "s2id_document_content_buttons:nxw_cvButton_addSelectedToCollectionAction_fancy_subview:nxw_cvButton_addSelectedToCollectionAction_fancyform:nxw_singleDocumentSuggestion_2_select2";
+
+    /**
+     * @since 7.10-HF31
+     */
+    private final static String S2_CHOOSE_COLLECTION_ID_OPTIMS = "s2id_document_content_buttons:nxw_addSelectedToCollectionAction_after_view_fancy_subview:nxw_addSelectedToCollectionAction_after_view_fancyform:nxw_singleDocumentSuggestion_2_select2";
 
     private final static String NEW_COLLECTION_DESCRIPTION_ID = "document_content_buttons:nxw_cvButton_addSelectedToCollectionAction_fancy_subview:nxw_cvButton_addSelectedToCollectionAction_fancyform:nxw_cvButton_addSelectedToCollectionAction_fancyform_collectionDescriptionsPanel";
 
+    /**
+     * @since 7.10-HF31
+     */
+    private final static String NEW_COLLECTION_DESCRIPTION_ID_OPTIMS = "document_content_buttons:nxw_addSelectedToCollectionAction_after_view_fancy_subview:nxw_addSelectedToCollectionAction_after_view_fancyform:description";
+
     private static final String EXISTING_COLLECTION_DESCRIPTION_ID = "document_content_buttons:nxw_cvButton_addSelectedToCollectionAction_fancy_subview:nxw_cvButton_addSelectedToCollectionAction_fancyform:scd";
+
+    /**
+     * @since 7.10-HF31
+     */
+    private static final String EXISTING_COLLECTION_DESCRIPTION_ID_OPTIMS = "document_content_buttons:nxw_addSelectedToCollectionAction_after_view_fancy_subview:nxw_addSelectedToCollectionAction_after_view_fancyform:scd";
 
     public AddAllToCollectionForm(WebDriver driver, WebElement element) {
         super(driver, element);
@@ -53,27 +73,39 @@ public class AddAllToCollectionForm extends AddToCollectionForm {
     }
 
     public <T> T addAll(final Class<T> pageClassProxy) {
-        Locator.findElementWaitUntilEnabledAndClick(By.id(ADD_BUTTON_ID));
+        Locator.findElementWaitUntilEnabledAndClick(By.id(getAddButtonId()));
         return AbstractTest.asPage(pageClassProxy);
     }
 
     @Override
     protected String getAddButtonId() {
+        if (AbstractTest.JSF_OPTIMS_ENABLED) {
+            return ADD_BUTTON_ID_OPTIMS;
+        }
         return ADD_BUTTON_ID;
     }
 
     @Override
     protected String getChooseCollectionId() {
+        if (AbstractTest.JSF_OPTIMS_ENABLED) {
+            return S2_CHOOSE_COLLECTION_ID_OPTIMS;
+        }
         return S2_CHOOSE_COLLECTION_ID;
     }
 
     @Override
     protected String getNewCollectionDescriptionId() {
+        if (AbstractTest.JSF_OPTIMS_ENABLED) {
+            return NEW_COLLECTION_DESCRIPTION_ID_OPTIMS;
+        }
         return NEW_COLLECTION_DESCRIPTION_ID;
     }
 
     @Override
     protected String getCollectionDescriptionId() {
+        if (AbstractTest.JSF_OPTIMS_ENABLED) {
+            return EXISTING_COLLECTION_DESCRIPTION_ID_OPTIMS;
+        }
         return EXISTING_COLLECTION_DESCRIPTION_ID;
     }
 

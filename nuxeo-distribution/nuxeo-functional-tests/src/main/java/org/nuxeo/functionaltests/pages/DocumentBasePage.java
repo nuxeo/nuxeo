@@ -17,12 +17,11 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
@@ -49,6 +48,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import com.google.common.base.Function;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * The nuxeo main document base page
@@ -301,7 +302,17 @@ public class DocumentBasePage extends AbstractPage {
 
     private static final String ADD_TO_COLLECTION_UPPER_ACTION_ID = "nxw_addToCollectionAction_form:nxw_documentActionsUpperButtons_addToCollectionAction_subview:nxw_documentActionsUpperButtons_addToCollectionAction_link";
 
+    /**
+     * @since 7.10-HF31
+     */
+    private static final String ADD_TO_COLLECTION_UPPER_ACTION_ID_OPTIMS = "nxw_addToCollectionAction_form:nxw_addToCollectionAction_link";
+
     private static final String ADD_ALL_TO_COLLECTION_ACTION_ID = "document_content_buttons:nxw_addSelectedToCollectionAction_form:nxw_cvButton_addSelectedToCollectionAction_subview:nxw_cvButton_addSelectedToCollectionAction_link";
+
+    /**
+     * @since 7.10-HF31
+     */
+    private static final String ADD_ALL_TO_COLLECTION_ACTION_ID_OPTIMS = "document_content_buttons:nxw_addSelectedToCollectionAction_form:nxw_addSelectedToCollectionAction_link";
 
     @FindBy(id = ADD_TO_COLLECTION_UPPER_ACTION_ID)
     private WebElement addToCollectionUpperAction;
@@ -315,7 +326,13 @@ public class DocumentBasePage extends AbstractPage {
     public AddToCollectionForm getAddToCollectionPopup() {
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.begin();
-        addToCollectionUpperAction.click();
+        String id;
+        if (AbstractTest.JSF_OPTIMS_ENABLED) {
+            id = ADD_TO_COLLECTION_UPPER_ACTION_ID_OPTIMS;
+        } else {
+            id = ADD_TO_COLLECTION_UPPER_ACTION_ID;
+        }
+        Locator.findElementWaitUntilEnabledAndClick(By.id(id));
         arm.end();
         Locator.waitUntilElementPresent(By.id("fancybox-content"));
         return getWebFragment(By.id("fancybox-content"), AddToCollectionForm.class);
@@ -325,24 +342,35 @@ public class DocumentBasePage extends AbstractPage {
      * @since 5.9.3
      */
     public AddAllToCollectionForm getAddAllToCollectionPopup() {
+        String id;
+        if (AbstractTest.JSF_OPTIMS_ENABLED) {
+            id = ADD_ALL_TO_COLLECTION_ACTION_ID_OPTIMS;
+        } else {
+            id = ADD_ALL_TO_COLLECTION_ACTION_ID;
+        }
         Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
-                return StringUtils.isBlank(
-                        driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute("disabled"));
+                return StringUtils.isBlank(driver.findElement(By.id(id)).getAttribute("disabled"));
             }
         }, StaleElementReferenceException.class);
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.begin();
-        driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).click();
+        Locator.findElementWaitUntilEnabledAndClick(By.id(id));
         arm.end();
         Locator.waitUntilElementPresent(By.id("fancybox-content"));
         return getWebFragment(By.id("fancybox-content"), AddAllToCollectionForm.class);
     }
 
     public boolean isAddToCollectionUpperActionAvailable() {
+        String id;
+        if (AbstractTest.JSF_OPTIMS_ENABLED) {
+            id = ADD_TO_COLLECTION_UPPER_ACTION_ID_OPTIMS;
+        } else {
+            id = ADD_TO_COLLECTION_UPPER_ACTION_ID;
+        }
         try {
-            driver.findElement(By.id(ADD_TO_COLLECTION_UPPER_ACTION_ID));
+            driver.findElement(By.id(id));
             return true;
         } catch (final NoSuchElementException e) {
             return false;
