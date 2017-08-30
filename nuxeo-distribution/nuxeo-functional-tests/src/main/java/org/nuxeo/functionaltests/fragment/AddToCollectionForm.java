@@ -33,11 +33,19 @@ public class AddToCollectionForm extends WebFragmentImpl {
 
     private final static String ADD_BUTTON_ID = "nxw_documentActionsUpperButtons_addToCollectionAction_fancy_subview:nxw_documentActionsUpperButtons_addToCollectionAction_fancyform:add";
 
+    private final static String ADD_BUTTON_ID_OPTIMS = "nxw_addToCollectionAction_after_view_fancy_subview:nxw_addToCollectionAction_after_view_fancyform:add";
+
     private final static String S2_CHOOSE_COLLECTION_ID = "s2id_nxw_documentActionsUpperButtons_addToCollectionAction_fancy_subview:nxw_documentActionsUpperButtons_addToCollectionAction_fancyform:nxw_singleDocumentSuggestion_1_select2";
+
+    private final static String S2_CHOOSE_COLLECTION_ID_OPTIMS = "s2id_nxw_addToCollectionAction_after_view_fancy_subview:nxw_addToCollectionAction_after_view_fancyform:nxw_singleDocumentSuggestion_1_select2";
 
     private final static String NEW_COLLECTION_DESCRIPTION_ID = "nxw_documentActionsUpperButtons_addToCollectionAction_fancy_subview:nxw_documentActionsUpperButtons_addToCollectionAction_fancyform:description";
 
+    private final static String NEW_COLLECTION_DESCRIPTION_ID_OPTIMS = "nxw_addToCollectionAction_after_view_fancy_subview:nxw_addToCollectionAction_after_view_fancyform:description";
+
     private static final String EXISTING_COLLECTION_DESCRIPTION_ID = "nxw_documentActionsUpperButtons_addToCollectionAction_fancy_subview:nxw_documentActionsUpperButtons_addToCollectionAction_fancyform:scd";
+
+    private static final String EXISTING_COLLECTION_DESCRIPTION_ID_OPTIMS = "nxw_addToCollectionAction_after_view_fancy_subview:nxw_addToCollectionAction_after_view_fancyform:scd";
 
     protected boolean multiple = false;
 
@@ -54,23 +62,35 @@ public class AddToCollectionForm extends WebFragmentImpl {
     }
 
     public <T> T add(final Class<T> pageClassProxy) {
-        Locator.findElementWaitUntilEnabledAndClick(By.id(ADD_BUTTON_ID));
+        Locator.findElementWaitUntilEnabledAndClick(By.id(getAddButtonId()));
         return AbstractTest.asPage(pageClassProxy);
     }
 
     protected String getAddButtonId() {
+        if (AbstractTest.JSF_OPTIMS_ENABLED) {
+            return ADD_BUTTON_ID_OPTIMS;
+        }
         return ADD_BUTTON_ID;
     }
 
     protected String getChooseCollectionId() {
+        if (AbstractTest.JSF_OPTIMS_ENABLED) {
+            return S2_CHOOSE_COLLECTION_ID_OPTIMS;
+        }
         return S2_CHOOSE_COLLECTION_ID;
     }
 
     protected String getNewCollectionDescriptionId() {
+        if (AbstractTest.JSF_OPTIMS_ENABLED) {
+            return NEW_COLLECTION_DESCRIPTION_ID_OPTIMS;
+        }
         return NEW_COLLECTION_DESCRIPTION_ID;
     }
 
     protected String getCollectionDescriptionId() {
+        if (AbstractTest.JSF_OPTIMS_ENABLED) {
+            return EXISTING_COLLECTION_DESCRIPTION_ID_OPTIMS;
+        }
         return EXISTING_COLLECTION_DESCRIPTION_ID;
     }
 
