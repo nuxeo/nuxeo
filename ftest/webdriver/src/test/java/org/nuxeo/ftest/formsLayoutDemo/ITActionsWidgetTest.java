@@ -34,13 +34,6 @@ public class ITActionsWidgetTest extends AbstractWidgetPageTest {
         super("actionsWidget");
     }
 
-    protected boolean areJSFOptimsEnabled() {
-        if (Boolean.parseBoolean(System.getProperty("nuxeo.jsf.tests.optimsEnabled"))) {
-            return true;
-        }
-        return false;
-    }
-
     @Test
     public void testWidget() {
         navigateTo(pageId);
@@ -52,7 +45,7 @@ public class ITActionsWidgetTest extends AbstractWidgetPageTest {
         String actionsXpath = "//div[@id='" + idPrefix + "nxw_actionsWidget_1_panel']/div/a/span";
 
         String fancyXPath;
-        if (areJSFOptimsEnabled()) {
+        if (JSF_OPTIMS_ENABLED) {
             fancyXPath = "//a[@id='" + idPrefix + "nxw_actionsWidget_1_layoutDemoFancyBox_link']/span";
         } else {
             fancyXPath = "//a[@id='" + idPrefix
@@ -85,7 +78,7 @@ public class ITActionsWidgetTest extends AbstractWidgetPageTest {
         assertNotNull(driver.findElement(By.xpath(fancyXPath)));
         driver.findElement(By.xpath(fancyXPath)).click();
         String boxSel;
-        if (areJSFOptimsEnabled()) {
+        if (JSF_OPTIMS_ENABLED) {
             boxSel = "#nxw_actionsWidget_1_layoutDemoFancyBox_after_view_box > div > h3";
         } else {
             boxSel = "#nxw_actionsWidget_1_layoutDemoFancyBox_box > div > h3";
