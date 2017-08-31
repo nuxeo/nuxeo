@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.model.Document;
@@ -218,9 +219,15 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
     }
 
     @Override
-    public VersioningOption doPreSave(Document doc, boolean isDirty, VersioningOption option, String checkinComment,
-            Map<String, Serializable> options) {
+    public VersioningOption doPreSave(Document doc, boolean isDirty, VersioningOption option,
+            String checkinComment, Map<String, Serializable> options) {
         return service.doPreSave(doc, isDirty, option, checkinComment, options);
+    }
+
+    @Override
+    public VersioningOption doPreSave(CoreSession session, Document doc, boolean isDirty, VersioningOption option,
+            String checkinComment, Map<String, Serializable> options) {
+        return service.doPreSave(session, doc, isDirty, option, checkinComment, options);
     }
 
     @Override
@@ -232,6 +239,12 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
     public Document doPostSave(Document doc, VersioningOption option, String checkinComment,
             Map<String, Serializable> options) {
         return service.doPostSave(doc, option, checkinComment, options);
+    }
+
+    @Override
+    public Document doPostSave(CoreSession session, Document doc, VersioningOption option, String checkinComment,
+            Map<String, Serializable> options) {
+        return service.doPostSave(session, doc, option, checkinComment, options);
     }
 
     @Override
