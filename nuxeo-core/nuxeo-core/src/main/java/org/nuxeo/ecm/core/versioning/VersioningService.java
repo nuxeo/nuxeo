@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.model.Document;
@@ -106,14 +107,16 @@ public interface VersioningService {
     /**
      * Applies versioning options before document save.
      *
+     * @param session the core session
      * @param doc the document
      * @param isDirty {@code true} if there is actual data to save
      * @param option an option chosen by the user or framework
      * @param checkinComment a checkin comment
      * @param options map event info
      * @return the validated option (to use in doPostSave)
+     * @since 9.3
      */
-    VersioningOption doPreSave(Document doc, boolean isDirty, VersioningOption option, String checkinComment,
+    VersioningOption doPreSave(CoreSession session, Document doc, boolean isDirty, VersioningOption option, String checkinComment,
             Map<String, Serializable> options);
 
     /**
@@ -130,13 +133,15 @@ public interface VersioningService {
      * Applies versioning options after document save. If a new version is checked in during the operation, the document
      * for this version is returned to the caller.
      *
+     * @param session the core session
      * @param doc the document
      * @param option an option chosen by the user or framework
      * @param checkinComment a checkin comment
      * @param options map event info
      * @return checkedInDocument or null
+     * @since 9.3
      */
-    Document doPostSave(Document doc, VersioningOption option, String checkinComment,
+    Document doPostSave(CoreSession session, Document doc, VersioningOption option, String checkinComment,
             Map<String, Serializable> options);
 
     /**

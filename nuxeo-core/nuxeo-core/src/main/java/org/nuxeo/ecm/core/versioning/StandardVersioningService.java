@@ -19,9 +19,16 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TO;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION;
 import static org.nuxeo.ecm.core.api.VersioningOption.MAJOR;
 import static org.nuxeo.ecm.core.api.VersioningOption.MINOR;
 import static org.nuxeo.ecm.core.api.VersioningOption.NONE;
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.DOC_LIFE_CYCLE;
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.REPOSITORY_NAME;
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.SESSION_ID;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,15 +43,21 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Implementation of the versioning service that follows standard checkout / checkin semantics.
@@ -94,6 +107,16 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     /** Key for minor version in Document API. */
     protected static final String MINOR_VERSION = "ecm:minorVersion";
+
+    /**
+     * @since 9.3
+     */
+    public static final String CATEGORY = "category";
+
+    /**
+     * @since 9.3
+     */
+    public static final String COMMENT = "comment";
 
     private Map<String, VersioningPolicyDescriptor> versioningPolicies = new HashMap<>();
 
@@ -297,21 +320,25 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
-    public VersioningOption doPreSave(Document doc, boolean isDirty, VersioningOption option, String checkinComment,
-            Map<String, Serializable> options) {
+    public VersioningOption doPreSave(CoreSession session, Document doc, boolean isDirty, VersioningOption option,
+            String checkinComment, Map<String, Serializable> options) {
         option = validateOption(doc, option);
         if (isPreSaveDoingCheckOut(doc, isDirty, option, options)) {
             doCheckOut(doc);
-            followTransitionByOption(doc, option);
+            followTransitionByOption(session, doc, options);
         }
         // transition follow shouldn't change what postSave options will be
         return option;
     }
 
-    protected void followTransitionByOption(Document doc, VersioningOption option) {
+    protected void followTransitionByOption(CoreSession session, Document doc, Map<String, Serializable> options) {
         String lifecycleState = doc.getLifeCycleState();
         if (APPROVED_STATE.equals(lifecycleState) || OBSOLETE_STATE.equals(lifecycleState)) {
             doc.followTransition(BACK_TO_PROJECT_TRANSITION);
+            if (session != null) {
+                // Send an event to notify that the document state has changed
+                sendEvent(session, doc, lifecycleState, options);
+            }
         }
     }
 
@@ -322,7 +349,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
-    public Document doPostSave(Document doc, VersioningOption option, String checkinComment,
+    public Document doPostSave(CoreSession session, Document doc, VersioningOption option, String checkinComment,
             Map<String, Serializable> options) {
         if (isPostSaveDoingCheckIn(doc, option, options)) {
             incrementByOption(doc, option);
@@ -515,6 +542,24 @@ public class StandardVersioningService implements ExtendableVersioningService {
         }
         // All filters match the context (previousDocument + currentDocument)
         return true;
+    }
+
+    protected void sendEvent(CoreSession session, Document doc, String previousLifecycleState, Map<String, Serializable> options) {
+        String sid = session.getSessionId();
+        DocumentModel docModel = DocumentModelFactory.createDocumentModel(doc, sid, null);
+
+        DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), docModel);
+
+        ctx.setProperty(TRANSTION_EVENT_OPTION_FROM, previousLifecycleState);
+        ctx.setProperty(TRANSTION_EVENT_OPTION_TO, doc.getLifeCycleState());
+        ctx.setProperty(TRANSTION_EVENT_OPTION_TRANSITION, BACK_TO_PROJECT_TRANSITION);
+        ctx.setProperty(REPOSITORY_NAME, session.getRepositoryName());
+        ctx.setProperty(SESSION_ID, sid);
+        ctx.setProperty(DOC_LIFE_CYCLE, BACK_TO_PROJECT_TRANSITION);
+        ctx.setProperty(CATEGORY, DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY);
+        ctx.setProperty(COMMENT, options.get(COMMENT));
+
+        Framework.getService(EventService.class).fireEvent(ctx.newEvent(TRANSITION_EVENT));
     }
 
 }
