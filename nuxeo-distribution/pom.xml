@@ -104,14 +104,6 @@
           </snapshots>
         </pluginRepository>
       </pluginRepositories>
-      <distributionManagement>
-        <snapshotRepository>
-          <id>daily-snapshots</id>
-          <url>
-            http://mavenin.nuxeo.com/nexus/content/repositories/daily-snapshots
-          </url>
-        </snapshotRepository>
-      </distributionManagement>
     </profile>
     <profile>
       <id>nightly</id>
