@@ -187,6 +187,12 @@ public abstract class AbstractTest {
     protected static ProxyServer proxyServer = null;
 
     /**
+     * @since 7.10-HF31
+     */
+    public static final boolean JSF_OPTIMS_ENABLED = Boolean.parseBoolean(
+            System.getProperty("nuxeo.jsf.tests.optimsEnabled"));
+
+    /**
      * Logger method to follow what's being run on server logs and take a screenshot of the last page in case of failure
      */
     @Rule
