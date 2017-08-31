@@ -22,20 +22,25 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.common.collect.Sets;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 5.9.3
@@ -52,10 +57,33 @@ public class TransitionTest implements EventListener {
 
     private String lastComment;
 
+    protected EventListenerDescriptor eventDesc;
+
     @Before
     public void doBefore() {
         lastComment = null;
-        registerAsEventListenerFor(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT);
+        eventDesc = new EventListenerDescriptor() {
+            @Override
+            public Set<String> getEvents() {
+                return Sets.newHashSet(LifeCycleConstants.TRANSITION_EVENT);
+            }
+
+            @Override
+            public EventListener asEventListener() {
+                return TransitionTest.this;
+            }
+
+            @Override
+            public void initListener() {
+
+            }
+        };
+        eventService.addEventListener(eventDesc);
+    }
+
+    @After
+    public void doAfter() {
+        eventService.removeEventListener(eventDesc);
     }
 
     @Test
@@ -70,37 +98,33 @@ public class TransitionTest implements EventListener {
         assertEquals("a comment", lastComment);
     }
 
-    @Override
-    public void handleEvent(Event event) {
-        if (org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT.equals(event.getName())) {
-            lastComment = (String) event.getContext().getProperty("comment");
-        }
+    @Test
+    public void itCanModifyACommentWhenModifyingADocument() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "myDoc", "File");
+        doc = session.createDocument(doc);
+
+        doc.setPropertyValue("dc:title", "title");
+        doc.putContextData("comment", "a comment");
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
+
+        session.followTransition(doc, "approve");
+        assertEquals("a comment", lastComment);
+
+        doc = session.saveDocument(doc);
+
+        doc.setPropertyValue("dc:title", "new title");
+        doc.putContextData("comment", "b comment");
+
+        session.saveDocument(doc);
+
+        assertEquals("b comment", lastComment);
     }
 
-    /**
-     * Register this class as an eventListener for a given eventName
-     *
-     * @param eventName
-     */
-    private void registerAsEventListenerFor(final String eventName) {
-        final EventListener el = this;
-        eventService.addEventListener(new EventListenerDescriptor() {
-            @Override
-            public Set<String> getEvents() {
-                return Sets.newHashSet(eventName);
-            }
-
-            @Override
-            public EventListener asEventListener() {
-                return el;
-            }
-
-            @Override
-            public void initListener() {
-
-            }
-
-        });
+    @Override
+    public void handleEvent(Event event) {
+        if (LifeCycleConstants.TRANSITION_EVENT.equals(event.getName())) {
+            lastComment = (String) event.getContext().getProperty("comment");
+        }
     }
 
 }

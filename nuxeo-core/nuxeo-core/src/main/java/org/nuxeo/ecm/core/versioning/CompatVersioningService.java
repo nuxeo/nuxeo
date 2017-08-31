@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -55,8 +56,8 @@ public class CompatVersioningService extends StandardVersioningService {
      * version.
      */
     @Override
-    public VersioningOption doPreSave(Document doc, boolean isDirty, VersioningOption option, String checkinComment,
-            Map<String, Serializable> options) {
+    public VersioningOption doPreSave(CoreSession session, Document doc, boolean isDirty, VersioningOption option,
+            String checkinComment, Map<String, Serializable> options) {
         option = validateOption(doc, option);
         boolean increment = option != VersioningOption.NONE;
         if (increment) {
@@ -71,14 +72,14 @@ public class CompatVersioningService extends StandardVersioningService {
     }
 
     @Override
-    public Document doPostSave(Document doc, VersioningOption option, String checkinComment,
+    public Document doPostSave(CoreSession session, Document doc, VersioningOption option, String checkinComment,
             Map<String, Serializable> options) {
         if (!doc.isCheckedOut()) {
             return null;
         }
         // option = validateOption(doc, option);
         incrementByOption(doc, option);
-        followTransitionByOption(doc, option);
+        followTransitionByOption(null, doc, options);
         return null;
     }
 

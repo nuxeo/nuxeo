@@ -1554,7 +1554,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             if (checkout) {
                 notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel, options, null, null, true, true);
             }
-            versioningOption = getVersioningService().doPreSave(doc, dirty, versioningOption, checkinComment, options);
+            versioningOption = getVersioningService().doPreSave(this, doc, dirty, versioningOption, checkinComment,
+                    options);
             if (checkout) {
                 DocumentModel checkedOutDoc = readModel(doc);
                 notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, checkedOutDoc, options, null, null, true, false);
@@ -1581,7 +1582,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             if (checkin) {
                 notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options, null, null, true, true);
             }
-            checkedInDoc = getVersioningService().doPostSave(doc, versioningOption, checkinComment, options);
+            checkedInDoc = getVersioningService().doPostSave(this, doc, versioningOption, checkinComment, options);
         }
 
         // post-save events
