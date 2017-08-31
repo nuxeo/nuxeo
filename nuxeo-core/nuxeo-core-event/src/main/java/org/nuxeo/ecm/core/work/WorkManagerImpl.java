@@ -542,7 +542,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             } else if (ExceptionUtils.hasInterruptedCause(e)) {
                 logLocal.warn("Interrupted error on thread" + t.getName(), e);
             } else {
-                logLocal.error("Uncaught error on thread " + t.getName(), e);
+                logLocal.error(String.format("Uncaught error on thread: %s, "
+                        + "current work might be lost, WorkManager metrics might be corrupted.", t.getName()), e);
             }
         }
 
