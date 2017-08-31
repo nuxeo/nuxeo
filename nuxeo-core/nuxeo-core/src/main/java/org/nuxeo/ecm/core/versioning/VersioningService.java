@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.model.Document;
@@ -117,6 +118,21 @@ public interface VersioningService {
             Map<String, Serializable> options);
 
     /**
+     * Applies versioning options before document save.
+     *
+     * @param session the core session
+     * @param doc the document
+     * @param isDirty {@code true} if there is actual data to save
+     * @param option an option chosen by the user or framework
+     * @param checkinComment a checkin comment
+     * @param context map event info
+     * @return the validated option (to use in doPostSave)
+     * @since 9.3
+     */
+    VersioningOption doPreSave(CoreSession session, Document doc, boolean isDirty, VersioningOption option, String checkinComment,
+            Map<String, Serializable> options);
+
+    /**
      * Checks if {@link #doPostSave} will do a checkin when called with the same arguments.
      *
      * @param doc the document
@@ -137,6 +153,21 @@ public interface VersioningService {
      * @return checkedInDocument or null
      */
     Document doPostSave(Document doc, VersioningOption option, String checkinComment,
+            Map<String, Serializable> options);
+
+    /**
+     * Applies versioning options after document save. If a new version is checked in during the operation, the document
+     * for this version is returned to the caller.
+     *
+     * @param session the core session
+     * @param doc the document
+     * @param option an option chosen by the user or framework
+     * @param checkinComment a checkin comment
+     * @param context map event info
+     * @return checkedInDocument or null
+     * @since 9.3
+     */
+    Document doPostSave(CoreSession session, Document doc, VersioningOption option, String checkinComment,
             Map<String, Serializable> options);
 
     /**
