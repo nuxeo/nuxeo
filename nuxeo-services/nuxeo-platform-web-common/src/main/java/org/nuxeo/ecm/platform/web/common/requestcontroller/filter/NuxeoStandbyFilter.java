@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.web.common.requestcontroller.filter;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -83,39 +84,31 @@ public class NuxeoStandbyFilter implements Filter {
 
         protected volatile boolean isStandby = !Framework.getRuntime().getComponentManager().isStarted();
 
-        protected volatile int inprogress = 0;
+        protected final AtomicInteger inProgress = new AtomicInteger();
 
         public void onNewRequest() {
-            if (!isStandby) {
-                inprogress += 1;
-                return;
+            if (isStandby) {
+                awaitCanProceed();
             }
-            awaitCanProceed();
+            inProgress.incrementAndGet();
         }
 
         public void onRequestEnd() {
-            inprogress -= 1;
-            if (inprogress > 0) {
-                return;
-            }
-            lock.lock();
-            try {
-                canStandby.signal();
-            } finally {
-                lock.unlock();
+            if (inProgress.decrementAndGet() <= 0) {
+                signalBlockedToStandby();
             }
         }
 
         public void onStandby() throws RuntimeException {
             isStandby = true;
-            if (inprogress > 0) {
+            if (inProgress.get() > 0) {
                 awaitCanStandby();
             }
         }
 
         public void onResumed() {
             isStandby = false;
-            signalBlocked();
+            signalBlockedToProceed();
         }
 
         protected void awaitCanProceed() throws RuntimeException {
@@ -142,10 +135,19 @@ public class NuxeoStandbyFilter implements Filter {
             }
         }
 
-        protected void signalBlocked() {
+        protected void signalBlockedToProceed() {
             lock.lock();
             try {
                 canProceed.signalAll();
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        protected void signalBlockedToStandby() {
+            lock.lock();
+            try {
+                canStandby.signal();
             } finally {
                 lock.unlock();
             }
