@@ -36,20 +36,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.inject.Inject;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
+import org.nuxeo.ecm.platform.login.test.DummyNuxeoLoginModule;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Florent Guillaume
  */
-public class TestMemoryDirectory extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({RuntimeFeature.class, ClientLoginFeature.class})
+@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.directory" })
+@LocalDeploy("org.nuxeo.ecm.directory.core.tests:test-schema.xml")
+public class TestMemoryDirectory {
 
     MemoryDirectory memDir;
 
@@ -57,16 +71,16 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
 
     DocumentModel entry;
 
+    @Inject
+    protected ClientLoginFeature loginFeature;
+
     static final String SCHEMA_NAME = "myschema";
 
-    @Override
-    public void setUp() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.directory.core.tests", "test-schema.xml");
-    }
+    @Before
+    public void before() throws Exception {
 
-    @Override
-    protected void postSetUp() throws Exception {
+        loginFeature.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
+
         MemoryDirectoryDescriptor descr = new MemoryDirectoryDescriptor();
         descr.name = "mydir";
         descr.schemaName = SCHEMA_NAME;
@@ -83,6 +97,11 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         e1.put("int", 3);
         e1.put("x", "XYZ"); // shouldn't be put in storage
         entry = dir.createEntry(e1);
+    }
+
+    @After
+    public void after() throws Exception {
+        loginFeature.logout();
     }
 
     @Test
@@ -501,11 +520,6 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         descr.idField = "i";
         descr.passwordField = "pw";
         descr.schemaSet = new HashSet<>(Arrays.asList("i"));
-
-        // required by directory service
-        deployBundle("org.nuxeo.ecm.core.cache");
-        deployBundle("org.nuxeo.ecm.directory");
-        applyInlineDeployments();
 
         DirectoryService service = Framework.getService(DirectoryService.class);
         service.registerDirectoryDescriptor(descr);
