@@ -173,7 +173,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
         }
     }
 
-    protected class CachePubSubInvalidator extends AbstractPubSubBroker<CacheInvalidation> {
+    protected static abstract class AbstractCachePubSubInvalidator extends AbstractPubSubBroker<CacheInvalidation> {
 
         public static final String ALL_KEYS = "__ALL__";
 
@@ -192,15 +192,26 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
         @Override
         public void receivedMessage(CacheInvalidation invalidation) {
-            Cache cache = getCache(invalidation.cacheName);
+            CacheManagement cache = (CacheManagement) getCache(invalidation.cacheName);
             if (cache != null) {
                 String key = invalidation.key;
                 if (ALL_KEYS.equals(key)) {
-                    cache.invalidateAll();
+                    cache.invalidateLocalAll();
                 } else {
-                    cache.invalidate(key);
+                    cache.invalidateLocal(key);
                 }
             }
+        }
+
+        // for testability, we want an alternative implementation to return a test cache
+        protected abstract Cache getCache(String name);
+    }
+
+    protected class CachePubSubInvalidator extends AbstractCachePubSubInvalidator {
+
+        @Override
+        protected Cache getCache(String name) {
+            return CacheServiceImpl.this.getCache(name);
         }
     }
 

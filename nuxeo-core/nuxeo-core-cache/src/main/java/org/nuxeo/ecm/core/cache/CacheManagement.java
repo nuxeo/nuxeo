@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.cache;
 
+import java.io.Serializable;
+
 /**
  * Management-related APIs for a {@link Cache}.
  *
@@ -43,5 +45,29 @@ public interface CacheManagement extends Cache {
      * @since 9.1
      */
     long getSize();
+
+    /**
+     * Stores a {@link Serializable} value into the cache locally. Does not propagate invalidations.
+     *
+     * @param key the key
+     * @param value the value
+     * @since 9.3
+     */
+    void putLocal(String key, Serializable value);
+
+    /**
+     * Invalidates the given key locally. Does not propagate invalidations.
+     *
+     * @param key the key to remove from the cache
+     * @since 9.3
+     */
+    void invalidateLocal(String key);
+
+    /**
+     * Invalidates all keys locally. Does not propagate invalidations.
+     *
+     * @since 9.3
+     */
+    void invalidateLocalAll();
 
 }
