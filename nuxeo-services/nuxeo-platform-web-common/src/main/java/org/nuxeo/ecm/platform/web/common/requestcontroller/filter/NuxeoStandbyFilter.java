@@ -86,14 +86,29 @@ public class NuxeoStandbyFilter implements Filter {
 
         protected final AtomicInteger inProgress = new AtomicInteger();
 
+        /**
+         * This variable is used to determine if the Thread wanting to shutdown/standby the server has gone through this
+         * filter. We need this variable in order to not wait for ourself to end.
+         * <p />
+         * Calls relying on this variable:
+         * <ul>
+         * <li>org.nuxeo.runtime.reload.NuxeoRestart#restart()</li>
+         * <li>org.nuxeo.ecm.admin.operation.HotReloadStudioSnapshot#run()</li>
+         * <li>org.nuxeo.connect.client.jsf.AppCenterViewsManager#installStudioSnapshotAndRedirect()</li>
+         * </ul>
+         */
+        protected final ThreadLocal<Boolean> hasBeenFiltered = ThreadLocal.withInitial(() -> Boolean.FALSE);
+
         public void onNewRequest() {
             if (isStandby) {
                 awaitCanProceed();
             }
             inProgress.incrementAndGet();
+            hasBeenFiltered.set(Boolean.TRUE);
         }
 
         public void onRequestEnd() {
+            hasBeenFiltered.set(Boolean.FALSE);
             if (inProgress.decrementAndGet() <= 0) {
                 signalBlockedToStandby();
             }
@@ -101,6 +116,11 @@ public class NuxeoStandbyFilter implements Filter {
 
         public void onStandby() throws RuntimeException {
             isStandby = true;
+            if (hasBeenFiltered.get()) {
+                // current thread has gone through this filter, so remove this request from counter
+                // otherwise we will wait for ourself to end
+                inProgress.decrementAndGet();
+            }
             if (inProgress.get() > 0) {
                 awaitCanStandby();
             }
@@ -108,6 +128,11 @@ public class NuxeoStandbyFilter implements Filter {
 
         public void onResumed() {
             isStandby = false;
+            if (hasBeenFiltered.get()) {
+                // current thread has gone through this filter, so add this request back to counter
+                // as we removed this request just before / proceeding as it makes conditions easier to read
+                inProgress.incrementAndGet();
+            }
             signalBlockedToProceed();
         }
 
