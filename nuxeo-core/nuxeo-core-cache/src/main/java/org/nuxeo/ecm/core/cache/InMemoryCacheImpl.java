@@ -74,6 +74,11 @@ public class InMemoryCacheImpl extends AbstractCache {
 
     @Override
     public void invalidate(String key) {
+        invalidateLocal(key);
+    }
+
+    @Override
+    public void invalidateLocal(String key) {
         if (key != null) {
             cache.invalidate(key);
         } else {
@@ -83,11 +88,21 @@ public class InMemoryCacheImpl extends AbstractCache {
 
     @Override
     public void invalidateAll() {
+        invalidateLocalAll();
+    }
+
+    @Override
+    public void invalidateLocalAll() {
         cache.invalidateAll();
     }
 
     @Override
     public void put(String key, Serializable value) {
+        putLocal(key, value);
+    }
+
+    @Override
+    public void putLocal(String key, Serializable value) {
         if (key != null && value != null) {
             cache.put(key, value);
         } else {

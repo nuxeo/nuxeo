@@ -62,7 +62,8 @@ public class CacheFeature extends SimpleFeature {
 
     @Override
     public void beforeSetup(FeaturesRunner runner) throws Exception {
-        Framework.getService(CacheService.class).getCache(DEFAULT_TEST_CACHE_NAME).put(KEY, VAL);
+        Cache cache = Framework.getService(CacheService.class).getCache(DEFAULT_TEST_CACHE_NAME);
+        ((CacheManagement) cache).putLocal(KEY, VAL);
     }
 
     @Override
@@ -71,7 +72,8 @@ public class CacheFeature extends SimpleFeature {
     }
 
     protected void clearCache(String name) {
-        Framework.getService(CacheService.class).getCache(name).invalidateAll();
+        Cache cache = Framework.getService(CacheService.class).getCache(name);
+        ((CacheManagement) cache).invalidateLocalAll();
     }
 
     public static <T extends Cache> T unwrapImpl(Class<T> type, Cache cache) {

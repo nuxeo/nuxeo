@@ -33,9 +33,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.cache.CacheServiceImpl.AbstractCachePubSubInvalidator;
 import org.nuxeo.ecm.core.cache.CacheServiceImpl.CacheInvalidation;
-import org.nuxeo.ecm.core.cache.CacheServiceImpl.CachePubSubInvalidator;
-import org.nuxeo.ecm.core.pubsub.AbstractPubSubBroker;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
@@ -81,20 +80,25 @@ public class TestCacheInvalidation {
 
     public static List<CacheInvalidation> RECEIVED_INVALIDATIONS = new CopyOnWriteArrayList<>();
 
-    public static class DummyCachePubSubInvalidator extends AbstractPubSubBroker<CacheInvalidation> {
+    public class DummyCachePubSubInvalidator extends AbstractCachePubSubInvalidator {
 
         @Override
         public CacheInvalidation deserialize(InputStream in) throws IOException {
             return CacheInvalidation.deserialize(in);
         }
 
-        public void sendInvalidation(String cacheName, String key) {
-            sendMessage(new CacheInvalidation(cacheName, key));
-        }
-
         @Override
         public void receivedMessage(CacheInvalidation invalidation) {
             RECEIVED_INVALIDATIONS.add(invalidation);
+            super.receivedMessage(invalidation);
+        }
+
+        @Override
+        protected Cache getCache(String name) {
+            if (!name.equals(cache.getName())) {
+                throw new UnsupportedOperationException(name);
+            }
+            return cache;
         }
     }
 
@@ -147,7 +151,7 @@ public class TestCacheInvalidation {
         assertEquals(1, RECEIVED_INVALIDATIONS.size());
         inval = RECEIVED_INVALIDATIONS.get(0);
         assertEquals(CacheFeature.DEFAULT_TEST_CACHE_NAME, inval.cacheName);
-        assertEquals(CachePubSubInvalidator.ALL_KEYS, inval.key);
+        assertEquals(AbstractCachePubSubInvalidator.ALL_KEYS, inval.key);
     }
 
     @Test

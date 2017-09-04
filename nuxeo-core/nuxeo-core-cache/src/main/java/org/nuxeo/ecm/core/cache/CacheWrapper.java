@@ -46,13 +46,28 @@ public class CacheWrapper implements CacheManagement {
     }
 
     @Override
+    public void invalidateLocal(String key) {
+        cache.invalidateLocal(key);
+    }
+
+    @Override
     public void invalidate(String key) {
         cache.invalidate(key);
     }
 
     @Override
+    public void invalidateLocalAll() {
+        cache.invalidateLocalAll();
+    }
+
+    @Override
     public void invalidateAll() {
         cache.invalidateAll();
+    }
+
+    @Override
+    public void putLocal(String key, Serializable value) {
+        cache.putLocal(key, value);
     }
 
     @Override
