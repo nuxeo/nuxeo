@@ -370,9 +370,13 @@ public abstract class AbstractTest {
             return wait.until(aPage -> {
                 String notLoaded = anyElementNotLoaded(elements, fieldNames);
                 if (notLoaded == null) {
-                    // check if there are Jquery ajax requests to complete
+                    // check if there are JQuery ajax requests to complete
                     if (pageClassToProxy.isAnnotationPresent(WaitForJQueryAjaxOnLoading.class)) {
-                        new AjaxRequestManager(driver).waitForJQueryRequests();
+                        try {
+                            new AjaxRequestManager(driver).waitForJQueryRequests();
+                        } catch (TimeoutException e) {
+                            return null;
+                        }
                     }
 
                     return aPage;
