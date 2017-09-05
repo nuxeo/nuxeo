@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -39,6 +41,8 @@ public abstract class AbstractConfigurationTest {
     protected ConfigurationGenerator configGenerator;
 
     protected File nuxeoHome;
+
+    protected Map<String, String> originSystemProps = new HashMap<>();
 
     public File getResourceFile(String resource) {
         URL url = getClass().getClassLoader().getResource(resource);
@@ -57,19 +61,39 @@ public abstract class AbstractConfigurationTest {
         nuxeoHome.mkdirs();
         File nuxeoConf = getResourceFile("configurator/nuxeo.conf");
         FileUtils.copyFileToDirectory(nuxeoConf, nuxeoHome);
-        System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(nuxeoHome, nuxeoConf.getName()).getPath());
-        System.setProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
-        System.setProperty(Environment.NUXEO_DATA_DIR, new File(nuxeoHome, "data").getPath());
-        System.setProperty(Environment.NUXEO_LOG_DIR, new File(nuxeoHome, "log").getPath());
+
+        setSystemProperty(ConfigurationGenerator.NUXEO_CONF, new File(nuxeoHome, nuxeoConf.getName()).getPath());
+        setSystemProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
+        setSystemProperty(Environment.NUXEO_DATA_DIR, new File(nuxeoHome, "data").getPath());
+        setSystemProperty(Environment.NUXEO_LOG_DIR, new File(nuxeoHome, "log").getPath());
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws Exception {
         FileUtils.deleteQuietly(nuxeoHome);
-        System.clearProperty(ConfigurationGenerator.NUXEO_CONF);
-        System.clearProperty(Environment.NUXEO_HOME);
-        System.clearProperty(Environment.NUXEO_DATA_DIR);
-        System.clearProperty(Environment.NUXEO_LOG_DIR);
+
+        // Restore or clear all the system properties manipulated by the current test
+        originSystemProps.forEach((key, value) -> {
+            if (value == null) {
+                System.clearProperty(key);
+            } else {
+                System.setProperty(key, value);
+            }
+        });
+        originSystemProps.clear();
+    }
+
+    /**
+     * Sets a specific {@link System} property before the test.
+     * <p>
+     * The original property value will be stored in {@link #originSystemProps}.
+     *
+     * @param key The name of the system property.
+     * @param newValue The new value of the system property.
+     * @since 9.3
+     */
+    protected void setSystemProperty(String key, String newValue) {
+        originSystemProps.put(key, System.setProperty(key, newValue));
     }
 
 }
