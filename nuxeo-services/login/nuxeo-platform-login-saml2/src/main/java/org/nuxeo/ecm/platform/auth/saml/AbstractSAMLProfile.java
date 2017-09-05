@@ -89,24 +89,28 @@ public abstract class AbstractSAMLProfile {
 
     // VALIDATION
 
-    protected void validateSignature(Signature signature, String IDPEntityID)
-            throws ValidationException, org.opensaml.xml.security.SecurityException {
+    protected void validateSignature(Signature signature, String IDPEntityID) throws SAMLException {
 
         if (trustEngine == null) {
-            throw new SecurityException("Trust engine is not set, signature can't be verified");
+            throw new SAMLException("Trust engine is not set, signature can't be verified");
         }
 
-        SAMLSignatureProfileValidator validator = new SAMLSignatureProfileValidator();
-        validator.validate(signature);
-        CriteriaSet criteriaSet = new CriteriaSet();
-        criteriaSet.add(new EntityIDCriteria(IDPEntityID));
-        criteriaSet.add(new MetadataCriteria(IDPSSODescriptor.DEFAULT_ELEMENT_NAME, SAMLConstants.SAML20P_NS));
-        criteriaSet.add(new UsageCriteria(UsageType.SIGNING));
-        log.debug("Verifying signature: " + signature);
+        try {
+            SAMLSignatureProfileValidator validator = new SAMLSignatureProfileValidator();
+            validator.validate(signature);
+            CriteriaSet criteriaSet = new CriteriaSet();
+            criteriaSet.add(new EntityIDCriteria(IDPEntityID));
+            criteriaSet.add(new MetadataCriteria(IDPSSODescriptor.DEFAULT_ELEMENT_NAME, SAMLConstants.SAML20P_NS));
+            criteriaSet.add(new UsageCriteria(UsageType.SIGNING));
+            log.debug("Verifying signature: " + signature);
 
-        if (!getTrustEngine().validate(signature, criteriaSet)) {
-            throw new ValidationException("Signature is not trusted or invalid");
+            if (!getTrustEngine().validate(signature, criteriaSet)) {
+                throw new SAMLException("Signature is not trusted or invalid");
+            }
+        } catch (ValidationException | SecurityException e) {
+            throw new SAMLException("Error validating signature", e);
         }
+
     }
 
     protected void validateIssuer(Issuer issuer, SAMLMessageContext context) throws SAMLException {
