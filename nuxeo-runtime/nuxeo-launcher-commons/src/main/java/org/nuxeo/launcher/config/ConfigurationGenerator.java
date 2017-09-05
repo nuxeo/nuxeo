@@ -49,15 +49,16 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -73,7 +74,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.NullEnumeration;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -236,6 +236,13 @@ public class ConfigurationGenerator {
     public static final String PARAM_MONGODB_SERVER = "nuxeo.mongodb.server";
 
     /**
+     * Java options split by spaces followed by an even number of quotes (or zero).
+     *
+     * @since 9.3
+     */
+    protected static final Pattern JAVA_OPTS_PATTERN = Pattern.compile("[ ]+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+
+    /**
      * Keys which value must be displayed thoughtfully
      *
      * @since 8.1
@@ -293,6 +300,13 @@ public class ConfigurationGenerator {
 
     /** @since 8.4 */
     public static final String JVMCHECK_NOFAIL = "nofail";
+
+    /**
+     * Java options configured in <tt>bin/nuxeo.conf</tt> and <tt>bin/nuxeoctl</tt>.
+     *
+     * @since 9.3
+     */
+    public static final String JAVA_OPTS_PROP = "launcher.java.opts";
 
     private final File nuxeoHome;
 
@@ -2069,10 +2083,36 @@ public class ConfigurationGenerator {
      * Gets the Java options with 'nuxeo.*' properties substituted. It enables
      * usage of property like ${nuxeo.log.dir} inside JAVA_OPTS.
      *
-     * @return the java options string.
+     * @return the Java options string.
+     * @deprecated Since 9.3. Use {@link #getJavaOptsString()} instead.
      */
+    @Deprecated
+    @SuppressWarnings("unused")
     protected String getJavaOpts(String key, String value) {
-        return StrSubstitutor.replace(System.getProperty(key, value), getUserConfig());
+        return getJavaOptsString();
+    }
+
+    /**
+     * Gets the Java options defined in Nuxeo configuration files, e.g. <tt>bin/nuxeo.conf</tt> and
+     * <tt>bin/nuxeoctl</tt>.
+     *
+     * @return the Java options.
+     * @since 9.3
+     */
+    public List<String> getJavaOpts(Function<String, String> mapper) {
+        return Arrays.stream(JAVA_OPTS_PATTERN.split(System.getProperty(JAVA_OPTS_PROP, "")))
+                     .map(option -> StrSubstitutor.replace(option, getUserConfig()))
+                     .map(mapper)
+                     .collect(Collectors.toList());
+    }
+
+    /**
+     * @return the Java options string.
+     * @since 9.3
+     * @see #getJavaOpts(Function)
+     */
+    protected String getJavaOptsString() {
+        return String.join(" ", getJavaOpts(Function.identity()));
     }
 
 }

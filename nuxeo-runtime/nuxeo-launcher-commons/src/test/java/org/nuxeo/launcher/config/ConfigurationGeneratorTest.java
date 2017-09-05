@@ -20,6 +20,7 @@
 
 package org.nuxeo.launcher.config;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -35,6 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.AppenderSkeleton;
@@ -59,6 +61,24 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertTrue(configGenerator.init());
         log.debug(
                 "Test with " + configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
+    }
+
+    @Test
+    public void getJavaOptsStringWithoutConfig() throws Exception {
+        assertThat(configGenerator.getJavaOptsString()).isEmpty();
+    }
+
+    @Test
+    public void getJavaOptsWithoutConfig() throws Exception {
+        List<String> javaOpts = configGenerator.getJavaOpts(Function.identity());
+        assertThat(javaOpts).containsExactly("");
+    }
+
+    @Test
+    public void getJavaOptsWithConfig() throws Exception {
+        setSystemProperty(ConfigurationGenerator.JAVA_OPTS_PROP, "-Xms1g -Xmx2g");
+        List<String> javaOpts = configGenerator.getJavaOpts(Function.identity());
+        assertThat(javaOpts).containsExactly("-Xms1g", "-Xmx2g");
     }
 
     @Test
