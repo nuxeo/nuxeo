@@ -13,6 +13,7 @@
 
   <properties>
     <connect.password>setTheValueInYourSettings</connect.password>
+    <nuxeo.jsf.tests.optimsEnabled>false</nuxeo.jsf.tests.optimsEnabled>
   </properties>
 
   <dependencies>
@@ -97,6 +98,7 @@
               <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/main/resources/log4j.xml
                 -Dnuxeo.log.dir=${project.build.directory}
                 -DconnectPassword=${connect.password}
+                -Dnuxeo.jsf.tests.optimsEnabled=${nuxeo.jsf.tests.optimsEnabled}
                 ${it.failsafe.argLine}
               </argLine>
             </configuration>
@@ -168,30 +170,9 @@
     </profile>
     <profile>
       <id>jsfoptims</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-failsafe-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>integration-test</goal>
-                  <goal>verify</goal>
-                </goals>
-                <configuration>
-                  <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/main/resources/log4j.xml
-                    -Dnuxeo.log.dir=${project.build.directory}
-                    -DconnectPassword=${connect.password}
-                    -Dnuxeo.jsf.tests.optimsEnabled=true
-                    ${it.failsafe.argLine}
-                  </argLine>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
+      <properties>
+        <nuxeo.jsf.tests.optimsEnabled>true</nuxeo.jsf.tests.optimsEnabled>
+      </properties>
     </profile>
   </profiles>
 
