@@ -37,28 +37,11 @@ import org.nuxeo.ecm.core.api.Blob;
 public interface TransientStore {
 
     /**
-     * Initializes the store from the given {@code config}.
-     */
-    void init(TransientStoreConfig config);
-
-    /**
-     * Shuts down the store.
-     */
-    void shutdown();
-
-    /**
      * Returns {@code true} if an entry exists with the given {@code key}.
      *
      * @since 7.10
      */
     boolean exists(String key);
-
-    /**
-     * Returns the set of keys for all entries.
-     *
-     * @since 8.3
-     */
-    Set<String> keySet();
 
     /**
      * Sets {@code parameter} to {@code value} in the entry with the given {@code key}.
@@ -153,20 +136,5 @@ public interface TransientStore {
      * Has no effect if entry does not exist.
      */
     void release(String key);
-
-    /**
-     * Returns the size of the used disk storage in MB.
-     */
-    int getStorageSizeMB();
-
-    /**
-     * Runs garbage collecting to delete the file system resources that are associated with entries that were removed.
-     */
-    void doGC();
-
-    /**
-     * Removes all entries from the store.
-     */
-    void removeAll();
 
 }

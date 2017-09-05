@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig;
+import org.nuxeo.ecm.core.transientstore.api.TransientStoreProvider;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -38,7 +39,7 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
 
     protected Map<String, TransientStoreConfig> configs = new HashMap<>();
 
-    protected Map<String, TransientStore> stores = new HashMap<>();
+    protected Map<String, TransientStoreProvider> stores = new HashMap<>();
 
     public static final String EP_STORE = "store";
 
@@ -58,7 +59,7 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
 
     protected TransientStore registerDefaultStore() {
         synchronized (this) {
-            TransientStore defaultStore = stores.get(DEFAULT_STORE_NAME);
+            TransientStoreProvider defaultStore = stores.get(DEFAULT_STORE_NAME);
             if (defaultStore == null) {
                 TransientStoreConfig defaultConfig = new TransientStoreConfig(DEFAULT_STORE_NAME);
                 defaultStore = defaultConfig.getStore();
@@ -70,7 +71,7 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
 
     @Override
 	public void doGC() {
-        stores.values().forEach(TransientStore::doGC);
+        stores.values().forEach(TransientStoreProvider::doGC);
     }
 
     @Override
@@ -86,7 +87,7 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (EP_STORE.equals(extensionPoint)) {
             TransientStoreConfig config = (TransientStoreConfig) contribution;
-            TransientStore store = stores.get(config.getName());
+            TransientStoreProvider store = stores.get(config.getName());
             store.shutdown();
         }
     }
@@ -99,21 +100,21 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
     }
 
     protected TransientStore registerStore(TransientStoreConfig config) {
-        TransientStore store = config.getStore();
+        TransientStoreProvider store = config.getStore();
         stores.put(config.getName(), store);
         return store;
     }
 
     @Override
     public void deactivate(ComponentContext context) {
-        stores.values().forEach(TransientStore::shutdown);
+        stores.values().forEach(TransientStoreProvider::shutdown);
         stores.clear();
         configs.values().forEach(TransientStoreConfig::flush);
         super.deactivate(context);
     }
 
     public void cleanUpStores() {
-        stores.values().forEach(TransientStore::removeAll);
+        stores.values().forEach(TransientStoreProvider::removeAll);
     }
 
 }

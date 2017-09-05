@@ -71,6 +71,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.ecm.core.transientstore.api.TransientStoreProvider;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
@@ -109,14 +110,14 @@ public class OAuth2ChallengeFixture {
 
     protected Client client;
 
-    protected TransientStore store;
+    protected TransientStoreProvider store;
 
     @Before
     public void initOAuthClient() {
         // Client to make the requests like a "Client" as the OAuth2 RFC describes it
         client = JerseyClientHelper.DEFAULT_CLIENT;
 
-        store = transientStoreService.getStore(AuthorizationRequest.STORE_NAME);
+        store = (TransientStoreProvider) transientStoreService.getStore(AuthorizationRequest.STORE_NAME);
     }
 
     @After

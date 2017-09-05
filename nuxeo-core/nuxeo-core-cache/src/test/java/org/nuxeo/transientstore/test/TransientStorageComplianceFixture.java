@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.transientstore.SimpleTransientStore;
 import org.nuxeo.ecm.core.transientstore.TransientStorageGCTrigger;
 import org.nuxeo.ecm.core.transientstore.api.MaximumTransientSpaceExceeded;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.ecm.core.transientstore.api.TransientStoreProvider;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -98,6 +99,7 @@ public class TransientStorageComplianceFixture {
 
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
+        TransientStoreProvider tsm = (TransientStoreProvider) ts;
 
         long size = ((AbstractTransientStore) ts).getStorageSize();
         assertEquals(0, size);
@@ -113,8 +115,8 @@ public class TransientStorageComplianceFixture {
         // check that entry is stored
         assertTrue(ts.exists("1"));
         assertFalse(ts.isCompleted("1"));
-        assertEquals(1, ts.keySet().size());
-        assertTrue(ts.keySet().contains("1"));
+        assertEquals(1, tsm.keySet().size());
+        assertTrue(tsm.keySet().contains("1"));
         assertEquals(11, ts.getSize("1"));
         assertEquals("1", ts.getParameter("1", "A"));
         assertEquals("b", ts.getParameter("1", "B"));
@@ -138,8 +140,8 @@ public class TransientStorageComplianceFixture {
 
         // check update
         assertTrue(ts.exists("1"));
-        assertEquals(1, ts.keySet().size());
-        assertTrue(ts.keySet().contains("1"));
+        assertEquals(1, tsm.keySet().size());
+        assertTrue(tsm.keySet().contains("1"));
         assertEquals(23, ts.getSize("1"));
         blobs = ts.getBlobs("1");
         assertEquals(2, blobs.size());
@@ -152,13 +154,13 @@ public class TransientStorageComplianceFixture {
         // check that still here
         ts.release("1");
         assertTrue(ts.exists("1"));
-        assertEquals(1, ts.keySet().size());
-        assertTrue(ts.keySet().contains("1"));
+        assertEquals(1, tsm.keySet().size());
+        assertTrue(tsm.keySet().contains("1"));
 
         // check Remove
         ts.remove("1");
         assertFalse(ts.exists("1"));
-        assertEquals(0, ts.keySet().size());
+        assertEquals(0, tsm.keySet().size());
 
         size = ((AbstractTransientStore) ts).getStorageSize();
         assertEquals(0, size);
@@ -238,6 +240,7 @@ public class TransientStorageComplianceFixture {
 
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
+        TransientStoreProvider tsm = (TransientStoreProvider) ts;
         putEntry(ts, "X");
 
         // check that entry is stored
@@ -250,7 +253,7 @@ public class TransientStorageComplianceFixture {
         assertTrue(cacheEntries.length > 0);
 
         // do GC for no reason
-        ts.doGC();
+        tsm.doGC();
 
         // entry is still here
         assertTrue(ts.exists("X"));
@@ -263,7 +266,7 @@ public class TransientStorageComplianceFixture {
         ts.remove("X");
 
         // do GC
-        ts.doGC();
+        tsm.doGC();
 
         // entry is gone
         assertFalse(ts.exists("X"));
@@ -309,6 +312,7 @@ public class TransientStorageComplianceFixture {
 
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
+        TransientStoreProvider tsm = (TransientStoreProvider) ts;
         putEntry(ts, "foobar");
 
         // check that entry is stored
@@ -328,7 +332,7 @@ public class TransientStorageComplianceFixture {
         }
 
         // do GC
-        ts.doGC();
+        tsm.doGC();
 
         // check still here
         assertTrue(ts.exists("foobar"));
@@ -341,7 +345,7 @@ public class TransientStorageComplianceFixture {
         }
 
         // do GC
-        ts.doGC();
+        tsm.doGC();
 
         // check no longer there
         assertFalse(ts.exists("foobar"));

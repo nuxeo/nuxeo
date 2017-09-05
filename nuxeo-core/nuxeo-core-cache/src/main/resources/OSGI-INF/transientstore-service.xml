@@ -28,7 +28,7 @@
      The store tag supports 2 attributes:
      <ul>
          <li>name, that is used to identify the store</li>
-         <li>class, that should reference an implementation of TransientStore interface (will default to SimpleTransientStore))</li>
+         <li>class, that should reference an implementation of the TransientStoreProvider interface (will default to SimpleTransientStore))</li>
      </ul>
 
      Nested configuration elements are :

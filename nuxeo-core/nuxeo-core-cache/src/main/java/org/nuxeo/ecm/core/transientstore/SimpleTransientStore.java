@@ -265,11 +265,11 @@ public class SimpleTransientStore extends AbstractTransientStore {
 
     @Override
     public long getStorageSize() {
-        int intStorageSize = (int) storageSize.get();
+        long size = storageSize.get();
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Fetched storage size of store %s: %d", config.getName(), intStorageSize));
+            log.debug(String.format("Fetched storage size of store %s: %d", config.getName(), size));
         }
-        return intStorageSize;
+        return size;
     }
 
     @Override

@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.ecm.core.transientstore.api.TransientStoreProvider;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.lazy.AbstractLazyCachableRenditionProvider;
@@ -97,9 +98,10 @@ public class TestLazyRenditions {
 
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore(AbstractLazyCachableRenditionProvider.CACHE_NAME);
+        TransientStoreProvider tsm = (TransientStoreProvider) ts;
 
         // let's pretend TTL has expired and run GC
-        ts.removeAll();
+        tsm.removeAll();
 
         // re ask for the rendition : it should not be here anymore
         rendition = rs.getRendition(session.getRootDocument(), "iamlazy");
