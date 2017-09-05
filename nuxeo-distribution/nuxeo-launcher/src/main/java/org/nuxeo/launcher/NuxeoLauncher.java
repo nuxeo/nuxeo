@@ -47,7 +47,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 
 import javax.json.Json;
@@ -74,7 +73,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
-import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
@@ -770,18 +768,13 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Gets the Java options with 'nuxeo.*' properties substituted. It enables
-     * usage of property like ${nuxeo.log.dir} inside JAVA_OPTS.
+     * Gets the Java options defined in Nuxeo configuration files, e.g. <tt>bin/nuxeo.conf</tt> and
+     * <tt>bin/nuxeoctl</tt>.
      *
-     * @return the java options string.
+     * @return the Java options.
      */
-    protected List<String> getJavaOptsProperty(Function<String,String> mapper) {
-        return Arrays
-                .stream(System.getProperty(JAVA_OPTS_PROPERTY, JAVA_OPTS_DEFAULT)
-                        .split("[ ]+(?=([^\"]*\"[^\"]*\")*[^\"]*$)"))
-                .map(opt -> StrSubstitutor.replace(opt, configurationGenerator.getUserConfig()))
-                .map(mapper)
-                .collect(Collectors.toList());
+    protected List<String> getJavaOptsProperty(Function<String, String> mapper) {
+        return configurationGenerator.getJavaOpts(mapper);
     }
 
     /**

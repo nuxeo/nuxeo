@@ -41,6 +41,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -86,6 +87,9 @@ public abstract class ServerConfigurator {
     public static final List<String> NUXEO_SYSTEM_PROPERTIES = Arrays.asList("nuxeo.conf", "nuxeo.home", "log.id");
 
     protected static final String DEFAULT_CONTEXT_NAME = "/nuxeo";
+
+    /** @since 9.3 */
+    public static final String JAVA_OPTS = "JAVA_OPTS";
 
     private static final String NEW_FILES = ConfigurationGenerator.TEMPLATES + File.separator + "files.list";
 
@@ -662,8 +666,8 @@ public abstract class ServerConfigurator {
         for (Object item : new TreeSet<>(userConfig.keySet())) {
             String key = (String) item;
             String value = userConfig.getRawProperty(key);
-            if (key.equals("JAVA_OPTS")) {
-                value = generator.getJavaOpts("JAVA_OPTS", "-Xms512m -Xmx1024m");
+            if (JAVA_OPTS.equals(key)) {
+                value = generator.getJavaOptsString();
             }
             if (ConfigurationGenerator.SECRET_KEYS.contains(key) || key.contains("password")
                     || key.equals(Environment.SERVER_STATUS_KEY) || Crypto.isEncrypted(value)) {
