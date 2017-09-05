@@ -40,7 +40,6 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,7 +53,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         super.setUp();
         env.put("NUXEO_DB_HOST", "10.0.0.1");
         FileUtils.copyDirectory(getResourceFile("templates/jboss"), new File(nuxeoHome, "templates"));
-        System.setProperty("jboss.home.dir", nuxeoHome.getPath());
+        setSystemProperty("jboss.home.dir", nuxeoHome.getPath());
         configGenerator = new ConfigurationGenerator() {
 
             @Override
@@ -68,15 +67,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
                 "Test with " + configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
     }
 
-    @Override
-    @After
-    public void tearDown() {
-        super.tearDown();
-        System.clearProperty("jboss.home.dir");
-        System.clearProperty("java.net.preferIPv4Stack");
-        System.clearProperty("java.net.preferIPv6Addresses");
-    }
-
     @Test
     public void testEvalDynamicProperties() {
         assertEquals("Bad loop back URL", "http://127.0.0.1:8080/nuxeo",
@@ -87,8 +77,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
             log.error(e);
         }
         log.debug("Force IPv6");
-        System.setProperty("java.net.preferIPv4Stack", "false");
-        System.setProperty("java.net.preferIPv6Addresses", "true");
+        setSystemProperty("java.net.preferIPv4Stack", "false");
+        setSystemProperty("java.net.preferIPv6Addresses", "true");
         try {
             testAddress("::", "http://[0:0:0:0:0:0:0:1]:8080/nuxeo");
         } catch (ConfigurationException e) {
