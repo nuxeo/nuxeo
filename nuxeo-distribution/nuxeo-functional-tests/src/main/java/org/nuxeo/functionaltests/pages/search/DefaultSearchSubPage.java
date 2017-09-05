@@ -202,7 +202,7 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
         a.watchAjaxRequests();
         driver.findElement(By.id(TREE_PATH_ID)).findElement(By.linkText(pathArray[i])).click();
         a.waitForAjaxRequests();
-        driver.findElement(By.id("fancybox-close")).click();
+        closeFancyBox();
         Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {

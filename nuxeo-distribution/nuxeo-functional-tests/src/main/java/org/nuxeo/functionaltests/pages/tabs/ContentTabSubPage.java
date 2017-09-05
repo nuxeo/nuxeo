@@ -18,16 +18,15 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.contentView.ContentViewElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -37,6 +36,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import com.google.common.base.Function;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * The content tab sub page. Most of the time available for folderish documents and displaying the current document's
@@ -76,6 +78,13 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     @FindBy(xpath = "//form[@id=\"document_content\"]//tbody//tr")
     List<WebElement> childDocumentRows;
+
+    /**
+     * @since 9.3
+     */
+    @Required
+    @FindBy(id = "cv_document_content_0_panel")
+    WebElement contentView;
 
     public List<WebElement> getChildDocumentRows() {
         return childDocumentRows;
@@ -320,4 +329,20 @@ public class ContentTabSubPage extends DocumentBasePage {
         getChildDocumentRows().get(index).findElement(By.xpath("td[3]/div/a[1]")).click();
         return asPage(DocumentBasePage.class);
     }
+
+    /**
+     * @since 9.3
+     */
+    public WebElement getContentViewElement() {
+        return contentView;
+    }
+
+    /**
+     * @since 9.3
+     */
+    public ContentViewElement getContentView() {
+        return AbstractTest.getWebFragment(getContentViewElement(), ContentViewElement.class);
+    }
+
+
 }

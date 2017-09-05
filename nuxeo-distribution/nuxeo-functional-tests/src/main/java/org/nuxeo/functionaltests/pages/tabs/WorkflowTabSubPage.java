@@ -80,7 +80,7 @@ public class WorkflowTabSubPage extends DocumentBasePage {
     }
 
     public void closeGraphView() {
-        findElementAndWaitUntilEnabled(By.id("fancybox-close")).click();
+        closeFancyBox();
     }
 
     public void startWorkflow() {

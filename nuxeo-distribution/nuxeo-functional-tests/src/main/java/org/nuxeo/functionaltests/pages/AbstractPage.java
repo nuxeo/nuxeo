@@ -18,8 +18,6 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.util.List;
 
 import org.nuxeo.functionaltests.AbstractTest;
@@ -36,6 +34,8 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Base functions for all pages.
@@ -136,6 +136,32 @@ public abstract class AbstractPage {
         WebDriverWait wait = new WebDriverWait(driver, AbstractTest.LOAD_TIMEOUT_SECONDS);
         wait.until(ExpectedConditions.visibilityOf(fancyBox));
         return fancyBox;
+    }
+
+    /**
+     * @since 9.3
+     */
+    public void closeFancyBox() {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
+        driver.findElement(By.id("fancybox-close")).click();
+        arm.end();
+    }
+
+    /**
+     * @since 9.3
+     */
+    public boolean isFancyBoxOpen() {
+        By by = By.id("fancybox-content");
+        try {
+            WebElement fancy = driver.findElement(by);
+            if (fancy.isDisplayed()) {
+                return true;
+            }
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+        return false;
     }
 
     /**

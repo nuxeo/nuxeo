@@ -16,8 +16,11 @@
  */
 package org.nuxeo.functionaltests.contentView;
 
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.fragment.EditResultColumnsForm;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -43,7 +46,7 @@ public class ContentViewElement extends WebFragmentImpl {
 
     @FindBy(className = "contentViewUpperActions")
     @Required
-    private WebElement upperActions;
+    protected WebElement upperActions;
 
     public ContentViewElement(WebDriver driver, WebElement element) {
         super(driver, element);
@@ -59,4 +62,34 @@ public class ContentViewElement extends WebFragmentImpl {
         getActionByTitle(layout.title).click();
         a.waitForAjaxRequests();
     }
+
+    /**
+     * @since 9.3
+     */
+    public void refresh() {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
+        String refreshId = "nxw_contentViewActions_refreshContentView_form:nxw_contentViewActions_refreshContentView";
+        Locator.findElementWaitUntilEnabledAndClick(By.id(refreshId));
+        arm.end();
+    }
+
+    /**
+     * @since 9.3
+     */
+    public EditResultColumnsForm openEditColumnsFancybox() {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
+        String id;
+        if (AbstractTest.JSF_OPTIMS_ENABLED) {
+            id = "nxw_contentViewActions_contentViewEditColumns_form:nxw_contentViewActions_contentViewEditColumns_link";
+        } else {
+            id = "nxw_contentViewActions_contentViewEditColumns_form:nxw_contentViewActions_contentViewEditColumns_subview:nxw_contentViewActions_contentViewEditColumns_link";
+        }
+        Locator.findElementWaitUntilEnabledAndClick(By.id(id));
+        arm.end();
+        Locator.waitUntilElementPresent(By.id("fancybox-content"));
+        return AbstractTest.getWebFragment(By.id("fancybox-content"), EditResultColumnsForm.class);
+    }
+
 }

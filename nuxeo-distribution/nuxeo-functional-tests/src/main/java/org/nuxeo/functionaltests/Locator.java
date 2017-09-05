@@ -24,11 +24,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidSelectorException;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -273,8 +275,7 @@ public class Locator {
             public Boolean apply(WebDriver driver) {
                 // Find the element.
                 WebElement element = findElementAndWaitUntilEnabled(by, findElementTimeout, waitUntilEnabledTimeout);
-
-                element.click();
+                scrollAndForceClick(element);
                 return true;
             }
         }, StaleElementReferenceException.class);
@@ -295,8 +296,7 @@ public class Locator {
             public Boolean apply(WebDriver driver) {
                 // Find the element.
                 WebElement element = findElementWithTimeout(by);
-
-                element.click();
+                scrollAndForceClick(element);
                 return true;
             }
         }, StaleElementReferenceException.class);
@@ -509,4 +509,41 @@ public class Locator {
         }
         throw new NoSuchElementException(String.format("No parent element found with tag %s.", tagName));
     }
+
+    /**
+     * Scrolls to the element in the view: allows to safely click on it afterwards.
+     *
+     * @param executor the javascript executor, usually {@link WebDriver}
+     * @param element the element to scroll to
+     * @since 9.3
+     */
+    public static final void scrollToElement(WebElement element) {
+        ((JavascriptExecutor) AbstractTest.driver).executeScript("arguments[0].scrollIntoView(false);", element);
+    }
+
+    /**
+     * Forces a click on an element, to workaround non-effective clicks in miscellaneous situations, after having
+     * scrolled to it.
+     *
+     * @param executor the javascript executor, usually {@link WebDriver}
+     * @param element the element to scroll to
+     * @return true if element is clickable
+     * @since 9.3
+     */
+    public static final boolean scrollAndForceClick(WebElement element) {
+        JavascriptExecutor executor = (JavascriptExecutor) AbstractTest.driver;
+        scrollToElement(element);
+        try {
+            // forced click to workaround non-effective clicks in miscellaneous situations
+            executor.executeScript("arguments[0].click();", element);
+            return true;
+        } catch (WebDriverException e) {
+            if (e.getMessage().contains("Element is not clickable at point")) {
+                log.debug("Element is not clickable yet");
+                return false;
+            }
+            throw e;
+        }
+    }
+
 }
