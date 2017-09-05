@@ -373,19 +373,11 @@ public abstract class AbstractTest {
 
         Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                                              .pollingEvery(POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        T res;
         try {
-            return wait.until(aPage -> {
+            res = wait.until(aPage -> {
                 String notLoaded = anyElementNotLoaded(elements, fieldNames);
                 if (notLoaded == null) {
-                    // check if there are JQuery ajax requests to complete
-                    if (pageClassToProxy.isAnnotationPresent(WaitForJQueryAjaxOnLoading.class)) {
-                        try {
-                            new AjaxRequestManager(driver).waitForJQueryRequests();
-                        } catch (TimeoutException e) {
-                            return null;
-                        }
-                    }
-
                     return aPage;
                 } else {
                     return null;
@@ -394,6 +386,11 @@ public abstract class AbstractTest {
         } catch (TimeoutException e) {
             throw new TimeoutException("not loaded: " + anyElementNotLoaded(elements, fieldNames), e);
         }
+        // check if there are JQuery ajax requests to complete
+        if (pageClassToProxy.isAnnotationPresent(WaitForJQueryAjaxOnLoading.class)) {
+            new AjaxRequestManager(driver).waitForJQueryRequests();
+        }
+        return res;
     }
 
     protected static String anyElementNotLoaded(List<WrapsElement> proxies, List<String> fieldNames) {
