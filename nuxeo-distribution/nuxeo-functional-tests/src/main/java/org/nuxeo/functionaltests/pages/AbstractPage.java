@@ -183,6 +183,22 @@ public abstract class AbstractPage {
     }
 
     /**
+     * @since 9.3
+     */
+    public boolean isFancyBoxOpen() {
+        By by = By.id("fancybox-content");
+        try {
+            WebElement fancy = driver.findElement(by);
+            if (fancy.isDisplayed()) {
+                return true;
+            }
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+        return false;
+    }
+
+    /**
      * Finds the first {@link WebElement} using the given method, with a timeout.
      *
      * @param by the locating mechanism

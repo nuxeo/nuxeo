@@ -83,12 +83,33 @@ public class ContentTabSubPage extends DocumentBasePage {
     @FindBy(id = "cv_document_content_0_resetFilterForm:resetFilter")
     WebElement clearFilterButton;
 
+    /**
+     * @since 9.3
+     */
+    @Required
+    @FindBy(id = "cv_document_content_0_panel")
+    WebElement contentView;
+
     public ContentTabSubPage(WebDriver driver) {
         super(driver);
     }
 
     protected ContentViewElement getElement() {
         return AbstractTest.getWebFragment(By.id("cv_document_content_0_panel"), ContentViewElement.class);
+    }
+
+    /**
+     * @since 9.3
+     */
+    public WebElement getContentViewElement() {
+        return contentView;
+    }
+
+    /**
+     * @since 9.3
+     */
+    public ContentViewElement getContentView() {
+        return AbstractTest.getWebFragment(getContentViewElement(), ContentViewElement.class);
     }
 
     public List<WebElement> getChildDocumentRows() {
@@ -160,8 +181,8 @@ public class ContentTabSubPage extends DocumentBasePage {
      *
      * @param filter the string to filter
      * @since 5.7.2
-     * @deprecated since 9.1 use {@link ContentTabSubPage#filterDocument(String)} instead and assert in your
-     * test the expected number of results.
+     * @deprecated since 9.1 use {@link ContentTabSubPage#filterDocument(String)} instead and assert in your test the
+     *             expected number of results.
      */
     @Deprecated
     public ContentTabSubPage filterDocument(final String filter, final int expectedNbOfDisplayedResult,
