@@ -46,13 +46,14 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.transientstore.api.MaximumTransientSpaceExceeded;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig;
+import org.nuxeo.ecm.core.transientstore.api.TransientStoreProvider;
 
 /**
  * Base class for a {@link TransientStore} implementation.
  *
  * @since 7.2
  */
-public abstract class AbstractTransientStore implements TransientStore {
+public abstract class AbstractTransientStore implements TransientStoreProvider {
 
     protected static final Log log = LogFactory.getLog(AbstractTransientStore.class);
 
@@ -122,11 +123,6 @@ public abstract class AbstractTransientStore implements TransientStore {
      * {@code sizeOfBlobs} and stores the blob information in this entry.
      */
     protected abstract void persistBlobs(String key, long sizeOfBlobs, List<Map<String, String>> blobInfos);
-
-    /**
-     * Returns the size of the disk storage in bytes.
-     */
-    public abstract long getStorageSize();
 
     /**
      * Sets the size of the disk storage in bytes.
@@ -241,11 +237,6 @@ public abstract class AbstractTransientStore implements TransientStore {
             blobs.add(blob);
         }
         return blobs;
-    }
-
-    @Override
-    public int getStorageSizeMB() {
-        return (int) getStorageSize() / (1024 * 1024);
     }
 
     @Override

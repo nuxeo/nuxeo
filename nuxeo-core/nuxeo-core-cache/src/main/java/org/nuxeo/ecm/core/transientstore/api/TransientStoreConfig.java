@@ -57,9 +57,9 @@ public class TransientStoreConfig {
     protected int minimalRetention = 10;
 
     @XNode("@class")
-    protected Class<? extends TransientStore> implClass = SimpleTransientStore.class;
+    protected Class<? extends TransientStoreProvider> implClass = SimpleTransientStore.class;
 
-    protected TransientStore store;
+    protected TransientStoreProvider store;
 
     public TransientStoreConfig() {
     }
@@ -104,7 +104,7 @@ public class TransientStoreConfig {
         this.secondLevelTTL = secondLevelTTL;
     }
 
-    public TransientStore getStore() {
+    public TransientStoreProvider getStore() {
         if (store == null) {
             try {
                 store = implClass.newInstance();

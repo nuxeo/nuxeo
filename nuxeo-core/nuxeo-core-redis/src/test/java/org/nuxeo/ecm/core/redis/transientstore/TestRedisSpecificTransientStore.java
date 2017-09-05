@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.redis.RedisCallable;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.ecm.core.redis.contribs.RedisTransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.ecm.core.transientstore.api.TransientStoreProvider;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -60,6 +61,7 @@ public class TestRedisSpecificTransientStore {
     public void verifyKeySet() {
 
         TransientStore ts = tss.getStore("testStore");
+        TransientStoreProvider tsm = (TransientStoreProvider) ts;
 
         // Keys with no params nor blobs
         ts.setCompleted("size2", true);
@@ -106,7 +108,7 @@ public class TestRedisSpecificTransientStore {
         expectedKeys.add("key4");
         expectedKeys.add("key5");
 
-        assertEquals(expectedKeys, ts.keySet());
+        assertEquals(expectedKeys, tsm.keySet());
     }
 
     @Test
