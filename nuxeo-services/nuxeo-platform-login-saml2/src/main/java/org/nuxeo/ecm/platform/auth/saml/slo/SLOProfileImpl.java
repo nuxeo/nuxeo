@@ -87,13 +87,7 @@ public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
         // Validate signature of the response if present
         if (request.getSignature() != null) {
             log.debug("Verifying message signature");
-            try {
-                validateSignature(request.getSignature(), context.getPeerEntityId());
-            } catch (ValidationException e) {
-                log.error("Error validating signature", e);
-            } catch (org.opensaml.xml.security.SecurityException e) {
-                e.printStackTrace();
-            }
+            validateSignature(request.getSignature(), context.getPeerEntityId());
             context.setInboundSAMLMessageAuthenticated(true);
         }
 
@@ -151,13 +145,7 @@ public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
         // Validate signature of the response if present
         if (response.getSignature() != null) {
             log.debug("Verifying message signature");
-            try {
-                validateSignature(response.getSignature(), context.getPeerEntityId());
-            } catch (ValidationException e) {
-                log.error("Error validating signature", e);
-            } catch (org.opensaml.xml.security.SecurityException e) {
-                e.printStackTrace();
-            }
+            validateSignature(response.getSignature(), context.getPeerEntityId());
             context.setInboundSAMLMessageAuthenticated(true);
         }
 
