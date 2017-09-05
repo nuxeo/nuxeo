@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
@@ -222,8 +223,8 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
 
     protected List<DocumentModel> getChildSyncRoots(DocumentModel doc, CoreSession session) {
         String nxql = "SELECT * FROM Document WHERE ecm:mixinType = '" + NuxeoDriveManagerImpl.NUXEO_DRIVE_FACET
-                + "' AND ecm:currentLifeCycleState != 'deleted' AND ecm:path STARTSWITH '" + doc.getPathAsString()
-                + "'";
+                + "' AND ecm:currentLifeCycleState != 'deleted' AND ecm:path STARTSWITH "
+                + NXQL.escapeString(doc.getPathAsString());
         return session.query(nxql);
     }
 
