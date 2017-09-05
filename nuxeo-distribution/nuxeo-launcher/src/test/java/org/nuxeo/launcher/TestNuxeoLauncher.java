@@ -43,11 +43,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.internal.AssumptionViolatedException;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.InvalidCLID;
@@ -147,9 +145,9 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         File nuxeoConf = getResourceFile("config/nuxeo.conf");
         FileUtils.copyFileToDirectory(nuxeoConf, nuxeoHome);
         FileUtils.copyDirectory(getResourceFile("templates"), new File(nuxeoHome, "templates"));
-        System.setProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
-        System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(nuxeoHome, nuxeoConf.getName()).getPath());
-        System.setProperty(TomcatConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
+        setSystemProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
+        setSystemProperty(ConfigurationGenerator.NUXEO_CONF, new File(nuxeoHome, nuxeoConf.getName()).getPath());
+        setSystemProperty(TomcatConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
     }
@@ -232,17 +230,6 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
                 launcher.cmdLine.getOptionValue(NuxeoLauncher.OPTION_ENCRYPT, "AES/ECB/PKCS5Padding"));
         assertArrayEquals(new String[] { "value1", "value2" }, launcher.params);
         launcher.encrypt();
-    }
-
-    @Override
-    @After
-    public void tearDown() {
-        FileUtils.deleteQuietly(nuxeoHome);
-        System.clearProperty(ConfigurationGenerator.NUXEO_CONF);
-        System.clearProperty(Environment.NUXEO_HOME);
-        System.clearProperty(TomcatConfigurator.TOMCAT_HOME);
-        System.clearProperty(Environment.NUXEO_DATA_DIR);
-        System.clearProperty(Environment.NUXEO_LOG_DIR);
     }
 
 }
