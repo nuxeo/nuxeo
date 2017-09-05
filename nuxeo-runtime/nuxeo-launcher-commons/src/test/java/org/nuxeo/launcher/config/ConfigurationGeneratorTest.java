@@ -48,9 +48,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     Map<String, String> env = new HashMap<>();
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Override
     @Before
     public void setUp() throws Exception {
@@ -143,8 +140,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
      * nuxeo.wizard.done=false
      * nuxeo.force.generation=true
      * </pre>
-     *
-     * @throws ConfigurationException
      */
     @Test
     public void testSetSpecialProperties() throws ConfigurationException {

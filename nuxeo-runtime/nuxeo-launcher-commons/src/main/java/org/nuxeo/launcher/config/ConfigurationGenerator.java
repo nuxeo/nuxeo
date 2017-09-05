@@ -603,14 +603,10 @@ public class ConfigurationGenerator {
         }
 
         logDebugInformation();
-
-        // Could be useful to initialize DEFAULT env...
-        // initEnv();
     }
 
     /**
      * @since 5.7
-     * @throws IOException
      */
     protected void includeTemplates() throws IOException {
         includedTemplates.clear();
@@ -643,7 +639,6 @@ public class ConfigurationGenerator {
      * Generate properties which values are based on others
      *
      * @return Map with new parameters to save in {@code nuxeoConf}
-     * @throws ConfigurationException
      * @since 5.5
      */
     protected HashMap<String, String> evalDynamicProperties() throws ConfigurationException {
@@ -704,7 +699,6 @@ public class ConfigurationGenerator {
     /**
      * Generate a server status key if not already set
      *
-     * @throws ConfigurationException
      * @see Environment#SERVER_STATUS_KEY
      * @since 5.5
      */
@@ -1285,7 +1279,6 @@ public class ConfigurationGenerator {
      * <a href="http://www.oracle.com/technetwork/java/javase/versioning-naming-139433.html">J2SE SDK/JRE Version String
      * Naming Convention</a>
      *
-     * @throws ConfigurationException
      * @since 5.6
      */
     public void checkJavaVersion() throws ConfigurationException {
@@ -1401,7 +1394,6 @@ public class ConfigurationGenerator {
      * Server specific implementations should override this method in order to check for server specific ports.
      * {@link #PARAM_BIND_ADDRESS} must be set before.
      *
-     * @throws ConfigurationException
      * @since 5.5
      * @see ServerConfigurator#verifyInstallation()
      */
@@ -1419,7 +1411,6 @@ public class ConfigurationGenerator {
      * Checks the userConfig bind address is not 0.0.0.0 and replaces it with 127.0.0.1 if needed
      *
      * @return the userConfig bind address if not 0.0.0.0 else 127.0.0.1
-     * @throws ConfigurationException
      * @since 5.7
      */
     public InetAddress getBindAddress() throws ConfigurationException {
@@ -1431,7 +1422,6 @@ public class ConfigurationGenerator {
      *
      * @param hostName the hostname of Nuxeo server (works also with the IP)
      * @return the bind address matching hostName parameter if not 0.0.0.0 else 127.0.0.1
-     * @throws ConfigurationException
      * @since 9.2
      */
     public static InetAddress getBindAddress(String hostName) throws ConfigurationException {
@@ -1453,7 +1443,6 @@ public class ConfigurationGenerator {
 
     /**
      * @param address address to check for availability
-     * @throws ConfigurationException
      * @since 5.5
      */
     public static void checkAddressReachable(InetAddress address) throws ConfigurationException {
@@ -1648,7 +1637,6 @@ public class ConfigurationGenerator {
      * Add template(s) to the {@link #PARAM_TEMPLATES_NAME} list if not already present
      *
      * @param templatesToAdd Comma separated templates to add
-     * @throws ConfigurationException
      * @since 5.5
      */
     public void addTemplate(String templatesToAdd) throws ConfigurationException {
@@ -1680,7 +1668,6 @@ public class ConfigurationGenerator {
      * Remove template(s) from the {@link #PARAM_TEMPLATES_NAME} list
      *
      * @param templatesToRm Comma separated templates to remove
-     * @throws ConfigurationException
      * @since 5.5
      */
     public void rmTemplate(String templatesToRm) throws ConfigurationException {
@@ -1698,7 +1685,6 @@ public class ConfigurationGenerator {
     /**
      * Set a property in nuxeo configuration
      *
-     * @throws ConfigurationException
      * @return The old value
      * @since 5.5
      */
@@ -1718,7 +1704,6 @@ public class ConfigurationGenerator {
      * Set properties in nuxeo configuration
      *
      * @return The old values
-     * @throws ConfigurationException
      * @since 7.4
      */
     public Map<String, String> setProperties(Map<String, String> newParametersToSave) throws ConfigurationException {
@@ -1739,8 +1724,6 @@ public class ConfigurationGenerator {
      * Set properties in the given template, if it exists
      *
      * @return The old values
-     * @throws ConfigurationException
-     * @throws IOException
      * @since 7.4
      */
     public Map<String, String> setProperties(String template, Map<String, String> newParametersToSave)
@@ -1794,10 +1777,6 @@ public class ConfigurationGenerator {
      * @param dbPassword nuxeo.db.password parameter in nuxeo.conf
      * @param dbHost nuxeo.db.host parameter in nuxeo.conf
      * @param dbPort nuxeo.db.port parameter in nuxeo.conf
-     * @throws DatabaseDriverException
-     * @throws IOException
-     * @throws FileNotFoundException
-     * @throws SQLException
      * @since 5.6
      */
     public void checkDatabaseConnection(String databaseTemplate, String dbName, String dbUser, String dbPassword,
@@ -1849,13 +1828,11 @@ public class ConfigurationGenerator {
      *
      * @param classname Driver class name, defined by {@link #PARAM_DB_DRIVER}
      * @return Driver driver if found, else an Exception must have been raised.
-     * @throws IOException
-     * @throws FileNotFoundException
      * @throws DatabaseDriverException If there was an error when trying to instantiate the driver.
      * @since 5.6
      */
     private Driver lookupDriver(String databaseTemplate, File databaseTemplateDir, String classname)
-            throws FileNotFoundException, IOException, DatabaseDriverException {
+            throws IOException, DatabaseDriverException {
         File[] files = (File[]) ArrayUtils.addAll( //
                 new File(databaseTemplateDir, "lib").listFiles(), //
                 serverConfigurator.getServerLibDir().listFiles());
@@ -1915,7 +1892,6 @@ public class ConfigurationGenerator {
      * @since 5.6
      * @param propsFile Properties file
      * @return new Properties containing trimmed keys and values read in {@code propsFile}
-     * @throws IOException
      */
     public static Properties loadTrimmedProperties(File propsFile) throws IOException {
         Properties props = new Properties();
@@ -1929,7 +1905,6 @@ public class ConfigurationGenerator {
      * @since 5.6
      * @param props Properties object to be filled
      * @param propsIS Properties InputStream
-     * @throws IOException
      */
     public static void loadTrimmedProperties(Properties props, InputStream propsIS) throws IOException {
         if (props == null) {

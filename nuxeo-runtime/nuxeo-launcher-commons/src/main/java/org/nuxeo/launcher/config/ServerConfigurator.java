@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,8 +76,6 @@ public abstract class ServerConfigurator {
 
     protected File pidDir = null;
 
-    protected File libDir = null;
-
     protected File tmpDir = null;
 
     protected File packagesDir = null;
@@ -85,8 +83,7 @@ public abstract class ServerConfigurator {
     /**
      * @since 5.4.2
      */
-    public static final List<String> NUXEO_SYSTEM_PROPERTIES = Arrays.asList(new String[] { "nuxeo.conf", "nuxeo.home",
-            "log.id" });
+    public static final List<String> NUXEO_SYSTEM_PROPERTIES = Arrays.asList("nuxeo.conf", "nuxeo.home", "log.id");
 
     protected static final String DEFAULT_CONTEXT_NAME = "/nuxeo";
 
@@ -125,16 +122,10 @@ public abstract class ServerConfigurator {
      * Generate configuration files from templates and given configuration parameters
      *
      * @param config Properties with configuration parameters for template replacement
-     * @throws ConfigurationException
      */
     protected void parseAndCopy(Properties config) throws IOException, TemplateException, ConfigurationException {
         // FilenameFilter for excluding "nuxeo.defaults" files from copy
-        final FilenameFilter filter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return !ConfigurationGenerator.NUXEO_DEFAULT_CONF.equals(name);
-            }
-        };
+        final FilenameFilter filter = (dir, name) -> !ConfigurationGenerator.NUXEO_DEFAULT_CONF.equals(name);
         final TextTemplate templateParser = new TextTemplate(config);
         templateParser.setKeepEncryptedAsVar(true);
         templateParser.setTrim(true);
@@ -176,9 +167,6 @@ public abstract class ServerConfigurator {
     /**
      * Delete files previously deployed by templates. If a file had been overwritten by a template, it will be restored.
      * Helps the server returning to the state before any template was applied.
-     *
-     * @throws IOException
-     * @throws ConfigurationException
      */
     private void deleteTemplateFiles() throws IOException, ConfigurationException {
         File newFiles = new File(generator.getNuxeoHome(), NEW_FILES);
@@ -216,9 +204,6 @@ public abstract class ServerConfigurator {
     /**
      * Store into {@link #NEW_FILES} the list of new files deployed by the templates. For later use by
      * {@link #deleteTemplateFiles()}
-     *
-     * @param newFilesList
-     * @throws IOException
      */
     private void storeNewFilesList(List<String> newFilesList) throws IOException {
         BufferedWriter writer = null;
@@ -421,7 +406,6 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * @param absoluteDirectory
      * @since 5.9.4
      */
     private void setPackagesDir(String packagesDirStr) {
@@ -576,7 +560,6 @@ public abstract class ServerConfigurator {
     public abstract File getServerLibDir();
 
     /**
-     * @throws ConfigurationException
      * @since 5.7
      */
     public void verifyInstallation() throws ConfigurationException {
@@ -587,7 +570,6 @@ public abstract class ServerConfigurator {
     /**
      * Perform server specific checks, not already done by {@link ConfigurationGenerator#checkAddressesAndPorts()}
      *
-     * @throws ConfigurationException
      * @since 5.7
      * @see ConfigurationGenerator#checkAddressesAndPorts()
      */
@@ -597,7 +579,6 @@ public abstract class ServerConfigurator {
     /**
      * Override to add server specific parameters to the list of parameters to migrate
      *
-     * @param parametersmigration
      * @since 5.7
      */
     protected void addServerSpecificParameters(Map<String, String> parametersmigration) {
