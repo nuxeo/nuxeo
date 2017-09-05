@@ -57,7 +57,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 
 import javax.json.Json;
@@ -777,17 +776,13 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Gets the Java options with 'nuxeo.*' properties substituted. It enables
-     * usage of property like ${nuxeo.log.dir} inside JAVA_OPTS.
+     * Gets the Java options defined in Nuxeo configuration files, e.g. <tt>bin/nuxeo.conf</tt> and
+     * <tt>bin/nuxeoctl</tt>.
      *
-     * @return the java options string.
+     * @return the Java options.
      */
-    protected List<String> getJavaOptsProperty(Function<String,String> mapper) {
-        return Arrays
-                .stream(System.getProperty(JAVA_OPTS_PROPERTY, JAVA_OPTS_DEFAULT)
-                        .split("[ ]+(?=([^\"]*\"[^\"]*\")*[^\"]*$)"))
-                .map(mapper)
-                .collect(Collectors.toList());
+    protected List<String> getJavaOptsProperty(Function<String, String> mapper) {
+        return configurationGenerator.getJavaOpts(mapper);
     }
 
     /**
