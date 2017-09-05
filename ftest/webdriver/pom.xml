@@ -12,6 +12,10 @@
   <artifactId>nuxeo-platform-forms-layout-demo-webdriver-tests</artifactId>
   <name>Layout Demo Functional Tests with Webdriver</name>
 
+  <properties>
+    <nuxeo.jsf.tests.optimsEnabled>false</nuxeo.jsf.tests.optimsEnabled>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -79,6 +83,7 @@
               </excludes>
               <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/test/resources/log4j.xml
                 -Dnuxeo.log.dir=${project.build.directory}
+                -Dnuxeo.jsf.tests.optimsEnabled=${nuxeo.jsf.tests.optimsEnabled}
               </argLine>
               <reportNameSuffix>layoutDemo</reportNameSuffix>
             </configuration>
@@ -132,31 +137,9 @@
     </profile>
     <profile>
       <id>jsfoptims</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-failsafe-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>integration-test</goal>
-                  <goal>verify</goal>
-                </goals>
-                <configuration>
-                  <excludes>
-                    <exclude>**/**/ITAjaxListWidgetTest.java</exclude>
-                  </excludes>
-                  <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/test/resources/log4j.xml
-                    -Dnuxeo.log.dir=${project.build.directory} -Dnuxeo.jsf.tests.optimsEnabled=true
-                  </argLine>
-                  <reportNameSuffix>layoutDemo</reportNameSuffix>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
+      <properties>
+        <nuxeo.jsf.tests.optimsEnabled>true</nuxeo.jsf.tests.optimsEnabled>
+      </properties>
     </profile>
   </profiles>
 
