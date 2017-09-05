@@ -29,6 +29,7 @@ import org.opensaml.saml2.core.*;
 import org.opensaml.saml2.metadata.SPSSODescriptor;
 import org.opensaml.saml2.metadata.SingleSignOnService;
 import org.opensaml.xml.encryption.DecryptionException;
+import org.opensaml.xml.security.SecurityException;
 import org.opensaml.xml.signature.Signature;
 import org.opensaml.xml.validation.ValidationException;
 
@@ -75,13 +76,7 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
         // Validate signature of the response if present
         if (response.getSignature() != null) {
             log.debug("Verifying message signature");
-            try {
-                validateSignature(response.getSignature(), context.getPeerEntityId());
-            } catch (ValidationException e) {
-                log.error("Error validating signature", e);
-            } catch (org.opensaml.xml.security.SecurityException e) {
-                e.printStackTrace();
-            }
+            validateSignature(response.getSignature(), context.getPeerEntityId());
             context.setInboundSAMLMessageAuthenticated(true);
         }
 
@@ -129,8 +124,7 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
                         sessionIndexes.add(statement.getSessionIndex());
                     }
 
-                } catch (SAMLException | org.opensaml.xml.security.SecurityException | ValidationException
-                        | DecryptionException e) {
+                } catch (SAMLException | SecurityException | ValidationException | DecryptionException e) {
                     log.debug("Validation of received assertion failed, assertion will be skipped", e);
                     continue;
                 }
