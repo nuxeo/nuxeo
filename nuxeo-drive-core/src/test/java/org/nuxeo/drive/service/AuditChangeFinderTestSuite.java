@@ -422,6 +422,58 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
         }
     }
 
+    public void testSyncRootParentWithSingleQuotePermissionChange() throws Exception {
+        List<FileSystemItemChange> changes;
+        DocumentModel folder;
+        DocumentModel subFolder;
+
+        try {
+            // No sync roots
+            changes = getChanges();
+            assertTrue(changes.isEmpty());
+
+            // Create a folder with a single quote including a subfolder
+            folder = session.createDocumentModel("/", "fol'der", "Folder");
+            folder = session.createDocument(folder);
+            subFolder = session.createDocumentModel("/fol'der", "subFolder", "Folder");
+            subFolder = session.createDocument(subFolder);
+            // Grant READ_WRITE permission to user1 on the parent folder
+            setPermissions(folder, new ACE("user1", SecurityConstants.READ_WRITE));
+
+            // Mark subfolder as a sync root for user1
+            nuxeoDriveManager.registerSynchronizationRoot(user1Session.getPrincipal(), subFolder, user1Session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Get changes for user1
+            changes = getChanges(user1Session.getPrincipal());
+            // Folder creation and sync root registration events
+            assertEquals(2, changes.size());
+
+            // Remove READ_WRITE permission granted to user1 on the parent folder
+            resetPermissions(folder, "user1");
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            changes = getChanges(user1Session.getPrincipal());
+            // Expecting 1 change: securityUpdated for the subfolder with a null FileSystemItem and FileSystemItem name
+            // since the user cannot access it anymore
+            assertEquals(1, changes.size());
+            FileSystemItemChange change = changes.get(0);
+            SimpleFileSystemItemChange simpleChange = new SimpleFileSystemItemChange(subFolder.getId(),
+                    "securityUpdated", "test", "test#" + subFolder.getId(), "subFolder");
+            assertEquals(simpleChange, toSimpleFileSystemItemChange(change));
+            assertNull(change.getFileSystemItem());
+            assertNull(change.getFileSystemItemName());
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
     @Test
     public void testGetChangeSummary() throws Exception {
         FileSystemChangeSummary changeSummary;
