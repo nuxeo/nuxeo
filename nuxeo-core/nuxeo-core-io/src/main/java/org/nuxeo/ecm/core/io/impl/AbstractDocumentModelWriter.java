@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -133,6 +134,9 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
         String name = toPath.lastSegment();
 
         DocumentModel doc = new DocumentModelImpl(parentPath.toString(), name, xdoc.getType());
+        if (doc.getDocumentType() == null) {
+            throw new DocumentNotFoundException("Unknown document type: " + xdoc.getType());
+        }
 
         // set lifecycle state at creation
         Element system = xdoc.getDocument().getRootElement().element(ExportConstants.SYSTEM_TAG);
