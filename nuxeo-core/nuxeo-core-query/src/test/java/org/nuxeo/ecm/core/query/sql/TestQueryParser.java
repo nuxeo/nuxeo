@@ -356,6 +356,17 @@ public class TestQueryParser {
     }
 
     @Test
+    public void testEsHintIndexWithDash() {
+        SQLQuery query = SQLQueryParser.parse(
+                "SELECT p FROM t WHERE /*+ES: INDEX(my-schema:article.author) */ my-schema:article/author = 'foo'");
+        Operand lvalue = query.getWhereClause().predicate.lvalue;
+        assertTrue(lvalue instanceof Reference);
+        assertEquals(1, ((Reference) lvalue).esHint.getIndex().length);
+        assertEquals(new Reference(new Reference("my-schema:article/author"),
+                new EsHint(new EsIdentifierList("my-schema:article.author"), null, null)), lvalue);
+    }
+
+    @Test
     public void testEsHintIndexBoost() {
         SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+es: INDEX(dc:title.ngram^3) */ dc:title = 'foo'");
         Operand lvalue = query.getWhereClause().predicate.lvalue;

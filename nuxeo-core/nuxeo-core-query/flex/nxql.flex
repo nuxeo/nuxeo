@@ -77,7 +77,7 @@ Exponent = [eE] [+-]? [0-9]+
 
 /* Elasticsearch Hints */
 EsHint = "\/*+" [Ee] [Ss] ":"
-EsIdentifier = [:jletter:] [a-zA-Z0-9_:.-\\\^]*
+EsIdentifier = [:jletter:] [a-zA-Z0-9_:.\\\^-]*
 
 
 %state SQ_STRING
