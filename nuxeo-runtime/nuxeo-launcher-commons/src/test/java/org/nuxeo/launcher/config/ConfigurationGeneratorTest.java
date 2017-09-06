@@ -519,8 +519,9 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testEnvironmentVariableInTemplates() throws Exception {
-        configGenerator.getUserConfig().setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "${env:NUXEO_DB_TYPE:default,sql},docker,${env:NUXEO_DB_HOST:docker}");
-        assertEquals("default,sql,docker,10.0.0.1",String.join(",",configGenerator.getTemplateList()));
+        configGenerator.getUserConfig().setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME,
+                "${env:NUXEO_DB_TYPE:default},docker,${env:NUXEO_DB_HOST:docker}");
+        assertEquals("default,docker,10.0.0.1", String.join(",",configGenerator.getTemplateList()));
     }
 
     /**
