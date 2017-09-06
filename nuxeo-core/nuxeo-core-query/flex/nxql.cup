@@ -128,12 +128,12 @@ select_clause ::= SELECT select_list:list
 
 select_list ::= select_list:list COMMA operand:o
                   {:
-                  list.add(o.toString(), o);
+                  list.put(o.toString(), o);
                   RESULT = list;
                   :}
               | select_list:list COMMA operand:o AS IDENTIFIER:alias
                   {:
-                  list.add(alias, o);
+                  list.put(alias, o);
                   RESULT = list;
                   :}
               | operand:o
@@ -166,12 +166,12 @@ from_key ::= IDENTIFIER:id
 
 from_list ::= from_list:list COMMA from_key:name
                 {:
-                list.add(name, name);
+                list.put(name, name);
                 RESULT = list;
                 :}
             | from_list:list COMMA from_key:name AS IDENTIFIER:alias
                 {:
-                list.add(alias, name);
+                list.put(alias, name);
                 RESULT = list;
                 :}
             | from_key:name
