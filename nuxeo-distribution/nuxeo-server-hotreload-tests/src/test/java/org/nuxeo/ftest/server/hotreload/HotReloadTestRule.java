@@ -110,7 +110,7 @@ public class HotReloadTestRule extends TestWatcher {
      * <p />
      * In order to use this method you need to add these properties to your nuxeo.conf:
      * <ul>
-     * <li>nuxeo.templates=default,sql,sdk (just add the sdk template)</li>
+     * <li>nuxeo.templates=default,sdk (just add the sdk template)</li>
      * <li>org.nuxeo.dev=true</li>
      * <li>nuxeo.server.sdkInstallReloadTimer=false</li>
      * </ul>
