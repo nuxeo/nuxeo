@@ -16,8 +16,10 @@
  */
 package org.nuxeo.functionaltests.pages.search;
 
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.contentView.ContentViewElement;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
@@ -47,6 +49,13 @@ public class SearchPage extends DocumentBasePage {
     @FindBy(id = "nxl_gridSearchLayout:nxw_searchResults_panel")
     @Required
     protected WebElement searchResultPanel;
+
+    /**
+     * @since 9.3
+     */
+    @Required
+    @FindBy(id = "nxw_searchContentView")
+    protected WebElement contentView;
 
     public SearchPage(WebDriver driver) {
         super(driver);
@@ -117,6 +126,13 @@ public class SearchPage extends DocumentBasePage {
             selectSearch(searchLabel);
         }
         return asPage(clazz);
+    }
+
+    /**
+     * @since 9.3
+     */
+    public ContentViewElement getContentView() {
+        return AbstractTest.getWebFragment(contentView, ContentViewElement.class);
     }
 
 }
