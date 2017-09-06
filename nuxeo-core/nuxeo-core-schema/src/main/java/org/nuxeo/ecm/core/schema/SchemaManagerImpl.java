@@ -277,7 +277,8 @@ public class SchemaManagerImpl implements SchemaManager {
     /**
      * Checks if something has to be recomputed if a dynamic register/unregister happened.
      */
-    protected void checkDirty() {
+    // public for tests
+    public void checkDirty() {
         // variant of double-check idiom
         if (!dirty) {
             return;
