@@ -18,12 +18,16 @@
  */
 package org.nuxeo.ftest.cap;
 
+import java.util.Calendar;
+
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.contentView.ContentViewElement;
 import org.nuxeo.functionaltests.fragment.EditResultColumnsForm;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
+import org.nuxeo.functionaltests.pages.search.DefaultSearchSubPage;
+import org.nuxeo.functionaltests.pages.search.SearchPage;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -56,6 +60,34 @@ public class ITFancyboxTest extends AbstractTest {
         contentView.refresh();
 
         page = asPage(DocumentBasePage.class);
+        assertFalse(page.isFancyBoxOpen());
+
+        logout();
+    }
+
+    /**
+     * Non-regression tests for NXP-22009.
+     */
+    @Test
+    public void testSearchContentViewEditColumns() throws UserNotConnectedException {
+        SearchPage page = login().goToSearchPage();
+        ContentViewElement contentView = page.getContentView();
+
+        assertFalse(page.isFancyBoxOpen());
+
+        EditResultColumnsForm form = contentView.openEditRowsFancybox();
+        assertTrue(page.isFancyBoxOpen());
+        form.save();
+        assertFalse(page.isFancyBoxOpen());
+
+        page = asPage(SearchPage.class);
+
+        // trigger an ajax re-rendering
+        DefaultSearchSubPage searchLayoutSubPage = page.getDefaultSearch();
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        searchLayoutSubPage.selectCreatedAggregate(String.valueOf(year));
+
+        page = asPage(SearchPage.class);
         assertFalse(page.isFancyBoxOpen());
 
         logout();

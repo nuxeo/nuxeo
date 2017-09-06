@@ -487,10 +487,34 @@ public class ContentViewElement extends WebFragmentImpl {
      * @since 9.3
      */
     public EditResultColumnsForm openEditColumnsFancybox() {
+        return openEditColumnsFancybox(false);
+    }
+
+    /**
+     * @since 9.3
+     */
+    public EditResultColumnsForm openEditRowsFancybox() {
+        return openEditColumnsFancybox(true);
+    }
+
+    protected EditResultColumnsForm openEditColumnsFancybox(boolean useRows) {
         AjaxRequestManager arm = new AjaxRequestManager(driver);
+        String id;
+        if (AbstractTest.JSF_OPTIMS_ENABLED) {
+            if (useRows) {
+                id = "nxw_contentViewActions_contentViewEditRows_form:nxw_contentViewActions_contentViewEditRows_link";
+            } else {
+                id = "nxw_contentViewActions_contentViewEditColumns_form:nxw_contentViewActions_contentViewEditColumns_link";
+            }
+        } else {
+            if (useRows) {
+                id = "nxw_contentViewActions_contentViewEditRows_form:nxw_contentViewActions_contentViewEditRows_subview:nxw_contentViewActions_contentViewEditRows_link";
+            } else {
+                id = "nxw_contentViewActions_contentViewEditColumns_form:nxw_contentViewActions_contentViewEditColumns_subview:nxw_contentViewActions_contentViewEditColumns_link";
+            }
+        }
         arm.begin();
-        String id = "nxw_contentViewActions_contentViewEditColumns_form:nxw_contentViewActions_contentViewEditColumns_link";
-        Locator.findElementWaitUntilEnabledAndClick(By.id(id));
+        Locator.findElementWaitUntilEnabledAndClick(By.xpath("//a[contains(@id, '" + id + "')]"));
         arm.end();
         Locator.waitUntilElementPresent(By.id("fancybox-content"));
         return AbstractTest.getWebFragment(By.id("fancybox-content"), EditResultColumnsForm.class);
