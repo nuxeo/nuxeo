@@ -11,6 +11,8 @@
       <schema name="invoiceNew" />
       <schema name="new" />
     </facet>
+    <doctype name="CustomFile" extends="File">
+    </doctype>
   </extension>
 
 </component>
