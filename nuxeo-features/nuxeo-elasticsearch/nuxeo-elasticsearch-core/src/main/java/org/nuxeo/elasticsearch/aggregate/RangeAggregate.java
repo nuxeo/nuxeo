@@ -32,7 +32,7 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.range.Range;
-import org.elasticsearch.search.aggregations.bucket.range.RangeBuilder;
+import org.elasticsearch.search.aggregations.bucket.range.RangeAggregationBuilder;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
@@ -49,8 +49,8 @@ public class RangeAggregate extends AggregateEsBase<BucketRange> {
 
     @JsonIgnore
     @Override
-    public RangeBuilder getEsAggregate() {
-        RangeBuilder ret = AggregationBuilders.range(getId()).field(getField());
+    public RangeAggregationBuilder getEsAggregate() {
+        RangeAggregationBuilder ret = AggregationBuilders.range(getId()).field(getField());
         for (AggregateRangeDefinition range : getRanges()) {
             if (range.getFrom() != null) {
                 if (range.getTo() != null) {

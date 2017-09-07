@@ -83,6 +83,7 @@ public class TestCompareQueryAndFetch {
 
     @Before
     public void initWorkingDocuments() throws Exception {
+        esa.initIndexes(true);
         if (!TransactionHelper.isTransactionActive()) {
             TransactionHelper.startTransaction();
         }

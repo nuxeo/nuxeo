@@ -43,8 +43,9 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
-import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
+import org.elasticsearch.search.aggregations.bucket.histogram.ExtendedBounds;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -66,13 +67,13 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
 
     @JsonIgnore
     @Override
-    public DateHistogramBuilder getEsAggregate() {
-        DateHistogramBuilder ret = AggregationBuilders.dateHistogram(getId())
-                                                      .field(getField())
-                                                      .timeZone(DateTimeZone.getDefault().getID());
+    public DateHistogramAggregationBuilder getEsAggregate() {
+        DateHistogramAggregationBuilder ret = AggregationBuilders.dateHistogram(getId())
+                .field(getField())
+                .timeZone(DateTimeZone.getDefault());
         Map<String, String> props = getProperties();
         if (props.containsKey(AGG_INTERVAL_PROP)) {
-            ret.interval(new DateHistogramInterval(props.get(AGG_INTERVAL_PROP)));
+            ret.dateHistogramInterval(new DateHistogramInterval(props.get(AGG_INTERVAL_PROP)));
         }
         if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
             ret.minDocCount(Long.parseLong(props.get(AGG_MIN_DOC_COUNT_PROP)));
@@ -96,13 +97,13 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
             }
         }
         if (props.containsKey(AGG_EXTENDED_BOUND_MAX_PROP) && props.containsKey(AGG_EXTENDED_BOUND_MIN_PROP)) {
-            ret.extendedBounds(props.get(AGG_EXTENDED_BOUND_MIN_PROP), props.get(AGG_EXTENDED_BOUND_MAX_PROP));
+            ret.extendedBounds(new ExtendedBounds(props.get(AGG_EXTENDED_BOUND_MIN_PROP), props.get(AGG_EXTENDED_BOUND_MAX_PROP)));
         }
         if (props.containsKey(AGG_TIME_ZONE_PROP)) {
-            ret.timeZone(props.get(AGG_TIME_ZONE_PROP));
+            ret.timeZone(DateTimeZone.forID(props.get(AGG_TIME_ZONE_PROP)));
         }
         if (props.containsKey(AGG_PRE_ZONE_PROP)) {
-            ret.timeZone(props.get(AGG_PRE_ZONE_PROP));
+            ret.timeZone(DateTimeZone.forID(props.get(AGG_PRE_ZONE_PROP)));
         }
         if (props.containsKey(AGG_FORMAT_PROP)) {
             ret.format(props.get(AGG_FORMAT_PROP));

@@ -89,8 +89,7 @@ public class ElasticSearchIndexConfig {
             + "            \"type\" : \"path_hierarchy\"\n" //
             + "         }\n" + "      },\n" //
             + "      \"analyzer\" : {\n" //
-            + "         \"en_analyzer\" : {\n" //
-            + "            \"alias\" : \"fulltext\",\n" //
+            + "         \"fulltext\" : {\n" //
             + "            \"filter\" : [\n" //
             + "               \"lowercase\",\n" //
             + "               \"en_stop_filter\",\n" //
@@ -124,27 +123,25 @@ public class ElasticSearchIndexConfig {
             + "   },\n" //
             + "   \"properties\" : {\n" //
             + "      \"dc:title\" : {\n" //
-            + "         \"type\" : \"multi_field\",\n" //
+            + "         \"type\" : \"string\",\n" //
+            + "         \"fielddata\" : true,\n" //
             + "         \"fields\" : {\n" //
-            + "           \"dc:title\" : {\n" //
-            + "             \"type\" : \"string\"\n" //
-            + "           },\n" //
             + "           \"fulltext\" : {\n" //
             + "             \"boost\": 2,\n" //
-            + "             \"type\": \"string\",\n" //
+            + "             \"type\": \"text\",\n" //
             + "             \"analyzer\" : \"fulltext\"\n" //
             + "          }\n" //
             + "        }\n" //
             + "      },\n" //
             + "      \"dc:description\" : {\n" //
-            + "         \"type\" : \"multi_field\",\n" //
+            + "         \"type\" : \"string\",\n" //
             + "         \"fields\" : {\n" //
             + "           \"dc:description\" : {\n" //
             + "             \"type\" : \"string\"\n" //
             + "           },\n" //
             + "           \"fulltext\" : {\n" //
             + "             \"boost\": 1.5,\n" //
-            + "             \"type\": \"string\",\n" //
+            + "             \"type\": \"text\",\n" //
             + "             \"analyzer\" : \"fulltext\"\n" //
             + "          }\n" //
             + "        }\n" //
@@ -154,8 +151,11 @@ public class ElasticSearchIndexConfig {
             + "         \"index\" : \"no\",\n" //
             + "         \"include_in_all\" : true\n" //
             + "      },\n" //
+            + "      \"ecm:uuid\" : {\n" //
+            + "         \"type\" : \"keyword\"\n" //
+            + "      },\n" //
             + "      \"ecm:path\" : {\n" //
-            + "         \"type\" : \"multi_field\",\n" //
+            + "         \"type\" : \"keyword\",\n" //
             + "         \"fields\" : {\n" //
             + "            \"children\" : {\n" //
             + "               \"analyzer\" : \"path_analyzer\",\n" //
@@ -175,6 +175,18 @@ public class ElasticSearchIndexConfig {
             + "      \"dc:modified\": {\n" //
             + "         \"format\": \"dateOptionalTime\",\n" //
             + "        \"type\": \"date\"\n" //
+            + "      },\n" //
+            + "      \"dc:source\" : {\n" //
+            + "         \"type\" : \"keyword\"\n" //
+            + "      },\n" //
+            + "      \"dc:coverage\" : {\n" //
+            + "         \"type\" : \"keyword\"\n" //
+            + "      },\n" //
+            + "      \"dc:nature\" : {\n" //
+            + "         \"type\" : \"keyword\"\n" //
+            + "      },\n" //
+            + "      \"dc:subjects\" : {\n" //
+            + "         \"type\" : \"keyword\"\n" //
             + "      },\n" //
             + "      \"ecm:pos*\" : {\n" //
             + "         \"type\" : \"integer\"\n" //

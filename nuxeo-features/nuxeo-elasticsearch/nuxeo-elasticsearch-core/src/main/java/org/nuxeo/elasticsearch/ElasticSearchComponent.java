@@ -49,7 +49,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.elasticsearch.api.ESClientInitializationService;
+import org.nuxeo.elasticsearch.api.ESClientProvider;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -114,7 +114,7 @@ public class ElasticSearchComponent extends DefaultComponent
 
     protected JsonESDocumentWriter jsonESDocumentWriter;
 
-    protected ESClientInitializationService clientInitService;
+    protected ESClientProvider clientInitService;
 
     private ListeningExecutorService waiterExecutorService;
 
@@ -173,10 +173,7 @@ public class ElasticSearchComponent extends DefaultComponent
             ESClientInitializationDescriptor clientInitDescriptor = (ESClientInitializationDescriptor) contribution;
             try {
                 clientInitService = clientInitDescriptor.getKlass().newInstance();
-                clientInitService.setUsername(clientInitDescriptor.getUsername());
-                clientInitService.setPassword(clientInitDescriptor.getPassword());
-                clientInitService.setSslKeystorePath(clientInitDescriptor.getSslKeystorePath());
-                clientInitService.setSslKeystorePassword(clientInitDescriptor.getSslKeystorePassword());
+                clientInitService.setClientConfig(clientInitDescriptor);
             } catch (IllegalAccessException | InstantiationException e) {
                 log.error(
                         "Can not instantiate ES Client initialization service from " + clientInitDescriptor.getKlass());

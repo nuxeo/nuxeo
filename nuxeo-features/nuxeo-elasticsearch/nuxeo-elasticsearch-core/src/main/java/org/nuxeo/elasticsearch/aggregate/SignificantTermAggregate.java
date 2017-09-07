@@ -31,7 +31,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
-import org.elasticsearch.search.aggregations.bucket.significant.SignificantTermsBuilder;
+import org.elasticsearch.search.aggregations.bucket.significant.SignificantTermsAggregationBuilder;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.core.BucketTerm;
@@ -47,8 +47,8 @@ public class SignificantTermAggregate extends AggregateEsBase<BucketTerm> {
 
     @JsonIgnore
     @Override
-    public SignificantTermsBuilder getEsAggregate() {
-        SignificantTermsBuilder ret = AggregationBuilders.significantTerms(getId()).field(getField());
+    public SignificantTermsAggregationBuilder getEsAggregate() {
+        SignificantTermsAggregationBuilder ret = AggregationBuilders.significantTerms(getId()).field(getField());
         Map<String, String> props = getProperties();
         if (props.containsKey(AGG_SIZE_PROP)) {
             ret.size(Integer.parseInt(props.get(AGG_SIZE_PROP)));

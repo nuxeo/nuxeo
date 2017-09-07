@@ -144,7 +144,7 @@
       Extension point to define which class should be used for Elasticsearch client initialization.
       A username and password can be set if authentication is required.
       <code>
-        <clientInitialization class="org.nuxeo.elasticsearch.core.ESClientInitializationServiceImpl">
+        <clientInitialization class="org.nuxeo.elasticsearch.core.ESDefaultClientProvider">
           <username>Administrator</username>
           <password>Administrator</password>
         </clientInitialization>

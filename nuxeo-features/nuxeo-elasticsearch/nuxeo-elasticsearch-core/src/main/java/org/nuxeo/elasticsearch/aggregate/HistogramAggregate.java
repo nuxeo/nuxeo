@@ -41,7 +41,7 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
-import org.elasticsearch.search.aggregations.bucket.histogram.HistogramBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.HistogramAggregationBuilder;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.core.BucketRange;
@@ -59,8 +59,8 @@ public class HistogramAggregate extends AggregateEsBase<BucketRange> {
 
     @JsonIgnore
     @Override
-    public HistogramBuilder getEsAggregate() {
-        HistogramBuilder ret = AggregationBuilders.histogram(getId()).field(getField());
+    public HistogramAggregationBuilder getEsAggregate() {
+        HistogramAggregationBuilder ret = AggregationBuilders.histogram(getId()).field(getField());
         Map<String, String> props = getProperties();
         ret.interval(getInterval());
         if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
@@ -139,6 +139,6 @@ public class HistogramAggregate extends AggregateEsBase<BucketRange> {
         } else if ("+Infinity".equals(key)) {
             return Integer.MAX_VALUE;
         }
-        return Integer.parseInt(key);
+        return Math.round(Float.parseFloat(key));
     }
 }

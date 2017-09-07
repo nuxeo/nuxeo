@@ -22,12 +22,15 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -36,6 +39,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
@@ -334,8 +338,8 @@ public class NxQueryBuilder {
     public List<FilterAggregationBuilder> getEsAggregates() {
         List<FilterAggregationBuilder> ret = new ArrayList<>(aggregates.size());
         for (AggregateEsBase agg : aggregates) {
-            FilterAggregationBuilder fagg = new FilterAggregationBuilder(getAggregateFilterId(agg));
-            fagg.filter(getAggregateFilterExceptFor(agg.getId()));
+            FilterAggregationBuilder fagg = null;
+            fagg = new FilterAggregationBuilder(getAggregateFilterId(agg), getAggregateFilterExceptFor(agg.getId()));
             fagg.subAggregation(agg.getEsAggregate());
             ret.add(fagg);
         }
@@ -363,15 +367,16 @@ public class NxQueryBuilder {
 
         // Add highlighting
         if (highlightFields != null && !highlightFields.isEmpty()) {
+            HighlightBuilder hb = new HighlightBuilder();
             for (String field : highlightFields) {
-                request.addHighlightedField(field);
+                hb.field(field);
             }
-            request.setHighlighterRequireFieldMatch(false);
+            hb.requireFieldMatch(false);
+            request.highlighter(hb);
         }
-
-       // Fields selection
+        // Fields selection
         if (!isFetchFromElasticsearch()) {
-            request.addFields(getSelectFields());
+            request.setFetchSource(getSelectFields(), null);
         }
 
     }

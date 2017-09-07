@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Assert;
@@ -153,14 +154,14 @@ public class TestElasticSearchQuery {
         QueryBuilder qb = QueryBuilders.nestedQuery("files:files.file",
                 QueryBuilders.boolQuery()
                         .must(QueryBuilders.termQuery("files:files.file.name", "testfile1.txt"))
-                        .must(QueryBuilders.termQuery("files:files.file.length", 3)));
+                        .must(QueryBuilders.termQuery("files:files.file.length", 3)), ScoreMode.Avg);
         ret = ess.query(new NxQueryBuilder(session).esQuery(qb));
         Assert.assertEquals(0, ret.totalSize());
 
         qb = QueryBuilders.nestedQuery("files:files.file",
                 QueryBuilders.boolQuery()
                         .must(QueryBuilders.termQuery("files:files.file.name", "testfile3.txt"))
-                        .must(QueryBuilders.termQuery("files:files.file.length", 3)));
+                        .must(QueryBuilders.termQuery("files:files.file.length", 3)), ScoreMode.Avg);
         ret = ess.query(new NxQueryBuilder(session).esQuery(qb));
         Assert.assertEquals(1, ret.totalSize());
 

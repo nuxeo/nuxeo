@@ -11,7 +11,7 @@
   <!--</extension>-->
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchClientInitialization">
-    <clientInitialization class="org.nuxeo.elasticsearch.core.ESClientInitializationServiceImpl" />
+    <clientInitialization class="org.nuxeo.elasticsearch.core.ESDefaultClientProvider" />
   </extension>
 
   <!-- custom writer to be used with the dynamic mapper -->
@@ -47,8 +47,7 @@
          }
       },
       "analyzer" : {
-         "en_analyzer" : {
-            "alias" : "fulltext",
+         "fulltext" : {
             "filter" : [
                "word_delimiter_filter",
                "lowercase",
@@ -83,7 +82,7 @@
    },
    "properties" : {
       "dc:title" : {
-         "type" : "multi_field",
+         "type" : "string",
          "fields" : {
            "dc:title" : {
              "index" : "not_analyzed",
@@ -91,13 +90,13 @@
            },
            "fulltext" : {
              "boost": 2,
-             "type": "string",
+             "type": "text",
              "analyzer" : "fulltext"
           }
         }
       },
       "dc:description" : {
-        "type" : "multi_field",
+        "type" : "string",
         "fields" : {
           "dc:description" : {
             "index" : "not_analyzed",
@@ -114,7 +113,7 @@
          "analyzer" : "fulltext"
       },
       "ecm:path" : {
-         "type" : "multi_field",
+         "type" : "string",
          "fields" : {
             "children" : {
                "analyzer" : "path_analyzer",

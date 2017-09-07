@@ -461,8 +461,8 @@ public class TestAutomaticIndexing {
         activateSynchronousMode(); // this is to prevent race condition that happen NXP-16169
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
         BlobHolder holder = doc.getAdapter(BlobHolder.class);
-        holder.setBlob(new StringBlob(new String(new char[33000]).replace('\0', 'a') + " search"));
-        // Note that token > 32k fails only when using a disk storage elastic configuration
+        holder.setBlob(new StringBlob(new String(new char[31000]).replace('\0', 'a') + " search"));
+        // Note that token > 32k is not supported in 5.x
         doc = session.createDocument(doc);
         session.save();
 

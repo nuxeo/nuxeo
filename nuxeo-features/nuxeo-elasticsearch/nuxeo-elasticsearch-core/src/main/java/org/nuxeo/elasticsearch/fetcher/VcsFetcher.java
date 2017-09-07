@@ -29,7 +29,7 @@ import java.util.Map;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.highlight.HighlightField;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -138,7 +138,7 @@ public class VcsFetcher extends Fetcher {
                 String hitId = getRepoForIndex(hit.getIndex()) + hit.getId();
                 if (docId.equals(hitId)) {
                     // Add highlight if it exists
-                    Map<String, HighlightField> esHighlights = hit.highlightFields();
+                    Map<String, HighlightField> esHighlights = hit.getHighlightFields();
                     if (!esHighlights.isEmpty()) {
                         Map<String, List<String>> fields = new HashMap<>();
                         for (Map.Entry<String, HighlightField> entry : esHighlights.entrySet()) {
