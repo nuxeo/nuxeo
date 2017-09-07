@@ -249,19 +249,11 @@ public class ContentViewElement extends WebFragmentImpl {
     protected EditResultColumnsForm openEditColumnsFancybox(boolean useRows) {
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         String id;
-        if (AbstractTest.JSF_OPTIMS_ENABLED) {
-            if (useRows) {
-                id = "nxw_contentViewActions_contentViewEditRows_form:nxw_contentViewActions_contentViewEditRows_link";
-            } else {
-                id = "nxw_contentViewActions_contentViewEditColumns_form:nxw_contentViewActions_contentViewEditColumns_link";
-            }
-        } else {
-            if (useRows) {
-                id = "nxw_contentViewActions_contentViewEditRows_form:nxw_contentViewActions_contentViewEditRows_subview:nxw_contentViewActions_contentViewEditRows_link";
-            } else {
-                id = "nxw_contentViewActions_contentViewEditColumns_form:nxw_contentViewActions_contentViewEditColumns_subview:nxw_contentViewActions_contentViewEditColumns_link";
-            }
-        }
+	if (useRows) {
+	    id = "nxw_contentViewActions_contentViewEditRows_form:nxw_contentViewActions_contentViewEditRows_link";
+	} else {
+	    id = "nxw_contentViewActions_contentViewEditColumns_form:nxw_contentViewActions_contentViewEditColumns_link";
+	}
         arm.begin();
         Locator.findElementWaitUntilEnabledAndClick(By.xpath("//a[contains(@id, '" + id + "')]"));
         arm.end();
