@@ -168,34 +168,6 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
                             Long.valueOf(resultsCount), Long.valueOf(getMaxResults())));
                 }
 
-                // refresh may have triggered display of an empty page => go
-                // back to first page or forward to last page depending on
-                // results count and page size
-                long pageSize = getPageSize();
-                if (pageSize != 0) {
-                    if (offset != 0 && currentPageDocuments.size() == 0) {
-                        if (resultsCount == 0) {
-                            // fetch first page directly
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format("Current page %s is not the first one but "
-                                        + "shows no result and there are " + "no results => rewind to first page",
-                                        Long.valueOf(getCurrentPageIndex())));
-                            }
-                            firstPage();
-                        } else {
-                            // fetch last page
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format("Current page %s is not the first one but "
-                                        + "shows no result and there are " + "%s results => fetch last page",
-                                        Long.valueOf(getCurrentPageIndex()), Long.valueOf(resultsCount)));
-                            }
-                            lastPage();
-                        }
-                        // fetch current page again
-                        getCurrentPage();
-                    }
-                }
-
                 if (getResultsCount() < 0) {
                     // additional info to handle next page when results count
                     // is unknown
@@ -328,11 +300,46 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
     @Override
     public PageSelections<DocumentModel> getCurrentSelectPage() {
         checkQueryCache();
+        // fetch last page if current page index is beyond the last page or if there are no results to display
+        rewindSelectablePage();
         return super.getCurrentSelectPage();
     }
 
     public String getCurrentQuery() {
         return query;
+    }
+
+    /**
+     * Fetch a page that can be selected. It loads the last page if we're targeting a page beyond the last one or
+     * the first page if there are no results to show and we're targeting anything other than the first page.
+     *
+     * Fix for NXP-8564.
+     */
+    protected void rewindSelectablePage() {
+        long pageSize = getPageSize();
+        if (pageSize != 0) {
+            if (offset != 0 && currentPageDocuments!= null && currentPageDocuments.size() == 0) {
+                if (resultsCount == 0) {
+                    // fetch first page directly
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Current page %s is not the first one but "
+                                + "shows no result and there are " + "no results => rewind to first page",
+                            Long.valueOf(getCurrentPageIndex())));
+                    }
+                    firstPage();
+                } else {
+                    // fetch last page
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Current page %s is not the first one but "
+                                + "shows no result and there are " + "%s results => fetch last page",
+                            Long.valueOf(getCurrentPageIndex()), Long.valueOf(resultsCount)));
+                    }
+                    lastPage();
+                }
+                // fetch current page again
+                getCurrentPage();
+            }
+        }
     }
 
     protected Filter getFilter() {
