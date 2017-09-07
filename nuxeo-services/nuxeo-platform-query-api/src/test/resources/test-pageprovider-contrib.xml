@@ -172,6 +172,13 @@
         <fixedPart statement="SELECT * FROM Note" />
       </whereClause>
     </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="DUMMY_FETCH_DOCUMENTS">
+      <pattern>
+        SELECT * FROM Document WHERE dc:source = 'dummy'
+      </pattern>
+      <maxPageSize>1000</maxPageSize>
+    </coreQueryPageProvider>
   </extension>
 
 </component>
