@@ -38,11 +38,14 @@ import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.geo.GeoUtils;
 import org.elasticsearch.common.geo.ShapeRelation;
+import org.elasticsearch.common.xcontent.NamedXContentRegistry;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.CommonTermsQueryBuilder;
+import org.elasticsearch.index.query.MatchPhrasePrefixQueryBuilder;
+import org.elasticsearch.index.query.MatchPhraseQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -313,7 +316,7 @@ final public class NxqlQueryConverter {
             }
             GeoPoint bottomLeft = parseGeoPointString((String) values[0]);
             GeoPoint topRight = parseGeoPointString((String) values[1]);
-            ret = QueryBuilders.geoBoundingBoxQuery(name).bottomLeft(bottomLeft).topRight(topRight);
+            ret = QueryBuilders.geoBoundingBoxQuery(name).setCornersOGC(bottomLeft, topRight);
             break;
         case "geo_distance":
             if (values.length != 2) {
@@ -332,8 +335,9 @@ final public class NxqlQueryConverter {
             center = parseGeoPointString((String) values[0]);
             String from = (String) values[1];
             String to = (String) values[2];
-            ret = QueryBuilders.geoDistanceRangeQuery(name).point(center.lat(), center.lon()).from(from).to(to);
-            break;
+            throw new IllegalArgumentException("Operation not implemented: " + hint.operator);
+            // TODO: ret = QueryBuilders.geoDistanceRangeQuery(name).point(center.lat(), center.lon()).from(from).to(to);
+            // break;
         case "geo_hash_cell":
             if (values.length != 2) {
                 throw new IllegalArgumentException(String.format(
@@ -341,8 +345,9 @@ final public class NxqlQueryConverter {
             }
             center = parseGeoPointString((String) values[0]);
             String precision = (String) values[1];
-            ret = QueryBuilders.geoHashCellQuery(name).point(center).precision(precision);
-            break;
+            throw new IllegalArgumentException("Operation not implemented: " + hint.operator);
+            // TODO: ret = QueryBuilders.geoHashCellQuery(name).point(center).precision(precision);
+            // break;
         case "geo_shape":
             if (values.length != 4) {
                 throw new IllegalArgumentException(String.format(
@@ -352,10 +357,11 @@ final public class NxqlQueryConverter {
             String shapeType = (String) values[1];
             String shapeIndex = (String) values[2];
             String shapePath = (String) values[3];
-            ret = QueryBuilders.geoShapeQuery(name, shapeId, shapeType, ShapeRelation.WITHIN)
-                               .indexedShapeIndex(shapeIndex)
-                               .indexedShapePath(shapePath);
-            break;
+            throw new IllegalArgumentException("Operation not implemented: " + hint.operator);
+            // TODO: ret = QueryBuilders.geoShapeQuery(name, shapeId, shapeType, ShapeRelation.WITHIN)
+            //                   .indexedShapeIndex(shapeIndex)
+            //                   .indexedShapePath(shapePath);
+            // break;
         default:
             throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is unknown");
         }
@@ -367,7 +373,7 @@ final public class NxqlQueryConverter {
         try {
             XContentBuilder content = JsonXContent.contentBuilder();
             content.value(value);
-            XContentParser parser = JsonXContent.jsonXContent.createParser(content.bytes());
+            XContentParser parser = JsonXContent.jsonXContent.createParser(NamedXContentRegistry.EMPTY, content.bytes());
             parser.nextToken();
             return GeoUtils.parseGeoPoint(parser);
         } catch (IOException e) {
@@ -386,18 +392,18 @@ final public class NxqlQueryConverter {
             ret = matchQuery;
             break;
         case "match_phrase":
-            matchQuery = QueryBuilders.matchPhraseQuery(name, value);
+            MatchPhraseQueryBuilder matchPhraseQuery = QueryBuilders.matchPhraseQuery(name, value);
             if (hint.analyzer != null) {
-                matchQuery.analyzer(hint.analyzer);
+                matchPhraseQuery.analyzer(hint.analyzer);
             }
-            ret = matchQuery;
+            ret = matchPhraseQuery;
             break;
         case "match_phrase_prefix":
-            matchQuery = QueryBuilders.matchPhrasePrefixQuery(name, value);
+            MatchPhrasePrefixQueryBuilder matchPhrasePrefixQuery = QueryBuilders.matchPhrasePrefixQuery(name, value);
             if (hint.analyzer != null) {
-                matchQuery.analyzer(hint.analyzer);
+                matchPhrasePrefixQuery.analyzer(hint.analyzer);
             }
-            ret = matchQuery;
+            ret = matchPhrasePrefixQuery;
             break;
         case "multi_match":
             // hint.index must be set
@@ -509,7 +515,7 @@ final public class NxqlQueryConverter {
         // use match phrase prefix when possible
         if (StringUtils.countMatches(wildcard, "*") == 1 && wildcard.endsWith("*") && !wildcard.contains("?")
                 && !wildcard.contains("\\")) {
-            MatchQueryBuilder query = QueryBuilders.matchPhrasePrefixQuery(fieldName, wildcard.replace("*", ""));
+            MatchPhrasePrefixQueryBuilder query = QueryBuilders.matchPhrasePrefixQuery(fieldName, wildcard.replace("*", ""));
             if (hint != null && hint.analyzer != null) {
                 query.analyzer(hint.analyzer);
             }
@@ -579,14 +585,14 @@ final public class NxqlQueryConverter {
             name = FULLTEXT_FIELD;
         }
         String queryString = value;
-        SimpleQueryStringBuilder.Operator defaultOperator;
+        org.elasticsearch.index.query.Operator defaultOperator;
         if (queryString.startsWith(SIMPLE_QUERY_PREFIX)) {
             // elasticsearch-specific syntax
             queryString = queryString.substring(SIMPLE_QUERY_PREFIX.length());
-            defaultOperator = SimpleQueryStringBuilder.Operator.OR;
+            defaultOperator = org.elasticsearch.index.query.Operator.OR;
         } else {
             queryString = translateFulltextQuery(queryString);
-            defaultOperator = SimpleQueryStringBuilder.Operator.AND;
+            defaultOperator = org.elasticsearch.index.query.Operator.AND;
         }
         String analyzer = (hint != null && hint.analyzer != null) ? hint.analyzer : "fulltext";
         SimpleQueryStringBuilder query = QueryBuilders.simpleQueryStringQuery(queryString)

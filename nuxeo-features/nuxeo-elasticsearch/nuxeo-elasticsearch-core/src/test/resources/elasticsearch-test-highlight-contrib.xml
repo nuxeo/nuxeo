@@ -29,8 +29,7 @@
               }
             },
             "analyzer" : {
-              "en_analyzer" : {
-                "alias" : "fulltext",
+              "fulltext" : {
                 "filter" : [
                   "word_delimiter_filter",
                   "lowercase",
@@ -52,7 +51,7 @@
           },
           "properties" : {
             "dc:title" : {
-              "type" : "multi_field",
+              "type" : "string",
               "fields" : {
                 "dc:title" : {
                   "index" : "no",
@@ -68,7 +67,7 @@
             "ecm:binarytext" : {
               "index" : "no",
               "include_in_all" : true,
-              "type" : "string",
+              "type" : "text",
               "analyzer" : "fulltext"
             }
           }

@@ -21,7 +21,7 @@ package org.nuxeo.elasticsearch.config;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.elasticsearch.api.ESClientInitializationService;
+import org.nuxeo.elasticsearch.api.ESClientProvider;
 
 import java.io.Serializable;
 
@@ -34,7 +34,7 @@ public class ESClientInitializationDescriptor implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XNode("@class")
-    protected Class<ESClientInitializationService> klass;
+    protected Class<ESClientProvider> klass;
 
     @XNode("username")
     protected String username;
@@ -48,7 +48,7 @@ public class ESClientInitializationDescriptor implements Serializable {
     @XNode("sslKeystorePassword")
     protected String sslKeystorePassword;
 
-    public Class<ESClientInitializationService> getKlass() {
+    public Class<ESClientProvider> getKlass() {
         return klass;
     }
 

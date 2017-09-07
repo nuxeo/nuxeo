@@ -35,7 +35,8 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.range.Range;
-import org.elasticsearch.search.aggregations.bucket.range.date.DateRangeBuilder;
+
+import org.elasticsearch.search.aggregations.bucket.range.date.DateRangeAggregationBuilder;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
@@ -53,8 +54,8 @@ public class DateRangeAggregate extends AggregateEsBase<BucketRangeDate> {
 
     @JsonIgnore
     @Override
-    public DateRangeBuilder getEsAggregate() {
-        DateRangeBuilder ret = AggregationBuilders.dateRange(getId()).field(getField());
+    public DateRangeAggregationBuilder getEsAggregate() {
+        DateRangeAggregationBuilder ret = AggregationBuilders.dateRange(getId()).field(getField());
         for (AggregateRangeDateDefinition range : getDateRanges()) {
             if (range.getFromAsString() != null) {
                 if (range.getToAsString() != null) {

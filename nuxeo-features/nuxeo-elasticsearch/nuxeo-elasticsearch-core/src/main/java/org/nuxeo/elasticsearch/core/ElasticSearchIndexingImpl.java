@@ -377,7 +377,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
      */
     String getPathOfDocFromEs(String repository, String docId) {
         String indexName = esa.getIndexNameForRepository(repository);
-        GetRequestBuilder getRequest = esa.getClient().prepareGet(indexName, DOC_TYPE, docId).setFields(PATH_FIELD);
+        GetRequestBuilder getRequest = esa.getClient().prepareGet(indexName, DOC_TYPE, docId).setStoredFields(PATH_FIELD);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Get path of doc: curl -XGET 'http://localhost:9200/%s/%s/%s?fields=%s'", indexName,
                     DOC_TYPE, docId, PATH_FIELD));

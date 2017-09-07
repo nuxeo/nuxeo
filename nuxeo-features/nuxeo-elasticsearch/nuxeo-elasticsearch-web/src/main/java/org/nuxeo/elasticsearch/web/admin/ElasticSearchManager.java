@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
 import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsResponse;
-import org.elasticsearch.action.count.CountResponse;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -201,8 +201,8 @@ public class ElasticSearchManager implements Serializable {
 
     public String getNumberOfDocuments() {
         String[] indices = getIndexNames();
-        CountResponse ret = esa.getClient().prepareCount(indices).setQuery(QueryBuilders.matchAllQuery()).get();
-        return Long.valueOf(ret.getCount()).toString();
+        SearchResponse ret = esa.getClient().prepareSearch(indices).setSize(0).setQuery(QueryBuilders.matchAllQuery()).get();
+        return Long.valueOf(ret.getHits().totalHits).toString();
     }
 
     private String[] getIndexNames() {

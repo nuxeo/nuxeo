@@ -27,6 +27,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.search.SearchHit;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -60,6 +61,11 @@ public class TestFetchDocumentsFromEs {
 
     @Inject
     protected ElasticSearchAdmin esa;
+
+    @Before
+    public void setupIndex() throws Exception {
+        esa.initIndexes(true);
+    }
 
     protected void buildTree() {
         String root = "/";

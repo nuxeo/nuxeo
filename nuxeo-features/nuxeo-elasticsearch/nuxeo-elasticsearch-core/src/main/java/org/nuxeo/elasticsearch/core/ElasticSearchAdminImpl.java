@@ -22,6 +22,8 @@ package org.nuxeo.elasticsearch.core;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
 
+import java.io.IOException;
+import java.net.BindException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -49,9 +51,12 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
-import org.nuxeo.elasticsearch.api.ESClientInitializationService;
+
+import org.elasticsearch.node.NodeValidationException;
+import org.elasticsearch.transport.Netty4Plugin;
+import org.nuxeo.elasticsearch.api.ESClientProvider;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
@@ -88,7 +93,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     private final ElasticSearchRemoteConfig remoteConfig;
 
-    private final ESClientInitializationService clientInitService;
+    private final ESClientProvider clientInitService;
 
     private String[] includeSourceFields;
 
@@ -98,26 +103,15 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     private List<String> repositoryInitialized = new ArrayList<>();
 
-    /**
-     * Init the admin service, remote configuration if not null will take precedence over local embedded configuration.
-     * 
-     * @deprecated since 9.1, use {@link #ElasticSearchAdminImpl(ElasticSearchLocalConfig, ElasticSearchRemoteConfig,
-     *             Map<String, ElasticSearchIndexConfig>, ESClientInitializationService)} instead.
-     */
-    @Deprecated
-    public ElasticSearchAdminImpl(ElasticSearchLocalConfig localConfig, ElasticSearchRemoteConfig remoteConfig,
-            Map<String, ElasticSearchIndexConfig> indexConfig) {
-        this(localConfig, remoteConfig, indexConfig, null);
-    }
 
     /**
      * Init the admin service, remote configuration if not null will take precedence over local embedded configuration.
      * The transport client initialization can be customized.
-     * 
+     *
      * @since 9.1
      */
     public ElasticSearchAdminImpl(ElasticSearchLocalConfig localConfig, ElasticSearchRemoteConfig remoteConfig,
-            Map<String, ElasticSearchIndexConfig> indexConfig, ESClientInitializationService clientInitService) {
+            Map<String, ElasticSearchIndexConfig> indexConfig, ESClientProvider clientInitService) {
         this.remoteConfig = remoteConfig;
         this.localConfig = localConfig;
         this.indexConfig = indexConfig;
@@ -150,7 +144,11 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             log.info("ES Disconnected");
         }
         if (localNode != null) {
-            localNode.close();
+            try {
+                localNode.close();
+            } catch (IOException e) {
+                log.error("Failed to close embedded node: " + e.getMessage(), e);
+            }
             localNode = null;
             log.info("ES embedded Node Stopped");
         }
@@ -165,13 +163,11 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             log.warn("Elasticsearch embedded configuration is ONLY for testing"
                     + " purpose. You need to create a dedicated Elasticsearch" + " cluster for production.");
         }
-        Builder sBuilder = Settings.settingsBuilder();
+        Builder sBuilder = Settings.builder();
         sBuilder.put("http.enabled", conf.httpEnabled())
                 .put("network.host", conf.getNetworkHost())
                 .put("path.home", conf.getHomePath())
                 .put("path.data", conf.getDataPath())
-                .put("index.number_of_shards", 1)
-                .put("index.number_of_replicas", 0)
                 .put("cluster.name", conf.getClusterName())
                 .put("node.name", conf.getNodeName())
                 .put("http.netty.worker_count", 4)
@@ -186,14 +182,36 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         }
         Settings settings = sBuilder.build();
         log.debug("Using settings: " + settings.toDelimitedString(','));
-        Node ret = NodeBuilder.nodeBuilder().local(true).settings(settings).node();
+
+        Collection plugins = Collections.singletonList(Netty4Plugin.class);
+        Node ret = new PluginConfigurableNode(settings, plugins);
+
+        // Node ret = NodeBuilder.nodeBuilder().local(true).settings(settings).node();
         assert ret != null : "Can not create an embedded ES Node";
         return ret;
     }
 
     private Client connectToEmbedded() {
         log.info("Connecting to embedded ES");
-        Client ret = localNode.start().client();
+        Client ret = null;
+        try {
+            ret = localNode.start().client();
+        } catch (NodeValidationException e) {
+            throw new RuntimeException("Can not start embedded ES: " + e.getMessage(), e);
+        } catch (Exception e) {
+            if (e.getCause() instanceof BindException) {
+                log.error("Port is not free wait");
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e1) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(e1);
+                }
+                return connectToEmbedded();
+            } else {
+                throw e;
+            }
+        }
         assert ret != null : "Can not connect to embedded ES Node";
         return ret;
     }
@@ -201,12 +219,11 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     private Client connectToRemote(ElasticSearchRemoteConfig config) {
         log.info("Connecting to remote ES cluster: " + config);
 
-        Settings settings = clientInitService.initializeSettings(config);
+        clientInitService.setServerConfig(config);
         if (log.isDebugEnabled()) {
-            log.debug("Using settings: " + settings.toDelimitedString(','));
+            log.debug("Using settings: " + clientInitService.getSetting().build().toDelimitedString(','));
         }
-
-        TransportClient ret = clientInitService.initializeClient(settings);
+        TransportClient ret = clientInitService.getClient();
 
         String[] addresses = config.getAddresses();
         if (addresses == null) {
@@ -458,7 +475,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             getClient().admin()
                        .indices()
                        .prepareCreate(conf.getName())
-                       .setSettings(conf.getSettings())
+                       .setSettings(conf.getSettings(), XContentType.JSON)
                        .execute()
                        .actionGet();
         }
@@ -471,7 +488,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                        .indices()
                        .preparePutMapping(conf.getName())
                        .setType(conf.getType())
-                       .setSource(conf.getMapping())
+                       .setSource(conf.getMapping(), XContentType.JSON)
                        .execute()
                        .actionGet();
             if (!dropIfExists && conf.getRepositoryName() != null) {

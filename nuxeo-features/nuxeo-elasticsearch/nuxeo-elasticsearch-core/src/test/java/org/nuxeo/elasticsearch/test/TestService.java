@@ -88,7 +88,7 @@ public class TestService {
 
         NodesInfoResponse nodeInfoResponse = esa.getClient().admin().cluster().nodesInfo(new NodesInfoRequest()).actionGet();
 
-        Assert.assertEquals(1, nodeInfoResponse.getNodes().length);
+        Assert.assertEquals(1, nodeInfoResponse.getNodes().size());
     }
 
     @Test

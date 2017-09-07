@@ -261,22 +261,34 @@ public class TestPageProvider {
         pp.setParameters(params);
         List<DocumentModel> p = (List<DocumentModel>) pp.getCurrentPage();
         String esquery = ((ElasticSearchNxqlPageProvider) pp).getCurrentQueryAsEsBuilder().toString();
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"bool\" : {\n" + //
-                "    \"must\" : {\n" + //
-                "      \"match\" : {\n" + //
-                "        \"dc:title\" : {\n" + //
-                "          \"query\" : \"Test\",\n" + //
-                "          \"type\" : \"phrase_prefix\"\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    },\n" + //
-                "    \"filter\" : {\n" + //
-                "      \"terms\" : {\n" + //
-                "        \"ecm:primaryType\" : [ \"File\" ]\n" + //
-                "      }\n" + //
-                "    }\n" + //
-                "  }\n" + //
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [\n" +
+                "      {\n" +
+                "        \"match_phrase_prefix\" : {\n" +
+                "          \"dc:title\" : {\n" +
+                "            \"query\" : \"Test\",\n" +
+                "            \"slop\" : 0,\n" +
+                "            \"max_expansions\" : 50,\n" +
+                "            \"boost\" : 1.0\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"filter\" : [\n" +
+                "      {\n" +
+                "        \"terms\" : {\n" +
+                "          \"ecm:primaryType\" : [\n" +
+                "            \"File\"\n" +
+                "          ],\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"disable_coord\" : false,\n" +
+                "    \"adjust_pure_negative\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
                 "}", esquery);
 
         Assert.assertEquals(10, pp.getResultsCount());
@@ -353,41 +365,62 @@ public class TestPageProvider {
         model.setPropertyValue("dc:subjects", new String[] { "foo", "bar" });
 
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, null, true);
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"bool\" : {\n" + //
-                "    \"must\" : {\n" + //
-                "      \"constant_score\" : {\n" + //
-                "        \"filter\" : {\n" + //
-                "          \"terms\" : {\n" + //
-                "            \"dc:title\" : [ \"foo\", \"bar\" ]\n" + //
-                "          }\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    }\n" + //
-                "  }\n" + //
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [\n" +
+                "      {\n" +
+                "        \"constant_score\" : {\n" +
+                "          \"filter\" : {\n" +
+                "            \"terms\" : {\n" +
+                "              \"dc:title\" : [\n" +
+                "                \"foo\",\n" +
+                "                \"bar\"\n" +
+                "              ],\n" +
+                "              \"boost\" : 1.0\n" +
+                "            }\n" +
+                "          },\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"disable_coord\" : false,\n" +
+                "    \"adjust_pure_negative\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
                 "}", qb.toString());
 
         model.setPropertyValue("dc:subjects", new String[] { "foo" });
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, null, true);
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"bool\" : {\n" + //
-                "    \"must\" : {\n" + //
-                "      \"constant_score\" : {\n" + //
-                "        \"filter\" : {\n" + //
-                "          \"terms\" : {\n" + //
-                "            \"dc:title\" : [ \"foo\" ]\n" + //
-                "          }\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    }\n" + //
-                "  }\n" + //
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [\n" +
+                "      {\n" +
+                "        \"constant_score\" : {\n" +
+                "          \"filter\" : {\n" +
+                "            \"terms\" : {\n" +
+                "              \"dc:title\" : [\n" +
+                "                \"foo\"\n" +
+                "              ],\n" +
+                "              \"boost\" : 1.0\n" +
+                "            }\n" +
+                "          },\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"disable_coord\" : false,\n" +
+                "    \"adjust_pure_negative\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
                 "}", qb.toString());
 
         // criteria with no values are removed
         model.setPropertyValue("dc:subjects", new String[] {});
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, null, true);
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"match_all\" : { }\n" + //
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"match_all\" : {\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
                 "}", qb.toString());
     }
 
@@ -401,18 +434,29 @@ public class TestPageProvider {
         Integer[] array1 = new Integer[] { 1, 2, 3 };
         model.setPropertyValue("search:integerlist", array1);
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, null, true);
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"bool\" : {\n" + //
-                "    \"must\" : {\n" + //
-                "      \"constant_score\" : {\n" + //
-                "        \"filter\" : {\n" + //
-                "          \"terms\" : {\n" + //
-                "            \"size\" : [ 1, 2, 3 ]\n" + //
-                "          }\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    }\n" + //
-                "  }\n" + //
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [\n" +
+                "      {\n" +
+                "        \"constant_score\" : {\n" +
+                "          \"filter\" : {\n" +
+                "            \"terms\" : {\n" +
+                "              \"size\" : [\n" +
+                "                1,\n" +
+                "                2,\n" +
+                "                3\n" +
+                "              ],\n" +
+                "              \"boost\" : 1.0\n" +
+                "            }\n" +
+                "          },\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"disable_coord\" : false,\n" +
+                "    \"adjust_pure_negative\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
                 "}", qb.toString());
 
         // lists work too
@@ -420,18 +464,29 @@ public class TestPageProvider {
         List<Long> list = Arrays.asList(1L, 2L, 3L);
         model.setPropertyValue("search:integerlist", (Serializable) list);
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, null, true);
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"bool\" : {\n" + //
-                "    \"must\" : {\n" + //
-                "      \"constant_score\" : {\n" + //
-                "        \"filter\" : {\n" + //
-                "          \"terms\" : {\n" + //
-                "            \"size\" : [ 1, 2, 3 ]\n" + //
-                "          }\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    }\n" + //
-                "  }\n" + //
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [\n" +
+                "      {\n" +
+                "        \"constant_score\" : {\n" +
+                "          \"filter\" : {\n" +
+                "            \"terms\" : {\n" +
+                "              \"size\" : [\n" +
+                "                1,\n" +
+                "                2,\n" +
+                "                3\n" +
+                "              ],\n" +
+                "              \"boost\" : 1.0\n" +
+                "            }\n" +
+                "          },\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"disable_coord\" : false,\n" +
+                "    \"adjust_pure_negative\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
                 "}", qb.toString());
 
     }
@@ -448,22 +503,48 @@ public class TestPageProvider {
         model.setPropertyValue("search:subjects", arrayString);
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, params, true);
         String json = qb.toString();
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"bool\" : {\n" + //
-                "    \"must\" : [ {\n" + //
-                "      \"query_string\" : {\n" + //
-                "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" + //
-                "      }\n" + //
-                "    }, {\n" + //
-                "      \"constant_score\" : {\n" + //
-                "        \"filter\" : {\n" + //
-                "          \"terms\" : {\n" + //
-                "            \"dc:subjects\" : [ \"1\", \"2\", \"3\" ]\n" + //
-                "          }\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    } ]\n" + //
-                "  }\n" + //
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [\n" +
+                "      {\n" +
+                "        \"query_string\" : {\n" +
+                "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\",\n" +
+                "          \"fields\" : [ ],\n" +
+                "          \"use_dis_max\" : true,\n" +
+                "          \"tie_breaker\" : 0.0,\n" +
+                "          \"default_operator\" : \"or\",\n" +
+                "          \"auto_generate_phrase_queries\" : false,\n" +
+                "          \"max_determinized_states\" : 10000,\n" +
+                "          \"enable_position_increments\" : true,\n" +
+                "          \"fuzziness\" : \"AUTO\",\n" +
+                "          \"fuzzy_prefix_length\" : 0,\n" +
+                "          \"fuzzy_max_expansions\" : 50,\n" +
+                "          \"phrase_slop\" : 0,\n" +
+                "          \"escape\" : false,\n" +
+                "          \"split_on_whitespace\" : true,\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"constant_score\" : {\n" +
+                "          \"filter\" : {\n" +
+                "            \"terms\" : {\n" +
+                "              \"dc:subjects\" : [\n" +
+                "                \"1\",\n" +
+                "                \"2\",\n" +
+                "                \"3\"\n" +
+                "              ],\n" +
+                "              \"boost\" : 1.0\n" +
+                "            }\n" +
+                "          },\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"disable_coord\" : false,\n" +
+                "    \"adjust_pure_negative\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
                 "}", qb.toString());
 
         // lists work too
@@ -477,8 +558,10 @@ public class TestPageProvider {
         list = new ArrayList<>();
         model.setPropertyValue("search:subjects", (Serializable) list);
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, null, true);
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"match_all\" : { }\n" + //
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"match_all\" : {\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
                 "}", qb.toString());
     }
 
@@ -494,84 +577,183 @@ public class TestPageProvider {
         model.setPropertyValue("search:title", "bar");
 
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, params, true);
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"bool\" : {\n" + //
-                "    \"must\" : [ {\n" + //
-                "      \"query_string\" : {\n" + //
-                "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" + //
-                "      }\n" + //
-                "    }, {\n" + //
-                "      \"wildcard\" : {\n" + //
-                "        \"dc:title\" : \"bar\"\n" + //
-                "      }\n" + //
-                "    } ]\n" + //
-                "  }\n" + //
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [\n" +
+                "      {\n" +
+                "        \"query_string\" : {\n" +
+                "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\",\n" +
+                "          \"fields\" : [ ],\n" +
+                "          \"use_dis_max\" : true,\n" +
+                "          \"tie_breaker\" : 0.0,\n" +
+                "          \"default_operator\" : \"or\",\n" +
+                "          \"auto_generate_phrase_queries\" : false,\n" +
+                "          \"max_determinized_states\" : 10000,\n" +
+                "          \"enable_position_increments\" : true,\n" +
+                "          \"fuzziness\" : \"AUTO\",\n" +
+                "          \"fuzzy_prefix_length\" : 0,\n" +
+                "          \"fuzzy_max_expansions\" : 50,\n" +
+                "          \"phrase_slop\" : 0,\n" +
+                "          \"escape\" : false,\n" +
+                "          \"split_on_whitespace\" : true,\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"wildcard\" : {\n" +
+                "          \"dc:title\" : {\n" +
+                "            \"wildcard\" : \"bar\",\n" +
+                "            \"boost\" : 1.0\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"disable_coord\" : false,\n" +
+                "    \"adjust_pure_negative\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
                 "}", qb.toString());
 
         model.setPropertyValue("search:isPresent", Boolean.TRUE);
 
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, params, true);
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"bool\" : {\n" + //
-                "    \"must\" : [ {\n" + //
-                "      \"query_string\" : {\n" + //
-                "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" + //
-                "      }\n" + //
-                "    }, {\n" + //
-                "      \"wildcard\" : {\n" + //
-                "        \"dc:title\" : \"bar\"\n" + //
-                "      }\n" + //
-                "    }, {\n" + //
-                "      \"constant_score\" : {\n" + //
-                "        \"filter\" : {\n" + //
-                "          \"bool\" : {\n" + //
-                "            \"must_not\" : {\n" + //
-                "              \"exists\" : {\n" + //
-                "                \"field\" : \"dc:modified\"\n" + //
-                "              }\n" + //
-                "            }\n" + //
-                "          }\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    } ]\n" + //
-                "  }\n" + //
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [\n" +
+                "      {\n" +
+                "        \"query_string\" : {\n" +
+                "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\",\n" +
+                "          \"fields\" : [ ],\n" +
+                "          \"use_dis_max\" : true,\n" +
+                "          \"tie_breaker\" : 0.0,\n" +
+                "          \"default_operator\" : \"or\",\n" +
+                "          \"auto_generate_phrase_queries\" : false,\n" +
+                "          \"max_determinized_states\" : 10000,\n" +
+                "          \"enable_position_increments\" : true,\n" +
+                "          \"fuzziness\" : \"AUTO\",\n" +
+                "          \"fuzzy_prefix_length\" : 0,\n" +
+                "          \"fuzzy_max_expansions\" : 50,\n" +
+                "          \"phrase_slop\" : 0,\n" +
+                "          \"escape\" : false,\n" +
+                "          \"split_on_whitespace\" : true,\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"wildcard\" : {\n" +
+                "          \"dc:title\" : {\n" +
+                "            \"wildcard\" : \"bar\",\n" +
+                "            \"boost\" : 1.0\n" +
+                "          }\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"constant_score\" : {\n" +
+                "          \"filter\" : {\n" +
+                "            \"bool\" : {\n" +
+                "              \"must_not\" : [\n" +
+                "                {\n" +
+                "                  \"exists\" : {\n" +
+                "                    \"field\" : \"dc:modified\",\n" +
+                "                    \"boost\" : 1.0\n" +
+                "                  }\n" +
+                "                }\n" +
+                "              ],\n" +
+                "              \"disable_coord\" : false,\n" +
+                "              \"adjust_pure_negative\" : true,\n" +
+                "              \"boost\" : 1.0\n" +
+                "            }\n" +
+                "          },\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"disable_coord\" : false,\n" +
+                "    \"adjust_pure_negative\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
                 "}", qb.toString());
 
         // only boolean available in schema without default value
         model.setPropertyValue("search:isPresent", Boolean.FALSE);
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, params, true);
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"bool\" : {\n" + //
-                "    \"must\" : [ {\n" + //
-                "      \"query_string\" : {\n" + //
-                "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" + //
-                "      }\n" + //
-                "    }, {\n" + //
-                "      \"wildcard\" : {\n" + //
-                "        \"dc:title\" : \"bar\"\n" + //
-                "      }\n" + //
-                "    }, {\n" + //
-                "      \"constant_score\" : {\n" + //
-                "        \"filter\" : {\n" + //
-                "          \"bool\" : {\n" + //
-                "            \"must_not\" : {\n" + //
-                "              \"exists\" : {\n" + //
-                "                \"field\" : \"dc:modified\"\n" + //
-                "              }\n" + //
-                "            }\n" + //
-                "          }\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    } ]\n" + //
-                "  }\n" + //
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [\n" +
+                "      {\n" +
+                "        \"query_string\" : {\n" +
+                "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\",\n" +
+                "          \"fields\" : [ ],\n" +
+                "          \"use_dis_max\" : true,\n" +
+                "          \"tie_breaker\" : 0.0,\n" +
+                "          \"default_operator\" : \"or\",\n" +
+                "          \"auto_generate_phrase_queries\" : false,\n" +
+                "          \"max_determinized_states\" : 10000,\n" +
+                "          \"enable_position_increments\" : true,\n" +
+                "          \"fuzziness\" : \"AUTO\",\n" +
+                "          \"fuzzy_prefix_length\" : 0,\n" +
+                "          \"fuzzy_max_expansions\" : 50,\n" +
+                "          \"phrase_slop\" : 0,\n" +
+                "          \"escape\" : false,\n" +
+                "          \"split_on_whitespace\" : true,\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"wildcard\" : {\n" +
+                "          \"dc:title\" : {\n" +
+                "            \"wildcard\" : \"bar\",\n" +
+                "            \"boost\" : 1.0\n" +
+                "          }\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"constant_score\" : {\n" +
+                "          \"filter\" : {\n" +
+                "            \"bool\" : {\n" +
+                "              \"must_not\" : [\n" +
+                "                {\n" +
+                "                  \"exists\" : {\n" +
+                "                    \"field\" : \"dc:modified\",\n" +
+                "                    \"boost\" : 1.0\n" +
+                "                  }\n" +
+                "                }\n" +
+                "              ],\n" +
+                "              \"disable_coord\" : false,\n" +
+                "              \"adjust_pure_negative\" : true,\n" +
+                "              \"boost\" : 1.0\n" +
+                "            }\n" +
+                "          },\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"disable_coord\" : false,\n" +
+                "    \"adjust_pure_negative\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
                 "}", qb.toString());
 
         qb = PageProviderQueryBuilder.makeQuery("SELECT * FROM ? WHERE ? = '?'",
                 new Object[] { "Document", "dc:title", null }, false, true, true);
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"query_string\" : {\n" + //
-                "    \"query\" : \"SELECT * FROM Document WHERE dc:title = ''\"\n" + //
-                "  }\n" + //
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"query_string\" : {\n" +
+                "    \"query\" : \"SELECT * FROM Document WHERE dc:title = ''\",\n" +
+                "    \"fields\" : [ ],\n" +
+                "    \"use_dis_max\" : true,\n" +
+                "    \"tie_breaker\" : 0.0,\n" +
+                "    \"default_operator\" : \"or\",\n" +
+                "    \"auto_generate_phrase_queries\" : false,\n" +
+                "    \"max_determinized_states\" : 10000,\n" +
+                "    \"enable_position_increments\" : true,\n" +
+                "    \"fuzziness\" : \"AUTO\",\n" +
+                "    \"fuzzy_prefix_length\" : 0,\n" +
+                "    \"fuzzy_max_expansions\" : 50,\n" +
+                "    \"phrase_slop\" : 0,\n" +
+                "    \"escape\" : false,\n" +
+                "    \"split_on_whitespace\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
                 "}", qb.toString());
 
     }
@@ -587,21 +769,47 @@ public class TestPageProvider {
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
         model.setPropertyValue("search:fulltext_all", "you know for search");
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, params, true);
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"bool\" : {\n" + //
-                "    \"must\" : [ {\n" + //
-                "      \"query_string\" : {\n" + //
-                "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" + //
-                "      }\n" + //
-                "    }, {\n" + //
-                "      \"simple_query_string\" : {\n" + //
-                "        \"query\" : \"you know for search\",\n" + //
-                "        \"fields\" : [ \"_all\" ],\n" + //
-                "        \"analyzer\" : \"fulltext\",\n" + //
-                "        \"default_operator\" : \"and\"\n" + //
-                "      }\n" + //
-                "    } ]\n" + //
-                "  }\n" + //
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [\n" +
+                "      {\n" +
+                "        \"query_string\" : {\n" +
+                "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\",\n" +
+                "          \"fields\" : [ ],\n" +
+                "          \"use_dis_max\" : true,\n" +
+                "          \"tie_breaker\" : 0.0,\n" +
+                "          \"default_operator\" : \"or\",\n" +
+                "          \"auto_generate_phrase_queries\" : false,\n" +
+                "          \"max_determinized_states\" : 10000,\n" +
+                "          \"enable_position_increments\" : true,\n" +
+                "          \"fuzziness\" : \"AUTO\",\n" +
+                "          \"fuzzy_prefix_length\" : 0,\n" +
+                "          \"fuzzy_max_expansions\" : 50,\n" +
+                "          \"phrase_slop\" : 0,\n" +
+                "          \"escape\" : false,\n" +
+                "          \"split_on_whitespace\" : true,\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"simple_query_string\" : {\n" +
+                "          \"query\" : \"you know for search\",\n" +
+                "          \"fields\" : [\n" +
+                "            \"_all^1.0\"\n" +
+                "          ],\n" +
+                "          \"analyzer\" : \"fulltext\",\n" +
+                "          \"flags\" : -1,\n" +
+                "          \"default_operator\" : \"and\",\n" +
+                "          \"lenient\" : false,\n" +
+                "          \"analyze_wildcard\" : false,\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"disable_coord\" : false,\n" +
+                "    \"adjust_pure_negative\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
                 "}", qb.toString());
     }
 
@@ -621,32 +829,53 @@ public class TestPageProvider {
         Assert.assertNotNull(pp);
         pp.getCurrentPage(); // This is needed to build the nxql query
         String esquery = pp.getCurrentQueryAsEsBuilder().toString();
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"bool\" : {\n" + //
-                "    \"must\" : [ {\n" + //
-                "      \"constant_score\" : {\n" + //
-                "        \"filter\" : {\n" + //
-                "          \"term\" : {\n" + //
-                "            \"dc:title.fulltext\" : \"you know\"\n" + //
-                "          }\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    }, {\n" + //
-                "      \"fuzzy\" : {\n" + //
-                "        \"my_field\" : {\n" + //
-                "          \"value\" : \"for search\"\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    }, {\n" + //
-                "      \"constant_score\" : {\n" + //
-                "        \"filter\" : {\n" + //
-                "          \"terms\" : {\n" + //
-                "            \"my_subject\" : [ \"foo\", \"bar\" ]\n" + //
-                "          }\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    } ]\n" + //
-                "  }\n" + //
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [\n" +
+                "      {\n" +
+                "        \"constant_score\" : {\n" +
+                "          \"filter\" : {\n" +
+                "            \"term\" : {\n" +
+                "              \"dc:title.fulltext\" : {\n" +
+                "                \"value\" : \"you know\",\n" +
+                "                \"boost\" : 1.0\n" +
+                "              }\n" +
+                "            }\n" +
+                "          },\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"fuzzy\" : {\n" +
+                "          \"my_field\" : {\n" +
+                "            \"value\" : \"for search\",\n" +
+                "            \"fuzziness\" : \"AUTO\",\n" +
+                "            \"prefix_length\" : 0,\n" +
+                "            \"max_expansions\" : 50,\n" +
+                "            \"transpositions\" : false,\n" +
+                "            \"boost\" : 1.0\n" +
+                "          }\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"constant_score\" : {\n" +
+                "          \"filter\" : {\n" +
+                "            \"terms\" : {\n" +
+                "              \"my_subject\" : [\n" +
+                "                \"foo\",\n" +
+                "                \"bar\"\n" +
+                "              ],\n" +
+                "              \"boost\" : 1.0\n" +
+                "            }\n" +
+                "          },\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"disable_coord\" : false,\n" +
+                "    \"adjust_pure_negative\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
                 "}", esquery);
     }
 
@@ -666,32 +895,53 @@ public class TestPageProvider {
         Assert.assertNotNull(pp);
         pp.getCurrentPage(); // This is needed to build the nxql query
         String esquery = pp.getCurrentQueryAsEsBuilder().toString();
-        assertEqualsEvenUnderWindows("{\n" + //
-                "  \"bool\" : {\n" + //
-                "    \"must\" : [ {\n" + //
-                "      \"constant_score\" : {\n" + //
-                "        \"filter\" : {\n" + //
-                "          \"term\" : {\n" + //
-                "            \"dc:title.fulltext\" : \"you know\"\n" + //
-                "          }\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    }, {\n" + //
-                "      \"fuzzy\" : {\n" + //
-                "        \"my_field\" : {\n" + //
-                "          \"value\" : \"for search\"\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    }, {\n" + //
-                "      \"constant_score\" : {\n" + //
-                "        \"filter\" : {\n" + //
-                "          \"terms\" : {\n" + //
-                "            \"my_subject\" : [ \"foo\", \"bar\" ]\n" + //
-                "          }\n" + //
-                "        }\n" + //
-                "      }\n" + //
-                "    } ]\n" + //
-                "  }\n" + //
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [\n" +
+                "      {\n" +
+                "        \"constant_score\" : {\n" +
+                "          \"filter\" : {\n" +
+                "            \"term\" : {\n" +
+                "              \"dc:title.fulltext\" : {\n" +
+                "                \"value\" : \"you know\",\n" +
+                "                \"boost\" : 1.0\n" +
+                "              }\n" +
+                "            }\n" +
+                "          },\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"fuzzy\" : {\n" +
+                "          \"my_field\" : {\n" +
+                "            \"value\" : \"for search\",\n" +
+                "            \"fuzziness\" : \"AUTO\",\n" +
+                "            \"prefix_length\" : 0,\n" +
+                "            \"max_expansions\" : 50,\n" +
+                "            \"transpositions\" : false,\n" +
+                "            \"boost\" : 1.0\n" +
+                "          }\n" +
+                "        }\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"constant_score\" : {\n" +
+                "          \"filter\" : {\n" +
+                "            \"terms\" : {\n" +
+                "              \"my_subject\" : [\n" +
+                "                \"foo\",\n" +
+                "                \"bar\"\n" +
+                "              ],\n" +
+                "              \"boost\" : 1.0\n" +
+                "            }\n" +
+                "          },\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"disable_coord\" : false,\n" +
+                "    \"adjust_pure_negative\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
                 "}", esquery);
     }
 

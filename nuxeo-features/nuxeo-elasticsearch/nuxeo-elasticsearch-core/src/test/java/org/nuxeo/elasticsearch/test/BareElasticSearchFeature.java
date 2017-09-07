@@ -19,21 +19,23 @@
 
 package org.nuxeo.elasticsearch.test;
 
-import java.io.File;
-import java.security.InvalidParameterException;
-
+import com.google.inject.Binder;
+import com.google.inject.Scopes;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
+import org.elasticsearch.transport.Netty4Plugin;
+import org.nuxeo.elasticsearch.core.PluginConfigurableNode;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-import com.google.inject.Binder;
-import com.google.inject.Scopes;
+import java.io.File;
+import java.security.InvalidParameterException;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
@@ -53,16 +55,17 @@ public class BareElasticSearchFeature extends SimpleFeature {
         if (!esDirectory.exists() && !esDirectory.mkdir()) {
             throw new InvalidParameterException("Can not create directory: " + esDirectory.getAbsolutePath());
         }
-        Settings settings = Settings.settingsBuilder()
-                                    .put("node.http.enabled", true)
-                                    .put("path.home", esDirectory.getPath())
-                                    .put("path.logs", esDirectory.getPath() + "/logs")
-                                    .put("path.data", esDirectory.getPath() + "/data")
-                                    .put("index.store.type", "mmapfs")
-                                    .put("index.number_of_shards", 1)
-                                    .put("index.number_of_replicas", 1)
-                                    .build();
-        node = NodeBuilder.nodeBuilder().local(true).settings(settings).node();
+        Settings settings = Settings.builder()
+                .put("node.http.enabled", true)
+                .put("path.home", esDirectory.getPath())
+                .put("path.logs", esDirectory.getPath() + "/logs")
+                .put("path.data", esDirectory.getPath() + "/data")
+                .put("index.store.type", "mmapfs")
+                .put("index.number_of_shards", 1)
+                .put("index.number_of_replicas", 1)
+                .build();
+        Collection plugins = Collections.singletonList(Netty4Plugin.class);
+        node = new PluginConfigurableNode(settings, plugins);
         client = node.client();
         super.start(runner);
     }

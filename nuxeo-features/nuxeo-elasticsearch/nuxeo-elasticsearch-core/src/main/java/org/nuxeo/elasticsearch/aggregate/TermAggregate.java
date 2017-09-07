@@ -39,7 +39,8 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.support.IncludeExclude;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.core.BucketTerm;
@@ -55,8 +56,8 @@ public class TermAggregate extends AggregateEsBase<BucketTerm> {
 
     @JsonIgnore
     @Override
-    public TermsBuilder getEsAggregate() {
-        TermsBuilder ret = AggregationBuilders.terms(getId()).field(getField());
+    public TermsAggregationBuilder getEsAggregate() {
+        TermsAggregationBuilder ret = AggregationBuilders.terms(getId()).field(getField());
         Map<String, String> props = getProperties();
         if (props.containsKey(AGG_SIZE_PROP)) {
             ret.size(Integer.parseInt(props.get(AGG_SIZE_PROP)));
@@ -64,11 +65,10 @@ public class TermAggregate extends AggregateEsBase<BucketTerm> {
         if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
             ret.minDocCount(Long.parseLong(props.get(AGG_MIN_DOC_COUNT_PROP)));
         }
-        if (props.containsKey(AGG_EXCLUDE_PROP)) {
-            ret.exclude(props.get(AGG_EXCLUDE_PROP));
-        }
-        if (props.containsKey(AGG_INCLUDE_PROP)) {
-            ret.include(props.get(AGG_INCLUDE_PROP));
+        if (props.containsKey(AGG_EXCLUDE_PROP) || props.containsKey(AGG_INCLUDE_PROP)) {
+            String include = props.get(AGG_INCLUDE_PROP);
+            String exclude = props.get(AGG_EXCLUDE_PROP);
+            ret.includeExclude(new IncludeExclude(include, exclude));
         }
         if (props.containsKey(AGG_ORDER_PROP)) {
             switch (props.get(AGG_ORDER_PROP).toLowerCase()) {
