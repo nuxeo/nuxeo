@@ -33,10 +33,13 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -202,15 +205,21 @@ public class TestAutomaticIndexing {
 
         // check no root document from search response
         startTransaction();
-        SearchResponse searchResponse = esa.getClient()
-                                           .prepareSearch(IDX_NAME)
-                                           .setTypes(TYPE_NAME)
-                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                           .setFrom(0)
-                                           .setSize(60)
-                                           .execute()
-                                           .actionGet();
+        SearchResponse searchResponse = searchAll();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+    }
+
+    protected SearchResponse searchAll() {
+        SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .source(new SearchSourceBuilder().from(0).size(60));
+        return esa.getClient().search(request);
+    }
+
+    protected SearchResponse search(QueryBuilder query) {
+        SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .source(new SearchSourceBuilder().from(0).size(60));
+        request.source(new SearchSourceBuilder().query(query));
+        return esa.getClient().search(request);
     }
 
     @Test
@@ -229,14 +238,7 @@ public class TestAutomaticIndexing {
 
         // check no root document from search response
         startTransaction();
-        SearchResponse searchResponse = esa.getClient()
-                                           .prepareSearch(IDX_NAME)
-                                           .setTypes(TYPE_NAME)
-                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                           .setFrom(0)
-                                           .setSize(60)
-                                           .execute()
-                                           .actionGet();
+        SearchResponse searchResponse = searchAll();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
     }
 
@@ -260,14 +262,7 @@ public class TestAutomaticIndexing {
         assertNumberOfCommandProcessed(10);
 
         startTransaction();
-        SearchResponse searchResponse = esa.getClient()
-                                           .prepareSearch(IDX_NAME)
-                                           .setTypes(TYPE_NAME)
-                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                           .setFrom(0)
-                                           .setSize(60)
-                                           .execute()
-                                           .actionGet();
+        SearchResponse searchResponse = searchAll();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
     }
 
@@ -285,14 +280,9 @@ public class TestAutomaticIndexing {
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
-        SearchResponse searchResponse = esa.getClient()
-                                           .prepareSearch(IDX_NAME)
-                                           .setTypes(TYPE_NAME)
-                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                           .setFrom(0)
-                                           .setSize(60)
-                                           .execute()
-                                           .actionGet();
+        SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .source(new SearchSourceBuilder().from(0).size(60));
+        SearchResponse searchResponse = esa.getClient().search(request);
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
     }
 
@@ -314,14 +304,10 @@ public class TestAutomaticIndexing {
         assertNumberOfCommandProcessed(0);
 
         startTransaction();
-        SearchResponse searchResponse = esa.getClient()
-                                           .prepareSearch(IDX_NAME)
-                                           .setTypes(TYPE_NAME)
-                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                           .setFrom(0)
-                                           .setSize(60)
-                                           .execute()
-                                           .actionGet();
+        SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .source(new SearchSourceBuilder().from(0).size(60));
+        SearchResponse searchResponse = esa.getClient().search(request);
+
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
         Assert.assertFalse(esa.isIndexingInProgress());
     }
@@ -338,14 +324,9 @@ public class TestAutomaticIndexing {
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
-        SearchResponse searchResponse = esa.getClient()
-                                           .prepareSearch(IDX_NAME)
-                                           .setTypes(TYPE_NAME)
-                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                           .setFrom(0)
-                                           .setSize(60)
-                                           .execute()
-                                           .actionGet();
+        SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .source(new SearchSourceBuilder().from(0).size(60));
+        SearchResponse searchResponse = esa.getClient().search(request);
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
         // now delete the document
@@ -355,14 +336,7 @@ public class TestAutomaticIndexing {
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
-        searchResponse = esa.getClient()
-                            .prepareSearch(IDX_NAME)
-                            .setTypes(TYPE_NAME)
-                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                            .setFrom(0)
-                            .setSize(60)
-                            .execute()
-                            .actionGet();
+        searchResponse = esa.getClient().search(request);
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
     }
 
@@ -382,15 +356,8 @@ public class TestAutomaticIndexing {
         assertNumberOfCommandProcessed(10);
 
         startTransaction();
-        SearchResponse searchResponse = esa.getClient()
-                                           .prepareSearch(IDX_NAME)
-                                           .setTypes(TYPE_NAME)
-                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                           .setQuery(QueryBuilders.matchQuery("dc:nature", "A"))
-                                           .setFrom(0)
-                                           .setSize(60)
-                                           .execute()
-                                           .actionGet();
+
+        SearchResponse searchResponse = search(QueryBuilders.matchQuery("dc:nature", "A"));
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
         int i = 0;
@@ -409,26 +376,10 @@ public class TestAutomaticIndexing {
         assertNumberOfCommandProcessed(8);
 
         startTransaction();
-        searchResponse = esa.getClient()
-                            .prepareSearch(IDX_NAME)
-                            .setTypes(TYPE_NAME)
-                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                            .setQuery(QueryBuilders.matchQuery("dc:nature", "A"))
-                            .setFrom(0)
-                            .setSize(60)
-                            .execute()
-                            .actionGet();
+        searchResponse = search(QueryBuilders.matchQuery("dc:nature", "A"));
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
 
-        searchResponse = esa.getClient()
-                            .prepareSearch(IDX_NAME)
-                            .setTypes(TYPE_NAME)
-                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                            .setQuery(QueryBuilders.matchQuery("dc:nature", "B"))
-                            .setFrom(0)
-                            .setSize(60)
-                            .execute()
-                            .actionGet();
+        searchResponse = search(QueryBuilders.matchQuery("dc:nature", "B"));
         Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
     }
 
@@ -513,14 +464,7 @@ public class TestAutomaticIndexing {
         assertNumberOfCommandProcessed(5);
 
         startTransaction();
-        SearchResponse searchResponse = esa.getClient()
-                                           .prepareSearch(IDX_NAME)
-                                           .setTypes(TYPE_NAME)
-                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                           .setFrom(0)
-                                           .setSize(60)
-                                           .execute()
-                                           .actionGet();
+        SearchResponse searchResponse = searchAll();
         // folder, version, file and proxy
         Assert.assertEquals(4, searchResponse.getHits().getTotalHits());
 
@@ -533,14 +477,7 @@ public class TestAutomaticIndexing {
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
-        searchResponse = esa.getClient()
-                            .prepareSearch(IDX_NAME)
-                            .setTypes(TYPE_NAME)
-                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                            .setFrom(0)
-                            .setSize(60)
-                            .execute()
-                            .actionGet();
+        searchResponse = searchAll();
         Assert.assertEquals(3, searchResponse.getHits().getTotalHits());
 
     }
@@ -603,14 +540,7 @@ public class TestAutomaticIndexing {
                 "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'deleted'"));
         Assert.assertEquals(2, ret.totalSize());
 
-        SearchResponse searchResponse = esa.getClient()
-                                           .prepareSearch(IDX_NAME)
-                                           .setTypes(TYPE_NAME)
-                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                           .setFrom(0)
-                                           .setSize(60)
-                                           .execute()
-                                           .actionGet();
+        SearchResponse searchResponse = searchAll();
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
 
         trashService.purgeDocuments(session, Collections.singletonList(doc.getRef()));
@@ -620,14 +550,7 @@ public class TestAutomaticIndexing {
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
-        searchResponse = esa.getClient()
-                            .prepareSearch(IDX_NAME)
-                            .setTypes(TYPE_NAME)
-                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                            .setFrom(0)
-                            .setSize(60)
-                            .execute()
-                            .actionGet();
+        searchResponse = searchAll();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
     }
 
@@ -652,14 +575,7 @@ public class TestAutomaticIndexing {
         waitForCompletion();
         startTransaction();
 
-        SearchResponse searchResponse = esa.getClient()
-                                           .prepareSearch(IDX_NAME)
-                                           .setTypes(TYPE_NAME)
-                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                           .setFrom(0)
-                                           .setSize(60)
-                                           .execute()
-                                           .actionGet();
+        SearchResponse searchResponse = searchAll();
         Assert.assertEquals(3, searchResponse.getHits().getTotalHits());
     }
 
@@ -680,16 +596,7 @@ public class TestAutomaticIndexing {
         assertNumberOfCommandProcessed(facetedTags ? 1 : 3); // doc, tagging relation and tag
 
         startTransaction();
-        SearchResponse searchResponse = esa.getClient()
-                                           .prepareSearch(IDX_NAME)
-                                           .setTypes(TYPE_NAME)
-                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                           .setFrom(0)
-                                           .setSize(60)
-                                           .setQuery(QueryBuilders.termQuery("ecm:tag", "mytag"))
-                                           .execute()
-                                           .actionGet();
-        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        SearchResponse searchResponse = search(QueryBuilders.termQuery("ecm:tag", "mytag"));
 
         tagService.tag(session, doc.getId(), "mytagbis");
         session.save();
@@ -698,15 +605,7 @@ public class TestAutomaticIndexing {
         assertNumberOfCommandProcessed(facetedTags ? 1 : 3); // doc
 
         startTransaction();
-        searchResponse = esa.getClient()
-                            .prepareSearch(IDX_NAME)
-                            .setTypes(TYPE_NAME)
-                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                            .setFrom(0)
-                            .setSize(60)
-                            .setQuery(QueryBuilders.termQuery("ecm:tag", "mytagbis"))
-                            .execute()
-                            .actionGet();
+        searchResponse = search(QueryBuilders.termQuery("ecm:tag", "mytagbis"));
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
         tagService.untag(session, doc.getId(), "mytag");
@@ -716,25 +615,9 @@ public class TestAutomaticIndexing {
         assertNumberOfCommandProcessed(facetedTags ? 1 : 2); // still doc
 
         startTransaction();
-        searchResponse = esa.getClient()
-                            .prepareSearch(IDX_NAME)
-                            .setTypes(TYPE_NAME)
-                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                            .setFrom(0)
-                            .setSize(60)
-                            .setQuery(QueryBuilders.termQuery("ecm:tag", "mytagbis"))
-                            .execute()
-                            .actionGet();
+        searchResponse = search(QueryBuilders.termQuery("ecm:tag", "mytagbis"));
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
-        searchResponse = esa.getClient()
-                            .prepareSearch(IDX_NAME)
-                            .setTypes(TYPE_NAME)
-                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                            .setFrom(0)
-                            .setSize(60)
-                            .setQuery(QueryBuilders.termQuery("ecm:tag", "mytag"))
-                            .execute()
-                            .actionGet();
+        searchResponse = search(QueryBuilders.termQuery("ecm:tag", "mytag"));
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
     }
 

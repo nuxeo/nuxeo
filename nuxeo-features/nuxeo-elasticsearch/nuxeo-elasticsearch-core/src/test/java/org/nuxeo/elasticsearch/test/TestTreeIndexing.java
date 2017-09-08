@@ -18,9 +18,12 @@
  */
 package org.nuxeo.elasticsearch.test;
 
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -64,7 +67,7 @@ import javax.inject.Inject;
 import static org.junit.Assume.assumeTrue;
 
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class })
+@Features({RepositoryElasticSearchFeature.class})
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestTreeIndexing {
 
@@ -148,15 +151,21 @@ public class TestTreeIndexing {
 
         startTransaction();
         // check indexing at ES level
-        SearchResponse searchResponse = esa.getClient()
-                                           .prepareSearch(IDX_NAME)
-                                           .setTypes(TYPE_NAME)
-                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                           .setFrom(0)
-                                           .setSize(60)
-                                           .execute()
-                                           .actionGet();
+        SearchResponse searchResponse = searchAll();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
+    }
+
+    protected SearchResponse searchAll() {
+        SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .source(new SearchSourceBuilder().from(0).size(60));
+        return esa.getClient().search(request);
+    }
+
+    protected SearchResponse search(QueryBuilder query) {
+        SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .source(new SearchSourceBuilder().from(0).size(60));
+        request.source(new SearchSourceBuilder().query(query));
+        return esa.getClient().search(request);
     }
 
     @Test
@@ -164,13 +173,7 @@ public class TestTreeIndexing {
         buildAndIndexTree();
 
         // check sub tree search
-        SearchResponse searchResponse = esa.getClient()
-                                           .prepareSearch(IDX_NAME)
-                                           .setTypes(TYPE_NAME)
-                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                           .setQuery(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folder2"))
-                                           .execute()
-                                           .actionGet();
+        SearchResponse searchResponse = search(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folder2"));
         Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
     }
 
@@ -188,14 +191,7 @@ public class TestTreeIndexing {
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
-        SearchResponse searchResponse = esa.getClient()
-                                           .prepareSearch(IDX_NAME)
-                                           .setTypes(TYPE_NAME)
-                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                           .setFrom(0)
-                                           .setSize(60)
-                                           .execute()
-                                           .actionGet();
+        SearchResponse searchResponse = searchAll();
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
     }
 
@@ -221,42 +217,17 @@ public class TestTreeIndexing {
         }
 
         startTransaction();
-        SearchResponse searchResponse = esa.getClient()
-                                           .prepareSearch(IDX_NAME)
-                                           .setTypes(TYPE_NAME)
-                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                                           .setFrom(0)
-                                           .setSize(60)
-                                           .execute()
-                                           .actionGet();
+        SearchResponse searchResponse = searchAll();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
         // check sub tree search
-        searchResponse = esa.getClient()
-                            .prepareSearch(IDX_NAME)
-                            .setTypes(TYPE_NAME)
-                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                            .setQuery(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folder2"))
-                            .execute()
-                            .actionGet();
+        searchResponse = search(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folder2"));
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
 
-        searchResponse = esa.getClient()
-                            .prepareSearch(IDX_NAME)
-                            .setTypes(TYPE_NAME)
-                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                            .setQuery(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folderA"))
-                            .execute()
-                            .actionGet();
+        searchResponse = search(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folderA"));
         Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
 
-        searchResponse = esa.getClient()
-                            .prepareSearch(IDX_NAME)
-                            .setTypes(TYPE_NAME)
-                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                            .setQuery(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1"))
-                            .execute()
-                            .actionGet();
+        searchResponse = search(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1"));
         Assert.assertEquals(9, searchResponse.getHits().getTotalHits());
 
     }

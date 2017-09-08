@@ -19,14 +19,11 @@
 
 package org.nuxeo.elasticsearch.test;
 
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,15 +42,20 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 /**
  * Test servcie declaration as well as basic indexing API
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy({ "org.nuxeo.elasticsearch.core:disable-listener-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml" })
+@Features({RepositoryElasticSearchFeature.class})
+@LocalDeploy({"org.nuxeo.elasticsearch.core:disable-listener-contrib.xml",
+        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml"})
 public class TestManualIndexing {
 
     private static final String IDX_NAME = "nxutest";
@@ -120,14 +122,14 @@ public class TestManualIndexing {
         assertNumberOfCommandProcessed(1);
 
         esa.refresh();
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .source(new SearchSourceBuilder().from(0).size(60));
+        SearchResponse searchResponse = esa.getClient().search(request);
         // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
-                60).execute().actionGet();
+        request.source(new SearchSourceBuilder().query(QueryBuilders.matchQuery("ecm:title", "TestMe")));
+        searchResponse = esa.getClient().search(request);
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
     }
 
@@ -149,13 +151,13 @@ public class TestManualIndexing {
         session.save();
 
         // only one doc should be indexed for now
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .source(new SearchSourceBuilder().from(0).size(60));
+        SearchResponse searchResponse = esa.getClient().search(request);
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
-                60).execute().actionGet();
+        request.source(new SearchSourceBuilder().query(QueryBuilders.matchQuery("ecm:title", "TestMe")));
+        searchResponse = esa.getClient().search(request);
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
 
         // now commit and wait for post commit indexing
@@ -171,13 +173,11 @@ public class TestManualIndexing {
 
         // both docs are here
         startTransaction();
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(
-                0).setSize(60).execute().actionGet();
+        request.source(new SearchSourceBuilder().query(QueryBuilders.matchAllQuery()));
+        searchResponse = esa.getClient().search(request);
         // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
-                60).execute().actionGet();
+        request.source(new SearchSourceBuilder().query(QueryBuilders.matchQuery("ecm:title", "TestMe")));
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
     }
 

@@ -23,9 +23,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -106,10 +109,15 @@ public class TestFetchDocumentsFromEs {
         TransactionHelper.startTransaction();
 
         // check indexing
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        SearchResponse searchResponse = searchAll();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
+    }
+
+    protected SearchResponse searchAll() {
+        SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .source(new SearchSourceBuilder().from(0).size(60));
+        return esa.getClient().search(request);
     }
 
     @Test

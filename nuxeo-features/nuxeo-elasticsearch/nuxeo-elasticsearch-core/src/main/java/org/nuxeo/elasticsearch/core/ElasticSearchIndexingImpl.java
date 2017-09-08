@@ -36,15 +36,23 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
+import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.bulk.BulkItemResponse;
+import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
+import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.common.io.stream.BytesStreamOutput;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.VersionType;
@@ -53,6 +61,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
@@ -152,7 +161,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     void processBulkIndexCommands(List<IndexingCommand> cmds) {
-        BulkRequestBuilder bulkRequest = esa.getClient().prepareBulk();
+        BulkRequest bulkRequest = new BulkRequest();
         Set<String> docIds = new HashSet<>(cmds.size());
         int bulkSize = 0;
         final int maxBulkSize = getMaxBulkSize();
@@ -165,9 +174,9 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                 continue;
             }
             try {
-                IndexRequestBuilder idxRequest = buildEsIndexingRequest(cmd);
+                IndexRequest idxRequest = buildEsIndexingRequest(cmd);
                 if (idxRequest != null) {
-                    bulkSize += idxRequest.request().source().length();
+                    bulkSize += idxRequest.source().length();
                     bulkRequest.add(idxRequest);
                 }
             } catch (ConcurrentUpdateException e) {
@@ -180,7 +189,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             if (bulkSize > maxBulkSize) {
                 log.warn("Max bulk size reached " + bulkSize + ", sending bulk command");
                 sendBulkCommand(bulkRequest, bulkSize);
-                bulkRequest = esa.getClient().prepareBulk();
+                bulkRequest = new BulkRequest();
                 bulkSize = 0;
             }
         }
@@ -192,15 +201,15 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         return Integer.parseInt(value);
     }
 
-    void sendBulkCommand(BulkRequestBuilder bulkRequest, int bulkSize) {
+    void sendBulkCommand(BulkRequest bulkRequest, int bulkSize) {
         if (bulkRequest.numberOfActions() > 0) {
             if (log.isDebugEnabled()) {
                 logDebugMessageTruncated(String.format(
                         "Index %d docs (%d bytes) in bulk request: curl -XPOST 'http://localhost:9200/_bulk' -d '%s'",
                         bulkRequest.numberOfActions(), bulkSize,
-                        bulkRequest.request().requests().toString()), MAX_CURL_LINE);
+                        bulkRequest.requests().toString()), MAX_CURL_LINE);
             }
-            BulkResponse response = bulkRequest.execute().actionGet();
+            BulkResponse response = esa.getClient().bulk(bulkRequest);
             if (response.hasFailures()) {
                 logBulkFailure(response);
             }
@@ -263,7 +272,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     void processIndexCommand(IndexingCommand cmd) {
-        IndexRequestBuilder request;
+        IndexRequest request;
         try {
             request = buildEsIndexingRequest(cmd);
         } catch (DocumentNotFoundException e) {
@@ -279,10 +288,10 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         if (log.isDebugEnabled()) {
             logDebugMessageTruncated(String.format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
                     esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE, cmd.getTargetDocumentId(),
-                    request.request().toString()), MAX_CURL_LINE);
+                    request.toString()), MAX_CURL_LINE);
         }
         try {
-            request.execute().actionGet();
+            esa.getClient().index(request);
         } catch (VersionConflictEngineException e) {
             SequenceTracer.addNote("Ignore indexing of doc " + cmd.getTargetDocumentId());
             log.info("Ignore indexing of doc " + cmd.getTargetDocumentId()
@@ -309,12 +318,12 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     void processDeleteCommandNonRecursive(IndexingCommand cmd) {
         String indexName = esa.getIndexNameForRepository(cmd.getRepositoryName());
-        DeleteRequestBuilder request = esa.getClient().prepareDelete(indexName, DOC_TYPE, cmd.getTargetDocumentId());
+        DeleteRequest request = new DeleteRequest(indexName, DOC_TYPE, cmd.getTargetDocumentId());
         if (log.isDebugEnabled()) {
             log.debug(String.format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s'", indexName,
                     DOC_TYPE, cmd.getTargetDocumentId()));
         }
-        request.execute().actionGet();
+        esa.getClient().delete(request);
     }
 
     void processDeleteCommandRecursive(IndexingCommand cmd) {
@@ -329,37 +338,32 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             return;
         }
         // Refresh index before bulk delete
-        esa.getClient().admin().indices().prepareRefresh(indexName).get();
+        esa.getClient().refresh(indexName);
 
         // Run the scroll query
         QueryBuilder query = QueryBuilders.constantScoreQuery(QueryBuilders.termQuery(CHILDREN_FIELD, docPath));
         TimeValue keepAlive = TimeValue.timeValueMinutes(1);
-        SearchRequestBuilder request = esa.getClient()
-                                          .prepareSearch(indexName)
-                                          .setTypes(DOC_TYPE)
-                                          .setScroll(keepAlive)
-                                          .setSize(100)
-                                          .setFetchSource(false)
-                                          .setQuery(query);
+        SearchSourceBuilder search = new SearchSourceBuilder().size(100).query(query).fetchSource(false);
+        SearchRequest request = new SearchRequest(indexName).scroll(keepAlive).source(search);
         if (log.isDebugEnabled()) {
             log.debug(String.format(
                     "Search with scroll request: curl -XGET 'http://localhost:9200/%s/%s/_search?scroll=%s' -d '%s'",
                     indexName, DOC_TYPE, keepAlive, query.toString()));
         }
-        for (SearchResponse response = request.execute().actionGet(); //
+        for (SearchResponse response = esa.getClient().search(request); //
         response.getHits().getHits().length > 0; //
         response = runNextScroll(response, keepAlive)) {
 
             // Build bulk delete request
-            BulkRequestBuilder bulkBuilder = esa.getClient().prepareBulk();
+            BulkRequest bulkRequest = new BulkRequest();
             for (SearchHit hit : response.getHits().getHits()) {
-                bulkBuilder.add(esa.getClient().prepareDelete(hit.getIndex(), hit.getType(), hit.getId()));
+                bulkRequest.add(new DeleteRequest(hit.getIndex(), hit.getType(), hit.getId()));
             }
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Bulk delete request on %s elements", bulkBuilder.numberOfActions()));
+                log.debug(String.format("Bulk delete request on %s elements", bulkRequest.numberOfActions()));
             }
             // Run bulk delete request
-            bulkBuilder.execute().actionGet();
+            esa.getClient().bulk(bulkRequest);
         }
     }
 
@@ -369,7 +373,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                     "Scroll request: -XGET 'localhost:9200/_search/scroll' -d '{\"scroll\": \"%s\", \"scroll_id\": \"%s\" }'",
                     keepAlive, response.getScrollId()));
         }
-        return esa.getClient().prepareSearchScroll(response.getScrollId()).setScroll(keepAlive).execute().actionGet();
+        SearchScrollRequest request = new SearchScrollRequest(response.getScrollId()).scroll(keepAlive);
+        return esa.getClient().searchScroll(request);
     }
 
     /**
@@ -377,12 +382,12 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
      */
     String getPathOfDocFromEs(String repository, String docId) {
         String indexName = esa.getIndexNameForRepository(repository);
-        GetRequestBuilder getRequest = esa.getClient().prepareGet(indexName, DOC_TYPE, docId).setStoredFields(PATH_FIELD);
+        GetRequest request = new GetRequest(indexName, DOC_TYPE, docId).storedFields(PATH_FIELD);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Get path of doc: curl -XGET 'http://localhost:9200/%s/%s/%s?fields=%s'", indexName,
                     DOC_TYPE, docId, PATH_FIELD));
         }
-        GetResponse ret = getRequest.execute().actionGet();
+        GetResponse ret = esa.getClient().get(request);
         if (!ret.isExists() || ret.getField(PATH_FIELD) == null) {
             // doc not found
             return null;
@@ -395,7 +400,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
      *
      * @throws java.lang.IllegalStateException if the command is not attached to a session
      */
-    IndexRequestBuilder buildEsIndexingRequest(IndexingCommand cmd) {
+    IndexRequest buildEsIndexingRequest(IndexingCommand cmd) {
         DocumentModel doc = cmd.getTargetDocument();
         if (doc == null) {
             return null;
@@ -405,14 +410,12 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             OutputStream out = new BytesStreamOutput();
             JsonGenerator jsonGen = factory.createJsonGenerator(out);
             jsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
-            IndexRequestBuilder ret = esa.getClient()
-                                         .prepareIndex(esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE,
-                                                 cmd.getTargetDocumentId())
-                                         .setSource(jsonBuilder(out));
+            IndexRequest request = new IndexRequest(esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE,
+                    cmd.getTargetDocumentId()).source(jsonBuilder(out));
             if (useExternalVersion && cmd.getOrder() > 0) {
-                ret.setVersionType(VersionType.EXTERNAL).setVersion(cmd.getOrder());
+                request.versionType(VersionType.EXTERNAL).version(cmd.getOrder());
             }
-            return ret;
+            return request;
         } catch (IOException e) {
             throw new NuxeoException("Unable to create index request for Document " + cmd.getTargetDocumentId(), e);
         }

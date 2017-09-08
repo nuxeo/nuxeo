@@ -20,21 +20,23 @@
 
 package org.nuxeo.elasticsearch.core;
 
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
-
-import java.util.List;
-
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.ClearScrollRequest;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchScrollRequestBuilder;
+import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.filter.InternalFilter;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -51,10 +53,9 @@ import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
-import com.codahale.metrics.Timer.Context;
+import java.util.List;
+
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 
 /**
  * @since 6.0
@@ -95,11 +96,11 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     @Deprecated
     @Override
     public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
-            SortInfo... sortInfos) {
+                                   SortInfo... sortInfos) {
         NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder)
-                                                          .limit(limit)
-                                                          .offset(offset)
-                                                          .addSort(sortInfos);
+                .limit(limit)
+                .offset(offset)
+                .addSort(sortInfos);
         return query(query);
     }
 
@@ -150,11 +151,13 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
                     "Clear scroll : curl -XDELETE 'http://localhost:9200/_search/scroll' -d '{\"scroll_id\" : [\"%s\"]}'",
                     scrollId));
         }
-        esa.getClient().prepareClearScroll().addScrollId(scrollId).execute().actionGet();
+        ClearScrollRequest request = new ClearScrollRequest();
+        request.addScrollId(scrollId);
+        esa.getClient().clearScroll(request);
     }
 
     protected EsScrollResult getScrollResults(NxQueryBuilder queryBuilder, SearchResponse response, String scrollId,
-            long keepAlive) {
+                                              long keepAlive) {
         if (queryBuilder.returnsDocuments()) {
             DocumentModelListImpl docs = getDocumentModels(queryBuilder, response);
             return new EsScrollResult(docs, response, queryBuilder, scrollId, keepAlive);
@@ -216,21 +219,21 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     }
 
     protected SearchResponse search(NxQueryBuilder query) {
-        try (Context ignored = searchTimer.time()){
+        try (Context ignored = searchTimer.time()) {
             SearchType searchType = SearchType.DFS_QUERY_THEN_FETCH;
-            SearchRequestBuilder request = buildEsSearchRequest(query, searchType);
+            SearchRequest request = buildEsSearchRequest(query, searchType);
             logSearchRequest(request, query, searchType);
-            SearchResponse response = request.execute().actionGet();
+            SearchResponse response = esa.getClient().search(request);
             logSearchResponse(response);
             return response;
         }
     }
 
     protected SearchResponse searchScroll(NxQueryBuilder query, SearchType searchType, long keepAlive) {
-        try (Context ignored = searchTimer.time()){
-            SearchRequestBuilder request = buildEsSearchScrollRequest(query, searchType, keepAlive);
-            logSearchRequest(request, query, searchType, keepAlive);
-            SearchResponse response = request.execute().actionGet();
+        try (Context ignored = searchTimer.time()) {
+            SearchRequest request = buildEsSearchScrollRequest(query, searchType, keepAlive);
+            logSearchRequest(request, query, searchType);
+            SearchResponse response = esa.getClient().search(request);
             logSearchResponse(response);
             return response;
         }
@@ -238,34 +241,36 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
 
     protected SearchResponse nextScroll(String scrollId, long keepAlive) {
         try (Context ignored = scrollTimer.time()) {
-            SearchScrollRequestBuilder request = buildEsScrollRequest(scrollId, keepAlive);
+            SearchScrollRequest request = buildEsScrollRequest(scrollId, keepAlive);
             logScrollRequest(scrollId, keepAlive);
-            SearchResponse response = request.execute().actionGet();
+            SearchResponse response = esa.getClient().searchScroll(request);
             logSearchResponse(response);
             return response;
         }
     }
 
-    protected SearchRequestBuilder buildEsSearchRequest(NxQueryBuilder query, SearchType searchType) {
-        SearchRequestBuilder request = esa.getClient()
-                                          .prepareSearch(esa.getSearchIndexes(query.getSearchRepositories()))
-                                          .setTypes(DOC_TYPE)
-                                          .setSearchType(searchType);
-        query.updateRequest(request);
+    protected SearchRequest buildEsSearchRequest(NxQueryBuilder query, SearchType searchType) {
+        SearchRequest request = new SearchRequest(esa.getSearchIndexes(query.getSearchRepositories()));
+        request.searchType(searchType);
+        SearchSourceBuilder search = new SearchSourceBuilder();
+        query.updateRequest(search);
+        request.source(search);
         if (query.isFetchFromElasticsearch()) {
             // fetch the _source without the binaryfulltext field
-            request.setFetchSource(esa.getIncludeSourceFields(), esa.getExcludeSourceFields());
+            search.fetchSource(esa.getIncludeSourceFields(), esa.getExcludeSourceFields());
         }
         return request;
     }
 
-    protected SearchRequestBuilder buildEsSearchScrollRequest(NxQueryBuilder query, SearchType searchType,
-            long keepAlive) {
-        return buildEsSearchRequest(query, searchType).setScroll(new TimeValue(keepAlive)).setSize(query.getLimit());
+    protected SearchRequest buildEsSearchScrollRequest(NxQueryBuilder query, SearchType searchType, long keepAlive) {
+        SearchRequest request = buildEsSearchRequest(query, searchType);
+        request.scroll(new TimeValue(keepAlive));
+        return request;
     }
 
-    protected SearchScrollRequestBuilder buildEsScrollRequest(String scrollId, long keepAlive) {
-        return esa.getClient().prepareSearchScroll(scrollId).setScroll(new TimeValue(keepAlive));
+    protected SearchScrollRequest buildEsScrollRequest(String scrollId, long keepAlive) {
+        SearchScrollRequest request = new SearchScrollRequest(scrollId).scroll(new TimeValue(keepAlive));
+        return request;
     }
 
     protected void logSearchResponse(SearchResponse response) {
@@ -274,18 +279,16 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         }
     }
 
-    protected void logSearchRequest(SearchRequestBuilder request, NxQueryBuilder query, SearchType searchType) {
-        logSearchRequest(request, query, searchType, null);
-    }
-
-    protected void logSearchRequest(SearchRequestBuilder request, NxQueryBuilder query, SearchType searchType,
-            Long keepAlive) {
+    protected void logSearchRequest(SearchRequest request, NxQueryBuilder query, SearchType searchType) {
         if (log.isDebugEnabled()) {
-            String scroll = keepAlive != null ? "&scroll=" + keepAlive : "";
+            String scroll = "";
+            if (request.scroll() != null) {
+                scroll = "&scroll=" + request.scroll().toString();
+            }
             log.debug(String.format(
                     "Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty&search_type=%s%s' -d '%s'",
-                    getSearchIndexesAsString(query), DOC_TYPE, searchType.toString().toLowerCase(), scroll,
-                    request.toString()));
+                    getSearchIndexesAsString(query), DOC_TYPE, searchType.toString().toLowerCase(),
+                    scroll, request.source().toString()));
         }
     }
 

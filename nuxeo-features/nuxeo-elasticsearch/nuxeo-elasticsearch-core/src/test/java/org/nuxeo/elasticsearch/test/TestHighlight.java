@@ -20,17 +20,7 @@
 
 package org.nuxeo.elasticsearch.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
-import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,11 +39,21 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @since 9.1
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class })
+@Features({RepositoryElasticSearchFeature.class})
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-highlight-contrib.xml")
 public class TestHighlight {
 
@@ -106,12 +106,12 @@ public class TestHighlight {
         waitForCompletion();
         TransactionHelper.startTransaction();
 
-        SearchRequestBuilder request = esa.getClient().prepareSearch("nxutest").setTypes("doc");
+        SearchSourceBuilder request = new SearchSourceBuilder();
         List<String> highlightFields = Arrays.asList("dc:title", "ecm:binarytext");
 
         NxQueryBuilder queryBuilder = new NxQueryBuilder(session)
-                             .nxql("SELECT * FROM Document WHERE ecm:fulltext='search'")
-                             .highlight(highlightFields);
+                .nxql("SELECT * FROM Document WHERE ecm:fulltext='search'")
+                .highlight(highlightFields);
         queryBuilder.updateRequest(request);
         DocumentModelList ret = ess.query(queryBuilder);
 
@@ -173,13 +173,13 @@ public class TestHighlight {
         waitForCompletion();
         TransactionHelper.startTransaction();
 
-        SearchRequestBuilder request = esa.getClient().prepareSearch("nxutest").setTypes("doc");
+        SearchSourceBuilder request = new SearchSourceBuilder();
 
         List<String> highlightFields = Arrays.asList("dc:title", "ecm:binarytext");
 
         NxQueryBuilder queryBuilder = new NxQueryBuilder(session)
-                             .nxql("SELECT * FROM Document WHERE ecm:fulltext='vehicula'")
-                             .highlight(highlightFields);
+                .nxql("SELECT * FROM Document WHERE ecm:fulltext='vehicula'")
+                .highlight(highlightFields);
         queryBuilder.updateRequest(request);
         DocumentModelList ret = ess.query(queryBuilder);
 

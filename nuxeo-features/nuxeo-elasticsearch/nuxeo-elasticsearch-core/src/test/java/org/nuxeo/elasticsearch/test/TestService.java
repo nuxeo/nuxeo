@@ -32,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -66,7 +67,7 @@ public class TestService {
         Assert.assertNotNull(esi);
         Assert.assertNotNull(esa);
 
-        Client client = esa.getClient();
+        ESClient client = esa.getClient();
         Assert.assertNotNull(client);
 
         Assert.assertEquals(0, esa.getTotalCommandProcessed());
@@ -86,9 +87,7 @@ public class TestService {
         ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
 
-        NodesInfoResponse nodeInfoResponse = esa.getClient().admin().cluster().nodesInfo(new NodesInfoRequest()).actionGet();
-
-        Assert.assertEquals(1, nodeInfoResponse.getNodes().size());
+        Assert.assertTrue(esa.getClient().waitForYellowStatus(null, 10));
     }
 
     @Test
