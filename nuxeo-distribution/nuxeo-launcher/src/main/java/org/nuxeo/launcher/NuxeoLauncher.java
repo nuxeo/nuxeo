@@ -262,6 +262,13 @@ public abstract class NuxeoLauncher {
     private static final String OPTION_CLID_DESC = "Use the provided instance CLID file";
 
     /**
+     * @since 8.10-HF15
+     */
+    protected static final String OPTION_RENEW = "renew";
+
+    private static final String OPTION_RENEW_DESC = "Renew the current CLID";
+
+    /**
      * @since 7.4
      */
     protected static final String OPTION_ENCRYPT = "encrypt";
@@ -563,8 +570,14 @@ public abstract class NuxeoLauncher {
             + "        nuxeoctl mp-list|mp-listall|mp-init|mp-update [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json]\n\n"
             + "        nuxeoctl mp-reset|mp-purge|mp-hotfix|mp-upgrade [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--accept <true|false|yes|no|ask>]\n\n"
             + "        nuxeoctl mp-add|mp-install|mp-uninstall|mp-remove|mp-set|mp-request [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--nodeps|--relax <true|false|yes|no|ask>|--accept <true|false|yes|no|ask>|-s|-im]\n\n"
-            + "        nuxeoctl register [<username> [<project> [<type> <description>] [<pwd>]]]\n\n"
-            + "        nuxeoctl register-trial [<email> <company> <project> <description> [<pwd>]]\n\n"
+            + "        nuxeoctl register [<username> [<project> [<type> <description>] [<pwd>]]]\n"
+            + "                Register an instance with Nuxeo Online Services.\n\n"
+            + "        nuxeoctl register-trial [<email> <company> <project> <description> [<pwd>]]\n"
+            + "                Register a trial instance with Nuxeo Online Services.\n\n"
+            + "        nuxeoctl register --clid <arg>\n"
+            + "                Register an instance according to the given CLID file.\n\n"
+            + "        nuxeoctl register --renew [--clid <arg>]\n"
+            + "                Renew an instance registration with Nuxeo Online Services.\n\n"
             + "        nuxeoctl pack <target> [-d [<categories>]|-q]\n\n" //
             + "OPTIONS";
 
@@ -964,6 +977,8 @@ public abstract class NuxeoLauncher {
                 .build());
         // Instance CLID option
         options.addOption(Option.builder().longOpt(OPTION_CLID).desc(OPTION_CLID_DESC).hasArg().build());
+        // Register renew option
+        options.addOption(Option.builder().longOpt(OPTION_RENEW).desc(OPTION_RENEW_DESC).build());
         { // Output options (mutually exclusive)
             OptionGroup outputOptions = new OptionGroup();
             // XML option
@@ -1255,7 +1270,7 @@ public abstract class NuxeoLauncher {
         } else if (launcher.commandIs("config")) {
             launcher.config();
         } else if (launcher.commandIs("register")) {
-            commandSucceeded = launcher.registerRemoteInstance();
+            commandSucceeded = launcher.register();
         } else if (launcher.commandIs("register-trial")) {
             commandSucceeded = launcher.registerTrial();
         } else if (launcher.commandIs("connect-report")) {
@@ -1499,14 +1514,15 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Register the instance, generating the CLID.
+     * Register the instance, generating the CLID or using the passed one; or renew a registration.
      *
      * <pre>
      * {@code
      * nuxeoctl register [<username> [<project> [<type> <description>] [pwd]]]
-     * 0/1 param:        [<username>]
-     * 2/3 params:        <username> <project> [pwd]
-     * 4/5 params:        <username> <project> <type> <description> [pwd]
+     *
+     * nuxeoctl register --clid <file>
+     *
+     * nuxeoctl register --renew [--clid <file>]
      * }
      * </pre>
      *
@@ -1515,7 +1531,50 @@ public abstract class NuxeoLauncher {
      * @return true if succeed
      * @since 8.3
      */
-    public boolean registerRemoteInstance() throws IOException, ConfigurationException, PackageException {
+    public boolean register() throws IOException, ConfigurationException, PackageException {
+        // register --renew
+        if (cmdLine.hasOption(OPTION_RENEW)) {
+            if (params.length != 0) {
+                throw new ConfigurationException("Unexpected arguments for --renew.");
+            }
+            return registerRenew();
+        }
+
+        // register --clid <file>
+        if (cmdLine.hasOption(OPTION_CLID) && params.length == 0) {
+            return registerSaveCLID();
+        }
+
+        return registerRemoteInstance();
+    }
+
+    protected boolean registerRenew() throws IOException, PackageException {
+        try {
+            getConnectRegistrationBroker().remoteRenewRegistration();
+        } catch (RegistrationException e) {
+            log.debug(e, e);
+            errorValue = EXIT_CODE_ERROR;
+            return false;
+        }
+        log.info("Server registration renewed");
+        return true;
+    }
+
+    protected boolean registerSaveCLID() throws IOException, ConfigurationException, PackageException {
+        // at this point the --clid option has already been processed and the file's CLID loaded
+        try {
+            getConnectBroker().saveCLID();
+        } catch (NoCLID e) {
+            throw new ConfigurationException(e);
+        }
+        log.info("Server registration saved");
+        return true;
+    }
+
+    protected boolean registerRemoteInstance() throws IOException, ConfigurationException, PackageException {
+        // 0/1 param: [<username>]
+        // 2/3 params: <username> <project> [pwd]
+        // 4/5 params: <username> <project> <type> <description> [pwd]
         if (params.length > 5) {
             throw new ConfigurationException("Wrong number of arguments.");
         }
@@ -1555,6 +1614,12 @@ public abstract class NuxeoLauncher {
             description = promptDescription();
         }
 
+        return registerRemoteInstance(username, password, project, type, description);
+    }
+
+    protected boolean registerRemoteInstance(String username, char[] password, ConnectProject project,
+            NuxeoClientInstanceType type, String description)
+            throws IOException, ConfigurationException, PackageException {
         getConnectRegistrationBroker().registerRemote(username, password, project.getUuid(), type, description);
         log.info(String.format("Server registered to %s for project %s\nType: %s\nDescription: %s", username, project,
                 type, description));

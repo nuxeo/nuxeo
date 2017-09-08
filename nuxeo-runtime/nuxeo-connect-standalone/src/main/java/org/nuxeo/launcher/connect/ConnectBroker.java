@@ -152,6 +152,13 @@ public class ConnectBroker {
         }
     }
 
+    /**
+     * @since 8.10-HF15
+     */
+    public void saveCLID() throws IOException, NoCLID {
+        LogicalInstanceIdentifier.instance().save();
+    }
+
     public StandaloneUpdateService getUpdateService() {
         return service;
     }
