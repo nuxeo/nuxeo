@@ -19,13 +19,6 @@
  */
 package org.nuxeo.elasticsearch.io;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.common.bytes.BytesArray;
@@ -43,6 +36,13 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.api.Framework;
+
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Read a DocumentModel from an ES Json export.
@@ -115,11 +115,11 @@ public class JsonDocumentModelReader {
             }
             if ("ecm".equals(schema)) {
                 switch (prop) {
-                case "ecm:currentLifeCycleState":
-                    doc.prefetchCurrentLifecycleState((String) value);
-                    break;
-                default:
-                    // others not taken in account
+                    case "ecm:currentLifeCycleState":
+                        doc.prefetchCurrentLifecycleState((String) value);
+                        break;
+                    default:
+                        // others not taken in account
                 }
                 continue;
             }

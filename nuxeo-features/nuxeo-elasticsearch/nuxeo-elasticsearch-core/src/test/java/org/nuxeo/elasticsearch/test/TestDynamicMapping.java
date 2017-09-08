@@ -19,8 +19,6 @@
 
 package org.nuxeo.elasticsearch.test;
 
-import javax.inject.Inject;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,12 +33,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import javax.inject.Inject;
+
 /**
  *
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class })
+@Features({RepositoryElasticSearchFeature.class})
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-dynamic-mapping-contrib.xml")
 public class TestDynamicMapping extends TestMapping {
 

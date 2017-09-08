@@ -1,13 +1,10 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.core.listener">
 
-  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
-    point="listener">
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
 
-    <listener name="elasticSearchInlineListener" async="false"
-      enabled="${elasticsearch.enabled:=true}"
-      postCommit="false" priority="500"
-      class="org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener">
+    <listener name="elasticSearchInlineListener" async="false" enabled="${elasticsearch.enabled:=true}"
+      postCommit="false" priority="500" class="org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener">
       <event>beforeDocumentModification</event>
       <event>documentCreated</event>
       <event>documentImported</event>

@@ -18,20 +18,6 @@
  */
 package org.nuxeo.elasticsearch.io.marshallers.json;
 
-import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.FETCH_PROPERTIES;
-import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.MAX_DEPTH_PARAM;
-import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.TRANSLATE_PROPERTIES;
-import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
-import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
-
-import java.io.Closeable;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.ws.rs.core.MediaType;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerationException;
@@ -54,6 +40,20 @@ import org.nuxeo.ecm.platform.query.core.BucketRange;
 import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 import org.nuxeo.elasticsearch.aggregate.SignificantTermAggregate;
 import org.nuxeo.elasticsearch.aggregate.TermAggregate;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.ws.rs.core.MediaType;
+
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.FETCH_PROPERTIES;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.MAX_DEPTH_PARAM;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.TRANSLATE_PROPERTIES;
+import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
+import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 /**
  * @since 8.4
@@ -102,14 +102,14 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
             Field field = schemaManager.getField(fieldName);
             if (field != null) {
                 try (Closeable resource = ctx.wrap()
-                                             .with(FETCH_PROPERTIES + "." + DocumentModelJsonWriter.ENTITY_TYPE,
-                                                     "properties")
-                                             .with(FETCH_PROPERTIES + "." + DirectoryEntryJsonWriter.ENTITY_TYPE,
-                                                     "parent")
-                                             .with(TRANSLATE_PROPERTIES + "." + DirectoryEntryJsonWriter.ENTITY_TYPE,
-                                                     "label")
-                                             .with(MAX_DEPTH_PARAM, "max")
-                                             .open()) {
+                        .with(FETCH_PROPERTIES + "." + DocumentModelJsonWriter.ENTITY_TYPE,
+                                "properties")
+                        .with(FETCH_PROPERTIES + "." + DirectoryEntryJsonWriter.ENTITY_TYPE,
+                                "parent")
+                        .with(TRANSLATE_PROPERTIES + "." + DirectoryEntryJsonWriter.ENTITY_TYPE,
+                                "label")
+                        .with(MAX_DEPTH_PARAM, "max")
+                        .open()) {
 
                     writeBuckets("buckets", agg.getBuckets(), field, jg);
                     writeBuckets("extendedBuckets", agg.getExtendedBuckets(), field, jg);

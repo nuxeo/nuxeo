@@ -19,14 +19,9 @@
  */
 package org.nuxeo.elasticsearch.test;
 
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Assert;
@@ -47,8 +42,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class })
+@Features({RepositoryElasticSearchFeature.class})
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestFetchDocumentsFromEs {
 
@@ -167,7 +166,7 @@ public class TestFetchDocumentsFromEs {
         for (SearchHit sh : result.getElasticsearchResponse().getHits()) {
             String path = (String) sh.getSource().get("ecm:path");
             int pathDepth = (int) sh.getSource().get("ecm:path@depth");
-            String[] split =path.split("/");
+            String[] split = path.split("/");
             Assert.assertEquals(split.length, pathDepth);
             for (int i = 1; i < split.length; i++) {
                 Assert.assertEquals(split[i], sh.getSource().get("ecm:path@level" + i));

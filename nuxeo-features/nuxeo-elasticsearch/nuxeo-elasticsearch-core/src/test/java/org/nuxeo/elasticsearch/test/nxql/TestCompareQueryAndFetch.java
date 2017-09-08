@@ -18,18 +18,6 @@
  */
 package org.nuxeo.elasticsearch.test.nxql;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -58,8 +46,20 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class })
+@Features({RepositoryElasticSearchFeature.class})
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestCompareQueryAndFetch {
@@ -199,7 +199,7 @@ public class TestCompareQueryAndFetch {
     public void testIteratorWithLimit() throws Exception {
         int LIMIT = 5;
         EsResult esRes = ess.queryAndAggregate(new NxQueryBuilder(session).nxql("select ecm:uuid From Document").limit(LIMIT));
-        try(IterableQueryResult res = esRes.getRows()) {
+        try (IterableQueryResult res = esRes.getRows()) {
             // the number of doc in the iterator
             Assert.assertEquals(LIMIT, res.size());
             // the total number of docs that match for the query

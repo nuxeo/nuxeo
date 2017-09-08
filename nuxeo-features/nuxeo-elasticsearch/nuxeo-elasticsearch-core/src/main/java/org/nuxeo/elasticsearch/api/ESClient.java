@@ -18,7 +18,6 @@
  */
 package org.nuxeo.elasticsearch.api;
 
-import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -39,6 +38,7 @@ import org.elasticsearch.client.Client;
  */
 public interface ESClient extends AutoCloseable {
 
+    // TODO: remove this temporary helper
     Client _getClient();
 
 

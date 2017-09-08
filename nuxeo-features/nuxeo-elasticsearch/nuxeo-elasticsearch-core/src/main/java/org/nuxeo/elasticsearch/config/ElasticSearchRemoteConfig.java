@@ -19,10 +19,10 @@
 
 package org.nuxeo.elasticsearch.config;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+
+import java.io.Serializable;
 
 /**
  * XMap descriptor to configure a remote Elasticsearch connection

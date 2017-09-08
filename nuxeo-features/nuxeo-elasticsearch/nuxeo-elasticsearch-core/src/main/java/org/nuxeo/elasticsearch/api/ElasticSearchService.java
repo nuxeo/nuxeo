@@ -50,7 +50,6 @@ public interface ElasticSearchService {
     /**
      * Performs the initial search of a scrollable search request using an {@link NxQueryBuilder}.
      *
-     * @param queryBuilder
      * @param keepAlive the search context lifetime
      * @return an {@link EsScrollResult} including the search results and a scroll id, to be passed to the subsequent
      *         calls to {@link #scroll(EsScrollResult)}
@@ -62,7 +61,7 @@ public interface ElasticSearchService {
      * Retrieves the next batch of results of a scrollable search request for the given {@link EsScrollResult}.
      *
      * @return an {@link EsScrollResult} including the search results and a scroll id, to be passed to the subsequent
-     *         calls to {@link #scroll(EsScrollResult)}
+     *         calls to {code scroll}.
      * @since 8.3
      */
     EsScrollResult scroll(EsScrollResult scrollResult);
@@ -91,6 +90,6 @@ public interface ElasticSearchService {
      */
     @Deprecated
     DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
-            SortInfo... sortInfos);
+                            SortInfo... sortInfos);
 
 }

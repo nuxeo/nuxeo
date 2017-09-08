@@ -29,6 +29,7 @@ import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
  * @since 9.3
  */
 public interface ESClientFactory {
-        ESClient create(ElasticSearchRemoteConfig remoteConfig, ElasticSearchClientConfig clientConfig);
-        ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchClientConfig clientConfig);
+    ESClient create(ElasticSearchRemoteConfig remoteConfig, ElasticSearchClientConfig clientConfig);
+
+    ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchClientConfig clientConfig);
 }

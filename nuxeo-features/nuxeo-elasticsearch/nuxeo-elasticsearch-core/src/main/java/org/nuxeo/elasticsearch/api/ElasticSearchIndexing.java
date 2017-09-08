@@ -20,9 +20,9 @@
 
 package org.nuxeo.elasticsearch.api;
 
-import java.util.List;
-
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
+
+import java.util.List;
 
 /**
  * Interface to process indexing of documents

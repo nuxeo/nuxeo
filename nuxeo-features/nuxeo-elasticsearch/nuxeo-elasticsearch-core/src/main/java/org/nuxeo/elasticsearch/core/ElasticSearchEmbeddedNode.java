@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeValidationException;
+import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.transport.Netty4Plugin;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
@@ -39,7 +40,7 @@ import java.util.Collections;
  */
 public class ElasticSearchEmbeddedNode implements Closeable {
     private static final Log log = LogFactory.getLog(ElasticSearchEmbeddedNode.class);
-    ElasticSearchLocalConfig config;
+    final ElasticSearchLocalConfig config;
     private Node node;
 
     public ElasticSearchEmbeddedNode(ElasticSearchLocalConfig config) {
@@ -72,7 +73,7 @@ public class ElasticSearchEmbeddedNode implements Closeable {
         Settings settings = sBuilder.build();
         log.debug("Using settings: " + settings.toDelimitedString(','));
 
-        Collection plugins = Collections.singletonList(Netty4Plugin.class);
+        Collection<Class<? extends Plugin>> plugins = Collections.singletonList(Netty4Plugin.class);
         try {
             node = new PluginConfigurableNode(settings, plugins);
             node.start();

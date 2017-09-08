@@ -24,6 +24,7 @@ import com.google.inject.Scopes;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
+import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.transport.Netty4Plugin;
 import org.nuxeo.elasticsearch.core.PluginConfigurableNode;
 import org.nuxeo.runtime.api.Framework;
@@ -64,7 +65,7 @@ public class BareElasticSearchFeature extends SimpleFeature {
                 .put("index.number_of_shards", 1)
                 .put("index.number_of_replicas", 1)
                 .build();
-        Collection plugins = Collections.singletonList(Netty4Plugin.class);
+        Collection<Class<? extends Plugin>> plugins = Collections.singletonList(Netty4Plugin.class);
         node = new PluginConfigurableNode(settings, plugins);
         client = node.client();
         super.start(runner);

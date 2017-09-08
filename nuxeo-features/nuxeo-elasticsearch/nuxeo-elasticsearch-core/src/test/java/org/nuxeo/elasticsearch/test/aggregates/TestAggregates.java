@@ -19,22 +19,7 @@
 
 package org.nuxeo.elasticsearch.test.aggregates;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 import org.apache.commons.lang.SystemUtils;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -73,11 +58,24 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy({ "org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
+@Features({RepositoryElasticSearchFeature.class})
+@LocalDeploy({"org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:schemas-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml" })
+        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml"})
 public class TestAggregates {
 
     private static final String IDX_NAME = "nxutest";
@@ -131,7 +129,7 @@ public class TestAggregates {
         aggDef.setProperty("include", "bar*");
         aggDef.setProperty("order", "count asc");
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
-                                                       .addAggregate(AggregateFactory.create(aggDef, null));
+                .addAggregate(AggregateFactory.create(aggDef, null));
 
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
@@ -177,7 +175,7 @@ public class TestAggregates {
         aggDef.setDocumentField("ecm:fulltext");
         aggDef.setSearchField(new FieldDescriptor("advanced_search", "fulltext_agg"));
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
-                                                       .addAggregate(AggregateFactory.create(aggDef, null));
+                .addAggregate(AggregateFactory.create(aggDef, null));
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
         assertEqualsEvenUnderWindows(
@@ -216,7 +214,7 @@ public class TestAggregates {
         aggDef.setProperty("minDocCount", "10");
 
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
-                                                       .addAggregate(AggregateFactory.create(aggDef, null));
+                .addAggregate(AggregateFactory.create(aggDef, null));
 
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
@@ -261,7 +259,7 @@ public class TestAggregates {
         ranges.add(new AggregateRangeDescriptor("big", 6144.0, null));
         aggDef.setRanges(ranges);
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
-                                                       .addAggregate(AggregateFactory.create(aggDef, null));
+                .addAggregate(AggregateFactory.create(aggDef, null));
 
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
@@ -316,7 +314,7 @@ public class TestAggregates {
         ranges.add(new AggregateRangeDateDescriptor("thisMonth", "now-1M/M", null));
         aggDef.setDateRanges(ranges);
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
-                                                       .addAggregate(AggregateFactory.create(aggDef, null));
+                .addAggregate(AggregateFactory.create(aggDef, null));
 
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
@@ -369,7 +367,7 @@ public class TestAggregates {
         aggDef.setProperty("extendedBoundsMin", "0");
         aggDef.setProperty("extendedBoundsMax", "10240");
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
-                                                       .addAggregate(AggregateFactory.create(aggDef, null));
+                .addAggregate(AggregateFactory.create(aggDef, null));
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
         assertEqualsEvenUnderWindows(
@@ -422,51 +420,51 @@ public class TestAggregates {
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows("{\n" //
-                + "  \"from\" : 0,\n" //
-                + "  \"size\" : 10,\n" //
-                + "  \"query\" : {\n" //
-                + "    \"match_all\" : { }\n" //
-                + "  },\n" //
-                + "  \"post_filter\" : {\n" //
-                + "    \"bool\" : {\n" //
-                + "      \"must\" : {\n" //
-                + "        \"bool\" : {\n" //
-                + "          \"should\" : {\n" //
-                + "            \"range\" : {\n" //
-                + "              \"dc:created\" : {\n" //
-                + "                \"from\" : 1470009600000,\n" // Mon Aug 1 00:00:00 UTC 2016
-                + "                \"to\" : 1472688000000,\n" // Thu Sep 1 00:00:00 UTC 2016
-                + "                \"format\" : \"epoch_millis\",\n" + "                \"include_lower\" : true,\n" //
-                + "                \"include_upper\" : false\n" //
-                + "              }\n" //
-                + "            }\n" //
-                + "          }\n" //
-                + "        }\n" //
-                + "      }\n" //
-                + "    }\n" //
-                + "  },\n" //
-                + "  \"fields\" : \"_id\",\n" //
-                + "  \"aggregations\" : {\n" //
-                + "    \"created_filter\" : {\n" //
-                + "      \"filter\" : {\n" //
-                + "        \"match_all\" : { }\n" //
-                + "      },\n" //
-                + "      \"aggregations\" : {\n" //
-                + "        \"created\" : {\n" //
-                + "          \"date_histogram\" : {\n" //
-                + "            \"field\" : \"dc:created\",\n" //
-                + "            \"interval\" : \"month\",\n" //
-                + "            \"order\" : {\n" //
-                + "              \"_count\" : \"desc\"\n" //
-                + "            },\n" //
-                + "            \"time_zone\" : \"UTC\",\n" //
-                + "            \"format\" : \"yyy-MM\"\n" //
-                + "          }\n" //
-                + "        }\n" //
-                + "      }\n" //
-                + "    }\n" //
-                + "  }\n" //
-                + "}", //
+                        + "  \"from\" : 0,\n" //
+                        + "  \"size\" : 10,\n" //
+                        + "  \"query\" : {\n" //
+                        + "    \"match_all\" : { }\n" //
+                        + "  },\n" //
+                        + "  \"post_filter\" : {\n" //
+                        + "    \"bool\" : {\n" //
+                        + "      \"must\" : {\n" //
+                        + "        \"bool\" : {\n" //
+                        + "          \"should\" : {\n" //
+                        + "            \"range\" : {\n" //
+                        + "              \"dc:created\" : {\n" //
+                        + "                \"from\" : 1470009600000,\n" // Mon Aug 1 00:00:00 UTC 2016
+                        + "                \"to\" : 1472688000000,\n" // Thu Sep 1 00:00:00 UTC 2016
+                        + "                \"format\" : \"epoch_millis\",\n" + "                \"include_lower\" : true,\n" //
+                        + "                \"include_upper\" : false\n" //
+                        + "              }\n" //
+                        + "            }\n" //
+                        + "          }\n" //
+                        + "        }\n" //
+                        + "      }\n" //
+                        + "    }\n" //
+                        + "  },\n" //
+                        + "  \"fields\" : \"_id\",\n" //
+                        + "  \"aggregations\" : {\n" //
+                        + "    \"created_filter\" : {\n" //
+                        + "      \"filter\" : {\n" //
+                        + "        \"match_all\" : { }\n" //
+                        + "      },\n" //
+                        + "      \"aggregations\" : {\n" //
+                        + "        \"created\" : {\n" //
+                        + "          \"date_histogram\" : {\n" //
+                        + "            \"field\" : \"dc:created\",\n" //
+                        + "            \"interval\" : \"month\",\n" //
+                        + "            \"order\" : {\n" //
+                        + "              \"_count\" : \"desc\"\n" //
+                        + "            },\n" //
+                        + "            \"time_zone\" : \"UTC\",\n" //
+                        + "            \"format\" : \"yyy-MM\"\n" //
+                        + "          }\n" //
+                        + "        }\n" //
+                        + "      }\n" //
+                        + "    }\n" //
+                        + "  }\n" //
+                        + "}", //
                 request.toString());
     }
 
@@ -481,7 +479,7 @@ public class TestAggregates {
         aggDef.setProperty("order", "count desc");
         aggDef.setProperty("minDocCounts", "5");
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
-                                                       .addAggregate(AggregateFactory.create(aggDef, null));
+                .addAggregate(AggregateFactory.create(aggDef, null));
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
@@ -533,13 +531,13 @@ public class TestAggregates {
         aggDef2.setProperty("size", "10");
 
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
-        String[] sources = { "foo", "bar" };
+        String[] sources = {"foo", "bar"};
         model.setProperty("advanced_search", "source_agg", sources);
         // String[] natures = { "foobar" };
         // model.setProperty("advanced_search", "nature_agg", natures);
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
-                                                       .addAggregate(AggregateFactory.create(aggDef1, model))
-                                                       .addAggregate(AggregateFactory.create(aggDef2, model));
+                .addAggregate(AggregateFactory.create(aggDef1, model))
+                .addAggregate(AggregateFactory.create(aggDef2, model));
 
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
@@ -608,7 +606,7 @@ public class TestAggregates {
         aggDef.setProperty("minDocCount", "10");
 
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
-                                                       .addAggregate(AggregateFactory.create(aggDef, null));
+                .addAggregate(AggregateFactory.create(aggDef, null));
 
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
@@ -651,7 +649,7 @@ public class TestAggregates {
         Assert.assertNotNull(ppdef);
 
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
-        String[] sources = { "Source1", "Source2" };
+        String[] sources = {"Source1", "Source2"};
         model.setProperty("advanced_search", "source_agg", sources);
 
         HashMap<String, Serializable> props = new HashMap<>();
@@ -699,7 +697,7 @@ public class TestAggregates {
         Assert.assertNotNull(ppdef);
 
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
-        String[] sizes = { "big", "medium" };
+        String[] sizes = {"big", "medium"};
         model.setProperty("advanced_search", "size_agg", sizes);
 
         HashMap<String, Serializable> props = new HashMap<>();
@@ -734,7 +732,7 @@ public class TestAggregates {
         Assert.assertNotNull(ppdef);
 
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
-        String[] created = { "long_time_ago", "some_time_ago" };
+        String[] created = {"long_time_ago", "some_time_ago"};
         model.setProperty("advanced_search", "created_agg", created);
 
         HashMap<String, Serializable> props = new HashMap<>();
@@ -769,7 +767,7 @@ public class TestAggregates {
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
         Assert.assertNotNull(ppdef);
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
-        String[] sizes = { "1024", "4096" };
+        String[] sizes = {"1024", "4096"};
         model.setProperty("advanced_search", "size_histo_agg", sizes);
 
         HashMap<String, Serializable> props = new HashMap<>();
@@ -798,8 +796,8 @@ public class TestAggregates {
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
         DateTimeFormatter fmt = DateTimeFormat.forPattern("dd-MM-yyy");
         DateTime yesterdayNoon = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay().minusDays(1).plusHours(12);
-        String[] created = { fmt.print(new DateTime(yesterdayNoon.minusWeeks(3).getMillis())),
-                fmt.print(new DateTime(yesterdayNoon.minusWeeks(6).getMillis())) };
+        String[] created = {fmt.print(new DateTime(yesterdayNoon.minusWeeks(3).getMillis())),
+                fmt.print(new DateTime(yesterdayNoon.minusWeeks(6).getMillis()))};
         model.setProperty("advanced_search", "created_histo_agg", created);
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);

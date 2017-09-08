@@ -18,11 +18,6 @@
  */
 package org.nuxeo.elasticsearch.test.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +29,11 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.elasticsearch.commands.IndexingCommands;
 import org.nuxeo.elasticsearch.commands.IndexingCommandsStacker;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Test that the logic for transforming CoreEvents in ElasticSearch commands
  *
@@ -41,7 +41,7 @@ import org.nuxeo.elasticsearch.commands.IndexingCommandsStacker;
  */
 public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
 
-    protected Map<String, IndexingCommands> commands = new HashMap<String, IndexingCommands>();
+    protected Map<String, IndexingCommands> commands = new HashMap<>();
 
     protected List<IndexingCommand> flushedSyncCommands;
 

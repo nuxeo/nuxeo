@@ -18,14 +18,6 @@
  */
 package org.nuxeo.elasticsearch.test.io;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.junit.Assert;
@@ -48,12 +40,20 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 /**
  * @since 5.9.5
  */
 
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class })
+@Features({RepositoryElasticSearchFeature.class})
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestDocumentModelReader {
 
@@ -105,7 +105,7 @@ public class TestDocumentModelReader {
 
     @Test
     public void ICanReadADocModelFromSource() throws Exception {
-        Map<String, Object> source = new HashMap<String, Object>();
+        Map<String, Object> source = new HashMap<>();
         source.put("ecm:uuid", "001");
         source.put("ecm:primaryType", "File");
         DocumentModel doc = DocumentModelReaders.fromSource(source).getDocumentModel();

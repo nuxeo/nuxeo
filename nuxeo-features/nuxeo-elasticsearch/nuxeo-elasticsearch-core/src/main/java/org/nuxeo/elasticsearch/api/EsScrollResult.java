@@ -26,8 +26,7 @@ import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 /**
  * Wrapper for the results of a scrollable search request.
  *
- * @see ElasticSearchService#scroll(NxQueryBuilder, long, int)
- * @see ElasticSearchService#scanAndScroll(NxQueryBuilder, long, int)
+ * @see ElasticSearchService#scroll(NxQueryBuilder, long)
  * @see ElasticSearchService#scroll(EsScrollResult)
  * @since 8.3
  */
@@ -49,7 +48,7 @@ public class EsScrollResult extends EsResult {
     protected final long keepAlive;
 
     public EsScrollResult(DocumentModelList documents, SearchResponse response, NxQueryBuilder queryBuilder,
-            String scrollId, long keepAlive) {
+                          String scrollId, long keepAlive) {
         super(documents, null, response);
         this.queryBuilder = queryBuilder;
         this.scrollId = scrollId;
@@ -57,7 +56,7 @@ public class EsScrollResult extends EsResult {
     }
 
     public EsScrollResult(IterableQueryResult rows, SearchResponse response, NxQueryBuilder queryBuilder,
-            String scrollId, long keepAlive) {
+                          String scrollId, long keepAlive) {
         super(rows, null, response);
         this.queryBuilder = queryBuilder;
         this.scrollId = scrollId;

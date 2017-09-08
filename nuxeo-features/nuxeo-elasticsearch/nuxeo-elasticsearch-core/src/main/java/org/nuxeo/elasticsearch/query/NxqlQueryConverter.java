@@ -19,25 +19,11 @@
  */
 package org.nuxeo.elasticsearch.query;
 
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.geo.GeoUtils;
-import org.elasticsearch.common.geo.ShapeRelation;
 import org.elasticsearch.common.xcontent.NamedXContentRegistry;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
@@ -80,6 +66,19 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.runtime.api.Framework;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
 
 /**
  * Helper class that holds the conversion logic. Conversion is based on the existing NXQL Parser, we are just using a
@@ -134,7 +133,7 @@ final public class NxqlQueryConverter {
 
             @Override
             public void visitMultiExpression(MultiExpression node) {
-                for (Iterator<Operand> it = node.values.iterator(); it.hasNext();) {
+                for (Iterator<Operand> it = node.values.iterator(); it.hasNext(); ) {
                     it.next().accept(this);
                     if (it.hasNext()) {
                         node.operator.accept(this);
@@ -224,7 +223,7 @@ final public class NxqlQueryConverter {
     }
 
     public static QueryAndFilter makeQueryFromSimpleExpression(String op, String nxqlName, Object value,
-            Object[] values, EsHint hint, CoreSession session) {
+                                                               Object[] values, EsHint hint, CoreSession session) {
         QueryBuilder query = null;
         QueryBuilder filter = null;
         String name = getFieldName(nxqlName, hint);
@@ -248,60 +247,60 @@ final public class NxqlQueryConverter {
             }
         } else
             switch (op) {
-            case "=":
-                filter = QueryBuilders.termQuery(name, value);
-                break;
-            case "<>":
-            case "!=":
-                filter = QueryBuilders.boolQuery().mustNot(QueryBuilders.termQuery(name, value));
-                break;
-            case ">":
-                filter = QueryBuilders.rangeQuery(name).gt(value);
-                break;
-            case "<":
-                filter = QueryBuilders.rangeQuery(name).lt(value);
-                break;
-            case ">=":
-                filter = QueryBuilders.rangeQuery(name).gte(value);
-                break;
-            case "<=":
-                filter = QueryBuilders.rangeQuery(name).lte(value);
-                break;
-            case "BETWEEN":
-            case "NOT BETWEEN":
-                filter = QueryBuilders.rangeQuery(name).from(values[0]).to(values[1]);
-                if (op.startsWith("NOT")) {
-                    filter = QueryBuilders.boolQuery().mustNot(filter);
-                }
-                break;
-            case "IN":
-            case "NOT IN":
-                filter = QueryBuilders.termsQuery(name, values);
-                if (op.startsWith("NOT")) {
-                    filter = QueryBuilders.boolQuery().mustNot(filter);
-                }
-                break;
-            case "IS NULL":
-                filter = QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery(name));
-                break;
-            case "IS NOT NULL":
-                filter = QueryBuilders.existsQuery(name);
-                break;
-            case "LIKE":
-            case "ILIKE":
-            case "NOT LIKE":
-            case "NOT ILIKE":
-                query = makeLikeQuery(op, name, (String) value, hint);
-                if (op.startsWith("NOT")) {
-                    filter = QueryBuilders.boolQuery().mustNot(query);
-                    query = null;
-                }
-                break;
-            case "STARTSWITH":
-                filter = makeStartsWithQuery(name, value);
-                break;
-            default:
-                throw new UnsupportedOperationException("Operator: '" + op + "' is unknown");
+                case "=":
+                    filter = QueryBuilders.termQuery(name, value);
+                    break;
+                case "<>":
+                case "!=":
+                    filter = QueryBuilders.boolQuery().mustNot(QueryBuilders.termQuery(name, value));
+                    break;
+                case ">":
+                    filter = QueryBuilders.rangeQuery(name).gt(value);
+                    break;
+                case "<":
+                    filter = QueryBuilders.rangeQuery(name).lt(value);
+                    break;
+                case ">=":
+                    filter = QueryBuilders.rangeQuery(name).gte(value);
+                    break;
+                case "<=":
+                    filter = QueryBuilders.rangeQuery(name).lte(value);
+                    break;
+                case "BETWEEN":
+                case "NOT BETWEEN":
+                    filter = QueryBuilders.rangeQuery(name).from(values[0]).to(values[1]);
+                    if (op.startsWith("NOT")) {
+                        filter = QueryBuilders.boolQuery().mustNot(filter);
+                    }
+                    break;
+                case "IN":
+                case "NOT IN":
+                    filter = QueryBuilders.termsQuery(name, values);
+                    if (op.startsWith("NOT")) {
+                        filter = QueryBuilders.boolQuery().mustNot(filter);
+                    }
+                    break;
+                case "IS NULL":
+                    filter = QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery(name));
+                    break;
+                case "IS NOT NULL":
+                    filter = QueryBuilders.existsQuery(name);
+                    break;
+                case "LIKE":
+                case "ILIKE":
+                case "NOT LIKE":
+                case "NOT ILIKE":
+                    query = makeLikeQuery(op, name, (String) value, hint);
+                    if (op.startsWith("NOT")) {
+                        filter = QueryBuilders.boolQuery().mustNot(query);
+                        query = null;
+                    }
+                    break;
+                case "STARTSWITH":
+                    filter = makeStartsWithQuery(name, value);
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Operator: '" + op + "' is unknown");
             }
         return new QueryAndFilter(query, filter);
     }
@@ -309,61 +308,61 @@ final public class NxqlQueryConverter {
     private static QueryBuilder makeHintFilter(String name, Object[] values, EsHint hint) {
         QueryBuilder ret;
         switch (hint.operator) {
-        case "geo_bounding_box":
-            if (values.length != 2) {
-                throw new IllegalArgumentException(String.format(
-                        "Operator: %s requires 2 parameters: bottomLeft " + "and topRight point", hint.operator));
-            }
-            GeoPoint bottomLeft = parseGeoPointString((String) values[0]);
-            GeoPoint topRight = parseGeoPointString((String) values[1]);
-            ret = QueryBuilders.geoBoundingBoxQuery(name).setCornersOGC(bottomLeft, topRight);
-            break;
-        case "geo_distance":
-            if (values.length != 2) {
-                throw new IllegalArgumentException(
-                        String.format("Operator: %s requires 2 parameters: point and " + "distance", hint.operator));
-            }
-            GeoPoint center = parseGeoPointString((String) values[0]);
-            String distance = (String) values[1];
-            ret = QueryBuilders.geoDistanceQuery(name).point(center.lat(), center.lon()).distance(distance);
-            break;
-        case "geo_distance_range":
-            if (values.length != 3) {
-                throw new IllegalArgumentException(String.format(
-                        "Operator: %s requires 3 parameters: point, " + "minimal and maximal distance", hint.operator));
-            }
-            center = parseGeoPointString((String) values[0]);
-            String from = (String) values[1];
-            String to = (String) values[2];
-            throw new IllegalArgumentException("Operation not implemented: " + hint.operator);
-            // TODO: ret = QueryBuilders.geoDistanceRangeQuery(name).point(center.lat(), center.lon()).from(from).to(to);
-            // break;
-        case "geo_hash_cell":
-            if (values.length != 2) {
-                throw new IllegalArgumentException(String.format(
-                        "Operator: %s requires 2 parameters: point and " + "geohash precision", hint.operator));
-            }
-            center = parseGeoPointString((String) values[0]);
-            String precision = (String) values[1];
-            throw new IllegalArgumentException("Operation not implemented: " + hint.operator);
-            // TODO: ret = QueryBuilders.geoHashCellQuery(name).point(center).precision(precision);
-            // break;
-        case "geo_shape":
-            if (values.length != 4) {
-                throw new IllegalArgumentException(String.format(
-                        "Operator: %s requires 4 parameters: shapeId, type, " + "index and path", hint.operator));
-            }
-            String shapeId = (String) values[0];
-            String shapeType = (String) values[1];
-            String shapeIndex = (String) values[2];
-            String shapePath = (String) values[3];
-            throw new IllegalArgumentException("Operation not implemented: " + hint.operator);
-            // TODO: ret = QueryBuilders.geoShapeQuery(name, shapeId, shapeType, ShapeRelation.WITHIN)
-            //                   .indexedShapeIndex(shapeIndex)
-            //                   .indexedShapePath(shapePath);
-            // break;
-        default:
-            throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is unknown");
+            case "geo_bounding_box":
+                if (values.length != 2) {
+                    throw new IllegalArgumentException(String.format(
+                            "Operator: %s requires 2 parameters: bottomLeft " + "and topRight point", hint.operator));
+                }
+                GeoPoint bottomLeft = parseGeoPointString((String) values[0]);
+                GeoPoint topRight = parseGeoPointString((String) values[1]);
+                ret = QueryBuilders.geoBoundingBoxQuery(name).setCornersOGC(bottomLeft, topRight);
+                break;
+            case "geo_distance":
+                if (values.length != 2) {
+                    throw new IllegalArgumentException(
+                            String.format("Operator: %s requires 2 parameters: point and " + "distance", hint.operator));
+                }
+                GeoPoint center = parseGeoPointString((String) values[0]);
+                String distance = (String) values[1];
+                ret = QueryBuilders.geoDistanceQuery(name).point(center.lat(), center.lon()).distance(distance);
+                break;
+            case "geo_distance_range":
+                if (values.length != 3) {
+                    throw new IllegalArgumentException(String.format(
+                            "Operator: %s requires 3 parameters: point, " + "minimal and maximal distance", hint.operator));
+                }
+                center = parseGeoPointString((String) values[0]);
+                String from = (String) values[1];
+                String to = (String) values[2];
+                throw new IllegalArgumentException("Operation not implemented: " + hint.operator);
+                // TODO: ret = QueryBuilders.geoDistanceRangeQuery(name).point(center.lat(), center.lon()).from(from).to(to);
+                // break;
+            case "geo_hash_cell":
+                if (values.length != 2) {
+                    throw new IllegalArgumentException(String.format(
+                            "Operator: %s requires 2 parameters: point and " + "geohash precision", hint.operator));
+                }
+                center = parseGeoPointString((String) values[0]);
+                String precision = (String) values[1];
+                throw new IllegalArgumentException("Operation not implemented: " + hint.operator);
+                // TODO: ret = QueryBuilders.geoHashCellQuery(name).point(center).precision(precision);
+                // break;
+            case "geo_shape":
+                if (values.length != 4) {
+                    throw new IllegalArgumentException(String.format(
+                            "Operator: %s requires 4 parameters: shapeId, type, " + "index and path", hint.operator));
+                }
+                String shapeId = (String) values[0];
+                String shapeType = (String) values[1];
+                String shapeIndex = (String) values[2];
+                String shapePath = (String) values[3];
+                throw new IllegalArgumentException("Operation not implemented: " + hint.operator);
+                // TODO: ret = QueryBuilders.geoShapeQuery(name, shapeId, shapeType, ShapeRelation.WITHIN)
+                //                   .indexedShapeIndex(shapeIndex)
+                //                   .indexedShapePath(shapePath);
+                // break;
+            default:
+                throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is unknown");
         }
         return ret;
 
@@ -384,81 +383,81 @@ final public class NxqlQueryConverter {
     private static QueryBuilder makeHintQuery(String name, Object value, EsHint hint) {
         QueryBuilder ret;
         switch (hint.operator) {
-        case "match":
-            MatchQueryBuilder matchQuery = QueryBuilders.matchQuery(name, value);
-            if (hint.analyzer != null) {
-                matchQuery.analyzer(hint.analyzer);
-            }
-            ret = matchQuery;
-            break;
-        case "match_phrase":
-            MatchPhraseQueryBuilder matchPhraseQuery = QueryBuilders.matchPhraseQuery(name, value);
-            if (hint.analyzer != null) {
-                matchPhraseQuery.analyzer(hint.analyzer);
-            }
-            ret = matchPhraseQuery;
-            break;
-        case "match_phrase_prefix":
-            MatchPhrasePrefixQueryBuilder matchPhrasePrefixQuery = QueryBuilders.matchPhrasePrefixQuery(name, value);
-            if (hint.analyzer != null) {
-                matchPhrasePrefixQuery.analyzer(hint.analyzer);
-            }
-            ret = matchPhrasePrefixQuery;
-            break;
-        case "multi_match":
-            // hint.index must be set
-            MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(value, hint.getIndex());
-            if (hint.analyzer != null) {
-                multiMatchQuery.analyzer(hint.analyzer);
-            }
-            ret = multiMatchQuery;
-            break;
-        case "regex":
-            ret = QueryBuilders.regexpQuery(name, (String) value);
-            break;
-        case "fuzzy":
-            ret = QueryBuilders.fuzzyQuery(name, (String) value);
-            break;
-        case "wildcard":
-            ret = QueryBuilders.wildcardQuery(name, (String) value);
-            break;
-        case "common":
-            CommonTermsQueryBuilder commonQuery = QueryBuilders.commonTermsQuery(name, value);
-            if (hint.analyzer != null) {
-                commonQuery.analyzer(hint.analyzer);
-            }
-            ret = commonQuery;
-            break;
-        case "query_string":
-            QueryStringQueryBuilder queryString = QueryBuilders.queryStringQuery((String) value);
-            if (hint.index != null) {
-                for (String index : hint.getIndex()) {
-                    queryString.field(index);
+            case "match":
+                MatchQueryBuilder matchQuery = QueryBuilders.matchQuery(name, value);
+                if (hint.analyzer != null) {
+                    matchQuery.analyzer(hint.analyzer);
                 }
-            } else {
-                queryString.defaultField(name);
-            }
-            if (hint.analyzer != null) {
-                queryString.analyzer(hint.analyzer);
-            }
-            ret = queryString;
-            break;
-        case "simple_query_string":
-            SimpleQueryStringBuilder querySimpleString = QueryBuilders.simpleQueryStringQuery((String) value);
-            if (hint.index != null) {
-                for (String index : hint.getIndex()) {
-                    querySimpleString.field(index);
+                ret = matchQuery;
+                break;
+            case "match_phrase":
+                MatchPhraseQueryBuilder matchPhraseQuery = QueryBuilders.matchPhraseQuery(name, value);
+                if (hint.analyzer != null) {
+                    matchPhraseQuery.analyzer(hint.analyzer);
                 }
-            } else {
-                querySimpleString.field(name);
-            }
-            if (hint.analyzer != null) {
-                querySimpleString.analyzer(hint.analyzer);
-            }
-            ret = querySimpleString;
-            break;
-        default:
-            throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is unknown");
+                ret = matchPhraseQuery;
+                break;
+            case "match_phrase_prefix":
+                MatchPhrasePrefixQueryBuilder matchPhrasePrefixQuery = QueryBuilders.matchPhrasePrefixQuery(name, value);
+                if (hint.analyzer != null) {
+                    matchPhrasePrefixQuery.analyzer(hint.analyzer);
+                }
+                ret = matchPhrasePrefixQuery;
+                break;
+            case "multi_match":
+                // hint.index must be set
+                MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(value, hint.getIndex());
+                if (hint.analyzer != null) {
+                    multiMatchQuery.analyzer(hint.analyzer);
+                }
+                ret = multiMatchQuery;
+                break;
+            case "regex":
+                ret = QueryBuilders.regexpQuery(name, (String) value);
+                break;
+            case "fuzzy":
+                ret = QueryBuilders.fuzzyQuery(name, (String) value);
+                break;
+            case "wildcard":
+                ret = QueryBuilders.wildcardQuery(name, (String) value);
+                break;
+            case "common":
+                CommonTermsQueryBuilder commonQuery = QueryBuilders.commonTermsQuery(name, value);
+                if (hint.analyzer != null) {
+                    commonQuery.analyzer(hint.analyzer);
+                }
+                ret = commonQuery;
+                break;
+            case "query_string":
+                QueryStringQueryBuilder queryString = QueryBuilders.queryStringQuery((String) value);
+                if (hint.index != null) {
+                    for (String index : hint.getIndex()) {
+                        queryString.field(index);
+                    }
+                } else {
+                    queryString.defaultField(name);
+                }
+                if (hint.analyzer != null) {
+                    queryString.analyzer(hint.analyzer);
+                }
+                ret = queryString;
+                break;
+            case "simple_query_string":
+                SimpleQueryStringBuilder querySimpleString = QueryBuilders.simpleQueryStringQuery((String) value);
+                if (hint.index != null) {
+                    for (String index : hint.getIndex()) {
+                        querySimpleString.field(index);
+                    }
+                } else {
+                    querySimpleString.field(name);
+                }
+                if (hint.analyzer != null) {
+                    querySimpleString.analyzer(hint.analyzer);
+                }
+                ret = querySimpleString;
+                break;
+            default:
+                throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is unknown");
         }
         return ret;
     }
@@ -535,38 +534,37 @@ final public class NxqlQueryConverter {
         StringBuilder wildcard = new StringBuilder();
         char[] chars = like.toCharArray();
         boolean escape = false;
-        for (int i = 0; i < chars.length; i++) {
-            char c = chars[i];
+        for (char c : chars) {
             boolean escapeNext = false;
             switch (c) {
-            case '?':
-                wildcard.append("\\?");
-                break;
-            case '*': // compat, * = % in NXQL (for some backends)
-            case '%':
-                if (escape) {
+                case '?':
+                    wildcard.append("\\?");
+                    break;
+                case '*': // compat, * = % in NXQL (for some backends)
+                case '%':
+                    if (escape) {
+                        wildcard.append(c);
+                    } else {
+                        wildcard.append("*");
+                    }
+                    break;
+                case '_':
+                    if (escape) {
+                        wildcard.append(c);
+                    } else {
+                        wildcard.append("?");
+                    }
+                    break;
+                case '\\':
+                    if (escape) {
+                        wildcard.append("\\\\");
+                    } else {
+                        escapeNext = true;
+                    }
+                    break;
+                default:
                     wildcard.append(c);
-                } else {
-                    wildcard.append("*");
-                }
-                break;
-            case '_':
-                if (escape) {
-                    wildcard.append(c);
-                } else {
-                    wildcard.append("?");
-                }
-                break;
-            case '\\':
-                if (escape) {
-                    wildcard.append("\\\\");
-                } else {
-                    escapeNext = true;
-                }
-                break;
-            default:
-                wildcard.append(c);
-                break;
+                    break;
             }
             escape = escapeNext;
         }
@@ -596,8 +594,8 @@ final public class NxqlQueryConverter {
         }
         String analyzer = (hint != null && hint.analyzer != null) ? hint.analyzer : "fulltext";
         SimpleQueryStringBuilder query = QueryBuilders.simpleQueryStringQuery(queryString)
-                                                      .defaultOperator(defaultOperator)
-                                                      .analyzer(analyzer);
+                .defaultOperator(defaultOperator)
+                .analyzer(analyzer);
         if (hint != null && hint.index != null) {
             for (String index : hint.getIndex()) {
                 query.field(index);

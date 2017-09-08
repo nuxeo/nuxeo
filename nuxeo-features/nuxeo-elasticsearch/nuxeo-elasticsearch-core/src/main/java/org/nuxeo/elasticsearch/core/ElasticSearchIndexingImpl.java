@@ -20,37 +20,22 @@
 
 package org.nuxeo.elasticsearch.core;
 
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEX_BULK_MAX_SIZE_PROPERTY;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.delete.DeleteRequestBuilder;
-import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.common.io.stream.BytesStreamOutput;
@@ -74,10 +59,17 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
-import com.codahale.metrics.Timer.Context;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEX_BULK_MAX_SIZE_PROPERTY;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
 
 /**
  * @since 6.0
@@ -153,7 +145,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         // Can be optimized with a single delete by query
         for (IndexingCommand cmd : cmds) {
             if (cmd.getType() == Type.DELETE) {
-                try (Context ignored = deleteTimer.time()){
+                try (Context ignored = deleteTimer.time()) {
                     processDeleteCommand(cmd);
                 }
             }
@@ -351,8 +343,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                     indexName, DOC_TYPE, keepAlive, query.toString()));
         }
         for (SearchResponse response = esa.getClient().search(request); //
-        response.getHits().getHits().length > 0; //
-        response = runNextScroll(response, keepAlive)) {
+             response.getHits().getHits().length > 0; //
+             response = runNextScroll(response, keepAlive)) {
 
             // Build bulk delete request
             BulkRequest bulkRequest = new BulkRequest();

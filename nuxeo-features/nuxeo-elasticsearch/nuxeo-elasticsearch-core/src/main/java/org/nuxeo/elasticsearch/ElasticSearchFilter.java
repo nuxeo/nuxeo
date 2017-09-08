@@ -19,6 +19,8 @@
 
 package org.nuxeo.elasticsearch;
 
+import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
+
 import java.io.IOException;
 
 import javax.servlet.Filter;
@@ -28,8 +30,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-
-import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
 
 /**
  * @since 8.3
@@ -45,7 +45,7 @@ public class ElasticSearchFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        if (request instanceof HttpServletRequest == false) {
+        if (!(request instanceof HttpServletRequest)) {
             chain.doFilter(request, response);
             return;
         }

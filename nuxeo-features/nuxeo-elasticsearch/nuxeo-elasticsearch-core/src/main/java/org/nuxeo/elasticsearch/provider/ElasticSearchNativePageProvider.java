@@ -19,12 +19,6 @@
 
 package org.nuxeo.elasticsearch.provider;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,6 +44,12 @@ import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.query.PageProviderQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ElasticSearchNativePageProvider extends AbstractPageProvider<DocumentModel> {
 
@@ -85,7 +85,7 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
             log.debug(String.format("Perform query for provider '%s': with pageSize=%d, offset=%d", getName(),
                     getMinMaxPageSize(), getCurrentPageOffset()));
         }
-        currentPageDocuments = new ArrayList<DocumentModel>();
+        currentPageDocuments = new ArrayList<>();
         // Build the ES query
         QueryBuilder query = makeQueryBuilder();
         SortInfo[] sortArray = null;
@@ -96,10 +96,10 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         try {
             NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession()).esQuery(query)
-                                                                         .offset((int) getCurrentPageOffset())
-                                                                         .limit((int) getMinMaxPageSize())
-                                                                         .addSort(sortArray)
-                                                                         .addAggregates(buildAggregates());
+                    .offset((int) getCurrentPageOffset())
+                    .limit((int) getMinMaxPageSize())
+                    .addSort(sortArray)
+                    .addAggregates(buildAggregates());
             if (searchOnAllRepositories()) {
                 nxQuery.searchOnAllRepositories();
             }

@@ -81,6 +81,7 @@ public class ESTransportClient implements ESClient {
             } else {
                 if ((indexNames.length > 0) && response.getStatus() != ClusterHealthStatus.GREEN) {
                     log.warn("Es Cluster ready but not GREEN: " + response);
+                    ret = false;
                 } else {
                     log.info("ES Cluster ready: " + response);
                 }
