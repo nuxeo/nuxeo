@@ -35,7 +35,29 @@ public interface KeyValueStore {
      * @param key the key
      * @param value the value, which may be {@code null}
      */
-    void put(String key, byte[] value);
+    default void put(String key, byte[] value) {
+        put(key, value, 0);
+    }
+
+    /**
+     * Sets the value associated to the key, and a TTL.
+     *
+     * @param key the key
+     * @param value the value, which may be {@code null}
+     * @param ttl the TTL, in seconds (0 for infinite)
+     * @since 9.3
+     */
+    void put(String key, byte[] value, long ttl);
+
+    /**
+     * Sets the TTL for an existing key.
+     *
+     * @param key the key
+     * @param ttl the TTL, in seconds (0 for infinite)
+     * @return {@code true} if the TTL has been set, or {@code false} if the key does not exist
+     * @since 9.3
+     */
+    boolean setTTL(String key, long ttl);
 
     /**
      * Retrieves the value associated to the key.

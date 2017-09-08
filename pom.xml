@@ -4895,6 +4895,12 @@
         <version>1.0.1</version>
       </dependency>
 
+      <dependency>
+        <groupId>net.jodah</groupId>
+        <artifactId>expiringmap</artifactId>
+        <version>0.5.8</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 

@@ -23,7 +23,6 @@ import javax.inject.Inject;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.storage.kv.AbstractKeyValueStoreTest;
 import org.nuxeo.ecm.core.storage.kv.KeyValueService;
-import org.nuxeo.ecm.core.storage.kv.KeyValueStore;
 import org.nuxeo.ecm.core.storage.kv.KeyValueStoreProvider;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -36,9 +35,9 @@ public class TestRedisKeyValueStore extends AbstractKeyValueStoreTest {
     protected KeyValueService keyValueService;
 
     @Override
-    protected KeyValueStore newKeyValueStore() {
-        KeyValueStore store = keyValueService.getKeyValueStore("redis");
-        ((KeyValueStoreProvider) store).clear();
+    protected KeyValueStoreProvider newKeyValueStore() {
+        KeyValueStoreProvider store = (KeyValueStoreProvider) keyValueService.getKeyValueStore("redis");
+        store.clear();
         return store;
     }
 

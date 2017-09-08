@@ -24,7 +24,7 @@ package org.nuxeo.ecm.core.storage.kv;
 public class TestMemKeyValueStore extends AbstractKeyValueStoreTest {
 
     @Override
-    protected KeyValueStore newKeyValueStore() {
+    protected KeyValueStoreProvider newKeyValueStore() {
         return new MemKeyValueStore();
     }
 

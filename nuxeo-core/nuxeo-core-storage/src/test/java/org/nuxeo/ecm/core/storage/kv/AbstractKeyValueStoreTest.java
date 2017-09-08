@@ -24,6 +24,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -45,11 +47,25 @@ public abstract class AbstractKeyValueStoreTest {
 
     protected static final byte[] MOO_B = MOO.getBytes();
 
-    protected abstract KeyValueStore newKeyValueStore();
+    protected KeyValueStoreProvider store;
+
+    @Before
+    public void setUp() {
+        store = newKeyValueStore();
+        KeyValueStoreDescriptor descriptor = new KeyValueStoreDescriptor();
+        descriptor.name = "test";
+        store.initialize(descriptor);
+    }
+
+    @After
+    public void tearDown() {
+        store.close();
+    }
+
+    protected abstract KeyValueStoreProvider newKeyValueStore();
 
     @Test
     public void testPutGet() {
-        KeyValueStore store = newKeyValueStore();
         String key = "foo";
 
         assertNull(store.get(key));
@@ -75,7 +91,6 @@ public abstract class AbstractKeyValueStoreTest {
 
     @Test
     public void testCompareAndSet() {
-        KeyValueStore store = newKeyValueStore();
         String key = "foo";
 
         assertFalse(store.compareAndSet(key, BAR_B, GEE_B));
@@ -115,7 +130,6 @@ public abstract class AbstractKeyValueStoreTest {
 
     @Test
     public void testBinaryValuesAreAccepted() {
-        KeyValueStore store = newKeyValueStore();
         String key = "foo";
 
         byte[] value = new byte[256];
@@ -128,12 +142,30 @@ public abstract class AbstractKeyValueStoreTest {
 
     @Test
     public void testClear() {
-        KeyValueStore store = newKeyValueStore();
         String key = "foo";
         store.put(key, BAR_B);
         assertEquals(BAR, new String(store.get(key)));
         ((KeyValueStoreProvider) store).clear();
         assertNull(store.get(key));
+    }
+
+    @Test
+    public void testTTL() throws Exception {
+        String key = "foo";
+        int longTTL = 30; // 30s
+        assertFalse(store.setTTL(key, 0)); // no such key
+        assertFalse(store.setTTL(key, longTTL)); // no such key
+        store.put(key, BAR_B, longTTL);
+        assertEquals(BAR, new String(store.get(key)));
+        int shortTTL = 3; // 3s
+        assertTrue(store.setTTL(key, shortTTL)); // set shorter TTL
+        Thread.sleep((shortTTL + 2) * 1000); // sleep a bit more in case expiration is late
+        assertNull(store.get(key));
+
+        store.put(key, BAR_B, shortTTL);
+        store.setTTL(key, 0); // unset TTL
+        Thread.sleep((shortTTL + 2) * 1000); // sleep a bit more in case expiration is late
+        assertEquals(BAR, new String(store.get(key)));
     }
 
 }

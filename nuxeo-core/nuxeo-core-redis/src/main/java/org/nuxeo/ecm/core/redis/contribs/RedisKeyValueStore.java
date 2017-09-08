@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
+import org.nuxeo.ecm.core.storage.kv.KeyValueStoreDescriptor;
 import org.nuxeo.ecm.core.storage.kv.KeyValueStoreProvider;
 import org.nuxeo.runtime.api.Framework;
 
@@ -53,6 +54,8 @@ public class RedisKeyValueStore implements KeyValueStoreProvider {
 
     protected static final Long ONE = Long.valueOf(1);
 
+    protected String name;
+
     protected String namespace;
 
     protected byte[] compareAndSetSHA;
@@ -66,8 +69,10 @@ public class RedisKeyValueStore implements KeyValueStoreProvider {
     }
 
     @Override
-    public void initialize(Map<String, String> properties) {
+    public void initialize(KeyValueStoreDescriptor descriptor) {
         log.debug("Initializing");
+        name = descriptor.name;
+        Map<String, String> properties = descriptor.getProperties();
         String name = properties.get(NAMESPACE_PROP);
         RedisAdmin redisAdmin = Framework.getService(RedisAdmin.class);
         namespace = redisAdmin.namespace(name == null ? new String[0] : new String[] { name });
@@ -92,14 +97,16 @@ public class RedisKeyValueStore implements KeyValueStoreProvider {
     }
 
     @Override
-    public void put(String key, byte[] value) {
+    public void put(String key, byte[] value, long ttl) {
         RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
         redisExecutor.execute(jedis -> {
             byte[] keyb = getBytes(namespace + key);
             if (value == null) {
                 jedis.del(keyb);
-            } else {
+            } else if (ttl == 0) {
                 jedis.set(keyb, value);
+            } else {
+                jedis.setex(keyb, (int) ttl, value);
             }
             return null;
         });
@@ -109,6 +116,20 @@ public class RedisKeyValueStore implements KeyValueStoreProvider {
     public byte[] get(String key) {
         RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
         return redisExecutor.execute(jedis -> jedis.get(getBytes(namespace + key)));
+    }
+
+    @Override
+    public boolean setTTL(String key, long ttl) {
+        RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
+        Long result = redisExecutor.execute(jedis -> {
+            byte[] keyb = getBytes(namespace + key);
+            if (ttl == 0) {
+                return jedis.persist(keyb);
+            } else {
+                return jedis.expire(keyb, (int) ttl);
+            }
+        });
+        return ONE.equals(result);
     }
 
     @Override
@@ -133,6 +154,11 @@ public class RedisKeyValueStore implements KeyValueStoreProvider {
             Object result = redisExecutor.evalsha(sha, keys, args);
             return ONE.equals(result);
         }
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + name + ")";
     }
 
 }

@@ -93,7 +93,7 @@ public class KeyValueServiceImpl extends DefaultComponent implements KeyValueSer
             }
             try {
                 provider = descriptor.getKlass().newInstance();
-                provider.initialize(descriptor.getProperties());
+                provider.initialize(descriptor);
             } catch (ReflectiveOperationException e) {
                 throw new NuxeoException(e);
             }
