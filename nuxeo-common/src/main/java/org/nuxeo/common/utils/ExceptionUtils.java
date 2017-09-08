@@ -24,6 +24,8 @@ package org.nuxeo.common.utils;
 import java.io.InterruptedIOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.channels.ClosedByInterruptException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Provides utility methods for manipulating and examining exceptions in a generic way.
@@ -47,15 +49,25 @@ public final class ExceptionUtils {
      * @return the root cause of the <code>Throwable</code>, <code>null</code> if none found or null throwable input
      */
     public static Throwable getRootCause(Throwable throwable) {
-        Throwable cause = throwable;
-        if (throwable != null) {
-            cause = throwable.getCause();
-            while ((throwable = cause.getCause()) != null) {
-                cause = throwable;
-            }
-        }
+        // This code is taken from Apache commons utils org.apache.commons.lang3.exception.ExceptionUtils
+        final List<Throwable> list = getThrowableList(throwable);
+        return list.size() < 2 ? null : (Throwable) list.get(list.size() - 1);
+    }
 
-        return cause;
+    public static List<Throwable> getThrowableList(Throwable throwable) {
+        final List<Throwable> list = new ArrayList<>();
+        while (throwable != null && list.contains(throwable) == false) {
+            list.add(throwable);
+            throwable = getCause(throwable);
+        }
+        return list;
+    }
+
+    protected static Throwable getCause(Throwable throwable) {
+        if (throwable != null) {
+            return throwable.getCause();
+        }
+        return null;
     }
 
     /**
