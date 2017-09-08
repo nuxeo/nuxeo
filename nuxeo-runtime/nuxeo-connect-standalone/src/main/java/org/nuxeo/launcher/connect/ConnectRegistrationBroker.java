@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.connector.NuxeoClientInstanceType;
 import org.nuxeo.connect.data.ConnectProject;
@@ -155,6 +156,22 @@ public class ConnectRegistrationBroker {
         String strCLID = RegistrationHelper.remoteRegisterInstance(username, new String(password), projectId, type,
                 description);
         registerLocal(strCLID, description);
+    }
+
+    /**
+     * Renews a registration.
+     *
+     * @since 8.10-HF15
+     */
+    public void remoteRenewRegistration() throws IOException, RegistrationException {
+        try {
+            registration().remoteRenewRegistration();
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            ExceptionUtils.checkInterrupt(e);
+            throw new RegistrationException("Instance registration failed. " + e.getMessage());
+        }
     }
 
     /**
