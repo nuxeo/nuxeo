@@ -33,7 +33,9 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.SystemUtils;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -131,7 +133,7 @@ public class TestAggregates {
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
 
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
+        SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
@@ -176,7 +178,7 @@ public class TestAggregates {
         aggDef.setSearchField(new FieldDescriptor("advanced_search", "fulltext_agg"));
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
+        SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
         assertEqualsEvenUnderWindows(
                 "{\n" //
@@ -216,7 +218,7 @@ public class TestAggregates {
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
 
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
+        SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
@@ -261,7 +263,7 @@ public class TestAggregates {
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
 
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
+        SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
@@ -316,7 +318,7 @@ public class TestAggregates {
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
 
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
+        SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
@@ -368,7 +370,7 @@ public class TestAggregates {
         aggDef.setProperty("extendedBoundsMax", "10240");
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
+        SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
         assertEqualsEvenUnderWindows(
                 "{\n" //
@@ -416,7 +418,7 @@ public class TestAggregates {
         DateHistogramAggregate agg = (DateHistogramAggregate) AggregateFactory.create(aggDef, null);
         agg.setSelection(Arrays.asList("2016-08"));
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(agg);
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
+        SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows("{\n" //
@@ -480,7 +482,7 @@ public class TestAggregates {
         aggDef.setProperty("minDocCounts", "5");
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
+        SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
@@ -539,7 +541,7 @@ public class TestAggregates {
                                                        .addAggregate(AggregateFactory.create(aggDef1, model))
                                                        .addAggregate(AggregateFactory.create(aggDef2, model));
 
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
+        SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(
@@ -608,7 +610,7 @@ public class TestAggregates {
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
 
-        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
+        SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows(

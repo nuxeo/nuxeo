@@ -19,26 +19,16 @@
 
 package org.nuxeo.elasticsearch.api;
 
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.nuxeo.elasticsearch.config.ESClientInitializationDescriptor;
+import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
+import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
 
 /**
- * This service enables the initialization of the Elasticsearch transport client and his settings
+ * Factory to create an Elasticsearch client
  *
- * @since 9.1
+ * @since 9.3
  */
-public interface ESClientProvider {
-
-    void setClientConfig(ESClientInitializationDescriptor config);
-
-    void setServerConfig(ElasticSearchRemoteConfig config);
-
-    Settings.Builder getSetting();
-
-    /**
-     * Creates a transport client according to provided configuration.
-     */
-    TransportClient getClient();
+public interface ESClientFactory {
+        ESClient create(ElasticSearchRemoteConfig remoteConfig, ElasticSearchClientConfig clientConfig);
+        ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchClientConfig clientConfig);
 }

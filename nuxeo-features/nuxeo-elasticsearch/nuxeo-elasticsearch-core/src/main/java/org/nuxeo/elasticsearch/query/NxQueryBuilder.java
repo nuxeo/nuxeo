@@ -39,6 +39,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
@@ -346,23 +347,23 @@ public class NxQueryBuilder {
         return ret;
     }
 
-    public void updateRequest(SearchRequestBuilder request) {
+    public void updateRequest(SearchSourceBuilder request) {
         // Set limits
-        request.setFrom(getOffset()).setSize(getLimit());
+        request.from(getOffset()).size(getLimit());
         // Build query with security checks
-        request.setQuery(makeQuery());
+        request.query(makeQuery());
         // Add sort
         for (SortBuilder sortBuilder : getSortBuilders()) {
-            request.addSort(sortBuilder);
+            request.sort(sortBuilder);
         }
         // Add Aggregate
         for (AbstractAggregationBuilder aggregate : getEsAggregates()) {
-            request.addAggregation(aggregate);
+            request.aggregation(aggregate);
         }
         // Add Aggregate post filter
         QueryBuilder aggFilter = getAggregateFilter();
         if (aggFilter != null) {
-            request.setPostFilter(aggFilter);
+            request.postFilter(aggFilter);
         }
 
         // Add highlighting
@@ -376,7 +377,7 @@ public class NxQueryBuilder {
         }
         // Fields selection
         if (!isFetchFromElasticsearch()) {
-            request.setFetchSource(getSelectFields(), null);
+            request.fetchSource(getSelectFields(), null);
         }
 
     }

@@ -38,7 +38,7 @@ public interface ElasticSearchAdmin {
      *
      * @since 5.9.3
      */
-    Client getClient();
+    ESClient getClient();
 
     /**
      * Initialize Elasticsearch indexes. Setup the index settings and mapping for each index that has been registered.

@@ -11,7 +11,7 @@
   <!--</extension>-->
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchClientInitialization">
-    <clientInitialization class="org.nuxeo.elasticsearch.core.ESDefaultClientProvider" />
+    <clientInitialization class="org.nuxeo.elasticsearch.client.ESTransportClientFactory" />
   </extension>
 
   <!-- custom writer to be used with the dynamic mapper -->
