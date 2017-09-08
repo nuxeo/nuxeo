@@ -19,13 +19,13 @@
 
 package org.nuxeo.elasticsearch.config;
 
-import java.io.File;
-import java.io.Serializable;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
+
+import java.io.File;
+import java.io.Serializable;
 
 /**
  * XMap descriptor used to configure a local in JVM Elasticsearch instance

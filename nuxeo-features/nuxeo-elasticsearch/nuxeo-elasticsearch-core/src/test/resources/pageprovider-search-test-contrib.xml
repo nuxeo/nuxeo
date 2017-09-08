@@ -4,11 +4,10 @@
 
   <require>org.nuxeo.ecm.restapi.server.search.config</require>
 
-  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
-             point="providers">
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
 
     <genericPageProvider name="REST_API_SEARCH_ADAPTER"
-                         class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <pageSize>0</pageSize>
       <maxPageSize>0</maxPageSize>
     </genericPageProvider>

@@ -32,7 +32,6 @@ import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
 
-import java.net.BindException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 

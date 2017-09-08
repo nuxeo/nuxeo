@@ -19,12 +19,6 @@
 
 package org.nuxeo.elasticsearch.test;
 
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-
-import java.util.Date;
-
-import javax.inject.Inject;
-
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -38,6 +32,12 @@ import org.junit.runner.RunWith;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import java.util.Date;
+
+import javax.inject.Inject;
+
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 /**
  * Check controller for Elasticsearch
@@ -73,14 +73,14 @@ public class TestElasticSearchClient {
 
         SearchResponse searchResponse = elasticSearchClient.prepareSearch("nxutest").setTypes("doc").setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.matchQuery("name", "test1")) // Query
-        .setFrom(0).setSize(60).execute().actionGet();
+                .setFrom(0).setSize(60).execute().actionGet();
 
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
         // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
 
         searchResponse = elasticSearchClient.prepareSearch("nxutest").setTypes("doc").setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.matchQuery("dc:title", "YoHou")) // Query
-        .setFrom(0).setSize(60).execute().actionGet();
+                .setFrom(0).setSize(60).execute().actionGet();
 
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 

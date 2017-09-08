@@ -269,8 +269,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     }
 
     protected SearchScrollRequest buildEsScrollRequest(String scrollId, long keepAlive) {
-        SearchScrollRequest request = new SearchScrollRequest(scrollId).scroll(new TimeValue(keepAlive));
-        return request;
+        return new SearchScrollRequest(scrollId).scroll(new TimeValue(keepAlive));
     }
 
     protected void logSearchResponse(SearchResponse response) {

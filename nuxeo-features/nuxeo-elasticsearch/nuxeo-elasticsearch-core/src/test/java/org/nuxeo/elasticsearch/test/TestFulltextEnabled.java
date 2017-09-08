@@ -19,10 +19,6 @@
 
 package org.nuxeo.elasticsearch.test;
 
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,11 +43,15 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 /**
  * Test "on the fly" indexing via the listener system
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class })
+@Features({RepositoryElasticSearchFeature.class})
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestFulltextEnabled {
 

@@ -23,7 +23,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 
 /**
- * 
+ *
  * @since 7.2
  */
 @XObject("writer")

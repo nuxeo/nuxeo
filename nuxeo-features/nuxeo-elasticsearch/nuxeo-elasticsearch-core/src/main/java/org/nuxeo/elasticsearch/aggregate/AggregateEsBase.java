@@ -18,10 +18,6 @@
  */
 package org.nuxeo.elasticsearch.aggregate;
 
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
-
-import java.util.Collection;
-
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
@@ -30,6 +26,10 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.core.AggregateBase;
+
+import java.util.Collection;
+
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
 
 /**
  * @since 6.0

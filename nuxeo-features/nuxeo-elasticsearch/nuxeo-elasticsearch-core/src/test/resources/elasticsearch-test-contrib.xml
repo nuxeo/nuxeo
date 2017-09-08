@@ -7,7 +7,7 @@
   </extension>
 
   <!--<extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchRemote">-->
-    <!--<elasticSearchRemote clusterName="elasticsearch" addressList="localhost:9300" />-->
+  <!--<elasticSearchRemote clusterName="elasticsearch" addressList="localhost:9300" />-->
   <!--</extension>-->
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchClientInitialization">

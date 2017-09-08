@@ -18,14 +18,6 @@
  */
 package org.nuxeo.elasticsearch.aggregate;
 
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_SIZE_PROP;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -35,6 +27,14 @@ import org.elasticsearch.search.aggregations.bucket.significant.SignificantTerms
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.core.BucketTerm;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_SIZE_PROP;
 
 /**
  * @since 6.0

@@ -23,7 +23,6 @@ import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,7 +46,7 @@ public abstract class AbstractIndexingWorker extends BaseIndexingWorker {
     public AbstractIndexingWorker(String repositoryName, List<IndexingCommand> cmds) {
         this.cmds = cmds;
         this.repositoryName = repositoryName;
-        if (! cmds.isEmpty()) {
+        if (!cmds.isEmpty()) {
             this.docId = cmds.get(0).getTargetDocumentId();
         }
     }
@@ -55,7 +54,7 @@ public abstract class AbstractIndexingWorker extends BaseIndexingWorker {
     @Override
     public void doWork() {
         openSystemSession();
-        for (IndexingCommand cmd: cmds) {
+        for (IndexingCommand cmd : cmds) {
             cmd.attach(session);
         }
         ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);

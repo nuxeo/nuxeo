@@ -19,12 +19,6 @@
 
 package org.nuxeo.elasticsearch.provider;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -45,6 +39,12 @@ import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.query.NxqlQueryConverter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Elasticsearch Page provider that converts the NXQL query build by CoreQueryDocumentPageProvider.
@@ -100,9 +100,9 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         try {
             NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession()).nxql(query)
-                                                                         .offset((int) getCurrentPageOffset())
-                                                                         .limit(getLimit())
-                                                                         .addAggregates(buildAggregates());
+                    .offset((int) getCurrentPageOffset())
+                    .limit(getLimit())
+                    .addAggregates(buildAggregates());
             if (searchOnAllRepositories()) {
                 nxQuery.searchOnAllRepositories();
             }
@@ -258,8 +258,8 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
                 maxResultWindow = Long.valueOf(maxResultWindowStr);
             } catch (NumberFormatException e) {
                 log.warn(String.format(
-                    "Invalid maxResultWindow property value: %s for page provider: %s, fallback to default.",
-                            maxResultWindowStr, getName()));
+                        "Invalid maxResultWindow property value: %s for page provider: %s, fallback to default.",
+                        maxResultWindowStr, getName()));
                 maxResultWindow = Long.valueOf(DEFAULT_ES_MAX_RESULT_WINDOW_VALUE);
             }
         }

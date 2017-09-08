@@ -18,18 +18,18 @@
  */
 package org.nuxeo.elasticsearch.core;
 
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHitField;
+import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHitField;
-import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 
 /**
  * Converter used to convert a {@link SearchHit} to a {@link Map}&lt;{@link String}, {@link Serializable}&gt;.
@@ -55,7 +55,7 @@ public class EsSearchHitConverter {
         Map<String, Serializable> row = new HashMap<>(emptyRow);
         for (SearchHitField field : hit.getFields().values()) {
             String name = field.getName();
-            Serializable value = field.<Serializable> getValue();
+            Serializable value = field.<Serializable>getValue();
             // type conversion
             Type type;
             if (value instanceof String && (type = selectFieldsAndTypes.get(name)) instanceof DateType) {
@@ -65,7 +65,7 @@ public class EsSearchHitConverter {
             row.put(name, value);
         }
         if (selectFieldsAndTypes.containsKey(NXQL.ECM_FULLTEXT_SCORE)) {
-            row.put(NXQL.ECM_FULLTEXT_SCORE, Double.valueOf(hit.getScore()));
+            row.put(NXQL.ECM_FULLTEXT_SCORE, (double) hit.getScore());
         }
         return row;
     }

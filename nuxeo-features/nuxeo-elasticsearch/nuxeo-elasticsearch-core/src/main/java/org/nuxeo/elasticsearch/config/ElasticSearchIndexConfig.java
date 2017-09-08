@@ -19,13 +19,13 @@
 
 package org.nuxeo.elasticsearch.config;
 
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.BINARYTEXT_FIELD;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.BINARYTEXT_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 
 /**
  * XMap descriptor for configuring an index
@@ -202,14 +202,14 @@ public class ElasticSearchIndexConfig {
 
     public String[] getExcludes() {
         if (excludes == null) {
-            return new String[] { BINARYTEXT_FIELD };
+            return new String[]{BINARYTEXT_FIELD};
         }
         return excludes;
     }
 
     public String[] getIncludes() {
         if (includes == null || includes.length == 0) {
-            return new String[] { ALL_FIELDS };
+            return new String[]{ALL_FIELDS};
         }
         return includes;
     }

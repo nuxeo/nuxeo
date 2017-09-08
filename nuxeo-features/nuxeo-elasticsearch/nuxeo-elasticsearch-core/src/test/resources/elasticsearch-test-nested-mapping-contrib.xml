@@ -7,7 +7,7 @@
   </extension>
 
   <!--<extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchRemote">-->
-    <!--<elasticSearchRemote clusterName="elasticsearch" addressList="localhost:9300" />-->
+  <!--<elasticSearchRemote clusterName="elasticsearch" addressList="localhost:9300" />-->
   <!--</extension>-->
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchClientInitialization">
@@ -22,148 +22,148 @@
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">
     <elasticSearchIndex name="nxutest" type="doc" repository="test">
       <settings>
-{
-   "analysis" : {
-      "filter" : {
-         "en_stem_filter" : {
-            "name" : "minimal_english",
-            "type" : "stemmer"
-         },
-         "en_stop_filter" : {
-            "stopwords" : [
-               "_english_"
-            ],
-            "type" : "stop"
-         },
-        "word_delimiter_filter" : {
-          "type" : "word_delimiter",
-          "preserve_original" : true
-        }
-      },
-      "tokenizer" : {
-         "path_tokenizer" : {
-            "delimiter" : "/",
-            "type" : "path_hierarchy"
-         }
-      },
-      "analyzer" : {
-         "fulltext" : {
-            "filter" : [
-               "word_delimiter_filter",
-               "lowercase",
-               "en_stop_filter",
-               "en_stem_filter",
-               "asciifolding"
-            ],
-            "type" : "custom",
-            "tokenizer" : "standard"
-         },
-         "path_analyzer" : {
-            "type" : "custom",
-            "tokenizer" : "path_tokenizer"
-         },
-        "lowercase_analyzer" : {
-          "type" : "custom",
-          "filter" : ["lowercase", "asciifolding"],
-          "tokenizer" : "keyword"
+        {
+        "analysis" : {
+        "filter" : {
+        "en_stem_filter" : {
+        "name" : "minimal_english",
+        "type" : "stemmer"
         },
-         "default" : {
-            "type" : "custom",
-            "tokenizer" : "keyword"
-         }
-      }
-   }
-}
+        "en_stop_filter" : {
+        "stopwords" : [
+        "_english_"
+        ],
+        "type" : "stop"
+        },
+        "word_delimiter_filter" : {
+        "type" : "word_delimiter",
+        "preserve_original" : true
+        }
+        },
+        "tokenizer" : {
+        "path_tokenizer" : {
+        "delimiter" : "/",
+        "type" : "path_hierarchy"
+        }
+        },
+        "analyzer" : {
+        "fulltext" : {
+        "filter" : [
+        "word_delimiter_filter",
+        "lowercase",
+        "en_stop_filter",
+        "en_stem_filter",
+        "asciifolding"
+        ],
+        "type" : "custom",
+        "tokenizer" : "standard"
+        },
+        "path_analyzer" : {
+        "type" : "custom",
+        "tokenizer" : "path_tokenizer"
+        },
+        "lowercase_analyzer" : {
+        "type" : "custom",
+        "filter" : ["lowercase", "asciifolding"],
+        "tokenizer" : "keyword"
+        },
+        "default" : {
+        "type" : "custom",
+        "tokenizer" : "keyword"
+        }
+        }
+        }
+        }
       </settings>
       <mapping>
-{
-   "_all" : {
-      "analyzer" : "fulltext"
-   },
-   "properties" : {
-      "dc:title" : {
-         "type" : "string",
-         "fields" : {
-           "dc:title" : {
-             "index" : "not_analyzed",
-             "type" : "string"
-           },
-           "fulltext" : {
-             "boost": 2,
-             "type": "text",
-             "analyzer" : "fulltext"
-          }
-        }
-      },
-      "dc:description" : {
+        {
+        "_all" : {
+        "analyzer" : "fulltext"
+        },
+        "properties" : {
+        "dc:title" : {
         "type" : "string",
         "fields" : {
-          "dc:description" : {
-            "index" : "not_analyzed",
-            "type" : "string"
-           },
-          "lowercase" : {
-             "analyzer" : "lowercase_analyzer",
-             "type" : "string"
-           }
+        "dc:title" : {
+        "index" : "not_analyzed",
+        "type" : "string"
+        },
+        "fulltext" : {
+        "boost": 2,
+        "type": "text",
+        "analyzer" : "fulltext"
         }
-      },
-      "ecm:binarytext*" : {
-         "type" : "string",
-         "analyzer" : "fulltext"
-      },
-      "ecm:path" : {
-         "type" : "string",
-         "fields" : {
-            "children" : {
-               "analyzer" : "path_analyzer",
-               "search_analyzer" : "keyword",
-               "type" : "string"
-            },
-            "ecm:path" : {
-               "index" : "not_analyzed",
-               "type" : "string"
-            }
-         }
-      },
-      "ecm:pos": {
-         "type": "integer"
-      },
-      "dc:created": {
-         "format": "dateOptionalTime",
+        }
+        },
+        "dc:description" : {
+        "type" : "string",
+        "fields" : {
+        "dc:description" : {
+        "index" : "not_analyzed",
+        "type" : "string"
+        },
+        "lowercase" : {
+        "analyzer" : "lowercase_analyzer",
+        "type" : "string"
+        }
+        }
+        },
+        "ecm:binarytext*" : {
+        "type" : "string",
+        "analyzer" : "fulltext"
+        },
+        "ecm:path" : {
+        "type" : "string",
+        "fields" : {
+        "children" : {
+        "analyzer" : "path_analyzer",
+        "search_analyzer" : "keyword",
+        "type" : "string"
+        },
+        "ecm:path" : {
+        "index" : "not_analyzed",
+        "type" : "string"
+        }
+        }
+        },
+        "ecm:pos": {
+        "type": "integer"
+        },
+        "dc:created": {
+        "format": "dateOptionalTime",
         "type": "date"
-      },
-      "dc:modified": {
-         "format": "dateOptionalTime",
+        },
+        "dc:modified": {
+        "format": "dateOptionalTime",
         "type": "date"
-      },
-      "files:files": {
+        },
+        "files:files": {
         "properties": {
-          "file": {
-            "type" : "nested",
-            "include_in_parent": true,
-            "properties": {
-                "mime-type": {
-                    "type": "string"
-                },
-                "digest": {
-                    "type": "string"
-                },
-                "length": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "encoding": {
-                    "type": "string"
-                }
-            }
+        "file": {
+        "type" : "nested",
+        "include_in_parent": true,
+        "properties": {
+        "mime-type": {
+        "type": "string"
+        },
+        "digest": {
+        "type": "string"
+        },
+        "length": {
+        "type": "integer"
+        },
+        "name": {
+        "type": "string"
+        },
+        "encoding": {
+        "type": "string"
         }
-      }
-    }
-  }
-}
+        }
+        }
+        }
+        }
+        }
+        }
       </mapping>
 
     </elasticSearchIndex>

@@ -18,21 +18,6 @@
  */
 package org.nuxeo.elasticsearch.query;
 
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
-
-import java.io.IOException;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -59,6 +44,17 @@ import org.nuxeo.elasticsearch.fetcher.EsFetcher;
 import org.nuxeo.elasticsearch.fetcher.Fetcher;
 import org.nuxeo.elasticsearch.fetcher.VcsFetcher;
 import org.nuxeo.runtime.api.Framework;
+
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
 
 /**
  * Elasticsearch query builder for the Nuxeo ES api.
@@ -91,7 +87,7 @@ public class NxQueryBuilder {
 
     private boolean searchOnAllRepo = false;
 
-    private String[] selectFields = { ElasticSearchConstants.ID_FIELD };
+    private String[] selectFields = {ElasticSearchConstants.ID_FIELD};
 
     private Map<String, Type> selectFieldsAndTypes;
 
@@ -392,8 +388,8 @@ public class NxQueryBuilder {
         // we want an ACL that match principals but we discard
         // unsupported ACE that contains negative ACE
         QueryBuilder aclFilter = QueryBuilders.boolQuery()
-                                              .must(QueryBuilders.termsQuery(ACL_FIELD, principals))
-                                              .mustNot(QueryBuilders.termsQuery(ACL_FIELD, UNSUPPORTED_ACL));
+                .must(QueryBuilders.termsQuery(ACL_FIELD, principals))
+                .mustNot(QueryBuilders.termsQuery(ACL_FIELD, UNSUPPORTED_ACL));
         return QueryBuilders.boolQuery().must(query).filter(aclFilter);
     }
 
@@ -424,7 +420,7 @@ public class NxQueryBuilder {
      */
     public List<String> getSearchRepositories() {
         if (searchOnAllRepo) {
-            return Collections.<String> emptyList();
+            return Collections.<String>emptyList();
         }
         return repositories;
     }
