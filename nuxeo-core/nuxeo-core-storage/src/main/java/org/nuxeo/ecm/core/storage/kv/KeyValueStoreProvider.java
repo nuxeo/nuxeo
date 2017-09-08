@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.storage.kv;
 
-import java.util.Map;
-
 /**
  * Key/Value Store SPI.
  *
@@ -30,9 +28,9 @@ public interface KeyValueStoreProvider extends KeyValueStore {
     /**
      * Initializes this Key/Value store provider.
      *
-     * @param properties the store provide properties.
+     * @param descriptor the store provider descriptor
      */
-    void initialize(Map<String, String> properties);
+    void initialize(KeyValueStoreDescriptor descriptor);
 
     /**
      * Closes this Key/Value store provider.

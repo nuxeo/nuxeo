@@ -18,13 +18,13 @@
  */
 package org.nuxeo.ecm.core.storage.kv;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import net.jodah.expiringmap.ExpiringMap;
 
 /**
  * Memory-based implementation of a Key/Value store.
@@ -33,24 +33,26 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class MemKeyValueStore implements KeyValueStoreProvider {
 
-    protected final Map<String, byte[]> map;
-
-    protected final Lock readLock;
+    protected final ExpiringMap<String, byte[]> map;
 
     protected final Lock writeLock;
 
+    protected String name;
+
     public MemKeyValueStore() {
-        ReadWriteLock rwLock = new ReentrantReadWriteLock();
-        readLock = rwLock.readLock();
-        writeLock = rwLock.writeLock();
-        // We can't use ConcurrentHashMap because compareAndSet needs to compare by value
-        // and ConcurrentHashMap doesn't know how to do that. Instead we use full locking;
-        // this is ok as this class isn't expected to be used in a high write rate scenario.
-        map = new HashMap<>();
+        map = ExpiringMap.builder().expiration(Integer.MAX_VALUE, TimeUnit.DAYS).variableExpiration().build();
+        try {
+            Field field = map.getClass().getDeclaredField("writeLock");
+            field.setAccessible(true);
+            writeLock = (Lock) field.get(map);
+        } catch (ReflectiveOperationException | SecurityException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void initialize(Map<String, String> properties) {
+    public void initialize(KeyValueStoreDescriptor descriptor) {
+        this.name = descriptor.name;
     }
 
     @Override
@@ -59,12 +61,7 @@ public class MemKeyValueStore implements KeyValueStoreProvider {
 
     @Override
     public void clear() {
-        writeLock.lock();
-        try {
-            map.clear();
-        } finally {
-            writeLock.unlock();
-        }
+        map.clear();
     }
 
     protected static byte[] clone(byte[] value) {
@@ -72,28 +69,38 @@ public class MemKeyValueStore implements KeyValueStoreProvider {
     }
 
     @Override
-    public void put(String key, byte[] value) {
+    public void put(String key, byte[] value, long ttl) {
         Objects.requireNonNull(key);
         value = clone(value);
-        writeLock.lock();
-        try {
+        if (value == null) {
+            map.remove(key);
+        } else if (ttl == 0) {
             map.put(key, value);
-        } finally {
-            writeLock.unlock();
+        } else {
+            map.put(key, value, ttl, TimeUnit.SECONDS);
         }
     }
 
     @Override
     public byte[] get(String key) {
         Objects.requireNonNull(key);
-        byte[] value;
-        readLock.lock();
-        try {
-            value = map.get(key);
-        } finally {
-            readLock.unlock();
-        }
+        byte[] value = map.get(key);
         return clone(value);
+    }
+
+    @Override
+    public boolean setTTL(String key, long ttl) {
+        Objects.requireNonNull(key);
+        byte[] value = map.get(key);
+        if (value == null) {
+            return false;
+        }
+        if (ttl == 0) {
+            map.setExpiration(key, Integer.MAX_VALUE, TimeUnit.DAYS);
+        } else {
+            map.setExpiration(key, ttl, TimeUnit.SECONDS);
+        }
+        return true;
     }
 
     @Override
@@ -102,17 +109,27 @@ public class MemKeyValueStore implements KeyValueStoreProvider {
         // clone is not needed if the comparison fails
         // but we are optimistic and prefer to do the clone outside the lock
         value = clone(value);
+        // we don't use ExpiringMap.replace because it deals with null differently
         writeLock.lock();
         try {
             byte[] current = map.get(key);
             boolean equal = Arrays.equals(expected, current);
             if (equal) {
-                map.put(key, value);
+                if (value == null) {
+                    map.remove(key);
+                } else {
+                    map.put(key, value);
+                }
             }
             return equal;
         } finally {
             writeLock.unlock();
         }
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + name + ")";
     }
 
 }

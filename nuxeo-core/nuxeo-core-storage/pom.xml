@@ -74,6 +74,10 @@
       <artifactId>guava</artifactId>
     </dependency>
     <dependency>
+      <groupId>net.jodah</groupId>
+      <artifactId>expiringmap</artifactId>
+    </dependency>
+    <dependency>
       <groupId>net.htmlparser.jericho</groupId>
       <artifactId>jericho-html</artifactId>
     </dependency>
