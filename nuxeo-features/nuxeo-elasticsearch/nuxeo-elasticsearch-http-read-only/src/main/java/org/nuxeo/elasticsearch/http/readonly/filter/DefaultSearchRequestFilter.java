@@ -52,8 +52,8 @@ public class DefaultSearchRequestFilter extends AbstractSearchRequestFilterImpl 
                 query = new JSONObject("{\"match_all\":{}}");
             }
             JSONObject filter = new JSONObject().put("terms", new JSONObject().put("ecm:acl", principals));
-            JSONObject newQuery = new JSONObject().put("filtered",
-                    new JSONObject().put("query", query).put("filter", filter));
+            JSONObject newQuery = new JSONObject().put("bool",
+                    new JSONObject().put("must", query).put("filter", filter));
             payloadJson.put("query", newQuery);
             filteredPayload = payloadJson.toString();
             if (filteredPayload.contains(BACKSLASH_MARKER)) {

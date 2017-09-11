@@ -18,9 +18,6 @@
  */
 package org.nuxeo.elasticsearch.audit.pageprovider;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -28,6 +25,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.audit.api.document.AdditionalDocumentAuditParams;
 import org.nuxeo.ecm.platform.audit.api.document.DocumentAuditHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
 
@@ -44,16 +44,39 @@ public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
             + "                    }\n" + "                  }\n" + "                }\n"
             + "              }          \n" + "";
 
-    protected static String complexQuery = "{\n" + "    \"filtered\" : {\n" + "        \"query\" : {\n"
-            + "            \"match_all\" : { }\n" + "        },\n" + "        \"filter\" : {\n"
-            + "            \"or\" : [\n" + "                {\n"
-            + "                    \"term\" : { \"docUUID\" : \"?\" }\n" + "                },\n"
-            + "                {\n" + "                    \"bool\" : {\n" + "                      \"must\" : [{\n"
-            + "                        \"term\" : { \"docUUID\" : \"?\" }\n" + "                      },\n"
-            + "                      {\n" + "                        \"range\" : {\n"
-            + "                          \"eventDate\" :  { \"lte\" : \"?\"}\n" + "                        }\n"
-            + "                      }]\n" + "                  }\n" + "                }\n" + "            ]\n"
-            + "        }\n" + "    }\n" + "}\n" + "\n" + "";
+    protected static String complexQuery = "{\n" + //
+            "  \"query\": {\n" + //
+            "    \"bool\": {\n" + //
+            "      \"filter\": {\n" + //
+            "        \"or\": [\n" + //
+            "          {\n" + //
+            "            \"term\": {\n" + //
+            "              \"docUUID\": \"?\"\n" + //
+            "            }\n" + //
+            "          },\n" + //
+            "          {\n" + //
+            "            \"bool\": {\n" + //
+            "              \"must\": [\n" + //
+            "                {\n" + //
+            "                  \"term\": {\n" + //
+            "                    \"docUUID\": \"?\"\n" + //
+            "                  }\n" + //
+            "                },\n" + //
+            "                {\n" + //
+            "                  \"range\": {\n" + //
+            "                    \"eventDate\": {\n" + //
+            "                      \"lte\": \"?\"\n" + //
+            "                    }\n" + //
+            "                  }\n" + //
+            "                }\n" + //
+            "              ]\n" + //
+            "            }\n" + //
+            "          }\n" + //
+            "        ]\n" + //
+            "      }\n" + //
+            "    }\n" + //
+            "  }\n" + //
+            "}\n";
 
     @Override
     protected String getFixedPart() {

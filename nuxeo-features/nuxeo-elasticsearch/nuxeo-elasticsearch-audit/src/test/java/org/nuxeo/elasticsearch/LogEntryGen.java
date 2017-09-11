@@ -64,8 +64,8 @@ public class LogEntryGen {
         Assert.assertTrue(Framework.getLocalService(AuditLogger.class).await(10,TimeUnit.SECONDS));
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
 
-        esa.getClient().admin().indices().prepareFlush(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE)).execute().actionGet();
-        esa.getClient().admin().indices().prepareRefresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE)).execute().actionGet();
+        esa.getClient().flush(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE));
+        esa.getClient().refresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE));
 
     }
 

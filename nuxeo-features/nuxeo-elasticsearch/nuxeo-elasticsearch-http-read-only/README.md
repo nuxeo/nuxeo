@@ -42,9 +42,9 @@ Note that the base URL change from **http://my-elastic-search-server:9200** to *
 
 The previous request is rewritten and the final request submitted to Elasticsearch is equivalent to:
 
-    curl -XGET 'http://localhost:9200/nuxeo/doc/_search?size=0' -d '{"query":{"filtered":{"filter":{"terms":{"ecm:acl":["members","user1","Everyone"]}},"query":{"match_all":{}}}}}'
+    curl -XGET 'http://localhost:9200/nuxeo/doc/_search?size=0' -d '{"query":{"bool":{"filter":{"terms":{"ecm:acl":["members","user1","Everyone"]}},"must":{"match_all":{}}}}}'
 
-We can see that `index` and `type` have been explicitly set and the query has been filtered to match the *jdoe* user ACL.
+We can see that `index` and `type` have been explicitly set and the query has a filter to match the *jdoe* user ACL.
 
 Nuxeo will submit only HTTP GET request to Elasticsearch, even if Nuxeo accepts search using HTTP POST.
 

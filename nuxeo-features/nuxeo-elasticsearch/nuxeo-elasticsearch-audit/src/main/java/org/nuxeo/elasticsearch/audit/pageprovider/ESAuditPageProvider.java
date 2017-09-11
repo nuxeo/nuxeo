@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -56,7 +56,7 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
 
     private static final long serialVersionUID = 1L;
 
-    protected SearchRequestBuilder searchBuilder;
+    protected SearchRequest searchRequest;
 
     public static final String CORE_SESSION_PROPERTY = "coreSession";
 
@@ -70,7 +70,7 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
     public String toString() {
         buildAuditQuery(true);
         StringBuffer sb = new StringBuffer();
-        sb.append(searchBuilder.toString());
+        sb.append(searchRequest.toString());
         return sb.toString();
     }
 
@@ -98,15 +98,15 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
     public List<LogEntry> getCurrentPage() {
 
         buildAuditQuery(true);
-        searchBuilder.setFrom((int) (getCurrentPageIndex() * pageSize));
-        searchBuilder.setSize((int) getMinMaxPageSize());
+        searchRequest.source().from((int) (getCurrentPageIndex() * pageSize));
+        searchRequest.source().size((int) getMinMaxPageSize());
 
         for (SortInfo sortInfo : getSortInfos()) {
-            searchBuilder.addSort(sortInfo.getSortColumn(),
+            searchRequest.source().sort(sortInfo.getSortColumn(),
                     sortInfo.getSortAscending() ? SortOrder.ASC : SortOrder.DESC);
         }
 
-        SearchResponse searchResponse = searchBuilder.execute().actionGet();
+        SearchResponse searchResponse = getESBackend().search(searchRequest);
         List<LogEntry> entries = new ArrayList<>();
         SearchHits hits = searchResponse.getHits();
 
@@ -127,7 +127,7 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
         CoreSession session = getCoreSession();
         if (session != null) {
             // send event for statistics !
-            fireSearchEvent(session.getPrincipal(), searchBuilder.toString(), entries, System.currentTimeMillis() - t0);
+            fireSearchEvent(session.getPrincipal(), searchRequest.toString(), entries, System.currentTimeMillis() - t0);
         }
 
         return entries;
@@ -213,7 +213,7 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
                     : originalPattern + " WHERE " + quickFiltersClause;
 
             String baseQuery = getESBackend().expandQueryVariables(pattern, params);
-            searchBuilder = getESBackend().buildQuery(baseQuery, null);
+            searchRequest = getESBackend().buildQuery(baseQuery, null);
         } else {
 
             // Add the quick filters clauses to the fixed part
@@ -225,7 +225,7 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
 
             // Where clause based on DocumentModel
             String baseQuery = getESBackend().expandQueryVariables(fixedPart, params);
-            searchBuilder = getESBackend().buildSearchQuery(baseQuery, whereClause.getPredicates(),
+            searchRequest = getESBackend().buildSearchQuery(baseQuery, whereClause.getPredicates(),
                     getSearchDocumentModel());
         }
     }
