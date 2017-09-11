@@ -7,6 +7,8 @@
       class="org.nuxeo.ecm.platform.routing.test.TestOperationSetProperty" />
     <operation
       class="org.nuxeo.ecm.platform.routing.test.TestOperationSetVariable" />
+    <operation
+      class="org.nuxeo.ecm.platform.routing.test.TestCheckValueOperation" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
@@ -64,6 +66,13 @@
       <operation id="Context.SetWorkflowVar">
         <param type="string" name="name">globalVariable</param>
         <param type="object" name="value">test</param>
+      </operation>
+    </chain>
+    <chain id="test_globalVarAssert">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Document.Routing.Test.CheckValue">
+        <param type="string" name="expected">test</param>
+        <param type="string" name="actual">expr:@{WorkflowVariables["globalVariable"]}</param>
       </operation>
     </chain>
     <chain id="test_setGlobalVariableToWorkflowInitiator">

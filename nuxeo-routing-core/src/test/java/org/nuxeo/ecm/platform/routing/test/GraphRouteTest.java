@@ -982,6 +982,61 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         }
     }
 
+    /**
+     * @since 9.3
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSetVarOnTransitionAndCheckVarWithInputChain() throws Exception {
+
+        NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
+        assertNotNull(user1);
+
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
+        routeDoc.addFacet("FacetRoute1");
+        routeDoc = session.saveDocument(routeDoc);
+        DocumentModel node1 = createNode(routeDoc, "node1", session);
+        node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1,
+                transition("trans1", "node2",
+                        "true",
+                        "test_setGlobalvariable"));
+
+        node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION, "Write");
+        node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
+        String[] users = { user1.getName() };
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
+        setButtons(node1, button("btn1", "label-btn1", "filterrr"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2", session);
+        node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "test_globalVarAssert");
+        node2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        setTransitions(node2, transition("trans23", "node3", "true"));
+        node2 = session.saveDocument(node2);
+
+        DocumentModel node3 = createNode(routeDoc, "node3", session);
+        node3.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node3 = session.saveDocument(node3);
+
+        DocumentModelList doneTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'ended'");
+        assertEquals(0, doneTasks.size());
+
+        instantiateAndRun(session);
+
+        List<Task> tasks = taskService.getTaskInstances(doc, user1, session);
+        assertEquals(1, tasks.size());
+
+        Map<String, Object> data = new HashMap<String, Object>();
+        try (CoreSession sessionUser1 = openSession(user1)) {
+            routing.endTask(sessionUser1, tasks.get(0), data, "trans1");
+        }
+
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testEvaluateTaskAssigneesFromVariable() throws Exception {
