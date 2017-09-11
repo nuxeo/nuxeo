@@ -25,8 +25,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -64,6 +69,21 @@ public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
         assertEquals(a.hashCode(), b.hashCode());
         // we don't assert that hash codes are different for principals with
         // different names, as that doesn't have to be true
+    }
+
+    @Test
+    public void testCopyConstructorContextData() {
+        DocumentModel userModel = BaseSession.createEntryModel(null, "user", null, null);
+        userModel.putContextData("readonly", true);
+        NuxeoPrincipalImpl a = new NuxeoPrincipalImpl("foo");
+        a.setModel(userModel);
+
+        NuxeoPrincipalImpl b = new NuxeoPrincipalImpl(a);
+        Map<String, Serializable> aContextData = a.getModel().getContextData();
+        Map<String, Serializable> bContextData = b.getModel().getContextData();
+        assertEquals(aContextData.size(), bContextData.size());
+        assertTrue((Boolean) aContextData.get("readonly"));
+        assertTrue((Boolean) bContextData.get("readonly"));
     }
 
 }
