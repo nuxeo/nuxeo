@@ -28,11 +28,4 @@
     <object class="org.nuxeo.ecm.core.mongodb.MongoDBConnectionConfig" />
   </extension-point>
 
-  <extension target="org.nuxeo.ecm.core.mongodb.MongoDBComponent" point="connection">
-    <connection id="default">
-      <server>${nuxeo.mongodb.server}</server>
-      <dbname>${nuxeo.mongodb.dbname}</dbname>
-    </connection>
-  </extension>
-
 </component>
