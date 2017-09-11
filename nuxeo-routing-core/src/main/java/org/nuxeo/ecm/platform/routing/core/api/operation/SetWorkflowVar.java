@@ -63,13 +63,12 @@ public class SetWorkflowVar {
     @SuppressWarnings("unchecked")
     @OperationMethod
     public void run() {
-        if (workflowInstanceId == null) {
-            if (ctx.get(Constants.VAR_WORKFLOW) != null) {
-                ((Map<String, Serializable>) ctx.get(Constants.VAR_WORKFLOW)).put(name, (Serializable) value);
-            }
-            if (ctx.get("workflowInstanceId") != null) {
-                workflowInstanceId = (String) ctx.get("workflowInstanceId");
-            }
+        if (ctx.get(Constants.VAR_WORKFLOW) != null) {
+            ((Map<String, Serializable>) ctx.get(Constants.VAR_WORKFLOW)).put(name, (Serializable) value);
+            return;
+        }
+        if (workflowInstanceId == null && ctx.get("workflowInstanceId") != null) {
+            workflowInstanceId = (String) ctx.get("workflowInstanceId");
         }
         if (workflowInstanceId == null) {
             return;
