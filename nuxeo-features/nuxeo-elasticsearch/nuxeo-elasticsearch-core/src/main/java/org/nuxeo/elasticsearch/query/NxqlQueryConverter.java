@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.geo.GeoUtils;
+import org.elasticsearch.common.geo.ShapeRelation;
 import org.elasticsearch.common.xcontent.NamedXContentRegistry;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
@@ -334,9 +335,8 @@ final public class NxqlQueryConverter {
                 center = parseGeoPointString((String) values[0]);
                 String from = (String) values[1];
                 String to = (String) values[2];
-                throw new IllegalArgumentException("Operation not implemented: " + hint.operator);
-                // TODO: ret = QueryBuilders.geoDistanceRangeQuery(name).point(center.lat(), center.lon()).from(from).to(to);
-                // break;
+                ret = QueryBuilders.geoDistanceRangeQuery(name, center.lat(), center.lon()).from(from).to(to);
+                break;
             case "geo_hash_cell":
                 if (values.length != 2) {
                     throw new IllegalArgumentException(String.format(
@@ -344,9 +344,8 @@ final public class NxqlQueryConverter {
                 }
                 center = parseGeoPointString((String) values[0]);
                 String precision = (String) values[1];
-                throw new IllegalArgumentException("Operation not implemented: " + hint.operator);
-                // TODO: ret = QueryBuilders.geoHashCellQuery(name).point(center).precision(precision);
-                // break;
+                ret = QueryBuilders.geoHashCellQuery(name, center).precision(precision);
+                break;
             case "geo_shape":
                 if (values.length != 4) {
                     throw new IllegalArgumentException(String.format(
@@ -356,11 +355,11 @@ final public class NxqlQueryConverter {
                 String shapeType = (String) values[1];
                 String shapeIndex = (String) values[2];
                 String shapePath = (String) values[3];
-                throw new IllegalArgumentException("Operation not implemented: " + hint.operator);
-                // TODO: ret = QueryBuilders.geoShapeQuery(name, shapeId, shapeType, ShapeRelation.WITHIN)
-                //                   .indexedShapeIndex(shapeIndex)
-                //                   .indexedShapePath(shapePath);
-                // break;
+
+                ret = QueryBuilders.geoShapeQuery(name, shapeId, shapeType).relation(ShapeRelation.WITHIN)
+                        .indexedShapeIndex(shapeIndex)
+                        .indexedShapePath(shapePath);
+                break;
             default:
                 throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is unknown");
         }

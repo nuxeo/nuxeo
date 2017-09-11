@@ -31,21 +31,19 @@ import org.elasticsearch.action.search.ClearScrollResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
-import org.elasticsearch.client.Client;
+import org.elasticsearch.cluster.health.ClusterHealthStatus;
 
 /**
  * @since 9.3
  */
 public interface ESClient extends AutoCloseable {
 
-    // TODO: remove this temporary helper
-    Client _getClient();
-
-
     // -------------------------------------------------------------------
     // Admin
     //
     boolean waitForYellowStatus(String[] indexNames, int timeoutSecond);
+
+    ClusterHealthStatus getHealthStatus(String[] indexNames);
 
     void refresh(String indexName);
 
@@ -62,6 +60,11 @@ public interface ESClient extends AutoCloseable {
     void createIndex(String indexName, String jsonSettings);
 
     void createMapping(String indexName, String type, String jsonMapping);
+
+    String getNodesInfo();
+
+    String getNodesStats();
+
 
     // -------------------------------------------------------------------
     // Search
@@ -80,4 +83,6 @@ public interface ESClient extends AutoCloseable {
     IndexResponse index(IndexRequest request);
 
     ClearScrollResponse clearScroll(ClearScrollRequest request);
+
+
 }

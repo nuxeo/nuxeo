@@ -35,7 +35,7 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
-import org.elasticsearch.search.aggregations.bucket.filter.InternalFilter;
+import org.elasticsearch.search.aggregations.bucket.filter.ParsedFilter;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -199,7 +199,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
 
     protected List<Aggregate<Bucket>> getAggregates(NxQueryBuilder queryBuilder, SearchResponse response) {
         for (AggregateEsBase<? extends Bucket> agg : queryBuilder.getAggregates()) {
-            InternalFilter filter = response.getAggregations().get(NxQueryBuilder.getAggregateFilterId(agg));
+            ParsedFilter filter = response.getAggregations().get(NxQueryBuilder.getAggregateFilterId(agg));
             if (filter == null) {
                 continue;
             }

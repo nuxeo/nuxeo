@@ -32,8 +32,13 @@ import org.nuxeo.runtime.api.Framework;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.BindException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @since 9.3
@@ -107,7 +112,13 @@ public class ElasticSearchEmbeddedNode implements Closeable {
     public void close() throws IOException {
         log.info("Closing embedded (in JVM) Elasticsearch");
         node.close();
-        log.debug("Closed");
+        List<Path> locks = Files.walk(Paths.get(config.getDataPath()))
+                .filter(f -> f.getFileName().toString().equals("node.lock")).collect(Collectors.toList());
+        if (!locks.isEmpty()) {
+            locks.forEach(f -> log.warn("Found lock on close, deleting: " + f));
+            locks.forEach(f -> f.toFile().delete());
+        }
+        log.info("Node closed: " + node.isClosed());
         node = null;
     }
 

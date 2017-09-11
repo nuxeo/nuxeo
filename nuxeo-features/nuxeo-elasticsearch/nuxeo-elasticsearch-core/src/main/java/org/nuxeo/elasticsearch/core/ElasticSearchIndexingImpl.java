@@ -47,6 +47,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
@@ -374,17 +375,18 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
      */
     String getPathOfDocFromEs(String repository, String docId) {
         String indexName = esa.getIndexNameForRepository(repository);
-        GetRequest request = new GetRequest(indexName, DOC_TYPE, docId).storedFields(PATH_FIELD);
+        GetRequest request = new GetRequest(indexName, DOC_TYPE, docId).fetchSourceContext(
+                new FetchSourceContext(true, new String[]{PATH_FIELD}, null));
         if (log.isDebugEnabled()) {
             log.debug(String.format("Get path of doc: curl -XGET 'http://localhost:9200/%s/%s/%s?fields=%s'", indexName,
                     DOC_TYPE, docId, PATH_FIELD));
         }
         GetResponse ret = esa.getClient().get(request);
-        if (!ret.isExists() || ret.getField(PATH_FIELD) == null) {
+        if (!ret.isExists() || ret.getSource() == null || ret.getSource().get(PATH_FIELD) == null) {
             // doc not found
             return null;
         }
-        return ret.getField(PATH_FIELD).getValue().toString();
+        return ret.getSource().get(PATH_FIELD).toString();
     }
 
     /**

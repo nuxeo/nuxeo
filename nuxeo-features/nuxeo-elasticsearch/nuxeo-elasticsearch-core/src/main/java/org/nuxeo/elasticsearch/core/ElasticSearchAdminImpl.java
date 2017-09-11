@@ -99,11 +99,26 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         this.localConfig = localConfig;
         this.indexConfig = indexConfig;
         this.clientConfig = clientConfig;
+        checkConfig();
         connect();
         initializeIndexes();
     }
 
-    private void connect() {
+    protected void checkConfig() {
+        String msg = null;
+        if (localConfig == null && remoteConfig == null) {
+            msg = "No local or remote configuration provided, aborting";
+        }
+        if (clientConfig == null) {
+            msg = "No client configuration provided, aborting";
+        }
+        if (msg != null) {
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+    }
+
+    protected void connect() {
         if (client != null) {
             return;
         }
@@ -147,7 +162,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         ESClient ret;
         try {
             ESClientFactory clientFactory = clientConfig.getKlass().newInstance();
-            ret = clientFactory.create(node, clientConfig);
+            ret = clientFactory.create(node, localConfig, clientConfig);
         } catch (IllegalAccessException | InstantiationException e) {
             log.error("Can not instantiate ES Client from class: " + clientConfig.getKlass());
             throw new RuntimeException(e);
