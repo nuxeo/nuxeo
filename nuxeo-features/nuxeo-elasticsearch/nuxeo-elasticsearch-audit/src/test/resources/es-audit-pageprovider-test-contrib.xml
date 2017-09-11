@@ -8,91 +8,93 @@
     <genericPageProvider name="SimpleESAuditPP"
       class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
        <pattern>
-			{   "filtered" : {
-			      "query" : {
-			        "bool" : {
-			          "must" : {
-			            "match" : {
-			              "docPath" : {
-			                "query" : "/dummy",
-			                "type" : "boolean"
-			              }
-			            }
-			          }
-			        }
-			      },
-			      "filter" : {
-			        "bool" : {
-			          "must" : {
-			            "term" : {
-			              "category" :  "category1"
-			            }
-			          }
-			        }
-			      }
-			    }
-			}
+       {
+				 "query": {
+           "bool": {
+             "must": {
+               "match": {
+                  "docPath": {
+                    "query": "/dummy",
+                    "type": "boolean"
+                  }
+               }
+             },
+             "filter": {
+               "term": {
+                 "category": "category1"
+				       }
+				     }
+				   }
+				 }
+       }
       </pattern>
       <sort ascending="true" column="id"/>
-      <pageSize>5</pageSize>    
+      <pageSize>5</pageSize>
     </genericPageProvider>
 
 
     <genericPageProvider name="SimpleESAuditPPWithParams"
       class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
        <pattern>
-			{   "filtered" : {
-			      "query" : {
-			        "bool" : {
-			          "must" : {
-			            "match" : {
-			              "docPath" : {
-			                "query" : "/withParams",
-			                "type" : "boolean"
-			              }
-			            }
-			          }
-			        }
-			      },
-			      "filter" : {
-			        "bool" : {
-			          "must" : [{
-			            "terms" : {
-			              "eventId" : [ "entry1", "entry2", "entry3"]
-			            }
-			          },
-			          {
-			            "term" : {
-			              "category" :  "?"
-			            }
-			          }]
-			        }
-			      }
-			    }
-			}
+        {
+          "query": {
+            "bool": {
+              "filter": {
+                "bool": {
+                  "must": [
+                    {
+                      "terms": {
+                        "eventId": [
+                          "entry1",
+                          "entry2",
+                          "entry3"
+                        ]
+                      }
+                    },
+                    {
+                      "term": {
+                        "category": "?"
+                      }
+                    }
+                  ]
+                }
+              },
+              "must": {
+                "match": {
+                  "docPath": {
+                    "type": "boolean",
+                    "query": "/withParams"
+                  }
+                }
+              }
+            }
+          }
+				}
       </pattern>
       <sort ascending="false" column="id"/>
-      <pageSize>5</pageSize>    
+      <pageSize>5</pageSize>
     </genericPageProvider>
 
     <genericPageProvider name="SearchById"
       class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
        <pattern>
-            {
-	        "bool" : {
-	          "must" : {
-	            "match" : {
-	              "docUUID" : {
-	                "query" : "?",
-	                "type" : "boolean"
-	              }
-	            }
-	          }
-	        }
-			  }          
+				{
+				 "query": {
+          "bool" : {
+            "must" : {
+              "match" : {
+                "docUUID" : {
+                  "query" : "?",
+                  "type" : "boolean"
+                }
+              }
+            }
+          }
+        }
+			 }
       </pattern>
       <sort ascending="true" column="id"/>
-      <pageSize>5</pageSize>    
+      <pageSize>5</pageSize>
     </genericPageProvider>
 
   </extension>

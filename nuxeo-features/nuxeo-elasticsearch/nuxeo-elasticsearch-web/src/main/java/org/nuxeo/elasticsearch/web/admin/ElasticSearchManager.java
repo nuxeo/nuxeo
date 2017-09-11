@@ -18,21 +18,15 @@
  */
 package org.nuxeo.elasticsearch.web.admin;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
-import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
-import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsResponse;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -51,9 +45,13 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.jboss.seam.ScopeType.CONVERSATION;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
@@ -98,19 +96,16 @@ public class ElasticSearchManager implements Serializable {
     private Boolean dropIndex = false;
 
     public String getNodesInfo() {
-        NodesInfoResponse nodesInfo = esa.getClient().admin().cluster().prepareNodesInfo().execute().actionGet();
-        return nodesInfo.toString();
+        return esa.getClient().getNodesInfo();
     }
 
     public String getNodesStats() {
-        NodesStatsResponse stats = esa.getClient().admin().cluster().prepareNodesStats().execute().actionGet();
-        return stats.toString();
+        return esa.getClient().getNodesStats();
     }
 
     public String getNodesHealth() {
         String[] indices = getIndexNames();
-        ClusterHealthResponse health = esa.getClient().admin().cluster().prepareHealth(indices).get();
-        return health.toString();
+        return esa.getClient().getHealthStatus(indices).toString();
     }
 
     public void startReindexAll() {
@@ -201,7 +196,8 @@ public class ElasticSearchManager implements Serializable {
 
     public String getNumberOfDocuments() {
         String[] indices = getIndexNames();
-        SearchResponse ret = esa.getClient().prepareSearch(indices).setSize(0).setQuery(QueryBuilders.matchAllQuery()).get();
+        SearchResponse ret = esa.getClient().search(new SearchRequest(indices)
+                .source(new SearchSourceBuilder().query(QueryBuilders.matchAllQuery()).size(0)));
         return Long.valueOf(ret.getHits().totalHits).toString();
     }
 

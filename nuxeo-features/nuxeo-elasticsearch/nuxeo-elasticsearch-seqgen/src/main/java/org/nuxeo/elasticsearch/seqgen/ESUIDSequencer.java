@@ -18,16 +18,18 @@
  */
 package org.nuxeo.elasticsearch.seqgen;
 
-import java.util.NoSuchElementException;
-
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.Client;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.uidgen.AbstractUIDSequencer;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
+import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
+
+import java.util.NoSuchElementException;
 
 /**
  * Elasticsearch implementation of {@link UIDSequencer}.
@@ -41,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ESUIDSequencer extends AbstractUIDSequencer {
 
-    protected Client esClient = null;
+    protected ESClient esClient = null;
 
     protected String indexName;
 
@@ -54,8 +56,7 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
         esClient = esa.getClient();
         indexName = esa.getIndexNameForType(ElasticSearchConstants.SEQ_ID_TYPE);
         try {
-            boolean indexExists = esClient.admin().indices().prepareExists(indexName).execute().actionGet()
-                    .isExists();
+            boolean indexExists = esClient.indexExists(indexName);
             if (!indexExists) {
                 throw new NuxeoException(
                         String.format("Sequencer %s needs an elasticSearchIndex contribution with type %s", getName(),
@@ -79,8 +80,9 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
     @Override
     public long getNextLong(String sequenceName) {
         String source = "{ \"ts\" : " + System.currentTimeMillis() + "}";
-        IndexResponse res = esClient.prepareIndex(indexName, ElasticSearchConstants.SEQ_ID_TYPE, sequenceName).setSource(
-                source).execute().actionGet();
+        IndexResponse res = esClient.index(
+                new IndexRequest(indexName, ElasticSearchConstants.SEQ_ID_TYPE, sequenceName)
+                        .source(source, XContentType.JSON));
         return res.getVersion();
     }
 

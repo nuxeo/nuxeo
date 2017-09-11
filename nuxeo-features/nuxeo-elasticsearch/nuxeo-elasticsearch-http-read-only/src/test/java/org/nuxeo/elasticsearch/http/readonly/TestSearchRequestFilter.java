@@ -52,7 +52,7 @@ public class TestSearchRequestFilter {
         filter.init(getNonAdminCoreSession(), INDICES, TYPES, "pretty", payload);
         Assert.assertEquals("/nxutest/doc/_search?pretty", filter.getUrl());
         Assert.assertEquals(
-                "{\"query\":{\"filtered\":{\"filter\":{\"terms\":{\"ecm:acl\":[\"group1\",\"group2\",\"members\",\"jdoe\",\"Everyone\"]}},\"query\":{\"match_all\":{}}}}}",
+                "{\"query\":{\"bool\":{\"filter\":{\"terms\":{\"ecm:acl\":[\"group1\",\"group2\",\"members\",\"jdoe\",\"Everyone\"]}},\"must\":{\"match_all\":{}}}}}",
                 filter.getPayload());
     }
 
@@ -72,8 +72,8 @@ public class TestSearchRequestFilter {
                 "size=2&q=dc%5C%3Atitle:Workspaces", null);
         Assert.assertEquals(filter.getUrl(), "/nxutest/doc/_search?size=2");
         Assert.assertEquals(
-                filter.getPayload(),
-                "{\"query\":{\"filtered\":{\"filter\":{\"terms\":{\"ecm:acl\":[\"group1\",\"group2\",\"members\",\"jdoe\",\"Everyone\"]}},\"query\":{\"query_string\":{\"default_operator\":\"OR\",\"query\":\"dc\\:title:Workspaces\",\"default_field\":\"_all\"}}}}}");
+                "{\"query\":{\"bool\":{\"filter\":{\"terms\":{\"ecm:acl\":[\"group1\",\"group2\",\"members\",\"jdoe\",\"Everyone\"]}},\"must\":{\"query_string\":{\"default_operator\":\"OR\",\"query\":\"dc\\:title:Workspaces\",\"default_field\":\"_all\"}}}}}",
+                filter.getPayload());
     }
 
     @Test
@@ -82,9 +82,8 @@ public class TestSearchRequestFilter {
         filter.init(getNonAdminCoreSession(), INDICES, TYPES,
                 "q=dc\\:title:Workspaces&pretty&df=dc:title&default_operator=AND", null);
         Assert.assertEquals(filter.getUrl(), "/nxutest/doc/_search?pretty");
-        Assert.assertEquals(
-                filter.getPayload(),
-                "{\"query\":{\"filtered\":{\"filter\":{\"terms\":{\"ecm:acl\":[\"group1\",\"group2\",\"members\",\"jdoe\",\"Everyone\"]}},\"query\":{\"query_string\":{\"default_operator\":\"AND\",\"query\":\"dc\\:title:Workspaces\",\"default_field\":\"dc:title\"}}}}}");
+        Assert.assertEquals("{\"query\":{\"bool\":{\"filter\":{\"terms\":{\"ecm:acl\":[\"group1\",\"group2\",\"members\",\"jdoe\",\"Everyone\"]}},\"must\":{\"query_string\":{\"default_operator\":\"AND\",\"query\":\"dc\\:title:Workspaces\",\"default_field\":\"dc:title\"}}}}}",
+                filter.getPayload());
     }
 
     @Test

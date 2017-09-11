@@ -19,41 +19,39 @@
  */
 package org.nuxeo.elasticsearch.audit;
 
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.elasticsearch.action.bulk.BulkItemResponse;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.common.io.stream.BytesStreamOutput;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.common.xcontent.NamedXContentRegistry;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.common.xcontent.XContentParser;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryParseContext;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchModule;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.metrics.max.Max;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -79,11 +77,25 @@ import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
+import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 /**
  * Implementation of the {@link AuditBackend} interface using Elasticsearch persistence
@@ -106,7 +118,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         super(component, config);
     }
 
-    protected Client esClient;
+    protected ESClient esClient;
 
     protected static final Log log = LogFactory.getLog(ESAuditBackend.class);
 
@@ -136,30 +148,30 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
         @Override
         public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap,
-                boolean doDefaultSort) {
+                                               boolean doDefaultSort) {
             throw new UnsupportedOperationException("Not implemented yet!");
         }
     };
 
-    protected Client getClient() {
+    protected ESClient getClient() {
         log.info("Activate Elasticsearch backend for Audit");
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-        Client client = esa.getClient();
+        ESClient client = esa.getClient();
         ensureUIDSequencer(client);
         return client;
     }
 
     protected boolean isMigrationDone() {
         AuditReader reader = Framework.getService(AuditReader.class);
-        List<LogEntry> entries = reader.queryLogs(new String[] { MIGRATION_DONE_EVENT }, null);
+        List<LogEntry> entries = reader.queryLogs(new String[]{MIGRATION_DONE_EVENT}, null);
         return !entries.isEmpty();
     }
 
     @Override
     public int getApplicationStartedOrder() {
         int elasticOrder = ((DefaultComponent) Framework.getRuntime()
-                                            .getComponent("org.nuxeo.elasticsearch.ElasticSearchComponent"))
-                                                                                                            .getApplicationStartedOrder();
+                .getComponent("org.nuxeo.elasticsearch.ElasticSearchComponent"))
+                .getApplicationStartedOrder();
         int uidgenOrder = ((DefaultComponent) Framework.getRuntime()
                 .getComponent("org.nuxeo.ecm.core.uidgen.UIDGeneratorService"))
                 .getApplicationStartedOrder();
@@ -200,6 +212,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         }
         try {
             esClient.close();
+        } catch (Exception e) {
+            log.warn("Fail to close esClient: " + e.getMessage(), e);
         } finally {
             esClient = null;
         }
@@ -232,24 +246,24 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     }
 
     protected List<LogEntry> getLogEntries(QueryBuilder filter, boolean doDefaultSort) {
-        SearchRequestBuilder builder = getSearchRequestBuilder(esClient);
-        if (doDefaultSort) {
-            builder.addSort("eventDate", SortOrder.DESC);
-        }
+        SearchRequest request = createSearchRequest();
         TimeValue keepAlive = TimeValue.timeValueMinutes(1);
-        builder.setQuery(QueryBuilders.constantScoreQuery(filter)).setScroll(keepAlive).setSize(100);
-
-        logSearchRequest(builder);
-        SearchResponse searchResponse = builder.get();
+        request.scroll(keepAlive);
+        request.source(new SearchSourceBuilder().query(QueryBuilders.constantScoreQuery(filter)).size(100));
+        if (doDefaultSort) {
+            request.source().sort("eventDate", SortOrder.DESC);
+        }
+        logSearchRequest(request);
+        SearchResponse searchResponse = esClient.search(request);
         logSearchResponse(searchResponse);
 
         // Build log entries
         List<LogEntry> logEntries = buildLogEntries(searchResponse);
         // Scroll on next results
         for (; //
-                searchResponse.getHits().getHits().length > 0
-                        && logEntries.size() < searchResponse.getHits().getTotalHits(); //
-                searchResponse = runNextScroll(searchResponse.getScrollId(), keepAlive)) {
+             searchResponse.getHits().getHits().length > 0
+                     && logEntries.size() < searchResponse.getHits().getTotalHits(); //
+             searchResponse = runNextScroll(searchResponse.getScrollId(), keepAlive)) {
             // Build log entries
             logEntries.addAll(buildLogEntries(searchResponse));
         }
@@ -262,7 +276,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                     "Scroll request: -XGET 'localhost:9200/_search/scroll' -d '{\"scroll\": \"%s\", \"scroll_id\": \"%s\" }'",
                     keepAlive, scrollId));
         }
-        SearchResponse response = esClient.prepareSearchScroll(scrollId).setScroll(keepAlive).execute().actionGet();
+        SearchResponse response = esClient.searchScroll(new SearchScrollRequest(scrollId).scroll(keepAlive));
         logSearchResponse(response);
         return response;
     }
@@ -279,16 +293,15 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         return entries;
     }
 
-    protected SearchRequestBuilder getSearchRequestBuilder(Client esClient) {
-        return esClient.prepareSearch(getESIndexName())
-                       .setTypes(ElasticSearchConstants.ENTRY_TYPE)
-                       .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+    protected SearchRequest createSearchRequest() {
+        return new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE)
+                .searchType(SearchType.DFS_QUERY_THEN_FETCH);
     }
 
     @Override
     public LogEntry getLogEntryByID(long id) {
-        GetResponse ret = esClient.prepareGet(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE, String.valueOf(id))
-                                  .get();
+        GetResponse ret = esClient.get(
+                new GetRequest(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE, String.valueOf(id)));
         if (!ret.isExists()) {
             return null;
         }
@@ -299,14 +312,30 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         }
     }
 
-    public SearchRequestBuilder buildQuery(String query, Map<String, Object> params) {
+    public SearchRequest buildQuery(String query, Map<String, Object> params) {
         if (params != null && params.size() > 0) {
             query = expandQueryVariables(query, params);
         }
-        SearchRequestBuilder builder = getSearchRequestBuilder(esClient);
-        builder.setQuery(query);
-        return builder;
+        SearchRequest request = createSearchRequest();
+        SearchSourceBuilder sourceBuilder = createSearchSourceBuilder(query);
+        return request.source(sourceBuilder);
     }
+
+    protected SearchSourceBuilder createSearchSourceBuilder(String query) {
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        SearchModule searchModule = new SearchModule(Settings.EMPTY, false, Collections.emptyList());
+        try {
+            try (XContentParser parser = XContentFactory.xContent(XContentType.JSON)
+                        .createParser(new NamedXContentRegistry(searchModule.getNamedXContents()), query)) {
+                searchSourceBuilder.parseXContent(new QueryParseContext(parser));
+            }
+        } catch (IOException e) {
+            log.error("Invalid query: " + query + ": " + e.getMessage(), e);
+            throw new IllegalArgumentException("Bad query: " + query);
+        }
+        return searchSourceBuilder;
+    }
+
 
     public String expandQueryVariables(String query, Object[] params) {
         Map<String, Object> qParams = new HashMap<>();
@@ -339,23 +368,23 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public List<?> nativeQuery(String query, Map<String, Object> params, int pageNb, int pageSize) {
-        SearchRequestBuilder builder = buildQuery(query, params);
+        SearchRequest request = buildQuery(query, params);
         if (pageNb > 0) {
-            builder.setFrom(pageNb * pageSize);
+            request.source().from(pageNb * pageSize);
         }
         if (pageSize > 0) {
-            builder.setSize(pageSize);
+            request.source().size(pageSize);
         }
-        logSearchRequest(builder);
-        SearchResponse searchResponse = builder.get();
+        logSearchRequest(request);
+        SearchResponse searchResponse = esClient.search(request);
         logSearchResponse(searchResponse);
         return buildLogEntries(searchResponse);
     }
 
     @Override
     public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String[] categories, String path, int pageNb,
-            int pageSize) {
-        SearchRequestBuilder builder = getSearchRequestBuilder(esClient);
+                                          int pageSize) {
+        SearchRequest request = createSearchRequest();
         BoolQueryBuilder filterBuilder = QueryBuilders.boolQuery();
         if (eventIds != null && eventIds.length > 0) {
             if (eventIds.length == 1) {
@@ -378,24 +407,22 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         if (limit != null) {
             filterBuilder.must(QueryBuilders.rangeQuery("eventDate").lt(limit));
         }
-
-        builder.setQuery(QueryBuilders.constantScoreQuery(filterBuilder));
-
+        request.source(new SearchSourceBuilder().query(QueryBuilders.constantScoreQuery(filterBuilder)));
         if (pageNb > 0) {
-            builder.setFrom(pageNb * pageSize);
+            request.source().from(pageNb * pageSize);
         }
         if (pageSize > 0) {
-            builder.setSize(pageSize);
+            request.source().size(pageSize);
         }
-        logSearchRequest(builder);
-        SearchResponse searchResponse = builder.get();
+        logSearchRequest(request);
+        SearchResponse searchResponse = esClient.search(request);
         logSearchResponse(searchResponse);
         return buildLogEntries(searchResponse);
     }
 
     @Override
     public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String[] categories, String path,
-            int pageNb, int pageSize) {
+                                          int pageNb, int pageSize) {
 
         Date limit = null;
         if (dateRange != null) {
@@ -416,7 +443,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             return;
         }
 
-        BulkRequestBuilder bulkRequest = esClient.prepareBulk();
+        BulkRequest bulkRequest = new BulkRequest();
         JsonFactory factory = new JsonFactory();
 
         UIDGeneratorService uidGeneratorService = Framework.getService(UIDGeneratorService.class);
@@ -433,11 +460,11 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 JsonGenerator jsonGen = factory.createJsonGenerator(out);
                 XContentBuilder builder = jsonBuilder(out);
                 AuditEntryJSONWriter.asJSON(jsonGen, entry);
-                bulkRequest.add(esClient.prepareIndex(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE,
-                        String.valueOf(entry.getId())).setSource(builder));
+                bulkRequest.add(new IndexRequest(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE,
+                        String.valueOf(entry.getId())).source(builder));
             }
 
-            BulkResponse bulkResponse = bulkRequest.execute().actionGet();
+            BulkResponse bulkResponse = esClient.bulk(bulkRequest);
             if (bulkResponse.hasFailures()) {
                 for (BulkItemResponse response : bulkResponse.getItems()) {
                     if (response.isFailed()) {
@@ -454,18 +481,28 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public Long getEventsCount(String eventId) {
-        SearchResponse res = esClient.prepareSearch(getESIndexName())
-                                     .setTypes(ElasticSearchConstants.ENTRY_TYPE)
-                                     .setQuery(QueryBuilders.constantScoreQuery(
-                                             QueryBuilders.termQuery("eventId", eventId)))
-                                     .setSize(0)
-                                     .get();
+        SearchResponse res = esClient.search(
+                new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE).source(
+                        new SearchSourceBuilder().query(QueryBuilders.constantScoreQuery(
+                                QueryBuilders.termQuery("eventId", eventId))).size(0)
+                ));
         return res.getHits().getTotalHits();
     }
 
     @Override
     public long syncLogCreationEntries(final String repoId, final String path, final Boolean recurs) {
         return syncLogCreationEntries(provider, repoId, path, recurs);
+    }
+
+    public SearchResponse search(SearchRequest request) {
+        String[] indices = request.indices();
+        if (indices == null && indices.length != 1) {
+            throw new IllegalStateException("Search on audit must include index name: " + request);
+        }
+        if (! getESIndexName().equals(indices[0])) {
+            throw new IllegalStateException("Search on audit must be on audit index: " + request);
+        }
+        return esClient.search(request);
     }
 
     protected QueryBuilder buildFilter(PredicateDefinition[] predicates, DocumentModel searchDocumentModel) {
@@ -540,13 +577,14 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         return filterBuilder;
     }
 
-    public SearchRequestBuilder buildSearchQuery(String fixedPart, PredicateDefinition[] predicates,
-            DocumentModel searchDocumentModel) {
-        SearchRequestBuilder builder = getSearchRequestBuilder(esClient);
+    public SearchRequest buildSearchQuery(String fixedPart, PredicateDefinition[] predicates,
+                                          DocumentModel searchDocumentModel) {
+        SearchRequest request = createSearchRequest();
         QueryBuilder queryBuilder = QueryBuilders.wrapperQuery(fixedPart);
         QueryBuilder filterBuilder = buildFilter(predicates, searchDocumentModel);
-        builder.setQuery(QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder));
-        return builder;
+        request.source(new SearchSourceBuilder().query(
+                QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder)));
+        return request;
     }
 
     protected boolean isNonNullParam(Object[] val) {
@@ -593,7 +631,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         }
     }
 
-    protected void logSearchRequest(SearchRequestBuilder request) {
+    protected void logSearchRequest(SearchRequest request) {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
                     getESIndexName(), ElasticSearchConstants.ENTRY_TYPE, request.toString()));
@@ -603,21 +641,16 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     /**
      * Ensures the audit sequence returns an UID greater or equal than the maximum log entry id.
      */
-    protected void ensureUIDSequencer(Client esClient) {
-        boolean auditIndexExists = esClient.admin()
-                                           .indices()
-                                           .prepareExists(getESIndexName())
-                                           .execute()
-                                           .actionGet()
-                                           .isExists();
+    protected void ensureUIDSequencer(ESClient esClient) {
+        boolean auditIndexExists = esClient.indexExists(getESIndexName());
         if (!auditIndexExists) {
             return;
         }
 
         // Get max log entry id
-        SearchRequestBuilder builder = getSearchRequestBuilder(esClient);
-        builder.setQuery(QueryBuilders.matchAllQuery()).addAggregation(AggregationBuilders.max("maxAgg").field("id"));
-        SearchResponse searchResponse = builder.execute().actionGet();
+        SearchRequest request = createSearchRequest();
+        request.source(new SearchSourceBuilder().query(QueryBuilders.matchAllQuery()).aggregation(AggregationBuilders.max("maxAgg").field("id")));
+        SearchResponse searchResponse = esClient.search(request);
         Max agg = searchResponse.getAggregations().get("maxAgg");
         int maxLogEntryId = (int) agg.getValue();
 

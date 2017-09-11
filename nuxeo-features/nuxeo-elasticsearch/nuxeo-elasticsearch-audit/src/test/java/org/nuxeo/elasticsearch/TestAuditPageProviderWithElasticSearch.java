@@ -101,7 +101,7 @@ public class TestAuditPageProviderWithElasticSearch {
 
         LogEntryGen.generate("dummy", "entry", "category", 15);
         PageProvider<?> pp = pps.getPageProvider("SimpleESAuditPP", null, Long.valueOf(5), Long.valueOf(0),
-                new HashMap<String, Serializable>());
+                new HashMap<>());
         assertNotNull(pp);
 
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
