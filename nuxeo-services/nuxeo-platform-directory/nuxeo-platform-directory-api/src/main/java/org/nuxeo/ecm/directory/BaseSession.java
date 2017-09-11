@@ -286,7 +286,7 @@ public abstract class BaseSession implements Session, EntrySource {
      * @since 5.3.1
      */
     public static boolean isReadOnlyEntry(DocumentModel entry) {
-        return entry.getContextData(READONLY_ENTRY_FLAG) == Boolean.TRUE;
+        return Boolean.TRUE.equals(entry.getContextData(READONLY_ENTRY_FLAG));
     }
 
     /**
