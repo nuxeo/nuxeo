@@ -1,0 +1,318 @@
+/*
+ * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     bdelbosc
+ */
+package org.nuxeo.elasticsearch.client;
+
+import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
+import org.apache.http.entity.ContentType;
+import org.apache.http.nio.entity.NStringEntity;
+import org.apache.http.util.EntityUtils;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.ClearScrollRequest;
+import org.elasticsearch.action.search.ClearScrollResponse;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchScrollRequest;
+import org.elasticsearch.client.Response;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.cluster.health.ClusterHealthStatus;
+import org.elasticsearch.common.xcontent.XContentHelper;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.nuxeo.elasticsearch.api.ESClient;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+
+import static java.util.Collections.emptyMap;
+
+/**
+ * @since 9.3
+ */
+public class ESRestClient implements ESClient {
+    private static final org.apache.commons.logging.Log log = LogFactory.getLog(ESRestClient.class);
+    protected RestClient lowLevelClient;
+    protected RestHighLevelClient client;
+
+    public ESRestClient(RestClient lowLevelRestClient, RestHighLevelClient client) {
+        this.lowLevelClient = lowLevelRestClient;
+        this.client = client;
+    }
+
+    @Override
+    public boolean waitForYellowStatus(String[] indexNames, int timeoutSecond) {
+        ClusterHealthStatus healthStatus;
+        Response response;
+        try {
+            response = lowLevelClient.performRequest("GET",
+                    String.format("/_cluster/health/%s?wait_for_status=yellow&timeout=%ds",
+                            getIndexesAsString(indexNames), timeoutSecond));
+            try (InputStream is = response.getEntity().getContent()) {
+                Map<String, Object> map = XContentHelper.convertToMap(XContentType.JSON.xContent(), is, true);
+                healthStatus = ClusterHealthStatus.fromString((String) map.get("status"));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        switch (healthStatus) {
+            case GREEN:
+                log.info("ES Cluster ready: " + response);
+                return true;
+            case YELLOW:
+                log.warn("Es Cluster ready but not GREEN: " + response);
+                return false;
+            default:
+                String error = "ES Cluster health status: " + healthStatus + ", not Yellow after " + timeoutSecond + " give up: "
+                        + response;
+                log.error(error);
+                throw new IllegalStateException(error);
+        }
+    }
+
+    protected String getIndexesAsString(String[] indexNames) {
+        String indexes = "";
+        if (indexNames != null && indexNames.length > 0) {
+            indexes = String.join(",", indexNames);
+        }
+        return indexes;
+    }
+
+    @Override
+    public ClusterHealthStatus getHealthStatus(String[] indexNames) {
+        try {
+            Response response = lowLevelClient.performRequest("GET",
+                    String.format("/_cluster/health/%s", getIndexesAsString(indexNames)));
+            try (InputStream is = response.getEntity().getContent()) {
+                Map<String, Object> map = XContentHelper.convertToMap(XContentType.JSON.xContent(), is, true);
+                return ClusterHealthStatus.fromString((String) map.get("status"));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void refresh(String indexName) {
+        try {
+            lowLevelClient.performRequest("POST", "/" + indexName + "/_refresh");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public void flush(String indexName) {
+        try {
+            lowLevelClient.performRequest("POST", "/" + indexName + "/_flush?wait_if_ongoing=true");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void optimize(String indexName) {
+        try {
+            lowLevelClient.performRequest("GET", "/" + indexName + "/?max_num_segments=1&wait_for_merge=true");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean indexExists(String indexName) {
+        Response response;
+        try {
+            response = lowLevelClient.performRequest("HEAD", indexName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        int code = response.getStatusLine().getStatusCode();
+        if (code == HttpStatus.SC_OK) {
+            return true;
+        } else if (code == HttpStatus.SC_NOT_FOUND) {
+            return false;
+        }
+        throw new IllegalStateException(String.format("Checking index %s returns: %s", indexName, response));
+    }
+
+    @Override
+    public boolean mappingExists(String indexName, String type) {
+        Response response;
+        try {
+            response = lowLevelClient.performRequest("HEAD",
+                    String.format("/%s/%s", indexName, type));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        int code = response.getStatusLine().getStatusCode();
+        if (code == HttpStatus.SC_OK) {
+            return true;
+        } else if (code == HttpStatus.SC_NOT_FOUND) {
+            return false;
+        }
+        throw new IllegalStateException(String.format("Checking mapping %s returns: %s", indexName, response));
+    }
+
+    @Override
+    public void deleteIndex(String indexName, int timeoutSecond) {
+        Response response;
+        try {
+            response = lowLevelClient.performRequest("DELETE",
+                    String.format("/%s?master_timeout=%ds", indexName, timeoutSecond));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        int code = response.getStatusLine().getStatusCode();
+        if (code != HttpStatus.SC_OK) {
+            throw new IllegalStateException(String.format("Deleting %s returns: %s", indexName, response));
+        }
+    }
+
+    @Override
+    public void createIndex(String indexName, String jsonSettings) {
+        HttpEntity entity = new NStringEntity(jsonSettings, ContentType.APPLICATION_JSON);
+        Response response;
+        try {
+            response = lowLevelClient.performRequest("PUT", indexName, emptyMap(), entity);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            throw new RuntimeException("Fail to create index: " + indexName + " :" + response);
+        }
+    }
+
+    @Override
+    public void createMapping(String indexName, String type, String jsonMapping) {
+        HttpEntity entity = new NStringEntity(jsonMapping, ContentType.APPLICATION_JSON);
+        Response response;
+        try {
+            response = lowLevelClient.performRequest("PUT", String.format("/%s/%s/_mapping", indexName, type),
+                    emptyMap(), entity);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            throw new RuntimeException(String.format("Fail to create mapping on %s/%s: %s", indexName, type, response));
+        }
+
+    }
+
+    @Override
+    public String getNodesInfo() {
+        try {
+            Response response = lowLevelClient.performRequest("GET", "_nodes/_all");
+            return EntityUtils.toString(response.getEntity());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String getNodesStats() {
+        try {
+            Response response = lowLevelClient.performRequest("GET", "_nodes/stats");
+            return EntityUtils.toString(response.getEntity());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public BulkResponse bulk(BulkRequest request) {
+        try {
+            return client.bulk(request);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public DeleteResponse delete(DeleteRequest request) {
+        try {
+            return client.delete(request);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public SearchResponse search(SearchRequest request) {
+        try {
+            return client.search(request);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public SearchResponse searchScroll(SearchScrollRequest request) {
+        try {
+            return client.searchScroll(request);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public GetResponse get(GetRequest request) {
+        try {
+            return client.get(request);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public IndexResponse index(IndexRequest request) {
+        try {
+            return client.index(request);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ClearScrollResponse clearScroll(ClearScrollRequest request) {
+        try {
+            return client.clearScroll(request);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (lowLevelClient != null) {
+            lowLevelClient.close();
+            lowLevelClient = null;
+        }
+        client = null;
+    }
+}

@@ -625,7 +625,7 @@ public class TestAggregates {
                         "        \"created\" : {\n" +
                         "          \"date_histogram\" : {\n" +
                         "            \"field\" : \"dc:created\",\n" +
-                        "            \"time_zone\" : \"Europe/Paris\",\n" +
+                        "            \"time_zone\" : \"" + DateTimeZone.getDefault().getID() +"\",\n" +
                         "            \"interval\" : \"month\",\n" +
                         "            \"offset\" : 0,\n" +
                         "            \"order\" : {\n" +

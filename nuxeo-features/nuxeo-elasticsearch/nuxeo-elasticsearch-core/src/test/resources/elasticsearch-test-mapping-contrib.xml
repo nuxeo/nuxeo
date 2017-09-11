@@ -90,12 +90,8 @@
         },
         "properties" : {
         "dc:title" : {
-        "type" : "string",
+        "type" : "text",
         "fields" : {
-        "dc:title" : {
-        "index" : "not_analyzed",
-        "type" : "string"
-        },
         "fulltext" : {
         "boost": 2,
         "type": "text",
@@ -103,42 +99,39 @@
         },
         "lowercase" : {
         "analyzer" : "lowercase_analyzer",
-        "type" : "string"
+        "type" : "text"
         },
         "ngram": {
-        "type": "string",
+        "type": "text",
         "analyzer": "ngram_analyzer"
         }
         }
         },
         "dc:description" : {
-        "type" : "string",
+        "type" : "text",
         "fields" : {
         "dc:description" : {
-        "index" : "not_analyzed",
-        "type" : "string"
+        "type" : "keyword"
         },
         "lowercase" : {
         "analyzer" : "lowercase_analyzer",
-        "type" : "string"
+        "type" : "text"
         }
         }
         },
         "ecm:binarytext*" : {
-        "type" : "string",
-        "analyzer" : "fulltext"
+        "type" : "text"
         },
         "ecm:path" : {
-        "type" : "string",
+        "type" : "keyword",
         "fields" : {
         "children" : {
         "analyzer" : "path_analyzer",
         "search_analyzer" : "keyword",
-        "type" : "string"
+        "type" : "text"
         },
         "ecm:path" : {
-        "index" : "not_analyzed",
-        "type" : "string"
+        "type" : "keyword"
         }
         }
         },

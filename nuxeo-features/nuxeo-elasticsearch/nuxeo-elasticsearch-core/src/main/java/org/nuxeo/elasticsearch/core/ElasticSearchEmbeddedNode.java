@@ -112,14 +112,19 @@ public class ElasticSearchEmbeddedNode implements Closeable {
     public void close() throws IOException {
         log.info("Closing embedded (in JVM) Elasticsearch");
         node.close();
-        List<Path> locks = Files.walk(Paths.get(config.getDataPath()))
+        // TODO: should we delete the lock ?
+        // deleteLuceneFileLock(config.getDataPath());
+        log.info("Node closed: " + node.isClosed());
+        node = null;
+    }
+
+    protected void deleteLuceneFileLock(String root) throws IOException {
+        List<Path> locks = Files.walk(Paths.get(root))
                 .filter(f -> f.getFileName().toString().equals("node.lock")).collect(Collectors.toList());
         if (!locks.isEmpty()) {
             locks.forEach(f -> log.warn("Found lock on close, deleting: " + f));
             locks.forEach(f -> f.toFile().delete());
         }
-        log.info("Node closed: " + node.isClosed());
-        node = null;
     }
 
     public ElasticSearchLocalConfig getConfig() {

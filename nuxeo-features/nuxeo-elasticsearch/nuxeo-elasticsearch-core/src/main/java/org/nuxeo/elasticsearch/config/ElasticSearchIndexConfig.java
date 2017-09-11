@@ -144,9 +144,7 @@ public class ElasticSearchIndexConfig {
             + "        }\n" //
             + "      },\n" //
             + "      \"ecm:binarytext\" : {\n" //
-            + "         \"type\" : \"text\",\n" //
-            + "         \"index\" : false,\n" //
-            + "         \"include_in_all\" : true\n" //
+            + "         \"type\" : \"text\"\n" //
             + "      },\n" //
             + "      \"ecm:uuid\" : {\n" //
             + "         \"type\" : \"keyword\"\n" //
@@ -160,7 +158,6 @@ public class ElasticSearchIndexConfig {
             + "               \"type\" : \"text\"\n" //
             + "            },\n" //
             + "            \"ecm:path\" : {\n" //
-            + "               \"index\" : \"not_analyzed\",\n" //
             + "               \"type\" : \"keyword\"\n" //
             + "            }\n" //
             + "         }\n" //
