@@ -55,24 +55,16 @@
         },
         "properties" : {
         "dc:title" : {
-        "type" : "string",
+        "type" : "text",
         "fields" : {
-        "dc:title" : {
-        "index" : "no",
-        "include_in_all" : true,
-        "type" : "string"
-        },
         "fulltext" : {
-        "type": "string",
+        "type": "text",
         "analyzer" : "fulltext"
         }
         }
         },
         "ecm:binarytext" : {
-        "index" : "no",
-        "include_in_all" : true,
-        "type" : "text",
-        "analyzer" : "fulltext"
+        "type" : "text"
         }
         }
         }

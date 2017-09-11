@@ -56,10 +56,6 @@ public class ESTransportClient implements ESClient {
         this.client = client;
     }
 
-    public Client _getClient() {
-        return client;
-    }
-
     @Override
     public boolean waitForYellowStatus(String[] indexNames, int timeoutSecond) {
         boolean ret = true;
@@ -78,7 +74,7 @@ public class ESTransportClient implements ESClient {
                 errorMessage = "ES Cluster health status not Yellow after " + timeout + " give up: "
                         + response;
             } else {
-                if ((indexNames.length > 0) && response.getStatus() != ClusterHealthStatus.GREEN) {
+                if (response.getStatus() != ClusterHealthStatus.GREEN) {
                     log.warn("Es Cluster ready but not GREEN: " + response);
                     ret = false;
                 } else {
@@ -90,7 +86,7 @@ public class ESTransportClient implements ESClient {
         }
         if (errorMessage != null) {
             log.error(errorMessage);
-            throw new RuntimeException(errorMessage);
+            throw new IllegalStateException(errorMessage);
         }
         return ret;
     }
