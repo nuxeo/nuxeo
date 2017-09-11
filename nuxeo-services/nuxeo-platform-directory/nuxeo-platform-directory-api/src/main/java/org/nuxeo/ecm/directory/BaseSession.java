@@ -284,8 +284,7 @@ public abstract class BaseSession implements Session {
      * @since 5.3.1
      */
     public static boolean isReadOnlyEntry(DocumentModel entry) {
-        ScopedMap contextData = entry.getContextData();
-        return contextData.getScopedValue(ScopeType.REQUEST, READONLY_ENTRY_FLAG) == Boolean.TRUE;
+        return Boolean.TRUE.equals(entry.getContextData(ScopeType.REQUEST, READONLY_ENTRY_FLAG));
     }
 
     /**
