@@ -19,7 +19,6 @@
 package org.nuxeo.elasticsearch.core;
 
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHitField;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
@@ -53,17 +52,17 @@ public class EsSearchHitConverter {
 
     public Map<String, Serializable> convert(SearchHit hit) {
         Map<String, Serializable> row = new HashMap<>(emptyRow);
-        for (SearchHitField field : hit.getFields().values()) {
-            String name = field.getName();
-            Serializable value = field.<Serializable>getValue();
+        hit.getSourceAsMap().forEach((name, value) -> {
             // type conversion
-            Type type;
-            if (value instanceof String && (type = selectFieldsAndTypes.get(name)) instanceof DateType) {
-                // convert back to calendar
-                value = (Serializable) type.decode(((String) value));
+            if (value instanceof String) {
+                Type type = selectFieldsAndTypes.get(name);
+                if (type instanceof DateType) {
+                    // convert back to calendar
+                    value = type.decode(((String) value));
+                }
             }
-            row.put(name, value);
-        }
+            row.put(name, (Serializable) value);
+        });
         if (selectFieldsAndTypes.containsKey(NXQL.ECM_FULLTEXT_SCORE)) {
             row.put(NXQL.ECM_FULLTEXT_SCORE, (double) hit.getScore());
         }

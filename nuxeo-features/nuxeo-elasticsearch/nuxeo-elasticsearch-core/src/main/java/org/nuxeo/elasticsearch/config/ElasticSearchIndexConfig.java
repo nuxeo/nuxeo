@@ -123,7 +123,7 @@ public class ElasticSearchIndexConfig {
             + "   },\n" //
             + "   \"properties\" : {\n" //
             + "      \"dc:title\" : {\n" //
-            + "         \"type\" : \"string\",\n" //
+            + "         \"type\" : \"text\",\n" //
             + "         \"fielddata\" : true,\n" //
             + "         \"fields\" : {\n" //
             + "           \"fulltext\" : {\n" //
@@ -134,11 +134,8 @@ public class ElasticSearchIndexConfig {
             + "        }\n" //
             + "      },\n" //
             + "      \"dc:description\" : {\n" //
-            + "         \"type\" : \"string\",\n" //
+            + "         \"type\" : \"text\",\n" //
             + "         \"fields\" : {\n" //
-            + "           \"dc:description\" : {\n" //
-            + "             \"type\" : \"string\"\n" //
-            + "           },\n" //
             + "           \"fulltext\" : {\n" //
             + "             \"boost\": 1.5,\n" //
             + "             \"type\": \"text\",\n" //
@@ -147,8 +144,8 @@ public class ElasticSearchIndexConfig {
             + "        }\n" //
             + "      },\n" //
             + "      \"ecm:binarytext\" : {\n" //
-            + "         \"type\" : \"string\",\n" //
-            + "         \"index\" : \"no\",\n" //
+            + "         \"type\" : \"text\",\n" //
+            + "         \"index\" : false,\n" //
             + "         \"include_in_all\" : true\n" //
             + "      },\n" //
             + "      \"ecm:uuid\" : {\n" //
@@ -160,11 +157,11 @@ public class ElasticSearchIndexConfig {
             + "            \"children\" : {\n" //
             + "               \"analyzer\" : \"path_analyzer\",\n" //
             + "               \"search_analyzer\" : \"keyword\",\n" //
-            + "               \"type\" : \"string\"\n" //
+            + "               \"type\" : \"text\"\n" //
             + "            },\n" //
             + "            \"ecm:path\" : {\n" //
             + "               \"index\" : \"not_analyzed\",\n" //
-            + "               \"type\" : \"string\"\n" //
+            + "               \"type\" : \"keyword\"\n" //
             + "            }\n" //
             + "         }\n" //
             + "      },\n" //

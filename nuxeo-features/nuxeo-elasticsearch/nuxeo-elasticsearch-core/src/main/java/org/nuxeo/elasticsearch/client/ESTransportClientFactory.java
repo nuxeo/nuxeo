@@ -29,6 +29,7 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
+import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
 
@@ -78,7 +79,7 @@ public class ESTransportClientFactory implements ESClientFactory {
     }
 
     @Override
-    public ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchClientConfig clientConfig) {
+    public ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchLocalConfig localConfig, ElasticSearchClientConfig clientConfig) {
         log.info("Creating a TransportClient to a local Elasticsearch");
         return new ESTransportClient(node.getNode().client());
     }

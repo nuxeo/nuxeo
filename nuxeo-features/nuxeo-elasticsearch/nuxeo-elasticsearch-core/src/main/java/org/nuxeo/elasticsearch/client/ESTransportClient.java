@@ -56,7 +56,6 @@ public class ESTransportClient implements ESClient {
         this.client = client;
     }
 
-    @Override
     public Client _getClient() {
         return client;
     }
@@ -94,6 +93,11 @@ public class ESTransportClient implements ESClient {
             throw new RuntimeException(errorMessage);
         }
         return ret;
+    }
+
+    @Override
+    public ClusterHealthStatus getHealthStatus(String[] indexNames) {
+        return client.admin().cluster().prepareHealth(indexNames).get().getStatus();
     }
 
     @Override
@@ -156,6 +160,16 @@ public class ESTransportClient implements ESClient {
                 .setType(type)
                 .setSource(jsonMapping, XContentType.JSON)
                 .get();
+    }
+
+    @Override
+    public String getNodesInfo() {
+        return client.admin().cluster().prepareNodesInfo().get().toString();
+    }
+
+    @Override
+    public String getNodesStats() {
+        return client.admin().cluster().prepareNodesStats().get().toString();
     }
 
     @Override

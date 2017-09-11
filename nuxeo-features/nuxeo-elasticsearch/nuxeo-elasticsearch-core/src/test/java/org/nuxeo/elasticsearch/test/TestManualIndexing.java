@@ -110,7 +110,7 @@ public class TestManualIndexing {
     public void checkIndexing() throws Exception {
         startTransaction();
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
-        doc.setPropertyValue("dc:title", "TestMe");
+        doc.setPropertyValue("dc:title", "Testme");
         // disable automatic indexing to control manually the indexing command
         doc.putContextData(ElasticSearchConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
         doc = session.createDocument(doc);
@@ -128,7 +128,7 @@ public class TestManualIndexing {
         // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        request.source(new SearchSourceBuilder().query(QueryBuilders.matchQuery("ecm:title", "TestMe")));
+        request.source(new SearchSourceBuilder().query(QueryBuilders.matchQuery("ecm:title", "Testme")));
         searchResponse = esa.getClient().search(request);
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
     }
@@ -136,7 +136,7 @@ public class TestManualIndexing {
     @Test
     public void checkManualAsyncIndexing() throws Exception {
         DocumentModel doc0 = session.createDocumentModel("/", "testNote", "Note");
-        doc0.setPropertyValue("dc:title", "TesNote");
+        doc0.setPropertyValue("dc:title", "TestNote");
         doc0 = session.createDocument(doc0);
         session.save();
 
@@ -178,6 +178,7 @@ public class TestManualIndexing {
         // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
         request.source(new SearchSourceBuilder().query(QueryBuilders.matchQuery("ecm:title", "TestMe")));
+        searchResponse = esa.getClient().search(request);
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
     }
 

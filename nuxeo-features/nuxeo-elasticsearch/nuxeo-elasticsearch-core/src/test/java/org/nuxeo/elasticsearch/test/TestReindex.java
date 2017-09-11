@@ -225,7 +225,7 @@ public class TestReindex {
             shouldReindexDocument();
             List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
             Assert.assertFalse("Expecting warn message", events.isEmpty());
-            Assert.assertTrue(events.get(0).getRenderedMessage().contains("Max bulk size reached"));
+            Assert.assertTrue(events.get(events.size() - 1).getRenderedMessage().contains("Max bulk size reached"));
         } finally {
             restoreConsoleLog();
             System.clearProperty(INDEX_BULK_MAX_SIZE_PROPERTY);
