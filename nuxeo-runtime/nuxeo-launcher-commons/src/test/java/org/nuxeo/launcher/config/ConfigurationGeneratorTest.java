@@ -88,6 +88,13 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     }
 
     @Test
+    public void getJavaOptsWithMultivaluedProperty() throws Exception {
+        setSystemProperty(ConfigurationGenerator.JAVA_OPTS_PROP, "-Da=\"a1 a2\" -Db=\"b1 b2\"");
+        List<String> javaOpts = configGenerator.getJavaOpts(Function.identity());
+        assertThat(javaOpts).containsExactly("-Da=\"a1 a2\"", "-Db=\"b1 b2\"");
+    }
+
+    @Test
     public void testEvalDynamicProperties() {
         assertEquals("Bad loop back URL", "http://127.0.0.1:8080/nuxeo",
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_LOOPBACK_URL));
