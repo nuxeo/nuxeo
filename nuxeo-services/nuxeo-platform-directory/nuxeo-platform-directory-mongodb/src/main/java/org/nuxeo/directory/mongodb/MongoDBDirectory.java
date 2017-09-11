@@ -32,6 +32,7 @@ import java.util.Map;
 
 import com.mongodb.MongoClient;
 import org.nuxeo.ecm.core.cache.CacheService;
+import org.nuxeo.ecm.core.mongodb.MongoDBConnectionHelper;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.AbstractDirectory;
@@ -46,7 +47,7 @@ import com.mongodb.client.model.Filters;
 
 /**
  * MongoDB implementation of a {@link Directory}
- * 
+ *
  * @since 9.1
  */
 public class MongoDBDirectory extends AbstractDirectory {
