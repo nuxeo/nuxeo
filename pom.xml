@@ -1061,11 +1061,6 @@
       <!-- MongoDB Extension -->
       <dependency>
         <groupId>org.nuxeo.ecm.mongodb.ext</groupId>
-        <artifactId>nuxeo-mongodb-core</artifactId>
-        <version>${nuxeo.mongodb.ext.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.mongodb.ext</groupId>
         <artifactId>nuxeo-mongodb-seqgen</artifactId>
         <version>${nuxeo.mongodb.ext.version}</version>
       </dependency>
@@ -1078,13 +1073,6 @@
         <groupId>org.nuxeo.ecm.mongodb.ext</groupId>
         <artifactId>nuxeo-mongodb-directory</artifactId>
         <version>${nuxeo.mongodb.ext.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.mongodb.ext</groupId>
-        <artifactId>nuxeo-mongodb-core</artifactId>
-        <version>${nuxeo.mongodb.ext.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
       </dependency>
 
       <!-- Target platforms -->
