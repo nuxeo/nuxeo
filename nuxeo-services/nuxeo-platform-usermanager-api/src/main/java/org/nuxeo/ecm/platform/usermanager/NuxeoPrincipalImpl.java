@@ -293,10 +293,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
      */
     public void setModel(DocumentModel model, boolean updateAllGroups) {
         this.model = model;
-        dataModel = model.getDataModels()
-                .values()
-                .iterator()
-                .next();
+        dataModel = model.getDataModels().values().iterator().next();
         if (updateAllGroups) {
             updateAllGroups();
         }
@@ -460,9 +457,8 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     /**
-     * Provides another implementation which marshall the user id instead of
-     * transferring the whole content and resolve it when unmarshalled.
-     *
+     * Provides another implementation which marshall the user id instead of transferring the whole content and resolve
+     * it when unmarshalled.
      */
     static protected class TransferableClone extends NuxeoPrincipalImpl {
 
@@ -484,8 +480,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
             }
 
             private Object readResolve() throws ObjectStreamException {
-                NuxeoPrincipal principal = Framework.getService(UserManager.class)
-                        .getPrincipal(username);
+                NuxeoPrincipal principal = Framework.getService(UserManager.class).getPrincipal(username);
                 principal.setOriginatingUser(originatingUser);
                 return principal;
             }
