@@ -1,0 +1,13 @@
+<#escape x as x?xml>
+<?xml version="1.0"?>
+<component name="org.nuxeo.mongodb.connection">
+
+  <extension target="org.nuxeo.ecm.core.mongodb.MongoDBComponent" point="connection">
+    <connection id="default">
+      <server>${nuxeo.mongodb.server}</server>
+      <dbname>${nuxeo.mongodb.dbname}</dbname>
+    </connection>
+  </extension>
+
+</component>
+</#escape>
