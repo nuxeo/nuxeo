@@ -243,7 +243,9 @@ public class PopupHelper implements Serializable {
 
     @WebRemote
     public String getCurrentURLAfterDelete() {
-        if (!isDocumentDeleted(currentContainer)) {
+        // If the deleted document is a child of the current container we can stay on the current container,
+        // else we must navigate to the closest parent of the deleted document
+        if (isPopupDocumentDescendantOfCurrentDocument()) {
             currentParent = currentContainer;
         }
         return DocumentModelFunctions.documentUrl(null, currentParent, null, getCurrentTabParameters(), false);
@@ -340,16 +342,9 @@ public class PopupHelper implements Serializable {
         return null;
     }
 
-    private boolean isDocumentDeleted(DocumentModel doc) {
-        // test if the document still exists in the repository
-        if (!documentManager.exists(doc.getRef())) {
-            return true;
-        }
-        // test if the document is in the trash
-        if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-            return true;
-        }
-        return false;
+    protected boolean isPopupDocumentDescendantOfCurrentDocument() {
+        return currentPopupDocument != null && currentContainer != null
+                && currentPopupDocument.getPathAsString().startsWith(currentContainer.getPathAsString() + "/");
     }
 
 }
