@@ -125,6 +125,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         config = other.config;
         try {
             model = other.model.clone();
+            model.copyContextData(other.model);
         } catch (CloneNotSupportedException cause) {
             throw new NuxeoException("Cannot clone principal " + this);
         }
