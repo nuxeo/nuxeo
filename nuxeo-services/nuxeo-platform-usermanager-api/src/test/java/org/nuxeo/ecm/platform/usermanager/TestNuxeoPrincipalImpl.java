@@ -21,14 +21,15 @@ package org.nuxeo.ecm.platform.usermanager;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @author Florent Guillaume
- *
  */
 public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
 
