@@ -127,8 +127,8 @@ public class VideoConversionTest {
 
     @Test
     public void testMP4Conversion() throws Exception {
-        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-toogg");
-        Assume.assumeTrue("ffmpeg-toogg is not available, skipping test", ca.isAvailable());
+        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-tomp4");
+        Assume.assumeTrue("ffmpeg-tomp4 is not available, skipping test", ca.isAvailable());
 
         BlobHolder result = applyConverter(Constants.TO_MP4_CONVERTER, DELTA_OGV, "video/ogg", 480);
         List<Blob> blobs = result.getBlobs();
