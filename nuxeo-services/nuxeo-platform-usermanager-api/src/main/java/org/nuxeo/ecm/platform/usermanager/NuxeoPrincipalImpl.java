@@ -28,14 +28,6 @@
  */
 package org.nuxeo.ecm.platform.usermanager;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -51,6 +43,14 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.api.Framework;
+
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
@@ -101,12 +101,12 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
      * Constructor that updates all the principal groups.
      */
     public NuxeoPrincipalImpl(String name, boolean isAnonymous,
-            boolean isAdministrator) throws ClientException {
+                              boolean isAdministrator) throws ClientException {
         this(name, isAnonymous, isAdministrator, true);
     }
 
     public NuxeoPrincipalImpl(String name, boolean isAnonymous,
-            boolean isAdministrator, boolean updateAllGroups)
+                              boolean isAdministrator, boolean updateAllGroups)
             throws ClientException {
         DocumentModelImpl documentModelImpl = new DocumentModelImpl(
                 config.schemaName);
@@ -121,21 +121,21 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         this.isAdministrator = isAdministrator;
     }
 
-    protected NuxeoPrincipalImpl(NuxeoPrincipalImpl other)  {
-       config = other.config;
+    protected NuxeoPrincipalImpl(NuxeoPrincipalImpl other) {
+        config = other.config;
         try {
             model = other.model.clone();
         } catch (CloneNotSupportedException cause) {
             throw new NuxeoException("Cannot clone principal " + this);
         }
-       dataModel = model.getDataModel(config.schemaName);
-       roles.addAll(other.roles);
-       allGroups = new ArrayList<>(other.allGroups);
-       virtualGroups = new ArrayList<>(other.virtualGroups);
-       isAdministrator = other.isAdministrator;
-       isAnonymous = other.isAnonymous;
-       origUserName = other.origUserName;
-       principalId = other.principalId;
+        dataModel = model.getDataModel(config.schemaName);
+        roles.addAll(other.roles);
+        allGroups = new ArrayList<>(other.allGroups);
+        virtualGroups = new ArrayList<>(other.virtualGroups);
+        isAdministrator = other.isAdministrator;
+        isAnonymous = other.isAnonymous;
+        origUserName = other.origUserName;
+        principalId = other.principalId;
     }
 
     public void setConfig(UserConfig config) {
@@ -434,7 +434,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     public void setVirtualGroups(List<String> virtualGroups,
-            boolean updateAllGroups) throws ClientException {
+                                 boolean updateAllGroups) throws ClientException {
         this.virtualGroups = new ArrayList<String>(virtualGroups);
         if (updateAllGroups) {
             updateAllGroups();
