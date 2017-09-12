@@ -166,7 +166,7 @@ public class ESRestClient implements ESClient {
         Response response;
         try {
             response = lowLevelClient.performRequest("HEAD",
-                    String.format("/%s/%s", indexName, type));
+                    String.format("/%s/_mapping/%s", indexName, type));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -412,19 +412,25 @@ public class TestAutomaticIndexing {
         activateSynchronousMode(); // this is to prevent race condition that happen NXP-16169
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
         BlobHolder holder = doc.getAdapter(BlobHolder.class);
-        holder.setBlob(new StringBlob(new String(new char[31000]).replace('\0', 'a') + " search"));
-        // Note that token > 32k is not supported in 5.x
+        // lucene don't allow term > 32k so use 20k (all db backend don't support either > 32k field)
+        holder.setBlob(new StringBlob("search " + createBigString(20000, 'a') + "  foo"));
         doc = session.createDocument(doc);
         session.save();
 
         TransactionHelper.commitOrRollbackTransaction();
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
         waitForCompletion();
 
         startTransaction();
         DocumentModelList ret = ess.query(
                 new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext='search'"));
         Assert.assertEquals(1, ret.totalSize());
+        ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext='foo'"));
+        Assert.assertEquals(1, ret.totalSize());
+    }
+
+    protected String createBigString(int length, char c) {
+        return new String(new char[length]).replace('\0', c);
     }
 
     @Test
@@ -434,19 +440,23 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
-        doc.setPropertyValue("dc:source", "search foo" + new String(new char[33000]).replace('\0', 'a'));
-        // Note that token > 32k error is raised only when using a disk storage elastic configuration
+        doc.setPropertyValue("dc:title", "search " + createBigString(40000, 'a') + " bar");
+        // term > 32k can not be indexed by lucene
+        // but es discard them with the ignore_above and the with the custom tokenizer
         doc = session.createDocument(doc);
         session.save();
 
         TransactionHelper.commitOrRollbackTransaction();
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
         waitForCompletion();
 
         startTransaction();
         DocumentModelList ret = ess.query(
-                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:source LIKE 'search*'"));
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'search'"));
         Assert.assertEquals(1, ret.totalSize());
+        ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'bar'"));
+        Assert.assertEquals(1, ret.totalSize());
+
     }
 
     @Test
