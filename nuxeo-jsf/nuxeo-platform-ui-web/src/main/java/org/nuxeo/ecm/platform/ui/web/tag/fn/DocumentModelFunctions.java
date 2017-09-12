@@ -109,7 +109,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     // static cache of default viewId per document type shared all among
     // threads
-    private static final Map<String, String> defaultViewCache = Collections.synchronizedMap(new HashMap<String, String>());
+    private static final Map<String, String> defaultViewCache = Collections.synchronizedMap(
+            new HashMap<String, String>());
 
     // Utility class.
     private DocumentModelFunctions() {
@@ -583,6 +584,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     /**
      * @deprecated since 7.3, use {@link #documentUrl(String, DocumentLocation, String, Map, boolean, String)} instead.
      */
+    @Deprecated
     public static String documentUrl(String patternName, DocumentModel doc, String viewId,
             Map<String, String> parameters, boolean newConversation) {
         return documentUrl(patternName, doc, viewId, parameters, newConversation, BaseURL.getBaseURL());
@@ -591,6 +593,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     /**
      * @deprecated since 7.3, use {@link #documentUrl(String, DocumentLocation, String, Map, boolean, String)} instead.
      */
+    @Deprecated
     public static String documentUrl(String patternName, DocumentModel doc, String viewId,
             Map<String, String> parameters, boolean newConversation, HttpServletRequest req) {
         String baseURL = null;
@@ -670,6 +673,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @since 5.7
      * @deprecated since 7.3, use {@link #repositoryUrl(String, String, String, Map, boolean, String)} instead.
      */
+    @Deprecated
     public static String repositoryUrl(String patternName, String repositoryName, String viewId,
             Map<String, String> parameters, boolean newConversation) {
         return repositoryUrl(patternName, repositoryName, viewId, parameters, newConversation,
@@ -682,6 +686,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @since 5.7
      * @deprecated since 7.3, use {@link #repositoryUrl(String, String, String, Map, boolean, String)} instead.
      */
+    @Deprecated
     public static String repositoryUrl(String patternName, String repositoryName, String viewId,
             Map<String, String> parameters, boolean newConversation, HttpServletRequest req) {
         DocumentLocation docLoc = new DocumentLocationImpl(repositoryName, null);
@@ -701,8 +706,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return documentUrl(patternName, docLoc, viewId, parameters, newConversation, baseURL);
     }
 
-    protected static void addQueryParameter(StringBuilder sb, String name, String value, boolean isFirst)
-            {
+    protected static void addQueryParameter(StringBuilder sb, String name, String value, boolean isFirst) {
         if (isFirst) {
             sb.append("?");
         } else {

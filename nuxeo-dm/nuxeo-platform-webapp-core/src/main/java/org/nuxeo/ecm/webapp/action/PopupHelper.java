@@ -46,7 +46,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
@@ -309,8 +308,7 @@ public class PopupHelper implements Serializable {
     }
 
     @WebRemote
-    public String downloadDocument(String docId, String blobPropertyName, String filenamePropertyName)
-            {
+    public String downloadDocument(String docId, String blobPropertyName, String filenamePropertyName) {
         DocumentModel documentModel = documentManager.getDocument(new IdRef(docId));
         String filename = (String) documentModel.getPropertyValue(filenamePropertyName);
         return DocumentModelFunctions.fileUrl("downloadFile", documentModel, blobPropertyName, filename);
