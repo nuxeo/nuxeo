@@ -25,7 +25,11 @@ public class TestMemKeyValueStore extends AbstractKeyValueStoreTest {
 
     @Override
     protected KeyValueStoreProvider newKeyValueStore() {
-        return new MemKeyValueStore();
+        store = new MemKeyValueStore();
+        KeyValueStoreDescriptor descriptor = new KeyValueStoreDescriptor();
+        descriptor.name = "mem";
+        store.initialize(descriptor);
+        return store;
     }
 
 }

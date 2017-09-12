@@ -18,13 +18,20 @@
  */
 package org.nuxeo.ecm.core.storage.kv;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
 
-import org.junit.After;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,17 +59,16 @@ public abstract class AbstractKeyValueStoreTest {
     @Before
     public void setUp() {
         store = newKeyValueStore();
-        KeyValueStoreDescriptor descriptor = new KeyValueStoreDescriptor();
-        descriptor.name = "test";
-        store.initialize(descriptor);
-    }
-
-    @After
-    public void tearDown() {
-        store.close();
     }
 
     protected abstract KeyValueStoreProvider newKeyValueStore();
+
+    protected boolean hasSlowTTLExpiration() {
+        return false;
+    }
+
+    protected void sleepForTTLExpiration() {
+    }
 
     @Test
     public void testPutGet() {
@@ -136,6 +142,18 @@ public abstract class AbstractKeyValueStoreTest {
         for (int i = 0; i < value.length; i++) {
             value[i] = (byte) i;
         }
+
+        // make sure the bytes are not valid UTF-8
+        try {
+            CharsetDecoder cd = UTF_8.newDecoder()
+                                     .onMalformedInput(CodingErrorAction.REPORT) //
+                                     .onUnmappableCharacter(CodingErrorAction.REPORT);
+            cd.decode(ByteBuffer.wrap(value));
+            fail("bytes should be invalid UTF-8");
+        } catch (CharacterCodingException e) {
+            // ok
+        }
+
         store.put(key, value);
         assertArrayEquals(value, store.get(key));
     }
@@ -151,6 +169,8 @@ public abstract class AbstractKeyValueStoreTest {
 
     @Test
     public void testTTL() throws Exception {
+        assumeFalse("Ignored because of slow TTL expiration", hasSlowTTLExpiration());
+
         String key = "foo";
         int longTTL = 30; // 30s
         assertFalse(store.setTTL(key, 0)); // no such key
@@ -160,11 +180,13 @@ public abstract class AbstractKeyValueStoreTest {
         int shortTTL = 3; // 3s
         assertTrue(store.setTTL(key, shortTTL)); // set shorter TTL
         Thread.sleep((shortTTL + 2) * 1000); // sleep a bit more in case expiration is late
+        sleepForTTLExpiration();
         assertNull(store.get(key));
 
         store.put(key, BAR_B, shortTTL);
         store.setTTL(key, 0); // unset TTL
         Thread.sleep((shortTTL + 2) * 1000); // sleep a bit more in case expiration is late
+        sleepForTTLExpiration();
         assertEquals(BAR, new String(store.get(key)));
     }
 
