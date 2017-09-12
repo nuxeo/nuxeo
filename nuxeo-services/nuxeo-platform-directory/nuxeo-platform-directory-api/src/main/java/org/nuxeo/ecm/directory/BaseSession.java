@@ -18,14 +18,6 @@
 
 package org.nuxeo.ecm.directory;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
@@ -42,6 +34,14 @@ import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.login.LoginComponent;
+
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Base session class with helper methods common to all kinds of directory
@@ -65,9 +65,8 @@ public abstract class BaseSession implements Session {
     /**
      * Check the current user rights for the given permission against the
      * permission descriptor
-     * 
-     * @return true if the user
      *
+     * @return true if the user
      * @since 6.0
      */
     public boolean isCurrentUserAllowed(String permissionTocheck) {
@@ -130,7 +129,7 @@ public abstract class BaseSession implements Session {
     }
 
     private boolean checkPermission(PermissionDescriptor permDescriptors[],
-            String permToChek, String username, List<String> userGroups) {
+                                    String permToChek, String username, List<String> userGroups) {
         for (int i = 0; i < permDescriptors.length; i++) {
             PermissionDescriptor currentDesc = permDescriptors[i];
             if (currentDesc.name.equalsIgnoreCase(permToChek)) {
@@ -165,10 +164,10 @@ public abstract class BaseSession implements Session {
      * @since 5.2M4
      */
     public static DocumentModel createEntryModel(String sessionId,
-            String schema, String id, Map<String, Object> values)
+                                                 String schema, String id, Map<String, Object> values)
             throws PropertyException {
         DocumentModelImpl entry = new DocumentModelImpl(sessionId, schema, id,
-                null, null, null, null, new String[] { schema },
+                null, null, null, null, new String[]{schema},
                 new HashSet<String>(), null, null);
         DataModel dataModel;
         if (values == null) {
@@ -188,7 +187,7 @@ public abstract class BaseSession implements Session {
      * @since 5.3.1
      */
     public static DocumentModel createEntryModel(String sessionId, String schema, String id, Map<String, Object> values,
-            boolean readOnly) throws PropertyException {
+                                                 boolean readOnly) throws PropertyException {
         DocumentModel entry = createEntryModel(sessionId, schema, id, values);
         if (readOnly) {
             setReadOnlyEntry(entry);
@@ -226,9 +225,7 @@ public abstract class BaseSession implements Session {
      * @since 5.3.1
      */
     public static boolean isReadOnlyEntry(DocumentModel entry) {
-        ScopedMap contextData = entry.getContextData();
-        return contextData.getScopedValue(ScopeType.REQUEST,
-                READONLY_ENTRY_FLAG) == Boolean.TRUE;
+        return Boolean.TRUE.equals(entry.getContextData(ScopeType.REQUEST, READONLY_ENTRY_FLAG));
     }
 
     /**
@@ -262,14 +259,14 @@ public abstract class BaseSession implements Session {
      * @since 5.6
      */
     public static String computeMultiTenantDirectoryId(String tenantId,
-            String id) {
+                                                       String id) {
         return String.format(MULTI_TENANT_ID_FORMAT, tenantId, id);
     }
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter,
-            Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences, int limit, int offset)
+                                   Set<String> fulltext, Map<String, String> orderBy,
+                                   boolean fetchReferences, int limit, int offset)
             throws ClientException, DirectoryException {
         log.info("Call an unoverrided query with offset and limit.");
         DocumentModelList entries = query(filter, fulltext, orderBy,
