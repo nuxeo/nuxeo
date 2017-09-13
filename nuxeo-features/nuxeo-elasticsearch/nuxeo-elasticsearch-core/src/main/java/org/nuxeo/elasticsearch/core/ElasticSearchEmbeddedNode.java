@@ -45,8 +45,10 @@ import java.util.stream.Collectors;
  */
 public class ElasticSearchEmbeddedNode implements Closeable {
     private static final Log log = LogFactory.getLog(ElasticSearchEmbeddedNode.class);
-    final ElasticSearchLocalConfig config;
-    private Node node;
+    private static final int DEFAULT_RETRY = 3;
+    final protected ElasticSearchLocalConfig config;
+    protected Node node;
+    protected int retry = DEFAULT_RETRY;
 
     public ElasticSearchEmbeddedNode(ElasticSearchLocalConfig config) {
         this.config = config;
@@ -89,7 +91,9 @@ public class ElasticSearchEmbeddedNode implements Closeable {
         } catch (Exception e) {
             Throwable cause = ExceptionUtils.getRootCause(e);
             if (cause != null && cause instanceof BindException) {
-                log.error("Can not bind to local Elasticsearch, wait and retry: " + config.getDataPath());
+                retry--;
+                log.error(String.format("Can not bind local Elasticsearch on port %s, from %s, retry countdown: %d",
+                        config.getHttpPort(), config.getDataPath(), retry));
                 try {
                     node.close();
                     Thread.sleep(5000);
@@ -99,12 +103,17 @@ public class ElasticSearchEmbeddedNode implements Closeable {
                 } catch (IOException e1) {
                     throw new RuntimeException(e1);
                 }
-                // retry
+                if (retry < 0) {
+                    String msg = "Not able to bind to local Elasticsearch after multiple attempts, give up";
+                    log.error(msg);
+                    throw new IllegalStateException(msg);
+                }
                 start();
             } else {
                 throw e;
             }
         }
+        retry = DEFAULT_RETRY;
         log.debug("Elasticsearch node started.");
     }
 

@@ -54,7 +54,8 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(FeaturesRunner.class)
 @Features({RepositoryElasticSearchFeature.class})
-@LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-highlight-contrib.xml")
+@LocalDeploy({"org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml",
+        "org.nuxeo.elasticsearch.core:elasticsearch-test-highlight-contrib.xml"})
 public class TestHighlight {
 
     @Inject

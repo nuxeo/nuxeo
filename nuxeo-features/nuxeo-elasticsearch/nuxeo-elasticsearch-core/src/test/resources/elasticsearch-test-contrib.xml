@@ -11,8 +11,8 @@
   <!--</extension>-->
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchClientInitialization">
-    <clientInitialization class="org.nuxeo.elasticsearch.client.ESRestClientFactory" />
-    <!--<clientInitialization class="org.nuxeo.elasticsearch.client.ESTransportClientFactory" />-->
+    <!--<clientInitialization class="org.nuxeo.elasticsearch.client.ESRestClientFactory" />-->
+    <clientInitialization class="org.nuxeo.elasticsearch.client.ESTransportClientFactory" />
   </extension>
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">

@@ -205,7 +205,9 @@ public class ESTransportClient implements ESClient {
 
     @Override
     public void close() throws Exception {
-        client.close();
-        client = null;
+        if (client != null) {
+            client.close();
+            client = null;
+        }
     }
 }

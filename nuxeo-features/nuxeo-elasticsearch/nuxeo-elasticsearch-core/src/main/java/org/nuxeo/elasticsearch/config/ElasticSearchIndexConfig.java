@@ -19,9 +19,12 @@
 
 package org.nuxeo.elasticsearch.config;
 
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+
+import java.io.IOException;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.BINARYTEXT_FIELD;
@@ -34,6 +37,8 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
  */
 @XObject(value = "elasticSearchIndex")
 public class ElasticSearchIndexConfig {
+    final public static String DEFAULT_SETTING_FILE = "default-doc-settings.json";
+    final public static String DEFAULT_MAPPING_FILE = "default-doc-mapping.json";
 
     @XNode("@enabled")
     protected boolean isEnabled = true;
@@ -63,130 +68,14 @@ public class ElasticSearchIndexConfig {
     @XNode("settings")
     protected String settings;
 
-    final public static String DEFAULT_SETTING = "{\n" //
-            + "   \"number_of_shards\" : 1,\n" //
-            + "   \"number_of_replicas\" : 0,\n" //
-            + "   \"analysis\" : {\n" //
-            + "      \"filter\" : {\n" //
-            + "         \"truncate_filter\" : {\n" //
-            + "            \"length\" : 256,\n" //
-            + "            \"type\" : \"truncate\"\n" //
-            + "         },\n" //
-            + "         \"en_stem_filter\" : {\n" //
-            + "            \"name\" : \"minimal_english\",\n" //
-            + "            \"type\" : \"stemmer\"\n" //
-            + "         },\n" //
-            + "         \"en_stop_filter\" : {\n" //
-            + "            \"stopwords\" : [\n" //
-            + "               \"_english_\"\n" //
-            + "            ],\n" //
-            + "            \"type\" : \"stop\"\n" //
-            + "         }\n" //
-            + "      },\n" //
-            + "      \"tokenizer\" : {\n" //
-            + "         \"path_tokenizer\" : {\n" //
-            + "            \"delimiter\" : \"/\",\n" //
-            + "            \"type\" : \"path_hierarchy\"\n" //
-            + "         }\n" + "      },\n" //
-            + "      \"analyzer\" : {\n" //
-            + "         \"fulltext\" : {\n" //
-            + "            \"filter\" : [\n" //
-            + "               \"lowercase\",\n" //
-            + "               \"en_stop_filter\",\n" //
-            + "               \"en_stem_filter\",\n" //
-            + "               \"asciifolding\"\n" //
-            + "            ],\n" //
-            + "            \"type\" : \"custom\",\n" //
-            + "            \"tokenizer\" : \"standard\"\n" //
-            + "         },\n" //
-            + "         \"path_analyzer\" : {\n" //
-            + "            \"type\" : \"custom\",\n" //
-            + "            \"tokenizer\" : \"path_tokenizer\"\n" //
-            + "         },\n" //
-            + "         \"default\" : {\n" //
-            + "            \"type\" : \"custom\",\n" //
-            + "            \"tokenizer\" : \"keyword\",\n" //
-            + "            \"filter\" : [\n" //
-            + "               \"truncate_filter\"\n" //
-            + "            ]\n" //
-            + "         }\n" //
-            + "      }\n" //
-            + "   }\n" //
-            + "}";
+    @XNode("settings@file")
+    protected String settingsFile;
 
     @XNode("mapping")
     protected String mapping;
 
-    final public static String DEFAULT_MAPPING = "{\n" //
-            + "   \"_all\" : {\n" //
-            + "      \"analyzer\" : \"fulltext\"\n" //
-            + "   },\n" //
-            + "   \"properties\" : {\n" //
-            + "      \"dc:title\" : {\n" //
-            + "         \"type\" : \"text\",\n" //
-            + "         \"fielddata\" : true,\n" //
-            + "         \"fields\" : {\n" //
-            + "           \"fulltext\" : {\n" //
-            + "             \"boost\": 2,\n" //
-            + "             \"type\": \"text\",\n" //
-            + "             \"analyzer\" : \"fulltext\"\n" //
-            + "          }\n" //
-            + "        }\n" //
-            + "      },\n" //
-            + "      \"dc:description\" : {\n" //
-            + "         \"type\" : \"text\",\n" //
-            + "         \"fields\" : {\n" //
-            + "           \"fulltext\" : {\n" //
-            + "             \"boost\": 1.5,\n" //
-            + "             \"type\": \"text\",\n" //
-            + "             \"analyzer\" : \"fulltext\"\n" //
-            + "          }\n" //
-            + "        }\n" //
-            + "      },\n" //
-            + "      \"ecm:binarytext\" : {\n" //
-            + "         \"type\" : \"text\"\n" //
-            + "      },\n" //
-            + "      \"ecm:uuid\" : {\n" //
-            + "         \"type\" : \"keyword\"\n" //
-            + "      },\n" //
-            + "      \"ecm:path\" : {\n" //
-            + "         \"type\" : \"keyword\",\n" //
-            + "         \"fields\" : {\n" //
-            + "            \"children\" : {\n" //
-            + "               \"analyzer\" : \"path_analyzer\",\n" //
-            + "               \"search_analyzer\" : \"keyword\",\n" //
-            + "               \"type\" : \"text\"\n" //
-            + "            },\n" //
-            + "            \"ecm:path\" : {\n" //
-            + "               \"type\" : \"keyword\"\n" //
-            + "            }\n" //
-            + "         }\n" //
-            + "      },\n" //
-            + "      \"dc:created\": {\n" //
-            + "         \"format\": \"dateOptionalTime\",\n" //
-            + "        \"type\": \"date\"\n" //
-            + "      },\n" //
-            + "      \"dc:modified\": {\n" //
-            + "         \"format\": \"dateOptionalTime\",\n" //
-            + "        \"type\": \"date\"\n" //
-            + "      },\n" //
-            + "      \"dc:source\" : {\n" //
-            + "         \"type\" : \"keyword\"\n" //
-            + "      },\n" //
-            + "      \"dc:coverage\" : {\n" //
-            + "         \"type\" : \"keyword\"\n" //
-            + "      },\n" //
-            + "      \"dc:nature\" : {\n" //
-            + "         \"type\" : \"keyword\"\n" //
-            + "      },\n" //
-            + "      \"dc:subjects\" : {\n" //
-            + "         \"type\" : \"keyword\"\n" //
-            + "      },\n" //
-            + "      \"ecm:pos*\" : {\n" //
-            + "         \"type\" : \"integer\"\n" //
-            + "      }\n" //
-            + "   }\n" //
-            + "}";
+    @XNode("mapping@file")
+    protected String mappingFile;
 
     @XNodeList(value = "fetchFromSource/exclude", type = String[].class, componentType = String.class)
     protected String[] excludes;
@@ -217,11 +106,30 @@ public class ElasticSearchIndexConfig {
     }
 
     public String getSettings() {
-        return settings == null ? DEFAULT_SETTING : settings;
+        if (settingsFile != null) {
+            return contentOfFile(settingsFile);
+        } else if (settings != null && !settings.isEmpty()) {
+            return settings;
+        }
+        return contentOfFile(DEFAULT_SETTING_FILE);
+    }
+
+    private String contentOfFile(String filename) {
+        try {
+            // getResourceAsStream is needed getResource will not work when called from another module
+            return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(filename), "UTF-8");
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Can not load resource file: " + filename, e);
+        }
     }
 
     public String getMapping() {
-        return mapping == null ? DEFAULT_MAPPING : mapping;
+        if (mappingFile != null) {
+            return contentOfFile(mappingFile);
+        } else if (mapping != null && !mapping.isEmpty()) {
+            return mapping;
+        }
+        return contentOfFile(DEFAULT_MAPPING_FILE);
     }
 
     public boolean mustCreate() {
@@ -264,6 +172,12 @@ public class ElasticSearchIndexConfig {
         }
         if (settings == null && other.settings != null) {
             settings = other.settings;
+        }
+        if (mappingFile == null && other.mappingFile != null) {
+            mappingFile = other.mappingFile;
+        }
+        if (settingsFile == null && other.settingsFile != null) {
+            settingsFile = other.settingsFile;
         }
     }
 
