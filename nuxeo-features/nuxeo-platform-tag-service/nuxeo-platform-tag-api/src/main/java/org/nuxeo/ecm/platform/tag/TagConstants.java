@@ -37,4 +37,14 @@ public class TagConstants {
 
     public static final String TAGGING_TARGET_FIELD = "relation:target";
 
+    /**
+     * @since 9.3
+     */
+    public static final String TAG_LIST = "nxtag:tags";
+
+    /**
+     * @since 9.3
+     */
+    public static final String TAG_FACET = "Tag";
+
 }
