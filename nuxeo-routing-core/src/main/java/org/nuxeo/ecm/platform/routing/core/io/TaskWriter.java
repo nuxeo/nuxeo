@@ -123,16 +123,16 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
             jg.writeArrayFieldStart(TARGET_DOCUMENT_IDS);
             final boolean isFetchTargetDocumentIds = ctx.getFetched(ENTITY_TYPE).contains(FETCH_TARGET_DOCUMENT);
             for (String docId : item.getTargetDocumentsIds()) {
-                if (isFetchTargetDocumentIds) {
-                    IdRef idRef = new IdRef(docId);
-                    if (wrapper.getSession().exists(idRef)) {
+                IdRef idRef = new IdRef(docId);
+                if (wrapper.getSession().exists(idRef)) {
+                    if (isFetchTargetDocumentIds) {
                         writeEntity(wrapper.getSession().getDocument(idRef), jg);
-                        break;
+                    } else {
+                        jg.writeStartObject();
+                        jg.writeStringField("id", docId);
+                        jg.writeEndObject();
                     }
                 }
-                jg.writeStartObject();
-                jg.writeStringField("id", docId);
-                jg.writeEndObject();
             }
             jg.writeEndArray();
 
