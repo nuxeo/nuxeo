@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <component name="org.nuxeo.gridfs.config">
   <require>default-repository-config</require>
 
@@ -10,3 +11,4 @@
     </blobprovider>
   </extension>
 </component>
+</#escape>
