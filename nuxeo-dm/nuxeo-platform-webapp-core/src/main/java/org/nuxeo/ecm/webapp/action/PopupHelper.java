@@ -52,6 +52,7 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.webapp.edit.lock.LockActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
@@ -181,7 +182,7 @@ public class PopupHelper implements Serializable {
 
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
 
-        return DocumentModelFunctions.documentUrl(null, doc, null, params, false);
+        return DocumentModelFunctions.documentUrl(null, doc, null, params, false, getBaseURL());
     }
 
     @WebRemote
@@ -191,12 +192,16 @@ public class PopupHelper implements Serializable {
             params.put("tabId", tabId);
         }
 
-        return DocumentModelFunctions.documentUrl(null, currentContainer, null, params, false);
+        return DocumentModelFunctions.documentUrl(null, currentContainer, null, params, false, getBaseURL());
     }
 
     @WebRemote
     public String getNavigationURLOnPopupdoc(String tabId) {
         return getNavigationURLOnPopupdoc2(tabId, null);
+    }
+
+    protected String getBaseURL() {
+        return BaseURL.getBaseURL(getRequest());
     }
 
     protected HttpServletRequest getRequest() {
@@ -220,7 +225,7 @@ public class PopupHelper implements Serializable {
         if (subTabId != null) {
             params.put("subTabId", subTabId);
         }
-        return DocumentModelFunctions.documentUrl(null, currentPopupDocument, null, params, false, getRequest());
+        return DocumentModelFunctions.documentUrl(null, currentPopupDocument, null, params, false, getBaseURL());
     }
 
     protected Map<String, String> getCurrentTabParameters() {
@@ -238,7 +243,8 @@ public class PopupHelper implements Serializable {
 
     @WebRemote
     public String getCurrentURL() {
-        return DocumentModelFunctions.documentUrl(null, currentContainer, null, getCurrentTabParameters(), false);
+        return DocumentModelFunctions.documentUrl(null, currentContainer, null, getCurrentTabParameters(), false,
+                getBaseURL());
     }
 
     @WebRemote
@@ -248,7 +254,8 @@ public class PopupHelper implements Serializable {
         if (isPopupDocumentDescendantOfCurrentDocument()) {
             currentParent = currentContainer;
         }
-        return DocumentModelFunctions.documentUrl(null, currentParent, null, getCurrentTabParameters(), false);
+        return DocumentModelFunctions.documentUrl(null, currentParent, null, getCurrentTabParameters(), false,
+                getBaseURL());
     }
 
     @WebRemote
@@ -324,7 +331,7 @@ public class PopupHelper implements Serializable {
     @WebRemote
     public String sendEmail(String docId) {
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
-        return DocumentModelFunctions.documentUrl(null, doc, "send_notification_email", null, false);
+        return DocumentModelFunctions.documentUrl(null, doc, "send_notification_email", null, false, getBaseURL());
     }
 
     private DocumentModel getFirstParentAfterDelete(DocumentModel doc) {
