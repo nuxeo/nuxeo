@@ -573,11 +573,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     // TODO: add method accepting filename property name (used for edit online)
 
     public static String documentUrl(DocumentModel doc, HttpServletRequest req) {
-        return documentUrl(null, doc, null, null, false);
+        return documentUrl(null, doc, null, null, false, BaseURL.getBaseURL(req));
     }
 
     public static String documentUrl(DocumentModel doc) {
-        return documentUrl(null, doc, null, null, false);
+        return documentUrl(null, doc, null, null, false, BaseURL.getBaseURL());
     }
 
     /**
@@ -585,7 +585,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      */
     public static String documentUrl(String patternName, DocumentModel doc, String viewId,
             Map<String, String> parameters, boolean newConversation) {
-        return documentUrl(patternName, doc, viewId, parameters, newConversation, (HttpServletRequest) null);
+        return documentUrl(patternName, doc, viewId, parameters, newConversation, BaseURL.getBaseURL());
     }
 
     /**
