@@ -1,0 +1,95 @@
+{
+  "_all": {
+    "analyzer": "fulltext"
+  },
+  "dynamic_templates": [
+    {
+      "strings": {
+        "mapping": {
+          "ignore_above": 256,
+          "type": "keyword"
+        },
+        "match_mapping_type": "string"
+      }
+    },
+    {
+      "no_thumbnail_template": {
+        "mapping": {
+          "index": false
+        },
+        "path_match": "thumb:thumbnail.*"
+      }
+    },
+    {
+      "no_picture_template": {
+        "mapping": {
+          "index": false
+        },
+        "path_match": "picture:views.*"
+      }
+    }
+  ],
+  "properties": {
+    "ecm:binarytext": {
+      "analyzer": "fulltext",
+      "type": "text"
+    },
+    "ecm:path": {
+      "fields": {
+        "children": {
+          "type": "text",
+          "search_analyzer": "keyword",
+          "analyzer": "path_analyzer"
+        }
+      },
+      "type": "keyword"
+    },
+    "ecm:pos": {
+      "type": "integer"
+    },
+    "common:icon": {
+      "index": false,
+      "type": "text"
+    },
+    "dc:modified": {
+      "type": "date"
+    },
+    "dc:title": {
+      "fields": {
+        "fulltext": {
+          "analyzer": "fulltext",
+          "type": "text",
+          "boost": 2
+        }
+      },
+      "type": "text",
+      "fielddata": true
+    },
+    "dc:description": {
+      "fields": {
+        "fulltext": {
+          "analyzer": "fulltext",
+          "type": "text",
+          "boost": 1.5
+        }
+      },
+      "type": "text"
+    },
+    "dc:created": {
+      "type": "date"
+    },
+    "dc:expired": {
+      "type": "date"
+    },
+    "note:note": {
+      "fields": {
+        "fulltext": {
+          "analyzer": "fulltext",
+          "type": "text"
+        }
+      },
+      "type": "text"
+    }
+  }
+}
+
