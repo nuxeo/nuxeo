@@ -20,11 +20,16 @@
 package org.nuxeo.elasticsearch.config;
 
 import org.apache.commons.io.IOUtils;
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.BINARYTEXT_FIELD;
@@ -114,13 +119,36 @@ public class ElasticSearchIndexConfig {
         return contentOfFile(DEFAULT_SETTING_FILE);
     }
 
-    private String contentOfFile(String filename) {
+    protected String contentOfFile(String filename) {
         try {
-            // getResourceAsStream is needed getResource will not work when called from another module
-            return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(filename), "UTF-8");
+            return IOUtils.toString(getResourceStream(filename), "UTF-8");
         } catch (IOException e) {
             throw new IllegalArgumentException("Can not load resource file: " + filename, e);
         }
+    }
+
+    protected InputStream getResourceStream(String filename) {
+        // First check if the resource is available on the config directory
+        File file = new File(Environment.getDefault().getConfig(), filename);
+        if (file.exists()) {
+            try {
+                return new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                // try another way
+            }
+        }
+
+        // getResourceAsStream is needed getResource will not work when called from another module
+        InputStream ret = this.getClass().getClassLoader().getResourceAsStream(filename);
+        if (ret == null) {
+            // Then try to get it from jar
+            ret = this.getClass().getClassLoader().getResourceAsStream(filename);
+        }
+        if (ret == null) {
+            throw new IllegalArgumentException(String.format("Resource file can not be found: %s or %s",
+                    file.getAbsolutePath(), filename));
+        }
+        return ret;
     }
 
     public String getMapping() {
