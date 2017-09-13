@@ -584,7 +584,7 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
-        assertNumberOfCommandProcessed(2);
+        assertNumberOfCommandProcessed(3); // 2 creations + 1 update done by the TaggedVersionListener
 
         startTransaction();
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(
@@ -663,17 +663,16 @@ public class TestAutomaticIndexing {
 
     @Test
     public void shouldIndexTag() throws Exception {
-        assumeTrue("DBS does not support tags", !coreFeature.getStorageConfiguration().isDBS());
 
         // ElasticSearchInlineListener.useSyncIndexing.set(true);
         startTransaction();
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
-        tagService.tag(session, doc.getId(), "mytag", "Administrator");
+        tagService.tag(session, doc.getId(), "mytag");
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
         ElasticSearchInlineListener.useSyncIndexing.set(true);
-        assertNumberOfCommandProcessed(3); // doc, tagging relation and tag
+        assertNumberOfCommandProcessed(1); // doc, tagging relation and tag
 
         startTransaction();
         SearchResponse searchResponse = esa.getClient()
@@ -687,11 +686,11 @@ public class TestAutomaticIndexing {
                                            .actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        tagService.tag(session, doc.getId(), "mytagbis", "Administrator");
+        tagService.tag(session, doc.getId(), "mytagbis");
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
-        assertNumberOfCommandProcessed(3); // doc, tagging and new tag
+        assertNumberOfCommandProcessed(1); // doc
 
         startTransaction();
         searchResponse = esa.getClient()
@@ -705,11 +704,11 @@ public class TestAutomaticIndexing {
                             .actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        tagService.untag(session, doc.getId(), "mytag", "Administrator");
+        tagService.untag(session, doc.getId(), "mytag");
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
-        assertNumberOfCommandProcessed(2); // doc, tagging
+        assertNumberOfCommandProcessed(1); // still doc
 
         startTransaction();
         searchResponse = esa.getClient()
