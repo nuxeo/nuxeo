@@ -16,7 +16,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.kv;
+package org.nuxeo.ecm.core.kv;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;

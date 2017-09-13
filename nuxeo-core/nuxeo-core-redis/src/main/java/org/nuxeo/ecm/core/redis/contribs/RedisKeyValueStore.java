@@ -29,10 +29,10 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.kv.KeyValueStoreDescriptor;
+import org.nuxeo.ecm.core.kv.KeyValueStoreProvider;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
-import org.nuxeo.ecm.core.storage.kv.KeyValueStoreDescriptor;
-import org.nuxeo.ecm.core.storage.kv.KeyValueStoreProvider;
 import org.nuxeo.runtime.api.Framework;
 
 /**

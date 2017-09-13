@@ -1,6 +1,6 @@
 <component name="org.nuxeo.ecm.core.mongodb.contribs">
 
-  <extension target="org.nuxeo.ecm.core.storage.KeyValueService" point="configuration">
+  <extension target="org.nuxeo.ecm.core.kv.KeyValueService" point="configuration">
     <store name="mongodb" class="org.nuxeo.ecm.core.mongodb.kv.MongoDBKeyValueStore">
       <property name="collection">kv</property>
     </store>

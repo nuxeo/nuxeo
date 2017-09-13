@@ -16,30 +16,24 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.kv;
+package org.nuxeo.ecm.core.kv;
+
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
- * Key/Value Store SPI.
+ * Registry to register Key/Value stores.
  *
  * @since 9.1
  */
-public interface KeyValueStoreProvider extends KeyValueStore {
+public final class KeyValueStoreRegistry extends SimpleContributionRegistry<KeyValueStoreDescriptor> {
 
-    /**
-     * Initializes this Key/Value store provider.
-     *
-     * @param descriptor the store provider descriptor
-     */
-    void initialize(KeyValueStoreDescriptor descriptor);
+    @Override
+    public String getContributionId(KeyValueStoreDescriptor contrib) {
+        return contrib.name;
+    }
 
-    /**
-     * Closes this Key/Value store provider.
-     */
-    void close();
-
-    /**
-     * Clears the content of this Key/Value store provider.
-     */
-    void clear();
+    public KeyValueStoreDescriptor getKeyValueStoreDescriptor(String name) {
+        return getCurrentContribution(name);
+    }
 
 }

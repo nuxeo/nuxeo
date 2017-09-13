@@ -21,9 +21,9 @@ package org.nuxeo.ecm.core.redis;
 import javax.inject.Inject;
 
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.storage.kv.AbstractKeyValueStoreTest;
-import org.nuxeo.ecm.core.storage.kv.KeyValueService;
-import org.nuxeo.ecm.core.storage.kv.KeyValueStoreProvider;
+import org.nuxeo.ecm.core.kv.AbstractKeyValueStoreTest;
+import org.nuxeo.ecm.core.kv.KeyValueService;
+import org.nuxeo.ecm.core.kv.KeyValueStoreProvider;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
