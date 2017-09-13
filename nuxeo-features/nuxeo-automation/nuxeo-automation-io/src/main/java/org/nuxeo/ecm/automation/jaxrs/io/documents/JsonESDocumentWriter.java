@@ -57,7 +57,6 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityService;
-import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -153,8 +152,8 @@ public class JsonESDocumentWriter implements MessageBodyWriter<DocumentModel> {
         TagService tagService = Framework.getService(TagService.class);
         if (tagService != null) {
             jg.writeArrayFieldStart("ecm:tag");
-            for (Tag tag : tagService.getDocumentTags(doc.getCoreSession(), doc.getId(), null, true)) {
-                jg.writeString(tag.getLabel());
+            for (String tag : tagService.getTags(doc.getCoreSession(), doc.getId())) {
+                jg.writeString(tag);
             }
             jg.writeEndArray();
         }

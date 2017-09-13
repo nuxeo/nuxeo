@@ -4,6 +4,16 @@
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
     point="providers">
 
+    <genericPageProvider name="GET_DOCUMENT_IDS_FOR_FACETED_TAG"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <pattern>
+        SELECT DISTINCT ecm:uuid FROM Document WHERE nxtag:tags/* = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
     <genericPageProvider name="GET_DOCUMENT_IDS_FOR_TAG"
       class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
       <property name="useUnrestrictedSession">true</property>
@@ -117,6 +127,17 @@
         TAGISTARGET: SELECT tag:label, dc:created, dc:creator,
         relation:target FROM Tagging
         WHERE relation:source = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="GET_FACETED_TAG_SUGGESTIONS"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <pattern>
+        SELECT nxtag:tags/*1 FROM Document WHERE nxtag:tags/*1 LIKE ? AND
+        ecm:isProxy = 0
       </pattern>
       <pageSize>0</pageSize>
       <maxPageSize>0</maxPageSize>

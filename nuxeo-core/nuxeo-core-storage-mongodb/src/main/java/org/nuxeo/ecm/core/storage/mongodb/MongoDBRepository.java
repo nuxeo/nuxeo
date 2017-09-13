@@ -277,6 +277,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(new BasicDBObject("rend:renditionName", ONE));
         coll.createIndex(new BasicDBObject("drv:subscriptions.enabled", ONE));
         coll.createIndex(new BasicDBObject("collectionMember:collectionIds", ONE));
+        coll.createIndex(new BasicDBObject("nxtag:tags", ONE));
         if (!isFulltextDisabled()) {
             DBObject indexKeys = new BasicDBObject();
             indexKeys.put(KEY_FULLTEXT_SIMPLE, MONGODB_INDEX_TEXT);

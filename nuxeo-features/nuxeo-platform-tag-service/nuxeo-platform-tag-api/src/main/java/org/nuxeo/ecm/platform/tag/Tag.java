@@ -28,7 +28,10 @@ import java.util.Comparator;
 
 /**
  * Aggregates a tag with its weight.
+ *
+ * @deprecated since 9.3, as we don't use the weight anymore
  */
+@Deprecated
 public class Tag implements Serializable {
 
     private static final long serialVersionUID = 1L;
