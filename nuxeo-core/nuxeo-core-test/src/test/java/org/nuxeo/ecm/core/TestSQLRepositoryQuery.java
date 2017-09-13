@@ -58,6 +58,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.spi.LoggingEvent;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -2467,19 +2468,20 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
+    @Ignore("NXP-21651: Tags are not stored as documents anymore")
     public void testTagsWithProxies() throws Exception {
         proxies = true;
         testTags();
     }
 
     @Test
+    @Ignore("NXP-21651: Tags are not stored as documents anymore")
     public void testTagsWithoutProxies() throws Exception {
         proxies = false;
         testTags();
     }
 
     protected void testTags() throws Exception {
-        assumeTrue("DBS does not support tags", supportsTags());
 
         String nxql;
         DocumentModelList dml;

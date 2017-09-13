@@ -44,7 +44,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TagService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -142,8 +141,6 @@ public class TestBulkEditService {
     @Test
     @LocalDeploy("org.nuxeo.ecm.webapp.base:test-bulkedit-minorversion-before-update-contrib.xml")
     public void testBulkEditBeforeUpdate() {
-
-        assumeTrue("DBS does not support tags", !coreFeature.getStorageConfiguration().isDBS());
 
         // behaviour should be compliant with NXP-12225, NXP-22099 provides fix with auto-versioning
         List<DocumentModel> docs = createTestDocuments();
