@@ -42,7 +42,6 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.node.ArrayNode;
@@ -447,19 +446,17 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         ClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
 
         // Initiate a ParallelDocumentReview workflow
         response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("ParallelDocumentReview", null));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
 
         // Check GET /workflow?workflowMnodelName=SerialDocumentReview
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.put("workflowModelName", Arrays.asList(new String[] { "SerialDocumentReview" }));
         response = getResponse(RequestType.GET, "/workflow", null, queryParams, null, null);
-        node = mapper.readTree(response.getEntityInputStream());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, node.get("entries").size());
 
         // Check GET /workflow?workflowMnodelName=ParallelDocumentReview
@@ -819,9 +816,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
     /**
      * Trigger the escalation rule that resumes a ParallelDocumentReview workflow instance of which all attached
-     * documents have been deleted.
-     *
-     * The expected behaviour is that workflow instance is cancelled.
+     * documents have been deleted. The expected behaviour is that workflow instance is cancelled.
      *
      * @throws InterruptedException
      * @since 8.4
@@ -897,8 +892,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         awaitCleanupWorks();
 
-        cancelled = session.query(
-                "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'");
+        cancelled = session.query("SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'");
         assertTrue(cancelled.isEmpty());
 
     }
