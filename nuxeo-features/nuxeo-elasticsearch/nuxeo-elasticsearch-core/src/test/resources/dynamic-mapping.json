@@ -1,0 +1,77 @@
+{
+  "dynamic_templates": [
+    {
+      "dynamic_string": {
+        "match": "*_string",
+        "mapping": {
+          "type": "text"
+        }
+      }
+    },
+    {
+      "dynamic_int": {
+        "match": "*_int",
+        "mapping": {
+          "type": "integer"
+        }
+      }
+    },
+    {
+      "dynamic_date": {
+        "match": "*_date",
+        "mapping": {
+          "type": "date"
+        }
+      }
+    }
+  ],
+  "_all": {
+    "analyzer": "fulltext"
+  },
+  "properties": {
+    "dc:title": {
+      "type": "text",
+      "fields": {
+        "fulltext": {
+          "boost": 2,
+          "type": "text",
+          "analyzer": "fulltext"
+        }
+      }
+    },
+    "dc:description": {
+      "type": "text",
+      "fields": {
+        "lowercase": {
+          "analyzer": "lowercase_analyzer",
+          "type": "text"
+        }
+      }
+    },
+    "ecm:binarytext*": {
+      "type": "text"
+    },
+    "ecm:path": {
+      "type": "keyword",
+      "fields": {
+        "children": {
+          "analyzer": "path_analyzer",
+          "search_analyzer": "keyword",
+          "type": "text"
+        },
+        "ecm:path": {
+          "type": "keyword"
+        }
+      }
+    },
+    "ecm:pos": {
+      "type": "integer"
+    },
+    "dc:created": {
+      "type": "date"
+    },
+    "dc:modified": {
+      "type": "date"
+    }
+  }
+}

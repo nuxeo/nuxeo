@@ -1,74 +1,9 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.elasticsearch.test.contrib">
-  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchLocal">
-    <elasticSearchLocal clusterName="nuxeoTestClusterLocal" nodeName="nuxeoTestNode" indexStoreType="mmapfs"
-      httpEnabled="true" />
-  </extension>
-
-  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchClientInitialization">
-    <clientInitialization class="org.nuxeo.elasticsearch.client.ESTransportClientFactory" />
-  </extension>
-
+<component name="org.nuxeo.elasticsearch.test.highlight.contrib">
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">
     <elasticSearchIndex name="nxutest" type="doc" repository="test">
-      <settings>
-        {
-        "number_of_shards" : 1,
-        "number_of_replicas" : 0,
-        "analysis" : {
-        "filter" : {
-        "en_stem_filter" : {
-        "name" : "minimal_english",
-        "type" : "stemmer"
-        },
-        "en_stop_filter" : {
-        "stopwords" : [
-        "_english_"
-        ],
-        "type" : "stop"
-        },
-        "word_delimiter_filter" : {
-        "type" : "word_delimiter",
-        "preserve_original" : true
-        }
-        },
-        "analyzer" : {
-        "fulltext" : {
-        "filter" : [
-        "word_delimiter_filter",
-        "lowercase",
-        "en_stop_filter",
-        "en_stem_filter",
-        "asciifolding"
-        ],
-        "type" : "custom",
-        "tokenizer" : "standard"
-        }
-        }
-        }
-        }
-      </settings>
-      <mapping>
-        {
-        "_all" : {
-        "analyzer" : "fulltext"
-        },
-        "properties" : {
-        "dc:title" : {
-        "type" : "text",
-        "fields" : {
-        "fulltext" : {
-        "type": "text",
-        "analyzer" : "fulltext"
-        }
-        }
-        },
-        "ecm:binarytext" : {
-        "type" : "text"
-        }
-        }
-        }
-      </mapping>
+      <settings file="highlight-settings.json" />
+      <mapping file="highlight-mapping.json" />
     </elasticSearchIndex>
   </extension>
 </component>

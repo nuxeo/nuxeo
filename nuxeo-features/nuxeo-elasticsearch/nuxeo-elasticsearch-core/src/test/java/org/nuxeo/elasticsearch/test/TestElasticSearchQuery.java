@@ -59,7 +59,8 @@ import javax.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({RepositoryElasticSearchFeature.class})
-@LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-nested-mapping-contrib.xml")
+@LocalDeploy({"org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml",
+        "org.nuxeo.elasticsearch.core:elasticsearch-test-nested-mapping-contrib.xml"})
 public class TestElasticSearchQuery {
 
     private static final String IDX_NAME = "nxutest";

@@ -1,0 +1,51 @@
+{
+  "number_of_replicas": 0,
+  "number_of_shards": 1,
+  "analysis": {
+    "filter": {
+      "truncate_filter": {
+        "length": 256,
+        "type": "truncate"
+      },
+      "en_stem_filter": {
+        "name": "minimal_english",
+        "type": "stemmer"
+      },
+      "en_stop_filter": {
+        "stopwords": [
+          "_english_"
+        ],
+        "type": "stop"
+      }
+    },
+    "tokenizer": {
+      "path_tokenizer": {
+        "delimiter": "/",
+        "type": "path_hierarchy"
+      }
+    },
+    "analyzer": {
+      "fulltext": {
+        "filter": [
+          "lowercase",
+          "en_stop_filter",
+          "en_stem_filter",
+          "asciifolding"
+        ],
+        "type": "custom",
+        "tokenizer": "standard"
+      },
+      "path_analyzer": {
+        "type": "custom",
+        "tokenizer": "path_tokenizer"
+      },
+      "default": {
+        "type": "custom",
+        "tokenizer": "keyword",
+        "filter": [
+          "truncate_filter"
+        ]
+      }
+    }
+  }
+}

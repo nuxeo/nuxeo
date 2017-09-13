@@ -1,0 +1,64 @@
+{
+  "_all": {
+    "analyzer": "fulltext"
+  },
+  "dynamic_templates": [
+    {
+      "strings": {
+        "mapping": {
+          "ignore_above": 256,
+          "type": "keyword"
+        },
+        "match_mapping_type": "string"
+      }
+    }
+  ],
+  "properties": {
+    "dc:title": {
+      "type": "text",
+      "fielddata": true,
+      "fields": {
+        "fulltext": {
+          "boost": 2,
+          "type": "text",
+          "analyzer": "fulltext"
+        }
+      }
+    },
+    "dc:description": {
+      "type": "text",
+      "fields": {
+        "fulltext": {
+          "boost": 1.5,
+          "type": "text",
+          "analyzer": "fulltext"
+        }
+      }
+    },
+    "ecm:binarytext": {
+      "type": "text"
+    },
+    "ecm:path": {
+      "type": "keyword",
+      "fields": {
+        "children": {
+          "analyzer": "path_analyzer",
+          "search_analyzer": "keyword",
+          "type": "text"
+        },
+        "ecm:path": {
+          "type": "keyword"
+        }
+      }
+    },
+    "dc:created": {
+      "type": "date"
+    },
+    "dc:modified": {
+      "type": "date"
+    },
+    "ecm:pos*": {
+      "type": "integer"
+    }
+  }
+}
