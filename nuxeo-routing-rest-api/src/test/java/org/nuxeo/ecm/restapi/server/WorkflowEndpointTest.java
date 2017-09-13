@@ -82,6 +82,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.jersey.api.client.ClientResponse;
@@ -743,6 +744,56 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         ArrayNode taskTargetDocuments = (ArrayNode) task.get(TaskWriter.TARGET_DOCUMENT_IDS);
         assertEquals(1, taskTargetDocuments.size());
         assertEquals(note.getId(), taskTargetDocuments.get(0).get("uid").getTextValue());
+
+        // Don't fetch the target documents and check that "targetDocumentIds" contains a list of document ids
+        // instead of document objects
+        task = getCurrentTask(createdWorflowInstanceId, null, null);
+
+        taskTargetDocuments = (ArrayNode) task.get(TaskWriter.TARGET_DOCUMENT_IDS);
+        assertEquals(1, taskTargetDocuments.size());
+        assertEquals(note.getId(), taskTargetDocuments.get(0).get("id").getTextValue());
+    }
+
+    /**
+     * Same as {@link #testFetchTaskTargetDocuments()} with the {@code DeleteTaskForDeletedDocumentListener} disabled to
+     * check the behavior when a task targeting a deleted document remains.
+     *
+     * @since 9.3
+     */
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.platform.restapi.server.routing:test-disable-task-deletion-listener.xml")
+    public void testFetchTaskTargetDocumentsDeleted() throws IOException {
+        final String createdWorflowInstanceId;
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        ClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", Collections.singletonList(note.getId())));
+        try {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            createdWorflowInstanceId = node.get("id").getTextValue();
+        } finally {
+            response.close();
+        }
+
+        // Remove the task's target document
+        session.removeDocument(note.getRef());
+        txFeature.nextTransaction();
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("fetch." + TaskWriter.ENTITY_TYPE, TaskWriter.FETCH_TARGET_DOCUMENT);
+
+        JsonNode task = getCurrentTask(createdWorflowInstanceId, queryParams, null);
+
+        ArrayNode taskTargetDocuments = (ArrayNode) task.get(TaskWriter.TARGET_DOCUMENT_IDS);
+        assertEquals(0, taskTargetDocuments.size());
+
+        // Don't fetch the target documents and check that "targetDocumentIds" still contains an empty list
+        task = getCurrentTask(createdWorflowInstanceId, null, null);
+
+        taskTargetDocuments = (ArrayNode) task.get(TaskWriter.TARGET_DOCUMENT_IDS);
+        assertEquals(0, taskTargetDocuments.size());
     }
 
     /**
