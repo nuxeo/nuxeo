@@ -187,47 +187,52 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
             jg.writeFieldName("variables");
             jg.writeStartObject();
             // add nodeVariables
-            writeTaskVariables(node, jg, registry, ctx, schemaManager);
+            if (node != null) {
+                writeTaskVariables(node, jg, registry, ctx, schemaManager);
+            }
             // add workflow variables
             if (workflowInstance != null) {
                 writeWorkflowVariables(workflowInstance, node, jg, registry, ctx, schemaManager);
             }
             jg.writeEndObject();
 
-            jg.writeFieldName("taskInfo");
-            jg.writeStartObject();
-            final ActionManager actionManager = Framework.getService(ActionManager.class);
-            jg.writeArrayFieldStart("taskActions");
-            for (Button button : node.getTaskButtons()) {
-                if (StringUtils.isBlank(button.getFilter())
-                        || actionManager.checkFilter(button.getFilter(), createActionContext(wrapper.getSession()))) {
+            if (node != null) {
+                jg.writeFieldName("taskInfo");
+                jg.writeStartObject();
+                final ActionManager actionManager = Framework.getService(ActionManager.class);
+                jg.writeArrayFieldStart("taskActions");
+                for (Button button : node.getTaskButtons()) {
+                    if (StringUtils.isBlank(button.getFilter()) || actionManager.checkFilter(button.getFilter(),
+                            createActionContext(wrapper.getSession()))) {
+                        jg.writeStartObject();
+                        jg.writeStringField("name", button.getName());
+                        jg.writeStringField("url", ctx.getBaseUrl() + "api/v1/task/" + item.getDocument().getId() + "/"
+                                + button.getName());
+                        jg.writeStringField("label", button.getLabel());
+                        jg.writeEndObject();
+                    }
+                }
+                jg.writeEndArray();
+
+                jg.writeFieldName("layoutResource");
+                jg.writeStartObject();
+                jg.writeStringField("name", node.getTaskLayout());
+                jg.writeStringField("url",
+                        ctx.getBaseUrl() + "site/layout-manager/layouts/?layoutName=" + node.getTaskLayout());
+                jg.writeEndObject();
+
+                jg.writeArrayFieldStart("schemas");
+                for (String schema : node.getDocument().getSchemas()) {
+                    // TODO only keep functional schema once adaptation done
                     jg.writeStartObject();
-                    jg.writeStringField("name", button.getName());
-                    jg.writeStringField("url",
-                            ctx.getBaseUrl() + "api/v1/task/" + item.getDocument().getId() + "/" + button.getName());
-                    jg.writeStringField("label", button.getLabel());
+                    jg.writeStringField("name", schema);
+                    jg.writeStringField("url", ctx.getBaseUrl() + "api/v1/config/schemas/" + schema);
                     jg.writeEndObject();
                 }
-            }
-            jg.writeEndArray();
+                jg.writeEndArray();
 
-            jg.writeFieldName("layoutResource");
-            jg.writeStartObject();
-            jg.writeStringField("name", node.getTaskLayout());
-            jg.writeStringField("url", ctx.getBaseUrl() + "site/layout-manager/layouts/?layoutName=" + node.getTaskLayout());
-            jg.writeEndObject();
-
-            jg.writeArrayFieldStart("schemas");
-            for (String schema : node.getDocument().getSchemas()) {
-                // TODO only keep functional schema once adaptation done
-                jg.writeStartObject();
-                jg.writeStringField("name", schema);
-                jg.writeStringField("url", ctx.getBaseUrl() + "api/v1/config/schemas/" + schema);
                 jg.writeEndObject();
             }
-            jg.writeEndArray();
-
-            jg.writeEndObject();
         }
 
     }
@@ -244,6 +249,9 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
      */
     public static void writeTaskVariables(GraphNode node, JsonGenerator jg, MarshallerRegistry registry,
             RenderingContext ctx, SchemaManager schemaManager) throws IOException, JsonGenerationException {
+        if (node == null || node.getDocument() == null) {
+            return;
+        }
         String facet = (String) node.getDocument().getPropertyValue(GraphNode.PROP_VARIABLES_FACET);
         if (StringUtils.isNotBlank(facet)) {
 

@@ -50,12 +50,14 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -68,11 +70,14 @@ import org.nuxeo.ecm.platform.routing.core.io.enrichers.RunningWorkflowJsonEnric
 import org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingEscalationListener;
 import org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingWorkflowInstancesCleanup;
 import org.nuxeo.ecm.platform.routing.test.WorkflowFeature;
+import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.TaskAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.WorkflowAdapter;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -99,6 +104,9 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
     @Inject
     EventService eventService;
+
+    @Inject
+    TransactionalFeature txFeature;
 
     @Test
     public void testAdapter() throws IOException {
@@ -960,6 +968,41 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         cancelled = session.query("SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'");
         assertTrue(cancelled.isEmpty());
+    }
+
+    /**
+     * @since 9.3
+     */
+    @Test
+    public void testTaskWithoutWorkflowInstance() throws IOException {
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        // Create a task not related to a workflow instance
+        List<Task> tasks = Framework.getService(TaskService.class).createTask(session,
+                (NuxeoPrincipal) session.getPrincipal(), note, "testNoWorkflowTask",
+                Arrays.asList("user:Administrator"), false, null, null, null, Collections.emptyMap(), null);
+        assertEquals(1, tasks.size());
+        Task task = tasks.get(0);
+        txFeature.nextTransaction();
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", PendingTasksJsonEnricher.NAME);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/id/" + note.getId(), headers)) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            ArrayNode tasksNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
+                                                  .get(PendingTasksJsonEnricher.NAME);
+            assertEquals(1, tasksNode.size());
+
+            JsonNode taskNode = tasksNode.get(0);
+            assertEquals(task.getId(), taskNode.get("id").getTextValue());
+            assertEquals("testNoWorkflowTask", taskNode.get("name").getTextValue());
+            assertTrue(taskNode.get("workflowInstanceId").isNull());
+            ArrayNode targetDocumentIdsNode = (ArrayNode) taskNode.get(TaskWriter.TARGET_DOCUMENT_IDS);
+            assertEquals(1, targetDocumentIdsNode.size());
+            assertEquals(note.getId(), targetDocumentIdsNode.get(0).get("id").getTextValue());
+            assertActorIs("user:Administrator", taskNode);
+            assertEquals(0, taskNode.get("variables").size());
+        }
     }
 
     /**
