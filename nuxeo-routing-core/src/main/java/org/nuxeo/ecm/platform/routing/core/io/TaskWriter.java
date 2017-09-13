@@ -94,6 +94,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
 
     public static final String ENTITY_TYPE = "task";
 
+    @Override
     public void writeEntityBody(Task item, JsonGenerator jg) throws IOException {
         GraphRoute workflowInstance = null;
         GraphNode node = null;
@@ -150,7 +151,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
                     } else if (actorId.startsWith(GROUP_PREFIX + SEPARATOR)) {
                         actorId = actorId.substring(GROUP_PREFIX.length() + SEPARATOR.length());
                         NuxeoGroup group = userManager.getGroup(actorId);
-                        if (group !=  null) {
+                        if (group != null) {
                             writeEntity(group, jg);
                             continue;
                         }
@@ -261,8 +262,9 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
 
                 Writer<Property> propertyWriter = registry.getWriter(ctx, Property.class, APPLICATION_JSON_TYPE);
                 // provides the current route to the property marshaller
-                try (Closeable resource = ctx.wrap().with(DocumentModelJsonWriter.ENTITY_TYPE,
-                        node.getDocument()).open()) {
+                try (Closeable resource = ctx.wrap()
+                                             .with(DocumentModelJsonWriter.ENTITY_TYPE, node.getDocument())
+                                             .open()) {
                     for (Field f : type.getFields()) {
                         String name = f.getName().getLocalName();
                         Property property = hasFacet ? node.getDocument().getProperty(name) : null;
@@ -280,7 +282,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
      */
     public static void writeWorkflowVariables(DocumentRoute route, GraphNode node, JsonGenerator jg,
             MarshallerRegistry registry, RenderingContext ctx, SchemaManager schemaManager)
-                    throws IOException, JsonGenerationException {
+            throws IOException, JsonGenerationException {
         String facet = (String) route.getDocument().getPropertyValue(GraphRoute.PROP_VARIABLES_FACET);
         if (StringUtils.isNotBlank(facet)) {
 
@@ -297,8 +299,9 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
 
                 Writer<Property> propertyWriter = registry.getWriter(ctx, Property.class, APPLICATION_JSON_TYPE);
                 // provides the current route to the property marshaller
-                try (Closeable resource = ctx.wrap().with(DocumentModelJsonWriter.ENTITY_TYPE,
-                        route.getDocument()).open()) {
+                try (Closeable resource = ctx.wrap()
+                                             .with(DocumentModelJsonWriter.ENTITY_TYPE, route.getDocument())
+                                             .open()) {
                     for (Field f : type.getFields()) {
                         String name = f.getName().getLocalName();
                         if (transientSchema.hasField(name)) {

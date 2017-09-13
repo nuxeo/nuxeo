@@ -507,14 +507,12 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null))) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-            JsonNode node = mapper.readTree(response.getEntityInputStream());
         }
 
         // Initiate a ParallelDocumentReview workflow
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("ParallelDocumentReview", null))) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-            JsonNode Jnode = mapper.readTree(response.getEntityInputStream());
         }
 
         // Check GET /workflow?workflowMnodelName=SerialDocumentReview
