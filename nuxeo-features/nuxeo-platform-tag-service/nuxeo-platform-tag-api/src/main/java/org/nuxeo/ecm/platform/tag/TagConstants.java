@@ -45,6 +45,6 @@ public class TagConstants {
     /**
      * @since 9.3
      */
-    public static final String TAG_FACET = "Tag";
+    public static final String TAG_FACET = "NXTag";
 
 }

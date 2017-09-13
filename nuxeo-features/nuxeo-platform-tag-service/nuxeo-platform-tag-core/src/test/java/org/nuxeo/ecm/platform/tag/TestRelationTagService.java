@@ -20,7 +20,10 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import org.junit.Before;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Test class for tag service based on SQL relations
@@ -29,4 +32,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @LocalDeploy("org.nuxeo.ecm.platform.tag:override-tag-service-properties.xml")
 public class TestRelationTagService extends AbstractTestTagService {
+
+    @Before
+    public void setUp() {
+        assumeTrue("DBS does not support tags based on SQL relations", !coreFeature.getStorageConfiguration().isDBS());
+    }
 }

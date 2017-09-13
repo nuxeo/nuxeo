@@ -79,7 +79,6 @@ public class TestTagOperations {
 
     @Test
     public void testTagOperationsSuite() throws Exception {
-        assumeTrue("DBS does not support tags", !coreFeature.getStorageConfiguration().isDBS());
 
         // quick init
         document = session.createDocumentModel("/", "File", "File");

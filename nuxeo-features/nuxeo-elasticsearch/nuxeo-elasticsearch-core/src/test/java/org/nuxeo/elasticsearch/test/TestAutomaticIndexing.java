@@ -584,7 +584,7 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
-        assertNumberOfCommandProcessed(3); // 2 creations + 1 update done by the TaggedVersionListener
+        assertNumberOfCommandProcessed(2); // 2 creations
 
         startTransaction();
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(
