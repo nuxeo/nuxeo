@@ -16,14 +16,13 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.kv;
+package org.nuxeo.ecm.core.kv;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -53,7 +52,7 @@ public class KeyValueServiceImpl extends DefaultComponent implements KeyValueSer
             registerKeyValueStore((KeyValueStoreDescriptor) contribution);
             break;
         default:
-            throw new NuxeoException("Unknown extension point: " + extensionPoint);
+            throw new RuntimeException("Unknown extension point: " + extensionPoint);
         }
     }
 
@@ -95,7 +94,7 @@ public class KeyValueServiceImpl extends DefaultComponent implements KeyValueSer
                 provider = descriptor.getKlass().newInstance();
                 provider.initialize(descriptor);
             } catch (ReflectiveOperationException e) {
-                throw new NuxeoException(e);
+                throw new RuntimeException(e);
             }
             providers.put(name, provider);
         }

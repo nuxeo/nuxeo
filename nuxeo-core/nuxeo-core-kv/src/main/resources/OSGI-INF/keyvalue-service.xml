@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.kv.KeyValueService" version="1.0">
+
+  <documentation>
+    The Key/Value service allows registration and access to KeyValueStores
+    to store simple values associated to keys.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.kv.KeyValueService" />
+  </service>
+
+  <implementation class="org.nuxeo.ecm.core.kv.KeyValueServiceImpl" />
+
+  <extension-point name="configuration">
+    <documentation>
+      Defines the implementations of the Key/Value stores:
+      <code>
+        <store name="default" class="org.nuxeo.ecm.core.kv.MemKeyValueStore"/>
+      </code>
+      The class must implement org.nuxeo.ecm.core.kv.KeyValueStoreProvider.
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.kv.KeyValueStoreDescriptor" />
+  </extension-point>
+
+</component>

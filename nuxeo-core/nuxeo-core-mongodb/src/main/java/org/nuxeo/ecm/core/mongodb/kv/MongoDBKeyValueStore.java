@@ -38,9 +38,9 @@ import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.Binary;
+import org.nuxeo.ecm.core.kv.KeyValueStoreDescriptor;
+import org.nuxeo.ecm.core.kv.KeyValueStoreProvider;
 import org.nuxeo.ecm.core.mongodb.MongoDBConnectionService;
-import org.nuxeo.ecm.core.storage.kv.KeyValueStoreDescriptor;
-import org.nuxeo.ecm.core.storage.kv.KeyValueStoreProvider;
 import org.nuxeo.runtime.api.Framework;
 
 import com.mongodb.ErrorCategory;
