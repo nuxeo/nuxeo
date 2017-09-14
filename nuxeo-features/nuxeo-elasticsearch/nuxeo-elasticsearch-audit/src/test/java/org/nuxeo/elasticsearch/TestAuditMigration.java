@@ -49,13 +49,13 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.runtime.datasource",
         "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core",
+        "org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.seqgen",
         "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit" })
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy({ "org.nuxeo.elasticsearch.audit:nxaudit-ds.xml", "org.nuxeo.elasticsearch.audit:nxuidsequencer-ds.xml",
-        "org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
 @SuppressWarnings("unchecked")

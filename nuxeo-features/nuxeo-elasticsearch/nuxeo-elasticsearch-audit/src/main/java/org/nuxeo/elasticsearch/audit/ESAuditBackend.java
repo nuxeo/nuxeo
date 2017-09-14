@@ -34,6 +34,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.common.ParsingException;
 import org.elasticsearch.common.io.stream.BytesStreamOutput;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.TimeValue;
@@ -53,8 +54,6 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.metrics.max.Max;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -326,10 +325,10 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         SearchModule searchModule = new SearchModule(Settings.EMPTY, false, Collections.emptyList());
         try {
             try (XContentParser parser = XContentFactory.xContent(XContentType.JSON)
-                        .createParser(new NamedXContentRegistry(searchModule.getNamedXContents()), query)) {
+                    .createParser(new NamedXContentRegistry(searchModule.getNamedXContents()), query)) {
                 searchSourceBuilder.parseXContent(new QueryParseContext(parser));
             }
-        } catch (IOException e) {
+        } catch (IOException | ParsingException e) {
             log.error("Invalid query: " + query + ": " + e.getMessage(), e);
             throw new IllegalArgumentException("Bad query: " + query);
         }
@@ -354,9 +353,9 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 if (val == null) {
                     continue;
                 } else if (val instanceof Calendar) {
-                    tmpl.setVariable(key, ISODateTimeFormat.dateTime().print(new DateTime(val)));
+                    tmpl.setVariable(key, Long.toString(((Calendar) val).getTime().getTime()));
                 } else if (val instanceof Date) {
-                    tmpl.setVariable(key, ISODateTimeFormat.dateTime().print(new DateTime(val)));
+                    tmpl.setVariable(key, Long.toString(((Date) val).getTime()));
                 } else {
                     tmpl.setVariable(key, val.toString());
                 }
@@ -405,7 +404,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         }
 
         if (limit != null) {
-            filterBuilder.must(QueryBuilders.rangeQuery("eventDate").lt(limit));
+            filterBuilder.must(QueryBuilders.rangeQuery("eventDate").lt(convertDate(limit)));
         }
         request.source(new SearchSourceBuilder().query(QueryBuilders.constantScoreQuery(filterBuilder)));
         if (pageNb > 0) {
@@ -499,7 +498,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         if (indices == null && indices.length != 1) {
             throw new IllegalStateException("Search on audit must include index name: " + request);
         }
-        if (! getESIndexName().equals(indices[0])) {
+        if (!getESIndexName().equals(indices[0])) {
             throw new IllegalStateException("Search on audit must be on audit index: " + request);
         }
         return esClient.search(request);
@@ -554,20 +553,20 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 }
                 filterBuilder.must(QueryBuilders.termsQuery(predicate.getParameter(), values));
             } else if (op.equalsIgnoreCase("BETWEEN")) {
-                filterBuilder.must(QueryBuilders.rangeQuery(predicate.getParameter()).gt(val[0]));
+                filterBuilder.must(QueryBuilders.rangeQuery(predicate.getParameter()).gt(convertDate(val[0])));
                 if (val.length > 1) {
-                    filterBuilder.must(QueryBuilders.rangeQuery(predicate.getParameter()).lt(val[1]));
+                    filterBuilder.must(QueryBuilders.rangeQuery(predicate.getParameter()).lt(convertDate(val[1])));
                 }
             } else if (">".equals(op)) {
-                filterBuilder.must(QueryBuilders.rangeQuery(predicate.getParameter()).gt(val[0]));
+                filterBuilder.must(QueryBuilders.rangeQuery(predicate.getParameter()).gt(convertDate(val[0])));
             } else if (">=".equals(op)) {
-                filterBuilder.must(QueryBuilders.rangeQuery(predicate.getParameter()).gte(val[0]));
+                filterBuilder.must(QueryBuilders.rangeQuery(predicate.getParameter()).gte(convertDate(val[0])));
             } else if ("<".equals(op)) {
-                filterBuilder.must(QueryBuilders.rangeQuery(predicate.getParameter()).lt(val[0]));
+                filterBuilder.must(QueryBuilders.rangeQuery(predicate.getParameter()).lt(convertDate(val[0])));
             } else if ("<=".equals(op)) {
-                filterBuilder.must(QueryBuilders.rangeQuery(predicate.getParameter()).lte(val[0]));
+                filterBuilder.must(QueryBuilders.rangeQuery(predicate.getParameter()).lte(convertDate(val[0])));
             } else {
-                filterBuilder.must(QueryBuilders.termQuery(predicate.getParameter(), val[0]));
+                filterBuilder.must(QueryBuilders.termQuery(predicate.getParameter(), convertDate(val[0])));
             }
         }
 
@@ -575,6 +574,16 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             return QueryBuilders.matchAllQuery();
         }
         return filterBuilder;
+    }
+
+    protected Object convertDate(Object o) {
+        // Date are convert to timestamp ms which is a known format by default for ES
+        if (o instanceof Calendar) {
+            return Long.valueOf(((Calendar) o).getTime().getTime());
+        } else if (o instanceof Date) {
+            return Long.valueOf(((Date) o).getTime());
+        }
+        return o;
     }
 
     public SearchRequest buildSearchQuery(String fixedPart, PredicateDefinition[] predicates,

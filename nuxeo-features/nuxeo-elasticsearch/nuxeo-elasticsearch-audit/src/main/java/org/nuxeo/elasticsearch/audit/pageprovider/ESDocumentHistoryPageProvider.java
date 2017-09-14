@@ -44,38 +44,34 @@ public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
             + "                    }\n" + "                  }\n" + "                }\n"
             + "              }          \n" + "";
 
-    protected static String complexQuery = "{\n" + //
-            "  \"query\": {\n" + //
-            "    \"bool\": {\n" + //
-            "      \"filter\": {\n" + //
-            "        \"or\": [\n" + //
-            "          {\n" + //
-            "            \"term\": {\n" + //
-            "              \"docUUID\": \"?\"\n" + //
-            "            }\n" + //
-            "          },\n" + //
-            "          {\n" + //
-            "            \"bool\": {\n" + //
-            "              \"must\": [\n" + //
-            "                {\n" + //
-            "                  \"term\": {\n" + //
-            "                    \"docUUID\": \"?\"\n" + //
-            "                  }\n" + //
-            "                },\n" + //
-            "                {\n" + //
-            "                  \"range\": {\n" + //
-            "                    \"eventDate\": {\n" + //
-            "                      \"lte\": \"?\"\n" + //
-            "                    }\n" + //
-            "                  }\n" + //
-            "                }\n" + //
-            "              ]\n" + //
-            "            }\n" + //
-            "          }\n" + //
-            "        ]\n" + //
-            "      }\n" + //
-            "    }\n" + //
-            "  }\n" + //
+    protected static String complexQuery = "{\n" +  //
+            "    \"bool\": {\n" +  //
+            "      \"should\": [\n" +  //
+            "        {\n" +  //
+            "          \"term\": {\n" +  //
+            "            \"docUUID\": \"?\"\n" +  //
+            "          }\n" +  //
+            "        },\n" +  //
+            "        {\n" +  //
+            "          \"bool\": {\n" +  //
+            "            \"must\": [\n" +  //
+            "              {\n" +  //
+            "                \"term\": {\n" +  //
+            "                  \"docUUID\": \"?\"\n" +  //
+            "                }\n" +  //
+            "              },\n" +  //
+            "              {\n" +  //
+            "                \"range\": {\n" +  //
+            "                  \"eventDate\": {\n" +  //
+            "                    \"lte\": \"?\"\n" +  //
+            "                  }\n" +  //
+            "                }\n" +  //
+            "              }\n" +  //
+            "            ]\n" +  //
+            "          }\n" +  //
+            "        }\n" +  //
+            "      ]\n" +  //
+            "    }\n" +  //
             "}\n";
 
     @Override

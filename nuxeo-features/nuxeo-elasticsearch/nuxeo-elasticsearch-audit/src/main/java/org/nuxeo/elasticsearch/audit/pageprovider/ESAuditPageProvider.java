@@ -105,7 +105,6 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
             searchRequest.source().sort(sortInfo.getSortColumn(),
                     sortInfo.getSortAscending() ? SortOrder.ASC : SortOrder.DESC);
         }
-
         SearchResponse searchResponse = getESBackend().search(searchRequest);
         List<LogEntry> entries = new ArrayList<>();
         SearchHits hits = searchResponse.getHits();

@@ -39,13 +39,12 @@
 		          "must" : {
 		            "match" : {
 		              "docUUID" : {
-		                "query" : "?",
-		                "type" : "boolean"
+		                "query" : "?"
 		              }
 		            }
 		          }
 		        }
-			  }          
+			  }
         </fixedPart>
         <predicate parameter="eventDate" operator="BETWEEN">
           <field schema="basicauditsearch" name="startDate" />
@@ -81,7 +80,7 @@
         </predicate>
         <predicate parameter="principalName" operator="IN">
           <field schema="basicauditsearch" name="principalNames" />
-        </predicate>                
+        </predicate>
       </whereClause>
       <sort column="eventDate" ascending="false" />
         <pageSize>10</pageSize>
@@ -114,25 +113,35 @@
   <genericPageProvider name="LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER"
     class="org.nuxeo.elasticsearch.audit.pageprovider.ESDocumentHistoryPageProvider">
      <pattern>
-    {
-      "filtered" : {
-        "query" : {
-          "term" : {
-            "category" :  "userGroup"
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "term": {
+            "category": "userGroup"
           }
         },
-        "filter" : {
-          "or" : [
-            {
-              "term" : { "eventId" :  "user_created" }
-            },
-            {
-              "term" : { "eventId" :  "group_created" }
-            }
-          ]
+        {
+          "bool": {
+            "should": [
+              {
+                "term": {
+                  "eventId": "user_created"
+                }
+              },
+              {
+                "term": {
+                  "eventId": "group_created"
+                }
+              }
+            ]
+          }
         }
-      }
+      ]
     }
+  }
+}
     </pattern>
     <sort column="eventDate" ascending="false" />
     <pageSize>5</pageSize>
