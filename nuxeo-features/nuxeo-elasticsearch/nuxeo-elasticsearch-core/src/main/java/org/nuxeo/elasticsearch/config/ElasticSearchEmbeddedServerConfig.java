@@ -28,10 +28,10 @@ import java.io.File;
 import java.io.Serializable;
 
 /**
- * XMap descriptor used to configure a local in JVM Elasticsearch instance
+ * Configuration of an embedded (same JVM as Nuxeo) Elasticsearch server.
  */
-@XObject(value = "elasticSearchLocal")
-public class ElasticSearchLocalConfig implements Serializable {
+@XObject(value = "elasticSearchEmbeddedServer")
+public class ElasticSearchEmbeddedServerConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

@@ -20,8 +20,6 @@
 package org.nuxeo.elasticsearch.api;
 
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
-import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
-import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
 
 /**
@@ -30,7 +28,6 @@ import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
  * @since 9.3
  */
 public interface ESClientFactory {
-    ESClient create(ElasticSearchRemoteConfig remoteConfig, ElasticSearchClientConfig clientConfig);
 
-    ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchLocalConfig localConfig, ElasticSearchClientConfig clientConfig);
+    ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchClientConfig clientConfig);
 }

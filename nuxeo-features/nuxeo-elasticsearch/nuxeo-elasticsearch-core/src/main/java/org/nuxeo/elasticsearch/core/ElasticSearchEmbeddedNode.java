@@ -26,7 +26,7 @@ import org.elasticsearch.node.NodeValidationException;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.transport.Netty4Plugin;
 import org.nuxeo.common.utils.ExceptionUtils;
-import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
+import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
 import org.nuxeo.runtime.api.Framework;
 
 import java.io.Closeable;
@@ -46,11 +46,11 @@ import java.util.stream.Collectors;
 public class ElasticSearchEmbeddedNode implements Closeable {
     private static final Log log = LogFactory.getLog(ElasticSearchEmbeddedNode.class);
     private static final int DEFAULT_RETRY = 3;
-    final protected ElasticSearchLocalConfig config;
+    final protected ElasticSearchEmbeddedServerConfig config;
     protected Node node;
     protected int retry = DEFAULT_RETRY;
 
-    public ElasticSearchEmbeddedNode(ElasticSearchLocalConfig config) {
+    public ElasticSearchEmbeddedNode(ElasticSearchEmbeddedServerConfig config) {
         this.config = config;
     }
 
@@ -103,7 +103,7 @@ public class ElasticSearchEmbeddedNode implements Closeable {
                 } catch (IOException e1) {
                     throw new RuntimeException(e1);
                 }
-                if (retry < 0) {
+                if (retry <= 0) {
                     String msg = "Not able to bind to local Elasticsearch after multiple attempts, give up";
                     log.error(msg);
                     throw new IllegalStateException(msg);
@@ -136,7 +136,7 @@ public class ElasticSearchEmbeddedNode implements Closeable {
         }
     }
 
-    public ElasticSearchLocalConfig getConfig() {
+    public ElasticSearchEmbeddedServerConfig getConfig() {
         return config;
     }
 

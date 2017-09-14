@@ -27,9 +27,8 @@ import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
+import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
-import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
-import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.runtime.api.Framework;
 
 import java.io.IOException;
@@ -65,23 +64,19 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     private final Map<String, ElasticSearchIndexConfig> indexConfig;
 
-    private ElasticSearchEmbeddedNode localNode;
+    private ElasticSearchEmbeddedNode embeddedServer;
 
     private ESClient client;
 
     private boolean indexInitDone = false;
 
-    private final ElasticSearchLocalConfig localConfig;
-
-    private final ElasticSearchRemoteConfig remoteConfig;
+    private final ElasticSearchEmbeddedServerConfig embeddedServerConfig;
 
     private final ElasticSearchClientConfig clientConfig;
 
     private String[] includeSourceFields;
 
     private String[] excludeSourceFields;
-
-    private boolean embedded = true;
 
     private List<String> repositoryInitialized = new ArrayList<>();
 
@@ -92,11 +87,10 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
      *
      * @since 9.1
      */
-    public ElasticSearchAdminImpl(ElasticSearchLocalConfig localConfig, ElasticSearchRemoteConfig remoteConfig,
-                                  Map<String, ElasticSearchIndexConfig> indexConfig,
-                                  ElasticSearchClientConfig clientConfig) {
-        this.remoteConfig = remoteConfig;
-        this.localConfig = localConfig;
+    public ElasticSearchAdminImpl(ElasticSearchEmbeddedServerConfig embeddedServerConfig,
+                                  ElasticSearchClientConfig clientConfig,
+                                  Map<String, ElasticSearchIndexConfig> indexConfig) {
+        this.embeddedServerConfig = embeddedServerConfig;
         this.indexConfig = indexConfig;
         this.clientConfig = clientConfig;
         checkConfig();
@@ -106,9 +100,6 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     protected void checkConfig() {
         String msg = null;
-        if (localConfig == null && remoteConfig == null) {
-            msg = "No local or remote configuration provided, aborting";
-        }
         if (clientConfig == null) {
             msg = "No client configuration provided, aborting";
         }
@@ -122,15 +113,11 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         if (client != null) {
             return;
         }
-        if (remoteConfig != null) {
-            client = connectToRemote(remoteConfig);
-            embedded = false;
-        } else {
-            localNode = new ElasticSearchEmbeddedNode(localConfig);
-            localNode.start();
-            client = connectToEmbedded(localNode);
-            embedded = true;
+        if (embeddedServerConfig != null) {
+            embeddedServer = new ElasticSearchEmbeddedNode(embeddedServerConfig);
+            embeddedServer.start();
         }
+        client = createClient(embeddedServer);
         checkClusterHealth();
         log.info("ES Connected");
     }
@@ -146,38 +133,25 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             indexInitDone = false;
             log.info("ES Disconnected");
         }
-        if (localNode != null) {
+        if (embeddedServer != null) {
             try {
-                localNode.close();
+                embeddedServer.close();
             } catch (IOException e) {
                 log.error("Failed to close embedded node: " + e.getMessage(), e);
             }
-            localNode = null;
+            embeddedServer = null;
             log.info("ES embedded Node Stopped");
         }
     }
 
-    private ESClient connectToEmbedded(ElasticSearchEmbeddedNode node) {
-        log.info("Connecting to embedded ES");
+    private ESClient createClient(ElasticSearchEmbeddedNode node) {
+        log.info("Connecting to ES");
         ESClient ret;
         try {
             ESClientFactory clientFactory = clientConfig.getKlass().newInstance();
-            ret = clientFactory.create(node, localConfig, clientConfig);
+            ret = clientFactory.create(node, clientConfig);
         } catch (IllegalAccessException | InstantiationException e) {
             log.error("Can not instantiate ES Client from class: " + clientConfig.getKlass());
-            throw new RuntimeException(e);
-        }
-        return ret;
-    }
-
-    private ESClient connectToRemote(ElasticSearchRemoteConfig config) {
-        log.info("Connecting to remote ES cluster: " + config);
-        ESClient ret;
-        try {
-            ESClientFactory clientFactory = clientConfig.getKlass().newInstance();
-            ret = clientFactory.create(remoteConfig, clientConfig);
-        } catch (IllegalAccessException | InstantiationException e) {
-            log.error("Can not instantiate ES Client initialization service from " + clientConfig.getKlass());
             throw new RuntimeException(e);
         }
         return ret;
@@ -408,15 +382,12 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public boolean isEmbedded() {
-        return embedded;
+        return (embeddedServer != null);
     }
 
     @Override
     public boolean useExternalVersion() {
-        if (isEmbedded()) {
-            return localConfig.useExternalVersion();
-        }
-        return remoteConfig.useExternalVersion();
+        return clientConfig.useExternalVersion();
     }
 
     @Override

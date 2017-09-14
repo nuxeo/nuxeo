@@ -4,33 +4,27 @@
   <require>org.nuxeo.elasticsearch.ElasticSearchComponent</require>
 
 <#if "${elasticsearch.addressList}" == "">
-  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
-    point="elasticSearchLocal">
-    <elasticSearchLocal
-      clusterName="${elasticsearch.clusterName}"
-      nodeName="${elasticsearch.nodeName}"
-      pathData="${nuxeo.data.dir}/elasticsearch"
-      pathLogs="${nuxeo.log.dir}/elasticsearch"
-      httpEnabled="${elasticsearch.httpEnabled}"
-      networkHost="${elasticsearch.networkHost}" />
-  </extension>
-<#else>
-  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
-    point="elasticSearchRemote">
-    <elasticSearchRemote
-      clusterName="${elasticsearch.clusterName}"
-      addressList="${elasticsearch.addressList}"
-      clientTransportSniff="false"
-      clientTransportIgnoreClusterName="false"
-      clientTransportPingTimeout="5s"
-      clientTransportNodesSamplerInterval="5s" />
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchEmbeddedServer">
+    <elasticSearchEmbeddedServer clusterName="${elasticsearch.clusterName}" nodeName="${elasticsearch.nodeName}"
+      pathData="${nuxeo.data.dir}/elasticsearch" pathLogs="${nuxeo.log.dir}/elasticsearch"
+      httpEnabled="${elasticsearch.httpEnabled}" networkHost="${elasticsearch.networkHost}" />
   </extension>
 </#if>
-  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchClientInitialization">
-<#if (elasticsearch.client)?? && "${elasticsearch.client}" == "TransportClient">
-    <clientInitialization class="org.nuxeo.elasticsearch.client.ESTransportClientFactory" />
+
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchClient">
+<#if (elasticsearch.client)?? && "${elasticsearch.client}" == "RestClient">
+    <elasticSearchClient class="org.nuxeo.elasticsearch.client.ESRestClientFactory">
+      <option name="addressList">${elasticsearch.addressList}</option>
+    </elasticSearchClient>
 <#else>
-    <clientInitialization class="org.nuxeo.elasticsearch.client.ESRestClientFactory" />
+  <elasticSearchClient class="org.nuxeo.elasticsearch.client.ESTransportClientFactory">
+    <option name="addressList">${elasticsearch.addressList}</option>
+    <option name="clusterName">${elasticsearch.clusterName}</option>
+    <option name="clientTransportSniff">false</option>
+    <option name="clientTransportIgnoreClusterName">false</option>
+    <option name="clientTransportPingTimeout">5s</option>
+    <option name="clientTransportNodesSamplerInterval">5s</option>
+  </elasticSearchClient>
 </#if>
   </extension>
 

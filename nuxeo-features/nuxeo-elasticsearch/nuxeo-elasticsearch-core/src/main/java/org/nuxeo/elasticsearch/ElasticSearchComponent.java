@@ -41,9 +41,8 @@ import org.nuxeo.elasticsearch.api.EsScrollResult;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchDocWriterDescriptor;
+import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
-import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
-import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchAdminImpl;
 import org.nuxeo.elasticsearch.core.ElasticSearchIndexingImpl;
 import org.nuxeo.elasticsearch.core.ElasticSearchServiceImpl;
@@ -81,70 +80,56 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_ON_STARTUP_
 public class ElasticSearchComponent extends DefaultComponent
         implements ElasticSearchAdmin, ElasticSearchIndexing, ElasticSearchService {
 
-    private static final Log log = LogFactory.getLog(ElasticSearchComponent.class);
+    protected static final Log log = LogFactory.getLog(ElasticSearchComponent.class);
 
-    private static final String EP_REMOTE = "elasticSearchRemote";
+    protected static final String EP_EMBEDDED_SERVER = "elasticSearchEmbeddedServer";
 
-    private static final String EP_LOCAL = "elasticSearchLocal";
+    protected static final String EP_CLIENT_INIT = "elasticSearchClient";
 
-    private static final String EP_INDEX = "elasticSearchIndex";
+    protected static final String EP_INDEX = "elasticSearchIndex";
 
-    private static final String EP_DOC_WRITER = "elasticSearchDocWriter";
+    protected static final String EP_DOC_WRITER = "elasticSearchDocWriter";
 
-    private static final String EP_CLIENT_INIT = "elasticSearchClientInitialization";
-
-    private static final long REINDEX_TIMEOUT = 20;
+    protected static final long REINDEX_TIMEOUT = 20;
 
     // Indexing commands that where received before the index initialization
-    private final List<IndexingCommand> stackedCommands = Collections.synchronizedList(new ArrayList<>());
+    protected final List<IndexingCommand> stackedCommands = Collections.synchronizedList(new ArrayList<>());
 
-    private final Map<String, ElasticSearchIndexConfig> indexConfig = new HashMap<>();
+    protected final Map<String, ElasticSearchIndexConfig> indexConfig = new HashMap<>();
 
-    private ElasticSearchLocalConfig localConfig;
+    protected ElasticSearchEmbeddedServerConfig embeddedServerConfig;
 
-    private ElasticSearchRemoteConfig remoteConfig;
+    protected ElasticSearchClientConfig clientConfig;
 
-    private ElasticSearchClientConfig clientConfig;
+    protected ElasticSearchAdminImpl esa;
 
-    private ElasticSearchAdminImpl esa;
+    protected ElasticSearchIndexingImpl esi;
 
-    private ElasticSearchIndexingImpl esi;
-
-    private ElasticSearchServiceImpl ess;
+    protected ElasticSearchServiceImpl ess;
 
     protected JsonESDocumentWriter jsonESDocumentWriter;
 
-    private ListeningExecutorService waiterExecutorService;
+    protected ListeningExecutorService waiterExecutorService;
 
-    private final AtomicInteger runIndexingWorkerCount = new AtomicInteger(0);
+    protected final AtomicInteger runIndexingWorkerCount = new AtomicInteger(0);
 
     // Nuxeo Component impl ======================================é=============
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         switch (extensionPoint) {
-            case EP_LOCAL:
-                ElasticSearchLocalConfig localContrib = (ElasticSearchLocalConfig) contribution;
-                if (localContrib.isEnabled()) {
-                    localConfig = localContrib;
-                    remoteConfig = null;
-                    log.info("Registering local embedded configuration: " + localConfig + ", loaded from "
+            case EP_EMBEDDED_SERVER:
+                ElasticSearchEmbeddedServerConfig serverContrib = (ElasticSearchEmbeddedServerConfig) contribution;
+                if (serverContrib.isEnabled()) {
+                    embeddedServerConfig = serverContrib;
+                    log.info("Registering embedded server configuration: " + embeddedServerConfig + ", loaded from "
                             + contributor.getName());
-                } else if (localConfig != null) {
-                    log.info("Disabling previous local embedded configuration, deactivated by " + contributor.getName());
-                    localConfig = null;
+                } else if (embeddedServerConfig != null) {
+                    log.info("Disabling previous embedded server configuration, deactivated by " + contributor.getName());
+                    embeddedServerConfig = null;
                 }
                 break;
-            case EP_REMOTE:
-                ElasticSearchRemoteConfig remoteContribution = (ElasticSearchRemoteConfig) contribution;
-                if (remoteContribution.isEnabled()) {
-                    remoteConfig = remoteContribution;
-                    localConfig = null;
-                    log.info(
-                            "Registering remote configuration: " + remoteConfig + ", loaded from " + contributor.getName());
-                } else if (remoteConfig != null) {
-                    log.info("Disabling previous remote configuration, deactivated by " + contributor.getName());
-                    remoteConfig = null;
-                }
+            case EP_CLIENT_INIT:
+                clientConfig = (ElasticSearchClientConfig) contribution;
                 break;
             case EP_INDEX:
                 ElasticSearchIndexConfig idx = (ElasticSearchIndexConfig) contribution;
@@ -167,9 +152,6 @@ public class ElasticSearchComponent extends DefaultComponent
                     throw new RuntimeException(e);
                 }
                 break;
-            case EP_CLIENT_INIT:
-                clientConfig = (ElasticSearchClientConfig) contribution;
-                break;
             default:
                 throw new IllegalStateException("Invalid EP: " + extensionPoint);
         }
@@ -181,7 +163,7 @@ public class ElasticSearchComponent extends DefaultComponent
             log.info("Elasticsearch service is disabled");
             return;
         }
-        esa = new ElasticSearchAdminImpl(localConfig, remoteConfig, indexConfig, clientConfig);
+        esa = new ElasticSearchAdminImpl(embeddedServerConfig, clientConfig, indexConfig);
         esi = new ElasticSearchIndexingImpl(esa, jsonESDocumentWriter);
         ess = new ElasticSearchServiceImpl(esa);
         initListenerThreadPool();
@@ -204,7 +186,7 @@ public class ElasticSearchComponent extends DefaultComponent
         }
     }
 
-    private void reindexOnStartup() {
+    protected void reindexOnStartup() {
         boolean reindexOnStartup = Boolean.parseBoolean(Framework.getProperty(REINDEX_ON_STARTUP_PROPERTY, "false"));
         if (!reindexOnStartup) {
             return;
@@ -335,7 +317,7 @@ public class ElasticSearchComponent extends DefaultComponent
         });
     }
 
-    private static class NamedThreadFactory implements ThreadFactory {
+    protected static class NamedThreadFactory implements ThreadFactory {
         @SuppressWarnings("NullableProblems")
         @Override
         public Thread newThread(Runnable r) {
@@ -544,7 +526,7 @@ public class ElasticSearchComponent extends DefaultComponent
     }
 
     // misc ====================================================================
-    private boolean isReady() {
+    protected boolean isReady() {
         return (esa != null) && esa.isReady();
     }
 

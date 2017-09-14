@@ -29,8 +29,6 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
-import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
-import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
 
 import java.net.InetAddress;
@@ -45,26 +43,38 @@ public class ESTransportClientFactory implements ESClientFactory {
     public ESTransportClientFactory() {
     }
 
-    public Settings.Builder getSetting(ElasticSearchRemoteConfig serverConfig) {
+    public Settings.Builder getSetting(ElasticSearchClientConfig config) {
         return Settings.builder()
-                .put("cluster.name", serverConfig.getClusterName())
-                .put("client.transport.nodes_sampler_interval", serverConfig.getSamplerInterval())
-                .put("client.transport.ping_timeout", serverConfig.getPingTimeout())
-                .put("client.transport.ignore_cluster_name", serverConfig.isIgnoreClusterName())
-                .put("client.transport.sniff", serverConfig.isClusterSniff());
+                .put("cluster.name",
+                        config.getOption("clusterName", "elasticsearch"))
+                .put("client.transport.nodes_sampler_interval",
+                        config.getOption("clientTransportNodesSamplerInterval", "5s"))
+                .put("client.transport.ping_timeout",
+                        config.getOption("clientTransportPingTimeout", "5s"))
+                .put("client.transport.ignore_cluster_name",
+                        config.getOption("clientTransportIgnoreClusterName", "false"))
+                .put("client.transport.sniff",
+                        config.getOption("clientTransportSniff", "true"));
     }
 
     @Override
-    public ESClient create(ElasticSearchRemoteConfig remoteConfig, ElasticSearchClientConfig clientConfig) {
-        log.info("Creating a TransportClient to a remote Elasticsearch");
-        Settings settings = getSetting(remoteConfig).build();
+    public ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchClientConfig config) {
+        log.info("Creating an Elasticsearch TransportClient");
+        if (node == null) {
+            return createRemoteClient(config);
+        }
+        return createLocalClient(node);
+    }
+
+    protected ESClient createRemoteClient(ElasticSearchClientConfig config) {
+        Settings settings = getSetting(config).build();
         log.debug("Using settings: " + settings.toDelimitedString(','));
         TransportClient client = new PreBuiltTransportClient(settings);
-        String[] addresses = remoteConfig.getAddresses();
-        if (addresses == null) {
-            log.error("You need to provide an addressList to join a cluster");
+        String[] addresses = config.getOption("addressList", "").split(",");
+        if (addresses.length == 0) {
+            throw new IllegalArgumentException("No addressList option provided can not connect TransportClient");
         } else {
-            for (String item : remoteConfig.getAddresses()) {
+            for (String item : addresses) {
                 String[] address = item.split(":");
                 log.debug("Add transport address: " + item);
                 try {
@@ -78,8 +88,7 @@ public class ESTransportClientFactory implements ESClientFactory {
         return new ESTransportClient(client);
     }
 
-    @Override
-    public ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchLocalConfig localConfig, ElasticSearchClientConfig clientConfig) {
+    protected ESClient createLocalClient(ElasticSearchEmbeddedNode node) {
         log.info("Creating a TransportClient to a local Elasticsearch");
         return new ESTransportClient(node.getNode().client());
     }
