@@ -94,7 +94,7 @@ public class WorkflowEndpointTest extends BaseTest {
 
     @Inject
     WorkManager workManager;
-    
+
     @Inject
     EventService eventService;
 
@@ -120,13 +120,13 @@ public class WorkflowEndpointTest extends BaseTest {
         return getBodyForStartReviewTaskCompletion(taskId, calendar.getTime());
     }
 
-	protected String getBodyForStartReviewTaskCompletion(String taskId, Date dueDate) throws IOException {
-		String jsonBody = "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\","
-				+ "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
-				+ DateParser.formatW3CDateTime(dueDate) + "\"," + "\"participants\": [\"user:Administrator\"],"
-				+ "\"assignees\": [\"user:Administrator\"]" + "}" + "}";
-		return jsonBody;
-	}
+    protected String getBodyForStartReviewTaskCompletion(String taskId, Date dueDate) throws IOException {
+        String jsonBody = "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\","
+                + "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
+                + DateParser.formatW3CDateTime(dueDate) + "\"," + "\"participants\": [\"user:Administrator\"],"
+                + "\"assignees\": [\"user:Administrator\"]" + "}" + "}";
+        return jsonBody;
+    }
 
     protected String getBodyWithSecurityViolationForStartReviewTaskCompletion(String taskId) throws IOException {
         Calendar calendar = Calendar.getInstance();
@@ -134,8 +134,7 @@ public class WorkflowEndpointTest extends BaseTest {
         String jsonBody = "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\","
                 + "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
                 + DateParser.formatW3CDateTime(calendar.getTime()) + "\","
-                + "\"participants\": [\"user:Administrator\"]," + "\"review_result\": \"blabablaa\"" + "}"
-                + "}";
+                + "\"participants\": [\"user:Administrator\"]," + "\"review_result\": \"blabablaa\"" + "}" + "}";
         return jsonBody;
     }
 
@@ -157,7 +156,8 @@ public class WorkflowEndpointTest extends BaseTest {
         return result;
     }
 
-    protected String getCurrentTaskId(final String createdWorflowInstanceId) throws IOException, JsonProcessingException {
+    protected String getCurrentTaskId(final String createdWorflowInstanceId)
+            throws IOException, JsonProcessingException {
         ClientResponse response;
         JsonNode node;
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
@@ -207,8 +207,8 @@ public class WorkflowEndpointTest extends BaseTest {
         assertEquals(createdWorflowInstanceId, node.get("entries").getElements().next().get("id").getTextValue());
 
         // Check GET /api/id/{documentId}/@workflow/{workflowInstanceId}/task
-        response = getResponse(RequestType.GET, "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME + "/"
-                + createdWorflowInstanceId + "/task");
+        response = getResponse(RequestType.GET,
+                "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME + "/" + createdWorflowInstanceId + "/task");
         node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, node.get("entries").size());
         JsonNode taskNode = node.get("entries").getElements().next();
@@ -222,8 +222,9 @@ public class WorkflowEndpointTest extends BaseTest {
         assertEquals(taskUid, taskNode.get("id").getTextValue());
 
         // Complete task via task adapter
-        response = getResponse(RequestType.PUT, "/id/" + note.getId() + "/@" + TaskAdapter.NAME + "/" + taskUid
-                + "/start_review", getBodyForStartReviewTaskCompletion(taskUid).toString());
+        response = getResponse(RequestType.PUT,
+                "/id/" + note.getId() + "/@" + TaskAdapter.NAME + "/" + taskUid + "/start_review",
+                getBodyForStartReviewTaskCompletion(taskUid).toString());
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
@@ -352,11 +353,8 @@ public class WorkflowEndpointTest extends BaseTest {
 
         // Start SerialDocumentReview on Note 0
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(
-                RequestType.POST,
-                "/workflow",
-                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
-                        Arrays.asList(new String[] { note.getId() })));
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                "ParallelDocumentReview", Arrays.asList(new String[] { note.getId() })));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -402,11 +400,8 @@ public class WorkflowEndpointTest extends BaseTest {
 
         // Start SerialDocumentReview on Note 0
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(
-                RequestType.POST,
-                "/workflow",
-                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
-                        Arrays.asList(new String[] { note.getId() })));
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                "ParallelDocumentReview", Arrays.asList(new String[] { note.getId() })));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -512,19 +507,17 @@ public class WorkflowEndpointTest extends BaseTest {
         ClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
 
         // Initiate a ParallelDocumentReview workflow
         response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("ParallelDocumentReview", null));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
 
         // Check GET /workflow?workflowMnodelName=SerialDocumentReview
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.put("workflowModelName", Arrays.asList(new String[] { "SerialDocumentReview" }));
         response = getResponse(RequestType.GET, "/workflow", null, queryParams, null, null);
-        node = mapper.readTree(response.getEntityInputStream());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, node.get("entries").size());
 
         // Check GET /workflow?workflowMnodelName=ParallelDocumentReview
@@ -538,11 +531,8 @@ public class WorkflowEndpointTest extends BaseTest {
     public void testDelegateTask() throws IOException {
         // Start SerialDocumentReview on Note 0
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(
-                RequestType.POST,
-                "/workflow",
-                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
-                        Arrays.asList(new String[] { note.getId() })));
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                "ParallelDocumentReview", Arrays.asList(new String[] { note.getId() })));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -568,13 +558,10 @@ public class WorkflowEndpointTest extends BaseTest {
 
     @Test
     public void testReassignTask() throws IOException {
-     // Start SerialDocumentReview on Note 0
+        // Start SerialDocumentReview on Note 0
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(
-                RequestType.POST,
-                "/workflow",
-                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
-                        Arrays.asList(new String[] { note.getId() })));
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                "ParallelDocumentReview", Arrays.asList(new String[] { note.getId() })));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -661,9 +648,7 @@ public class WorkflowEndpointTest extends BaseTest {
 
     /**
      * Trigger the escalation rule that resumes a ParallelDocumentReview workflow instance of which all attached
-     * documents have been deleted.
-     *
-     * The expected behaviour is that workflow instance is cancelled.
+     * documents have been deleted. The expected behaviour is that workflow instance is cancelled.
      *
      * @throws InterruptedException
      * @since 8.4
@@ -739,8 +724,7 @@ public class WorkflowEndpointTest extends BaseTest {
 
         awaitCleanupWorks();
 
-        cancelled = session.query(
-                "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'");
+        cancelled = session.query("SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'");
         assertTrue(cancelled.isEmpty());
 
     }
@@ -763,7 +747,7 @@ public class WorkflowEndpointTest extends BaseTest {
         ClientResponse response = getResponse(RequestType.GET, "/id/" + note.getId() + "/@task");
         try {
             JsonNode tasksNode = mapper.readTree(response.getEntityInputStream());
-            ArrayNode taskEntries = (ArrayNode)tasksNode.get("entries");
+            ArrayNode taskEntries = (ArrayNode) tasksNode.get("entries");
             assertEquals(1, taskEntries.size());
 
             JsonNode taskNode = taskEntries.get(0);

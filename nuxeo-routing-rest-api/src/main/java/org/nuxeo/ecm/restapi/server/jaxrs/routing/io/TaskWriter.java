@@ -47,9 +47,9 @@ import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Button;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.routing.core.io.JsonEncodeDecodeUtils;
 import org.nuxeo.ecm.platform.routing.core.io.NodeAccessRunner;
-import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskComment;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
@@ -138,17 +138,19 @@ public class TaskWriter extends EntityWriter<Task> {
         // add nodeVariables
         if (node != null) {
             for (Entry<String, Serializable> e : node.getVariables().entrySet()) {
-                JsonEncodeDecodeUtils.encodeVariableEntry(node.getDocument(), GraphNode.PROP_VARIABLES_FACET, e, jg, request);
+                JsonEncodeDecodeUtils.encodeVariableEntry(node.getDocument(), GraphNode.PROP_VARIABLES_FACET, e, jg,
+                        request);
             }
         }
         // add workflow variables
         if (workflowInstance != null) {
-            final String transientSchemaName =  DocumentRoutingConstants.GLOBAL_VAR_SCHEMA_PREFIX + node.getId();
+            final String transientSchemaName = DocumentRoutingConstants.GLOBAL_VAR_SCHEMA_PREFIX + node.getId();
             final SchemaManager schemaManager = Framework.getService(SchemaManager.class);
             final Schema transientSchema = schemaManager.getSchema(transientSchemaName);
             for (Entry<String, Serializable> e : workflowInstance.getVariables().entrySet()) {
                 if (transientSchema == null || transientSchema.hasField(e.getKey())) {
-                    JsonEncodeDecodeUtils.encodeVariableEntry(workflowInstance.getDocument(), GraphRoute.PROP_VARIABLES_FACET, e, jg, request);
+                    JsonEncodeDecodeUtils.encodeVariableEntry(workflowInstance.getDocument(),
+                            GraphRoute.PROP_VARIABLES_FACET, e, jg, request);
                 }
             }
         }
