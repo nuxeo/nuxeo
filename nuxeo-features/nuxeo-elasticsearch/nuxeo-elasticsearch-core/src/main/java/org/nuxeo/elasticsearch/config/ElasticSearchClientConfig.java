@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,64 +14,43 @@
  * limitations under the License.
  *
  * Contributors:
- *     Funsho David
+ *     bdelbosc
  */
 
 package org.nuxeo.elasticsearch.config;
 
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
 
-import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * @since 9.1
+ * @since 9.3
  */
-@XObject(value = "clientInitialization")
-public class ElasticSearchClientConfig implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+@XObject(value = "elasticSearchClient")
+public class ElasticSearchClientConfig {
 
     @XNode("@class")
     protected Class<ESClientFactory> klass;
 
-    @XNode("username")
-    protected String username;
+    @XNode("@useExternalVersion")
+    protected boolean externalVersion = true;
 
-    @XNode("password")
-    protected String password;
-
-    @XNode("sslKeystorePath")
-    protected String sslKeystorePath;
-
-    @XNode("sslKeystorePassword")
-    protected String sslKeystorePassword;
+    @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
+    public Map<String, String> options = new HashMap<>();
 
     public Class<ESClientFactory> getKlass() {
         return klass;
     }
 
-    public String getUsername() {
-        return username;
+    public boolean useExternalVersion() {
+        return externalVersion;
     }
 
-    public String getPassword() {
-        return password;
+    public String getOption(String key, String defaultValue) {
+        return options.getOrDefault(key, defaultValue);
     }
-
-    /**
-     * @since 8.10-HF08, 9.2
-     */
-    public String getSslKeystorePath() {
-        return sslKeystorePath;
-    }
-
-    /**
-     * @since 8.10-HF08, 9.2
-     */
-    public String getSslKeystorePassword() {
-        return sslKeystorePassword;
-    }
-
 }

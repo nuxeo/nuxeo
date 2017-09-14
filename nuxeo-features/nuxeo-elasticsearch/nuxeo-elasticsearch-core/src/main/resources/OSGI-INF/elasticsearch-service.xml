@@ -9,13 +9,13 @@
     <provide interface="org.nuxeo.elasticsearch.api.ElasticSearchAdmin" />
   </service>
 
-  <extension-point name="elasticSearchLocal">
+  <extension-point name="elasticSearchEmbeddedServer">
     <documentation>
-      Extension point used to setup an embedded Elasticsearch instance.
+      Extension point to setup an embedded Elasticsearch instance.
 
       It creates a local node using the same JVM as Nuxeo.
 
-      This is a test configuration and must not be used in production,
+      This is a test configuration and must NOT be used in production,
       it is limited to one shard and no replica.
 
       <code>
@@ -37,40 +37,35 @@
 
     </documentation>
 
-    <object class="org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig" />
+    <object class="org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig" />
   </extension-point>
 
-  <extension-point name="elasticSearchRemote">
+
+  <extension-point name="elasticSearchClient">
     <documentation>
-      Extension point used to configure access to a remote Elasticsearch cluster.
+      Extension point to define how to access the Elasticsearch cluster.
 
-      This setup a TransportClient, clusterName and addressList are mandatory.
-
+      For the TransportClient protocol:
       <code>
-        <elasticSearchRemote clusterName="elasticsearch" addressList="127.0.0.1:9300,myelasticsearch:9300"
-          clientTransportSniff="false" clientTransportIgnoreClusterName="false" clientTransportPingTimeout="5s"
-          clientTransportNodesSamplerInterval="5s" />
+        <elasticSeachClient class="org.nuxeo.elasticsearch.client.ESTransportClientFactory">
+          <option name="addressList">localhost:9300</option>
+          <option name="clusterName">elasticsearch</option>
+          <option name="clientTransportSniff">false</option>
+          <option name="clientTransportIgnoreClusterName">false</option>
+          <option name="clientTransportPingTimeout">5s</option>
+          <option name="clientTransportNodesSamplerInterval">5s</option>
+        </elasticSeachClient>
       </code>
 
-      Please refer to the Elasticsearch documentation for the following options:
+      For a Rest client:
+      <code>
+        <elasticSeachClient class="org.nuxeo.elasticsearch.client.ESRestClientFactory">
+          <option name="addressList">localhost:9200</option>
+        </elasticSeachClient>
+      </code>
 
-      clusterName the cluster name to join
-
-      addressList a list of comma separated transport address, note that the default
-      elasticsearch TCP port is 9300 and not 9200 (which is the HTTP port).
-
-      clientTransportSniff see client.transport.sniff option
-
-      clientTransportIgnoreClusterName see client.transport.ignore_cluster_name
-
-      clientTransportPingTimeout see client.transport.ping_timeout
-
-      clientTransportNodesSamplerInterval see client.transport.nodes_sampler_interval
-
-      @see http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/client.html
     </documentation>
-
-    <object class="org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig" />
+    <object class="org.nuxeo.elasticsearch.config.ElasticSearchClientConfig" />
   </extension-point>
 
   <extension-point name="elasticSearchIndex">
@@ -129,19 +124,5 @@
     <object class="org.nuxeo.elasticsearch.config.ElasticSearchDocWriterDescriptor" />
   </extension-point>
 
-  <extension-point name="elasticSearchClientInitialization">
-    <documentation>
-      Extension point to define which class should be used for Elasticsearch client initialization.
-      A username and password can be set if authentication is required.
-      <code>
-        <clientInitialization class="org.nuxeo.elasticsearch.client.ESTransportClientFactory">
-          <username>Administrator</username>
-          <password>Administrator</password>
-        </clientInitialization>
-      </code>
-
-    </documentation>
-    <object class="org.nuxeo.elasticsearch.config.ElasticSearchClientConfig" />
-  </extension-point>
 
 </component>

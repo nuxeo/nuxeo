@@ -26,8 +26,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
-import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
-import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
+import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
 
 import java.io.IOException;
@@ -39,25 +38,36 @@ public class ESRestClientFactory implements ESClientFactory {
     private static final Log log = LogFactory.getLog(ESRestClientFactory.class);
 
     @Override
-    public ESClient create(ElasticSearchRemoteConfig remoteConfig, ElasticSearchClientConfig clientConfig) {
-        HttpHost[] hosts = new HttpHost[remoteConfig.getAddresses().length];
-        int i = 0;
-        for (String item : remoteConfig.getAddresses()) {
-            String[] address = item.split(":");
-            hosts[i++] = new HttpHost(address[0], Integer.parseInt(address[1]));
+    public ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchClientConfig config) {
+        if (node != null) {
+            return createLocalRestClient(node.getConfig());
         }
-        RestClient lowLevelRestClient = RestClient.builder(hosts).build();
-        RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
-        return new ESRestClient(lowLevelRestClient, client);
+        return createRestClient(config);
     }
 
-    @Override
-    public ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchLocalConfig localConfig, ElasticSearchClientConfig clientConfig) {
-        if (!localConfig.httpEnabled()) {
+    protected ESClient createLocalRestClient(ElasticSearchEmbeddedServerConfig serverConfig) {
+        if (serverConfig.httpEnabled()) {
             throw new IllegalArgumentException("Embedded configuration has no HTTP port enable, use TransportClient instead of Rest");
         }
         RestClient lowLevelRestClient = RestClient.builder(
-                new HttpHost("localhost", Integer.parseInt(localConfig.getHttpPort()))).build();
+                new HttpHost("localhost", Integer.parseInt(serverConfig.getHttpPort()))).build();
+        RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
+        //checkConnection(client);
+        return new ESRestClient(lowLevelRestClient, client);
+    }
+
+    protected ESClient createRestClient(ElasticSearchClientConfig config) {
+        String[] hosts = config.getOption("addressList", "").split(",");
+        if (hosts.length == 0) {
+            throw new IllegalArgumentException("No addressList option provided can not connect RestClient");
+        }
+        HttpHost[] httpHosts = new HttpHost[hosts.length];
+        int i = 0;
+        for (String host : hosts) {
+            String[] address = host.split(":");
+            httpHosts[i++] = new HttpHost(address[0], Integer.parseInt(address[1]));
+        }
+        RestClient lowLevelRestClient = RestClient.builder(httpHosts).build();
         RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
         //checkConnection(client);
         return new ESRestClient(lowLevelRestClient, client);

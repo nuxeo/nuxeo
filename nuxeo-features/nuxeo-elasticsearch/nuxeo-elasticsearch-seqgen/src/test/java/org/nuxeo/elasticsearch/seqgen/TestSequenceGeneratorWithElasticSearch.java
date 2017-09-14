@@ -41,9 +41,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.seqgen" })
-@LocalDeploy({ "org.nuxeo.elasticsearch.seqgen:elasticsearch-seqgen-test-contrib.xml",
-        "org.nuxeo.elasticsearch.seqgen:elasticsearch-seqgen-index-test-contrib.xml" })
+@Deploy({ "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.seqgen",
+        "org.nuxeo.elasticsearch.core", "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml" })
+@LocalDeploy("org.nuxeo.elasticsearch.seqgen:elasticsearch-seqgen-index-test-contrib.xml")
 public class TestSequenceGeneratorWithElasticSearch {
 
     @Inject
