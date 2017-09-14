@@ -29,6 +29,7 @@ import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_RESPONSE_TYPE;
 import static org.nuxeo.ecm.platform.oauth2.Constants.REDIRECT_URI_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.RESPONSE_TYPE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.STATE_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ENDPOINT_AUTH_SUBMIT;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ENDPOINT_TOKEN;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_DESCRIPTION_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_PARAM;
@@ -197,11 +198,16 @@ public class ITOAuth2Test extends AbstractTest {
         LoginPage loginPage = getLoginPage();
         loginPage.login(TEST_USERNAME, TEST_PASSWORD);
 
+        // Call a GET request on /oauth2/authorize_submit
+        OAuth2ErrorPage errorPage = get(NUXEO_URL + "/oauth2/authorize_submit", OAuth2ErrorPage.class);
+        errorPage.checkDescription(
+                String.format("The /oauth2/%s endpoint only accepts POST requests.", ENDPOINT_AUTH_SUBMIT));
+
         // Simulate an empty client_id parameter
         OAuth2GrantPage grantPage = getOAuth2GrantPageBuilder().build();
         grantPage.setFieldValue("client_id", "");
         grantPage.grant();
-        OAuth2ErrorPage errorPage = asPage(OAuth2ErrorPage.class);
+        errorPage = asPage(OAuth2ErrorPage.class);
         errorPage.checkDescription(String.format(MISSING_REQUIRED_FIELD_MESSAGE, CLIENT_ID_PARAM));
 
         // Simulate an empty response_type parameter
@@ -331,6 +337,14 @@ public class ITOAuth2Test extends AbstractTest {
         checkAuthorizationWithValidAccessToken(JSON_CMIS_PATH, refreshedToken.accessToken);
         checkAuthorizationWithValidAccessToken(ATOM_CMIS_PATH, refreshedToken.accessToken);
         checkAuthorizationWithValidAccessToken(ATOM_CMIS10_PATH, refreshedToken.accessToken);
+    }
+
+    @Test
+    public void testTokenGetRequest() {
+        // Call a GET request on /oauth2/token
+        OAuth2ErrorPage errorPage = get(NUXEO_URL + "/oauth2/token", OAuth2ErrorPage.class);
+        errorPage.checkDescription(
+                String.format("The /oauth2/%s endpoint only accepts POST requests.", ENDPOINT_TOKEN));
     }
 
     protected OAuth2Token getOAuth2Token() throws IOException {
