@@ -170,13 +170,20 @@ public class ITOAuth2Test extends AbstractTest {
 
     @Test
     public void testOAuth2GrantPage() {
-        LoginPage loginPage = getLoginPage();
-        loginPage.login(TEST_USERNAME, TEST_PASSWORD);
+        // The grant page is behind the authentication filter
+        LoginPage loginPage = get(NUXEO_URL + "/oauth2Grant.jsp", LoginPage.class);
+        OAuth2GrantPage grantPage = loginPage.login(TEST_USERNAME, TEST_PASSWORD, OAuth2GrantPage.class);
+        // When called directly without going through the /oauth2/authorize endpoint the input fields are empty
+        grantPage.checkClientName("null");
+        grantPage.checkFieldCount(2);
+        grantPage.checkResponseType("");
+        grantPage.checkClientId("");
 
-        // Send only the required parameters
+        // Get the grant page by going through the /oauth2/authorize endpoint
+        // First send only the required parameters
         getOAuth2GrantPageBuilder().build();
 
-        // Send extra parameters
+        // Then send extra parameters
         Map<String, String> extraParameters = new HashMap<>();
         extraParameters.put("redirect_uri", "http://localhost:8080/nuxeo/home.html");
         extraParameters.put("state", "1234");
