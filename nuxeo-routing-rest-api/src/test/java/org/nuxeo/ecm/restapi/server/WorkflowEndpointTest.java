@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -72,6 +73,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.jersey.api.client.ClientResponse;
@@ -166,6 +168,24 @@ public class WorkflowEndpointTest extends BaseTest {
         Iterator<JsonNode> elements = node.get("entries").getElements();
         String taskId = elements.next().get("id").getTextValue();
         return taskId;
+    }
+
+    /**
+     * @since 8.3
+     */
+    protected JsonNode getCurrentTask(final String createdWorflowInstanceId, MultivaluedMap<String, String> queryParams,
+            Map<String, String> headers) throws IOException, JsonProcessingException {
+        ClientResponse response;
+        JsonNode node;
+        if (queryParams == null) {
+            queryParams = new MultivaluedMapImpl();
+        }
+        queryParams.put("workflowInstanceId", Arrays.asList(new String[] { createdWorflowInstanceId }));
+        response = getResponse(RequestType.GET, "/task", null, queryParams, null, headers);
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, node.get("entries").size());
+        Iterator<JsonNode> elements = node.get("entries").getElements();
+        return elements.next();
     }
 
     @Test
@@ -758,6 +778,65 @@ public class WorkflowEndpointTest extends BaseTest {
         } finally {
             response.close();
         }
+    }
+
+    /**
+     * @since 9.3
+     */
+    @Test
+    public void testTaskTargetDocuments() throws IOException {
+        final String createdWorflowInstanceId;
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                "SerialDocumentReview", Arrays.asList(new String[] { note.getId() })));
+        try {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            createdWorflowInstanceId = node.get("id").getTextValue();
+        } finally {
+            response.close();
+        }
+
+        JsonNode task = getCurrentTask(createdWorflowInstanceId, null, null);
+
+        ArrayNode taskTargetDocuments = (ArrayNode) task.get("targetDocumentIds");
+        assertEquals(1, taskTargetDocuments.size());
+        assertEquals(note.getId(), taskTargetDocuments.get(0).get("id").getTextValue());
+    }
+
+    /**
+     * Same as {@link #testFetchTaskTargetDocuments()} with the {@code DeleteTaskForDeletedDocumentListener} disabled to
+     * check the behavior when a task targeting a deleted document remains.
+     *
+     * @since 9.3
+     */
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.platform.restapi.server.routing:test-disable-task-deletion-listener.xml")
+    public void testFetchTaskTargetDocumentsDeleted() throws IOException {
+        final String createdWorflowInstanceId;
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        ClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", Collections.singletonList(note.getId())));
+        try {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            createdWorflowInstanceId = node.get("id").getTextValue();
+        } finally {
+            response.close();
+        }
+
+        // Remove the task's target document
+        session.removeDocument(note.getRef());
+        txFeature.nextTransaction();
+
+        JsonNode task = getCurrentTask(createdWorflowInstanceId, null, null);
+
+        ArrayNode taskTargetDocuments = (ArrayNode) task.get("targetDocumentIds");
+        assertEquals(0, taskTargetDocuments.size());
     }
 
     /**

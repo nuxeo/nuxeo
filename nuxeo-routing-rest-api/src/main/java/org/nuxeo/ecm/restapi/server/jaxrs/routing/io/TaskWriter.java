@@ -35,6 +35,7 @@ import org.codehaus.jackson.JsonGenerator;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -105,9 +106,12 @@ public class TaskWriter extends EntityWriter<Task> {
 
         jg.writeArrayFieldStart("targetDocumentIds");
         for (String docId : item.getTargetDocumentsIds()) {
-            jg.writeStartObject();
-            jg.writeStringField("id", docId);
-            jg.writeEndObject();
+            IdRef idRef = new IdRef(docId);
+            if (session.exists(idRef)) {
+                jg.writeStartObject();
+                jg.writeStringField("id", docId);
+                jg.writeEndObject();
+            }
         }
         jg.writeEndArray();
 
