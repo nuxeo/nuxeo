@@ -4,20 +4,33 @@
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
              point="elasticSearchIndex">
 
-    <elasticSearchIndex name="audit" type="entry" >    
+    <elasticSearchIndex name="audit" type="entry" >
       <mapping>
-        {
-          "properties" : {
-            "eventDate": {
-              "format": "dateOptionalTime",
-              "type": "date"
-            },
-            "logDate": {
-              "format": "dateOptionalTime",
-              "type": "date"
-            }
-          }
+{
+  "_all": {
+    "analyzer": "fulltext"
+  },
+  "dynamic_templates": [
+    {
+      "strings": {
+        "match_mapping_type": "string",
+        "mapping": {
+          "type": "keyword",
+          "ignore_above": 256
         }
+      }
+    }
+  ],
+  "properties": {
+    "eventDate": {
+      "type": "date"
+    },
+    "logDate": {
+      "type": "date"
+    }
+  }
+}
+
       </mapping>
     </elasticSearchIndex>
 

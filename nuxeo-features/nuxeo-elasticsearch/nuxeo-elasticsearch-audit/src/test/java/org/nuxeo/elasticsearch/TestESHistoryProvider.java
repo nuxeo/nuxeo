@@ -56,7 +56,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.platform.audit",
-        "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.seqgen",
+        "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.core", "org.nuxeo.elasticsearch.seqgen",
         "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit", "org.nuxeo.admin.center" })
 @RunWith(FeaturesRunner.class)
@@ -306,7 +306,7 @@ public class TestESHistoryProvider {
         // Get Proxy history
 
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si, Long.valueOf(30), Long.valueOf(0),
-                new HashMap<String, Serializable>(), proxy);
+                new HashMap<>(), proxy);
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();

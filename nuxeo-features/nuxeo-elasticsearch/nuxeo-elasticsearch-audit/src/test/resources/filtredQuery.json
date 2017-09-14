@@ -1,13 +1,14 @@
 {
   "query": {
     "bool": {
-      "must": {
-        "match": {
-          "docPath": {
-            "query": "/dummy",
-            "type": "boolean"
+      "must": [
+        {
+          "match": {
+            "docPath": "/dummy"
           }
-        },
+        }
+      ],
+      "filter": {
         "terms": {
           "eventId": [
             "entry1",
