@@ -273,6 +273,22 @@ public class OAuth2ChallengeFixture {
     }
 
     @Test
+    public void getAuthorizeSubmitShouldReturn500() {
+        try (CloseableClientResponse response = CloseableClientResponse.of(
+                client.resource(BASE_URL).path("oauth2").path(ENDPOINT_AUTH_SUBMIT).get(ClientResponse.class))) {
+            assertEquals(405, response.getStatus());
+        }
+    }
+
+    @Test
+    public void getTokenShouldReturn500() {
+        try (CloseableClientResponse response = CloseableClientResponse.of(
+                client.resource(BASE_URL).path("oauth2").path(ENDPOINT_TOKEN).get(ClientResponse.class))) {
+            assertEquals(405, response.getStatus());
+        }
+    }
+
+    @Test
     public void tokenShouldValidateParameters() throws IOException {
         ObjectMapper obj = new ObjectMapper();
         // unsupported grant_type parameter

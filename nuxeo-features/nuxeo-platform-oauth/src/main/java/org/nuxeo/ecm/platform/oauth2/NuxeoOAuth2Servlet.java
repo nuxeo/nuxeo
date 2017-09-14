@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.oauth2;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.nuxeo.ecm.platform.oauth2.Constants.AUTHORIZATION_CODE_GRANT_TYPE;
@@ -97,6 +98,10 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         String pathInfo = request.getPathInfo();
         if (pathInfo.endsWith(ENDPOINT_AUTH)) {
             doGetAuthorize(request, response);
+        } else if (pathInfo.endsWith(ENDPOINT_AUTH_SUBMIT)) {
+            doGetNotAllowed(ENDPOINT_AUTH_SUBMIT, request, response);
+        } else if (pathInfo.endsWith(ENDPOINT_TOKEN)) {
+            doGetNotAllowed(ENDPOINT_TOKEN, request, response);
         } else {
             response.sendError(SC_NOT_FOUND);
         }
@@ -149,6 +154,14 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(GRANT_JSP_PAGE_PATH);
         requestDispatcher.forward(request, response);
+    }
+
+    protected void doGetNotAllowed(String endpoint, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        OAuth2Error error = OAuth2Error.invalidRequest(
+                String.format("The /oauth2/%s endpoint only accepts POST requests.", endpoint));
+        handleError(error, SC_METHOD_NOT_ALLOWED, request, response);
+        return;
     }
 
     protected void doPostAuthorizeSubmit(HttpServletRequest request, HttpServletResponse response)
@@ -302,9 +315,14 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     protected void handleError(OAuth2Error error, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
+        handleError(error, SC_BAD_REQUEST, request, response);
+    }
+
+    protected void handleError(OAuth2Error error, int status, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
         log.warn(String.format("OAuth2 authorization request error: %s", error));
         response.reset();
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.setStatus(status);
         request.setAttribute("error", error);
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(ERROR_JSP_PAGE_PATH);
         requestDispatcher.forward(request, response);
