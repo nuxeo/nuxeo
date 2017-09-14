@@ -408,8 +408,7 @@ public class ITOAuth2Test extends AbstractTest {
     }
 
     protected OAuth2ErrorPage getOAuth2ErrorPage(String resource) {
-        driver.get(NUXEO_URL + resource);
-        return asPage(OAuth2ErrorPage.class);
+        return get(NUXEO_URL + resource, OAuth2ErrorPage.class);
     }
 
     protected OAuth2GrantPageBuilder getOAuth2GrantPageBuilder() {
@@ -434,8 +433,7 @@ public class ITOAuth2Test extends AbstractTest {
             if (extraParameters != null) {
                 url = URIUtils.addParametersToURIQuery(url, extraParameters);
             }
-            driver.get(url);
-            grantPage = asPage(OAuth2GrantPage.class);
+            grantPage = get(url, OAuth2GrantPage.class);
             grantPage.checkClientName("Test Client");
             grantPage.checkResponseType("code");
             grantPage.checkClientId("test-client");
