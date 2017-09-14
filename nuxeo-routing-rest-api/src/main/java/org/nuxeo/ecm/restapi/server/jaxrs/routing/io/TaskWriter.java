@@ -132,8 +132,10 @@ public class TaskWriter extends EntityWriter<Task> {
         jg.writeFieldName("variables");
         jg.writeStartObject();
         // add nodeVariables
-        for (Entry<String, Serializable> e : node.getVariables().entrySet()) {
-            JsonEncodeDecodeUtils.encodeVariableEntry(node.getDocument(), GraphNode.PROP_VARIABLES_FACET, e, jg, request);
+        if (node != null) {
+            for (Entry<String, Serializable> e : node.getVariables().entrySet()) {
+                JsonEncodeDecodeUtils.encodeVariableEntry(node.getDocument(), GraphNode.PROP_VARIABLES_FACET, e, jg, request);
+            }
         }
         // add workflow variables
         if (workflowInstance != null) {
@@ -148,7 +150,7 @@ public class TaskWriter extends EntityWriter<Task> {
         }
         jg.writeEndObject();
 
-        if (session != null) {
+        if (node != null && session != null) {
             jg.writeFieldName("taskInfo");
             jg.writeStartObject();
             final ActionManager actionManager = Framework.getService(ActionManager.class);

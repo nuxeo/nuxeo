@@ -40,17 +40,20 @@ import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -58,10 +61,13 @@ import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingEscalationListener;
 import org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingWorkflowInstancesCleanup;
 import org.nuxeo.ecm.platform.routing.test.WorkflowFeature;
+import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.TaskAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.WorkflowAdapter;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -89,6 +95,9 @@ public class WorkflowEndpointTest extends BaseTest {
     
     @Inject
     EventService eventService;
+
+    @Inject
+    TransactionalFeature txFeature;
 
     protected String assertActorIsAdministrator(ClientResponse response) throws JsonProcessingException, IOException {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -714,6 +723,41 @@ public class WorkflowEndpointTest extends BaseTest {
                 "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'");
         assertTrue(cancelled.isEmpty());
 
+    }
+
+    /**
+     * @since 9.3
+     */
+    @Test
+    public void testTaskWithoutWorkflowInstance() throws IOException {
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        // Create a task not related to a workflow instance
+        List<Task> tasks = Framework.getService(TaskService.class).createTask(session,
+                (NuxeoPrincipal) session.getPrincipal(), note, "testNoWorkflowTask",
+                Arrays.asList("user:Administrator"), false, null, null, null, Collections.emptyMap(), null);
+        assertEquals(1, tasks.size());
+        Task task = tasks.get(0);
+        txFeature.nextTransaction();
+
+        ClientResponse response = getResponse(RequestType.GET, "/id/" + note.getId() + "/@task");
+        try {
+            JsonNode tasksNode = mapper.readTree(response.getEntityInputStream());
+            ArrayNode taskEntries = (ArrayNode)tasksNode.get("entries");
+            assertEquals(1, taskEntries.size());
+
+            JsonNode taskNode = taskEntries.get(0);
+            assertEquals(task.getId(), taskNode.get("id").getTextValue());
+            assertEquals("testNoWorkflowTask", taskNode.get("name").getTextValue());
+            assertTrue(taskNode.get("workflowInstanceId").isNull());
+            ArrayNode targetDocumentIdsNode = (ArrayNode) taskNode.get("targetDocumentIds");
+            assertEquals(1, targetDocumentIdsNode.size());
+            assertEquals(note.getId(), targetDocumentIdsNode.get(0).get("id").getTextValue());
+            assertActorIs("user:Administrator", taskNode);
+            assertEquals(0, taskNode.get("variables").size());
+        } finally {
+            response.close();
+        }
     }
 
     /**
