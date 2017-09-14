@@ -11,6 +11,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/convert-service-contrib.xml,
+ OSGI-INF/commandline-image2pdf-contrib.xml,
  OSGI-INF/commandline-pdf2html-contrib.xml,
  OSGI-INF/commandline-pdf2image-contrib.xml,
  OSGI-INF/commandline-wpd2text-contrib.xml,

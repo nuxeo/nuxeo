@@ -60,6 +60,16 @@
       </parameters>
     </converter>
 
+    <converter name="image2pdf" class="org.nuxeo.ecm.platform.convert.plugins.Image2PDFConverter">
+      <sourceMimeType>image/jpeg</sourceMimeType>
+      <sourceMimeType>image/png</sourceMimeType>
+      <sourceMimeType>image/gif</sourceMimeType>
+      <destinationMimeType>application/pdf</destinationMimeType>
+      <parameters>
+        <parameter name="CommandLineName">imagetopdf</parameter>
+      </parameters>
+    </converter>
+
     <converter name="any2ods" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
       <destinationMimeType>application/vnd.oasis.opendocument.spreadsheet</destinationMimeType>
 
