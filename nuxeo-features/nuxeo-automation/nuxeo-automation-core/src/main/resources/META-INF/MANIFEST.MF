@@ -28,7 +28,8 @@ Nuxeo-Component: OSGI-INF/AutomationService.xml,
  OSGI-INF/reload-contrib.xml,
  OSGI-INF/operations-contrib.xml,
  OSGI-INF/properties-contrib.xml,
- OSGI-INF/marshallers-contrib.xml
+ OSGI-INF/marshallers-contrib.xml,
+ OSGI-INF/workmanager-contrib.xml
 Import-Package: freemarker.core,
  freemarker.template,
  groovy.lang;resolution:=optional,
