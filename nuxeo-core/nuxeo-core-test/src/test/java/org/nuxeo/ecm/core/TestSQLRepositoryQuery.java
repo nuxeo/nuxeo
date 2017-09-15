@@ -94,9 +94,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class TestSQLRepositoryQuery {
 
     @Inject
-    protected RuntimeHarness runtimeHarness;
-
-    @Inject
     protected CoreFeature coreFeature;
 
     @Inject
@@ -1510,7 +1507,10 @@ public class TestSQLRepositoryQuery {
         }
     }
 
-    protected void checkQueryACL(int expected, String query) {
+    /**
+     * @since 9.3
+     */
+    protected void checkQueryACL(CoreSession session, int expected, String query) {
         DocumentModelList dml = session.query(query);
         assertEquals(expected, dml.size());
 
@@ -1518,6 +1518,10 @@ public class TestSQLRepositoryQuery {
         long size = res.size();
         res.close();
         assertEquals(expected, size);
+    }
+
+    protected void checkQueryACL(int expected, String query) {
+        checkQueryACL(session, expected, query);
     }
 
     @Test
@@ -1595,6 +1599,34 @@ public class TestSQLRepositoryQuery {
                 "local:bob:Browse:true:null:null:null", "local:steve:Read:true:null:null:null",
                 "local:leela:Write:true:Administrator:" + begin.getTimeInMillis() + ":" + end.getTimeInMillis(),
                 "local:Everyone:Everything:false:null:null:null")), set);
+    }
+
+    @Test
+    public void testQueryWithDateBasedACLs() throws Exception {
+        createDocs();
+
+        DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
+        Date now = new Date();
+        Calendar begin = new GregorianCalendar();
+        begin.setTimeInMillis(now.toInstant().plus(5, ChronoUnit.DAYS).toEpochMilli());
+        Calendar end = new GregorianCalendar();
+        end.setTimeInMillis(now.toInstant().plus(10, ChronoUnit.DAYS).toEpochMilli());
+
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(ACE.builder("leela", "Browse").creator("Administrator").begin(begin).end(end).build());
+
+        acp.addACL(acl);
+        folder1.setACP(acp, true);
+        session.save();
+
+        String query = String.format("SELECT * FROM Document WHERE ecm:uuid = '%s'", folder1.getId());
+        checkQueryACL(1, query);
+
+        try (CoreSession leelaSession = coreFeature.openCoreSession("leela")) {
+            checkQueryACL(leelaSession, 0, query);
+        }
+
     }
 
     @Test

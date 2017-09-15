@@ -148,7 +148,7 @@ public class EmbeddedFunctions {
         PreparedStatement ps3 = null;
         try {
             ps1 = conn.prepareStatement( //
-                    "SELECT \"GRANT\", \"PERMISSION\", \"USER\" FROM \"ACLS\" " + "WHERE ID = ? ORDER BY POS");
+                    "SELECT \"GRANT\", \"PERMISSION\", \"USER\" FROM \"ACLS\" WHERE ID = ? AND (STATUS IS NULL OR STATUS = 1) ORDER BY POS");
             ps2 = conn.prepareStatement("SELECT PARENTID FROM HIERARCHY WHERE ID = ?");
             boolean first = true;
             do {
