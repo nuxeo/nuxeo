@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.core.impl.workmanager" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="blobs">
+      <maxThreads>2</maxThreads>
+      <category>blobListZip</category>
+    </queue>
+  </extension>
+
+</component>

@@ -256,6 +256,7 @@
         </widget>
       </widgets>
     </operation>
+    <operation class="org.nuxeo.ecm.automation.core.operations.blob.BulkDownload"/>
     <operation class="org.nuxeo.ecm.automation.core.operations.blob.PostBlob"/>
     <operation class="org.nuxeo.ecm.automation.core.operations.blob.BlobToPDF"/>
     <operation class="org.nuxeo.ecm.automation.core.operations.blob.ConcatenatePDFs"/>
