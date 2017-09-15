@@ -89,7 +89,7 @@ FOR /F "usebackq eol=# tokens=1,* delims==" %%A in ("%NUXEO_CONF%") do (
   if "%%A" == "JAVA_OPTS" (
     set __JAVA_OPTS=%%B
     REM ***** Expand local string and replace $JAVA_OPTS with %LOCAL_JAVA_OPTS% *****
-    set LOCAL_JAVA_OPTS=!LOCAL_JAVA_OPTS! !__JAVA_OPTS:$JAVA_OPTS=%LOCAL_JAVA_OPTS%!
+    set LOCAL_JAVA_OPTS=!LOCAL_JAVA_OPTS!!__JAVA_OPTS:$JAVA_OPTS=%LOCAL_JAVA_OPTS%!
   )
 )
 ( ENDLOCAL
