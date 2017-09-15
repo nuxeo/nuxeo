@@ -19,7 +19,9 @@
 package org.nuxeo.ecm.platform.audit.service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -337,6 +339,51 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
     @Override
     public ExtendedInfo newExtendedInfo(Serializable value) {
         return ExtendedInfoImpl.createExtendedInfo(value);
+    }
+
+    @Override
+    public long getLatestLogId(String repositoryId, String... eventId) {
+        Map<String, Object> params = getParams(eventId);
+        String paramNames = getParamNames(eventId);
+        params.put("repoId", repositoryId);
+        String query = String.format("FROM LogEntry log" //
+                + " WHERE log.eventId IN (%s)" //
+                + "   AND log.repositoryId = :repoId" //
+                + " ORDER BY log.id DESC", paramNames);
+        @SuppressWarnings("unchecked")
+        List<LogEntry> entries = (List<LogEntry>) nativeQuery(query, params, 1, 1);
+        long id = entries.isEmpty() ? 0 : entries.get(0).getId();
+        return id;
+    }
+
+    @Override
+    public List<LogEntry> getLogEntriesAfter(long logIdOffset, int limit, String repositoryId, String... eventId) {
+        Map<String, Object> params = getParams(eventId);
+        String paramNames = getParamNames(eventId);
+        params.put("repoId", repositoryId);
+        params.put("minId", logIdOffset);
+        String query = String.format("FROM LogEntry log" //
+                + " WHERE log.id >= :minId" //
+                + "   AND log.eventId IN (%s)" //
+                + "   AND log.repositoryId = :repoId" //
+                + " ORDER BY log.id", paramNames);
+        return (List<LogEntry>) nativeQuery(query, params, 1, limit);
+    }
+
+    protected String getParamNames(String[] eventId) {
+        List<String> ret = new ArrayList<>(eventId.length);
+        for (String event: eventId) {
+            ret.add(":ev" + event);
+        }
+        return String.join(",", ret);
+    }
+
+    protected Map<String, Object> getParams(String[] eventId) {
+        HashMap<String, Object> ret = new HashMap<>(eventId.length);
+        for (String event: eventId) {
+            ret.put("ev" + event, event);
+        }
+        return ret;
     }
 
 }

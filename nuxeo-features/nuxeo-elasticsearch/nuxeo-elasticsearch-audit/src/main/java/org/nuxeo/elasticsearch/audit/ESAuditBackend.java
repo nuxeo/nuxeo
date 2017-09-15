@@ -687,4 +687,49 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         return esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
     }
 
+    @Override
+    public long getLatestLogId(String repositoryId, String... eventId) {
+        long id = 0;
+        SearchRequest request = createSearchRequest();
+        BoolQueryBuilder query = QueryBuilders.boolQuery()
+                .must(QueryBuilders.matchAllQuery())
+                .filter(QueryBuilders.termQuery("repositoryId", repositoryId))
+                .filter(QueryBuilders.termsQuery("eventId", eventId));
+
+        request.source(new SearchSourceBuilder().query(query).size(1).sort("id", SortOrder.DESC));
+        // TODO refactor this to use max clause
+        SearchResponse response = esClient.search(request);
+        SearchHit[] hits = response.getHits().getHits();
+        if (hits.length > 0) {
+            String hit = hits[0].getSourceAsString();
+            try {
+                id = AuditEntryJSONReader.read(hit).getId();
+            } catch (IOException e) {
+                throw new IllegalStateException("Failed to parse audit entry: " + hit, e);
+            }
+        }
+        return id;
+    }
+
+    @Override
+    public List<LogEntry> getLogEntriesAfter(long logIdOffset, int limit, String repositoryId, String... eventId) {
+        SearchRequest request = createSearchRequest();
+        BoolQueryBuilder query = QueryBuilders.boolQuery()
+                .must(QueryBuilders.matchAllQuery())
+                .filter(QueryBuilders.termQuery("repositoryId", repositoryId))
+                .filter(QueryBuilders.termsQuery("eventId", eventId))
+                .filter(QueryBuilders.rangeQuery("id").gte(logIdOffset));
+        request.source(new SearchSourceBuilder().query(query).size(limit).sort("id", SortOrder.ASC));
+        SearchResponse response = esClient.search(request);
+        SearchHit[] hits = response.getHits().getHits();
+        List<LogEntry> ret = new ArrayList<>(hits.length);
+        for (SearchHit hit : response.getHits()) {
+            try {
+                ret.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
+            } catch (IOException e) {
+                throw new IllegalStateException("Failed to parse audit entry: " + hit, e);
+            }
+        }
+        return ret;
+    }
 }

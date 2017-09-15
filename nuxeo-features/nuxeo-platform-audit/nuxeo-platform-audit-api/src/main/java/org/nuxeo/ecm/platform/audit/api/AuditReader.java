@@ -148,4 +148,22 @@ public interface AuditReader {
      */
     List<?> nativeQuery(String query, Map<String, Object> params, int pageNb, int pageSize);
 
+    /**
+     * Returns the latest log id matching events and repository or 0 when no match found.
+     *
+     * @since 9.3
+     */
+    default long getLatestLogId(String repositoryId, String... eventId) {
+        throw new UnsupportedOperationException("getLatestLogId is not yet implemented in this audit backend");
+    }
+
+    /**
+     * Returns up to limit log entries matching events and repository with log id greater or equal to logIdOffset.
+     *
+     * @since 9.3
+     */
+    default List<LogEntry> getLogEntriesAfter(long logIdOffset, int limit, String repositoryId, String... eventId) {
+        throw new UnsupportedOperationException("getLogEntriesAfter is not yet implemented in this audit backend");
+    }
+
 }
