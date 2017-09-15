@@ -68,12 +68,14 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.tag.TagService;
+import org.nuxeo.ecm.platform.tag.TagServiceImpl;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -672,7 +674,10 @@ public class TestAutomaticIndexing {
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
         ElasticSearchInlineListener.useSyncIndexing.set(true);
-        assertNumberOfCommandProcessed(1); // doc, tagging relation and tag
+
+        boolean facetedTags = Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(
+                TagServiceImpl.FACETED_TAG_SERVICE_ENABLED);
+        assertNumberOfCommandProcessed(facetedTags ? 1 : 3); // doc, tagging relation and tag
 
         startTransaction();
         SearchResponse searchResponse = esa.getClient()
@@ -690,7 +695,7 @@ public class TestAutomaticIndexing {
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
-        assertNumberOfCommandProcessed(1); // doc
+        assertNumberOfCommandProcessed(facetedTags ? 1 : 3); // doc
 
         startTransaction();
         searchResponse = esa.getClient()
@@ -708,7 +713,7 @@ public class TestAutomaticIndexing {
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
-        assertNumberOfCommandProcessed(1); // still doc
+        assertNumberOfCommandProcessed(facetedTags ? 1 : 2); // still doc
 
         startTransaction();
         searchResponse = esa.getClient()

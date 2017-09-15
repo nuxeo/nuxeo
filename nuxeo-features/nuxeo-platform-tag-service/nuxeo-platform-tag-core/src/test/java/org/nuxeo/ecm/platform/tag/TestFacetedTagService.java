@@ -20,11 +20,13 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test class for tag service based on facet
  *
  * @since 9.3
  */
+@LocalDeploy("org.nuxeo.ecm.platform.tag:faceted-tag-service-override.xml")
 public class TestFacetedTagService extends AbstractTestTagService {
 }

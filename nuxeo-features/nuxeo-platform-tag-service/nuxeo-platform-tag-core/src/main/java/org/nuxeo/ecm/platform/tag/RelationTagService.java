@@ -82,7 +82,8 @@ public class RelationTagService extends AbstractTagService {
 
     @Override
     public void doUntag(CoreSession session, String docId, String label) {
-        if (session.getDocument(new IdRef(docId)).isProxy()) { // Tags are disabled on proxies
+        IdRef ref = new IdRef(docId);
+        if (session.exists(ref) && session.getDocument(ref).isProxy()) { // Tags are disabled on proxies
             throw new NuxeoException("Removing tags is not allowed on proxies");
         }
         String tagId = null;
