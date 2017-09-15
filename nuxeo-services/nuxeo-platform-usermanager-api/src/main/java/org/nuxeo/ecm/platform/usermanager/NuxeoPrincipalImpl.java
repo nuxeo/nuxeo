@@ -481,7 +481,12 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
             }
 
             private Object readResolve() throws ObjectStreamException {
-                NuxeoPrincipal principal = Framework.getService(UserManager.class).getPrincipal(username);
+                UserManager userManager = Framework.getService(UserManager.class);
+                // look up principal as system user to avoid permission checks in directories
+                NuxeoPrincipal principal = Framework.doPrivileged(() -> userManager.getPrincipal(username));
+                if (principal == null) {
+                    throw new NullPointerException("No principal: " + username);
+                }
                 principal.setOriginatingUser(originatingUser);
                 return principal;
             }
