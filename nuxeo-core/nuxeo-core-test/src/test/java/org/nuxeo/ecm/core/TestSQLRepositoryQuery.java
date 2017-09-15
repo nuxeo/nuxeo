@@ -154,9 +154,8 @@ public class TestSQLRepositoryQuery {
     }
 
     /**
-     * Creates the following structure of documents:
+     * Creates the following structure of documents: VCS:
      *
-     * VCS:
      * <pre>
      *  root (UUID_1)
      *  |- testfolder1 (UUID_2)
@@ -169,6 +168,7 @@ public class TestSQLRepositoryQuery {
      * </pre>
      *
      * DBS:
+     *
      * <pre>
      *  root (UUID_0)
      *  |- testfolder1 (UUID_1)
@@ -1591,14 +1591,10 @@ public class TestSQLRepositoryQuery {
             set.add(ace);
         }
         res.close();
-        assertEquals(
-                new HashSet<>(
-                        Arrays.asList("local:Administrator:Everything:true:null:null:null",
-                                "local:bob:Browse:true:null:null:null", "local:steve:Read:true:null:null:null",
-                                "local:leela:Write:true:Administrator:" + begin.getTimeInMillis() + ":"
-                                        + end.getTimeInMillis(),
-                                "local:Everyone:Everything:false:null:null:null")),
-                set);
+        assertEquals(new HashSet<>(Arrays.asList("local:Administrator:Everything:true:null:null:null",
+                "local:bob:Browse:true:null:null:null", "local:steve:Read:true:null:null:null",
+                "local:leela:Write:true:Administrator:" + begin.getTimeInMillis() + ":" + end.getTimeInMillis(),
+                "local:Everyone:Everything:false:null:null:null")), set);
     }
 
     @Test
