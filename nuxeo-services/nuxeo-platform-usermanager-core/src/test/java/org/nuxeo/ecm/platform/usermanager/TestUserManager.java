@@ -43,12 +43,16 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
+import org.nuxeo.ecm.core.api.local.LoginStack;
+import org.nuxeo.ecm.core.api.local.LoginStack.Entry;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -1177,6 +1181,35 @@ public class TestUserManager extends UserManagerTestCase {
 
         assertTrue(CollectionUtils.isEqualCollection(Arrays.asList("AB", "A", "B", "CD", "C", "D"),
                 userManager.getAncestorGroups("ABCD")));
+    }
+
+    @Test
+    public void testNuxeoPrincipalSerialization() throws Exception {
+        String userId = "test";
+        DocumentModel doc = getUser(userId);
+        userManager.createUser(doc);
+        NuxeoPrincipal principal = userManager.getPrincipal(userId);
+        // clear cache to force directory lookup on deserialization
+        userManager.notifyUserChanged(userId, UserManagerImpl.USERMODIFIED_EVENT_ID);
+
+        // remove any user from the login stack
+        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
+        Entry[] entries = loginStack.toArray();
+        loginStack.clear();
+        try {
+            // check that no user is logged in
+            assertNull(ClientLoginModule.getCurrentPrincipal());
+            byte[] buffer = SerializationUtils.serialize(principal);
+            Object object = SerializationUtils.deserialize(buffer);
+            assertTrue(object instanceof NuxeoPrincipalImpl); // actually a TransferableClone but that's a detail
+            principal = (NuxeoPrincipal) object;
+            assertEquals(userId, principal.getName());
+        } finally {
+            // restore login stack
+            for (Entry e : entries) {
+                loginStack.push(e.getPrincipal(), e.getCredential(), e.getSubject());
+            }
+        }
     }
 
 }
