@@ -190,9 +190,8 @@ public class TestSQLRepositoryQuery {
     }
 
     /**
-     * Creates the following structure of documents:
+     * Creates the following structure of documents: VCS:
      *
-     * VCS:
      * <pre>
      *  root (UUID_1)
      *  |- testfolder1 (UUID_2)
@@ -205,6 +204,7 @@ public class TestSQLRepositoryQuery {
      * </pre>
      *
      * DBS:
+     *
      * <pre>
      *  root (UUID_0)
      *  |- testfolder1 (UUID_1)
@@ -1629,14 +1629,10 @@ public class TestSQLRepositoryQuery {
             set.add(ace);
         }
         res.close();
-        assertEquals(
-                new HashSet<>(
-                        Arrays.asList("local:Administrator:Everything:true:null:null:null",
-                                "local:bob:Browse:true:null:null:null", "local:steve:Read:true:null:null:null",
-                                "local:leela:Write:true:Administrator:" + begin.getTimeInMillis() + ":"
-                                        + end.getTimeInMillis(),
-                                "local:Everyone:Everything:false:null:null:null")),
-                set);
+        assertEquals(new HashSet<>(Arrays.asList("local:Administrator:Everything:true:null:null:null",
+                "local:bob:Browse:true:null:null:null", "local:steve:Read:true:null:null:null",
+                "local:leela:Write:true:Administrator:" + begin.getTimeInMillis() + ":" + end.getTimeInMillis(),
+                "local:Everyone:Everything:false:null:null:null")), set);
     }
 
     @Test
@@ -2328,9 +2324,9 @@ public class TestSQLRepositoryQuery {
 
     @Test
     public void testEqualsTimeWithMilliseconds() throws Exception {
-		assumeTrue("SQL Server and MySQL do not have millisecond DATETIME accuracy",
-				!coreFeature.getStorageConfiguration().isVCSSQLServer()
-						&& !coreFeature.getStorageConfiguration().isVCSMySQL());
+        assumeTrue("SQL Server and MySQL do not have millisecond DATETIME accuracy",
+                !coreFeature.getStorageConfiguration().isVCSSQLServer()
+                        && !coreFeature.getStorageConfiguration().isVCSMySQL());
 
         Date currentDate = setupDocTest();
         String testQuery = String.format(
@@ -3303,7 +3299,7 @@ public class TestSQLRepositoryQuery {
         final int nbDocs = 127;
         final int batchSize = 13;
         DocumentModel doc;
-        for (int i=0; i<nbDocs; i++) {
+        for (int i = 0; i < nbDocs; i++) {
             doc = new DocumentModelImpl("/", "doc1", "File");
             session.createDocument(doc);
         }
@@ -3449,10 +3445,10 @@ public class TestSQLRepositoryQuery {
     public void testScrollApiConcurrency() throws Exception {
         final int nbDocs = 127;
         final int batchSize = 13;
-        final int nbThread = nbDocs/batchSize + 1;
+        final int nbThread = nbDocs / batchSize + 1;
         // System.out.println("nbDocs: " + nbDocs + ", batch: " + batchSize + ", thread: " + nbThread);
         DocumentModel doc;
-        for (int i=0; i<nbDocs; i++) {
+        for (int i = 0; i < nbDocs; i++) {
             doc = new DocumentModelImpl("/", "doc1", "File");
             session.createDocument(doc);
         }
@@ -3470,7 +3466,7 @@ public class TestSQLRepositoryQuery {
         List<CompletableFuture<Integer>> futures = new ArrayList<>(nbThread);
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(nbThread);
         final CountDownLatch latch = new CountDownLatch(nbThread);
-        for (int n=0; n < nbThread; n++) {
+        for (int n = 0; n < nbThread; n++) {
             CompletableFuture completableFuture = CompletableFuture.supplyAsync(() -> {
                 TransactionHelper.startTransaction();
                 try {
@@ -3490,7 +3486,7 @@ public class TestSQLRepositoryQuery {
             }, executor);
             futures.add(completableFuture);
         }
-        for (int n=0; n < nbThread; n++) {
+        for (int n = 0; n < nbThread; n++) {
             int count = futures.get(n).get();
             total += count;
         }
@@ -3519,7 +3515,7 @@ public class TestSQLRepositoryQuery {
         List<CompletableFuture<Integer>> futures = new ArrayList<>(NB_TRHEADS);
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NB_TRHEADS);
         final CountDownLatch latch = new CountDownLatch(NB_TRHEADS);
-        for (int n=0; n < NB_TRHEADS; n++) {
+        for (int n = 0; n < NB_TRHEADS; n++) {
 
             CompletableFuture completableFuture = CompletableFuture.supplyAsync(() -> {
                 TransactionHelper.startTransaction();
@@ -3540,7 +3536,7 @@ public class TestSQLRepositoryQuery {
             futures.add(completableFuture);
         }
         int total = 0;
-        for (int n=0; n < NB_TRHEADS; n++) {
+        for (int n = 0; n < NB_TRHEADS; n++) {
             int count = futures.get(n).get();
             total += count;
         }
@@ -3548,4 +3544,3 @@ public class TestSQLRepositoryQuery {
     }
 
 }
-
