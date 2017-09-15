@@ -64,9 +64,7 @@ boolean hasVideos = screenConfig.hasVideos();
 String muted = screenConfig.getVideoMuted() ? "muted " : "";
 String loop = screenConfig.getVideoLoop() ? "loop " : "";
 
-String androidApplicationURL = MobileBannerHelper.getURLForAndroidApplication(request);
-String iOSApplicationURL = MobileBannerHelper.getURLForIOSApplication(request);
-String appStoreURL = MobileBannerHelper.getAppStoreURL();
+boolean displayMobileBanner = !"false".equals(request.getParameter("displayMobileBanner"));
 %>
 
 <html>
@@ -83,7 +81,9 @@ if (selectedLanguage != null) { %>
 <link rel="shortcut icon" type="image/x-icon" href="<%=context%>/icons/favicon.ico" />
 <script type="text/javascript" src="<%=context%>/scripts/detect_timezone.js"></script>
 <script type="text/javascript" src="<%=context%>/scripts/nxtimezone.js"></script>
+<% if (displayMobileBanner) { %>
 <script type="text/javascript" src="<%=context%>/scripts/mobile-banner.js"></script>
+<% } %>
 <script type="text/javascript">
   nxtz.resetTimeZoneCookieIfNotSet();
 </script>
@@ -322,6 +322,7 @@ input:-webkit-autofill:focus {
   background-color: rgba(255,255,255,0);
 }
 
+<% if (displayMobileBanner) { %>
 /* =Mobile Banner */
 #mobileBanner {
   /* set to flex to display the mobile banner */
@@ -347,6 +348,7 @@ a.mobileAppLink:hover {
   line-height: 1.4em;
   text-decoration: none;
 }
+<% } %>
 
 /* Mobile devices */
 @media all and (max-width: 850px) {
@@ -509,6 +511,11 @@ a.mobileAppLink:hover {
     <%=productVersion%>
   </footer>
 </div>
+<% if (displayMobileBanner) {
+     String androidApplicationURL = MobileBannerHelper.getURLForAndroidApplication(request);
+     String iOSApplicationURL = MobileBannerHelper.getURLForIOSApplication(request);
+     String appStoreURL = MobileBannerHelper.getAppStoreURL();
+%>
 <div id="mobileBanner">
   <a id="androidAppLink" class="mobileAppLink" href="<%=androidApplicationURL%>">
     <fmt:message bundle="${messages}" key="label.mobile.openInApp" />
@@ -519,10 +526,11 @@ a.mobileAppLink:hover {
     <fmt:message bundle="${messages}" key="label.mobile.openInApp" />
   </a>
 </div>
+<% } %>
 
 <script type="text/javascript">
   // Since the #! part of an URL is not sent to the server, ensure it is part of the requested URL
-  // and the mobile app links
+  // and the mobile app links if the mobile banner is displayed
   // Required for the Web UI
   var indexOfHash = window.location.href.indexOf('#!');
   if (indexOfHash > -1) {
@@ -531,6 +539,7 @@ a.mobileAppLink:hover {
     var lastPart = window.location.href.substring(indexOfHash);
     document.getElementById('requestedUrl').value += lastPart;
 
+    <% if (displayMobileBanner) { %>
     var docPart;
     var parts = lastPart.split('/');
     if (parts.length === 3) {
@@ -545,8 +554,11 @@ a.mobileAppLink:hover {
       androidAppLink.href += docPart;
       iOSAppLink.setAttribute('data-action', iOSAppLink.getAttribute('data-action') + docPart);
     }
+    <% } %>
   }
+  <% if (displayMobileBanner) { %>
   nuxeo.mobile.displayMobileBanner('mobileBanner', 'flex', 'androidAppLink', 'iOSAppLink');
+  <% } %>
 
   document.getElementById('username').focus();
 
