@@ -44,12 +44,12 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  */
 @Features({ AutomationFeature.class, AuditFeature.class, RepositoryElasticSearchFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.seqgen",
+        "org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml", "org.nuxeo.admin.center",
         "org.nuxeo.elasticsearch.audit",
         "org.nuxeo.elasticsearch.audit.test:elasticsearch-audit-index-test-contrib.xml",
         "org.nuxeo.drive.elasticsearch" })
-@LocalDeploy({ "org.nuxeo.drive.elasticsearch:OSGI-INF/test-nuxeodrive-elasticsearch-contrib.xml",
-        "org.nuxeo.drive.elasticsearch:nxuidsequencer-ds.xml" })
+@LocalDeploy("org.nuxeo.drive.elasticsearch:nxuidsequencer-ds.xml")
 public class ESAuditFeature extends SimpleFeature {
 
     @Override
@@ -75,11 +75,7 @@ public class ESAuditFeature extends SimpleFeature {
                 // Explicit refresh
                 esa.refresh();
                 // Explicit refresh for the audit index until it is handled by esa.refresh
-                esa.getClient()
-                   .admin()
-                   .indices()
-                   .prepareRefresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE))
-                   .get();
+                esa.getClient().refresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE));
                 return true;
             }
 

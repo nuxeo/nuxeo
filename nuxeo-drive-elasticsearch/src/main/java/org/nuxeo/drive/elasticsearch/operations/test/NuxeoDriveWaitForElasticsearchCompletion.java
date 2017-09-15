@@ -55,7 +55,7 @@ public class NuxeoDriveWaitForElasticsearchCompletion extends NuxeoDriveWaitForA
         // Explicit refresh
         esa.refresh();
         // Explicit refresh for the audit index until it is handled by esa.refresh
-        esa.getClient().admin().indices().prepareRefresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE)).get();
+        esa.getClient().refresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE));
     }
 
 }

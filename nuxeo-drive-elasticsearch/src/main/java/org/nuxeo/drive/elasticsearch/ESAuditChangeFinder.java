@@ -21,16 +21,14 @@ package org.nuxeo.drive.elasticsearch;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -38,6 +36,7 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
@@ -45,6 +44,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
+import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.runtime.api.Framework;
@@ -81,27 +81,25 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
     public static final Log log = LogFactory.getLog(ESAuditChangeFinder.class);
 
-    protected Client esClient = null;
+    protected ESClient esClient = null;
 
     protected List<LogEntry> queryESAuditEntries(CoreSession session, SynchronizationRoots activeRoots,
             Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds,
             int limit) {
 
-        SearchRequestBuilder builder = getClient().prepareSearch(getESIndexName())
-                                                  .setTypes(ElasticSearchConstants.ENTRY_TYPE)
-                                                  .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequest request = new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE)
+                                                  .searchType(SearchType.DFS_QUERY_THEN_FETCH);
 
         QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
         QueryBuilder filterBuilder = buildFilterClauses(session, activeRoots, collectionSyncRootMemberIds, lowerBound,
                 upperBound, integerBounds, limit);
-        builder.setQuery(QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder));
-
-        builder.addSort("repositoryId", SortOrder.ASC);
-        builder.addSort("eventDate", SortOrder.DESC);
-
+        SearchSourceBuilder source = new SearchSourceBuilder().query(QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder));
+        source.sort("repositoryId", SortOrder.ASC).sort("eventDate", SortOrder.DESC);
+        source.size(limit);
+        request.source(source);
         List<LogEntry> entries = new ArrayList<>();
-        logSearchRequest(builder);
-        SearchResponse searchResponse = builder.setSize(limit).execute().actionGet();
+        logSearchRequest(request);
+        SearchResponse searchResponse = getClient().search(request);
         logSearchResponse(searchResponse);
         for (SearchHit hit : searchResponse.getHits()) {
             try {
@@ -224,15 +222,14 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
     @Override
     public long getUpperBound() {
-        SearchRequestBuilder builder = getClient().prepareSearch(getESIndexName())
-                                                  .setTypes(ElasticSearchConstants.ENTRY_TYPE)
-                                                  .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequest request = new SearchRequest(getESIndexName())
+                .types(ElasticSearchConstants.ENTRY_TYPE)
+                .searchType(SearchType.DFS_QUERY_THEN_FETCH);
         // TODO refactor this to use max clause
-        builder.setQuery(QueryBuilders.matchAllQuery());
-        builder.addSort("id", SortOrder.DESC);
-        builder.setSize(1);
-        logSearchRequest(builder);
-        SearchResponse searchResponse = builder.execute().actionGet();
+        request.source(new SearchSourceBuilder().query(QueryBuilders.matchAllQuery())
+                .sort("id", SortOrder.DESC).size(1));
+        logSearchRequest(request);
+        SearchResponse searchResponse = getClient().search(request);
         logSearchResponse(searchResponse);
         List<LogEntry> entries = new ArrayList<>();
         SearchHits hits = searchResponse.getHits();
@@ -253,23 +250,23 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
      */
     @Override
     public long getUpperBound(Set<String> repositoryNames) {
-        SearchRequestBuilder builder = getClient().prepareSearch(getESIndexName())
-                                                  .setTypes(ElasticSearchConstants.ENTRY_TYPE)
-                                                  .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
-        QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
+        SearchRequest request = new SearchRequest(getESIndexName())
+                .types(ElasticSearchConstants.ENTRY_TYPE)
+                .searchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchSourceBuilder source = new SearchSourceBuilder();
         long clusteringDelay = getClusteringDelay(repositoryNames);
         if (clusteringDelay > -1) {
             long lastClusteringInvalidationDate = System.currentTimeMillis() - 2 * clusteringDelay;
             RangeQueryBuilder filterBuilder = QueryBuilders.rangeQuery("logDate")
-                                                           .lt(new Date(lastClusteringInvalidationDate));
-            builder.setQuery(QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder));
+                                                           .lt(lastClusteringInvalidationDate);
+            source.query(QueryBuilders.boolQuery().filter(filterBuilder));
         } else {
-            builder.setQuery(queryBuilder);
+            source.query(QueryBuilders.matchAllQuery());
         }
-        builder.addSort("id", SortOrder.DESC);
-        builder.setSize(1);
-        logSearchRequest(builder);
-        SearchResponse searchResponse = builder.execute().actionGet();
+        source.sort("id", SortOrder.DESC).size(1);
+        request.source(source);
+        logSearchRequest(request);
+        SearchResponse searchResponse = getClient().search(request);
         logSearchResponse(searchResponse);
         List<LogEntry> entries = new ArrayList<>();
         SearchHits hits = searchResponse.getHits();
@@ -285,9 +282,10 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
                 // Check for existing entries without the clustering invalidation date filter to not return -1 in this
                 // case and make sure the lower bound of the next call to NuxeoDriveManager#getChangeSummary will be >=
                 // 0
-                builder.setQuery(queryBuilder);
-                logSearchRequest(builder);
-                searchResponse = builder.execute().actionGet();
+                source.query(QueryBuilders.matchAllQuery());
+                request.source(source);
+                logSearchRequest(request);
+                searchResponse = getClient().search(request);
                 logSearchResponse(searchResponse);
                 if (searchResponse.getHits().iterator().hasNext()) {
                     log.debug("Found no audit log entries matching the criterias but some exist, returning 0");
@@ -327,7 +325,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         return postFilteredEntries;
     }
 
-    protected Client getClient() {
+    protected ESClient getClient() {
         if (esClient == null) {
             ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
             esClient = esa.getClient();
@@ -340,7 +338,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         return esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
     }
 
-    protected void logSearchRequest(SearchRequestBuilder request) {
+    protected void logSearchRequest(SearchRequest request) {
         if (log.isDebugEnabled()) {
             log.debug(String.format(
                     "Elasticsearch search request: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
