@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.blob.AsyncBlob;
 
 /**
  * This service allows the download of blobs to a HTTP response.
@@ -46,6 +47,11 @@ public interface DownloadService {
 
     String NXDOWNLOADINFO = "nxdownloadinfo";
 
+    /**
+     * @since 9.3
+     */
+    String NXBLOBSTATUS = "nxblobstatus";
+
     String NXBIGBLOB = "nxbigblob";
 
     /** @deprecated since 9.1, use nxbigblob instead */
@@ -59,6 +65,15 @@ public interface DownloadService {
     String BLOBHOLDER_PREFIX = "blobholder:";
 
     String BLOBHOLDER_0 = "blobholder:0";
+
+    /**
+     * The transient store parameter name for storing an error if any. Stored entry must
+     */
+    String TRANSIENT_STORE_PARAM_ERROR = "error";
+
+    String TRANSIENT_STORE_PARAM_PROGRESS = "progress";
+
+    String TRANSIENT_STORE_STORE_NAME = "download";
 
     public static class ByteRange {
 
@@ -157,8 +172,18 @@ public interface DownloadService {
             throws IOException;
 
     /**
-     * Triggers a blobs download. Once the temporary blobs are transfered from the store, they are
-     * automatically deleted.
+     * Triggers a {@link AsyncBlob} download which gives information about an asynchronous blob.
+     *
+     * @param storeKey the stored blobs key
+     * @param reason the download reason
+     * @since 9.3
+     */
+    void downloadBlobStatus(HttpServletRequest request, HttpServletResponse response, String storeKey, String reason)
+            throws IOException;
+
+    /**
+     * Triggers a blobs download. Once the temporary blobs are transfered from the store, they are automatically
+     * deleted. The returned HTTP Status Code is 200 if the blob is ready or 202 if it is still being processed.
      *
      * @param storeKey the stored blobs key
      * @param reason the download reason

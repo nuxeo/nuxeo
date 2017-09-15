@@ -63,6 +63,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.impl.blob.AsyncBlob;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
@@ -102,7 +103,9 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     private static final String RUN_FUNCTION = "run";
 
-    protected static enum Action {DOWNLOAD, DOWNLOAD_FROM_DOC, INFO};
+    protected static enum Action {
+        DOWNLOAD, DOWNLOAD_FROM_DOC, INFO, BLOBSTATUS
+    };
 
     private DownloadPermissionRegistry registry = new DownloadPermissionRegistry();
 
@@ -185,19 +188,17 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * Multipart download are not yet supported. You can only provide
-     * a blob singleton at this time.
+     * {@inheritDoc} Multipart download are not yet supported. You can only provide a blob singleton at this time.
      */
     @Override
     public String storeBlobs(List<Blob> blobs) {
         if (blobs.size() > 1) {
             throw new IllegalArgumentException("multipart download not yet implemented");
         }
-        TransientStore ts = Framework.getService(TransientStoreService.class).getStore("download");
+        TransientStore ts = Framework.getService(TransientStoreService.class).getStore(TRANSIENT_STORE_STORE_NAME);
         String storeKey = UUID.randomUUID().toString();
         ts.putBlobs(storeKey, blobs);
+        ts.setCompleted(storeKey, true);
         return storeKey;
     }
 
@@ -257,6 +258,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         case NXBIGZIPFILE:
         case NXBIGBLOB:
             return Pair.of(downloadPath, Action.DOWNLOAD);
+        case NXBLOBSTATUS:
+            return Pair.of(downloadPath, Action.BLOBSTATUS);
         default:
             return null;
         }
@@ -308,6 +311,9 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             break;
         case DOWNLOAD:
             downloadBlob(req, resp, downloadPath, "download");
+            break;
+        case BLOBSTATUS:
+            downloadBlobStatus(req, resp, downloadPath, "download");
             break;
         default:
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid URL syntax");
@@ -379,20 +385,54 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     }
 
     @Override
+    public void downloadBlobStatus(HttpServletRequest request, HttpServletResponse response, String key, String reason)
+            throws IOException {
+        this.downloadBlob(request, response, key, reason, true);
+    }
+
+    @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, String key, String reason) throws IOException {
-        TransientStore ts = Framework.getService(TransientStoreService.class).getStore("download");
-        try {
-            List<Blob> blobs = ts.getBlobs(key);
-            if (blobs == null) {
-                throw new IllegalArgumentException("no such blobs referenced with " + key);
+        this.downloadBlob(request, response, key, reason, false);
+    }
+
+    protected void downloadBlob(HttpServletRequest request, HttpServletResponse response, String key, String reason,
+            boolean status) throws IOException {
+        TransientStore ts = Framework.getService(TransientStoreService.class).getStore(TRANSIENT_STORE_STORE_NAME);
+        if (!ts.exists(key)) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        List<Blob> blobs = ts.getBlobs(key);
+        if (blobs == null || blobs.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        if (blobs.size() > 1) {
+            throw new IllegalArgumentException("multipart download not yet implemented");
+        }
+        if (ts.getParameter(key, TRANSIENT_STORE_PARAM_ERROR) != null) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    (String) ts.getParameter(key, TRANSIENT_STORE_PARAM_ERROR));
+        } else {
+            boolean isCompleted = ts.isCompleted(key);
+            if (!status && !isCompleted) {
+                response.setStatus(HttpServletResponse.SC_ACCEPTED);
+                return;
             }
-            if (blobs.size() > 1) {
-                throw new IllegalArgumentException("multipart download not yet implemented");
+            Blob blob;
+            if (status) {
+                Serializable progress = ts.getParameter(key, TRANSIENT_STORE_PARAM_PROGRESS);
+                blob = new AsyncBlob(key, isCompleted, progress != null ? (int) progress : -1);
+            } else {
+                blob = blobs.get(0);
             }
-            Blob blob = blobs.get(0);
-            downloadBlob(request, response, null, null, blob, blob.getFilename(), reason);
-        } finally {
-            ts.remove(key);
+            try {
+                downloadBlob(request, response, null, null, blob, blob.getFilename(), reason);
+            } finally {
+                if (!status) {
+                    ts.remove(key);
+                }
+            }
         }
     }
 

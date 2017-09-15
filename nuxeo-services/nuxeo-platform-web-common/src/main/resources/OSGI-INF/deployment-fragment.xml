@@ -235,6 +235,11 @@
       <url-pattern>/nxdownloadinfo/*</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+      <servlet-name>Nuxeo Downloader</servlet-name>
+      <url-pattern>/nxblobstatus/*</url-pattern>
+    </servlet-mapping>
+
     <servlet>
       <servlet-name>Nuxeo JS Provider</servlet-name>
       <servlet-class>
