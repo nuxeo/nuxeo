@@ -251,12 +251,12 @@ public class OAuth2ChallengeFixture {
         }
     }
 
+    @Test
     public void authorizeShouldDenyAccess() throws UnsupportedEncodingException {
         initValidAuthorizeRequestCall(STATE);
 
         // missing "grant_access" parameter to grant access
-        Map<String, String> params = new HashMap<>();
-        params.put(STATE_PARAM, STATE);
+        Map<String, String> params = getAuthorizationRequestParams(STATE, null, null);
         try (CloseableClientResponse cr = responseFromPostAuthorizeWith(params)) {
             assertEquals(302, cr.getStatus());
             String redirect = cr.getHeaders().get("Location").get(0);
