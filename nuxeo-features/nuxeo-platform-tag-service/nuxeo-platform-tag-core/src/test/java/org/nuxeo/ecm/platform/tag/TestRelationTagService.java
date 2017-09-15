@@ -30,7 +30,6 @@ import static org.junit.Assume.assumeTrue;
  *
  * @since 9.3
  */
-@LocalDeploy("org.nuxeo.ecm.platform.tag:override-tag-service-properties.xml")
 public class TestRelationTagService extends AbstractTestTagService {
 
     @Before

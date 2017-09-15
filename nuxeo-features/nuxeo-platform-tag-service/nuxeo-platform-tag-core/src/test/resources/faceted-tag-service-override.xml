@@ -4,7 +4,7 @@
   <require>org.nuxeo.tag.service.properties</require>
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
-    <property name="nuxeo.faceted.tag.service.enabled">false</property>
+    <property name="nuxeo.faceted.tag.service.enabled">true</property>
   </extension>
 
 </component>

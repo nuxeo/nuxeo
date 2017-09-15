@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Listener that copy tags applied on the live document to a version synchronously after the check-in event.
@@ -55,7 +56,9 @@ public class CheckedInDocumentListener implements EventListener {
                 return;
             }
             DocumentRef versionRef = (DocumentRef) ctx.getProperty("checkedInVersionRef");
-            if (versionRef instanceof IdRef) {
+            boolean facetedTags = Framework.getService(ConfigurationService.class)
+                                           .isBooleanPropertyTrue(TagServiceImpl.FACETED_TAG_SERVICE_ENABLED);
+            if (versionRef instanceof IdRef && !facetedTags) {
                 tagService.copyTags(session, docId, versionRef.toString());
             }
         }

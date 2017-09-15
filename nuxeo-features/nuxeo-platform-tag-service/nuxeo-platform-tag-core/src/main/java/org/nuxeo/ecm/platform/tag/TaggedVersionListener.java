@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Listener that copy tags applied on the live document to a version or proxy of this document or replace the existing
@@ -65,6 +66,12 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
             }
             String docId = doc.getId();
             TagService tagService = Framework.getLocalService(TagService.class);
+            boolean facetedTags = Framework.getService(ConfigurationService.class)
+                                             .isBooleanPropertyTrue(TagServiceImpl.FACETED_TAG_SERVICE_ENABLED);
+            if (doc instanceof DeletedDocumentModel && !facetedTags) {
+                tagService.removeTags(session, docId);
+                return;
+            }
             switch (name) {
             case DOCUMENT_PROXY_PUBLISHED:
                 if (doc.isProxy()) {
@@ -75,6 +82,11 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
             case DOCUMENT_RESTORED:
                 String versionUUID = (String) ctx.getProperty(VersioningDocument.RESTORED_VERSION_UUID_KEY);
                 tagService.replaceTags(session, versionUUID, docId);
+                break;
+            case DOCUMENT_REMOVED:
+                if (!facetedTags) {
+                    tagService.removeTags(session, docId);
+                }
                 break;
             case TRANSITION_EVENT:
                 tagService.removeTags(session, docId);
@@ -88,8 +100,10 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
     @Override
     public boolean acceptEvent(Event event) {
         String name = event.getName();
-        return DOCUMENT_PROXY_PUBLISHED.equals(name) || DOCUMENT_RESTORED.equals(name)
-                || (LifeCycleConstants.TRANSITION_EVENT.equals(name) && LifeCycleConstants.DELETED_STATE.equals(
-                        event.getContext().getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TO)));
+        return DOCUMENT_PROXY_PUBLISHED.equals(name)
+                || DOCUMENT_RESTORED.equals(name)
+                || DOCUMENT_REMOVED.equals(name)
+                || (LifeCycleConstants.TRANSITION_EVENT.equals(name) && LifeCycleConstants.DELETED_STATE.equals(event.getContext().getProperty(
+                LifeCycleConstants.TRANSTION_EVENT_OPTION_TO)));
     }
 }
