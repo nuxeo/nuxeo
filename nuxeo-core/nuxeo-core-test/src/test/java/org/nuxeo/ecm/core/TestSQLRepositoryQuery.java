@@ -195,9 +195,8 @@ public class TestSQLRepositoryQuery {
     }
 
     /**
-     * Creates the following structure of documents:
+     * Creates the following structure of documents: VCS:
      *
-     * VCS:
      * <pre>
      *  root (UUID_1)
      *  |- testfolder1 (UUID_2)
@@ -211,6 +210,7 @@ public class TestSQLRepositoryQuery {
      * </pre>
      *
      * DBS:
+     *
      * <pre>
      *  root (UUID_0)
      *  |- testfolder1 (UUID_1)
@@ -347,7 +347,8 @@ public class TestSQLRepositoryQuery {
         assertEquals(1, dml.size());
 
         // two uses of the same schema
-        dml = session.query("SELECT * FROM Note WHERE (dc:title = 'testfile3_Title' OR dc:description = 'hmmm') AND ecm:isVersion = 0");
+        dml = session.query(
+                "SELECT * FROM Note WHERE (dc:title = 'testfile3_Title' OR dc:description = 'hmmm') AND ecm:isVersion = 0");
         assertEquals(1, dml.size());
 
         // property in a schema with no prefix
@@ -358,10 +359,12 @@ public class TestSQLRepositoryQuery {
         assertEquals(1, dml.size());
 
         // this needs an actual LEFT OUTER JOIN
-        dml = session.query("SELECT * FROM Document WHERE (content/name = 'testfile.txt' OR dc:title = 'testfile3_Title') AND ecm:isVersion = 0");
+        dml = session.query(
+                "SELECT * FROM Document WHERE (content/name = 'testfile.txt' OR dc:title = 'testfile3_Title') AND ecm:isVersion = 0");
         assertEquals(2, dml.size());
 
-        dml = session.query("SELECT * FROM Document WHERE (content/name = 'testfile.txt' OR dc:contributors = 'bob') AND ecm:isVersion = 0");
+        dml = session.query(
+                "SELECT * FROM Document WHERE (content/name = 'testfile.txt' OR dc:contributors = 'bob') AND ecm:isVersion = 0");
         assertEquals(3, dml.size());
 
         // early detection of conflicting types for VCS
@@ -447,10 +450,12 @@ public class TestSQLRepositoryQuery {
         dml = session.query("SELECT * FROM Document WHERE dc:contributors IN ('bob', 'john') AND ecm:isVersion = 0");
         assertEquals(2, dml.size());
 
-        dml = session.query("SELECT * FROM Document WHERE dc:contributors NOT IN ('bob', 'pete') AND ecm:isVersion = 0");
+        dml = session.query(
+                "SELECT * FROM Document WHERE dc:contributors NOT IN ('bob', 'pete') AND ecm:isVersion = 0");
         assertEquals(5, dml.size());
 
-        dml = session.query("SELECT * FROM Document WHERE dc:contributors NOT IN ('bob', 'john') AND ecm:isVersion = 0");
+        dml = session.query(
+                "SELECT * FROM Document WHERE dc:contributors NOT IN ('bob', 'john') AND ecm:isVersion = 0");
         assertEquals(5, dml.size());
 
         dml = session.query("SELECT * FROM Document WHERE dc:contributors LIKE 'pe%' AND ecm:isVersion = 0");
@@ -489,10 +494,12 @@ public class TestSQLRepositoryQuery {
         dml = session.query("SELECT * FROM Document WHERE dc:contributors/* IN ('bob', 'john') AND ecm:isVersion = 0");
         assertEquals(2, dml.size());
 
-        dml = session.query("SELECT * FROM Document WHERE dc:contributors/* NOT IN ('bob', 'pete') AND ecm:isVersion = 0");
+        dml = session.query(
+                "SELECT * FROM Document WHERE dc:contributors/* NOT IN ('bob', 'pete') AND ecm:isVersion = 0");
         assertEquals(notMatchesNull() ? 5 : 1, dml.size());
 
-        dml = session.query("SELECT * FROM Document WHERE dc:contributors/* NOT IN ('bob', 'john') AND ecm:isVersion = 0");
+        dml = session.query(
+                "SELECT * FROM Document WHERE dc:contributors/* NOT IN ('bob', 'john') AND ecm:isVersion = 0");
         assertEquals(notMatchesNull() ? 5 : 1, dml.size());
 
         dml = session.query("SELECT * FROM Document WHERE dc:contributors/* LIKE 'pe%' AND ecm:isVersion = 0");
@@ -524,7 +531,8 @@ public class TestSQLRepositoryQuery {
         dml = session.query("SELECT * FROM Document WHERE dc:contributors <> 'blah' AND ecm:isVersion = 0");
         assertEquals(7, dml.size());
 
-        dml = session.query("SELECT * FROM File WHERE dc:contributors <> 'blah' AND ecm:isProxy = 0 AND ecm:isVersion = 0");
+        dml = session.query(
+                "SELECT * FROM File WHERE dc:contributors <> 'blah' AND ecm:isProxy = 0 AND ecm:isVersion = 0");
         assertEquals(3, dml.size());
 
         dml = session.query(
@@ -1635,14 +1643,10 @@ public class TestSQLRepositoryQuery {
             set.add(ace);
         }
         res.close();
-        assertEquals(
-                new HashSet<>(
-                        Arrays.asList("local:Administrator:Everything:true:null:null:null",
-                                "local:bob:Browse:true:null:null:null", "local:steve:Read:true:null:null:null",
-                                "local:leela:Write:true:Administrator:" + begin.getTimeInMillis() + ":"
-                                        + end.getTimeInMillis(),
-                                "local:Everyone:Everything:false:null:null:null")),
-                set);
+        assertEquals(new HashSet<>(Arrays.asList("local:Administrator:Everything:true:null:null:null",
+                "local:bob:Browse:true:null:null:null", "local:steve:Read:true:null:null:null",
+                "local:leela:Write:true:Administrator:" + begin.getTimeInMillis() + ":" + end.getTimeInMillis(),
+                "local:Everyone:Everything:false:null:null:null")), set);
     }
 
     @Test
@@ -3311,7 +3315,7 @@ public class TestSQLRepositoryQuery {
         final int nbDocs = 127;
         final int batchSize = 13;
         DocumentModel doc;
-        for (int i=0; i<nbDocs; i++) {
+        for (int i = 0; i < nbDocs; i++) {
             doc = new DocumentModelImpl("/", "doc" + i, "File");
             session.createDocument(doc);
         }
@@ -3457,10 +3461,10 @@ public class TestSQLRepositoryQuery {
     public void testScrollApiConcurrency() throws Exception {
         final int nbDocs = 127;
         final int batchSize = 13;
-        final int nbThread = nbDocs/batchSize + 1;
+        final int nbThread = nbDocs / batchSize + 1;
         // System.out.println("nbDocs: " + nbDocs + ", batch: " + batchSize + ", thread: " + nbThread);
         DocumentModel doc;
-        for (int i=0; i<nbDocs; i++) {
+        for (int i = 0; i < nbDocs; i++) {
             doc = new DocumentModelImpl("/", "doc" + i, "File");
             session.createDocument(doc);
         }
@@ -3478,7 +3482,7 @@ public class TestSQLRepositoryQuery {
         List<CompletableFuture<Integer>> futures = new ArrayList<>(nbThread);
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(nbThread);
         final CountDownLatch latch = new CountDownLatch(nbThread);
-        for (int n=0; n < nbThread; n++) {
+        for (int n = 0; n < nbThread; n++) {
             CompletableFuture completableFuture = CompletableFuture.supplyAsync(() -> {
                 TransactionHelper.startTransaction();
                 try {
@@ -3498,7 +3502,7 @@ public class TestSQLRepositoryQuery {
             }, executor);
             futures.add(completableFuture);
         }
-        for (int n=0; n < nbThread; n++) {
+        for (int n = 0; n < nbThread; n++) {
             int count = futures.get(n).get();
             total += count;
         }
@@ -3527,7 +3531,7 @@ public class TestSQLRepositoryQuery {
         List<CompletableFuture<Integer>> futures = new ArrayList<>(NB_TRHEADS);
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NB_TRHEADS);
         final CountDownLatch latch = new CountDownLatch(NB_TRHEADS);
-        for (int n=0; n < NB_TRHEADS; n++) {
+        for (int n = 0; n < NB_TRHEADS; n++) {
 
             CompletableFuture completableFuture = CompletableFuture.supplyAsync(() -> {
                 TransactionHelper.startTransaction();
@@ -3548,7 +3552,7 @@ public class TestSQLRepositoryQuery {
             futures.add(completableFuture);
         }
         int total = 0;
-        for (int n=0; n < NB_TRHEADS; n++) {
+        for (int n = 0; n < NB_TRHEADS; n++) {
             int count = futures.get(n).get();
             total += count;
         }
@@ -3556,4 +3560,3 @@ public class TestSQLRepositoryQuery {
     }
 
 }
-
