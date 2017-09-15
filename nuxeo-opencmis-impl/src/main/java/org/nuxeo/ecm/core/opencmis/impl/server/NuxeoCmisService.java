@@ -123,14 +123,8 @@ import org.apache.chemistry.opencmis.server.support.wrapper.CallContextAwareCmis
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -169,19 +163,14 @@ import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
-import org.nuxeo.elasticsearch.ElasticSearchConstants;
-import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.api.EsIterableQueryResultImpl;
-import org.nuxeo.elasticsearch.audit.ESAuditBackend;
-import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.elasticsearch.core.EsSearchHitConverter;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
@@ -1389,13 +1378,6 @@ public class NuxeoCmisService extends AbstractCmisService
         return ol;
     }
 
-    protected SearchRequestBuilder getElasticsearchBuilder() {
-        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-        String indexName = esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
-        return esa.getClient().prepareSearch(indexName).setTypes(ElasticSearchConstants.ENTRY_TYPE).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH);
-    }
-
     /**
      * Reads at most max+1 entries from the audit log.
      *
@@ -1406,42 +1388,8 @@ public class NuxeoCmisService extends AbstractCmisService
         if (reader == null) {
             throw new CmisRuntimeException("Cannot find audit service");
         }
-        List<LogEntry> entries;
-        if (reader instanceof DefaultAuditBackend) {
-            String query = "FROM LogEntry log" //
-                    + " WHERE log.id >= :minId" //
-                    + "   AND log.eventId IN (:evCreated, :evModified, :evRemoved)" //
-                    + "   AND log.repositoryId = :repoId" //
-                    + " ORDER BY log.id";
-            Map<String, Object> params = new HashMap<>();
-            params.put("minId", Long.valueOf(minId));
-            params.put("evCreated", DOCUMENT_CREATED);
-            params.put("evModified", DOCUMENT_UPDATED);
-            params.put("evRemoved", DOCUMENT_REMOVED);
-            params.put("repoId", repositoryId);
-            entries = (List<LogEntry>) reader.nativeQuery(query, params, 1, pageSize);
-        } else if (reader instanceof ESAuditBackend) {
-            SearchRequestBuilder builder = getElasticsearchBuilder();
-            BoolQueryBuilder query = QueryBuilders.boolQuery()
-                                                  .must(QueryBuilders.matchAllQuery())
-                                                  .filter(QueryBuilders.termQuery(ES_AUDIT_REPOSITORY_ID, repositoryId))
-                                                  .filter(QueryBuilders.termsQuery(ES_AUDIT_EVENT_ID, DOCUMENT_CREATED,
-                                                          DOCUMENT_UPDATED, DOCUMENT_REMOVED))
-                                                  .filter(QueryBuilders.rangeQuery(ES_AUDIT_ID).gte(minId));
-            builder.setQuery(query);
-            builder.addSort(ES_AUDIT_ID, SortOrder.ASC);
-            entries = new ArrayList<>();
-            SearchResponse searchResponse = builder.setSize(pageSize).execute().actionGet();
-            for (SearchHit hit : searchResponse.getHits()) {
-                try {
-                    entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
-                } catch (IOException e) {
-                    throw new CmisRuntimeException("Failed to parse audit entry: " + hit, e);
-                }
-            }
-        } else {
-            throw new CmisRuntimeException("Unknown audit backend: " + reader.getClass().getName());
-        }
+        List<LogEntry> entries = reader.getLogEntriesAfter(minId, pageSize, repositoryId,
+                DOCUMENT_CREATED, DOCUMENT_UPDATED, DOCUMENT_REMOVED);
         List<ObjectData> ods = new ArrayList<>();
         for (LogEntry entry : entries) {
             ObjectData od = getLogEntryObjectData(entry);
@@ -1506,46 +1454,7 @@ public class NuxeoCmisService extends AbstractCmisService
             return "0";
             // throw new CmisRuntimeException("Cannot find audit service");
         }
-        long id;
-        if (reader instanceof DefaultAuditBackend) {
-            String query = "FROM LogEntry log" //
-                    + " WHERE log.eventId IN (:evCreated, :evModified, :evRemoved)" //
-                    + "   AND log.repositoryId = :repoId" //
-                    + " ORDER BY log.id DESC";
-            Map<String, Object> params = new HashMap<>();
-            params.put("evCreated", DOCUMENT_CREATED);
-            params.put("evModified", DOCUMENT_UPDATED);
-            params.put("evRemoved", DOCUMENT_REMOVED);
-            params.put("repoId", repositoryId);
-            @SuppressWarnings("unchecked")
-            List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery(query, params, 1, 1);
-            id = entries.isEmpty() ? 0 : entries.get(0).getId();
-        } else if (reader instanceof ESAuditBackend) {
-            SearchRequestBuilder builder = getElasticsearchBuilder();
-            BoolQueryBuilder query = QueryBuilders.boolQuery()
-                                                  .must(QueryBuilders.matchAllQuery())
-                                                  .filter(QueryBuilders.termQuery(ES_AUDIT_REPOSITORY_ID, repositoryId))
-                                                  .filter(QueryBuilders.termsQuery(ES_AUDIT_EVENT_ID, DOCUMENT_CREATED,
-                                                          DOCUMENT_UPDATED, DOCUMENT_REMOVED));
-            builder.setQuery(query);
-            builder.addSort(ES_AUDIT_ID, SortOrder.DESC);
-            builder.setSize(1);
-            // TODO refactor this to use max clause
-            SearchResponse searchResponse = builder.execute().actionGet();
-            SearchHit[] hits = searchResponse.getHits().hits();
-            if (hits.length == 0) {
-                id = 0;
-            } else {
-                String hit = hits[0].getSourceAsString();
-                try {
-                    id = AuditEntryJSONReader.read(hit).getId();
-                } catch (IOException e) {
-                    throw new CmisRuntimeException("Failed to parse audit entry: " + hit, e);
-                }
-            }
-        } else {
-            throw new CmisRuntimeException("Unknown audit backend: " + reader.getClass().getName());
-        }
+        long id = reader.getLatestLogId(repositoryId, DOCUMENT_CREATED, DOCUMENT_UPDATED, DOCUMENT_REMOVED);
         return String.valueOf(id);
     }
 

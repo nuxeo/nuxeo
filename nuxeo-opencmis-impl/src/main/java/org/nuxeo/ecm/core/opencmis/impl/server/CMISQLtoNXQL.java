@@ -932,7 +932,11 @@ public class CMISQLtoNXQL {
             } else if (value instanceof Integer) {
                 value = BigInteger.valueOf(((Integer) value).intValue());
             } else if (value instanceof Double) {
-                value = BigDecimal.valueOf(((Double) value).doubleValue());
+                if (((Double) value).isNaN()) {
+                    value = BigDecimal.ZERO;
+                } else {
+                    value = BigDecimal.valueOf(((Double) value).doubleValue());
+                }
             } else if (value == null) {
                 // special handling of some columns where NULL means FALSE
                 if (NULL_IS_FALSE_COLUMNS.contains(nxqlCol)) {

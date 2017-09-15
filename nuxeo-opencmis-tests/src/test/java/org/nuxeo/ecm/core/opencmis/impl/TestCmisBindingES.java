@@ -34,8 +34,11 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.core.persistence", //
         "org.nuxeo.ecm.platform.uidgen.core", //
         "org.nuxeo.elasticsearch.core", //
+        "org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml", //
         "org.nuxeo.elasticsearch.seqgen", //
+        "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml", //
         "org.nuxeo.elasticsearch.audit", //
+        "org.nuxeo.elasticsearch.audit.test:elasticsearch-audit-index-test-contrib.xml" //
 })
 @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/elasticsearch-test-contrib.xml")
 public class TestCmisBindingES extends TestCmisBinding {
