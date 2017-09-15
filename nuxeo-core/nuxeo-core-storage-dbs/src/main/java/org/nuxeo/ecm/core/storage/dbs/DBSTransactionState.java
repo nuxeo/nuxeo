@@ -27,6 +27,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.INITIAL_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.INITIAL_SYS_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_GRANT;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_PERMISSION;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_STATUS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
@@ -455,7 +456,9 @@ public class DBSTransactionState {
                         String username = (String) aceMap.get(KEY_ACE_USER);
                         String permission = (String) aceMap.get(KEY_ACE_PERMISSION);
                         Boolean granted = (Boolean) aceMap.get(KEY_ACE_GRANT);
-                        if (TRUE.equals(granted) && browsePermissions.contains(permission)) {
+                        Long status = (Long) aceMap.get(KEY_ACE_STATUS);
+                        if (TRUE.equals(granted) && browsePermissions.contains(permission)
+                                && (status == null || status == 1)) {
                             racls.add(username);
                         }
                         if (FALSE.equals(granted)) {

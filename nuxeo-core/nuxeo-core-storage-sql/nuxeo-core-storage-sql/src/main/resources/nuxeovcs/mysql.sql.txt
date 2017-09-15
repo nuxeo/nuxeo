@@ -63,7 +63,7 @@ BEGIN
       DECLARE done BOOLEAN DEFAULT FALSE;
       DECLARE cur CURSOR FOR
         SELECT `grant`, `permission`, `user` FROM `acls`
-        WHERE `acls`.`id` = curid ORDER BY `pos`;
+        WHERE `acls`.`id` = curid AND (`acls`.`status` IS NULL OR `acls`.`status` = 1) ORDER BY `pos`;
       DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
       OPEN cur;
       REPEAT
