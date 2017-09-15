@@ -24,6 +24,7 @@ package org.nuxeo.ecm.platform.audit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashMap;
@@ -310,6 +311,59 @@ public class TestNXAuditEventsService {
         ObjectName objectName = AuditEventMetricFactory.getObjectName("documentCreated");
         Long count = (Long) mbeanServer.getAttribute(objectName, "count");
         assertEquals(new Long(1L), count);
+    }
+
+    @Test
+    public void testGetLatestLogId() throws Exception {
+        String repositoryId = "test";
+        createLogEntry("documentModified");
+        long id1 = serviceUnderTest.getLatestLogId(repositoryId, "documentModified");
+        assertTrue("id: " + id1, id1 > 0);
+        createLogEntry("documentCreated");
+        long id2 = serviceUnderTest.getLatestLogId(repositoryId, "documentModified", "documentCreated");
+        assertTrue("id2: " + id2, id2 > 0);
+        assertTrue(id2 > id1);
+        long id = serviceUnderTest.getLatestLogId(repositoryId, "documentModified");
+        assertEquals(id1, id);
+        id = serviceUnderTest.getLatestLogId(repositoryId, "unknownEvent");
+        assertTrue("id: " + id, id == 0);
+    }
+
+    @Test
+    public void testGetLogEntriesAfter() throws Exception {
+        String repositoryId = "test";
+        createLogEntry("something");
+        createLogEntry("documentModified");
+        long id1 = serviceUnderTest.getLatestLogId(repositoryId, "documentModified");
+
+        createLogEntry("documentCreated");
+        long id2 = serviceUnderTest.getLatestLogId(repositoryId, "documentModified", "documentCreated");
+        assertTrue(id2 > id1);
+
+        createLogEntry("documentCreated");
+        long id3 = serviceUnderTest.getLatestLogId(repositoryId, "documentModified", "documentCreated");
+        assertTrue(id3 > id2);
+
+        createLogEntry("documentCreated");
+        long id4 = serviceUnderTest.getLatestLogId(repositoryId, "documentModified", "documentCreated");
+        assertTrue(id4 > id3);
+
+        List<LogEntry> entries = serviceUnderTest.getLogEntriesAfter(id1, 5, repositoryId, "documentCreated", "documentModified");
+        assertEquals(4, entries.size());
+        assertEquals(id1, entries.get(0).getId());
+
+        entries = serviceUnderTest.getLogEntriesAfter(id2, 5, repositoryId, "documentCreated", "documentModified");
+        assertEquals(3, entries.size());
+        assertEquals(id2, entries.get(0).getId());
+    }
+
+    protected void createLogEntry(String eventId) throws InterruptedException {
+        EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), repo.source);
+        Event event = ctx.newEvent(eventId);
+        event.setInline(false);
+        event.setImmediate(true);
+        eventService.fireEvent(event);
+        waitForAsyncCompletion();
     }
 
 }
