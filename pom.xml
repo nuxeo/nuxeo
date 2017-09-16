@@ -154,11 +154,11 @@
     <apache.axiom.version>1.2.5</apache.axiom.version>
     <chemistry.opencmis.version>1.0.0</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
-    <apache.httpcore.version>4.4.4</apache.httpcore.version>
-    <apache.httpcomponents.version>4.5.2</apache.httpcomponents.version>
-    <apache.poi.version>3.10-FINAL</apache.poi.version>
+    <apache.httpcore.version>4.4.6</apache.httpcore.version>
+    <apache.httpcomponents.version>4.5.3</apache.httpcomponents.version>
+    <apache.poi.version>3.17</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
-    <jxls.version>1.0</jxls.version>
+    <jxls.version>1.0.6</jxls.version>
     <xdocreport.version>1.0.5</xdocreport.version>
     <itext.version>2.1.7</itext.version>
     <jclouds.version>1.9.2</jclouds.version>
@@ -196,12 +196,12 @@
     <nuxeo.platform.version>9.3-SNAPSHOT</nuxeo.platform.version>
     <org.ops4j.pax.version>4.4.0</org.ops4j.pax.version>
     <org.slf4j.version>1.7.21</org.slf4j.version>
-    <ch.qos.logback.version>1.0.11</ch.qos.logback.version>
+    <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
     <gatling.version>2.1.7</gatling.version>
     <scala.version>2.11.7</scala.version>
     <scala-logging.version>3.1.0</scala-logging.version>
     <scala-maven-plugin.version>3.2.2</scala-maven-plugin.version>
-    <jgiven.version>0.14.1</jgiven.version>
+    <jgiven.version>0.15.1</jgiven.version>
 
     <!-- Tests properties -->
     <!-- for use integration/vcstests.xml and org.nuxeo:nuxeo-ftest -->
@@ -1891,17 +1891,17 @@
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
-        <version>1.3.1</version>
+        <version>1.3.3</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.4</version>
+        <version>2.5</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.3.2</version>
+        <version>3.6</version>
       </dependency>
       <dependency>
         <groupId>commons-lang</groupId>
@@ -1911,7 +1911,7 @@
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
-        <version>1.9.2</version>
+        <version>1.9.3</version>
         <exclusions>
           <exclusion>
             <groupId>commons-collections</groupId>
@@ -1931,7 +1931,7 @@
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
-        <version>1.1</version>
+        <version>1.2</version>
         <exclusions>
           <exclusion>
             <groupId>javax.servlet</groupId>
@@ -1969,7 +1969,7 @@
       <dependency>
         <groupId>commons-cli</groupId>
         <artifactId>commons-cli</artifactId>
-        <version>1.3.1</version>
+        <version>1.4</version>
       </dependency>
       <dependency>
         <groupId>commons-betwixt</groupId>
@@ -1985,12 +1985,12 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-vfs2</artifactId>
-        <version>2.0</version>
+        <version>2.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-pool2</artifactId>
-        <version>2.3</version>
+        <version>2.4.2</version>
       </dependency>
       <dependency>
         <groupId>commons-httpclient</groupId>
@@ -2056,7 +2056,7 @@
       <dependency>
         <groupId>org.apache.derby</groupId>
         <artifactId>derby</artifactId>
-        <version>10.10.1.1</version>
+        <version>10.13.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
@@ -2359,7 +2359,7 @@
       <dependency>
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
-        <version>3.20.0-GA</version>
+        <version>3.21.0-GA</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
@@ -2801,7 +2801,7 @@
       <dependency>
         <groupId>org.freemarker</groupId>
         <artifactId>freemarker</artifactId>
-        <version>2.3.23</version>
+        <version>2.3.26-incubating</version>
       </dependency>
       <dependency>
         <groupId>concurrent</groupId>
@@ -2821,13 +2821,13 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.11</version>
+        <version>4.12</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
-        <version>3.6.2</version>
+        <version>3.8.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -2850,7 +2850,7 @@
       <dependency>
         <groupId>org.fusesource.jansi</groupId>
         <artifactId>jansi</artifactId>
-        <version>1.13</version>
+        <version>1.16</version>
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
@@ -2951,7 +2951,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-csv</artifactId>
-        <version>1.0</version>
+        <version>1.5</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -3017,12 +3017,12 @@
       <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
-        <version>5.1.39</version>
+        <version>5.1.44</version>
       </dependency>
       <dependency>
         <groupId>org.mariadb.jdbc</groupId>
         <artifactId>mariadb-java-client</artifactId>
-        <version>1.5.5</version>
+        <version>1.6.4</version>
       </dependency>
       <dependency>
         <groupId>net.sourceforge.jtds</groupId>
@@ -3098,7 +3098,7 @@
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
-        <version>1.4.9</version>
+        <version>1.4.10</version>
         <exclusions>
           <exclusion>
             <groupId>xpp3</groupId>
@@ -3119,7 +3119,7 @@
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-all</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.12</version>
       </dependency>
       <dependency>
         <groupId>org.mvel</groupId>
@@ -3991,7 +3991,7 @@
       <dependency>
         <groupId>org.opensaml</groupId>
         <artifactId>opensaml</artifactId>
-        <version>2.6.1</version>
+        <version>2.6.4</version>
         <scope>compile</scope>
         <exclusions>
           <exclusion>
@@ -4015,7 +4015,7 @@
       <dependency>
         <groupId>org.opensaml</groupId>
         <artifactId>openws</artifactId>
-        <version>1.5.1</version>
+        <version>1.5.4</version>
       </dependency>
       <!-- SCIM -->
       <dependency>
@@ -4140,7 +4140,7 @@
       <dependency>
         <groupId>xalan</groupId>
         <artifactId>xalan</artifactId>
-        <version>2.7.1</version>
+        <version>2.7.2</version>
       </dependency>
       <dependency>
         <groupId>org.owasp.antisamy</groupId>

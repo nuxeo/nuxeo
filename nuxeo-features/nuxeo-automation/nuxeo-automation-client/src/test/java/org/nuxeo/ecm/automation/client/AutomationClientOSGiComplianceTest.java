@@ -37,6 +37,7 @@ import javax.inject.Inject;
 
 import junit.framework.Assert;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -54,6 +55,7 @@ import org.osgi.framework.ServiceReference;
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
+@Ignore("OSGi compliance not necessary")
 public class AutomationClientOSGiComplianceTest {
 
     @Inject
