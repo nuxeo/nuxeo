@@ -317,7 +317,7 @@ public class CSVImporterWork extends TransientStoreWork {
             for (CSVRecord record : it) {
                 if (record.size() == 0) {
                     // empty record
-                    importLogs.add(new CSVImportLog(record.getRecordNumber(), Status.SKIPPED, "Empty record",
+                    importLogs.add(new CSVImportLog(getLineNumber(record), Status.SKIPPED, "Empty record",
                             LABEL_CSV_IMPORTER_EMPTY_LINE));
                     continue;
                 }
@@ -334,7 +334,7 @@ public class CSVImporterWork extends TransientStoreWork {
                 } catch (NuxeoException e) {
                     // try next line
                     Throwable unwrappedException = unwrapException(e);
-                    logError(parser.getRecordNumber(), "Error while importing line: %s",
+                    logError(getLineNumber(parser), "Error while importing line: %s",
                             LABEL_CSV_IMPORTER_ERROR_IMPORTING_LINE, unwrappedException.getMessage());
                     log.debug(unwrappedException, unwrappedException);
                 }
@@ -344,7 +344,7 @@ public class CSVImporterWork extends TransientStoreWork {
                 session.save();
             } catch (NuxeoException e) {
                 Throwable ue = unwrapException(e);
-                logError(parser.getRecordNumber(), "Unable to save: %s", LABEL_CSV_IMPORTER_UNABLE_TO_SAVE,
+                logError(getLineNumber(parser), "Unable to save: %s", LABEL_CSV_IMPORTER_UNABLE_TO_SAVE,
                         ue.getMessage());
                 log.debug(ue, ue);
             }
@@ -365,7 +365,7 @@ public class CSVImporterWork extends TransientStoreWork {
         String name = record.get(CSV_NAME_COL);
         if (StringUtils.isBlank(name)) {
             log.debug("record.isSet=" + record.isSet(CSV_NAME_COL));
-            logError(record.getRecordNumber(), "Missing 'name' value", LABEL_CSV_IMPORTER_MISSING_NAME_VALUE);
+            logError(getLineNumber(record), "Missing 'name' value", LABEL_CSV_IMPORTER_MISSING_NAME_VALUE);
             return false;
         }
 
@@ -385,14 +385,14 @@ public class CSVImporterWork extends TransientStoreWork {
             }
             if (StringUtils.isBlank(type)) {
                 log.debug("record.isSet=" + record.isSet(CSV_TYPE_COL));
-                logError(record.getRecordNumber(), "Missing 'type' value", LABEL_CSV_IMPORTER_MISSING_TYPE_VALUE);
+                logError(getLineNumber(record), "Missing 'type' value", LABEL_CSV_IMPORTER_MISSING_TYPE_VALUE);
                 return false;
             }
         }
 
         DocumentType docType = Framework.getLocalService(SchemaManager.class).getDocumentType(type);
         if (docType == null) {
-            logError(record.getRecordNumber(), "The type '%s' does not exist", LABEL_CSV_IMPORTER_NOT_EXISTING_TYPE,
+            logError(getLineNumber(record), "The type '%s' does not exist", LABEL_CSV_IMPORTER_NOT_EXISTING_TYPE,
                     type);
             return false;
         }
@@ -402,12 +402,23 @@ public class CSVImporterWork extends TransientStoreWork {
             return false;
         }
 
-        long lineNumber = record.getRecordNumber();
+        long lineNumber = getLineNumber(record);
         if (exists) {
             return updateDocument(lineNumber, docRef, properties);
         } else {
             return createDocument(lineNumber, newParentPath, name, type, properties);
         }
+    }
+
+    // our code expects line numbers to start at 1 for the header and 2 for the line after,
+    // but since commons-csv 1.5 record numbers restart at 1 on the line after the header
+    // thus we need to add 1
+    protected long getLineNumber(CSVRecord record) {
+        return record.getRecordNumber() + 1;
+    }
+
+    protected long getLineNumber(CSVParser parser) {
+        return parser.getRecordNumber() + 1;
     }
 
     /**
@@ -429,7 +440,7 @@ public class CSVImporterWork extends TransientStoreWork {
                     }
                     if (compositeType.hasField(fieldName) && !StringUtils.isBlank(lineValue)) {
                         Serializable convertedValue = convertValue(compositeType, fieldName, headerValue, lineValue,
-                                record.getRecordNumber());
+                                getLineNumber(record));
                         if (convertedValue == null) {
                             return null;
                         }
