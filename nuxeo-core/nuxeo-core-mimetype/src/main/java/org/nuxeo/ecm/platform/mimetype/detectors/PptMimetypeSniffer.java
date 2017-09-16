@@ -29,8 +29,7 @@ import net.sf.jmimemagic.MagicDetector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.hslf.HSLFSlideShow;
-import org.apache.poi.hslf.usermodel.SlideShow;
+import org.apache.poi.hslf.usermodel.HSLFSlideShow;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.Framework;
@@ -96,12 +95,12 @@ public class PptMimetypeSniffer implements MagicDetector {
     public String[] guessPowerpoint(File file) {
         String[] mimetypes = {};
         try {
-            FileInputStream stream = new FileInputStream(file);
-            HSLFSlideShow ppt = new HSLFSlideShow(stream);
-            SlideShow presentation = new SlideShow(ppt);
-
-            if (presentation.getSlides().length != 0) {
-                mimetypes = getHandledTypes();
+            try (FileInputStream stream = new FileInputStream(file)) {
+                try (HSLFSlideShow ppt = new HSLFSlideShow(stream)) {
+                    if (ppt.getSlides().size() != 0) {
+                        mimetypes = getHandledTypes();
+                    }
+                }
             }
         } catch (IOException | RuntimeException e) {
             log.debug("MimeType detector: Not a PowerPoint file", e);

@@ -21,6 +21,8 @@ package org.nuxeo.functionaltests;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -72,10 +74,10 @@ public class LogTestWatchman extends TestWatchman {
                         // time we add through reflection an after
                         // function that will be executed before all other
                         // ones. See NXP-12742
-                        Field fAtersField = RunAfters.class.getDeclaredField("fAfters");
-                        fAtersField.setAccessible(true);
+                        Field aftersField = RunAfters.class.getDeclaredField("afters");
+                        aftersField.setAccessible(true);
 
-                        List<FrameworkMethod> afters = (List<FrameworkMethod>) fAtersField.get(base);
+                        List<FrameworkMethod> afters = (List<FrameworkMethod>) aftersField.get(base);
                         if (afters != null && !afters.isEmpty()) {
                             try {
                                 // Improve this and instead of finding a
@@ -85,6 +87,19 @@ public class LogTestWatchman extends TestWatchman {
                                 Method m = AbstractTest.class.getMethod("runBeforeAfters", (Class<?>[]) null);
                                 FrameworkMethod f = new FrameworkMethod(m);
                                 if (first != null && !first.equals(f)) {
+                                    for (;;) {
+                                        String aftersClassName = afters.getClass().getName();
+                                        if (aftersClassName.endsWith("$UnmodifiableList")
+                                                || aftersClassName.endsWith("$UnmodifiableRandomAccessList")) {
+                                            Class<?> unmodifiableListClass = Collections.unmodifiableList(
+                                                    new LinkedList<>()).getClass();
+                                            Field listField = unmodifiableListClass.getDeclaredField("list");
+                                            listField.setAccessible(true);
+                                            afters = (List<FrameworkMethod>) listField.get(afters);
+                                        } else {
+                                            break;
+                                        }
+                                    }
                                     afters.add(0, f);
                                 }
                             } catch (NoSuchMethodException e) {
