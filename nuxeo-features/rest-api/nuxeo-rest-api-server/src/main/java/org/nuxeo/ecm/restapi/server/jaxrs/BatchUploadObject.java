@@ -70,19 +70,17 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * Batch upload endpoint.
  * <p>
- * Replaces the deprecated endpoints listed below:
- * <ul>
- * <li>POST /batch/upload, see org.nuxeo.ecm.automation.server.jaxrs.batch.BatchResource#doPost(HttpServletRequest), use
- * POST /upload/{batchId}/{fileIdx} instead, see {@link #upload(HttpServletRequest, String, String)}</li>
- * <li>GET /batch/files/{batchId}, see org.nuxeo.ecm.automation.server.jaxrs.batch.BatchResource#getFilesBatch(String),
- * use GET /upload/{batchId} instead, see {@link #getBatchInfo(String)} instead</li>
- * <li>GET /batch/drop/{batchId}, see org.nuxeo.ecm.automation.server.jaxrs.batch.BatchResource#dropBatch(String), use
- * DELETE /upload/{batchId} instead, see {@link #dropBatch(String)}</li>
- * </ul>
- * Also provides new endpoints:
+ * Provides the APIs listed below:
  * <ul>
  * <li>POST /upload, see {@link #initBatch()}</li>
+ * <li>POST /upload/{batchId}/{fileIdx}, see {@link #upload(HttpServletRequest, String, String)}</li>
+ * <li>GET /upload/{batchId}, see {@link #getBatchInfo(String)}</li>
  * <li>GET /upload/{batchId}/{fileIdx}, see {@link #getFileInfo(String, String)}</li>
+ * <li>POST /upload/{batchId}/execute/{operationId}, see {@link #execute(String, String, ExecutionRequest)}</li>
+ * <li>POST /upload/{batchId}/{fileIdx}/execute/{operationId}, see
+ * {@link #execute(String, String, String, ExecutionRequest)}</li>
+ * <li>DELETE /upload/{batchId}, see {@link #cancel(String)}</li>
+ * <li>DELETE /upload/{batchId}/{fileIdx}, see {@link #removeFile(String, String)}</li>
  * </ul>
  * Largely inspired by the excellent Google Drive REST API documentation about
  * <a href="https://developers.google.com/drive/web/manage-uploads#resumable">resumable upload</a>.
