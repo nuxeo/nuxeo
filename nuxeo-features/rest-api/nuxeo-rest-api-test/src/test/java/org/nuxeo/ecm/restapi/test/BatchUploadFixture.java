@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
@@ -74,53 +73,6 @@ public class BatchUploadFixture extends BaseTest {
 
     @Inject
     CoreSession session;
-
-    /**
-     * Tests the deprecated /batch/upload endpoint.
-     *
-     * @deprecated since 7.4
-     * @see org.nuxeo.ecm.automation.server.jaxrs.batch.BatchResource#doPost(HttpServletRequest)
-     * @see #itCanUseBatchUpload()
-     */
-    @Deprecated
-    @Test
-    public void itCanUseBatchResource() throws Exception {
-        String filename = "testfile";
-        String data = "batchUploadedData";
-
-        // upload the file in automation
-        String batchId;
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "text/plain");
-        headers.put("X-File-Idx", "0");
-        headers.put("X-File-Name", filename);
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "automation/batch/upload", data,
-                headers)) {
-            assertEquals(Status.OK.getStatusCode(), response.getStatus());
-            JsonNode node = mapper.readTree(response.getEntityInputStream());
-            batchId = node.get("batchId").getValueAsText();
-            assertNotNull(batchId);
-        }
-
-        // create the doc which references the given blob
-        String json = "{";
-        json += "\"entity-type\":\"document\" ,";
-        json += "\"name\":\"testBatchUploadDoc\" ,";
-        json += "\"type\":\"MultiBlobDoc\" ,";
-        json += "\"properties\" : {";
-        json += "\"mb:blobs\" : [ ";
-        json += "{ \"filename\" : \"" + filename + "\" , \"content\" : { \"upload-batch\": \"" + batchId
-                + "\", \"upload-fileId\": \"0\" } }";
-        json += "]}}";
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "path/", json)) {
-            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
-        }
-
-        DocumentModel doc = session.getDocument(new PathRef("/testBatchUploadDoc"));
-        Blob blob = (Blob) doc.getPropertyValue("mb:blobs/0/content");
-        assertNotNull(blob);
-        assertEquals(data, blob.getString());
-    }
 
     /**
      * Tests the /upload endpoints.

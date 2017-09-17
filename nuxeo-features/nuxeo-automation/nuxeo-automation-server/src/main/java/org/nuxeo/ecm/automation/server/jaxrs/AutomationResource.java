@@ -163,9 +163,4 @@ public class AutomationResource extends ModuleRoot {
         }
     }
 
-    @Path("/batch")
-    public Object getBatchManager() {
-        return newObject("batch");
-    }
-
 }
