@@ -113,8 +113,20 @@ public class VCSLockManager implements LockManager {
      * {@link #close} must be called when done with the lock manager.
      */
     public VCSLockManager(String repositoryName) {
-        SQLRepositoryService repositoryService = Framework.getService(SQLRepositoryService.class);
-        repository = repositoryService.getRepositoryImpl(repositoryName);
+        this(Framework.getService(SQLRepositoryService.class).getRepositoryImpl(repositoryName));
+    }
+
+    /**
+     * Creates a lock manager for the given repository.
+     * <p>
+     * The mapper will from then on be only used and closed by the lock manager.
+     * <p>
+     * {@link #close} must be called when done with the lock manager.
+     *
+     * @since 9.3
+     */
+    public VCSLockManager(RepositoryImpl repository) {
+        this.repository = repository;
         clusteringEnabled = repository.getRepositoryDescriptor().getClusteringEnabled();
         serializationLock = new ReentrantLock();
         caching = !clusteringEnabled;

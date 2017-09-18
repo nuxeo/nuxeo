@@ -52,17 +52,23 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
     }
 
     @Override
+    protected void postSetUp() throws Exception {
+        // we do the repository creation in setUpTestProp after setting up upgrade properties
+    }
+
+    @Override
     @After
     public void tearDown() throws Exception {
         JDBCMapper.testProps.clear();
         super.tearDown();
     }
 
-    protected void setUpTestProp(String prop) {
+    protected void setUpTestProp(String prop) throws Exception {
         for (String p : Arrays.asList(JDBCMapper.TEST_UPGRADE_VERSIONS, JDBCMapper.TEST_UPGRADE_LAST_CONTRIBUTOR,
                 JDBCMapper.TEST_UPGRADE_LOCKS)) {
             JDBCMapper.testProps.put(p, Boolean.valueOf(p.equals(prop)));
         }
+        repository = newRepository(-1);
     }
 
     protected static boolean isLatestVersion(Node node) throws Exception {
@@ -184,7 +190,7 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
     }
 
     @Test
-    public void testLastContributorUpgrade() {
+    public void testLastContributorUpgrade() throws Exception {
         setUpTestProp(JDBCMapper.TEST_UPGRADE_LAST_CONTRIBUTOR);
 
         Node ver;

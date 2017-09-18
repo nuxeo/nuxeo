@@ -61,7 +61,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory, R
 
     private static final long serialVersionUID = 1L;
 
-    private final RepositoryDescriptor repositoryDescriptor;
+    protected final String name;
 
     private transient ResourceAdapter resourceAdapter;
 
@@ -72,27 +72,15 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory, R
      */
     private RepositoryImpl repository;
 
-    // For JavaEE, called by the ra.xml, then the ds.xml provides properties
-    // through the Java Bean convention
-    public ManagedConnectionFactoryImpl() {
-        this(new RepositoryDescriptor());
-    }
-
-    public ManagedConnectionFactoryImpl(RepositoryDescriptor repositoryDescriptor) {
-        this.repositoryDescriptor = repositoryDescriptor;
-    }
-
-    /*
-     * ----- Java Bean -----
-     */
-
-    public void setName(String name) {
-        repositoryDescriptor.name = name;
+    public ManagedConnectionFactoryImpl(String name) {
+        this.name = name;
+        RepositoryDescriptor repositoryDescriptor = getRepositoryDescriptor(name);
+        repository = new RepositoryImpl(repositoryDescriptor);
     }
 
     @Override
     public String getName() {
-        return repositoryDescriptor.name;
+        return name;
     }
 
     /*
@@ -154,7 +142,6 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory, R
             throws ResourceException {
         // subject unused
         // connectionRequestInfo unused
-        initialize();
         return new ManagedConnectionImpl(this);
     }
 
@@ -240,17 +227,6 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory, R
     /*
      * ----- -----
      */
-
-    private void initialize() throws ResourceException {
-        synchronized (this) {
-            if (repository == null) {
-                repositoryDescriptor.merge(getRepositoryDescriptor(repositoryDescriptor.name));
-                repository = new RepositoryImpl(repositoryDescriptor);
-            }
-            SessionImpl session = repository.getConnection();
-            session.close();
-        }
-    }
 
     public void shutdown() {
         try {
