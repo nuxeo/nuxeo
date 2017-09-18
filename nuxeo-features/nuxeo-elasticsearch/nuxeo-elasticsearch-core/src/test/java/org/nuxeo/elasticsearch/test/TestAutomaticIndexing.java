@@ -666,6 +666,11 @@ public class TestAutomaticIndexing {
     @Test
     public void shouldIndexTag() throws Exception {
 
+        boolean facetedTags = Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(
+                TagServiceImpl.FACETED_TAG_SERVICE_ENABLED);
+        assumeTrue("DBS does not support tags based on SQL relations",
+                !coreFeature.getStorageConfiguration().isDBS() || facetedTags);
+
         // ElasticSearchInlineListener.useSyncIndexing.set(true);
         startTransaction();
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
@@ -675,8 +680,6 @@ public class TestAutomaticIndexing {
         waitForCompletion();
         ElasticSearchInlineListener.useSyncIndexing.set(true);
 
-        boolean facetedTags = Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(
-                TagServiceImpl.FACETED_TAG_SERVICE_ENABLED);
         assertNumberOfCommandProcessed(facetedTags ? 1 : 3); // doc, tagging relation and tag
 
         startTransaction();

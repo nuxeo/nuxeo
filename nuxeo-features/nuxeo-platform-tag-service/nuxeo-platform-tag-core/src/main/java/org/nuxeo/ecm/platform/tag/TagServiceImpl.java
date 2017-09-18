@@ -21,7 +21,10 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
+import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.services.config.ConfigurationService;
@@ -42,6 +45,17 @@ public class TagServiceImpl extends DefaultComponent {
         } else {
             tagService = new RelationTagService();
         }
+    }
+
+    @Override
+    public int getApplicationStartedOrder() {
+        // should deploy before repository service because the tag service is indirectly used (through a listener) by
+        // the repository init handlers
+        Component component = (Component) Framework.getRuntime()
+                                                   .getComponentInstance(
+                                                           "org.nuxeo.ecm.core.repository.RepositoryServiceComponent")
+                                                   .getInstance();
+        return component.getApplicationStartedOrder() - 1;
     }
 
     @Override
