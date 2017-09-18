@@ -19,17 +19,15 @@
  */
 package org.nuxeo.ecm.core.repository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.local.LocalException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Repository;
-import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
@@ -47,17 +45,12 @@ public class RepositoryService extends DefaultComponent {
 
     public static final String XP_REPOSITORY = "repository";
 
-    // @GuardedBy("itself")
-    private final Map<String, Repository> repositories = new HashMap<>();
+    private final Map<String, Repository> repositories = new ConcurrentHashMap<>();
 
     public void shutdown() {
         log.info("Shutting down repository manager");
-        synchronized (repositories) {
-            for (Repository repository : repositories.values()) {
-                repository.shutdown();
-            }
-            repositories.clear();
-        }
+        repositories.values().forEach(Repository::shutdown);
+        repositories.clear();
     }
 
     @Override
@@ -67,7 +60,8 @@ public class RepositoryService extends DefaultComponent {
 
     @Override
     public void start(ComponentContext context) {
-        initRepositories();
+        TransactionHelper.runInTransaction(this::doCreateRepositories);
+        initRepositories(); // call all RepositoryInitializationHandler
     }
 
     @Override
@@ -86,22 +80,37 @@ public class RepositoryService extends DefaultComponent {
     }
 
     /**
-     * Initializes all repositories. Requires an active transaction.
+     * Creates all the repositories. Requires an active transaction.
      *
-     * @since 9.2
+     * @since 9.3
+     */
+    protected void doCreateRepositories() {
+        repositories.clear();
+        for (String repositoryName : getRepositoryNames()) {
+            RepositoryFactory factory = getFactory(repositoryName);
+            if (factory == null) {
+                // XXX what case is this?
+                log.error("XXX DEBUG no repository: " + repositoryName, new Exception("DEBUG"));
+                continue;
+            }
+            Repository repository = (Repository) factory.call();
+            repositories.put(repositoryName, repository);
+        }
+    }
+
+    /**
+     * Initializes all the repositories. Requires an active transaction.
+     *
+     * @since 9.3
      */
     protected void doInitRepositories() {
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-        for (String name : repositoryManager.getRepositoryNames()) {
-            openRepository(name);
-        }
         // give up if no handler configured
         RepositoryInitializationHandler handler = RepositoryInitializationHandler.getInstance();
         if (handler == null) {
             return;
         }
         // invoke handlers
-        for (String name : repositoryManager.getRepositoryNames()) {
+        for (String name : getRepositoryNames()) {
             initializeRepository(handler, name);
         }
     }
@@ -112,16 +121,6 @@ public class RepositoryService extends DefaultComponent {
             return adapter.cast(this);
         }
         return null;
-    }
-
-    protected void openRepository(String name) {
-        new UnrestrictedSessionRunner(name) {
-
-            @Override
-            public void run() {
-            }
-
-        }.runUnrestricted();
     }
 
     protected void initializeRepository(final RepositoryInitializationHandler handler, String name) {
@@ -142,28 +141,7 @@ public class RepositoryService extends DefaultComponent {
      * @return the repository instance or null if no repository with that name was registered
      */
     public Repository getRepository(String repositoryName) {
-        synchronized (repositories) {
-            return doGetRepository(repositoryName);
-        }
-    }
-
-    /**
-     * Calls to that method should be synchronized on repositories
-     *
-     * @since 7.2
-     * @see #getRepository(String)
-     */
-    protected Repository doGetRepository(String repositoryName) {
-        Repository repository = repositories.get(repositoryName);
-        if (repository == null) {
-            RepositoryFactory factory = getFactory(repositoryName);
-            if (factory == null) {
-                return null;
-            }
-            repository = (Repository) factory.call();
-            repositories.put(repositoryName, repository);
-        }
-        return repository;
+        return repositories.get(repositoryName);
     }
 
     protected RepositoryFactory getFactory(String repositoryName) {
@@ -186,23 +164,6 @@ public class RepositoryService extends DefaultComponent {
     public List<String> getRepositoryNames() {
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         return repositoryManager.getRepositoryNames();
-    }
-
-    /**
-     * Creates a new session with the given session id from the given repository.
-     * <p/>
-     * Locks repositories before entering the pool. That allows concurrency with shutdown.
-     *
-     * @since 7.2
-     */
-    public Session getSession(String repositoryName) {
-        synchronized (repositories) {
-            Repository repository = doGetRepository(repositoryName);
-            if (repository == null) {
-                throw new LocalException("No such repository: " + repositoryName);
-            }
-            return repository.getSession();
-        }
     }
 
 }

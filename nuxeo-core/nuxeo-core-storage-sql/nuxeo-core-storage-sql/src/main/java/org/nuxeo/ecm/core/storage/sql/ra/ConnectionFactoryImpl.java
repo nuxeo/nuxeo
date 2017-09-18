@@ -72,11 +72,6 @@ public class ConnectionFactoryImpl implements Repository, org.nuxeo.ecm.core.mod
         name = managedConnectionFactory.getName();
     }
 
-    // NXP 3992 -- exposed this for clean shutdown on cluster
-    public ManagedConnectionFactoryImpl getManagedConnectionFactory() {
-        return managedConnectionFactory;
-    }
-
     /*
      * ----- javax.resource.cci.ConnectionFactory -----
      */

@@ -121,6 +121,7 @@ public class RepositoryImpl implements Repository {
         sessionCount = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
                 "sessions"));
         createMetricsGauges();
+        initRepository();
     }
 
     protected void createMetricsGauges() {
@@ -248,9 +249,6 @@ public class RepositoryImpl implements Repository {
         if (Framework.getRuntime().isShuttingDown()) {
             throw new IllegalStateException("Cannot open connection, runtime is shutting down");
         }
-        if (model == null) {
-            initRepository();
-        }
         SessionPathResolver pathResolver = new SessionPathResolver();
         Mapper mapper = newMapper(pathResolver, true);
         SessionImpl session = newSession(model, mapper);
@@ -308,7 +306,7 @@ public class RepositoryImpl implements Repository {
         if (lockManager == null) {
             // no descriptor
             // default to a VCSLockManager
-            lockManager = new VCSLockManager(lockManagerName);
+            lockManager = new VCSLockManager(this);
             lockManagerService.registerLockManager(lockManagerName, lockManager);
             selfRegisteredLockManager = true;
         } else {
