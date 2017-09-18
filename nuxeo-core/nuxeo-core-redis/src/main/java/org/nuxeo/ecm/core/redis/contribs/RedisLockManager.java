@@ -50,15 +50,11 @@ public class RedisLockManager implements LockManager {
 
     protected final String repositoryName;
 
-    protected RedisExecutor redisExecutor;
-
     protected String prefix;
 
     protected String scriptSetSha;
 
     protected String scriptRemoveSha;
-
-    protected RedisAdmin redisAdmin;
 
     /**
      * Creates a lock manager for the given repository.
@@ -67,13 +63,8 @@ public class RedisLockManager implements LockManager {
      */
     public RedisLockManager(String repositoryName) {
         this.repositoryName = repositoryName;
-        redisExecutor = Framework.getService(RedisExecutor.class);
-        redisAdmin = Framework.getService(RedisAdmin.class);
+        RedisAdmin redisAdmin = Framework.getService(RedisAdmin.class);
         redisNamespace = redisAdmin.namespace("lock", repositoryName);
-        loadScripts();
-    }
-
-    public void loadScripts() {
         try {
             scriptSetSha = redisAdmin.load("org.nuxeo.ecm.core.redis", "set-lock");
             scriptRemoveSha = redisAdmin.load("org.nuxeo.ecm.core.redis", "remove-lock");
@@ -105,6 +96,7 @@ public class RedisLockManager implements LockManager {
 
     @Override
     public Lock getLock(final String id) {
+        RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
         return redisExecutor.execute(new RedisCallable<Lock>() {
             @Override
             public Lock call(Jedis jedis) {
@@ -116,6 +108,7 @@ public class RedisLockManager implements LockManager {
 
     @Override
     public Lock setLock(final String id, final Lock lock) {
+        RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
         List<String> keys = Collections.singletonList(redisNamespace + id);
         List<String> args = Collections.singletonList(stringFromLock(lock));
         String lockString = (String) redisExecutor.evalsha(scriptSetSha, keys, args);
@@ -124,6 +117,7 @@ public class RedisLockManager implements LockManager {
 
     @Override
     public Lock removeLock(final String id, final String owner) {
+        RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
         List<String> keys = Collections.singletonList(redisNamespace + id);
         List<String> args = Collections.singletonList(owner == null ? "" : owner);
         String lockString = (String) redisExecutor.evalsha(scriptRemoveSha, keys, args);
