@@ -97,17 +97,12 @@ public abstract class AbstractTagService implements TagService {
 
     @Override
     public void tag(CoreSession session, String docId, String label) throws DocumentSecurityException {
-        if (session.hasPermission(new IdRef(docId), SecurityConstants.WRITE)) {
-            String cleanLabel = cleanLabel(label, true, false);
-            CoreInstance.doPrivileged(session, s -> {
-                doTag(s, docId, cleanLabel);
-            });
-            fireUpdateEvent(session, docId);
-        } else {
-            String principalName = session.getPrincipal().getName();
-            throw new DocumentSecurityException("User '" + principalName + "' is not allowed to add tag '" + label
-                    + "' on document '" + docId + "'");
-        }
+        String cleanLabel = cleanLabel(label, true, false);
+        String username = cleanUsername(session.getPrincipal().getName());
+        CoreInstance.doPrivileged(session, s -> {
+            doTag(s, docId, cleanLabel, username);
+        });
+        fireUpdateEvent(session, docId);
     }
 
     @Override
@@ -209,7 +204,7 @@ public abstract class AbstractTagService implements TagService {
         return getSuggestions(session, label).stream().map(t -> new Tag(t, 0)).collect(Collectors.toList());
     }
 
-    public abstract void doTag(CoreSession session, String docId, String label);
+    public abstract void doTag(CoreSession session, String docId, String label, String username);
 
     public abstract void doUntag(CoreSession session, String docId, String label);
 

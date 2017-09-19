@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 public class RelationTagService extends AbstractTagService {
 
     @Override
-    public void doTag(CoreSession session, String docId, String label) {
+    public void doTag(CoreSession session, String docId, String label, String username) {
         if (session.getDocument(new IdRef(docId)).isProxy()) { // Tags are disabled on proxies
             throw new NuxeoException("Adding tags is not allowed on proxies");
         }
@@ -73,6 +73,7 @@ public class RelationTagService extends AbstractTagService {
         // Add tagging to the document.
         DocumentModel tagging = session.createDocumentModel(null, label, TagConstants.TAGGING_DOCUMENT_TYPE);
         tagging.setPropertyValue("dc:created", date);
+        tagging.setPropertyValue("dc:creator", username);
 
         tagging.setPropertyValue(TagConstants.TAGGING_SOURCE_FIELD, docId);
         tagging.setPropertyValue(TagConstants.TAGGING_TARGET_FIELD, tagId);

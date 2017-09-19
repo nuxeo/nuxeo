@@ -2,12 +2,19 @@
 <xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/facetedTag/" xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:tagxs="http://www.nuxeo.org/ecm/schemas/facetedTag/">
 
-  <xs:complexType name="stringList">
+  <xs:complexType name="tag">
     <xs:sequence>
-      <xs:element name="tag" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="label" type="xs:string"/>
+      <xs:element name="username" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:element name="tags" type="tagxs:stringList"/>
+  <xs:complexType name="tags">
+    <xs:sequence>
+      <xs:element name="item" type="tagxs:tag" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="tags" type="tagxs:tags"/>
 
 </xs:schema>
