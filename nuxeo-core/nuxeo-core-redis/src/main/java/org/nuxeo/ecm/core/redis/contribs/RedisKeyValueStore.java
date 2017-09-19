@@ -29,8 +29,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.kv.AbstractKeyValueStoreProvider;
 import org.nuxeo.ecm.core.kv.KeyValueStoreDescriptor;
-import org.nuxeo.ecm.core.kv.KeyValueStoreProvider;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.runtime.api.Framework;
@@ -46,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 9.1
  */
-public class RedisKeyValueStore implements KeyValueStoreProvider {
+public class RedisKeyValueStore extends AbstractKeyValueStoreProvider {
 
     private static final Log log = LogFactory.getLog(RedisKeyValueStore.class);
 

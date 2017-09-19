@@ -35,9 +35,16 @@ public interface KeyValueStore {
      * @param key the key
      * @param value the value, which may be {@code null}
      */
-    default void put(String key, byte[] value) {
-        put(key, value, 0);
-    }
+    void put(String key, byte[] value);
+
+    /**
+     * Sets the value associated to the key.
+     *
+     * @param key the key
+     * @param value the value, which may be {@code null}
+     * @since 9.3
+     */
+    void put(String key, String value);
 
     /**
      * Sets the value associated to the key, and a TTL.
@@ -48,6 +55,16 @@ public interface KeyValueStore {
      * @since 9.3
      */
     void put(String key, byte[] value, long ttl);
+
+    /**
+     * Sets the value associated to the key, and a TTL.
+     *
+     * @param key the key
+     * @param value the value, which may be {@code null}
+     * @param ttl the TTL, in seconds (0 for infinite)
+     * @since 9.3
+     */
+    void put(String key, String value, long ttl);
 
     /**
      * Sets the TTL for an existing key.
@@ -68,6 +85,16 @@ public interface KeyValueStore {
     byte[] get(String key);
 
     /**
+     * Retrieves the value associated to the key.
+     *
+     * @param key the key
+     * @return the value, or {@code null} if there is no value
+     * @throws IllegalArgumentException if the value cannot be returned as a {@link String}
+     * @since 9.3
+     */
+    String getString(String key);
+
+    /**
      * Atomically sets the value associated to the key to the given value if the current value is the expected value.
      * <p>
      * Note value comparison is done by value and not by reference.
@@ -78,5 +105,18 @@ public interface KeyValueStore {
      * @return {@code true} if the value was updated, or {@code false} if not (the expected value was not found)
      */
     boolean compareAndSet(String key, byte[] expected, byte[] value);
+
+    /**
+     * Atomically sets the value associated to the key to the given value if the current value is the expected value.
+     * <p>
+     * Note value comparison is done by value and not by reference.
+     *
+     * @param key the key
+     * @param expected the expected value, which may be {@code null}
+     * @param value the updated value, which may be {@code null}
+     * @return {@code true} if the value was updated, or {@code false} if not (the expected value was not found)
+     * @since 9.3
+     */
+    boolean compareAndSet(String key, String expected, String value);
 
 }

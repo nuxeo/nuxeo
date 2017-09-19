@@ -75,12 +75,18 @@ public abstract class AbstractKeyValueStoreTest {
         String key = "foo";
 
         assertNull(store.get(key));
-        store.put(key, null);
+        assertNull(store.getString(key));
+        store.put(key, (byte[]) null);
         assertNull(store.get(key));
         store.put(key, BAR_B);
         assertEquals(BAR, new String(store.get(key)));
+        assertEquals(BAR, store.getString(key));
         store.put(key, GEE_B);
         assertEquals(GEE, new String(store.get(key)));
+        assertEquals(GEE, store.getString(key));
+        store.put(key, MOO);
+        assertEquals(MOO, new String(store.get(key)));
+        assertEquals(MOO, store.getString(key));
 
         // check value is copied on put and get
         byte[] bytes = ZAP.getBytes();
@@ -91,7 +97,7 @@ public abstract class AbstractKeyValueStoreTest {
         bytes2[0] = 'c';
         assertEquals(ZAP, new String(store.get(key)));
 
-        store.put(key, null);
+        store.put(key, (String) null);
         assertNull(store.get(key));
     }
 
@@ -103,19 +109,19 @@ public abstract class AbstractKeyValueStoreTest {
         assertNull(store.get(key));
         assertFalse(store.compareAndSet(key, BAR_B, null));
         assertNull(store.get(key));
-        assertTrue(store.compareAndSet(key, null, null));
+        assertTrue(store.compareAndSet(key, (byte[]) null, (byte[]) null));
         assertNull(store.get(key));
 
         assertTrue(store.compareAndSet(key, null, BAR_B));
         assertEquals(BAR, new String(store.get(key)));
         assertFalse(store.compareAndSet(key, GEE_B, MOO_B));
         assertEquals(BAR, new String(store.get(key)));
-        assertFalse(store.compareAndSet(key, null, GEE_B));
+        assertFalse(store.compareAndSet(key, null, GEE));
         assertEquals(BAR, new String(store.get(key)));
-        assertFalse(store.compareAndSet(key, null, null));
+        assertFalse(store.compareAndSet(key, (String) null, (String) null));
         assertEquals(BAR, new String(store.get(key)));
 
-        assertTrue(store.compareAndSet(key, BAR_B, GEE_B));
+        assertTrue(store.compareAndSet(key, BAR, GEE));
         assertEquals(GEE, new String(store.get(key)));
 
         // check value is copied
@@ -156,6 +162,12 @@ public abstract class AbstractKeyValueStoreTest {
 
         store.put(key, value);
         assertArrayEquals(value, store.get(key));
+        try {
+            store.getString(key);
+            fail("Shoudl fail to get value as a String");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Value is not a String for key: foo", e.getMessage());
+        }
     }
 
     @Test
@@ -183,7 +195,7 @@ public abstract class AbstractKeyValueStoreTest {
         sleepForTTLExpiration();
         assertNull(store.get(key));
 
-        store.put(key, BAR_B, shortTTL);
+        store.put(key, BAR, shortTTL);
         store.setTTL(key, 0); // unset TTL
         Thread.sleep((shortTTL + 2) * 1000); // sleep a bit more in case expiration is late
         sleepForTTLExpiration();
