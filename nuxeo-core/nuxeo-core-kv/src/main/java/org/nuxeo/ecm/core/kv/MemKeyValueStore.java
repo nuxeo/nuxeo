@@ -31,7 +31,7 @@ import net.jodah.expiringmap.ExpiringMap;
  *
  * @since 9.1
  */
-public class MemKeyValueStore implements KeyValueStoreProvider {
+public class MemKeyValueStore extends AbstractKeyValueStoreProvider {
 
     protected final ExpiringMap<String, byte[]> map;
 

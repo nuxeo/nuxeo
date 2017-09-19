@@ -24,10 +24,7 @@ import static com.mongodb.client.model.Updates.set;
 import static com.mongodb.client.model.Updates.unset;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CodingErrorAction;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -38,8 +35,8 @@ import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.Binary;
+import org.nuxeo.ecm.core.kv.AbstractKeyValueStoreProvider;
 import org.nuxeo.ecm.core.kv.KeyValueStoreDescriptor;
-import org.nuxeo.ecm.core.kv.KeyValueStoreProvider;
 import org.nuxeo.ecm.core.mongodb.MongoDBConnectionService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -62,7 +59,7 @@ import com.mongodb.client.result.UpdateResult;
  *
  * @since 9.3
  */
-public class MongoDBKeyValueStore implements KeyValueStoreProvider {
+public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
 
     private static final Log log = LogFactory.getLog(MongoDBKeyValueStore.class);
 
@@ -83,10 +80,6 @@ public class MongoDBKeyValueStore implements KeyValueStoreProvider {
     protected String name;
 
     protected MongoCollection<Document> coll;
-
-    protected static ThreadLocal<CharsetDecoder> UTF_8_DECODERS = ThreadLocal.withInitial(
-            () -> UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(
-                    CodingErrorAction.REPORT));
 
     @Override
     public void initialize(KeyValueStoreDescriptor descriptor) {
@@ -125,25 +118,45 @@ public class MongoDBKeyValueStore implements KeyValueStoreProvider {
     // if possible, store the bytes as a UTF-8 string
     protected static Object toStorage(byte[] bytes) {
         try {
-            return UTF_8_DECODERS.get().decode(ByteBuffer.wrap(bytes)).toString();
+            return bytesToString(bytes);
         } catch (CharacterCodingException e) {
             // could not decode as UTF-8, use a binary
             return new Binary(bytes);
         }
     }
 
-    protected static byte[] fromStorage(Object value) {
-        if (value instanceof Binary) {
-            return ((Binary) value).getData();
+    @Override
+    public byte[] get(String key) {
+        Object value = getObject(key);
+        if (value == null) {
+            return null;
         } else if (value instanceof String) {
             return ((String) value).getBytes(UTF_8);
-        } else {
-            throw new UnsupportedOperationException(value.getClass().getName());
+        } else if (value instanceof Binary) {
+            return ((Binary) value).getData();
         }
+        throw new UnsupportedOperationException(value.getClass().getName());
     }
 
     @Override
-    public byte[] get(String key) {
+    public String getString(String key) {
+        Object value = getObject(key);
+        if (value == null) {
+            return null;
+        } else if (value instanceof String) {
+            return (String) value;
+        } else if (value instanceof Binary) {
+            byte[] bytes = ((Binary) value).getData();
+            try {
+                return bytesToString(bytes);
+            } catch (CharacterCodingException e) {
+                // fall through to throw
+            }
+        }
+        throw new IllegalArgumentException("Value is not a String for key: " + key);
+    }
+
+    protected Object getObject(String key) {
         Bson filter = eq(ID_KEY, key);
         Document doc = coll.find(filter).first();
         if (doc == null) {
@@ -156,7 +169,7 @@ public class MongoDBKeyValueStore implements KeyValueStoreProvider {
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: GET " + key + " = " + value);
         }
-        return fromStorage(value);
+        return value;
     }
 
     protected Date getDateFromTTL(long ttl) {
@@ -165,14 +178,27 @@ public class MongoDBKeyValueStore implements KeyValueStoreProvider {
 
     @Override
     public void put(String key, byte[] bytes, long ttl) {
+        put(key, toStorage(bytes), ttl);
+    }
+
+    @Override
+    public void put(String key, String string) {
+        put(key, (Object) string, 0);
+    }
+
+    @Override
+    public void put(String key, String string, long ttl) {
+        put(key, (Object) string, ttl);
+    }
+
+    protected void put(String key, Object value, long ttl) {
         Bson filter = eq(ID_KEY, key);
-        if (bytes == null) {
+        if (value == null) {
             if (log.isTraceEnabled()) {
                 log.trace("MongoDB: DEL " + key);
             }
             coll.deleteOne(filter);
         } else {
-            Object value = toStorage(bytes);
             Document doc = new Document(VALUE_KEY, value);
             if (ttl != 0) {
                 doc.append(TTL_KEY, getDateFromTTL(ttl));
@@ -202,6 +228,15 @@ public class MongoDBKeyValueStore implements KeyValueStoreProvider {
 
     @Override
     public boolean compareAndSet(String key, byte[] expected, byte[] value) {
+        return compareAndSet(key, toStorage(expected), toStorage(value));
+    }
+
+    @Override
+    public boolean compareAndSet(String key, String expected, String value) {
+        return compareAndSet(key, (Object) expected, (Object) value);
+    }
+
+    protected boolean compareAndSet(String key, Object expected, Object value) {
         Bson filter = eq(ID_KEY, key);
         if (expected == null && value == null) {
             // check that document doesn't exist
@@ -217,8 +252,7 @@ public class MongoDBKeyValueStore implements KeyValueStoreProvider {
             return set;
         } else if (expected == null) {
             // set value if no document already exists: regular insert
-            Object storageValue = toStorage(value);
-            Document doc = new Document(ID_KEY, key).append(VALUE_KEY, storageValue);
+            Document doc = new Document(ID_KEY, key).append(VALUE_KEY, value);
             boolean set;
             try {
                 coll.insertOne(doc);
@@ -231,7 +265,7 @@ public class MongoDBKeyValueStore implements KeyValueStoreProvider {
             }
             if (log.isTraceEnabled()) {
                 if (set) {
-                    log.trace("MongoDB: TEST " + key + " = null ? SET " + storageValue);
+                    log.trace("MongoDB: TEST " + key + " = null ? SET " + value);
                 } else {
                     log.trace("MongoDB: TEST " + key + " = null ? FAILED");
                 }
@@ -239,29 +273,28 @@ public class MongoDBKeyValueStore implements KeyValueStoreProvider {
             return set;
         } else if (value == null) {
             // delete if previous value exists
-            filter = and(filter, eq(VALUE_KEY, toStorage(expected)));
+            filter = and(filter, eq(VALUE_KEY, expected));
             DeleteResult res = coll.deleteOne(filter);
             boolean set = res.getDeletedCount() == 1;
             if (log.isTraceEnabled()) {
                 if (set) {
-                    log.trace("MongoDB: TEST " + key + " = " + toStorage(expected) + " ? DEL");
+                    log.trace("MongoDB: TEST " + key + " = " + expected + " ? DEL");
                 } else {
-                    log.trace("MongoDB: TEST " + key + " = " + toStorage(expected) + " ? FAILED");
+                    log.trace("MongoDB: TEST " + key + " = " + expected + " ? FAILED");
                 }
             }
             return set;
         } else {
             // replace if previous value exists
-            filter = and(filter, eq(VALUE_KEY, toStorage(expected)));
-            Object storageValue = toStorage(value);
-            Document doc = new Document(VALUE_KEY, storageValue);
+            filter = and(filter, eq(VALUE_KEY, expected));
+            Document doc = new Document(VALUE_KEY, value);
             UpdateResult res = coll.replaceOne(filter, doc);
             boolean set = res.getModifiedCount() == 1;
             if (log.isTraceEnabled()) {
                 if (set) {
-                    log.trace("MongoDB: TEST " + key + " = " + toStorage(expected) + " ? SET " + storageValue);
+                    log.trace("MongoDB: TEST " + key + " = " + expected + " ? SET " + value);
                 } else {
-                    log.trace("MongoDB: TEST " + key + " = " + toStorage(expected) + " ? FAILED");
+                    log.trace("MongoDB: TEST " + key + " = " + expected + " ? FAILED");
                 }
             }
             return set;
