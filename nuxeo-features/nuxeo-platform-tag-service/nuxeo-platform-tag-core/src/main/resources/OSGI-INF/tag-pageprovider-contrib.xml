@@ -8,7 +8,7 @@
       class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
       <property name="useUnrestrictedSession">true</property>
       <pattern>
-        SELECT DISTINCT ecm:uuid FROM Document WHERE nxtag:tags/* = ?
+        SELECT DISTINCT ecm:uuid FROM Document WHERE nxtag:tags/*/label = ?
       </pattern>
       <pageSize>0</pageSize>
       <maxPageSize>0</maxPageSize>
@@ -136,7 +136,7 @@
       class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
       <property name="useUnrestrictedSession">true</property>
       <pattern>
-        SELECT nxtag:tags/*1 FROM Document WHERE nxtag:tags/*1 LIKE ? AND
+        SELECT nxtag:tags/*1/label FROM Document WHERE nxtag:tags/*1/label LIKE ? AND
         ecm:isProxy = 0
       </pattern>
       <pageSize>0</pageSize>

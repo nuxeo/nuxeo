@@ -500,7 +500,6 @@ public abstract class AbstractTestTagService {
      * NXP-19047
      */
     @Test
-    @Ignore("New tag service implementation currently does not allow user with only READ access to untag a document")
     public void testUntagAllowed() {
         DocumentModel file1 = session.createDocumentModel("/", "foo", "File");
         file1.setPropertyValue("dc:title", "File1");

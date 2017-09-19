@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.versioning.VersioningService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,15 +48,22 @@ import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_LIST;
  */
 public class FacetedTagService extends AbstractTagService {
 
+    public static final String LABEL_PROPERTY = "label";
+
+    public static final String USERNAME_PROPERTY = "username";
+
     @Override
-    public void doTag(CoreSession session, String docId, String label) {
+    public void doTag(CoreSession session, String docId, String label, String username) {
         DocumentModel docModel = session.getDocument(new IdRef(docId));
         if (docModel.isProxy()) {
             throw new NuxeoException("Adding tags is not allowed on proxies");
         }
-        List<String> tags = getTags(docModel);
-        if (!tags.contains(label)) {
-            tags.add(label);
+        List<Map<String, Serializable>> tags = getTags(docModel);
+        if (tags.stream().noneMatch(t -> label.equals(t.get(LABEL_PROPERTY)))) {
+            Map<String, Serializable> tag = new HashMap<>();
+            tag.put(LABEL_PROPERTY, label);
+            tag.put(USERNAME_PROPERTY, username);
+            tags.add(tag);
             setTags(docModel, tags);
             session.saveDocument(docModel);
         }
@@ -75,9 +83,13 @@ public class FacetedTagService extends AbstractTagService {
                     session.saveDocument(docModel);
                 }
             } else {
-                List<String> tags = getTags(docModel);
-                if (tags.contains(label)) {
-                    tags.remove(label);
+                List<Map<String, Serializable>> tags = getTags(docModel);
+                Map<String, Serializable> tag = tags.stream()
+                                                    .filter(t -> label.equals(t.get(LABEL_PROPERTY)))
+                                                    .findFirst()
+                                                    .orElse(null);
+                if (tag != null) {
+                    tags.remove(tag);
                     setTags(docModel, tags);
                     session.saveDocument(docModel);
                 }
@@ -86,9 +98,28 @@ public class FacetedTagService extends AbstractTagService {
     }
 
     @Override
+    public boolean canUntag(CoreSession session, String docId, String label) {
+        boolean canUntag = super.canUntag(session, docId, label);
+        if (!canUntag) {
+            // Check also if the current user is the one who applied the tag
+            DocumentModel docModel = session.getDocument(new IdRef(docId));
+            Map<String, Serializable> tag = getTags(docModel).stream()
+                                                             .filter(t -> label.equals(t.get(LABEL_PROPERTY)))
+                                                             .findFirst()
+                                                             .orElse(null);
+            if (tag != null) {
+                String username = session.getPrincipal().getName();
+                canUntag = username.equals(tag.get(USERNAME_PROPERTY));
+            }
+        }
+        return canUntag;
+    }
+
+    @Override
     public Set<String> doGetTags(CoreSession session, String docId) {
         DocumentModel docModel = session.getDocument(new IdRef(docId));
-        return new HashSet<>(getTags(docModel));
+        List<Map<String, Serializable>> tags = getTags(docModel);
+        return tags.stream().map(t -> (String) t.get(LABEL_PROPERTY)).collect(Collectors.toSet());
     }
 
     @Override
@@ -97,14 +128,14 @@ public class FacetedTagService extends AbstractTagService {
         DocumentModel dstDocModel = session.getDocument(new IdRef(dstDocId));
 
         if (!dstDocModel.isProxy()) {
-            List<String> srcTags = getTags(srcDocModel);
-            List<String> dstTags;
+            List<Map<String, Serializable>> srcTags = getTags(srcDocModel);
+            List<Map<String, Serializable>> dstTags;
             if (removeExistingTags) {
                 dstTags = srcTags;
             } else {
                 dstTags = getTags(dstDocModel);
-                for (String tag : srcTags) {
-                    if (!dstTags.contains(tag)) {
+                for (Map<String, Serializable> tag : srcTags) {
+                    if (dstTags.stream().noneMatch(t -> tag.get(LABEL_PROPERTY).equals(t.get(LABEL_PROPERTY)))) {
                         dstTags.add(tag);
                     }
                 }
@@ -136,7 +167,7 @@ public class FacetedTagService extends AbstractTagService {
         if (res == null) {
             return Collections.emptySet();
         }
-        return res.stream().map(m -> (String) m.get(TagConstants.TAG_LIST + "/*1")).collect(Collectors.toSet());
+        return res.stream().map(m -> (String) m.get(TagConstants.TAG_LIST + "/*1/label")).collect(Collectors.toSet());
     }
 
     @Override
@@ -145,15 +176,15 @@ public class FacetedTagService extends AbstractTagService {
     }
 
     @SuppressWarnings("unchecked")
-    protected List<String> getTags(DocumentModel docModel) {
+    protected List<Map<String, Serializable>> getTags(DocumentModel docModel) {
         try {
-            return (List<String>) docModel.getPropertyValue(TAG_LIST);
+            return (List<Map<String, Serializable>>) docModel.getPropertyValue(TAG_LIST);
         } catch (PropertyNotFoundException e) {
             return Collections.emptyList();
         }
     }
 
-    protected void setTags(DocumentModel docModel, List<String> tags) {
+    protected void setTags(DocumentModel docModel, List<Map<String, Serializable>> tags) {
         if (docModel.isVersion()) {
             docModel.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
         }
