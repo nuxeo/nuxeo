@@ -1,0 +1,95 @@
+<!--
+@license
+(C) Copyright Nuxeo Corp. (http://nuxeo.com/)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+`nuxeo-easysharefolder-view-layout`
+@group Nuxeo UI
+@element nuxeo-easysharefolder-view-layout
+-->
+<dom-module id="nuxeo-easysharefolder-view-layout">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+        position: relative;
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 40vh;
+      }
+    </style>
+
+    <nuxeo-page-provider id="provider"
+                         provider="ordered_content_collection"
+                         schemas="dublincore,common"
+                         enrichers="thumbnail, permissions">
+    </nuxeo-page-provider>
+
+    <nuxeo-default-results id="results"
+                           items="{{items}}" on-navigate="_navigate"
+                           selected-items="{{selectedItems}}"
+                           empty-label="[[i18n('collections.noDocument')]]"
+                           empty-label-when-filtered="[[i18n('collections.noDocumentWhenFiltered')]]"
+                           hide-content-view-actions>
+      <div class="selectionActions">
+        <nuxeo-slot slot="COLLECTION_ACTIONS" model="[[actionContext]]"></nuxeo-slot>
+      </div>
+    </nuxeo-default-results>
+  </template>
+  <script>
+    Polymer({
+      is: 'nuxeo-easysharefolder-view-layout',
+      behaviors: [Nuxeo.LayoutBehavior, Nuxeo.FiltersBehavior],
+      properties: {
+        /**
+         * @doctype Collection
+         */
+        document: {
+          type: Object,
+          observer: '_documentChanged',
+          notify: true
+        },
+        actionContext: {
+          type: Object,
+          computed: '_actionContext(document, selectedItems)'
+        }
+      },
+
+      _documentChanged: function () {
+        if (this.document && this.hasFacet(this.document, 'Collection')) {
+          this.$.results.nxProvider = this.$.provider;
+          this.$.provider.params = [this.document.uid];
+          this.$.provider.page = 1;
+          this.fire('collection-loaded', {collection: document, provider: this.$.provider});
+          this.$.provider.fetch();
+        }
+      },
+
+      _actionContext: function () {
+        return {collection: this.document, selectedItems: this.selectedItems, items: this.$.results.items};
+      },
+
+      _navigate: function(e) {
+        this.fire('navigate', {
+          doc: e.detail.doc,
+          srcDoc: this.document,
+          isFromCollection: true
+        });
+        e.stopPropagation();
+      }
+    });
+  </script>
+</dom-module>

@@ -17,39 +17,6 @@
   </openUrl>
  </extension>
 
- <extension target="org.nuxeo.ecm.platform.actions.ActionService"
-  point="actions">
-
-  <action id="showEasyShareURL" order="20" label="label.eshare.permalink" type="fancybox"
-          icon="/icons/contextual_menu/share.png" accessKey="k">
-   <category>DOCUMENT_UPPER_ACTION</category>
-   <filter id="easyShareFolderFilter">
-    <rule grant="true">
-     <type>EasyShareFolder</type>
-    </rule>
-   </filter>
-   <properties>
-    <property name="include">/incl/easyshare_url_box.xhtml</property>
-    <property name="ajaxSupport">true</property>
-   </properties>
-  </action>
-
-  <action id="permalinkAction" order="20" label="label.permalink" type="fancybox"
-          icon="/icons/contextual_menu/share.png" accessKey="k">
-   <category>DOCUMENT_UPPER_ACTION</category>
-   <filter id="easySharePermalinkFilter">
-    <rule grant="false">
-     <type>EasyShareFolder</type>
-    </rule>
-   </filter>
-   <properties>
-    <property name="include">/incl/permalink_box.xhtml</property>
-    <property name="ajaxSupport">true</property>
-   </properties>
-  </action>
-
- </extension>
-
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
     <coreQueryPageProvider name="EASYSHARE_FOLDER_CONTENT_PP">
       <pattern>
