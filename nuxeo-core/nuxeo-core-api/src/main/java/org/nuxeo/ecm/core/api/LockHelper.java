@@ -18,17 +18,13 @@
  *
  */
 
-package org.nuxeo.ecm.core.lock;
+package org.nuxeo.ecm.core.api;
 
-import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.util.concurrent.Callable;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
