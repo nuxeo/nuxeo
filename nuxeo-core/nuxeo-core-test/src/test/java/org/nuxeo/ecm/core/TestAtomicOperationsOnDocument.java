@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.lock.LockHelper;
+import org.nuxeo.ecm.core.api.LockHelper;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -52,7 +52,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.lock", "org.nuxeo.runtime.kv" })
+@Deploy("org.nuxeo.runtime.kv")
 public class TestAtomicOperationsOnDocument {
 
     @Inject
@@ -126,6 +126,9 @@ public class TestAtomicOperationsOnDocument {
         thread.join();
 
         doc = t.documentModel;
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         assertTrue(session.exists(doc.getRef()));
 
