@@ -100,10 +100,8 @@ public class RoutingAuditRequestFilter extends AuditRequestFilter {
                 fs.put(wfModelFilter);
             }
 
-            JSONObject filter = new JSONObject().put("bool", new JSONObject().put("must", fs));
-
-            JSONObject newQuery = new JSONObject().put("filtered",
-                    new JSONObject().put("query", query).put("filter", filter));
+            JSONObject newQuery = new JSONObject().put("bool",
+                    new JSONObject().put("must", query).put("filter", fs));
             payloadJson.put("query", newQuery);
             filteredPayload = payloadJson.toString();
             if (filteredPayload.contains(BACKSLASH_MARKER)) {
