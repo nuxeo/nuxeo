@@ -321,6 +321,59 @@ public class TestConnectBroker {
 
     @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
+    public void testInstallPackageRequestWithMissingDependencies() throws Exception {
+        Environment environment = Environment.getDefault();
+        environment.setProperty(Environment.DISTRIBUTION_NAME, "server");
+        environment.setProperty(Environment.DISTRIBUTION_VERSION, "8.4");
+        connectBroker = new ConnectBroker(environment);
+        ((StandaloneCallbackHolder) NuxeoConnectClient.getCallBackHolder()).setTestMode(true);
+        connectBroker.setAllowSNAPSHOT(false);
+
+        // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
+        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
+                        "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+
+        // L-1.0.2 is missing hfB not available on platform version server-8.4
+        assertThat(connectBroker.pkgRequest(null, Arrays.asList("L-1.0.2"), null, null, true, false)).isFalse();
+
+        // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
+        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
+                        "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+
+        // check logs
+        String expectedLogs = "\nFailed to resolve dependencies: Couldn't order [L-1.0.2] missing [hfB].";
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        // L-1.0.3 (last version of L) depends on hfD which is missing hfB not available on platform version server-8.4
+        assertThat(connectBroker.pkgRequest(null, Arrays.asList("L"), null, null, true, false)).isFalse();
+
+        // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
+        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBroker,
+                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
+                        "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+
+        // check logs
+        expectedLogs = "\nFailed to resolve dependencies: Couldn't order [L-1.0.3, hfD-1.0.0] missing [hfB, hfD].";
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+    }
+
+    @Test
+    @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
     public void testInstallLocalPackageRequest() throws Exception {
         connectBroker.setAllowSNAPSHOT(false);
 
