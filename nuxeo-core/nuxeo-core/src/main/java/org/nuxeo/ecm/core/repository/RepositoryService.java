@@ -89,8 +89,6 @@ public class RepositoryService extends DefaultComponent {
         for (String repositoryName : getRepositoryNames()) {
             RepositoryFactory factory = getFactory(repositoryName);
             if (factory == null) {
-                // XXX what case is this?
-                log.error("XXX DEBUG no repository: " + repositoryName, new Exception("DEBUG"));
                 continue;
             }
             Repository repository = (Repository) factory.call();
