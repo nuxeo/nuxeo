@@ -51,7 +51,7 @@ public class SignificantTermAggregate extends AggregateEsBase<BucketTerm> {
         SignificantTermsAggregationBuilder ret = AggregationBuilders.significantTerms(getId()).field(getField());
         Map<String, String> props = getProperties();
         if (props.containsKey(AGG_SIZE_PROP)) {
-            ret.size(Integer.parseInt(props.get(AGG_SIZE_PROP)));
+            ret.size(getAggSize(props.get(AGG_SIZE_PROP)));
         }
         if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
             ret.minDocCount(Integer.parseInt(props.get(AGG_MIN_DOC_COUNT_PROP)));

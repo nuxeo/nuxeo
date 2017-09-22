@@ -36,9 +36,11 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
  */
 public abstract class AggregateEsBase<B extends Bucket> extends AggregateBase<B> {
 
-    public final static char XPATH_SEP = '/';
+    public static final char XPATH_SEP = '/';
 
-    public final static char ES_MUTLI_LEVEL_SEP = '.';
+    public static final char ES_MUTLI_LEVEL_SEP = '.';
+
+    public static final int MAX_AGG_SIZE = 1000;
 
     public AggregateEsBase(AggregateDefinition definition, DocumentModel searchDocument) {
         super(definition, searchDocument);
@@ -67,6 +69,12 @@ public abstract class AggregateEsBase<B extends Bucket> extends AggregateBase<B>
         }
         ret = ret.replace(XPATH_SEP, ES_MUTLI_LEVEL_SEP);
         return ret;
+    }
+
+    protected int getAggSize(String prop) {
+        // handle the size = 0 which means all terms in ES 2 and which is not supported in ES 5
+        int size = Integer.parseInt(prop);
+        return size == 0 ? MAX_AGG_SIZE : size;
     }
 
 }
