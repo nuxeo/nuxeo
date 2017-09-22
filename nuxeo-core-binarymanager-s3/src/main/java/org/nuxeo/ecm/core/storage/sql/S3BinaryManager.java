@@ -40,10 +40,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.commons.codec.digest.DigestUtils;
-
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,9 +60,12 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.CryptoConfiguration;
 import com.amazonaws.services.s3.model.EncryptedPutObjectRequest;
@@ -184,7 +186,11 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         int oneDay = 1000 * 60 * 60 * 24;
         try {
             transferManager.abortMultipartUploads(bucketName, new Date(System.currentTimeMillis() - oneDay));
-        } catch (AmazonClientException e) {
+        } catch (AmazonS3Exception e) {
+            if (e.getStatusCode() == 400 || e.getStatusCode() == 404) {
+                log.error("Your cloud provider does not support aborting old uploads");
+                return;
+            }
             throw new IOException("Failed to abort old uploads", e);
         }
     }
@@ -320,25 +326,28 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         }
         isEncrypted = encryptionMaterials != null;
 
+        @SuppressWarnings("rawtypes")
+        AwsClientBuilder s3Builder;
         // Try to create bucket if it doesn't exist
         if (!isEncrypted) {
-            amazonS3 = AmazonS3ClientBuilder.standard()
-                            .withCredentials(awsCredentialsProvider)
-                            .withClientConfiguration(clientConfiguration)
+            s3Builder = AmazonS3ClientBuilder.standard()
                             .withRegion(bucketRegion)
-                            .build();
+                            .withCredentials(awsCredentialsProvider)
+                            .withClientConfiguration(clientConfiguration);
+
         } else {
-            amazonS3 = AmazonS3EncryptionClientBuilder.standard()
+            s3Builder = AmazonS3EncryptionClientBuilder.standard()
+                            .withRegion(bucketRegion)
                             .withClientConfiguration(clientConfiguration)
                             .withCryptoConfiguration(cryptoConfiguration)
                             .withCredentials(awsCredentialsProvider)
-                            .withRegion(bucketRegion)
-                            .withEncryptionMaterials(new StaticEncryptionMaterialsProvider(encryptionMaterials))
-                            .build();
+                            .withEncryptionMaterials(new StaticEncryptionMaterialsProvider(encryptionMaterials));
         }
         if (isNotBlank(endpoint)) {
-            amazonS3.setEndpoint(endpoint);
+            s3Builder = s3Builder.withEndpointConfiguration(new EndpointConfiguration(endpoint, bucketRegion));
         }
+        
+        amazonS3 = (AmazonS3) s3Builder.build();
 
         try {
             if (!amazonS3.doesBucketExist(bucketName)) {
