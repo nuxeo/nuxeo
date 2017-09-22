@@ -36,7 +36,7 @@
   </extension>
 
 <#if "${nuxeo.pubsub.provider}" == "redis">
-  <extension target="org.nuxeo.ecm.core.pubsub.PubSubService" point="configuration">
+  <extension target="org.nuxeo.runtime.pubsub.PubSubService" point="configuration">
     <provider class="org.nuxeo.ecm.core.redis.contribs.RedisPubSubProvider"/>
   </extension>
 </#if>

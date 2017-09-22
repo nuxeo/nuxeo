@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.pubsub.SerializableAccumulableInvalidations;
+import org.nuxeo.runtime.pubsub.SerializableAccumulableInvalidations;
 
 /**
  * A set of invalidations for a given repository.

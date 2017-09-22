@@ -46,7 +46,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features({ TestCacheInvalidation.ClusterFeature.class, CacheFeature.class })
-@Deploy("org.nuxeo.ecm.core.event:OSGI-INF/pubsub-service.xml")
+@Deploy("org.nuxeo.runtime.pubsub")
 @LocalDeploy("org.nuxeo.ecm.core.cache:inmemory-cache-config.xml")
 public class TestCacheInvalidation {
 

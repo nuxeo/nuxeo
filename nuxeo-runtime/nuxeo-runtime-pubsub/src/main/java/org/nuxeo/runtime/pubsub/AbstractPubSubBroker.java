@@ -16,7 +16,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.pubsub;
+package org.nuxeo.runtime.pubsub;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

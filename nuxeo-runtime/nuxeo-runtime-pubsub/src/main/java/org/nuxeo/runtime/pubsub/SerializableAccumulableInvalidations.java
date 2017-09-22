@@ -16,7 +16,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.pubsub;
+package org.nuxeo.runtime.pubsub;
 
 /**
  * Generic interface for serializable invalidations.

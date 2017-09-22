@@ -37,13 +37,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.pubsub.AbstractPubSubBroker;
-import org.nuxeo.ecm.core.pubsub.SerializableMessage;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.pubsub.AbstractPubSubBroker;
+import org.nuxeo.runtime.pubsub.SerializableMessage;
 
 /**
  * Cache service implementation to manage nuxeo cache
