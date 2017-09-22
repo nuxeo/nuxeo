@@ -52,7 +52,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.lock", "org.nuxeo.ecm.core.kv" })
+@Deploy({ "org.nuxeo.ecm.core.lock", "org.nuxeo.runtime.kv" })
 public class TestAtomicOperationsOnDocument {
 
     @Inject

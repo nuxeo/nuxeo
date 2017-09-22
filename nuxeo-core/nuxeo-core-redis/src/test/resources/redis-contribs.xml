@@ -15,7 +15,7 @@
       <ttl>1</ttl>
     </cache>
   </extension>
-  <extension target="org.nuxeo.ecm.core.kv.KeyValueService" point="configuration">
+  <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
     <store name="redis" class="org.nuxeo.ecm.core.redis.contribs.RedisKeyValueStore">
       <property name="namespace">kv</property>
     </store>

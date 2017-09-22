@@ -150,8 +150,8 @@ public class RedisFeature extends SimpleFeature {
         if (harness.getOSGiAdapter().getBundle("org.nuxeo.ecm.core.storage") == null) {
             harness.deployBundle("org.nuxeo.ecm.core.storage");
         }
-        if (harness.getOSGiAdapter().getBundle("org.nuxeo.ecm.core.kv") == null) {
-            harness.deployBundle("org.nuxeo.ecm.core.kv");
+        if (harness.getOSGiAdapter().getBundle("org.nuxeo.runtime.kv") == null) {
+            harness.deployBundle("org.nuxeo.runtime.kv");
         }
         if (harness.getOSGiAdapter().getBundle("org.nuxeo.ecm.core.cache") == null) {
             harness.deployBundle("org.nuxeo.ecm.core.cache");
