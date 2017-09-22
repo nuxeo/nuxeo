@@ -20,9 +20,9 @@ package org.nuxeo.elasticsearch;/*
  */
 public final class Timestamp {
     // currentTimeMillis is not accurate especially under windows (15ms granularity)
-    final static long t0 = System.currentTimeMillis() * 1000;
+    static final long t0 = System.currentTimeMillis() * 1000;
     // nanoTime is accurate but the value is not a timestamp it dependds on the OS/JVM
-    final static long n0 = System.nanoTime();
+    static final long n0 = System.nanoTime();
 
     private Timestamp() {
     }

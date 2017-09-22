@@ -26,6 +26,7 @@ import org.elasticsearch.node.NodeValidationException;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.transport.Netty4Plugin;
 import org.nuxeo.common.utils.ExceptionUtils;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
 import org.nuxeo.runtime.api.Framework;
 
@@ -46,7 +47,7 @@ import java.util.stream.Collectors;
 public class ElasticSearchEmbeddedNode implements Closeable {
     private static final Log log = LogFactory.getLog(ElasticSearchEmbeddedNode.class);
     private static final int DEFAULT_RETRY = 3;
-    final protected ElasticSearchEmbeddedServerConfig config;
+    protected final ElasticSearchEmbeddedServerConfig config;
     protected Node node;
     protected int retry = DEFAULT_RETRY;
 
@@ -60,8 +61,8 @@ public class ElasticSearchEmbeddedNode implements Closeable {
             log.warn("Elasticsearch embedded configuration is ONLY for testing"
                     + " purpose. You need to create a dedicated Elasticsearch" + " cluster for production.");
         }
-        Settings.Builder sBuilder = Settings.builder();
-        sBuilder.put("http.enabled", config.httpEnabled())
+        Settings.Builder buidler = Settings.builder();
+        buidler.put("http.enabled", config.httpEnabled())
                 .put("network.host", config.getNetworkHost())
                 .put("path.home", config.getHomePath())
                 .put("path.data", config.getDataPath())
@@ -75,9 +76,9 @@ public class ElasticSearchEmbeddedNode implements Closeable {
                 .put("cluster.routing.allocation.disk.threshold_enabled", false)
                 .put("http.port", config.getHttpPort());
         if (config.getIndexStorageType() != null) {
-            sBuilder.put("index.store.type", config.getIndexStorageType());
+            buidler.put("index.store.type", config.getIndexStorageType());
         }
-        Settings settings = sBuilder.build();
+        Settings settings = buidler.build();
         log.debug("Using settings: " + settings.toDelimitedString(','));
 
         Collection<Class<? extends Plugin>> plugins = Collections.singletonList(Netty4Plugin.class);
@@ -87,21 +88,21 @@ public class ElasticSearchEmbeddedNode implements Closeable {
             // try with another home path
             config.setHomePath(null);
         } catch (NodeValidationException e) {
-            throw new RuntimeException("Can not start embedded ES: " + e.getMessage(), e);
+            throw new NuxeoException("Cannot start embedded Elasticsearch: " + e.getMessage(), e);
         } catch (Exception e) {
             Throwable cause = ExceptionUtils.getRootCause(e);
             if (cause != null && cause instanceof BindException) {
                 retry--;
-                log.error(String.format("Can not bind local Elasticsearch on port %s, from %s, retry countdown: %d",
+                log.error(String.format("Cannot bind local Elasticsearch on port %s, from %s, retry countdown: %d",
                         config.getHttpPort(), config.getDataPath(), retry));
                 try {
                     node.close();
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
                     Thread.currentThread().interrupt();
-                    throw new RuntimeException(e1);
+                    throw new NuxeoException(e1);
                 } catch (IOException e1) {
-                    throw new RuntimeException(e1);
+                    throw new NuxeoException(e1);
                 }
                 if (retry <= 0) {
                     String msg = "Not able to bind to local Elasticsearch after multiple attempts, give up";

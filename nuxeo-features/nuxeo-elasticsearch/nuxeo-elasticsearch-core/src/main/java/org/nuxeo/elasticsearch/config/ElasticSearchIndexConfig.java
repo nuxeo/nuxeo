@@ -42,8 +42,8 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
  */
 @XObject(value = "elasticSearchIndex")
 public class ElasticSearchIndexConfig {
-    final public static String DEFAULT_SETTING_FILE = "default-doc-settings.json";
-    final public static String DEFAULT_MAPPING_FILE = "default-doc-mapping.json";
+    public static final String DEFAULT_SETTING_FILE = "default-doc-settings.json";
+    public static final String DEFAULT_MAPPING_FILE = "default-doc-mapping.json";
 
     @XNode("@enabled")
     protected boolean isEnabled = true;
@@ -123,7 +123,7 @@ public class ElasticSearchIndexConfig {
         try {
             return IOUtils.toString(getResourceStream(filename), "UTF-8");
         } catch (IOException e) {
-            throw new IllegalArgumentException("Can not load resource file: " + filename, e);
+            throw new IllegalArgumentException("Cannot load resource file: " + filename, e);
         }
     }
 
@@ -145,7 +145,7 @@ public class ElasticSearchIndexConfig {
             ret = this.getClass().getClassLoader().getResourceAsStream(filename);
         }
         if (ret == null) {
-            throw new IllegalArgumentException(String.format("Resource file can not be found: %s or %s",
+            throw new IllegalArgumentException(String.format("Resource file cannot be found: %s or %s",
                     file.getAbsolutePath(), filename));
         }
         return ret;

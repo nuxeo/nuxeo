@@ -40,6 +40,7 @@ import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 
 import java.util.Arrays;
@@ -50,7 +51,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ESTransportClient implements ESClient {
     private static final Log log = LogFactory.getLog(ESTransportClient.class);
-    private Client client;
+    protected Client client;
 
     public ESTransportClient(Client client) {
         this.client = client;
@@ -58,10 +59,8 @@ public class ESTransportClient implements ESClient {
 
     @Override
     public boolean waitForYellowStatus(String[] indexNames, int timeoutSecond) {
-        boolean ret = true;
         String timeout = timeoutSecond + "s";
         log.debug("Waiting for cluster yellow health status, indexes: " + Arrays.toString(indexNames));
-        String errorMessage = null;
         try {
             ClusterHealthResponse response = client.admin()
                     .cluster()
@@ -70,25 +69,19 @@ public class ESTransportClient implements ESClient {
                     .setWaitForYellowStatus()
                     .get();
             if (response.isTimedOut()) {
-                ret = false;
-                errorMessage = "ES Cluster health status not Yellow after " + timeout + " give up: "
-                        + response;
-            } else {
-                if (response.getStatus() != ClusterHealthStatus.GREEN) {
-                    log.warn("Es Cluster ready but not GREEN: " + response);
-                    ret = false;
-                } else {
-                    log.info("ES Cluster ready: " + response);
-                }
+                throw new NuxeoException("Elasticsearch Cluster health status not Yellow after " + timeout + " give up: "
+                        + response);
             }
+            if (response.getStatus() != ClusterHealthStatus.GREEN) {
+                log.warn("Elasticsearch Cluster ready but not GREEN: " + response);
+                return false;
+            }
+            log.info("Elasticsearch Cluster ready: " + response);
         } catch (NoNodeAvailableException e) {
-            errorMessage = "Failed to connect to elasticsearch, check addressList and clusterName: " + e.getMessage();
+            throw new NuxeoException("Failed to connect to elasticsearch, check addressList and clusterName: "
+                    + e.getMessage());
         }
-        if (errorMessage != null) {
-            log.error(errorMessage);
-            throw new IllegalStateException(errorMessage);
-        }
-        return ret;
+        return true;
     }
 
     @Override

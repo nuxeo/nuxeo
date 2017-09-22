@@ -154,7 +154,7 @@ public class TestReindex {
 
         Assert.assertEquals(coreDocs.totalSize(), docs.totalSize());
         Assert.assertEquals(getDigest(coreDocs), getDigest(docs));
-        // can not do that because of NXP-16154
+        // cannot do that because of NXP-16154
         // Assert.assertEquals(getDigest(coreDocs), 42, docs.totalSize());
         esa.initIndexes(true);
         esa.refresh();

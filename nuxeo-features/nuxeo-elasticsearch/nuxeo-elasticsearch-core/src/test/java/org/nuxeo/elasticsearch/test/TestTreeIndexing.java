@@ -249,8 +249,7 @@ public class TestTreeIndexing {
 
         // check for user with no rights
         startTransaction();
-        CoreSession restrictedSession = getRestrictedSession("toto");
-        try {
+        try (CoreSession restrictedSession = getRestrictedSession("toto")) {
             docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
             Assert.assertEquals(0, docs.totalSize());
 
@@ -300,8 +299,6 @@ public class TestTreeIndexing {
             startTransaction();
             docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
             Assert.assertEquals(3, docs.totalSize());
-        } finally {
-            restrictedSession.close();
         }
     }
 
@@ -314,8 +311,7 @@ public class TestTreeIndexing {
         Assert.assertEquals(10, docs.totalSize());
 
         // check for user with no rights
-        CoreSession restrictedSession = getRestrictedSession("toto");
-        try {
+        try (CoreSession restrictedSession = getRestrictedSession("toto")) {
             docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
             Assert.assertEquals(0, docs.totalSize());
 
@@ -350,8 +346,6 @@ public class TestTreeIndexing {
             docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document order by dc:title"));
             // can view folder2, folder3 and folder4
             Assert.assertEquals(3, docs.totalSize());
-        } finally {
-            restrictedSession.close();
         }
     }
 
@@ -362,8 +356,7 @@ public class TestTreeIndexing {
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document"));
         Assert.assertEquals(10, docs.totalSize());
 
-        CoreSession restrictedSession = getRestrictedSession("toto");
-        try {
+        try (CoreSession restrictedSession = getRestrictedSession("toto")) {
             docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
             Assert.assertEquals(0, docs.totalSize());
 
@@ -399,8 +392,6 @@ public class TestTreeIndexing {
             startTransaction();
             docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document order by dc:title"));
             Assert.assertEquals(0, docs.totalSize());
-        } finally {
-            restrictedSession.close();
         }
     }
 

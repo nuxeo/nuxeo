@@ -72,7 +72,7 @@ public class ESTransportClientFactory implements ESClientFactory {
         TransportClient client = new PreBuiltTransportClient(settings);
         String[] addresses = config.getOption("addressList", "").split(",");
         if (addresses.length == 0) {
-            throw new IllegalArgumentException("No addressList option provided can not connect TransportClient");
+            throw new IllegalArgumentException("No addressList option provided cannot connect TransportClient");
         } else {
             for (String item : addresses) {
                 String[] address = item.split(":");

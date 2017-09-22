@@ -27,6 +27,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -69,7 +70,7 @@ public class ElasticsearchIndexOperation {
     private void checkAccess() {
         NuxeoPrincipal principal = (NuxeoPrincipal) ctx.getPrincipal();
         if (principal == null || ! principal.isAdministrator()) {
-            throw new RuntimeException("Unauthorized access: " + principal);
+            throw new NuxeoException("Unauthorized access: " + principal);
         }
     }
 

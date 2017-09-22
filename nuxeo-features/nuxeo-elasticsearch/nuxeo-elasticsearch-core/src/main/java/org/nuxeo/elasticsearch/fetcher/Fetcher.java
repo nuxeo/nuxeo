@@ -56,6 +56,6 @@ public abstract class Fetcher {
         return repoNames.get(indexName);
     }
 
-    abstract public DocumentModelListImpl fetchDocuments();
+    public abstract DocumentModelListImpl fetchDocuments();
 
 }

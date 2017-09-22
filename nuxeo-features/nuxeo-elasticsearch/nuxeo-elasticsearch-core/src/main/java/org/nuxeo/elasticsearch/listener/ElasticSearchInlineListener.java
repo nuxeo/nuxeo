@@ -51,19 +51,9 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker impleme
 
     private static final Log log = LogFactory.getLog(ElasticSearchInlineListener.class);
 
-    protected static ThreadLocal<Map<String, IndexingCommands>> transactionCommands = new ThreadLocal<Map<String, IndexingCommands>>() {
-        @Override
-        protected HashMap<String, IndexingCommands> initialValue() {
-            return new HashMap<>();
-        }
-    };
+    protected static ThreadLocal<Map<String, IndexingCommands>> transactionCommands = ThreadLocal.withInitial(() -> new HashMap<>());
 
-    protected static ThreadLocal<Boolean> isEnlisted = new ThreadLocal<Boolean>() {
-        @Override
-        protected Boolean initialValue() {
-            return Boolean.FALSE;
-        }
-    };
+    protected static ThreadLocal<Boolean> isEnlisted = ThreadLocal.withInitial(() -> Boolean.FALSE);
 
     @Override
     protected Map<String, IndexingCommands> getAllCommands() {

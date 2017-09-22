@@ -18,6 +18,7 @@
  */
 package org.nuxeo.elasticsearch.client;
 
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
@@ -43,6 +44,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 
 import java.io.IOException;
@@ -55,7 +57,7 @@ import static java.util.Collections.emptyMap;
  * @since 9.3
  */
 public class ESRestClient implements ESClient {
-    private static final org.apache.commons.logging.Log log = LogFactory.getLog(ESRestClient.class);
+    private static final Log log = LogFactory.getLog(ESRestClient.class);
     protected RestClient lowLevelClient;
     protected RestHighLevelClient client;
 
@@ -77,29 +79,24 @@ public class ESRestClient implements ESClient {
                 healthStatus = ClusterHealthStatus.fromString((String) map.get("status"));
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
         switch (healthStatus) {
             case GREEN:
-                log.info("ES Cluster ready: " + response);
+                log.info("Elasticsearch Cluster ready: " + response);
                 return true;
             case YELLOW:
-                log.warn("Es Cluster ready but not GREEN: " + response);
+                log.warn("Elasticsearch Cluster ready but not GREEN: " + response);
                 return false;
             default:
-                String error = "ES Cluster health status: " + healthStatus + ", not Yellow after " + timeoutSecond + " give up: "
-                        + response;
-                log.error(error);
+                String error = "Elasticsearch Cluster health status: " + healthStatus + ", not Yellow after "
+                        + timeoutSecond + " give up: " + response;
                 throw new IllegalStateException(error);
         }
     }
 
     protected String getIndexesAsString(String[] indexNames) {
-        String indexes = "";
-        if (indexNames != null && indexNames.length > 0) {
-            indexes = String.join(",", indexNames);
-        }
-        return indexes;
+        return indexNames == null ? "" : String.join(",", indexNames);
     }
 
     @Override
@@ -112,7 +109,7 @@ public class ESRestClient implements ESClient {
                 return ClusterHealthStatus.fromString((String) map.get("status"));
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -121,7 +118,7 @@ public class ESRestClient implements ESClient {
         try {
             lowLevelClient.performRequest("POST", "/" + indexName + "/_refresh");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
 
     }
@@ -131,7 +128,7 @@ public class ESRestClient implements ESClient {
         try {
             lowLevelClient.performRequest("POST", "/" + indexName + "/_flush?wait_if_ongoing=true");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -140,7 +137,7 @@ public class ESRestClient implements ESClient {
         try {
             lowLevelClient.performRequest("GET", "/" + indexName + "/?max_num_segments=1&wait_for_merge=true");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -150,7 +147,7 @@ public class ESRestClient implements ESClient {
         try {
             response = lowLevelClient.performRequest("HEAD", indexName);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
         int code = response.getStatusLine().getStatusCode();
         if (code == HttpStatus.SC_OK) {
@@ -168,7 +165,7 @@ public class ESRestClient implements ESClient {
             response = lowLevelClient.performRequest("HEAD",
                     String.format("/%s/_mapping/%s", indexName, type));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
         int code = response.getStatusLine().getStatusCode();
         if (code == HttpStatus.SC_OK) {
@@ -186,7 +183,7 @@ public class ESRestClient implements ESClient {
             response = lowLevelClient.performRequest("DELETE",
                     String.format("/%s?master_timeout=%ds", indexName, timeoutSecond));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
         int code = response.getStatusLine().getStatusCode();
         if (code != HttpStatus.SC_OK) {
@@ -201,10 +198,10 @@ public class ESRestClient implements ESClient {
         try {
             response = lowLevelClient.performRequest("PUT", indexName, emptyMap(), entity);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw new RuntimeException("Fail to create index: " + indexName + " :" + response);
+            throw new NuxeoException("Fail to create index: " + indexName + " :" + response);
         }
     }
 
@@ -216,10 +213,10 @@ public class ESRestClient implements ESClient {
             response = lowLevelClient.performRequest("PUT", String.format("/%s/%s/_mapping", indexName, type),
                     emptyMap(), entity);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw new RuntimeException(String.format("Fail to create mapping on %s/%s: %s", indexName, type, response));
+            throw new NuxeoException(String.format("Fail to create mapping on %s/%s: %s", indexName, type, response));
         }
 
     }
@@ -230,7 +227,7 @@ public class ESRestClient implements ESClient {
             Response response = lowLevelClient.performRequest("GET", "_nodes/_all");
             return EntityUtils.toString(response.getEntity());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -240,7 +237,7 @@ public class ESRestClient implements ESClient {
             Response response = lowLevelClient.performRequest("GET", "_nodes/stats");
             return EntityUtils.toString(response.getEntity());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -249,7 +246,7 @@ public class ESRestClient implements ESClient {
         try {
             return client.bulk(request);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -258,7 +255,7 @@ public class ESRestClient implements ESClient {
         try {
             return client.delete(request);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -267,7 +264,7 @@ public class ESRestClient implements ESClient {
         try {
             return client.search(request);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -276,7 +273,7 @@ public class ESRestClient implements ESClient {
         try {
             return client.searchScroll(request);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -285,7 +282,7 @@ public class ESRestClient implements ESClient {
         try {
             return client.get(request);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -294,7 +291,7 @@ public class ESRestClient implements ESClient {
         try {
             return client.index(request);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -303,14 +300,18 @@ public class ESRestClient implements ESClient {
         try {
             return client.clearScroll(request);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         if (lowLevelClient != null) {
-            lowLevelClient.close();
+            try {
+                lowLevelClient.close();
+            } catch (IOException e) {
+                log.warn("Fail to close the Elasticsearch low level RestClient: " + e.getMessage(), e);
+            }
             lowLevelClient = null;
         }
         client = null;

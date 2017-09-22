@@ -307,7 +307,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         try {
             return AuditEntryJSONReader.read(ret.getSourceAsString());
         } catch (IOException e) {
-            throw new RuntimeException("Unable to read Entry for id " + id, e);
+            throw new NuxeoException("Unable to read Entry for id " + id, e);
         }
     }
 
@@ -495,7 +495,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     public SearchResponse search(SearchRequest request) {
         String[] indices = request.indices();
-        if (indices == null && indices.length != 1) {
+        if (indices == null || indices.length != 1) {
             throw new IllegalStateException("Search on audit must include index name: " + request);
         }
         if (!getESIndexName().equals(indices[0])) {

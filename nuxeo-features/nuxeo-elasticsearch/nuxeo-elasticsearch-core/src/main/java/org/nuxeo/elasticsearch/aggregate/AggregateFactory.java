@@ -32,7 +32,7 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TYPE_TERMS;
 /**
  * @since 6.0
  */
-final public class AggregateFactory {
+public final class AggregateFactory {
 
     private AggregateFactory() {
     }

@@ -85,7 +85,7 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
  * Helper class that holds the conversion logic. Conversion is based on the existing NXQL Parser, we are just using a
  * visitor to build the ES request.
  */
-final public class NxqlQueryConverter {
+public final class NxqlQueryConverter {
     private static final Log log = LogFactory.getLog(NxqlQueryConverter.class);
 
     private static final String SELECT_ALL = "SELECT * FROM Document";

@@ -59,7 +59,7 @@ public class ESRestClientFactory implements ESClientFactory {
     protected ESClient createRestClient(ElasticSearchClientConfig config) {
         String[] hosts = config.getOption("addressList", "").split(",");
         if (hosts.length == 0) {
-            throw new IllegalArgumentException("No addressList option provided can not connect RestClient");
+            throw new IllegalArgumentException("No addressList option provided cannot connect RestClient");
         }
         HttpHost[] httpHosts = new HttpHost[hosts.length];
         int i = 0;

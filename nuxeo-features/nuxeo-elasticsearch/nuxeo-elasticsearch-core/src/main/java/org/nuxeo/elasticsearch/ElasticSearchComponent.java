@@ -28,6 +28,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -148,8 +149,8 @@ public class ElasticSearchComponent extends DefaultComponent
                 try {
                     jsonESDocumentWriter = writerDescriptor.getKlass().newInstance();
                 } catch (IllegalAccessException | InstantiationException e) {
-                    log.error("Can not instantiate jsonESDocumentWriter from " + writerDescriptor.getKlass());
-                    throw new RuntimeException(e);
+                    log.error("Cannot instantiate jsonESDocumentWriter from " + writerDescriptor.getKlass());
+                    throw new NuxeoException(e);
                 }
                 break;
             default:
