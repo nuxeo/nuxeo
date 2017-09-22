@@ -97,7 +97,7 @@ public class RangeAggregate extends AggregateEsBase<BucketRange> {
             double to = (double) rangeBucket.getTo();
             nxBuckets.add(new BucketRange(bucket.getKeyAsString(), from, to, rangeBucket.getDocCount()));
         }
-        Collections.sort(nxBuckets, new BucketRangeComparator());
+        nxBuckets.sort(new BucketRangeComparator());
         this.buckets = nxBuckets;
     }
 

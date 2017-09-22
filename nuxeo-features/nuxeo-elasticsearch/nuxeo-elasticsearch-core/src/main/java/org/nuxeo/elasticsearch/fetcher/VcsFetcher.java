@@ -84,11 +84,7 @@ public class VcsFetcher extends Fetcher {
         Map<String, List<String>> ret = new HashMap<>();
         for (SearchHit hit : getResponse().getHits()) {
             String repoName = getRepoForIndex(hit.getIndex());
-            List<String> docIds = ret.get(repoName);
-            if (docIds == null) {
-                docIds = new ArrayList<>();
-                ret.put(repoName, docIds);
-            }
+            List<String> docIds = ret.computeIfAbsent(repoName, k -> new ArrayList<>());
             docIds.add(hit.getId());
         }
         return ret;
@@ -162,7 +158,7 @@ public class VcsFetcher extends Fetcher {
             ids.add(getRepoForIndex(hit.getIndex()) + hit.getId());
         }
 
-        Collections.sort(docs, new Comparator<DocumentModel>() {
+        docs.sort(new Comparator<DocumentModel>() {
             @Override
             public int compare(DocumentModel a, DocumentModel b) {
                 return ids.indexOf(a.getRepositoryName() + a.getId()) - ids.indexOf(b.getRepositoryName() + b.getId());

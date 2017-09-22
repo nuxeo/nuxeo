@@ -93,14 +93,14 @@ public class TestScrollSearch {
             int hitCount = docs.size();
             assertEquals(20, hitCount);
             totalDocCount += hitCount;
-            docPaths.addAll(docs.stream().map(doc -> doc.getPathAsString()).collect(Collectors.toList()));
+            docPaths.addAll(docs.stream().map(DocumentModel::getPathAsString).collect(Collectors.toList()));
             res = ess.scroll(res);
             docs = res.getDocuments();
         }
         assertEquals(100, totalDocCount);
 
         // Check order
-        assertEquals(session.query(query).stream().map(doc -> doc.getPathAsString()).collect(Collectors.toList()),
+        assertEquals(session.query(query).stream().map(DocumentModel::getPathAsString).collect(Collectors.toList()),
                 docPaths);
     }
 

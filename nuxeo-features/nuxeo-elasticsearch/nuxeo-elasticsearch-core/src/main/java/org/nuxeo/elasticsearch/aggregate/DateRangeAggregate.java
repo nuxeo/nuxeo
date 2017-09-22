@@ -104,7 +104,7 @@ public class DateRangeAggregate extends AggregateEsBase<BucketRangeDate> {
             nxBuckets.add(new BucketRangeDate(bucket.getKeyAsString(), (DateTime) rangeBucket.getFrom(),
                     (DateTime) rangeBucket.getTo(), rangeBucket.getDocCount()));
         }
-        Collections.sort(nxBuckets, new BucketRangeDateComparator());
+        nxBuckets.sort(new BucketRangeDateComparator());
         this.buckets = nxBuckets;
     }
 

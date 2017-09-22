@@ -128,7 +128,7 @@ public class JsonDocumentModelReader {
                 doc.setPropertyValue(prop, value);
             } catch (PropertyException e) {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("fetchDocFromEs can not set property %s to %s", prop, value));
+                    log.debug(String.format("fetchDocFromEs cannot set property %s to %s", prop, value));
                 }
             }
         }

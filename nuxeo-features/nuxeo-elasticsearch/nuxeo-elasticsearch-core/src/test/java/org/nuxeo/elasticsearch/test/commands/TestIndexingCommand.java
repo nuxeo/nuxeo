@@ -82,7 +82,7 @@ public class TestIndexingCommand {
         IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, false, false);
         cmd.makeSync();
         Assert.assertTrue(cmd.isSync());
-        // recursive command can not be turned into sync
+        // recursive command cannot be turned into sync
         cmd = new IndexingCommand(doc, Type.INSERT, false, true);
         cmd.makeSync();
         Assert.assertFalse(cmd.isSync());

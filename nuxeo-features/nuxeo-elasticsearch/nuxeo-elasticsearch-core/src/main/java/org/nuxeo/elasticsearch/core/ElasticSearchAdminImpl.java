@@ -23,6 +23,7 @@ package org.nuxeo.elasticsearch.core;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -99,13 +100,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     }
 
     protected void checkConfig() {
-        String msg = null;
         if (clientConfig == null) {
-            msg = "No client configuration provided, aborting";
-        }
-        if (msg != null) {
-            log.error(msg);
-            throw new IllegalStateException(msg);
+            throw new IllegalStateException("No Elasticsearch Client configuration provided, aborting");
         }
     }
 
@@ -119,7 +115,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         }
         client = createClient(embeddedServer);
         checkClusterHealth();
-        log.info("ES Connected");
+        log.info("Elasticsearch Connected");
     }
 
     public void disconnect() {
@@ -131,7 +127,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             }
             client = null;
             indexInitDone = false;
-            log.info("ES Disconnected");
+            log.info("Elasticsearch Disconnected");
         }
         if (embeddedServer != null) {
             try {
@@ -140,26 +136,26 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                 log.error("Failed to close embedded node: " + e.getMessage(), e);
             }
             embeddedServer = null;
-            log.info("ES embedded Node Stopped");
+            log.info("Elasticsearch embedded Node Stopped");
         }
     }
 
     private ESClient createClient(ElasticSearchEmbeddedNode node) {
-        log.info("Connecting to ES");
+        log.info("Connecting to Elasticsearch");
         ESClient ret;
         try {
             ESClientFactory clientFactory = clientConfig.getKlass().newInstance();
             ret = clientFactory.create(node, clientConfig);
-        } catch (IllegalAccessException | InstantiationException e) {
-            log.error("Can not instantiate ES Client from class: " + clientConfig.getKlass());
-            throw new RuntimeException(e);
+        } catch (ReflectiveOperationException e) {
+            log.error("Cannot instantiate Elasticsearch Client from class: " + clientConfig.getKlass());
+            throw new NuxeoException(e);
         }
         return ret;
     }
 
     private void checkClusterHealth(String... indexNames) {
         if (client == null) {
-            throw new IllegalStateException("No es client available");
+            throw new IllegalStateException("No Elasticsearch Client available");
         }
         client.waitForYellowStatus(indexNames, TIMEOUT_WAIT_FOR_CLUSTER_SECOND);
     }
@@ -288,7 +284,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         for (ElasticSearchIndexConfig conf : indexConfig.values()) {
             initIndex(conf, dropIfExists);
         }
-        log.info("ES Service ready");
+        log.info("Elasticsearch Service ready");
         indexInitDone = true;
     }
 
@@ -382,7 +378,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public boolean isEmbedded() {
-        return (embeddedServer != null);
+        return embeddedServer != null;
     }
 
     @Override

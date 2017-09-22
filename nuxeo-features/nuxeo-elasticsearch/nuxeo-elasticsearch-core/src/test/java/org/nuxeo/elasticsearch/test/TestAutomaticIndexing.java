@@ -441,7 +441,7 @@ public class TestAutomaticIndexing {
         startTransaction();
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
         doc.setPropertyValue("dc:title", "search " + createBigString(40000, 'a') + " bar");
-        // term > 32k can not be indexed by lucene
+        // term > 32k cannot be indexed by lucene
         // but es discard them with the ignore_above and the with the custom tokenizer
         doc = session.createDocument(doc);
         session.save();

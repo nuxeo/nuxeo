@@ -1644,7 +1644,7 @@ public class TestNxqlConversion {
         es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where /*+ES: OPERATOR(geo_bounding_box) */ osm:location IN ('drj7tee', 'dr5r9y')")
                 .toString();
-        // we can not do this because lat and lon are not rounded to match the input
+        // we cannot do this because lat and lon are not rounded to match the input
         // assertTruEqualsEvenUnderWindows(response, es);
         Assert.assertTrue(es.contains("geo_bounding_box"));
         Assert.assertTrue(es, es.contains("bottom_right"));

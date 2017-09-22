@@ -38,7 +38,7 @@ public final class DateHelper {
      * @param duration can be expressed with a noun: hour, day, month, quarter, year
      *                 or expression: 2d, 3h, 5w, 2M, 3y
      *                 or a number of ms: 1234
-     * @throws IllegalArgumentException if the duration can not be parsed
+     * @throws IllegalArgumentException if the duration cannot be parsed
      * @return a new datetime
      */
     public static DateTime plusDuration(DateTime origin, String duration) {

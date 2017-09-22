@@ -36,7 +36,6 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
-import org.elasticsearch.search.aggregations.bucket.filter.ParsedFilter;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -281,10 +280,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
 
     protected void logSearchRequest(SearchRequest request, NxQueryBuilder query, SearchType searchType) {
         if (log.isDebugEnabled()) {
-            String scroll = "";
-            if (request.scroll() != null) {
-                scroll = "&scroll=" + request.scroll().toString();
-            }
+            String scroll = request.scroll() != null ? "&scroll=" + request.scroll() : "";
             log.debug(String.format(
                     "Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty&search_type=%s%s' -d '%s'",
                     getSearchIndexesAsString(query), DOC_TYPE, searchType.toString().toLowerCase(),
