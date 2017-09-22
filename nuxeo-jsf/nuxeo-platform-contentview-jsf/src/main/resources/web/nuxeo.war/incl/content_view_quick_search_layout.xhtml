@@ -55,7 +55,7 @@ empty:
             value="#{jsfResetActions.resetComponents}" />
           <f:attribute name="selectedValue" value="false" />
           <f:attribute name="targetComponentId" value="#{cvid}_showFilterFormBox" />
-          <f:ajax execute="@form" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}" />
+          <a4j:ajax execute="@form" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}" />
         </h:commandButton>
       </h:form>
 
@@ -66,7 +66,7 @@ empty:
           styleClass="button">
           <f:attribute name="selectedValue" value="true" />
           <f:attribute name="targetComponentId" value="#{cvid}_showFilterFormBox" />
-          <f:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}" />
+          <a4j:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}" />
         </h:commandLink>
       </h:form>
 
@@ -83,7 +83,7 @@ empty:
             value="#{contentView.resetSearchDocumentModel()}" />
           <f:attribute name="selectedValue" value="false" />
           <f:attribute name="targetComponentId" value="#{cvid}_showFilterFormBox" />
-          <f:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}" />
+          <a4j:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}" />
         </h:commandLink>
       </h:form>
       <div class="action_bar">
@@ -136,7 +136,7 @@ empty:
                   value="#{contentView.setExecuted(true)}" />
                 <nxu:actionListenerMethod
                   value="#{jsfResetActions.resetComponents}" />
-                <f:ajax execute="@form" render="#{elementsToReRender}" />
+                <a4j:ajax execute="@form" render="#{elementsToReRender}" />
               </h:commandButton>
               <h:commandButton
                 value="#{messages['label.contentview.filter.clearFilterButton']}"
@@ -147,7 +147,7 @@ empty:
                   value="#{jsfResetActions.resetComponents}" />
                 <nxu:actionListenerMethod
                   value="#{contentView.resetSearchDocumentModel()}" />
-                <f:ajax execute="@this" render="#{filterFormId}" />
+                <a4j:ajax execute="@this" render="#{filterFormId}" />
               </h:commandButton>
             </p>
 
