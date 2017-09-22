@@ -26,7 +26,6 @@ import java.util.Collections;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -88,7 +87,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         if (contribution instanceof RedisPoolDescriptor) {
             registerRedisPoolDescriptor((RedisPoolDescriptor) contribution);
         } else {
-            throw new NuxeoException("Unknown contribution class: " + contribution);
+            throw new RuntimeException("Unknown contribution class: " + contribution);
         }
     }
 
@@ -144,10 +143,10 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
     public void handleNewExecutor(RedisExecutor executor) {
         this.executor = executor;
         try {
-            delsha = load("org.nuxeo.ecm.core.redis", "del-keys");
+            delsha = load("org.nuxeo.runtime.redis", "del-keys");
         } catch (RuntimeException cause) {
             executor = null;
-            throw new NuxeoException("Cannot activate redis executor", cause);
+            throw new RuntimeException("Cannot activate redis executor", cause);
         }
     }
 

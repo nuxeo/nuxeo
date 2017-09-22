@@ -26,6 +26,7 @@
     <module>nuxeo-runtime-management</module>
     <module>nuxeo-runtime-metrics</module>
     <module>nuxeo-runtime-jtajca</module>
+    <module>nuxeo-runtime-redis</module>
     <module>nuxeo-runtime-datasource</module>
     <module>nuxeo-runtime-kv</module>
     <module>nuxeo-runtime-pubsub</module>

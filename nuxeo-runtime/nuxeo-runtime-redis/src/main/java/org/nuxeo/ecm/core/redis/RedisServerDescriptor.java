@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -71,7 +70,7 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
     @Override
     public RedisExecutor newExecutor() {
         if (!canConnect(host, port)) {
-            throw new NuxeoException("Cannot connect to Redis host: " + host + ":" + port);
+            throw new RuntimeException("Cannot connect to Redis host: " + host + ":" + port);
         }
         JedisPoolConfig conf = new JedisPoolConfig();
         conf.setMaxTotal(maxTotal);
