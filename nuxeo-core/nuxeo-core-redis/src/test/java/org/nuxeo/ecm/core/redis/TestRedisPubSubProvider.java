@@ -32,10 +32,10 @@ import java.util.function.BiConsumer;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.core.pubsub.PubSubService;
 import org.nuxeo.ecm.core.redis.RedisFeature.Mode;
 import org.nuxeo.ecm.core.redis.contribs.RedisPubSubProvider;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.pubsub.PubSubService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestRedisPubSubProvider extends NXRuntimeTestCase {

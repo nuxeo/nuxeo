@@ -16,7 +16,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.pubsub;
+package org.nuxeo.runtime.pubsub;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy("org.nuxeo.ecm.core.event")
+@Deploy("org.nuxeo.runtime.pubsub")
 public class TestMemPubSubProvider {
 
     @Inject

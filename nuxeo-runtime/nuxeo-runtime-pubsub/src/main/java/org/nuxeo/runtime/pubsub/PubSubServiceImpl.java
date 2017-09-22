@@ -16,7 +16,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.pubsub;
+package org.nuxeo.runtime.pubsub;
 
 import java.util.List;
 import java.util.Map;
@@ -24,8 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.event.EventServiceComponent;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -82,7 +80,7 @@ public class PubSubServiceImpl extends DefaultComponent implements PubSubService
     @Override
     public int getApplicationStartedOrder() {
         // let RedisComponent start before us (Redis starts before WorkManager that starts before events)
-        return EventServiceComponent.APPLICATION_STARTED_ORDER + 10;
+        return -500 + 10;
     }
 
     @Override
@@ -90,7 +88,7 @@ public class PubSubServiceImpl extends DefaultComponent implements PubSubService
         if (CONFIG_XP.equals(extensionPoint)) {
             registerProvider((PubSubProviderDescriptor) contribution);
         } else {
-            throw new NuxeoException("Unknown extension point: " + extensionPoint);
+            throw new RuntimeException("Unknown extension point: " + extensionPoint);
         }
     }
 

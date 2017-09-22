@@ -36,11 +36,11 @@ import java.util.function.BiConsumer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.pubsub.AbstractPubSubProvider;
-import org.nuxeo.ecm.core.pubsub.PubSubProvider;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.pubsub.AbstractPubSubProvider;
+import org.nuxeo.runtime.pubsub.PubSubProvider;
 
 import redis.clients.jedis.Client;
 import redis.clients.jedis.JedisPubSub;

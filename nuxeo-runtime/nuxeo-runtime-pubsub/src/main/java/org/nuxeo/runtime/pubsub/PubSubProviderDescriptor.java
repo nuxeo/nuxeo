@@ -16,11 +16,10 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.pubsub;
+package org.nuxeo.runtime.pubsub;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Descriptor for a {@link PubSubProvider} implementation.
@@ -36,12 +35,12 @@ public class PubSubProviderDescriptor {
     public PubSubProvider getInstance() {
         // dynamic class check, the generics aren't enough
         if (!PubSubProvider.class.isAssignableFrom(klass)) {
-            throw new NuxeoException("Class does not implement PubSubServiceProvider: " + klass.getName());
+            throw new RuntimeException("Class does not implement PubSubServiceProvider: " + klass.getName());
         }
         try {
             return klass.newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new NuxeoException(e);
+            throw new RuntimeException(e);
         }
     }
 
