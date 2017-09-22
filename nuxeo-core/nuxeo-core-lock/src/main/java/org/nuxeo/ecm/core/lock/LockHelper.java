@@ -22,9 +22,9 @@ package org.nuxeo.ecm.core.lock;
 
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.kv.KeyValueService;
-import org.nuxeo.ecm.core.kv.KeyValueStore;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.KeyValueService;
+import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import java.util.concurrent.Callable;

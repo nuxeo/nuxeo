@@ -16,28 +16,19 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.redis;
+package org.nuxeo.runtime.kv;
 
-import javax.inject.Inject;
-
-import org.junit.runner.RunWith;
-import org.nuxeo.runtime.kv.AbstractKeyValueStoreTest;
-import org.nuxeo.runtime.kv.KeyValueService;
-import org.nuxeo.runtime.kv.KeyValueStoreProvider;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-@RunWith(FeaturesRunner.class)
-@Features(RedisFeature.class)
-public class TestRedisKeyValueStore extends AbstractKeyValueStoreTest {
-
-    @Inject
-    protected KeyValueService keyValueService;
+/**
+ * @since 9.1
+ */
+public class TestMemKeyValueStore extends AbstractKeyValueStoreTest {
 
     @Override
     protected KeyValueStoreProvider newKeyValueStore() {
-        KeyValueStoreProvider store = (KeyValueStoreProvider) keyValueService.getKeyValueStore("redis");
-        store.clear();
+        store = new MemKeyValueStore();
+        KeyValueStoreDescriptor descriptor = new KeyValueStoreDescriptor();
+        descriptor.name = "mem";
+        store.initialize(descriptor);
         return store;
     }
 
