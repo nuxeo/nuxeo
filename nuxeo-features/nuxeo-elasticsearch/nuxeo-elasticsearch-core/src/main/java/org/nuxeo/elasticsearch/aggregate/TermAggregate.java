@@ -60,7 +60,7 @@ public class TermAggregate extends AggregateEsBase<BucketTerm> {
         TermsAggregationBuilder ret = AggregationBuilders.terms(getId()).field(getField());
         Map<String, String> props = getProperties();
         if (props.containsKey(AGG_SIZE_PROP)) {
-            ret.size(Integer.parseInt(props.get(AGG_SIZE_PROP)));
+            ret.size(getAggSize(props.get(AGG_SIZE_PROP)));
         }
         if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
             ret.minDocCount(Long.parseLong(props.get(AGG_MIN_DOC_COUNT_PROP)));
