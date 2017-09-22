@@ -44,7 +44,7 @@ public class TestPDFToImage extends BaseConverterTest {
         assertEquals("pdf2image", converterName);
 
         checkConverterAvailability(converterName);
-        checkCommandAvailability("pdftoimage");
+        checkCommandAvailability("converter");
 
         BlobHolder pdfBH = getBlobFromPath("test-docs/hello.pdf");
         Map<String, Serializable> parameters = new HashMap<>();

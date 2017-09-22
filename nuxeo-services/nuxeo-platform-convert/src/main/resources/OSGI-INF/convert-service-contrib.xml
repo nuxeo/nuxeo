@@ -56,7 +56,7 @@
       <destinationMimeType>image/png</destinationMimeType>
       <destinationMimeType>image/gif</destinationMimeType>
       <parameters>
-        <parameter name="CommandLineName">pdftoimage</parameter>
+        <parameter name="CommandLineName">converter</parameter>
       </parameters>
     </converter>
 
@@ -66,7 +66,7 @@
       <sourceMimeType>image/gif</sourceMimeType>
       <destinationMimeType>application/pdf</destinationMimeType>
       <parameters>
-        <parameter name="CommandLineName">imagetopdf</parameter>
+        <parameter name="CommandLineName">converter</parameter>
       </parameters>
     </converter>
 

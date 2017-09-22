@@ -1,8 +1,17 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.convert.tests.command.line.converter">
 
-  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
-    point="converter">
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent" point="command">
+
+    <command name="pdftoimage" enabled="true">
+      <commandLine>convert</commandLine>
+      <parameterString>-define registry:temporary-path=#{nuxeo.tmp.dir} -quiet #{sourceFilePath} #{targetFilePath}</parameterString>
+      <installationDirective>You need to install ImageMagick.</installationDirective>
+    </command>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl" point="converter">
 
     <converter name="testCommandLineConverter" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
       <sourceMimeType>application/pdf</sourceMimeType>
