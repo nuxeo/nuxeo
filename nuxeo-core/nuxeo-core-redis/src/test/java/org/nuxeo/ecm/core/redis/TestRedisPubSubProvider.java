@@ -54,6 +54,7 @@ public class TestRedisPubSubProvider extends NXRuntimeTestCase {
         assumeTrue("Requires a true Redis server with pubsub support", redisFeature.getMode() == Mode.server);
         // we must check for a real Redis server and not the embedded one BEFORE initializing
         // the Redis pubsub contribution, because the embedded server doesn't support pubsub
+        deployBundle("org.nuxeo.runtime.pubsub");
         deployBundle("org.nuxeo.ecm.core.event");
         deployContrib("org.nuxeo.ecm.core.redis.tests", "test-redis-pubsub-contrib.xml");
         pubSubService = Framework.getService(PubSubService.class);

@@ -293,6 +293,18 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-redis</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-redis</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-kv</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>

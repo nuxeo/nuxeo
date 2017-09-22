@@ -1,10 +1,7 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.redis">
+<component name="org.nuxeo.runtime.redis">
 
-  <require>org.nuxeo.ecm.core.work.service</require>
-  <require>org.nuxeo.ecm.core.storage.lock.LockManagerService</require>
-  <require>org.nuxeo.ecm.core.cache.CacheService</require>
-
+  <alias>org.nuxeo.ecm.core.redis</alias>
 
   <documentation>
     Redis executor service.
