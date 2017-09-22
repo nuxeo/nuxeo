@@ -383,6 +383,12 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         String srcMimeType = blobHolder.getBlob().getMimeType();
         String converterName = translationHelper.getConverterName(srcMimeType, destinationMimeType);
         if (converterName == null) {
+            // check if a conversion is available through HTML
+            converterName = translationHelper.getConverterName(srcMimeType, MediaType.TEXT_HTML);
+            if (converterName == null) {
+                throw new ConversionException(String.format("No converters available to convert from %s to %s.",
+                    srcMimeType, destinationMimeType));
+            }
             // Use a chain of 2 converters which will first try to go through HTML,
             // then HTML to the destination mimetype
             return convertThroughHTML(blobHolder, destinationMimeType);
