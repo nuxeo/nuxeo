@@ -68,7 +68,7 @@ public class PDF2ImageConverter extends CommandLineBasedConverter {
             throws ConversionException {
 
         Map<String, Blob> cmdBlobParams = new HashMap<String, Blob>();
-        cmdBlobParams.put("sourceFilePath", blobHolder.getBlob());
+        cmdBlobParams.put("inputFilePath", blobHolder.getBlob());
         return cmdBlobParams;
     }
 
@@ -88,7 +88,7 @@ public class PDF2ImageConverter extends CommandLineBasedConverter {
         }
 
         cmdStringParams.put("outDirPath", outDir.getAbsolutePath());
-        cmdStringParams.put("targetFilePath", outDir.getAbsolutePath() + System.getProperty("file.separator")
+        cmdStringParams.put("outputFilePath", outDir.getAbsolutePath() + System.getProperty("file.separator")
                 + parameters.get("targetFilePath").toString());
         return cmdStringParams;
     }
