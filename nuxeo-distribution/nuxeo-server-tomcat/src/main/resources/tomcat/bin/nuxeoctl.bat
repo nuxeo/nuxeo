@@ -206,7 +206,7 @@ if "%JAVA_VERSION%" lss "%REQUIRED_JAVA_VERSION%" (
 )
 
 if "!JAVA_OPTS!" == "" set JAVA_OPTS=-Xms512m -Xmx1024m -Djava.net.preferIPv4Stack=true -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8
-set JAVA_OPTS=%JAVA_OPTS:"=""%
+set JAVA_OPTS=%JAVA_OPTS:"=\\\"%
 
 REM ***** Add third-party packages from the installer to the path *****
 set PATH=%NUXEO_HOME%\3rdparty\ffmpeg\bin;%NUXEO_HOME%\3rdparty\ImageMagick;%PATH%;%NUXEO_HOME%\3rdparty\pdftohtml;%NUXEO_HOME%\3rdparty\gs\bin;%NUXEO_HOME%\3rdparty\misc\bin
