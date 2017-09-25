@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package org.nuxeo.ecm.core.redis.retry;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.logging.LogFactory;
 
 public class SimpleDelay implements Retry.Policy {
@@ -51,6 +52,11 @@ public class SimpleDelay implements Retry.Policy {
 
     protected long computeDelay() {
         return base;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 
 }
