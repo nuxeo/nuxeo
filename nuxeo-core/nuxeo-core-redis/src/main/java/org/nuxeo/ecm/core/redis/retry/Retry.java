@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,12 @@
  */
 package org.nuxeo.ecm.core.redis.retry;
 
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class Retry {
+
+    private static final Log log = LogFactory.getLog(Retry.class);
 
     public interface Block<T> {
         T retry() throws FailException, ContinueException;
@@ -55,13 +58,19 @@ public class Retry {
 
     public <T> T retry(Block<T> block, Policy policy) throws FailException {
         FailException causes = new FailException(
-                "Cannot execute block, retry policy failed, check supressed exception for more infos");
+                "Cannot execute block, retry policy failed, check suppressed exception for more infos");
         while (policy.allow()) {
             try {
                 return block.retry();
             } catch (ContinueException error) {
+                if (log.isDebugEnabled()) {
+                    log.debug("An error occurred during redis script execution with policy=" + policy, error);
+                }
                 causes.addSuppressed(error.getCause());
             } catch (FailException error) {
+                if (log.isDebugEnabled()) {
+                    log.debug("An error occurred during redis script execution with policy=" + policy, error);
+                }
                 causes.addSuppressed(error.getCause());
                 throw causes;
             }
