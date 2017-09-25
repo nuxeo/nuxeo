@@ -21,15 +21,11 @@ package org.nuxeo.launcher.connect;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.connector.NuxeoClientInstanceType;
@@ -46,100 +42,10 @@ import org.nuxeo.launcher.config.ConfigurationException;
  */
 public class ConnectRegistrationBroker {
 
-    /**
-     * @since 9.2
-     */
-    public enum TrialField {
-        FIRST_NAME( //
-                "firstName", //
-                "First name", //
-                input -> Pattern.matches("^(\\p{Alnum}+)([\\s-]\\p{Alnum}+)*", input), //
-                "Invalid first name: only letters (without accents), space, and hyphen '-' are accepted." //
-        ), LAST_NAME( //
-                "lastName", //
-                "Last name", //
-                input -> Pattern.matches("^(\\p{Alnum}+)([\\s-]\\p{Alnum}+)*", input), //
-                "Invalid last name: only letters (without accents), space, and hyphen '-' are accepted." //
-        ), EMAIL( //
-                "email", //
-                "Email", //
-                input -> EmailValidator.getInstance().isValid(input), //
-                "Invalid email address." //
-        ), COMPANY( //
-                "company", //
-                "Company", //
-                input -> Pattern.matches("^(\\p{Alnum}+)([\\s-]\\p{Alnum}+)*", input),
-                "Invalid company name: only alphanumeric (without accents), space, and hyphen '-' are accepted." //
-        ), PROJECT( //
-                "connectreg:projectName", //
-                "Project name", //
-                input -> Pattern.matches("^(?:[-\\w]+|)$", input), //
-                "Project name can only contain alphanumeric characters and dashes." //
-        ), TERMS_AND_CONDITIONS( //
-                "termsAndConditions", //
-                "Terms and conditions", //
-                input -> true, // always valid
-                "Unused message." //
-        );
-
-        private String id;
-
-        private String name;
-
-        private Predicate<String> predicate;
-
-        private String errorMessage;
-
-        TrialField(String id, String name, Predicate<String> predicate, String errorMessage) {
-            this.id = id;
-            this.name = name;
-            this.predicate = predicate;
-            this.errorMessage = errorMessage;
-        }
-
-        /**
-         * @since 9.2
-         */
-        public String getId() {
-            return id;
-        }
-
-        /**
-         * @since 9.2
-         */
-        public String getPromptMessage() {
-            return name + ": ";
-        }
-
-        /**
-         * @since 9.2
-         */
-        public Predicate<String> getPredicate() {
-            return predicate;
-        }
-
-        /**
-         * @since 9.2
-         */
-        public String getErrorMessage() {
-            return errorMessage;
-        }
-    }
-
     private static final Log log = LogFactory.getLog(ConnectRegistrationBroker.class);
 
     protected static ConnectRegistrationService registration() {
         return NuxeoConnectClient.getConnectRegistrationService();
-    }
-
-    public void registerTrial(Map<String, String> parameters)
-            throws IOException, RegistrationException, ConfigurationException {
-        try {
-            registration().remoteTrialInstanceRegistration(parameters);
-        } catch (LogicalInstanceIdentifier.InvalidCLID e) {
-            log.debug(e, e);
-            throw new ConfigurationException("Instance registration failed.", e);
-        }
     }
 
     public void registerLocal(String strCLID, String description) throws IOException, ConfigurationException {
