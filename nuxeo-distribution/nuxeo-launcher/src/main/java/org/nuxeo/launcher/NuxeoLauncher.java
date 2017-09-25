@@ -91,7 +91,6 @@ import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.connect.ConnectBroker;
 import org.nuxeo.launcher.connect.ConnectRegistrationBroker;
-import org.nuxeo.launcher.connect.ConnectRegistrationBroker.TrialField;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
 import org.nuxeo.launcher.info.CommandInfo;
@@ -526,7 +525,7 @@ public abstract class NuxeoLauncher {
             + "        mp-upgrade\t\tGet all the available upgrades for the Nuxeo Packages currently installed (requires a registered instance).\n"
             + "        mp-show\t\t\tShow Nuxeo Package(s) information. You must provide the package file(s), name(s) or ID(s) as parameter.\n"
             + "        register\t\tRegister your instance with an existing Connect account. You must provide the credentials, the project name or ID, its type and a description.\n"
-            + "        register-trial\t\tRegister your instance with a new trial Connect account. You must provide your first name, your last name, an email, the company name and a project name.\n"
+            + "        register-trial\t\tThis command is deprecated. To register for a free 30 day trial on Nuxeo Online Services, please visit https://connect.nuxeo.com/register\n"
             + "\nThe following commands are always executed in console/headless mode (no GUI): "
             + "\"configure\", \"mp-init\", \"mp-purge\", \"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", "
             + "\"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", \"mp-reset\", \"mp-list\", \"mp-listall\", \"mp-update\", "
@@ -563,8 +562,6 @@ public abstract class NuxeoLauncher {
             + "        nuxeoctl mp-add|mp-install|mp-uninstall|mp-remove|mp-set|mp-request [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--nodeps|--relax <true|false|yes|no|ask>|--accept <true|false|yes|no|ask>|-s|-im]\n\n"
             + "        nuxeoctl register [<username> [<project> [<type> <description>] [<pwd>]]]\n"
             + "                Register an instance with Nuxeo Online Services.\n\n"
-            + "        nuxeoctl register-trial [<firstname> <lastname> <email> <company> <project>]\n"
-            + "                Register a trial instance with Nuxeo Online Services.\n\n"
             + "        nuxeoctl register --clid <arg>\n"
             + "                Register an instance according to the given CLID file.\n\n"
             + "        nuxeoctl register --renew [--clid <arg>]\n"
@@ -1420,25 +1417,6 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @since 8.3
-     */
-    public boolean promptAcceptTerms() {
-        Console console = System.console();
-        if (console != null) {
-            String terms = console.readLine("Read and accept the Nuxeo Trial Terms and Conditions - " + CONNECT_TC_URL
-                    + " (yes/no)? [yes] ");
-            if (StringUtils.isEmpty(terms)) {
-                terms = "yes";
-            }
-            terms = terms.trim().toLowerCase();
-            return "y".equalsIgnoreCase(terms) || "yes".equalsIgnoreCase(terms);
-        } else {
-            log.info("Read Nuxeo Trial Terms and Conditions - " + CONNECT_TC_URL);
-            return true;
-        }
-    }
-
-    /**
      * @param projects
      *            available projects the user must choose one amongst.
      * @return a project. Never null.
@@ -1630,65 +1608,14 @@ public abstract class NuxeoLauncher {
      * </pre>
      *
      * @since 8.3
+     * @deprecated Since 9.3: To register for a free 30 day trial on Nuxeo Online Services, please visit
+     *             https://connect.nuxeo.com/register
      */
+    @Deprecated
     public boolean registerTrial() throws IOException, ConfigurationException, PackageException {
-        CommandInfo commandInfo = cset.newCommandInfo("register-trial");
-        if (params.length != 0 && params.length != 5) {
-            throw new ConfigurationException("Wrong number of arguments.");
-        }
-
-        Map<String, String> registration = new HashMap<>();
-
-        if (params.length == 5) {
-            putIfValid(registration, params[0], TrialField.FIRST_NAME);
-            putIfValid(registration, params[1], TrialField.LAST_NAME);
-            putIfValid(registration, params[2], TrialField.EMAIL);
-            putIfValid(registration, params[3], TrialField.COMPANY);
-            putIfValid(registration, params[4], TrialField.PROJECT);
-        } else {
-            promptAndPut(registration, TrialField.FIRST_NAME);
-            promptAndPut(registration, TrialField.LAST_NAME);
-            promptAndPut(registration, TrialField.EMAIL);
-            promptAndPut(registration, TrialField.COMPANY);
-            promptAndPut(registration, TrialField.PROJECT);
-        }
-
-        if (!promptAcceptTerms()) {
-            log.error("You must accept the Nuxeo Trial Terms and Conditions to register your instance.");
-            errorValue = EXIT_CODE_INVALID;
-            commandInfo.exitCode = 1;
-            return false;
-        }
-        registration.put(TrialField.TERMS_AND_CONDITIONS.getId(), "true");
-
-        try {
-            getConnectRegistrationBroker().registerTrial(registration);
-        } catch (RegistrationException e) {
-            commandInfo.newMessage(e);
-            e.getErrors().forEach(err -> commandInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, err.getMessage()));
-            errorValue = EXIT_CODE_NOT_CONFIGURED;
-            commandInfo.exitCode = 1;
-            return false;
-        }
-        log.info(String.format(
-                "Trial registered to %s for project %s%n"
-                        + "Please ensure you have validated your registration with the confirmation email before starting the server.",
-                registration.get(TrialField.EMAIL.getId()), registration.get(TrialField.PROJECT.getId())));
-        return true;
-    }
-
-    protected void putIfValid(Map<String, String> map, String userInput, TrialField field)
-            throws ConfigurationException {
-        Predicate<String> isValid = field.getPredicate();
-        if (!isValid.test(userInput)) {
-            throw new ConfigurationException(field.getErrorMessage());
-        }
-        map.put(field.getId(), userInput);
-    }
-
-    protected void promptAndPut(Map<String, String> map, TrialField field) throws IOException, ConfigurationException {
-        String userInput = prompt(field.getPromptMessage(), field.getPredicate(), field.getErrorMessage());
-        map.put(field.getId(), userInput);
+        String msg = "This command is deprecated. To register for a free 30 day trial on Nuxeo Online Services,"
+                + " please visit https://connect.nuxeo.com/register";
+        throw new UnsupportedOperationException(msg);
     }
 
     /**

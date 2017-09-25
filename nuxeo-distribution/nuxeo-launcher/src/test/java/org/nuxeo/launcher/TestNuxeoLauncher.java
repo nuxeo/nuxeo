@@ -43,8 +43,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.internal.AssumptionViolatedException;
+import org.junit.rules.ExpectedException;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.launcher.config.AbstractConfigurationTest;
@@ -81,6 +83,9 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
 
     private static final String SOL_PS4 = "fguillau  2788  1.2 19.5699008405296 pts/2    S 18:54:51  1:26 "
             + SOL_PS4_CMD;
+
+    @Rule
+    public final ExpectedException thrown = ExpectedException.none();
 
     protected class MockSolarisProcessManager extends SolarisProcessManager {
 
@@ -174,14 +179,7 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
     }
 
     /**
-     * A valid command of {@code register-trial} contains 0 or 5 additional arguments:
-     *
-     * <pre>
-     * <code>
-     * register-trial
-     * register-trial firstName lastName email company project
-     * </code>
-     * </pre>
+     * Command "register-trial" is deprecated since 9.3.
      * <p>
      * Set timeout to 1 second, {@code timeout = 1000}, to prevent this test takes too long time to finish.
      * The only case it can happen is when Nuxeo Launcher waits for user
@@ -189,33 +187,12 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
      * the implementation of #registerTrial.
      */
     @Test(timeout = 1000) // 1s. Explanation in Javadoc.
-    public void testRegisterTrialWithWrongNumberArgs() throws Exception {
-        String[][] argsToTest = new String[][] {
-                {"register-trial"}, // OK
-                {"register-trial", "first"},
-                {"register-trial", "first", "last"},
-                {"register-trial", "first", "last", "email"},
-                {"register-trial", "first", "last", "email", "company"},
-                {"register-trial", "first", "last", "email", "company", "project"}, // OK
-                {"register-trial", "first", "last", "email", "company", "project", "tooMany"}
-        };
-
-        for (String[] args : argsToTest) {
-            NuxeoLauncher launcher = NuxeoLauncher.createLauncher(args);
-            String cmdStr = "Command " + Arrays.toString(args);
-
-            // Skip assertions for valid argument length
-            if (args.length == 1 || args.length == 6) {
-                continue;
-            }
-
-            try {
-                launcher.registerTrial();
-                fail(cmdStr + " did not raise exception.");
-            } catch (ConfigurationException e) {
-                assertEquals(cmdStr + ": " + e.getMessage(), "Wrong number of arguments.", e.getMessage());
-            }
-        }
+    @SuppressWarnings("deprecation")
+    public void testRegisterTrialIsDeprecated() throws Exception {
+        thrown.expect(UnsupportedOperationException.class);
+        thrown.expectMessage("deprecated");
+        thrown.expectMessage("https://connect.nuxeo.com/register");
+        NuxeoLauncher.createLauncher(new String[] { "register-trial" }).registerTrial();
     }
 
     /**
