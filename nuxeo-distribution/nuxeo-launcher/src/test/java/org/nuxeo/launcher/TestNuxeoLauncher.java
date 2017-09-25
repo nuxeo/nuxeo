@@ -40,7 +40,6 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -48,8 +47,6 @@ import org.junit.Test;
 import org.junit.internal.AssumptionViolatedException;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
-import org.nuxeo.connect.identity.LogicalInstanceIdentifier.InvalidCLID;
-import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.launcher.config.AbstractConfigurationTest;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
@@ -153,8 +150,7 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
     }
 
     @Test
-    public void testClidOption() throws ConfigurationException, ParseException, IOException, PackageException,
-            InvalidCLID {
+    public void testClidOption() throws Exception {
         Path instanceClid = Paths.get(TEST_INSTANCE_CLID);
         if (!Files.exists(instanceClid)) {
             throw new AssumptionViolatedException("No test CLID available");
@@ -226,7 +222,6 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
      * NXP-19071: avoid confusion with the command parameters when passing an argument to an option, or when calling
      * without argument an option which accepts optional arguments.
      *
-     * @throws Exception
      * @since 8.2
      */
     @Test
