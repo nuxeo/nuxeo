@@ -1077,8 +1077,7 @@ public abstract class NuxeoLauncher {
      */
     protected static CommandLine parseOptions(String[] args) throws ParseException {
         CommandLineParser parser = new DefaultParser();
-        CommandLine cmdLine = null;
-        cmdLine = parser.parse(options, args);
+        CommandLine cmdLine = parser.parse(options, args);
         if (cmdLine.hasOption(OPTION_HELP)) {
             cmdLine.getArgList().add(OPTION_HELP);
             setQuiet();
@@ -1132,12 +1131,6 @@ public abstract class NuxeoLauncher {
 
     /**
      * @since 5.5
-     * @param launcher
-     * @throws PackageException
-     * @throws IOException
-     * @throws ConfigurationException
-     * @throws ParseException
-     * @throws GeneralSecurityException
      */
     public static void launch(final NuxeoLauncher launcher) throws IOException, PackageException,
             ConfigurationException, ParseException, GeneralSecurityException {
@@ -1699,8 +1692,6 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @throws ConfigurationException
-     * @throws GeneralSecurityException
      * @since 7.4
      */
     protected void encrypt() throws ConfigurationException, GeneralSecurityException {
@@ -1731,7 +1722,6 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @throws ConfigurationException
      * @since 7.4
      */
     protected void decrypt() throws ConfigurationException {
@@ -1759,9 +1749,6 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @throws ConfigurationException
-     * @throws IOException
-     * @throws GeneralSecurityException
      * @since 7.4
      */
     protected void config() throws ConfigurationException, IOException, GeneralSecurityException {
@@ -1807,7 +1794,7 @@ public abstract class NuxeoLauncher {
             String value = userConfig.getProperty(key, raw);
             if (value == null) {
                 errorValue = EXIT_CODE_NOT_CONFIGURED;
-                sb.append(OUTPUT_UNSET_VALUE + newLine);
+                sb.append(OUTPUT_UNSET_VALUE).append(newLine);
             } else {
                 if (raw && !keyChecked && Crypto.isEncrypted(value)) {
                     keyChecked = true;
@@ -1832,17 +1819,15 @@ public abstract class NuxeoLauncher {
                     }
                 }
                 if (isRegexp) {
-                    sb.append(key + "=");
+                    sb.append(key).append('=');
                 }
-                sb.append(value + newLine);
+                sb.append(value).append(newLine);
             }
         }
         System.out.print(sb.toString());
     }
 
     /**
-     * @throws IOException
-     * @throws GeneralSecurityException
      * @since 7.4
      */
     protected void setConfigProperties() throws ConfigurationException, IOException, GeneralSecurityException {
@@ -1964,7 +1949,6 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @throws PackageException
      * @see #doStartAndWait(boolean)
      */
     public boolean doStartAndWait() throws PackageException {
@@ -1987,7 +1971,6 @@ public abstract class NuxeoLauncher {
      *
      * @see #doStart(boolean)
      * @return true if the server started successfully
-     * @throws PackageException
      */
     public boolean doStart() throws PackageException {
         boolean started = doStart(false);
@@ -2005,7 +1988,6 @@ public abstract class NuxeoLauncher {
      * @param logProcessOutput
      *            Must process output stream must be logged or not.
      * @return true if the server started successfully
-     * @throws PackageException
      */
     public boolean doStartAndWait(boolean logProcessOutput) throws PackageException {
         boolean commandSucceeded = false;
@@ -2034,7 +2016,6 @@ public abstract class NuxeoLauncher {
 
     /**
      * @return true if Nuxeo is ready
-     * @throws InterruptedException
      */
     protected boolean waitForEffectiveStart() throws InterruptedException {
         long startTime = new Date().getTime();
@@ -2124,7 +2105,6 @@ public abstract class NuxeoLauncher {
      * Starts the server in background.
      *
      * @return true if server successfully started
-     * @throws PackageException
      */
     public boolean doStart(boolean logProcessOutput) throws PackageException {
         errorValue = EXIT_CODE_OK;
@@ -2274,10 +2254,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * @since 5.5
-     * @param classpath
-     * @param baseDir
      * @return classpath with all jar files in baseDir
-     * @throws IOException
      */
     protected String getClassPath(String classpath, File baseDir) throws IOException {
         File[] files = getFilename(baseDir, ".*");
@@ -2289,8 +2266,6 @@ public abstract class NuxeoLauncher {
 
     /**
      * @since 5.5
-     * @param baseDir
-     * @param filePattern
      * @return filename matching filePattern in baseDir
      */
     protected File[] getFilename(File baseDir, final String filePattern) {
@@ -2502,13 +2477,10 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @throws ParseException
      * @return a NuxeoLauncher instance specific to current server ( Tomcat or
      *         Jetty).
      * @throws ConfigurationException
      *             If server cannot be identified
-     * @throws PackageException
-     * @throws IOException
      * @since 5.5
      */
     public static NuxeoLauncher createLauncher(String[] args) throws ConfigurationException, ParseException, IOException, PackageException {
@@ -2538,7 +2510,6 @@ public abstract class NuxeoLauncher {
      * @param cmdLine
      *            Program arguments; may be used by launcher implementation.
      *            Must not be null or empty.
-     * @throws ConfigurationException
      */
     private void setArgs(CommandLine cmdLine) throws ConfigurationException {
         this.cmdLine = cmdLine;
@@ -2797,9 +2768,6 @@ public abstract class NuxeoLauncher {
 
     /**
      * List all local packages.
-     *
-     * @throws IOException
-     * @throws PackageException
      */
     protected void pkgList() throws IOException, PackageException {
         getConnectBroker().listPending(configurationGenerator.getInstallFile());
@@ -2810,8 +2778,6 @@ public abstract class NuxeoLauncher {
      * List all packages including remote ones.
      *
      * @since 5.6
-     * @throws IOException
-     * @throws PackageException
      */
     protected void pkgListAll() throws IOException, PackageException {
         getConnectBroker().listPending(configurationGenerator.getInstallFile());
@@ -2884,9 +2850,6 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @throws PackageException
-     * @throws IOException
-     * @throws ConfigurationException
      * @since 5.6
      */
     protected void showConfig() throws IOException, PackageException, ConfigurationException {
@@ -2933,13 +2896,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * @since 5.6
-     * @param pkgsToAdd
-     * @param pkgsToInstall
-     * @param pkgsToUninstall
-     * @param pkgsToRemove
      * @return true if request execution was fine
-     * @throws IOException
-     * @throws PackageException
      */
     protected boolean pkgRequest(List<String> pkgsToAdd, List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove) throws IOException, PackageException {
@@ -2962,8 +2919,6 @@ public abstract class NuxeoLauncher {
      *
      * @since 5.6
      * @return true
-     * @throws IOException
-     * @throws PackageException
      */
     protected boolean pkgRefreshCache() throws IOException, PackageException {
         getConnectBroker().refreshCache();
@@ -2973,8 +2928,6 @@ public abstract class NuxeoLauncher {
     /**
      * Add packages from the distribution to the local cache
      *
-     * @throws PackageException
-     * @throws IOException
      * @since 5.6
      */
     protected boolean pkgInit() throws IOException, PackageException {
@@ -2985,8 +2938,6 @@ public abstract class NuxeoLauncher {
      * Uninstall and remove all packages from the local cache
      *
      * @return {@code true} if command succeed
-     * @throws PackageException
-     * @throws IOException
      * @since 5.6
      */
     protected boolean pkgPurge() throws PackageException, IOException {
@@ -2997,8 +2948,6 @@ public abstract class NuxeoLauncher {
      * Install the hotfixes available for the instance
      *
      * @return {@code true} if command succeed
-     * @throws PackageException
-     * @throws IOException
      * @since 5.6
      */
     protected boolean pkgHotfix() throws IOException, PackageException {
@@ -3009,8 +2958,6 @@ public abstract class NuxeoLauncher {
      * Upgrade the Nuxeo Packages (addons) available for the instance
      *
      * @return {@code true} if command succeed
-     * @throws PackageException
-     * @throws IOException
      * @since 5.6
      */
     protected boolean pkgUpgrade() throws IOException, PackageException {
@@ -3023,8 +2970,6 @@ public abstract class NuxeoLauncher {
      * @param request
      *            Space separated list of package names or IDs prefixed with +
      *            (install) or - (uninstall)
-     * @throws IOException
-     * @throws PackageException
      * @since 5.6
      */
     protected boolean pkgCompoundRequest(List<String> request) throws IOException, PackageException {
@@ -3066,8 +3011,6 @@ public abstract class NuxeoLauncher {
      *            List of packages identified by their ID, name or local
      *            filename.
      * @return false if unable to show package information.
-     * @throws PackageException
-     * @throws IOException
      * @since 5.7
      */
     protected boolean pkgShow(String[] packages) throws IOException, PackageException {
