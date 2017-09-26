@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.query.api.PageProviderservice.test.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
+
+    <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_TRACK">
+      <trackUsage>true</trackUsage>
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ?
+          AND ecm:isCheckedInVersion = 0
+          AND ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+      <pageSizeOptions>
+        <option>10</option>
+        <option>15</option>
+        <option>20</option>
+      </pageSizeOptions>
+    </coreQueryPageProvider>
+
+  </extension>
+
+</component>
