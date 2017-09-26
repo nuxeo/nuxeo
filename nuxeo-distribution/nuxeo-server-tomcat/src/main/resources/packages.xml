@@ -31,9 +31,6 @@
     <package id="nuxeo-web-ui" label="Nuxeo Web UI" color="#00adff" textcolor="#FFF"
       shortlabel="WEBUI"
       desc="Web UI is the new UI for Nuxeo Server. Thanks to its great flexibility, it is the ideal start for any Digital Asset Management, Case Managent and Document Management project. Web UI is made with great client side web technology and adopts most recent standards of the Web." />
-    <package id="nuxeo-jsf-ui" label="Nuxeo JSF UI" color="#0000ff" textcolor="#FFF"
-      shortlabel="JSFUI" virtual="false"
-      desc="JSF UI addon offers a complete user interface for Nuxeo server, fully extensible and configurable: forms, process, user actions. It is very easy to implement your business process on top of Nuxe JSF UI with Nuxeo Studio." />
     <package id="nuxeo-spreadsheet" label="Nuxeo Spreadsheet" shortlabel="SSHEET"
       desc="The Nuxeo Spreadsheet addon allows bulk editing documents metadata starting from a content view result set, providing a spreadsheet-like user experience." />
     <package id="nuxeo-vision" label="Nuxeo Vision" shortlabel="VISION"
@@ -45,7 +42,6 @@
       <package ref="nuxeo-server" exclusive="false">
         <package ref="nuxeo-ui-virtual" exclusive="false">
           <package ref="nuxeo-no-ui" exclusive="true"/>
-          <package ref="nuxeo-jsf-ui" exclusive="false"/>
           <package ref="nuxeo-web-ui" exclusive="false" />
         </package>
         <package ref="nuxeo-addon-virtual" exclusive="false">
@@ -63,7 +59,7 @@
   </install>
   <presets>
     <preset id="nuxeo-server-preset" label="Nuxeo Server Preset">
-      nuxeo-server,nuxeo-jsf-ui,nuxeo-web-ui,nuxeo-dam,nuxeo-drive,nuxeo-spreadsheet,nuxeo-showcase-content,nuxeo-template-rendering-samples
+      nuxeo-server,nuxeo-web-ui,nuxeo-dam,nuxeo-drive,nuxeo-spreadsheet,nuxeo-showcase-content,nuxeo-template-rendering-samples
     </preset>
   </presets>
 </packages>
