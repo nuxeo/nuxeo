@@ -30,8 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.Environment;
+import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
@@ -63,7 +63,9 @@ public class StatusServlet extends HttpServlet {
         if (param != null) {
             doPost(req, resp);
         } else {
-            sendResponse(resp, "Ok");
+            if (getOrRunHealthCheck().isHealthy()) {
+                sendResponse(resp, "Ok");
+            }
         }
     }
 
@@ -130,4 +132,8 @@ public class StatusServlet extends HttpServlet {
         log.debug("Ready.");
     }
 
+    protected HealthCheckResult getOrRunHealthCheck() {
+        return Framework.getService(ProbeManager.class).getOrRunHealthCheck();
+
+    }
 }

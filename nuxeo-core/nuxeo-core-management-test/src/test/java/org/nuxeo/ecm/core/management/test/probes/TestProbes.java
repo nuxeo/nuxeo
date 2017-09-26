@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.management.probes.AdministrativeStatusProbe;
+import org.nuxeo.ecm.core.management.statuses.HealthCheckResult;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -76,6 +77,21 @@ public class TestProbes {
         assertFalse("not a success", info.isInError());
         assertFalse("wrong success value", info.getStatus().getAsString().equals("[unavailable]"));
         assertEquals("wrong default value", "[unavailable]", info.getLastFailureStatus().getAsString());
+
+    }
+
+    @Test
+    public void testHealthCheck() {
+
+        ProbeManager pm = Framework.getLocalService(ProbeManager.class);
+        Collection<ProbeInfo> healthCheckProbes = pm.getAllContributeToHealthCheckProbeInfos();
+        assertEquals(1, healthCheckProbes.size());
+        ProbeInfo probeInfo = (ProbeInfo) healthCheckProbes.toArray()[0];
+
+        assertEquals(0, probeInfo.getRunnedCount());
+        HealthCheckResult result = pm.getOrRunHealthCheck();
+        assertTrue(result.isHealthy());
+        assertEquals(1, probeInfo.getRunnedCount());
 
     }
 

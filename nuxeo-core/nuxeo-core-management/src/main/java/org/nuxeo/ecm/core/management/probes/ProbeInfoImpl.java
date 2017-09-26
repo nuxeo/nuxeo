@@ -56,7 +56,7 @@ public class ProbeInfoImpl implements ProbeMBean, ProbeInfo, Serializable {
     protected Date lastFailureDate = new Date(0);
 
     protected ProbeStatus lastFailureStatus = ProbeStatus.newBlankProbStatus();
-
+    
     protected ProbeInfoImpl(ProbeDescriptor descriptor) {
         this.descriptor = descriptor;
         shortcutName = descriptor.getShortcut();

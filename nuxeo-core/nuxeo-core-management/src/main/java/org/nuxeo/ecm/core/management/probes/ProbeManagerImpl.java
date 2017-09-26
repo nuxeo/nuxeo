@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.core.management.probes;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -32,6 +35,7 @@ import org.nuxeo.ecm.core.management.api.Probe;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.management.api.ProbeStatus;
+import org.nuxeo.ecm.core.management.statuses.HealthCheckResult;
 import org.nuxeo.runtime.management.ManagementRuntimeException;
 
 public class ProbeManagerImpl implements ProbeManager {
@@ -44,9 +48,13 @@ public class ProbeManagerImpl implements ProbeManager {
 
     protected final Map<String, Probe> probesByShortcuts = new HashMap<String, Probe>();
 
+    protected final Map<String, ProbeInfo> probesForHealthCheck = new HashMap<String, ProbeInfo>();
+
     protected final Set<ProbeInfo> failed = new HashSet<ProbeInfo>();
 
     protected final Set<ProbeInfo> succeed = new HashSet<ProbeInfo>();
+
+    protected final int healthCheckIntervalInSec = 20;
 
     protected Set<String> doExtractProbesName(Collection<ProbeInfo> runners) {
         Set<String> names = new HashSet<String>();
@@ -150,12 +158,16 @@ public class ProbeManagerImpl implements ProbeManager {
         infosByTypes.put(probeClass, info);
         infosByShortcuts.put(descriptor.getShortcut(), info);
         probesByShortcuts.put(descriptor.getShortcut(), probe);
+        if (probesForHealthCheck.containsKey(descriptor.getShortcut())) {
+            probesForHealthCheck.put(descriptor.getShortcut(), info);
+        }
     }
 
     public void unregisterProbe(ProbeDescriptor descriptor) {
         Class<? extends Probe> probeClass = descriptor.getProbeClass();
         infosByTypes.remove(probeClass);
         infosByShortcuts.remove(descriptor.getShortcut());
+        probesForHealthCheck.remove(descriptor.getShortcut());
     }
 
     protected void doRun() {
@@ -216,6 +228,42 @@ public class ProbeManagerImpl implements ProbeManager {
                 failed.add(probe);
             }
         }
+    }
+
+    @Override
+    public void registerProbeForHealthCheck(HealthCheckProbesDescriptor descriptor) {
+        String name = descriptor.getName();
+        if (!descriptor.isEnabled()) {
+            if (probesForHealthCheck.containsKey(name)) {
+                probesForHealthCheck.remove(name);
+                return;
+            }
+        }
+        probesForHealthCheck.put(name, infosByShortcuts.containsKey(name) ? getProbeInfo(name) : null);
+    }
+
+    @Override
+    public Collection<ProbeInfo> getAllContributeToHealthCheckProbeInfos() {
+        return Collections.unmodifiableCollection(probesForHealthCheck.values());
+    }
+
+    @Override
+    public HealthCheckResult getOrRunHealthCheck() {
+        LocalDateTime now = LocalDateTime.now();
+        for (String probeName : probesForHealthCheck.keySet()) {
+            ProbeInfo probe = probesForHealthCheck.get(probeName);
+            if (probe == null) {
+                log.warn("Probe:" + probeName + " does not exist, skipping it for the health check");
+                continue;
+            }
+            Date lastRunDate = probe.getLastRunnedDate();
+            LocalDateTime lastRunDateTime = lastRunDate != null ? LocalDateTime.ofInstant(lastRunDate.toInstant(),
+                    ZoneId.systemDefault()) : LocalDateTime.MIN;
+            if (ChronoUnit.SECONDS.between(lastRunDateTime, now) > healthCheckIntervalInSec) {
+                doRunProbe(probe);
+            }
+        }
+        return new HealthCheckResult(probesForHealthCheck.values());
     }
 
 }
