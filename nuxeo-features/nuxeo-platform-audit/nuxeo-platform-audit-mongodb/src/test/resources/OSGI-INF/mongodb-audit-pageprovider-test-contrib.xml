@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.mongodb.PageProviderservice.test.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+             point="providers">
+
+    <genericPageProvider name="SimpleMongoDBAuditPP"
+                         class="org.nuxeo.mongodb.audit.pageprovider.MongoDBAuditPageProvider">
+      <pattern>
+        {
+          "$and": [
+            { "docPath": "/dummy" },
+            { "category": "category1" }
+           ]
+        }
+      </pattern>
+      <sort ascending="true" column="id" />
+      <pageSize>5</pageSize>
+    </genericPageProvider>
+
+
+    <genericPageProvider name="SimpleMongoDBAuditPPWithParams"
+                         class="org.nuxeo.mongodb.audit.pageprovider.MongoDBAuditPageProvider">
+      <pattern>
+        {
+          "$and": [
+            { "docPath": "/withParams" },
+            { "eventId": { "$in": [ "entry1", "entry2", "entry3" ] } },
+            { "category": "?" }
+          ]
+        }
+      </pattern>
+      <sort ascending="false" column="id" />
+      <pageSize>5</pageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="SearchById" class="org.nuxeo.mongodb.audit.pageprovider.MongoDBAuditPageProvider">
+      <pattern>
+        { "docUUID": "?" }
+      </pattern>
+      <sort ascending="true" column="id" />
+      <pageSize>5</pageSize>
+    </genericPageProvider>
+
+  </extension>
+
+</component>

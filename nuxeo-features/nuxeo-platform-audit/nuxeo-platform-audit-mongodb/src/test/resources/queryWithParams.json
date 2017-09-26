@@ -1,0 +1,18 @@
+{
+  "$and": [
+    {
+      "docPath": "/dummy"
+    },
+    {
+      "eventId": {
+        "$in": [
+          "entry1",
+          "entry2"
+        ]
+      }
+    },
+    {
+      "category": "${category}"
+    }
+  ]
+}

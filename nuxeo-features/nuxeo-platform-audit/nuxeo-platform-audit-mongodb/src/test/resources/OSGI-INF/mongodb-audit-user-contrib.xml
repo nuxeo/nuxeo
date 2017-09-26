@@ -1,0 +1,40 @@
+<component name="org.nuxeo.ecm.platform.audit.user.contrib" version="1.0">
+
+  <documentation>Contribute the user events to the Audit configuration :
+    this is only safe to do so when the MongoDB backend if used for Audit
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" point="event">
+    <event name="user_created">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.id}" key="id" />
+      </extendedInfos>
+    </event>
+    <event name="user_deleted">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.id}" key="id" />
+      </extendedInfos>
+    </event>
+    <event name="user_modified">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.id}" key="id" />
+      </extendedInfos>
+    </event>
+    <event name="group_created">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.id}" key="id" />
+      </extendedInfos>
+    </event>
+    <event name="group_deleted">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.id}" key="id" />
+      </extendedInfos>
+    </event>
+    <event name="group_modified">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.id}" key="id" />
+      </extendedInfos>
+    </event>
+  </extension>
+
+</component>

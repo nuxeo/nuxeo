@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-SymbolicName: org.nuxeo.mongodb.audit.test;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/mongodb-audit-contrib.xml,
+ OSGI-INF/mongodb-audit-pageprovider-contrib.xml,
+ OSGI-INF/mongodb-audit-search-contrib.xml,
+ OSGI-INF/mongodb-audit-user-contrib.xml
