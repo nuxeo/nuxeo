@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.core.mongodb;
+package org.nuxeo.runtime.mongodb;
 
 import java.io.Serializable;
 

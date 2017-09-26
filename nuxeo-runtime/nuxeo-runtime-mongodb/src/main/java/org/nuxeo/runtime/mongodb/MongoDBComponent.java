@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.core.mongodb;
+package org.nuxeo.runtime.mongodb;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -25,8 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.repository.RepositoryService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry.FragmentList;
@@ -46,7 +44,7 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
 
     private static final Log log = LogFactory.getLog(MongoDBComponent.class);
 
-    public static final String NAME = "org.nuxeo.ecm.core.mongodb.MongoDBComponent";
+    public static final String NAME = "org.nuxeo.runtime.mongodb.MongoDBComponent";
 
     private static final String EP_CONNECTION = "connection";
 
@@ -109,9 +107,9 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
 
     @Override
     public int getApplicationStartedOrder() {
-        RepositoryService component = (RepositoryService) Framework.getRuntime().getComponent(
-                "org.nuxeo.ecm.core.repository.RepositoryServiceComponent");
-        return component.getApplicationStartedOrder() + 1;
+        // RepositoryService getApplicationStartedOrder = 100
+        // (org.nuxeo.ecm.core.repository.RepositoryServiceComponent)
+        return 100 + 1;
     }
 
     /**

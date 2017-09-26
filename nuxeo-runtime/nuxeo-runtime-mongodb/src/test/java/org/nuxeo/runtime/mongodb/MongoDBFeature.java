@@ -16,19 +16,11 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.core.mongodb;
+package org.nuxeo.runtime.mongodb;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
-import org.bson.Document;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.mongodb.MongoDBConnectionService;
-import org.nuxeo.ecm.core.repository.RepositoryService;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.URLStreamRef;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
@@ -40,46 +32,56 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.osgi.framework.Bundle;
 
-import com.mongodb.client.MongoCollection;
-
 /**
  * @since 9.1
  */
-@Deploy({ "org.nuxeo.ecm.core.mongodb", "org.nuxeo.ecm.core.mongodb.test" })
-@Features(CoreFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
+@Features(RuntimeFeature.class)
+@Deploy({ "org.nuxeo.runtime.mongodb", "org.nuxeo.runtime.mongodb.test" })
 @ConditionalIgnoreRule.Ignore(condition = IgnoreNoMongoDB.class, cause = "Needs a MongoDB server!")
-public class MongoDBComponentFeature extends SimpleFeature {
+public class MongoDBFeature extends SimpleFeature {
+
+    /** Set this system property to true to enable MongoDB tests. */
+    public static final String MONGODB_ENABLED = "nuxeo.test.mongodb.enabled";
+
+    public static final String MONGODB_SERVER_PROPERTY = "nuxeo.test.mongodb.server";
+
+    public static final String MONGODB_DBNAME_PROPERTY = "nuxeo.test.mongodb.dbname";
+
+    public static final String DEFAULT_MONGODB_SERVER = "localhost:27017";
+
+    public static final String DEFAULT_MONGODB_DBNAME = "unittests";
+
+    protected static String defaultProperty(String name, String def) {
+        String value = System.getProperty(name);
+        if (value == null || value.equals("") || value.equals("${" + name + "}")) {
+            value = def;
+        }
+        Framework.getProperties().setProperty(name, value);
+        return value;
+    }
 
     @Override
     public void start(FeaturesRunner runner) {
-        // We need to deploy the bundle like this to have the same context and properties as StorageConfiguration
+        defaultProperty(MONGODB_SERVER_PROPERTY, DEFAULT_MONGODB_SERVER);
+        defaultProperty(MONGODB_DBNAME_PROPERTY, DEFAULT_MONGODB_DBNAME);
+        // deploy the test bundle after the default properties have been set
         try {
             RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
-            Bundle bundle = harness.getOSGiAdapter().getRegistry().getBundle("org.nuxeo.ecm.core.mongodb.test");
-            URL url = bundle.getEntry("OSGI-INF/mongodb-core-test-contrib.xml");
+            Bundle bundle = harness.getOSGiAdapter().getRegistry().getBundle("org.nuxeo.runtime.mongodb.test");
+            URL url = bundle.getEntry("OSGI-INF/mongodb-test-contrib.xml");
             harness.getContext().deploy(new URLStreamRef(url));
         } catch (IOException e) {
-            throw new NuxeoException(e);
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public void afterTeardown(FeaturesRunner runner) {
-        // We need to clean all collections except the one from repositories
-        List<String> repositoryNames = Framework.getService(RepositoryService.class).getRepositoryNames();
-        // Clean MongoDB database
-        // Get a connection to MongoDB
         MongoDBConnectionService mongoService = Framework.getService(MongoDBConnectionService.class);
-        // Get database
+        // drop all collections in the databases we've opened
         mongoService.getDatabases().forEach(database -> {
             for (String collName : database.listCollectionNames()) {
-                // Filter out collections used by repositories (eg: 'default' and 'default.counters')
-                if (repositoryNames.stream().anyMatch(collName::startsWith)) {
-                    continue;
-                }
-                MongoCollection<Document> collection = database.getCollection(collName);
-                collection.drop();
+                database.getCollection(collName).drop();
             }
         });
     }

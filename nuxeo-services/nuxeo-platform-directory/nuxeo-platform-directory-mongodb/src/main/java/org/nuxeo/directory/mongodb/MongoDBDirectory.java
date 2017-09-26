@@ -32,7 +32,6 @@ import java.util.Map;
 
 import com.mongodb.MongoClient;
 import org.nuxeo.ecm.core.cache.CacheService;
-import org.nuxeo.ecm.core.mongodb.MongoDBConnectionHelper;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.AbstractDirectory;
@@ -41,6 +40,7 @@ import org.nuxeo.ecm.directory.DirectoryCSVLoader;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;

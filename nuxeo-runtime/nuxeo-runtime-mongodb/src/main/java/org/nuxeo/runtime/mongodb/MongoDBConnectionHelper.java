@@ -18,7 +18,7 @@
  *     Kevin Leturc
  *     Funsho David
  */
-package org.nuxeo.ecm.core.mongodb;
+package org.nuxeo.runtime.mongodb;
 
 import java.util.stream.StreamSupport;
 
@@ -26,7 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
-import org.nuxeo.ecm.core.api.NuxeoException;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -63,14 +62,12 @@ public class MongoDBConnectionHelper {
      */
     public static MongoClient newMongoClient(String server) {
         if (StringUtils.isBlank(server)) {
-            throw new NuxeoException("Missing <server> in MongoDB repository descriptor");
+            throw new RuntimeException("Missing <server> in MongoDB descriptor");
         }
         MongoClientOptions.Builder optionsBuilder = MongoClientOptions.builder()
-                  // Can help to prevent firewall disconnects
-                  // inactive connection, option not available from URI
+                  // can help to prevent firewall disconnecting inactive connection, option not available from URI
                   .socketKeepAlive(true)
-                  // don't wait for ever by default,
-                  // can be overridden using URI options
+                  // don't wait forever by default, can be overridden using URI options
                   .connectTimeout(MONGODB_OPTION_CONNECTION_TIMEOUT_MS)
                   .socketTimeout(MONGODB_OPTION_SOCKET_TIMEOUT_MS)
                   .description("Nuxeo");
