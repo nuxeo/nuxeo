@@ -30,7 +30,7 @@
       desc="The Nuxeo Live Connect addon allows users to reference their files stored on most common EFSS systems (Dropbox, Box, Google Drive, One Drive). User can then apply business workflows to those external ressources, benefit from full text search and edit metadata as if they were stored in the Nuxeo repository." />
     <package id="nuxeo-web-ui" label="Nuxeo Web UI" color="#00adff" textcolor="#FFF"
       shortlabel="WEBUI"
-      desc="Web UI is the new UI for Nuxeo Server. Thanks to its great flexibility, it is the ideal start for any Digital Asset Management, Case Managent and Document Management project. Web UI is made with great client side web technology and adopts most recent standards of the Web." />
+      desc="Thanks to its great flexibility, it is the ideal start for any Digital Asset Management, Case Managent and Document Management project. Web UI is made with great client side web technology and adopts most recent standards of the Web." />
     <package id="nuxeo-spreadsheet" label="Nuxeo Spreadsheet" shortlabel="SSHEET"
       desc="The Nuxeo Spreadsheet addon allows bulk editing documents metadata starting from a content view result set, providing a spreadsheet-like user experience." />
     <package id="nuxeo-vision" label="Nuxeo Vision" shortlabel="VISION"
