@@ -31,8 +31,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.el.ELException;
 
@@ -395,6 +395,19 @@ public abstract class AbstractAuditBackend implements AuditBackend {
     }
 
     /**
+     * Returns the logs given a doc uuid.
+     *
+     * @param uuid the document uuid
+     * @return a list of log entries
+     * @deprecated since 8.4, use {@link #getLogEntriesFor(String, String))} instead.
+     */
+    @Deprecated
+    @Override
+    public List<LogEntry> getLogEntriesFor(String uuid) {
+        return getLogEntriesFor(uuid, Collections.<String, FilterMapEntry> emptyMap(), false);
+    }
+
+    /**
      * Returns the logs given a doc uuid and a repository id.
      *
      * @param uuid the document uuid
@@ -404,22 +417,12 @@ public abstract class AbstractAuditBackend implements AuditBackend {
      */
     @Override
     public List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
-        return getLogEntriesFor(uuid, repositoryId);
-    }
-
-    /**
-     * Returns the logs given a doc uuid.
-     *
-     * @param uuid the document uuid
-     * @return a list of log entries
-     * @deprecated since 8.4, use
-     *             {@link (org.nuxeo.ecm.platform.audit.service.AbstractAuditBackend.getLogEntriesFor(String, String))}
-     *             instead.
-     */
-    @Deprecated
-    @Override
-    public List<LogEntry> getLogEntriesFor(String uuid) {
-        return getLogEntriesFor(uuid, Collections.<String, FilterMapEntry> emptyMap(), false);
+        FilterMapEntry repositoryEntry = new FilterMapEntry();
+        repositoryEntry.setColumnName("repositoryId");
+        repositoryEntry.setObject(repositoryId);
+        repositoryEntry.setOperator("=");
+        repositoryEntry.setQueryParameterName("repositoryId");
+        return getLogEntriesFor(uuid, Collections.singletonMap("repositoryId", repositoryEntry), false);
     }
 
     @Override
