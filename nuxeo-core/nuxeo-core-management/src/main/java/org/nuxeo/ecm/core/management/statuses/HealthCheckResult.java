@@ -18,8 +18,18 @@
  */
 package org.nuxeo.ecm.core.management.statuses;
 
+import java.io.IOException;
 import java.util.Collection;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 
 /**
@@ -28,6 +38,8 @@ import org.nuxeo.ecm.core.management.api.ProbeInfo;
  * @since 9.3
  */
 public class HealthCheckResult {
+
+    public final Log log = LogFactory.getLog(HealthCheckResult.class);
 
     protected Collection<ProbeInfo> probes;
 
@@ -44,4 +56,29 @@ public class HealthCheckResult {
         return healthy;
     }
 
+    public String toJson() {
+        try {
+            return buildResponse(probes).getString();
+        } catch (IOException e) {
+            log.error("Unable to compute detailed healthCheck status", e);
+            return StringUtils.EMPTY; // don't fail as the probes might have been sucessful
+        }
+    }
+
+    protected Blob buildResponse(Collection<ProbeInfo> probes) {
+        JSONArray array = new JSONArray();
+        try {
+            for (ProbeInfo probe : probes) {
+                JSONObject o = new JSONObject();
+                o.append(probe.getShortcutName(), (probe.getStatus().isSuccess() ? "OK" : "FAIL"));
+                array.put(o);
+            }
+            JSONObject result = new JSONObject();
+            result.put("healthCheck", array);
+            return Blobs.createBlob(result.toString(), "application/json");
+        } catch (JSONException e) {
+            log.error("Unable to compute detailed healthCheck status", e);
+        }
+        return new StringBlob(StringUtils.EMPTY);
+    }
 }

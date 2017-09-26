@@ -24,6 +24,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import org.junit.Test;
@@ -81,17 +82,17 @@ public class TestProbes {
     }
 
     @Test
-    public void testHealthCheck() {
+    public void testHealthCheck() throws IOException {
 
         ProbeManager pm = Framework.getLocalService(ProbeManager.class);
         Collection<ProbeInfo> healthCheckProbes = pm.getAllContributeToHealthCheckProbeInfos();
         assertEquals(1, healthCheckProbes.size());
         ProbeInfo probeInfo = (ProbeInfo) healthCheckProbes.toArray()[0];
 
-        assertEquals(0, probeInfo.getRunnedCount());
         HealthCheckResult result = pm.getOrRunHealthCheck();
         assertTrue(result.isHealthy());
-        assertEquals(1, probeInfo.getRunnedCount());
+        assertTrue(probeInfo.getStatus().isSuccess());
+        assertEquals("{\"healthCheck\":[{\"runtimeStatus\":[\"OK\"]}]}", result.toJson());
 
     }
 
