@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-
 package org.nuxeo.ecm.platform.audit.service;
 
 import java.util.Date;
@@ -76,9 +75,7 @@ public class LogEntryProvider implements BaseLogEntryProvider {
     }
 
     protected List<LogEntry> doPublish(List<LogEntry> entries) {
-        for (LogEntry entry : entries) {
-            doPublish(entry);
-        }
+        entries.forEach(this::doPublish);
         return entries;
     }
 
@@ -100,9 +97,7 @@ public class LogEntryProvider implements BaseLogEntryProvider {
     }
 
     public void addLogEntries(List<LogEntry> entries) {
-        for (LogEntry entry : entries) {
-            doPersist(entry);
-        }
+        entries.forEach(this::doPersist);
     }
 
     @SuppressWarnings("unchecked")
@@ -136,7 +131,7 @@ public class LogEntryProvider implements BaseLogEntryProvider {
         }
 
         if (filterMap == null) {
-            filterMap = new HashMap<String, FilterMapEntry>();
+            filterMap = new HashMap<>();
         }
 
         StringBuilder queryStr = new StringBuilder();
@@ -263,7 +258,7 @@ public class LogEntryProvider implements BaseLogEntryProvider {
             throw aqe;
         }
 
-        String queryStr = "";
+        String queryStr;
         if (eventIds == null || eventIds.length == 0) {
             queryStr = "from LogEntry log" + " where log.eventDate >= :limit" + " ORDER BY log.eventDate DESC";
         } else {
@@ -294,7 +289,7 @@ public class LogEntryProvider implements BaseLogEntryProvider {
      */
     public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String[] categories, String path,
             int pageNb, int pageSize) {
-        Date limit = null;
+        Date limit;
         try {
             limit = DateRangeParser.parseDateRangeQuery(new Date(), dateRange);
         } catch (AuditQueryException aqe) {
