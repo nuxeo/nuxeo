@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public interface AuditBackend extends Logs {
     }
 
     /**
-     * @deprecated since 9.2 replaced with {@link #onStandby()}
+     * @deprecated since 9.2 replaced with {@link #onApplicationStopped()}
      */
     @Deprecated
     default void onShutdown() {
