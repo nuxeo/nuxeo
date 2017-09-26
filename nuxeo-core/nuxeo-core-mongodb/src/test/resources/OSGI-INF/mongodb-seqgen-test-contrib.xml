@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.mongodb.seqgen.test.contrib">
+
+  <extension target="org.nuxeo.ecm.core.uidgen.UIDGeneratorService" point="sequencers">
+    <sequencer name="uidgen" class="org.nuxeo.ecm.core.mongodb.seqgen.MongoDBUIDSequencer" default="true" />
+  </extension>
+
+</component>
