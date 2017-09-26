@@ -19,8 +19,8 @@
             <artifactId>nuxeo-platform-directory-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.nuxeo.ecm.core</groupId>
-            <artifactId>nuxeo-core-mongodb</artifactId>
+            <groupId>org.nuxeo.runtime</groupId>
+            <artifactId>nuxeo-runtime-mongodb</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>

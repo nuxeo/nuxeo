@@ -21,17 +21,17 @@ package org.nuxeo.ecm.core.mongodb.kv;
 import javax.inject.Inject;
 
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.mongodb.MongoDBComponentFeature;
 import org.nuxeo.runtime.kv.AbstractKeyValueStoreTest;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStoreProvider;
+import org.nuxeo.runtime.mongodb.MongoDBFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
-@Features(MongoDBComponentFeature.class)
+@Features(MongoDBFeature.class)
 @Deploy({ "org.nuxeo.runtime.kv" })
 @LocalDeploy({ "org.nuxeo.ecm.core.mongodb.test:OSGI-INF/mongodb-keyvalue-test-contrib.xml" })
 public class TestMongoDBKeyValueStore extends AbstractKeyValueStoreTest {
