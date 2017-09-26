@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
 import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
 import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
@@ -179,7 +180,7 @@ public class StorageConfiguration {
     }
 
     protected void clearMongoDB(MongoDBRepositoryDescriptor descriptor) throws UnknownHostException {
-        MongoClient mongoClient = MongoDBRepository.newMongoClient(descriptor);
+        MongoClient mongoClient = MongoDBConnectionHelper.newMongoClient(descriptor.server);
         try {
             MongoDatabase database = mongoClient.getDatabase(descriptor.dbname);
             database.drop();

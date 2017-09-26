@@ -43,7 +43,6 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_READ_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
 import java.io.Serializable;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -79,6 +78,7 @@ import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
 import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -86,10 +86,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoClientURI;
 import com.mongodb.QueryOperators;
-import com.mongodb.ServerAddress;
 import com.mongodb.WriteResult;
 
 /**
@@ -141,10 +138,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected static final String COUNTER_FIELD = "seq";
 
-    protected static final int MONGODB_OPTION_CONNECTION_TIMEOUT_MS = 30000;
-
-    protected static final int MONGODB_OPTION_SOCKET_TIMEOUT_MS = 60000;
-
     protected MongoClient mongoClient;
 
     protected DBCollection coll;
@@ -172,13 +165,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     public MongoDBRepository(ConnectionManager cm, MongoDBRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
-        try {
-            mongoClient = newMongoClient(descriptor);
-            coll = getCollection(descriptor, mongoClient);
-            countersColl = getCountersCollection(descriptor, mongoClient);
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
+        mongoClient = MongoDBConnectionHelper.newMongoClient(descriptor.server);
+        coll = getCollection(descriptor, mongoClient);
+        countersColl = getCountersCollection(descriptor, mongoClient);
         if (Boolean.TRUE.equals(descriptor.nativeId)) {
             idKey = MONGODB_ID;
         } else {
@@ -204,32 +193,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
         super.shutdown();
         cursorService.clear();
         mongoClient.close();
-    }
-
-    // used also by unit tests
-    public static MongoClient newMongoClient(MongoDBRepositoryDescriptor descriptor) throws UnknownHostException {
-        MongoClient ret;
-        String server = descriptor.server;
-        if (StringUtils.isBlank(server)) {
-            throw new NuxeoException("Missing <server> in MongoDB repository descriptor");
-        }
-        MongoClientOptions.Builder optionsBuilder = MongoClientOptions.builder()
-                // Can help to prevent firewall disconnects inactive connection, option not available from URI
-                .socketKeepAlive(true)
-                // don't wait for ever by default, can be overridden using URI options
-                .connectTimeout(MONGODB_OPTION_CONNECTION_TIMEOUT_MS)
-                .socketTimeout(MONGODB_OPTION_SOCKET_TIMEOUT_MS)
-                .description("Nuxeo");
-        if (server.startsWith("mongodb://")) {
-            // allow mongodb:// URI syntax for the server, to pass everything in one string
-            ret = new MongoClient(new MongoClientURI(server, optionsBuilder));
-        } else {
-            ret = new MongoClient(new ServerAddress(server), optionsBuilder.build());
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("MongoClient initialized with options: " + ret.getMongoClientOptions().toString());
-        }
-        return ret;
     }
 
     protected static DBCollection getCollection(MongoClient mongoClient, String dbname, String collection) {
