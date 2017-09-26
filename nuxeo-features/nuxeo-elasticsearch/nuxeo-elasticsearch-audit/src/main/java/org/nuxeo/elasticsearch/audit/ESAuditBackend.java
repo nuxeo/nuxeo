@@ -19,6 +19,19 @@
  */
 package org.nuxeo.elasticsearch.audit;
 
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -83,19 +96,6 @@ import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-
 /**
  * Implementation of the {@link AuditBackend} interface using Elasticsearch persistence
  *
@@ -135,21 +135,6 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             addLogEntries(entries);
         }
 
-        @Override
-        public List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
-            throw new UnsupportedOperationException("Not implemented yet!");
-        }
-
-        @Override
-        public List<LogEntry> getLogEntriesFor(String uuid) {
-            throw new UnsupportedOperationException("Not implemented yet!");
-        }
-
-        @Override
-        public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap,
-                                               boolean doDefaultSort) {
-            throw new UnsupportedOperationException("Not implemented yet!");
-        }
     };
 
     protected ESClient getClient() {

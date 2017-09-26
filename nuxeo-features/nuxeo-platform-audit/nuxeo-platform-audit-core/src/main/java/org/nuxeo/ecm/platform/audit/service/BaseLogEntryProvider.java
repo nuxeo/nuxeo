@@ -40,8 +40,12 @@ public interface BaseLogEntryProvider {
      * @param repositoryId the repository id
      * @return a list of log entries
      * @since 8.4
+     * @deprecated since 9.3, use {@link AuditBackend} APIs instead.
      */
-    List<LogEntry> getLogEntriesFor(String uuid, String repositoryId);
+    @Deprecated
+    default List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
+        throw new UnsupportedOperationException("Not implemented yet and deprecated!");
+    }
 
     /**
      * Returns the logs given a doc uuid.
@@ -52,7 +56,9 @@ public interface BaseLogEntryProvider {
      * @deprecated since 8.4, use {@link #getLogEntriesFor(String, String))} instead.
      */
     @Deprecated
-    List<LogEntry> getLogEntriesFor(String uuid);
+    default List<LogEntry> getLogEntriesFor(String uuid) {
+        throw new UnsupportedOperationException("Not implemented yet and deprecated!");
+    }
 
     /**
      * Returns the logs given a doc uuid, a map of filters and a default sort.
@@ -65,7 +71,9 @@ public interface BaseLogEntryProvider {
      * @deprecated since 8.4
      */
     @Deprecated
-    List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort);
+    default List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
+        throw new UnsupportedOperationException("Not implemented yet and deprecated!");
+    }
 
     int removeEntries(String eventId, String pathPattern);
 
