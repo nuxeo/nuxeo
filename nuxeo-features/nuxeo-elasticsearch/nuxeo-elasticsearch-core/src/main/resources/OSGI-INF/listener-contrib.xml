@@ -11,6 +11,7 @@
       <event>documentCreatedByCopy</event>
       <event>documentMoved</event>
       <event>lifecycle_transition_event</event>
+      <event>documentRestored</event>
       <event>documentSecurityUpdated</event>
       <event>documentRemoved</event>
       <event>sessionSaved</event>
