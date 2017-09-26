@@ -19,6 +19,16 @@
  */
 package org.nuxeo.elasticsearch.test;
 
+import static org.junit.Assume.assumeTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -47,9 +57,11 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -59,6 +71,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.platform.tag.TagServiceImpl;
@@ -74,16 +87,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
-import static org.junit.Assume.assumeTrue;
 
 /**
  * Test "on the fly" indexing via the listener system
@@ -834,6 +837,96 @@ public class TestAutomaticIndexing {
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestMajorVersion = 1"));
         Assert.assertEquals(3, ret.totalSize());
 
+    }
+
+    /*
+     * NXP-23033
+     */
+    @Test
+    public void shouldIndexAfterVersionRestored() throws Exception {
+        createADocumentWith3Versions();
+
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isVersion = 0 AND dc:title='v3'"));
+        Assert.assertEquals(1, ret.totalSize());
+        DocumentModel doc = ret.get(0);
+        Assert.assertEquals("v3", doc.getTitle());
+
+        // document in ES is the last version
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestMajorVersion = 1"));
+        Assert.assertEquals(1, ret.totalSize());
+        Assert.assertEquals("v3", ret.get(0).getTitle());
+
+        // restore the document to v2 and check version in ES
+        VersionModel v2VM = new VersionModelImpl();
+        v2VM.setLabel("2.0");
+        DocumentModel v2 = session.getDocumentWithVersion(doc.getRef(), v2VM);
+        session.restoreToVersion(doc.getRef(), v2.getRef());
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isVersion = 0 AND dc:title='v2'"));
+        Assert.assertEquals(1, ret.totalSize());
+        Assert.assertEquals("v2", ret.get(0).getTitle());
+    }
+
+    /*
+     * NXP-23033
+     */
+    @Test
+    public void shouldIndexAfterPublishThenRestore() throws Exception {
+        startTransaction();
+        // create a document
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        doc.setPropertyValue("dc:title", "v0.1");
+        doc = session.saveDocument(doc);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+
+        // publish
+        DocumentModel proxy = session.publishDocument(doc, folder);
+        Assert.assertEquals("0.1", proxy.getVersionLabel());
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // update document and version it
+        doc.setPropertyValue("dc:title", "v0.2");
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
+        doc = session.saveDocument(doc);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // check ES - document might have v1.1
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE ecm:path = '/file' and ecm:isVersion = 0 AND dc:title='v0.2'"));
+        Assert.assertEquals(1, ret.totalSize());
+        Assert.assertEquals("v0.2", ret.get(0).getTitle());
+
+        // restore document to 1.0
+        VersionModel versionModel = new VersionModelImpl();
+        versionModel.setLabel("0.1");
+        DocumentModel v1 = session.getDocumentWithVersion(doc.getRef(), versionModel);
+        session.restoreToVersion(doc.getRef(), v1.getRef());
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // check ES - document might have v1.0
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE ecm:path = '/file' and ecm:isVersion = 0 AND dc:title='v0.1'"));
+        Assert.assertEquals(1, ret.totalSize());
+        Assert.assertEquals("v0.1", ret.get(0).getTitle());
     }
 
     protected void createADocumentWith3Versions() throws Exception {
