@@ -76,7 +76,6 @@
 <input id="refresh" type='hidden' name="refresh" value="false" />
 
 <div>
-  <h3><fmt:message key="label.db.relational" /></h3>
   <table>
     <tr>
       <td class="labelCell"><fmt:message key="label.nuxeo.dbtemplate" /></td>
