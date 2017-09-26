@@ -26,7 +26,7 @@
     <package id="nuxeo-template-rendering-samples" label="Template Rendering (with samples)" color="#c3c7c9" textcolor="#FFF"
       shortlabel="TMPLS" implies="nuxeo-template-rendering"
       desc="Discover through an inspiring demo how the Template Rendering addon can improve your everyday business processes. This demo showcases the BigCorp company, generating financial reports for internal use, and case studies demonstrating their expertise for potential new customers. All being achieved by extracting their relevant content into office templates on the fly." />
-    <package id="nuxeo-liveconnect" label="Live Connect" color="#ff452a" textcolor="#FFF" shortlabel="LIVE" implies="nuxeo-jsf-ui"
+    <package id="nuxeo-liveconnect" label="Live Connect" color="#ff452a" textcolor="#FFF" shortlabel="LIVE"
       desc="The Nuxeo Live Connect addon allows users to reference their files stored on most common EFSS systems (Dropbox, Box, Google Drive, One Drive). User can then apply business workflows to those external ressources, benefit from full text search and edit metadata as if they were stored in the Nuxeo repository." />
     <package id="nuxeo-web-ui" label="Nuxeo Web UI" color="#00adff" textcolor="#FFF"
       shortlabel="WEBUI"
