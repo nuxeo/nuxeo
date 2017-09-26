@@ -202,9 +202,6 @@ if (ctx.hasInfos()) {%>
     </tr>
     <% } %>
   </table>
- <div id="userWarn" style="<%=userWarnStyle%>" class="warnBlock">
-      <fmt:message key="label.userSettings.warning"/>
- </div>
 
  <div id="directory" style="<%=directorytyle%>">
   <%if (!"default".equals(directoryType)){%>
