@@ -335,22 +335,6 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
             addLogEntries(entries);
         }
 
-        @Override
-        public List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
-            throw new UnsupportedOperationException("Not implemented yet!");
-        }
-
-        @Override
-        public List<LogEntry> getLogEntriesFor(String uuid) {
-            throw new UnsupportedOperationException("Not implemented yet!");
-        }
-
-        @Override
-        public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap,
-                boolean doDefaultSort) {
-            throw new UnsupportedOperationException("Not implemented yet!");
-        }
-
     }
 
 }
