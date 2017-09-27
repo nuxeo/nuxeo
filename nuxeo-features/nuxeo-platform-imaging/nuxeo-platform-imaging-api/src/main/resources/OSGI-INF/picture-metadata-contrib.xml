@@ -25,7 +25,7 @@
     <metadataMapping id="IPTC" processor="exifTool" blobXPath="file:content" ignorePrefix="false">
       <metadata name="IPTC:Source" xpath="dc:source"/>
       <metadata name="IPTC:CopyrightNotice" xpath="dc:rights"/>
-      <metadata name="IPTC:Description" xpath="dc:description"/>
+      <metadata name="IPTC:Caption-Abstract" xpath="dc:description"/>
     </metadataMapping>
   </extension>
 
