@@ -198,6 +198,11 @@ public abstract class AbstractAuditBackend implements AuditBackend {
                         log.debug("Can not evaluate the expression: " + exp + " on a DeletedDocumentModel, skipping.");
                     }
                     continue;
+                } catch (DocumentNotFoundException e) {
+                    if (entry.getEventId() != "documentRemoved") {
+                        log.error("Not found: " + e.getMessage() + ", entry: " + entry, e);
+                    }
+                    continue;
                 } catch (ELException e) {
                     continue;
                 }
@@ -214,7 +219,8 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         return component.getAuditableEventNames();
     }
 
-    protected LogEntry buildEntryFromEvent(Event event) {
+    @Override
+    public LogEntry buildEntryFromEvent(Event event) {
         EventContext ctx = event.getContext();
         String eventName = event.getName();
         Date eventDate = new Date(event.getTime());
