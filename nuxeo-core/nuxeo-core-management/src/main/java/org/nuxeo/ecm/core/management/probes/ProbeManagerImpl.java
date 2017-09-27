@@ -249,21 +249,35 @@ public class ProbeManagerImpl implements ProbeManager {
 
     @Override
     public HealthCheckResult getOrRunHealthCheck() {
-        LocalDateTime now = LocalDateTime.now();
         for (String probeName : probesForHealthCheck.keySet()) {
             ProbeInfo probe = probesForHealthCheck.get(probeName);
             if (probe == null) {
                 log.warn("Probe:" + probeName + " does not exist, skipping it for the health check");
                 continue;
             }
-            Date lastRunDate = probe.getLastRunnedDate();
-            LocalDateTime lastRunDateTime = lastRunDate != null ? LocalDateTime.ofInstant(lastRunDate.toInstant(),
-                    ZoneId.systemDefault()) : LocalDateTime.MIN;
-            if (ChronoUnit.SECONDS.between(lastRunDateTime, now) > healthCheckIntervalInSec) {
-                doRunProbe(probe);
-            }
+            getStatusOrRunProbe(probe);
         }
         return new HealthCheckResult(probesForHealthCheck.values());
     }
 
+    @Override
+    public HealthCheckResult getOrRunHealthCheckSingleProbe(String name) {
+        ProbeInfo probe = probesForHealthCheck.get(name);
+        if (probe == null) {
+            log.warn("Probe:" + name + " does not exist, or not registed for the healthCheck");
+            return new HealthCheckResult(Collections.emptyList());
+        }
+        getStatusOrRunProbe(probe);
+        return new HealthCheckResult(Collections.singletonList(probe));
+    }
+
+    protected void getStatusOrRunProbe(ProbeInfo probe) {
+        LocalDateTime now = LocalDateTime.now();
+        Date lastRunDate = probe.getLastRunnedDate();
+        LocalDateTime lastRunDateTime = lastRunDate != null ? LocalDateTime.ofInstant(lastRunDate.toInstant(),
+                ZoneId.systemDefault()) : LocalDateTime.MIN;
+        if (ChronoUnit.SECONDS.between(lastRunDateTime, now) > healthCheckIntervalInSec) {
+            doRunProbe(probe);
+        }
+    }
 }

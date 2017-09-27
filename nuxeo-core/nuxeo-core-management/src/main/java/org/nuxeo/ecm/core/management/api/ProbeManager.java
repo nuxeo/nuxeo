@@ -60,4 +60,13 @@ public interface ProbeManager extends ProbeRunnerMBean {
      * @since 9.3
      */
     void registerProbeForHealthCheck(HealthCheckProbesDescriptor descriptor);
+    
+    /**
+     * 
+     * Return the status of the given probe
+     * Run them before if the last run was more than 20s ago
+     * 
+     * @since 9.3
+     */
+    HealthCheckResult getOrRunHealthCheckSingleProbe(String probe);
 }

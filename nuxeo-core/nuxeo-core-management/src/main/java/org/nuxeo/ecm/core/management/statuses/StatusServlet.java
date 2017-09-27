@@ -28,8 +28,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpStatus;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.runtime.AbstractRuntimeService;
@@ -38,6 +40,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Servlet for retrieving Nuxeo services running status
+ * 
+ * @since 9.3 
+ * returns a status based of all the probes registered for the healthCheck 
+ * GET /runningstatus?info=probe&key=probeName returns a healthCheck status based on a probe
  */
 public class StatusServlet extends HttpServlet {
 
@@ -55,6 +61,8 @@ public class StatusServlet extends HttpServlet {
 
     public static final String PARAM_RELOAD = "reload";
 
+    public static final String PROBE_PARAM = "probe";
+
     private AbstractRuntimeService runtimeService;
 
     @Override
@@ -63,10 +71,18 @@ public class StatusServlet extends HttpServlet {
         if (param != null) {
             doPost(req, resp);
         } else {
-            if (getOrRunHealthCheck().isHealthy()) {
-                sendResponse(resp, "Ok");
-            }
+            HealthCheckResult result = getOrRunHealthCheck(null);
+            sendHealthCheckResponse(resp, result);
         }
+    }
+
+    protected void sendHealthCheckResponse(HttpServletResponse resp, HealthCheckResult result) throws IOException {
+        if (result.healthy) {
+            resp.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            resp.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        }
+        sendResponse(resp, result.toJson());
     }
 
     @Override
@@ -88,6 +104,10 @@ public class StatusServlet extends HttpServlet {
             } else {
                 resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             }
+        } else if (requestedInfo.equals(PROBE_PARAM)) {
+            String probetoEval = req.getParameter(PARAM_SUMMARY_KEY);
+            HealthCheckResult result = getOrRunHealthCheck(probetoEval);
+            sendHealthCheckResponse(resp, result);
         }
         sendResponse(resp, response.toString());
     }
@@ -132,8 +152,11 @@ public class StatusServlet extends HttpServlet {
         log.debug("Ready.");
     }
 
-    protected HealthCheckResult getOrRunHealthCheck() {
-        return Framework.getService(ProbeManager.class).getOrRunHealthCheck();
+    protected HealthCheckResult getOrRunHealthCheck(String probe) {
+        if (StringUtils.isEmpty(probe)) { // run all healthCheck probes
+            return Framework.getService(ProbeManager.class).getOrRunHealthCheck();
+        }
+        return Framework.getService(ProbeManager.class).getOrRunHealthCheckSingleProbe(probe);
 
     }
 }
