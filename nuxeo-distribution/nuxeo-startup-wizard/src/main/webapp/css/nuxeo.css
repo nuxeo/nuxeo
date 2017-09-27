@@ -38,7 +38,7 @@ h4, h5, h6 {
 h1 {
     font-size: 1.3em;
     margin: 0 0 15px;
-    color: #00adff;
+    color: #0067FF;
 }
 
 h2 {
@@ -79,7 +79,7 @@ p {
 }
 
 a, a:link, a:active, a:visited {
-    color: #00adff;
+    color: #0067FF;
     text-decoration: none;
 }
 
@@ -175,7 +175,7 @@ input:focus, textarea:focus {
 .leftCell {
     width: 23%;
     padding: 1em 0 2em;
-    background-color: #1166aa;
+    background-color: #1F28BF;
 }
 
 .navItem {
@@ -195,7 +195,7 @@ input:focus, textarea:focus {
 
 .navItemSelected {
     background-color: #fff;
-    color: #004881;
+    color: #1F28BF;
 }
 
 .navItemSelected a,
@@ -214,7 +214,7 @@ input:focus, textarea:focus {
 .navItem.navItemSelected:after {
     display: block;
     width: .9em;
-    background-color: #00adff;
+    background-color: #0067FF;
     height: .9em;
     z-index: 10;
     margin: 0 0 0 -1.8em;
@@ -227,7 +227,7 @@ input:focus, textarea:focus {
 .navItem:hover a,
 .navItemSelected a,
 .navItemSelected a.checked {
-    color: #00adff;
+    color: #1F28BF;
 }
 
 /* Main Column - content */
@@ -252,19 +252,19 @@ input:focus, textarea:focus {
 .screenExplanations,
 .warnBlock, .errBlock {
     background-color: #f7f8f9;
-    border-left: 1px solid #0af;
+    border-left: 1px solid #00ADED;
     display: block;
     margin: .5em 0 1.5em;
     padding: 1em;
 }
 
 .warnBlock, .errBlock {
-    border-left: 1px solid #dd4900;
+    border-left: 1px solid #FF0044;
 }
 
 .errItem,
 .warnBlock, .errBlock {
-    color: #dd6800;
+    color: #FF0044;
 }
 
 .infoBlock {
@@ -325,9 +325,8 @@ input:focus, textarea:focus {
 .glossyButton, a.glossyButton,
 #checkNetwork, #checkAuth,
 #testUserLdapParam, #testGroupLdapParam {
-    background-color: #00adff;
-    border-radius: 2em;
-    border: 2px solid #00adff;
+    background-color: #0067FF;
+    border: 2px solid #0067FF;
     color: white;
     letter-spacing: .015em;
     font-size: 14px;
@@ -344,8 +343,8 @@ input:focus, textarea:focus {
 }
 
 .glossyButton.endButton {
-    background-color: #00bd43;
-    border-color: #00bd43;
+    background-color: #73D2CF;
+    border-color: #73D2CF;
 }
 
 #btnPrev {
@@ -368,8 +367,8 @@ a.glossyButton:hover,
 }
 
 .glossyButton.endButton:hover {
-    background-color: #00d84c;
-    border-color: #00d84c;
+    background-color: #73D2CF;
+    border-color: #73D2CF;
 }
 
 /* Step: Proxy - Step: SMTP */
@@ -531,7 +530,7 @@ table.smtp,
 }
 
 .package.checked {
-    border-bottom: 3px solid #00bd43;
+    border-bottom: 3px solid #73D2CF;
 }
 
 .package:after {
@@ -549,8 +548,8 @@ table.smtp,
 }
 
 .package.checked:after {
-    border-color: #00bd43;
-    background-color: #00bd43;
+    border-color: #73D2CF;
+    background-color: #73D2CF;
     color: #fff;
 }
 
@@ -569,7 +568,7 @@ table.smtp,
 
 body .package.disabled {
     background-color: #f3f5f6;
-    border-bottom: 3px solid #00bd43;
+    border-bottom: 3px solid #73D2CF;
 }
 
 /* Footer style */
@@ -588,7 +587,7 @@ body .package.disabled {
 
 .footer a, .footer a:visited {
     font-size: .85em;
-    color: #788590;
+    color: white;
 }
 
 .footer a:hover {
@@ -612,7 +611,7 @@ body .package.disabled {
 .required:after {
     content: '*';
     padding-left: 0.2em;
-    color: red;
+    color: #FF0044;
     font-size: 133%;
 }
 
