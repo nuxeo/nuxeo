@@ -46,6 +46,11 @@ public class DateLiteral extends Literal {
 
     public final boolean onlyDate;
 
+    public DateLiteral(DateTime value) {
+        this.value = value;
+        this.onlyDate = false;
+    }
+
     public DateLiteral(String value, boolean onlyDate) {
         this.onlyDate = onlyDate;
         if (onlyDate) {

@@ -104,15 +104,17 @@ public class TestAuditWithElasticSearch {
         Assert.assertEquals(2, trail.size());
 
         LogEntry entry = trail.get(0);
-        Long startId = entry.getId();
+        Assert.assertEquals(2L, entry.getId());
+        Assert.assertEquals("documentModified", entry.getEventId());
+        Assert.assertEquals("eventDocumentCategory", entry.getCategory());
+        Assert.assertEquals("A modified File", entry.getExtendedInfos().get("title").getValue(String.class));
+
+        entry = trail.get(1);
+        Assert.assertEquals(1L, entry.getId());
         Assert.assertEquals("documentCreated", entry.getEventId());
         Assert.assertEquals("eventDocumentCategory", entry.getCategory());
         Assert.assertEquals("A File", entry.getExtendedInfos().get("title").getValue(String.class));
 
-        Assert.assertEquals(startId + 1, trail.get(1).getId());
-        Assert.assertEquals("documentModified", trail.get(1).getEventId());
-        Assert.assertEquals("eventDocumentCategory", trail.get(1).getCategory());
-        Assert.assertEquals("A modified File", trail.get(1).getExtendedInfos().get("title").getValue(String.class));
 
         LogEntry entryById = reader.getLogEntryByID(entry.getId());
         Assert.assertEquals(entry.getId(), entryById.getId());

@@ -24,12 +24,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.query.sql.model.Literals;
+import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
+import org.nuxeo.ecm.core.query.sql.model.Operand;
+import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
+import org.nuxeo.ecm.core.query.sql.model.Reference;
+import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
@@ -242,6 +252,88 @@ public class LogEntryProvider implements BaseLogEntryProvider {
         }
         query.setMaxResults(pageSize);
         return doPublishIfEntries(query.getResultList());
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<LogEntry> queryLogs(AuditQueryBuilder builder) {
+        if (log.isDebugEnabled()) {
+            log.debug("queryLogs() builder=" + builder);
+        }
+        // prepare parameters
+        Predicate andPredicate = builder.predicate();
+        OrderByList orders = builder.orders();
+        long offset = builder.offset();
+        long limit = builder.limit();
+        // cast parameters
+        // current implementation only support a MultiExpression with AND operator
+        List<Predicate> predicates = (List<Predicate>) ((List<?>) ((MultiExpression) andPredicate).values);
+        // current implementation only use Predicate/OrderByExpr with a simple Reference for left and right
+        Function<Operand, String> getFieldName = operand -> ((Reference) operand).name;
+
+        StringBuilder queryStr = new StringBuilder(" FROM LogEntry log");
+
+        // add predicate clauses
+        boolean firstFilter = true;
+        for (Predicate predicate : predicates) {
+            if (firstFilter) {
+                queryStr.append(" WHERE");
+                firstFilter = false;
+            } else {
+                queryStr.append(" AND");
+            }
+            String leftName = getFieldName.apply(predicate.lvalue);
+            Operator operator = predicate.operator;
+            queryStr.append(" log.")
+                    .append(leftName)
+                    .append(" ")
+                    .append(operator)
+                    .append(" :")
+                    .append(leftName);
+        }
+
+        // add order clauses
+        boolean firstOrder = true;
+        for (OrderByExpr order : orders) {
+            if (firstOrder) {
+                queryStr.append(" ORDER BY");
+                firstOrder = false;
+            } else {
+                queryStr.append(",");
+            }
+            queryStr.append(" log.").append(getFieldName.apply(order.reference));
+        }
+        // if firstOrder == false then there's at least one order
+        if (!firstOrder) {
+            if (orders.get(0).isDescending) {
+                queryStr.append(" DESC");
+            } else {
+                queryStr.append(" ASC");
+            }
+        }
+
+        // add limit clause
+        if (limit > 0) {
+            queryStr.append(" LIMIT ").append(limit);
+        }
+
+        // add offset clause
+        if (offset > 0) {
+            queryStr.append(" OFFSET ").append(offset);
+        }
+
+        Query query = em.createQuery(queryStr.toString());
+
+        for (Predicate predicate : predicates) {
+            String leftName = getFieldName.apply(predicate.lvalue);
+            Operator operator = predicate.operator;
+            Object rightValue = Literals.valueOf(predicate.rvalue);
+            if ("LIKE".equals(operator.toString())) {
+                rightValue = "%" + rightValue + "%";
+            }
+            query.setParameter(leftName, rightValue);
+        }
+
+        return doPublish(query.getResultList());
     }
 
     /*

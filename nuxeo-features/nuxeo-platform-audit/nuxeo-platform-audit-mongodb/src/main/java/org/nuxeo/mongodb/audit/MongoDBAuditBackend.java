@@ -20,38 +20,41 @@ package org.nuxeo.mongodb.audit;
 
 import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_CATEGORY;
 import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_DOC_PATH;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_DOC_UUID;
 import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_EVENT_DATE;
 import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_EVENT_ID;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_REPOSITORY_ID;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.nuxeo.common.utils.TextTemplate;
+import org.nuxeo.ecm.core.query.sql.model.Literals;
+import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
+import org.nuxeo.ecm.core.query.sql.model.Operand;
+import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
+import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
+import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
-import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
-import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
 import org.nuxeo.ecm.platform.audit.service.AbstractAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.BaseLogEntryProvider;
@@ -129,29 +132,66 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
     }
 
     @Override
-    public List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
-        Bson docFilter = Filters.eq(PROPERTY_DOC_UUID, uuid);
-        Bson repoFilter = Filters.eq(PROPERTY_REPOSITORY_ID, repositoryId);
-        Bson query = Filters.and(docFilter, repoFilter);
-        return getLogEntries(query, false);
+    @SuppressWarnings("unchecked")
+    public List<LogEntry> queryLogs(AuditQueryBuilder builder) {
+        // prepare parameters
+        Predicate andPredicate = builder.predicate();
+        OrderByList orders = builder.orders();
+        long offset = builder.offset();
+        long limit = builder.limit();
+        // cast parameters
+        // current implementation only support a MultiExpression with AND operator
+        List<Predicate> predicates = (List<Predicate>) ((List<?>) ((MultiExpression) andPredicate).values);
+
+        // create MongoDB filter
+        Bson mgFilter = createFilter(predicates);
+
+        // create MongoDB order
+        List<Bson> orderList = new ArrayList<>(orders.size());
+        for (OrderByExpr order : orders) {
+            String name = order.reference.name;
+            if (order.isDescending) {
+                orderList.add(Sorts.descending(name));
+            } else {
+                orderList.add(Sorts.ascending(name));
+            }
+        }
+        Bson mgOrder = Sorts.orderBy(orderList);
+
+        logRequest(mgFilter, mgOrder);
+        FindIterable<Document> iterable = collection.find(mgFilter)
+                                                    .sort(mgOrder)
+                                                    .skip((int) offset)
+                                                    .limit((int) limit);
+        return buildLogEntries(iterable);
     }
 
-    @Override
-    public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-        Bson docFilter = Filters.eq(PROPERTY_DOC_UUID, uuid);
+    protected Bson createFilter(List<Predicate> predicates) {
+        // current implementation only use Predicate/OrderByExpr with a simple Reference for left and right
+        Function<Operand, String> getFieldName = operand -> ((Reference) operand).name;
 
-        Bson filter;
-        if (MapUtils.isEmpty(filterMap)) {
-            filter = docFilter;
-        } else {
-            List<Bson> list = new ArrayList<>(Collections.singleton(docFilter));
-            for (Entry<String, FilterMapEntry> entry : filterMap.entrySet()) {
-                FilterMapEntry filterEntry = entry.getValue();
-                list.add(Filters.eq(filterEntry.getColumnName(), filterEntry.getObject()));
+        List<Bson> filterList = new ArrayList<>(predicates.size());
+        for (Predicate predicate : predicates) {
+            String leftName = getFieldName.apply(predicate.lvalue);
+            Operator operator = predicate.operator;
+            Object rightValue = Literals.valueOf(predicate.rvalue);
+            if (Operator.EQ.equals(operator)) {
+                filterList.add(Filters.eq(leftName, rightValue));
+            } else if (Operator.NOTEQ.equals(operator)) {
+                filterList.add(Filters.ne(leftName, rightValue));
+            } else if (Operator.LT.equals(operator)) {
+                filterList.add(Filters.lt(leftName, predicate.rvalue));
+            } else if (Operator.LTEQ.equals(operator)) {
+                filterList.add(Filters.lte(leftName, rightValue));
+            } else if (Operator.GTEQ.equals(operator)) {
+                filterList.add(Filters.gte(leftName, rightValue));
+            } else if (Operator.GT.equals(operator)) {
+                filterList.add(Filters.gt(leftName, rightValue));
+            } else if (Operator.IN.equals(operator)) {
+                filterList.add(Filters.in(leftName, (List<?>) rightValue));
             }
-            filter = Filters.and(list);
         }
-        return getLogEntries(filter, doDefaultSort);
+        return Filters.and(filterList);
     }
 
     @Override
@@ -241,22 +281,6 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
     }
 
     @Override
-    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String[] categories, String path,
-            int pageNb, int pageSize) {
-        // TODO maybe we can put this method in AbstratAuditBackend ?
-        Date limit = null;
-        if (dateRange != null) {
-            try {
-                limit = DateRangeParser.parseDateRangeQuery(new Date(), dateRange);
-            } catch (AuditQueryException aqe) {
-                aqe.addInfo("Wrong date range query. Query was " + dateRange);
-                throw aqe;
-            }
-        }
-        return queryLogsByPage(eventIds, limit, categories, path, pageNb, pageSize);
-    }
-
-    @Override
     public void addLogEntries(List<LogEntry> entries) {
         if (entries.isEmpty()) {
             return;
@@ -290,17 +314,6 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
     @Override
     public ExtendedInfo newExtendedInfo(Serializable value) {
         return new MongoDBExtendedInfo(value);
-    }
-
-    private List<LogEntry> getLogEntries(Bson filter, boolean doDefaultSort) {
-        Bson orderBy = null;
-        if (doDefaultSort) {
-            orderBy = Sorts.descending(PROPERTY_EVENT_DATE);
-        }
-
-        logRequest(filter, orderBy);
-        FindIterable<Document> iterable = collection.find(filter).sort(orderBy);
-        return buildLogEntries(iterable);
     }
 
     private List<LogEntry> buildLogEntries(FindIterable<Document> iterable) {
