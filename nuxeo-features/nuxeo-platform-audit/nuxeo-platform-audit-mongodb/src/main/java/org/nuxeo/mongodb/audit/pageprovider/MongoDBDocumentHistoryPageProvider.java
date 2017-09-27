@@ -18,8 +18,8 @@
  */
 package org.nuxeo.mongodb.audit.pageprovider;
 
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_DOC_UUID;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_EVENT_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,11 +42,11 @@ public class MongoDBDocumentHistoryPageProvider extends MongoDBAuditPageProvider
 
     private static final Log log = LogFactory.getLog(MongoDBDocumentHistoryPageProvider.class);
 
-    public static final String SINGLE_QUERY = String.format("{ \"%s\": \"?\" }", PROPERTY_DOC_UUID);
+    public static final String SINGLE_QUERY = String.format("{ \"%s\": \"?\" }", LOG_DOC_UUID);
 
     public static final String COMPLEX_QUERY = String.format(
             "{ \"$or\": [ { \"%s\": \"?\" }, { \"$and\": [ { \"%s\": \"?\" }, { \"%s\": { \"$lte\": ISODate(\"?\") } } ] } ]}",
-            PROPERTY_DOC_UUID, PROPERTY_DOC_UUID, PROPERTY_EVENT_DATE);
+            LOG_DOC_UUID, LOG_DOC_UUID, LOG_EVENT_DATE);
 
     protected Object[] newParams;
 
@@ -63,7 +63,7 @@ public class MongoDBDocumentHistoryPageProvider extends MongoDBAuditPageProvider
         List<SortInfo> sort = super.getSortInfos();
         if (sort == null || sort.size() == 0) {
             sort = new ArrayList<>(2);
-            sort.add(new SortInfo(PROPERTY_EVENT_DATE, true));
+            sort.add(new SortInfo(LOG_EVENT_DATE, true));
             sort.add(new SortInfo(MongoDBSerializationHelper.MONGODB_ID, true));
         }
         return sort;

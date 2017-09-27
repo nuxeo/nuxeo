@@ -18,6 +18,20 @@
  */
 package org.nuxeo.elasticsearch.audit.io;
 
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_CATEGORY;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_COMMENT;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_LIFE_CYCLE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_PATH;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_TYPE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EXTENDED;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_LOG_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_PRINCIPAL_NAME;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
@@ -54,20 +68,20 @@ public class AuditEntryJSONWriter {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "logEntry");
 
-        writeField(jg, "category", logEntry.getCategory());
-        writeField(jg, "principalName", logEntry.getPrincipalName());
-        writeField(jg, "comment", logEntry.getComment());
-        writeField(jg, "docLifeCycle", logEntry.getDocLifeCycle());
-        writeField(jg, "docPath", logEntry.getDocPath());
-        writeField(jg, "docType", logEntry.getDocType());
-        writeField(jg, "docUUID", logEntry.getDocUUID());
-        writeField(jg, "eventId", logEntry.getEventId());
-        writeField(jg, "repositoryId", logEntry.getRepositoryId());
-        jg.writeStringField("eventDate", ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getEventDate())));
-        jg.writeNumberField("id", logEntry.getId());
-        jg.writeStringField("logDate", ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getLogDate())));
+        writeField(jg, LOG_CATEGORY, logEntry.getCategory());
+        writeField(jg, LOG_PRINCIPAL_NAME, logEntry.getPrincipalName());
+        writeField(jg, LOG_COMMENT, logEntry.getComment());
+        writeField(jg, LOG_DOC_LIFE_CYCLE, logEntry.getDocLifeCycle());
+        writeField(jg, LOG_DOC_PATH, logEntry.getDocPath());
+        writeField(jg, LOG_DOC_TYPE, logEntry.getDocType());
+        writeField(jg, LOG_DOC_UUID, logEntry.getDocUUID());
+        writeField(jg, LOG_EVENT_ID, logEntry.getEventId());
+        writeField(jg, LOG_REPOSITORY_ID, logEntry.getRepositoryId());
+        jg.writeStringField(LOG_EVENT_DATE, ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getEventDate())));
+        jg.writeNumberField(LOG_ID, logEntry.getId());
+        jg.writeStringField(LOG_LOG_DATE, ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getLogDate())));
         Map<String, ExtendedInfo> extended = logEntry.getExtendedInfos();
-        jg.writeObjectFieldStart("extended");
+        jg.writeObjectFieldStart(LOG_EXTENDED);
         for (String key : extended.keySet()) {
             ExtendedInfo ei = extended.get(key);
             if (ei != null && ei.getSerializableValue() != null) {

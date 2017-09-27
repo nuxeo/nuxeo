@@ -18,18 +18,18 @@
  */
 package org.nuxeo.mongodb.audit;
 
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_CATEGORY;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_COMMENT;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_DOC_LIFE_CYCLE;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_DOC_PATH;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_DOC_TYPE;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_DOC_UUID;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_EVENT_DATE;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_EVENT_ID;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_EXTENDED;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_LOG_DATE;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_PRINCIPAL_NAME;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_REPOSITORY_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_CATEGORY;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_COMMENT;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_LIFE_CYCLE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_PATH;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_TYPE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EXTENDED;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_LOG_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_PRINCIPAL_NAME;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -49,17 +49,17 @@ public class MongoDBAuditEntryWriter {
 
     public static Document asDocument(LogEntry logEntry) {
         Document document = new Document(MongoDBSerializationHelper.MONGODB_ID, Long.valueOf(logEntry.getId()));
-        document.put(PROPERTY_CATEGORY, logEntry.getCategory());
-        document.put(PROPERTY_PRINCIPAL_NAME, logEntry.getPrincipalName());
-        document.put(PROPERTY_COMMENT, logEntry.getComment());
-        document.put(PROPERTY_DOC_LIFE_CYCLE, logEntry.getDocLifeCycle());
-        document.put(PROPERTY_DOC_PATH, logEntry.getDocPath());
-        document.put(PROPERTY_DOC_TYPE, logEntry.getDocType());
-        document.put(PROPERTY_DOC_UUID, logEntry.getDocUUID());
-        document.put(PROPERTY_EVENT_ID, logEntry.getEventId());
-        document.put(PROPERTY_REPOSITORY_ID, logEntry.getRepositoryId());
-        document.put(PROPERTY_EVENT_DATE, logEntry.getEventDate());
-        document.put(PROPERTY_LOG_DATE, logEntry.getLogDate());
+        document.put(LOG_CATEGORY, logEntry.getCategory());
+        document.put(LOG_PRINCIPAL_NAME, logEntry.getPrincipalName());
+        document.put(LOG_COMMENT, logEntry.getComment());
+        document.put(LOG_DOC_LIFE_CYCLE, logEntry.getDocLifeCycle());
+        document.put(LOG_DOC_PATH, logEntry.getDocPath());
+        document.put(LOG_DOC_TYPE, logEntry.getDocType());
+        document.put(LOG_DOC_UUID, logEntry.getDocUUID());
+        document.put(LOG_EVENT_ID, logEntry.getEventId());
+        document.put(LOG_REPOSITORY_ID, logEntry.getRepositoryId());
+        document.put(LOG_EVENT_DATE, logEntry.getEventDate());
+        document.put(LOG_LOG_DATE, logEntry.getLogDate());
 
         Map<String, ExtendedInfo> extendedInfo = logEntry.getExtendedInfos();
         Document extended = new Document();
@@ -76,7 +76,7 @@ public class MongoDBAuditEntryWriter {
                 extended.put(key, null);
             }
         }
-        document.put(PROPERTY_EXTENDED, extended);
+        document.put(LOG_EXTENDED, extended);
         return document;
     }
 

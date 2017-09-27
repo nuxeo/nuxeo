@@ -18,18 +18,18 @@
  */
 package org.nuxeo.mongodb.audit;
 
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_CATEGORY;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_COMMENT;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_DOC_LIFE_CYCLE;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_DOC_PATH;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_DOC_TYPE;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_DOC_UUID;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_EVENT_DATE;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_EVENT_ID;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_EXTENDED;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_LOG_DATE;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_PRINCIPAL_NAME;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_REPOSITORY_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_CATEGORY;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_COMMENT;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_LIFE_CYCLE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_PATH;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_TYPE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EXTENDED;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_LOG_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_PRINCIPAL_NAME;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -64,40 +64,40 @@ public class MongoDBAuditEntryReader {
             case MongoDBSerializationHelper.MONGODB_ID:
                 entry.setId(doc.getLong(key).longValue());
                 break;
-            case PROPERTY_CATEGORY:
+            case LOG_CATEGORY:
                 entry.setCategory(doc.getString(key));
                 break;
-            case PROPERTY_PRINCIPAL_NAME:
+            case LOG_PRINCIPAL_NAME:
                 entry.setPrincipalName(doc.getString(key));
                 break;
-            case PROPERTY_COMMENT:
+            case LOG_COMMENT:
                 entry.setComment(doc.getString(key));
                 break;
-            case PROPERTY_DOC_LIFE_CYCLE:
+            case LOG_DOC_LIFE_CYCLE:
                 entry.setDocLifeCycle(doc.getString(key));
                 break;
-            case PROPERTY_DOC_PATH:
+            case LOG_DOC_PATH:
                 entry.setDocPath(doc.getString(key));
                 break;
-            case PROPERTY_DOC_TYPE:
+            case LOG_DOC_TYPE:
                 entry.setDocType(doc.getString(key));
                 break;
-            case PROPERTY_DOC_UUID:
+            case LOG_DOC_UUID:
                 entry.setDocUUID(doc.getString(key));
                 break;
-            case PROPERTY_EVENT_ID:
+            case LOG_EVENT_ID:
                 entry.setEventId(doc.getString(key));
                 break;
-            case PROPERTY_REPOSITORY_ID:
+            case LOG_REPOSITORY_ID:
                 entry.setRepositoryId(doc.getString(key));
                 break;
-            case PROPERTY_EVENT_DATE:
+            case LOG_EVENT_DATE:
                 entry.setEventDate(doc.getDate(key));
                 break;
-            case PROPERTY_LOG_DATE:
+            case LOG_LOG_DATE:
                 entry.setLogDate(doc.getDate(key));
                 break;
-            case PROPERTY_EXTENDED:
+            case LOG_EXTENDED:
                 entry.setExtendedInfos(readExtendedInfo(doc.get(key, Document.class)));
                 break;
             default:
