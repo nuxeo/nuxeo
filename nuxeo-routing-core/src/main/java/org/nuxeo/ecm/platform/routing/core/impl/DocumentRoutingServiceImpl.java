@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.MAX_RESULTS_PROPERTY;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.PAGE_SIZE_RESULTS_KEY;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
@@ -970,9 +972,14 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
      * @since 7.1
      */
     private final class WfCleaner extends UnrestrictedSessionRunner {
+
+        private static final String WORKFLOWS_QUERY = "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState IN ('done', 'canceled')";
+
+        private static final String TASKS_QUERY = "SELECT ecm:uuid FROM Document WHERE ecm:mixinType = 'Task' AND nt:processId = '%s'";
+
         private final int limit;
 
-        protected int i = 0;
+        private int numberOfCleanedUpWorkflows = 0;
 
         private WfCleaner(String repositoryName, int limit) {
             super(repositoryName);
@@ -981,35 +988,22 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
         @Override
         public void run() {
-            List<String> routeIds = new ArrayList<>();
-            String query = "SELECT ecm:uuid FROM DocumentRoute WHERE (ecm:currentLifeCycleState = 'done' "
-                    + "OR ecm:currentLifeCycleState = 'canceled') ORDER BY dc:created";
-            try (IterableQueryResult results = session.queryAndFetch(query, "NXQL")) {
-                for (Map<String, Serializable> result : results) {
-                    routeIds.add(result.get("ecm:uuid").toString());
-                    i++;
-                    // stop when the limit is reached and close the resultSet
-                    if (i == limit) {
-                        break;
-                    }
-                }
-            }
-            for (String routeDocId : routeIds) {
-                final String associatedTaskQuery = String.format(
-                        "SELECT ecm:uuid FROM Document WHERE ecm:mixinType = 'Task' AND nt:processId = '%s'",
-                        routeDocId);
-                try (IterableQueryResult tasks = session.queryAndFetch(associatedTaskQuery, "NXQL")) {
-                    for (Map<String, Serializable> task : tasks) {
-                        final String taskId = task.get("ecm:uuid").toString();
-                        session.removeDocument(new IdRef(taskId));
-                    }
-                }
+            PartialList<Map<String, Serializable>> workflows = session.queryProjection(WORKFLOWS_QUERY, limit, 0);
+            numberOfCleanedUpWorkflows = workflows.size();
+
+            for (Map<String, Serializable> workflow : workflows) {
+                String routeDocId = workflow.get(ECM_UUID).toString();
+                final String associatedTaskQuery = String.format(TASKS_QUERY, routeDocId);
+                session.queryProjection(associatedTaskQuery, 0, 0)
+                       .stream()
+                       .map(task -> new IdRef(task.get(ECM_UUID).toString()))
+                       .forEach(session::removeDocument);
                 session.removeDocument(new IdRef(routeDocId));
             }
         }
 
         public int getNumberOfCleanedUpWf() {
-            return i;
+            return numberOfCleanedUpWorkflows;
         }
     }
 
