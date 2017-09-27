@@ -166,6 +166,7 @@ public class TestBinaryMetadataSyncListener {
         picture = session.getDocument(doc.getRef());
         assertEquals("DDP", picture.getPropertyValue("dc:source"));
         assertEquals("ImageForum", picture.getPropertyValue("dc:rights"));
+        assertEquals("Music", picture.getPropertyValue("dc:description").toString().substring(0,5));
     }
 
     @Test
