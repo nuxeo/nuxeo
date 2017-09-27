@@ -20,7 +20,7 @@ form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
 }
 
 body {
-    background: url("../images/bg.png") no-repeat fixed right bottom #002543;
+    background: url("../images/bg.jpg") no-repeat fixed center center #002543;
 }
 
 hr {
