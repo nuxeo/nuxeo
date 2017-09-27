@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.audit.PageProviderservice.mongodb.contrib">
+
+  <require>org.nuxeo.ecm.platform.audit.PageProviderservice.contrib</require>
+  <require>org.nuxeo.admin.pageproviders</require>
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+             point="providers">
+
+    <genericPageProvider name="EVENTS_VIEW" class="org.nuxeo.mongodb.audit.pageprovider.MongoDBAuditPageProvider">
+      <property name="coreSession">#{documentManager}</property>
+      <property name="generateUIComments">false</property>
+      <whereClause docType="BasicAuditSearch">
+        <predicate parameter="eventDate" operator="BETWEEN">
+          <field schema="basicauditsearch" name="startDate" />
+          <field schema="basicauditsearch" name="endDate" />
+        </predicate>
+        <predicate parameter="category" operator="=">
+          <field schema="basicauditsearch" name="eventCategory" />
+        </predicate>
+        <predicate parameter="eventId" operator="IN">
+          <field schema="basicauditsearch" name="eventIds" />
+        </predicate>
+        <predicate parameter="principalName" operator="=">
+          <field schema="basicauditsearch" name="principalName" />
+        </predicate>
+      </whereClause>
+      <sort column="eventDate" ascending="false" />
+      <pageSize>10</pageSize>
+      <maxPageSize>1000</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="DOCUMENT_HISTORY_PROVIDER_OLD"
+                         class="org.nuxeo.mongodb.audit.pageprovider.MongoDBAuditPageProvider">
+      <whereClause docType="BasicAuditSearch">
+        <fixedPart>
+          { "docUUID": "?" }
+        </fixedPart>
+        <predicate parameter="eventDate" operator="BETWEEN">
+          <field schema="basicauditsearch" name="startDate" />
+          <field schema="basicauditsearch" name="endDate" />
+        </predicate>
+        <predicate parameter="category" operator="IN">
+          <field schema="basicauditsearch" name="eventCategories" />
+        </predicate>
+        <predicate parameter="eventId" operator="IN">
+          <field schema="basicauditsearch" name="eventIds" />
+        </predicate>
+        <predicate parameter="principalName" operator="IN">
+          <field schema="basicauditsearch" name="principalNames" />
+        </predicate>
+      </whereClause>
+      <sort column="id" ascending="true" />
+      <pageSize>5</pageSize>
+    </genericPageProvider>
+
+
+    <genericPageProvider name="DOCUMENT_HISTORY_PROVIDER"
+                         class="org.nuxeo.mongodb.audit.pageprovider.MongoDBDocumentHistoryPageProvider">
+      <whereClause docType="BasicAuditSearch">
+        <predicate parameter="eventDate" operator="BETWEEN">
+          <field schema="basicauditsearch" name="startDate" />
+          <field schema="basicauditsearch" name="endDate" />
+        </predicate>
+        <predicate parameter="category" operator="IN">
+          <field schema="basicauditsearch" name="eventCategories" />
+        </predicate>
+        <predicate parameter="eventId" operator="IN">
+          <field schema="basicauditsearch" name="eventIds" />
+        </predicate>
+        <predicate parameter="principalName" operator="IN">
+          <field schema="basicauditsearch" name="principalNames" />
+        </predicate>
+      </whereClause>
+      <sort column="eventDate" ascending="false" />
+      <pageSize>10</pageSize>
+      <maxPageSize>1000</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="ADMIN_HISTORY" class="org.nuxeo.mongodb.audit.pageprovider.MongoDBAuditPageProvider">
+      <property name="coreSession"></property>
+      <property name="generateUIComments">false</property>
+      <whereClause docType="BasicAuditSearch">
+        <predicate parameter="eventDate" operator="BETWEEN">
+          <field schema="basicauditsearch" name="startDate" />
+          <field schema="basicauditsearch" name="endDate" />
+        </predicate>
+        <predicate parameter="category" operator="=">
+          <field schema="basicauditsearch" name="eventCategory" />
+        </predicate>
+        <predicate parameter="eventId" operator="IN">
+          <field schema="basicauditsearch" name="eventIds" />
+        </predicate>
+        <predicate parameter="principalName" operator="=">
+          <field schema="basicauditsearch" name="principalName" />
+        </predicate>
+      </whereClause>
+      <sort column="eventDate" ascending="false" />
+      <pageSize>10</pageSize>
+      <maxPageSize>1000</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER"
+                         class="org.nuxeo.mongodb.audit.pageprovider.MongoDBDocumentHistoryPageProvider">
+      <pattern>
+        {
+          "$and": [
+            { "category": "userGroup" },
+            { "eventId": { "$in": [ "user_created", "group_created" ] } }
+          ]
+        }
+      </pattern>
+      <sort column="eventDate" ascending="false" />
+      <pageSize>5</pageSize>
+      <maxPageSize>100</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="LATEST_CREATED_USERS_OR_GROUPS_PROVIDER"
+                         class="org.nuxeo.mongodb.audit.pageprovider.LatestCreatedUsersOrGroupsPageProvider">
+    </genericPageProvider>
+
+  </extension>
+
+</component>

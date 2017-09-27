@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo MongoDB Audit
+Bundle-SymbolicName: org.nuxeo.mongodb.audit;singleton:=true
+Bundle-Version: 1.0.0

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.mongodb.audit.contrib">
+
+  <require>org.nuxeo.ecm.platform.uidgen.contribs</require>
+  <require>org.nuxeo.elasticsearch.uidgen.sequencer.contrib</require>
+  <extension target="org.nuxeo.ecm.core.uidgen.UIDGeneratorService" point="sequencers">
+    <sequencer name="uidgen" class="org.nuxeo.ecm.core.mongodb.seqgen.MongoDBUIDSequencer" default="true" />
+  </extension>
+
+<#if ((elasticsearch.enabled)!"false") == "true">
+  <require>org.nuxeo.elasticsearch.audit.contrib</require>
+</#if>
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" point="backend">
+    <backend class="org.nuxeo.mongodb.audit.MongoDBAuditBackend">
+      <require>org.nuxeo.runtime.mongodb.MongoDBComponent</require>
+    </backend>
+  </extension>
+
+</component>

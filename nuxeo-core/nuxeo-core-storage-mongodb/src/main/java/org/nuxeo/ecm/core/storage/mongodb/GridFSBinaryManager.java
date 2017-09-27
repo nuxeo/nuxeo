@@ -43,12 +43,11 @@ import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
-import com.mongodb.ServerAddress;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
@@ -93,11 +92,7 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
         if (StringUtils.isBlank(bucket)) {
             bucket = blobProviderId + ".fs";
         }
-        if (server.startsWith("mongodb://")) {
-            client = new MongoClient(new MongoClientURI(server));
-        } else {
-            client = new MongoClient(new ServerAddress(server));
-        }
+        client = MongoDBConnectionHelper.newMongoClient(server);
         gridFS = new GridFS(client.getDB(dbname), bucket);
         garbageCollector = new GridFSBinaryGarbageCollector();
     }

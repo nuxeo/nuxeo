@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-Version: 1.0.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Runtime MongoDB
+Bundle-SymbolicName: org.nuxeo.runtime.mongodb;singleton:=true
+Nuxeo-Component: OSGI-INF/mongodb-service.xml

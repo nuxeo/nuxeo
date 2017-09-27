@@ -122,7 +122,7 @@
     <nuxeo.features.version>9.3-SNAPSHOT</nuxeo.features.version>
     <nuxeo.addons.core.version>9.3-SNAPSHOT</nuxeo.addons.core.version>
 
-    <nuxeo.connect.client.version>1.6</nuxeo.connect.client.version>
+    <nuxeo.connect.client.version>1.6.1-SNAPSHOT</nuxeo.connect.client.version>
     <!-- nuxeo-distribution-tools is still used as a dependency -->
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
@@ -142,7 +142,7 @@
     <jaxws.version>2.2.8</jaxws.version>
     <tomcat.version>7.0.81</tomcat.version>
     <lucene.version>6.6.1</lucene.version>
-    <elasticsearch.version>5.6.1</elasticsearch.version>
+    <elasticsearch.version>5.6.2</elasticsearch.version>
     <elasticsearch.shield.version>2.3.5</elasticsearch.shield.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
@@ -299,6 +299,18 @@
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-redis</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-mongodb</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-mongodb</artifactId>
         <type>test-jar</type>
         <scope>test</scope>
         <version>${nuxeo.runtime.version}</version>
@@ -590,18 +602,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-redis</artifactId>
-        <type>test-jar</type>
-        <scope>test</scope>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-lock</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-lock</artifactId>
         <type>test-jar</type>
         <scope>test</scope>
         <version>${nuxeo.core.version}</version>
@@ -1282,6 +1282,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-audit-ws</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-audit-mongodb</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
@@ -2105,12 +2110,12 @@
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-api</artifactId>
-        <version>2.9.0</version>
+        <version>2.9.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-core</artifactId>
-        <version>2.9.0</version>
+        <version>2.9.1</version>
       </dependency>
 
       <!-- apache -->

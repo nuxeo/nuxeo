@@ -1,0 +1,25 @@
+<component name="org.nuxeo.ecm.platform.audit.search.contrib" version="1.0">
+
+  <documentation>Contribute the search event to the Audit configuration :
+    this is only safe to do so when the MongoDB backend if used for Audit
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" point="event">
+    <event name="search">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.searchDocumentModelAsJson}" key="searchDocumentModel" />
+        <extendedInfo expression="${message.properties.aggregates}" key="aggregates" />
+        <extendedInfo expression="${message.properties.aggregatesMatches}" key="aggregatesMatches" />
+        <extendedInfo expression="${message.properties.effectiveQuery}" key="effectiveQuery" />
+        <extendedInfo expression="${message.properties.pageIndex}" key="pageIndex" />
+        <extendedInfo expression="${message.properties.resultsCountInPage}" key="resultsCountInPage" />
+        <extendedInfo expression="${message.properties.resultsCount}" key="resultsCount" />
+        <extendedInfo expression="${message.properties.pageProviderName}" key="pageProviderName" />
+        <extendedInfo expression="${message.properties.queryParams}" key="queryParams" />
+        <extendedInfo expression="${message.properties.params}" key="params" />
+        <extendedInfo expression="${message.properties.executionTimeMs}" key="executionTimeMs" />
+        <extendedInfo expression="${message.properties.searchFields}" key="searchFields" />
+      </extendedInfos>
+    </event>
+  </extension>
+</component>

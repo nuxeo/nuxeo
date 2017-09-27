@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.mongodb.core.test.contrib">
+
+  <extension target="org.nuxeo.runtime.mongodb.MongoDBComponent" point="connection">
+    <connection id="default">
+      <server>${nuxeo.test.mongodb.server}</server>
+      <dbname>${nuxeo.test.mongodb.dbname}</dbname>
+    </connection>
+  </extension>
+
+</component>

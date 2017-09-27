@@ -35,10 +35,10 @@ import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.Binary;
-import org.nuxeo.ecm.core.mongodb.MongoDBConnectionService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.AbstractKeyValueStoreProvider;
 import org.nuxeo.runtime.kv.KeyValueStoreDescriptor;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
 import com.mongodb.ErrorCategory;
 import com.mongodb.MongoWriteException;
