@@ -1353,8 +1353,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 actors.add(NXQL.escapeString(actorId));
             }
             String actorsParam = StringUtils.join(actors, ", ");
-            query.append(String.format(" AND (nt:actors/* IN (%s) OR nt:delegatedActors/* IN (%s))",
-                    actorsParam, actorsParam));
+            query.append(String.format(" AND (nt:actors/* IN (%s) OR nt:delegatedActors/* IN (%s))", actorsParam,
+                    actorsParam));
         }
         if (StringUtils.isNotBlank(workflowInstanceId)) {
             query.append(String.format(" AND nt:processId = %s", NXQL.escapeString(workflowInstanceId)));
