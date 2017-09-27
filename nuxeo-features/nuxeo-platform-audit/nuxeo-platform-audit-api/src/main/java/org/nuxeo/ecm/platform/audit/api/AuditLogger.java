@@ -79,4 +79,11 @@ public interface AuditLogger {
      * @since 8.2
      */
     boolean await(long time, TimeUnit unit) throws InterruptedException;
+
+    /**
+     * Returns a log entry representation of an event.
+     *
+     * @since 9.3
+     */
+    LogEntry buildEntryFromEvent(Event event);
 }
