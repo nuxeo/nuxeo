@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.api;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * The bundling of a list and a total size.
@@ -45,6 +46,15 @@ public class PartialList<E> implements Iterable<E> {
     @Override
     public Iterator<E> iterator() {
         return list.iterator();
+    }
+
+    /**
+     * Returns a sequential {@code Stream} with the underlying list as its source.
+     *
+     * @since 9.3
+     */
+    public Stream<E> stream() {
+        return list.stream();
     }
 
 }
