@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 ##
 ## (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
 ##
@@ -115,24 +115,24 @@ echo
 echo "Retrieving files..."
 rm -rf "${WORK_FOLDER}"
 mkdir -p "${WORK_FOLDER}"
-cd "${WORK_FOLDER}" || exit 1
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz" || exit 1
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5" || exit 1
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1" || exit 1
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar" || exit 1
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.md5" || exit 1
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.sha1" || exit 1
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar" || exit 1
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.md5" || exit 1
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.sha1" || exit 1
+cd "${WORK_FOLDER}"
+wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz"
+wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5"
+wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1"
+wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar"
+wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.md5"
+wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.sha1"
+wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar"
+wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.md5"
+wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.sha1"
 
 echo "Checking archives..."
-verifyHash "apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5" || exit 1
-verifyHash "apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1" || exit 1
-verifyHash "tomcat-juli-adapters.jar.md5" || exit 1
-verifyHash "tomcat-juli-adapters.jar.sha1" || exit 1
-verifyHash "tomcat-juli.jar.md5" || exit 1
-verifyHash "tomcat-juli.jar.sha1" || exit 1
+verifyHash "apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5"
+verifyHash "apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1"
+verifyHash "tomcat-juli-adapters.jar.md5"
+verifyHash "tomcat-juli-adapters.jar.sha1"
+verifyHash "tomcat-juli.jar.md5"
+verifyHash "tomcat-juli.jar.sha1"
 
 echo
 echo "Patching Nuxeo..."
