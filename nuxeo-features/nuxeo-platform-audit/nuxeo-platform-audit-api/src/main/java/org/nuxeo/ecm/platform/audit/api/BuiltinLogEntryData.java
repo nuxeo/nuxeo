@@ -48,6 +48,8 @@ public final class BuiltinLogEntryData {
 
     public static final String LOG_DOC_LIFE_CYCLE = "docLifeCycle";
 
+    public static final String LOG_REPOSITORY_ID = "repositoryId";
+
     private BuiltinLogEntryData() {
     }
 

@@ -19,15 +19,18 @@
 package org.nuxeo.ecm.platform.audit.service;
 
 import static org.nuxeo.ecm.core.schema.FacetNames.SYSTEM_DOCUMENT;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_CATEGORY;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_PATH;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.el.ELException;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ExpressionFactoryImpl;
@@ -46,6 +50,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -56,9 +61,13 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
+import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.api.Predicates;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
@@ -294,20 +303,6 @@ public abstract class AbstractAuditBackend implements AuditBackend {
     }
 
     @Override
-    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String category, String path, int pageNb,
-            int pageSize) {
-        String[] categories = { category };
-        return queryLogsByPage(eventIds, dateRange, categories, path, pageNb, pageSize);
-    }
-
-    @Override
-    public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String category, String path, int pageNb,
-            int pageSize) {
-        String[] categories = { category };
-        return queryLogsByPage(eventIds, limit, categories, path, pageNb, pageSize);
-    }
-
-    @Override
     public LogEntry newLogEntry() {
         return new LogEntryImpl();
     }
@@ -394,56 +389,69 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         return component.bulker.await(time, unit);
     }
 
-    /**
-     * Returns the logs given a doc uuid.
-     *
-     * @param uuid the document uuid
-     * @return a list of log entries
-     * @deprecated since 8.4, use {@link #getLogEntriesFor(String, String))} instead.
-     */
+    @Override
     @Deprecated
-    @Override
-    public List<LogEntry> getLogEntriesFor(String uuid) {
-        return getLogEntriesFor(uuid, Collections.<String, FilterMapEntry> emptyMap(), false);
+    public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
+        // create builder
+        AuditQueryBuilder builder = new AuditQueryBuilder();
+        // create predicates
+        builder.addAndPredicate(Predicates.eq(LOG_DOC_UUID, uuid));
+        filterMap.values()
+                 .stream()
+                 .map(this::convert)
+                 .forEach(builder::addAndPredicate);
+        if (doDefaultSort) {
+            builder.defaultOrder();
+        }
+        return queryLogs(builder);
     }
 
-    /**
-     * Returns the logs given a doc uuid and a repository id.
-     *
-     * @param uuid the document uuid
-     * @param repositoryId the repository id
-     * @return a list of log entries
-     * @since 8.4
-     */
-    @Override
-    public List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
-        FilterMapEntry repositoryEntry = new FilterMapEntry();
-        repositoryEntry.setColumnName("repositoryId");
-        repositoryEntry.setObject(repositoryId);
-        repositoryEntry.setOperator("=");
-        repositoryEntry.setQueryParameterName("repositoryId");
-        return getLogEntriesFor(uuid, Collections.singletonMap("repositoryId", repositoryEntry), false);
+    protected Predicate convert(FilterMapEntry entry) {
+        String name = entry.getColumnName();
+        String operator = entry.getOperator();
+        Object value = entry.getObject();
+        if (Operator.EQ.toString().equals(operator)) {
+            return Predicates.eq(name, value);
+        } else if (Operator.LT.toString().equals(operator)) {
+            return Predicates.lt(name, value);
+        } else if (Operator.LTEQ.toString().equals(operator)) {
+            return Predicates.lte(name, value);
+        } else if (Operator.GTEQ.toString().equals(operator)) {
+            return Predicates.gte(name, value);
+        } else if (Operator.GT.toString().equals(operator)) {
+            return Predicates.gt(name, value);
+        } else if (Operator.IN.toString().equals(operator)) {
+            return Predicates.in(name, (List<?>) value);
+        }
+        throw new NuxeoException(String.format("Audit backend search doesn't handle '%s' operator", operator));
     }
 
     @Override
-    public List<?> nativeQuery(String query, int pageNb, int pageSize) {
-        return nativeQuery(query, Collections.<String, Object> emptyMap(), pageNb, pageSize);
-    }
-
-    @Override
-    public List<LogEntry> queryLogs(final String[] eventIds, final String dateRange) {
-        return queryLogsByPage(eventIds, (String) null, (String[]) null, null, 0, 10000);
-    }
-
-    @Override
-    public List<LogEntry> nativeQueryLogs(final String whereClause, final int pageNb, final int pageSize) {
-        List<LogEntry> entries = new LinkedList<>();
-        for (Object entry : nativeQuery(whereClause, pageNb, pageSize)) {
-            if (entry instanceof LogEntry) {
-                entries.add((LogEntry) entry);
+    public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String[] categories, String path, int pageNb,
+            int pageSize) {
+        AuditQueryBuilder builder = new AuditQueryBuilder();
+        if (ArrayUtils.isNotEmpty(eventIds)) {
+            if (eventIds.length == 1) {
+                builder.addAndPredicate(Predicates.eq(LOG_EVENT_ID, eventIds[0]));
+            } else {
+                builder.addAndPredicate(Predicates.in(LOG_EVENT_ID, eventIds[0]));
             }
         }
-        return entries;
+        if (ArrayUtils.isNotEmpty(categories)) {
+            if (categories.length == 1) {
+                builder.addAndPredicate(Predicates.eq(LOG_CATEGORY, categories[0]));
+            } else {
+                builder.addAndPredicate(Predicates.in(LOG_CATEGORY, categories[0]));
+            }
+        }
+        if (path != null) {
+            builder.addAndPredicate(Predicates.eq(LOG_DOC_PATH, path));
+        }
+        if (limit != null) {
+            builder.addAndPredicate(Predicates.lt(LOG_EVENT_DATE, limit));
+        }
+        builder.offset(pageNb * pageSize).limit(pageSize);
+        return queryLogs(builder);
     }
 
 }

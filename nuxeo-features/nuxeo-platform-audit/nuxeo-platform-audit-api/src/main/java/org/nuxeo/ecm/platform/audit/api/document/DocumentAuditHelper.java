@@ -19,20 +19,24 @@
  */
 package org.nuxeo.ecm.platform.audit.api.document;
 
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
-import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.api.OrderByExprs;
+import org.nuxeo.ecm.platform.audit.api.Predicates;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -63,15 +67,11 @@ public class DocumentAuditHelper {
         String targetUUID = resolver.sourceDocument.getId();
         // now get from Audit Logs the creation date of
         // the version / proxy
+        AuditQueryBuilder builder = new AuditQueryBuilder().addAndPredicate(Predicates.eq(LOG_DOC_UUID, uuid))
+                                                           .addAndPredicate(Predicates.eq(LOG_EVENT_ID,
+                                                                   DocumentEventTypes.DOCUMENT_CREATED));
         AuditReader reader = Framework.getLocalService(AuditReader.class);
-        FilterMapEntry filter = new FilterMapEntry();
-        filter.setColumnName("eventId");
-        filter.setOperator("=");
-        filter.setQueryParameterName("eventId");
-        filter.setObject(DocumentEventTypes.DOCUMENT_CREATED);
-        Map<String, FilterMapEntry> filters = new HashMap<String, FilterMapEntry>();
-        filters.put("eventId", filter);
-        List<LogEntry> entries = reader.getLogEntriesFor(uuid, filters, false);
+        List<LogEntry> entries = reader.queryLogs(builder);
         AdditionalDocumentAuditParams result;
         if (entries != null && entries.size() > 0) {
             result = new AdditionalDocumentAuditParams();
@@ -91,28 +91,23 @@ public class DocumentAuditHelper {
 
             // We can not directly use the repo timestamp because Audit and VCS can be in separated DB
             // => try to find the matching TS in Audit
-            StringBuilder queryString = new StringBuilder();
-            queryString.append("from LogEntry log where log.docUUID in (");
-            queryString.append("'" + targetUUID + "'");
+            List<String> ids = new ArrayList<>();
+            ids.add(targetUUID);
             if (doc.isVersion()) {
-                DocumentModelList proxies = session.getProxies(doc.getRef(), null);
-                for (DocumentModel proxy : proxies) {
-                    queryString.append(",'" + proxy.getId() + "'");
-                }
+                session.getProxies(doc.getRef(), null).stream().map(DocumentModel::getId).forEach(ids::add);
             }
-            queryString.append(",'" + doc.getId() + "'");
-            queryString.append(") AND log.eventId IN (");
-            queryString.append("'" + DocumentEventTypes.DOCUMENT_CREATED + "'");
-            queryString.append(",'" + DocumentEventTypes.DOCUMENT_CHECKEDIN + "'");
-            queryString.append(") AND log.eventDate >= :minDate ");
-            queryString.append(" order by log.eventId asc");
-
             estimatedDate.add(Calendar.MILLISECOND, -500);
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("minDate", estimatedDate.getTime());
 
-            List<LogEntry> dateEntries = (List<LogEntry>) reader.nativeQuery(queryString.toString(),
-                    params, 0, 20);
+            AuditQueryBuilder dateBuilder = new AuditQueryBuilder();
+            dateBuilder.predicates( //
+                    Predicates.in(LOG_DOC_UUID, ids), //
+                    Predicates.in(LOG_EVENT_ID, DocumentEventTypes.DOCUMENT_CREATED,
+                            DocumentEventTypes.DOCUMENT_CHECKEDIN), //
+                    Predicates.gte(LOG_EVENT_DATE, estimatedDate.getTime()) //
+            );
+            dateBuilder.orders(OrderByExprs.asc(LOG_EVENT_ID));
+            dateBuilder.offset(0).limit(20);
+            List<LogEntry> dateEntries = reader.queryLogs(dateBuilder);
             if (dateEntries.size() > 0) {
                 result.targetUUID = targetUUID;
                 Calendar maxDate = new GregorianCalendar();
