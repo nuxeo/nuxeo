@@ -18,6 +18,20 @@
  */
 package org.nuxeo.elasticsearch.audit.io;
 
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_CATEGORY;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_COMMENT;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_LIFE_CYCLE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_PATH;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_TYPE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EXTENDED;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_LOG_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_PRINCIPAL_NAME;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,31 +79,31 @@ public class AuditEntryJSONReader {
             String key = jp.getCurrentName();
             JsonToken token = jp.nextToken();
             if (token != JsonToken.VALUE_NULL) {
-                if ("category".equals(key)) {
+                if (LOG_CATEGORY.equals(key)) {
                     entry.setCategory(token == JsonToken.VALUE_NULL ? null : jp.getText());
-                } else if ("principalName".equals(key)) {
+                } else if (LOG_PRINCIPAL_NAME.equals(key)) {
                     entry.setPrincipalName(jp.getText());
-                } else if ("comment".equals(key)) {
+                } else if (LOG_COMMENT.equals(key)) {
                     entry.setComment(jp.getText());
-                } else if ("docLifeCycle".equals(key)) {
+                } else if (LOG_DOC_LIFE_CYCLE.equals(key)) {
                     entry.setDocLifeCycle(jp.getText());
-                } else if ("docPath".equals(key)) {
+                } else if (LOG_DOC_PATH.equals(key)) {
                     entry.setDocPath(jp.getText());
-                } else if ("docType".equals(key)) {
+                } else if (LOG_DOC_TYPE.equals(key)) {
                     entry.setDocType(jp.getText());
-                } else if ("docUUID".equals(key)) {
+                } else if (LOG_DOC_UUID.equals(key)) {
                     entry.setDocUUID(jp.getText());
-                } else if ("eventId".equals(key)) {
+                } else if (LOG_EVENT_ID.equals(key)) {
                     entry.setEventId(jp.getText());
-                } else if ("repositoryId".equals(key)) {
+                } else if (LOG_REPOSITORY_ID.equals(key)) {
                     entry.setRepositoryId(jp.getText());
-                } else if ("id".equals(key)) {
+                } else if (LOG_ID.equals(key)) {
                     entry.setId(jp.getLongValue());
-                } else if ("eventDate".equals(key)) {
+                } else if (LOG_EVENT_DATE.equals(key)) {
                     entry.setEventDate(ISODateTimeFormat.dateTime().parseDateTime(jp.getText()).toDate());
-                } else if ("logDate".equals(key)) {
+                } else if (LOG_LOG_DATE.equals(key)) {
                     entry.setLogDate(ISODateTimeFormat.dateTime().parseDateTime(jp.getText()).toDate());
-                } else if ("extended".equals(key)) {
+                } else if (LOG_EXTENDED.equals(key)) {
                     entry.setExtendedInfos(readExtendedInfo(entry, jp, objectMapper));
                 }
             }

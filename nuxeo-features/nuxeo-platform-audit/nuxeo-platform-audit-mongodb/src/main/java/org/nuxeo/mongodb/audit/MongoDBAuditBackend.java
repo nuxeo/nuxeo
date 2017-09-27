@@ -18,10 +18,10 @@
  */
 package org.nuxeo.mongodb.audit;
 
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_CATEGORY;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_DOC_PATH;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_EVENT_DATE;
-import static org.nuxeo.mongodb.audit.LogEntryConstants.PROPERTY_EVENT_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_CATEGORY;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_PATH;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -256,23 +256,23 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
         List<Bson> list = new ArrayList<>();
         if (eventIds != null && eventIds.length > 0) {
             if (eventIds.length == 1) {
-                list.add(Filters.eq(PROPERTY_EVENT_ID, eventIds[0]));
+                list.add(Filters.eq(LOG_EVENT_ID, eventIds[0]));
             } else {
-                list.add(Filters.in(PROPERTY_EVENT_ID, eventIds));
+                list.add(Filters.in(LOG_EVENT_ID, eventIds));
             }
         }
         if (categories != null && categories.length > 0) {
             if (categories.length == 1) {
-                list.add(Filters.eq(PROPERTY_CATEGORY, categories[0]));
+                list.add(Filters.eq(LOG_CATEGORY, categories[0]));
             } else {
-                list.add(Filters.in(PROPERTY_CATEGORY, categories));
+                list.add(Filters.in(LOG_CATEGORY, categories));
             }
         }
         if (path != null) {
-            list.add(Filters.eq(PROPERTY_DOC_PATH, path));
+            list.add(Filters.eq(LOG_DOC_PATH, path));
         }
         if (limit != null) {
-            list.add(Filters.lt(PROPERTY_EVENT_DATE, limit));
+            list.add(Filters.lt(LOG_EVENT_DATE, limit));
         }
         Bson filter = list.size() == 1 ? list.get(0) : Filters.and(list);
         logRequest(filter, pageNb, pageSize);
