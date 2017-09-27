@@ -20,20 +20,45 @@
 ## Shell script that upgrades Tomcat 7 in Nuxeo (for 6.0, LTS 2015, LTS 2016, LTS 2017)
 ## Using explicitely bash to avoid dash which is not POSIX.
 ##
-## Requires the following commands to be available: wget, sed, tar, md5sum, shasum
+## Requires the following commands to be available: wget, sed, tar, openssl
 
 readonly TOMCAT_ARCHIVE_URL="https://archive.apache.org/dist/tomcat/tomcat-7"
 readonly TOMCAT_LATEST_URL="http://www.apache.org/dist/tomcat/tomcat-7"
 
 usage() {
   echo "Usage:"
-  echo -e "\t./upgrade_tomcat7.sh NUXEO_HOME [TOMCAT_TARGET_VERSION]"
+  echo -e "\t./$(basename "$0") NUXEO_HOME [TOMCAT_TARGET_VERSION]"
   echo
   echo "Note: If no target version is specified the latest one will be retrieved from the Tomcat site"
   echo
   echo "Examples:"
-  echo -e "\t./upgrade_tomcat7.sh /path/to/nuxeo-cap-7.10-tomcat"
-  echo -e "\t./upgrade_tomcat7.sh /path/to/nuxeo-cap-7.10-tomcat 7.0.76"
+  echo -e "\t./$(basename "$0") /path/to/nuxeo-cap-7.10-tomcat"
+  echo -e "\t./$(basename "$0") /path/to/nuxeo-cap-7.10-tomcat 7.0.76"
+}
+
+verifyHash() {
+  local hash_filename="$1"
+  local hash_algorithm="${hash_filename##*.}" # autodetects the algorithm from the extension
+  local filename_tocheck
+  local hash_tocheck
+  local hash_value
+
+  echo -n -e "\tVerifying ${hash_filename}..."
+
+  # file containing the hash
+  filename_tocheck="$(cat "${hash_filename}" | cut -d ' ' -f 2 | sed 's/^[\s*]//;s/\s*$//')" || return 1
+  hash_tocheck="$(cat "${hash_filename}" | cut -d ' ' -f 1 | sed 's/^[\s*]//;s/\s*$//')" || return 1
+
+  # file to be checked
+  hash_value="$(openssl "${hash_algorithm}" "${filename_tocheck}" | cut -d ' ' -f 2 | sed 's/^[\s*]//;s/\s*$//')" || return 1
+
+  if [ "${hash_value}" = "${hash_tocheck}" ]; then
+    echo -e "OK"
+    return 0
+  else
+    echo -e "FAILED"
+    return 1
+  fi
 }
 
 if [ $# -eq 0 ] || [ $# -gt 3 ]; then
@@ -102,20 +127,12 @@ wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.md5" ||
 wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.sha1" || exit 1
 
 echo "Checking archives..."
-# fix wrong md5 and sha1 file content
-sed -i 's/\*/ /g' "apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5"; echo >> "apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5"
-sed -i 's/\*/ /g' "apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1"; echo >> "apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1"
-sed -i 's/\*/ /g' tomcat-juli-adapters.jar.md5; echo >> tomcat-juli-adapters.jar.md5
-sed -i 's/\*/ /g' tomcat-juli-adapters.jar.sha1; echo >> tomcat-juli-adapters.jar.sha1
-sed -i 's/\*/ /g' tomcat-juli.jar.md5; echo >> tomcat-juli.jar.md5
-sed -i 's/\*/ /g' tomcat-juli.jar.sha1; echo >> tomcat-juli.jar.sha1
-# perform checks
-md5sum -c "apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5" || exit 1
-shasum -c "apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1" || exit 1
-md5sum -c tomcat-juli-adapters.jar.md5 || exit 1
-shasum -c tomcat-juli-adapters.jar.sha1 || exit 1
-md5sum -c tomcat-juli.jar.md5 || exit 1
-shasum -c tomcat-juli.jar.sha1 || exit 1
+verifyHash "apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5" || exit 1
+verifyHash "apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1" || exit 1
+verifyHash "tomcat-juli-adapters.jar.md5" || exit 1
+verifyHash "tomcat-juli-adapters.jar.sha1" || exit 1
+verifyHash "tomcat-juli.jar.md5" || exit 1
+verifyHash "tomcat-juli.jar.sha1" || exit 1
 
 echo
 echo "Patching Nuxeo..."
@@ -147,4 +164,10 @@ cp "apache-tomcat-${TOMCAT_TARGET}/RUNNING.txt" "${NUXEO_HOME}/doc-tomcat"
 
 # nuxeo version bump
 echo -e "\tUpdating Tomcat version in nuxeo.defaults..."
-sed -i 's/'"${TOMCAT_SOURCE//./\\.}"'/'"${TOMCAT_TARGET}"'/g' "${NUXEO_HOME}/templates/nuxeo.defaults"
+sed 's/'"${TOMCAT_SOURCE//./\\.}"'/'"${TOMCAT_TARGET}"'/g' "${NUXEO_HOME}/templates/nuxeo.defaults" > "${WORK_FOLDER}/nuxeo.defaults"
+mv "${WORK_FOLDER}/nuxeo.defaults" "${NUXEO_HOME}/templates/nuxeo.defaults"
+
+echo
+echo "Deleting temporary folder..."
+echo
+rm -rf "${WORK_FOLDER}"
