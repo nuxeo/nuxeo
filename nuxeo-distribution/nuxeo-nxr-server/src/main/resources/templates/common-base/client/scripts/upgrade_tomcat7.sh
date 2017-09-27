@@ -46,11 +46,11 @@ verifyHash() {
   echo -n -e "\tVerifying ${hash_filename}..."
 
   # file containing the hash
-  filename_tocheck="$(cat "${hash_filename}" | cut -d ' ' -f 2 | sed 's/^[\s*]//;s/\s*$//')" || return 1
-  hash_tocheck="$(cat "${hash_filename}" | cut -d ' ' -f 1 | sed 's/^[\s*]//;s/\s*$//')" || return 1
+  filename_tocheck="$(cat "${hash_filename}" | cut -d ' ' -f 2 | sed 's/^[\s*]//;s/\s*$//')" || { echo -e "FAILED"; return 1; }
+  hash_tocheck="$(cat "${hash_filename}" | cut -d ' ' -f 1 | sed 's/^[\s*]//;s/\s*$//')" || { echo -e "FAILED"; return 1; }
 
   # file to be checked
-  hash_value="$(openssl "${hash_algorithm}" "${filename_tocheck}" | cut -d ' ' -f 2 | sed 's/^[\s*]//;s/\s*$//')" || return 1
+  hash_value="$(openssl "${hash_algorithm}" "${filename_tocheck}" | cut -d ' ' -f 2 | sed 's/^[\s*]//;s/\s*$//')" || { echo -e "FAILED"; return 1; }
 
   if [ "${hash_value}" = "${hash_tocheck}" ]; then
     echo -e "OK"
