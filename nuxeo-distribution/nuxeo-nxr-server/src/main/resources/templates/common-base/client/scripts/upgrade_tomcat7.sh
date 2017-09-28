@@ -76,11 +76,11 @@ NUXEO_HOME=$1
 
 if [ -z "$2" ]; then
   # autodetects latest version
-  TOMCAT_TARGET=$(curl -sSL ${TOMCAT_LATEST_URL} | grep href=\"v | sed 's/.*href="v\(7.0.[0-9]*\).*/\1/g')
+  TOMCAT_TARGET=$(wget -qO - --show-progress ${TOMCAT_LATEST_URL} | grep href=\"v | sed 's/.*href="v\(7.0.[0-9]*\).*/\1/g')
   TOMCAT_TARGET=${TOMCAT_TARGET:-7.0.75} # fallback to 7.0.75 if autodetection failed
 else
   # check the TOMCAT version exists
-  VERSIONS_FOUND=$(curl -sSL ${TOMCAT_ARCHIVE_URL} | grep -c "${2}")
+  VERSIONS_FOUND=$(wget -qO - --show-progress ${TOMCAT_ARCHIVE_URL} | grep -c "${2}")
   if [ "$VERSIONS_FOUND" -ne 1 ]; then
     echo -e "Cannot find Tomcat version ${2}"
     echo
