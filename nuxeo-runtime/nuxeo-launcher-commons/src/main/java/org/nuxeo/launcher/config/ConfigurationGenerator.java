@@ -127,16 +127,16 @@ public class ConfigurationGenerator {
     public static final String PARAM_TEMPLATE_DBNAME = "nuxeo.dbtemplate";
 
     /**
-     * @since 8.1
+     * @since 9.3
      */
-    public static final String PARAM_TEMPLATE_DBNOSQL_NAME = "nuxeo.dbnosqltemplate";
+    public static final String PARAM_TEMPLATE_DBSECONDARY_NAME = "nuxeo.dbnosqltemplate";
 
     public static final String PARAM_TEMPLATE_DBTYPE = "nuxeo.db.type";
 
     /**
-     * @since 8.1
+     * @since 9.3
      */
-    public static final String PARAM_TEMPLATE_DBNOSQL_TYPE = "nuxeo.dbnosql.type";
+    public static final String PARAM_TEMPLATE_DBSECONDARY_TYPE = "nuxeo.dbsecondary.type";
 
     public static final String OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS = "nuxeo.templates.parsing.extensions";
 
@@ -155,12 +155,12 @@ public class ConfigurationGenerator {
 
     public static final String BOUNDARY_END = "### END - DO NOT EDIT BETWEEN BEGIN AND END ###";
 
-    public static final List<String> DB_LIST = Arrays.asList("default", "postgresql", "oracle", "mysql", "mariadb",
+    public static final List<String> DB_LIST = Arrays.asList("default", "mongodb","postgresql", "oracle", "mysql", "mariadb",
             "mssql", "db2");
 
-    public static final List<String> DB_NOSQL_LIST = Arrays.asList("none", "mongodb", "marklogic");
+    public static final List<String> DB_SECONDARY_LIST = Arrays.asList("none", "marklogic");
 
-    public static final List<String> DB_EXCLUDE_CHECK_LIST = Arrays.asList("default", "none");
+    public static final List<String> DB_EXCLUDE_CHECK_LIST = Arrays.asList("default", "none", "mongodb");
 
     public static final String PARAM_WIZARD_DONE = "nuxeo.wizard.done";
 
@@ -605,7 +605,7 @@ public class ConfigurationGenerator {
             includeTemplates();
             checkForDeprecatedParameters(defaultConfig);
             extractDatabaseTemplateName();
-            extractNoSqlDatabaseTemplateName();
+            extractSecondaryDatabaseTemplateName();
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (IOException e) {
@@ -946,7 +946,7 @@ public class ConfigurationGenerator {
         if (newDbTemplate != null) {
             changedParameters.put(PARAM_TEMPLATES_NAME, rebuildTemplatesStr(newDbTemplate));
         }
-        newDbTemplate = changedParameters.remove(PARAM_TEMPLATE_DBNOSQL_NAME);
+        newDbTemplate = changedParameters.remove(PARAM_TEMPLATE_DBSECONDARY_NAME);
         if (newDbTemplate != null) {
             changedParameters.put(PARAM_TEMPLATES_NAME, rebuildTemplatesStr(newDbTemplate));
         }
@@ -1182,8 +1182,8 @@ public class ConfigurationGenerator {
      * @see #rebuildTemplatesStr(String)
      * @since 8.1
      */
-    public String extractNoSqlDatabaseTemplateName() {
-        return extractDbTemplateName(DB_NOSQL_LIST, PARAM_TEMPLATE_DBNOSQL_TYPE, PARAM_TEMPLATE_DBNOSQL_NAME, null);
+    public String extractSecondaryDatabaseTemplateName() {
+        return extractDbTemplateName(DB_SECONDARY_LIST, PARAM_TEMPLATE_DBSECONDARY_TYPE, PARAM_TEMPLATE_DBSECONDARY_NAME, null);
     }
 
     private String extractDbTemplateName(List<String> knownDbList, String paramTemplateDbType,
@@ -1564,10 +1564,10 @@ public class ConfigurationGenerator {
             if (currentDBTemplate == null) {
                 currentDBTemplate = extractDatabaseTemplateName();
             }
-        } else if (DB_NOSQL_LIST.contains(dbTemplate)) {
-            currentDBTemplate = userConfig.getProperty(PARAM_TEMPLATE_DBNOSQL_NAME);
+        } else if (DB_SECONDARY_LIST.contains(dbTemplate)) {
+            currentDBTemplate = userConfig.getProperty(PARAM_TEMPLATE_DBSECONDARY_NAME);
             if (currentDBTemplate == null) {
-                currentDBTemplate = extractNoSqlDatabaseTemplateName();
+                currentDBTemplate = extractSecondaryDatabaseTemplateName();
             }
             if ("none".equals(dbTemplate)) {
                 dbTemplate = null;
