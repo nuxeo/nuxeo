@@ -30,8 +30,10 @@ import javax.ws.rs.ext.Provider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.TypeException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -57,12 +59,9 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
                 return Response.status(Status.BAD_REQUEST).entity(dve.getReport()).build();
             }
         }
-        if (cause instanceof NotFoundException) {
-            NotFoundException nfe = (NotFoundException) cause;
-            log.debug("JAX-RS 404 Not Found: " + nfe.getNotFoundUri());
-        } else if (cause instanceof WebResourceNotFoundException) {
-            WebResourceNotFoundException nfe = (WebResourceNotFoundException) cause;
-            log.debug("JAX-RS 404 Not Found: " + nfe.getMessage());
+        if (cause instanceof NotFoundException || cause instanceof WebResourceNotFoundException
+                || cause instanceof TypeException || cause instanceof DocumentNotFoundException) {
+            log.debug(cause, cause);
         } else {
             Throwable previousCause = cause.getCause();
             if (previousCause instanceof ConcurrentUpdateException) {
