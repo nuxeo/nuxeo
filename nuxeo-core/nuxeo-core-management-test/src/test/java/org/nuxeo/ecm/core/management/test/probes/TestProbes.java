@@ -92,12 +92,12 @@ public class TestProbes {
         HealthCheckResult result = pm.getOrRunHealthCheck();
         assertTrue(result.isHealthy());
         assertTrue(probeInfo.getStatus().isSuccess());
-        assertEquals("{\"healthCheck\":[{\"runtimeStatus\":[\"OK\"]}]}", result.toJson());
+        assertEquals("{\"healthCheck\":[{\"runtimeStatus\":[\"ok\"]}]}", result.toJson());
 
         result = pm.getOrRunHealthCheckSingleProbe("runtimeStatus");
         assertTrue(result.isHealthy());
         assertTrue(probeInfo.getStatus().isSuccess());
-        assertEquals("{\"healthCheck\":[{\"runtimeStatus\":[\"OK\"]}]}", result.toJson());
+        assertEquals("{\"healthCheck\":[{\"runtimeStatus\":[\"ok\"]}]}", result.toJson());
 
     }
 

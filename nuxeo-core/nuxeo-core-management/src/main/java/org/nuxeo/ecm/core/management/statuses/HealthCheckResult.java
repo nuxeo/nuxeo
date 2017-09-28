@@ -70,7 +70,7 @@ public class HealthCheckResult {
         try {
             for (ProbeInfo probe : probes) {
                 JSONObject o = new JSONObject();
-                o.append(probe.getShortcutName(), (probe.getStatus().isSuccess() ? "OK" : "FAIL"));
+                o.append(probe.getShortcutName(), (probe.getStatus().isSuccess() ? "ok" : "failed"));
                 array.put(o);
             }
             JSONObject result = new JSONObject();
