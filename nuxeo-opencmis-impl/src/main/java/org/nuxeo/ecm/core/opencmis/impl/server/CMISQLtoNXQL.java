@@ -305,8 +305,8 @@ public class CMISQLtoNXQL {
 
     public PartialList<Map<String, Serializable>> convertToCMIS(PartialList<Map<String, Serializable>> pl,
             NuxeoCmisService service) {
-        return pl.list.stream().map(map -> convertToCMISMap(map, realColumns, virtualColumns, service)).collect(
-                Collectors.collectingAndThen(Collectors.toList(), result -> new PartialList<>(result, pl.totalSize)));
+        return pl.stream().map(map -> convertToCMISMap(map, realColumns, virtualColumns, service)).collect(
+                Collectors.collectingAndThen(Collectors.toList(), result -> new PartialList<>(result, pl.totalSize())));
     }
 
     protected boolean isFacetsColumn(String name) {

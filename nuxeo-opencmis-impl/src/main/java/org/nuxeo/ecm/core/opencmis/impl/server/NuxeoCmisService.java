@@ -1483,8 +1483,8 @@ public class NuxeoCmisService extends AbstractCmisService
                 Boolean.TRUE.equals(searchAllVersions), typeInfo);
 
         // convert from Nuxeo to CMIS format
-        List<ObjectData> list = new ArrayList<>(res.list.size());
-        for (Map<String, Serializable> map : res.list) {
+        List<ObjectData> list = new ArrayList<>(res.size());
+        for (Map<String, Serializable> map : res) {
             ObjectDataImpl od = makeObjectData(map, typeInfo);
 
             // optional stuff
@@ -1514,7 +1514,7 @@ public class NuxeoCmisService extends AbstractCmisService
 
             list.add(od);
         }
-        long numItems = res.totalSize;
+        long numItems = res.totalSize();
         ObjectListImpl objList = new ObjectListImpl();
         objList.setObjects(list);
         objList.setNumItems(BigInteger.valueOf(numItems));
