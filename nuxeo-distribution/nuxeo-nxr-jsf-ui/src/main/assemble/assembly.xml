@@ -20,6 +20,7 @@
         </includes>
         <excludes>
           <artifact groupId="org.nuxeo.lib*" />
+          <artifact groupId="org.nuxeo.build*" />
         </excludes>
       </artifact:set>
     </copy>
