@@ -76,11 +76,11 @@ NUXEO_HOME=$1
 
 if [ -z "$2" ]; then
   # autodetects latest version
-  TOMCAT_TARGET=$(wget -qO - --show-progress ${TOMCAT_LATEST_URL} | grep href=\"v | sed 's/.*href="v\(7.0.[0-9]*\).*/\1/g')
+  TOMCAT_TARGET=$(wget -qO- ${TOMCAT_LATEST_URL} | grep href=\"v | sed 's/.*href="v\(7.0.[0-9]*\).*/\1/g')
   TOMCAT_TARGET=${TOMCAT_TARGET:-7.0.75} # fallback to 7.0.75 if autodetection failed
 else
   # check the TOMCAT version exists
-  VERSIONS_FOUND=$(wget -qO - --show-progress ${TOMCAT_ARCHIVE_URL} | grep -c "${2}")
+  VERSIONS_FOUND=$(wget -qO- ${TOMCAT_ARCHIVE_URL} | grep -c "${2}")
   if [ "$VERSIONS_FOUND" -ne 1 ]; then
     echo -e "Cannot find Tomcat version ${2}"
     echo
@@ -116,16 +116,17 @@ echo "Retrieving files..."
 rm -rf "${WORK_FOLDER}"
 mkdir -p "${WORK_FOLDER}"
 cd "${WORK_FOLDER}"
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz"
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5"
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1"
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar"
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.md5"
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.sha1"
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar"
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.md5"
-wget "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.sha1"
+wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz"
+wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5"
+wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1"
+wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar"
+wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.md5"
+wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli-adapters.jar.sha1"
+wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar"
+wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.md5"
+wget -q --show-progress "${TOMCAT_ARCHIVE_URL}/v${TOMCAT_TARGET}/bin/extras/tomcat-juli.jar.sha1"
 
+echo
 echo "Checking archives..."
 verifyHash "apache-tomcat-${TOMCAT_TARGET}.tar.gz.md5"
 verifyHash "apache-tomcat-${TOMCAT_TARGET}.tar.gz.sha1"
