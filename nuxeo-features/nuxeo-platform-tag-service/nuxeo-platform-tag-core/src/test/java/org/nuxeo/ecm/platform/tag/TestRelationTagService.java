@@ -21,7 +21,10 @@
 package org.nuxeo.ecm.platform.tag;
 
 import org.junit.Before;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import static org.junit.Assume.assumeTrue;
 
@@ -32,8 +35,63 @@ import static org.junit.Assume.assumeTrue;
  */
 public class TestRelationTagService extends AbstractTestTagService {
 
+    protected static final String TAG_DOCUMENT_TYPE = "Tag";
+
+    protected static final String TAG_LABEL_FIELD = "tag:label";
+
+    protected static final String TAGGING_DOCUMENT_TYPE = "Tagging";
+
+    protected static final String TAGGING_SOURCE_FIELD = "relation:source";
+
+    protected static final String TAGGING_TARGET_FIELD = "relation:target";
+
     @Before
     public void setUp() {
         assumeTrue("DBS does not support tags based on SQL relations", !coreFeature.getStorageConfiguration().isDBS());
+    }
+
+    @Override
+    protected void createTags() {
+        DocumentModel file1 = session.getDocument(new PathRef("/file1"));
+        DocumentModel file2 = session.getDocument(new PathRef("/file2"));
+
+        String label1 = "tag1";
+        DocumentModel tag1 = session.createDocumentModel(null, label1, TAG_DOCUMENT_TYPE);
+        tag1.setPropertyValue(TAG_LABEL_FIELD, label1);
+        tag1 = session.createDocument(tag1);
+
+        String label2 = "tag2";
+        DocumentModel tag2 = session.createDocumentModel(null, label2, TAG_DOCUMENT_TYPE);
+        tag2.setPropertyValue(TAG_LABEL_FIELD, label2);
+        tag2 = session.createDocument(tag2);
+
+        DocumentModel tagging1to1 = session.createDocumentModel(null, label1, TAGGING_DOCUMENT_TYPE);
+        tagging1to1.setPropertyValue(TAGGING_SOURCE_FIELD, file1.getId());
+        tagging1to1.setPropertyValue(TAGGING_TARGET_FIELD, tag1.getId());
+        tagging1to1 = session.createDocument(tagging1to1);
+
+        DocumentModel tagging1to2 = session.createDocumentModel(null, label2, TAGGING_DOCUMENT_TYPE);
+        tagging1to2.setPropertyValue(TAGGING_SOURCE_FIELD, file1.getId());
+        tagging1to2.setPropertyValue(TAGGING_TARGET_FIELD, tag2.getId());
+        tagging1to2 = session.createDocument(tagging1to2);
+
+        DocumentModel tagging2to1 = session.createDocumentModel(null, label1, TAGGING_DOCUMENT_TYPE);
+        tagging2to1.setPropertyValue(TAGGING_SOURCE_FIELD, file2.getId());
+        tagging2to1.setPropertyValue(TAGGING_TARGET_FIELD, tag1.getId());
+        tagging2to1 = session.createDocument(tagging2to1);
+
+        // create a relation that isn't a Tagging
+        DocumentModel rel = session.createDocumentModel(null, label1, "Relation");
+        rel.setPropertyValue(TAGGING_SOURCE_FIELD, file1.getId());
+        rel.setPropertyValue(TAGGING_TARGET_FIELD, tag1.getId());
+        rel = session.createDocument(rel);
+
+        session.save();
+
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+        coreFeature.getStorageConfiguration().waitForFulltextIndexing();
     }
 }
