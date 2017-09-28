@@ -23,34 +23,38 @@ package org.nuxeo.ecm.platform.tag;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeTrue;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -86,6 +90,7 @@ public abstract class AbstractTestTagService {
     @Inject
     protected HotDeployer deployer;
 
+    protected boolean proxies;
 
     // Oracle fails if we do too many connections in a short time, sleep
     // here to prevent this.
@@ -596,5 +601,158 @@ public abstract class AbstractTestTagService {
             assertEquals("mytag", tags.toArray()[0]);
         }
     }
+
+    @Test
+    public void testQueriesOnTagsWithProxies() throws Exception {
+        proxies = true;
+        testQueriesOnTags();
+    }
+
+    @Test
+    public void testQueriesOnTagsWithoutProxies() throws Exception {
+        proxies = false;
+        testQueriesOnTags();
+    }
+
+    protected void testQueriesOnTags() throws Exception {
+        String nxql;
+        DocumentModelList dml;
+        IterableQueryResult res;
+
+        DocumentModel file1 = new DocumentModelImpl("/", "file1", "File");
+        file1.setPropertyValue("dc:title", "file1");
+        session.createDocument(file1);
+        DocumentModel file2 = new DocumentModelImpl("/", "file2", "File");
+        file2.setPropertyValue("dc:title", "file2");
+        session.createDocument(file2);
+        session.save();
+
+        createTags();
+
+        file1 = session.getDocument(new PathRef("/file1"));
+
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag = 'tag0'");
+        assertEquals(0, session.query(nxql).size());
+
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag = 'tag1'");
+        assertEquals(2, session.query(nxql).size());
+
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag = 'tag2'");
+        dml = session.query(nxql);
+        assertEquals(1, dml.size());
+        assertEquals(file1.getId(), dml.get(0).getId());
+
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag IN ('tag1', 'tag2')");
+        assertEquals(2, session.query(nxql).size());
+
+        // unqualified name refers to the same tag
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag = 'tag1' AND ecm:tag = 'tag2'");
+        assertEquals(0, session.query(nxql).size());
+
+        // unqualified name refers to the same tag
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag = 'tag1' OR ecm:tag = 'tag2'");
+        assertEquals(2, session.query(nxql).size());
+
+        // any tag instance
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag/* = 'tag1'");
+        assertEquals(2, session.query(nxql).size());
+
+        // any tag instance
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag/* = 'tag1' AND ecm:tag/* = 'tag2'");
+        dml = session.query(nxql);
+        assertEquals(1, dml.size());
+        assertEquals(file1.getId(), dml.get(0).getId());
+
+        // any tag instance
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag/* = 'tag1' OR ecm:tag/* = 'tag2'");
+        dml = session.query(nxql);
+        assertEquals(2, dml.size());
+
+        // numbered tag instance
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag/*1 = 'tag1'");
+        assertEquals(2, session.query(nxql).size());
+
+        // numbered tag instance are the same tag
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag/*1 = 'tag1' AND ecm:tag/*1 = 'tag2'");
+        assertEquals(0, session.query(nxql).size());
+
+        // different numbered tags
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag/*1 = 'tag1' AND ecm:tag/*2 = 'tag2'");
+        assertEquals(1, session.query(nxql).size());
+
+        // needs DISTINCT
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag IN ('tag1', 'tag2')");
+        assertEquals(2, session.query(nxql).size());
+
+        // needs DISTINCT
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag IN ('tag1', 'tag2') AND dc:title = 'file1'");
+        dml = session.query(nxql);
+        assertEquals(1, dml.size());
+        assertEquals(file1.getId(), dml.get(0).getId());
+
+        // ----- queryAndFetch -----
+
+        nxql = nxql("SELECT ecm:tag FROM File");
+        res = session.queryAndFetch(nxql, NXQL.NXQL);
+        // file1: tag1, tag2; file2: tag1
+        assertIterableQueryResult(res, 3, "ecm:tag", "tag1", "tag2");
+        res.close();
+
+        nxql = nxql("SELECT ecm:tag FROM File WHERE ecm:tag LIKE '%1'");
+        res = session.queryAndFetch(nxql, NXQL.NXQL);
+        assertIterableQueryResult(res, 2, "ecm:tag", "tag1");
+        res.close();
+
+        // explicit DISTINCT
+        nxql = nxql("SELECT DISTINCT ecm:tag FROM File");
+        res = session.queryAndFetch(nxql, NXQL.NXQL);
+        assertIterableQueryResult(res, 2, "ecm:tag", "tag1", "tag2");
+        res.close();
+
+        nxql = nxql("SELECT ecm:tag FROM File WHERE dc:title = 'file1'");
+        res = session.queryAndFetch(nxql, NXQL.NXQL);
+        assertIterableQueryResult(res, 2, "ecm:tag", "tag1", "tag2");
+        res.close();
+
+        // unqualified name refers to the same tag
+        nxql = nxql("SELECT ecm:tag FROM File WHERE ecm:tag = 'tag1'");
+        res = session.queryAndFetch(nxql, NXQL.NXQL);
+        assertIterableQueryResult(res, 2, "ecm:tag", "tag1");
+        res.close();
+
+        // unqualified name refers to the same tag
+        nxql = nxql("SELECT ecm:tag FROM File WHERE ecm:tag = 'tag2'");
+        res = session.queryAndFetch(nxql, NXQL.NXQL);
+        assertIterableQueryResult(res, 1, "ecm:tag", "tag2");
+        res.close();
+
+        // numbered tag
+        nxql = nxql("SELECT ecm:tag/*1 FROM File WHERE ecm:tag/*1 = 'tag1'");
+        res = session.queryAndFetch(nxql, NXQL.NXQL);
+        assertIterableQueryResult(res, 2, "ecm:tag/*1", "tag1");
+        res.close();
+    }
+
+    protected String nxql(String nxql) {
+        if (proxies) {
+            return nxql;
+        } else if (nxql.contains(" WHERE ")) {
+            return nxql.replace(" WHERE ", " WHERE ecm:isProxy = 0 AND ");
+        } else {
+            return nxql + " WHERE ecm:isProxy = 0";
+        }
+    }
+
+    protected static void assertIterableQueryResult(IterableQueryResult actual, int size, String prop,
+            String... expected) {
+        assertEquals(size, actual.size());
+        Collection<String> set = new HashSet<>();
+        for (Map<String, Serializable> map : actual) {
+            set.add((String) map.get(prop));
+        }
+        assertEquals(new HashSet<>(Arrays.asList(expected)), set);
+    }
+
+    protected abstract void createTags();
 
 }

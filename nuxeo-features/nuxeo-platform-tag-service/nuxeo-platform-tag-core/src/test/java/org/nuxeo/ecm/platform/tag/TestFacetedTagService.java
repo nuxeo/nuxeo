@@ -20,7 +20,14 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Test class for tag service based on facet
@@ -29,4 +36,25 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @LocalDeploy("org.nuxeo.ecm.platform.tag:faceted-tag-service-override.xml")
 public class TestFacetedTagService extends AbstractTestTagService {
+
+    @Override
+    protected void createTags() {
+        DocumentModel file1 = session.getDocument(new PathRef("/file1"));
+        DocumentModel file2 = session.getDocument(new PathRef("/file2"));
+
+        Map<String, Serializable> tag1 = new HashMap<>();
+        tag1.put("label", "tag1");
+        tag1.put("username", "Administrator");
+
+        Map<String, Serializable> tag2 = new HashMap<>();
+        tag2.put("label", "tag2");
+        tag2.put("username", "Administrator");
+
+        file1.setPropertyValue("nxtag:tags", (Serializable) Arrays.asList(tag1, tag2));
+        file2.setPropertyValue("nxtag:tags", (Serializable) Arrays.asList(tag1));
+
+        session.saveDocument(file1);
+        session.saveDocument(file2);
+        session.save();
+    }
 }
