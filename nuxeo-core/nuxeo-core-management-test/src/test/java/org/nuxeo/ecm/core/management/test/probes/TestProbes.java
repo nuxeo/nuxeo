@@ -29,6 +29,7 @@ import java.util.Collection;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.management.probes.AdministrativeStatusProbe;
@@ -41,6 +42,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+import com.google.inject.Inject;
+
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
@@ -48,6 +51,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
         "org.nuxeo.ecm.core.management", //
         "org.nuxeo.ecm.core.management.test" })
 public class TestProbes {
+
+    @Inject
+    CoreSession session;
 
     @Test
     public void testServiceLookup() {
@@ -86,19 +92,43 @@ public class TestProbes {
 
         ProbeManager pm = Framework.getLocalService(ProbeManager.class);
         Collection<ProbeInfo> healthCheckProbes = pm.getAllContributeToHealthCheckProbeInfos();
-        assertEquals(1, healthCheckProbes.size());
+        assertEquals(2, healthCheckProbes.size());
         ProbeInfo probeInfo = (ProbeInfo) healthCheckProbes.toArray()[0];
 
         HealthCheckResult result = pm.getOrRunHealthCheck();
         assertTrue(result.isHealthy());
         assertTrue(probeInfo.getStatus().isSuccess());
-        assertEquals("{\"healthCheck\":[{\"runtimeStatus\":[\"ok\"]}]}", result.toJson());
+        assertEquals("{\"healthCheck\":[{\"runtimeStatus\":\"ok\"},{\"repositoryStatus\":\"ok\"}]}", result.toJson());
 
         result = pm.getOrRunHealthCheckSingleProbe("runtimeStatus");
+        probeInfo = pm.getProbeInfo("runtimeStatus");
+
         assertTrue(result.isHealthy());
         assertTrue(probeInfo.getStatus().isSuccess());
-        assertEquals("{\"healthCheck\":[{\"runtimeStatus\":[\"ok\"]}]}", result.toJson());
+        assertEquals("{\"healthCheck\":[{\"runtimeStatus\":\"ok\"}]}", result.toJson());
+
+        result = pm.getOrRunHealthCheckSingleProbe("repositoryStatus");
+        probeInfo = pm.getProbeInfo("repositoryStatus");
+        assertTrue(result.isHealthy());
+        assertTrue(probeInfo.getStatus().isSuccess());
+        assertEquals("{\"healthCheck\":[{\"repositoryStatus\":\"ok\"}]}", result.toJson());
+
+        // delete the root document
+        // the first check will still return healthy as the probe won't be run
+        session.removeDocument(session.getRootDocument().getRef());
+        session.save();
+
+        result = pm.getOrRunHealthCheckSingleProbe("repositoryStatus");
+        probeInfo = pm.getProbeInfo("repositoryStatus");
+        assertEquals(1, probeInfo.getRunnedCount()); // check that the probe was run only once in the past 20 s
+        assertTrue(result.isHealthy()); //
+        assertTrue(probeInfo.getStatus().isSuccess());
+        assertEquals("{\"healthCheck\":[{\"repositoryStatus\":\"ok\"}]}", result.toJson());
+
+        // force run again and should fail
+        probeInfo = pm.runProbe(probeInfo);
+        assertEquals(2, probeInfo.getRunnedCount());
+        assertTrue(probeInfo.isInError());
 
     }
-
 }
