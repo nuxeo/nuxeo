@@ -707,7 +707,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 (info, rs) -> info.whatColumns.get(0).getFromResultSet(rs, 1));
 
         if (logger.isLogEnabled()) {
-            logger.logIds(result.list, countUpTo != 0, result.totalSize);
+            logger.logIds(result, countUpTo != 0, result.totalSize());
         }
 
         return result;
@@ -740,7 +740,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 (info, rs) -> info.mapMaker.makeMap(rs), params);
 
         if (logger.isLogEnabled()) {
-            logger.logMaps(result.list, countUpTo != 0, result.totalSize);
+            logger.logMaps(result, countUpTo != 0, result.totalSize());
         }
 
         return result;

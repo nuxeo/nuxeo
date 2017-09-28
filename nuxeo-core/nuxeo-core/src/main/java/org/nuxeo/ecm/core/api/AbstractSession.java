@@ -1171,9 +1171,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             // get document list with total size
             PartialList<Document> pl = getSession().query(query, queryType, queryFilter, postFilter ? -1 : countUpTo);
             // convert to DocumentModelList
-            DocumentModelListImpl dms = new DocumentModelListImpl(pl.list.size());
-            dms.setTotalSize(pl.totalSize);
-            for (Document doc : pl.list) {
+            DocumentModelListImpl dms = new DocumentModelListImpl(pl.size());
+            dms.setTotalSize(pl.totalSize());
+            for (Document doc : pl) {
                 dms.add(readModel(doc));
             }
 
