@@ -380,7 +380,7 @@ public class SQLSession implements Session {
         PartialList<Serializable> pl = session.query(query, queryType, queryFilter, countUpTo);
 
         // get Documents in bulk, returns a newly-allocated ArrayList
-        List<Document> list = getDocumentsById(pl.list);
+        List<Document> list = getDocumentsById(pl);
 
         // order / limit
         if (orderByPath != null) {
@@ -395,7 +395,7 @@ public class SQLSession implements Session {
                 list.subList((int) limit, size).clear();
             }
         }
-        return new PartialList<>(list, pl.totalSize);
+        return new PartialList<>(list, pl.totalSize());
     }
 
     public static class PathComparator implements Comparator<Document> {

@@ -907,13 +907,13 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
         String query = String.format("SELECT * FROM TestDoc WHERE ecm:name = '%s'", name);
         res = session.query(query, qf, false);
-        assertEquals(0, res.list.size());
+        assertEquals(0, res.size());
 
         // user in ACL can read
         qf = new QueryFilter(null, new String[] { user }, new String[] { "Read" }, null,
                 Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
         res = session.query(query, qf, false);
-        assertEquals(1, res.list.size());
+        assertEquals(1, res.size());
 
         session.close();
     }
@@ -2546,15 +2546,15 @@ public class TestSQLBackend extends SQLBackendTestCase {
         PartialList<Serializable> plist;
         nxql = "SELECT * FROM Document WHERE info:info = 'proxyinfo' AND ecm:isProxy = 1";
         plist = session.query(nxql, QueryFilter.EMPTY, false);
-        assertEquals(1, plist.list.size());
+        assertEquals(1, plist.size());
 
         nxql = "SELECT * FROM Document WHERE info:info = 'proxyinfo'";
         plist = session.query(nxql, QueryFilter.EMPTY, false);
-        assertEquals(1, plist.list.size());
+        assertEquals(1, plist.size());
 
         nxql = "SELECT * FROM Document WHERE info:info = 'proxyinfo' AND ecm:isProxy = 0";
         plist = session.query(nxql, QueryFilter.EMPTY, false);
-        assertEquals(0, plist.list.size());
+        assertEquals(0, plist.size());
 
         // queryAndFetch
         IterableQueryResult it;
@@ -2599,7 +2599,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // search for it
         PartialList<Serializable> res = session.query("SELECT * FROM TestDoc WHERE ecm:path STARTSWITH '/folder2'",
                 QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
+        assertEquals(1, res.size());
     }
 
     @Test
@@ -2623,32 +2623,32 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // query without proxies (no result)
         sql = String.format("SELECT * FROM TestDoc WHERE ecm:proxyTargetId = '%s' AND ecm:isProxy = 0", ver.getId());
         res = session.query(sql, QueryFilter.EMPTY, false);
-        assertEquals(0, res.list.size());
+        assertEquals(0, res.size());
         sql = String.format("SELECT * FROM TestDoc WHERE ecm:proxyVersionableId = '%s' AND ecm:isProxy = 0",
                 node.getId());
         res = session.query(sql, QueryFilter.EMPTY, false);
-        assertEquals(0, res.list.size());
+        assertEquals(0, res.size());
 
         // query just proxies
         sql = String.format("SELECT * FROM TestDoc WHERE ecm:proxyTargetId = '%s' AND ecm:isProxy = 1", ver.getId());
         res = session.query(sql, QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-        assertEquals(proxy.getId(), res.list.get(0));
+        assertEquals(1, res.size());
+        assertEquals(proxy.getId(), res.get(0));
         sql = String.format("SELECT * FROM TestDoc WHERE ecm:proxyVersionableId = '%s' AND ecm:isProxy = 1",
                 node.getId());
         res = session.query(sql, QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-        assertEquals(proxy.getId(), res.list.get(0));
+        assertEquals(1, res.size());
+        assertEquals(proxy.getId(), res.get(0));
 
         // query all
         sql = String.format("SELECT * FROM TestDoc WHERE ecm:proxyTargetId = '%s'", ver.getId());
         res = session.query(sql, QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-        assertEquals(proxy.getId(), res.list.get(0));
+        assertEquals(1, res.size());
+        assertEquals(proxy.getId(), res.get(0));
         sql = String.format("SELECT * FROM TestDoc WHERE ecm:proxyVersionableId = '%s'", node.getId());
         res = session.query(sql, QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-        assertEquals(proxy.getId(), res.list.get(0));
+        assertEquals(1, res.size());
+        assertEquals(proxy.getId(), res.get(0));
     }
 
     private static void assertSameSet(Collection<Node> actual, Node... expected) {
@@ -2702,9 +2702,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // and with a query
         PartialList<Serializable> res;
         res = session.query("SELECT * FROM TestDoc WHERE ecm:isProxy = 0", QueryFilter.EMPTY, false);
-        assertEquals(0, res.list.size());
+        assertEquals(0, res.size());
         res = session.query("SELECT * FROM TestDoc", QueryFilter.EMPTY, false);
-        assertEquals(0, res.list.size());
+        assertEquals(0, res.size());
     }
 
     @Test
@@ -2953,19 +2953,19 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
 
         res = session.query("SELECT * FROM Document WHERE relation:source = '123'", QueryFilter.EMPTY, false);
-        assertEquals(0, res.list.size()); // Relation is not a Document
+        assertEquals(0, res.size()); // Relation is not a Document
         res = session.query("SELECT * FROM Relation WHERE relation:source = '123'", QueryFilter.EMPTY, false);
-        assertEquals(2, res.list.size());
+        assertEquals(2, res.size());
         res = session.query("SELECT * FROM Relation2", QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
+        assertEquals(1, res.size());
         res = session.query("SELECT * FROM Relation2 WHERE tst:title = 'yo'", QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
+        assertEquals(1, res.size());
 
         // remove
         session.removeNode(rel1);
         session.save();
         res = session.query("SELECT * FROM Relation WHERE relation:source = '123'", QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
+        assertEquals(1, res.size());
     }
 
     @Test
@@ -2980,18 +2980,18 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(0, node.getMixinTypes().length);
         session.save();
         res = session.query("SELECT * FROM TestDoc WHERE ecm:mixinType = 'Aged'", QueryFilter.EMPTY, false);
-        assertEquals(0, res.list.size());
+        assertEquals(0, res.size());
         res = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Aged'", QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
+        assertEquals(1, res.size());
 
         assertTrue(session.addMixinType(node, "Aged"));
         session.save();
         assertTrue(node.hasMixinType("Aged"));
         assertEquals(1, node.getMixinTypes().length);
         res = session.query("SELECT * FROM TestDoc WHERE ecm:mixinType = 'Aged'", QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
+        assertEquals(1, res.size());
         res = session.query("SELECT * FROM TestDoc WHERE ecm:mixinType <> 'Aged'", QueryFilter.EMPTY, false);
-        assertEquals(0, res.list.size());
+        assertEquals(0, res.size());
 
         assertFalse(session.addMixinType(node, "Aged"));
         assertEquals(1, node.getMixinTypes().length);
@@ -3015,9 +3015,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertTrue(node.hasMixinType("Orderable"));
         assertEquals(1, node.getMixinTypes().length);
         res = session.query("SELECT * FROM TestDoc WHERE ecm:mixinType = 'Aged'", QueryFilter.EMPTY, false);
-        assertEquals(0, res.list.size());
+        assertEquals(0, res.size());
         res = session.query("SELECT * FROM TestDoc WHERE ecm:mixinType <> 'Aged'", QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
+        assertEquals(1, res.size());
 
         assertFalse(session.removeMixinType(node, "Aged"));
         assertEquals(1, node.getMixinTypes().length);
@@ -3199,7 +3199,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         PartialList<Serializable> res = session.query("SELECT * FROM TestDoc WHERE age:age = 'barbar'",
                 QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
+        assertEquals(1, res.size());
     }
 
     @Test
@@ -3592,7 +3592,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         clause = "tst:title = 'hello world'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
         it = session.queryAndFetch(SELECT_TITLE_WHERE + clause, "NXQL", QueryFilter.EMPTY);
         assertEquals(1, it.size());
         assertEquals("hello world", it.iterator().next().get("tst:title"));
@@ -3600,7 +3600,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         clause = "tst:subjects = 'foo'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
         it = session.queryAndFetch(SELECT_TITLE_WHERE + clause, "NXQL", QueryFilter.EMPTY);
         assertEquals(1, it.size());
         assertEquals("hello world", it.iterator().next().get("tst:title"));
@@ -3608,7 +3608,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         clause = "tst:subjects IN ('foo', 'bar')";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
         it = session.queryAndFetch(SELECT_TITLE_WHERE + clause, "NXQL", QueryFilter.EMPTY);
         assertEquals(1, it.size());
         assertEquals("hello world", it.iterator().next().get("tst:title"));
@@ -3631,7 +3631,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // AND p.firstname = 'Bruce'
         clause = "tst:owner/firstname = 'Bruce'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
         it = session.queryAndFetch("SELECT tst:title, tst:owner/lastname" + FROM_WHERE + clause, "NXQL",
                 QueryFilter.EMPTY);
         assertEquals(1, it.size());
@@ -3642,15 +3642,15 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         clause = "tst:owner/firstname LIKE 'B%'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
 
         clause = "tst:owner/firstname IS NOT NULL";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
 
         clause = "tst:owner/firstname IN ('Bruce', 'Bilbo')";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
 
         // hierarchy h
         // JOIN hierarchy h2 ON h2.parentid = h.id
@@ -3661,7 +3661,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // AND p.firstname = 'Steve'
         clause = "tst:couple/first/firstname = 'Steve'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
         it = session.queryAndFetch("SELECT tst:title, tst:couple/first/lastname" + FROM_WHERE + clause, "NXQL",
                 QueryFilter.EMPTY);
         assertEquals(1, it.size());
@@ -3675,7 +3675,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // AND p.firstname = 'John'
         clause = "tst:friends/0/firstname = 'John'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
         it = session.queryAndFetch("SELECT tst:title, tst:friends/0/lastname" + FROM_WHERE + clause, "NXQL",
                 QueryFilter.EMPTY);
         assertEquals(1, it.size());
@@ -3685,7 +3685,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // alternate xpath syntax
         clause = "tst:friends/item[0]/firstname = 'John'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
 
         // hierarchy h
         // JOIN hierarchy h2 ON h2.parentid = h.id
@@ -3694,7 +3694,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // AND p.firstname = 'John'
         clause = "tst:friends/*/firstname = 'John'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
         it = session.queryAndFetch(SELECT_TITLE_WHERE + clause, "NXQL", QueryFilter.EMPTY);
         assertEquals(2, it.size()); // two uncorrelated stars
         it.close();
@@ -3702,7 +3702,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // alternate xpath syntax
         clause = "tst:friends/item[*]/firstname = 'John'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
 
         // hierarchy h
         // JOIN hierarchy h2 ON h2.parentid = h.id
@@ -3712,7 +3712,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // AND p.lastname = 'Smith'
         clause = "tst:friends/*1/firstname = 'John'" + " AND tst:friends/*1/lastname = 'Smith'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
         it = session.queryAndFetch("SELECT tst:title, tst:friends/*1/lastname" + FROM_WHERE + clause, "NXQL",
                 QueryFilter.EMPTY);
         assertEquals(1, it.size()); // correlated stars
@@ -3722,7 +3722,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // alternate xpath syntax
         clause = "tst:friends/item[*1]/firstname = 'John'" + " AND tst:friends/item[*1]/lastname = 'Smith'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
     }
 
     @Test
@@ -3735,7 +3735,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // schema with a prefix
         clause = "tst:owner/firstname = 'Bruce'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
 
         // use of prefix is mandatory if defined
         try {
@@ -3749,12 +3749,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // schema without a prefix
         clause = "animal/race = 'dog'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
 
         // allow use with schema-name-as-prefix
         clause = "testschema3:animal/race = 'dog'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
     }
 
     @Test
@@ -3774,7 +3774,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // WHERE h2.name = 'tst:friends'
         clause = "tst:title = 'hello world'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
         it = session.queryAndFetch("SELECT tst:friends/*/lastname" + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
         assertEquals(2, it.size());
         set = new HashSet<>();
@@ -3791,7 +3791,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // WHERE h2.name = 'tst:friends'
         clause = "tst:title = 'hello world'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
         it = session.queryAndFetch("SELECT tst:friends/*1/firstname, tst:friends/*1/lastname" + FROM_WHERE + clause,
                 "NXQL", QueryFilter.EMPTY);
         assertEquals(2, it.size());
@@ -3823,10 +3823,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // AND s.item = 'foo'
         clause = "tst:subjects/0 = 'foo'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
         clause = "tst:subjects/0 = 'bar'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(0, res.list.size());
+        assertEquals(0, res.size());
 
         // SELECT s.item
         // FROM hierarchy h
@@ -3847,7 +3847,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // AND s0.item LIKE 'foo%'
         clause = "tst:subjects/0 LIKE 'foo%'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
         it = session.queryAndFetch("SELECT tst:subjects/1" + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
         assertEquals(1, it.size());
         assertEquals("bar", it.iterator().next().get("tst:subjects/1"));
@@ -3859,7 +3859,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // WHERE s.item LIKE '%oo'
         clause = "tst:subjects/*1 LIKE '%oo'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
         it = session.queryAndFetch("SELECT tst:subjects/*1" + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
         assertEquals(2, it.size());
         set = new HashSet<>();
@@ -3871,7 +3871,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         clause = "tst:subjects/* LIKE '%oo'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
         it = session.queryAndFetch("SELECT tst:subjects/*" + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
         // two uncorrelated stars, resulting in a cross join
         assertEquals(6, it.size());
@@ -3906,32 +3906,32 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         clause = "tst:title LIKE '%' ORDER BY tst:owner/firstname";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
 
         clause = "tst:owner/firstname = 'Bruce' ORDER BY tst:title";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
 
         clause = "tst:owner/firstname = 'Bruce' ORDER BY tst:owner/firstname";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
 
         // this produces a DISTINCT and adds tst:title to the select list
         clause = "tst:subjects/* = 'foo' ORDER BY tst:title";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
 
         clause = "tst:friends/*/firstname = 'John' ORDER BY tst:title";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
 
         // no wildcard index so no DISTINCT needed
         clause = "tst:title LIKE '%' ORDER BY tst:friends/0/lastname";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
         clause = "tst:title LIKE '%' ORDER BY tst:subjects/0";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
 
         // SELECT * statement cannot ORDER BY array or complex list element
         clause = "tst:subjects/*1 = 'foo' ORDER BY tst:subjects/*1";
@@ -3942,7 +3942,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
             String expected = "For SELECT * the ORDER BY columns cannot use wildcard indexes";
             assertEquals(expected, e.getMessage());
         }
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
 
         clause = "tst:title = 'hello world' ORDER BY tst:subjects/*1";
         it = session.queryAndFetch("SELECT tst:title" + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
@@ -3990,7 +3990,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         clause = "tst:friends/*/firstname = 'John' ORDER BY tst:title";
         res = session.query("SELECT * FROM TestDoc WHERE " + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
+        assertEquals(oneDoc, res);
     }
 
     @Test
@@ -4028,49 +4028,49 @@ public class TestSQLBackend extends SQLBackendTestCase {
         PartialList<Serializable> res;
 
         res = session.query(s1 + c1 + s2, QueryFilter.EMPTY, false);
-        assertEquals(Collections.singletonList(doc1.getId()), res.list);
+        assertEquals(Collections.singletonList(doc1.getId()), res);
 
         res = session.query(s1 + c2 + s2, QueryFilter.EMPTY, false);
-        assertEquals(Collections.singletonList(doc2.getId()), res.list);
+        assertEquals(Collections.singletonList(doc2.getId()), res);
 
         res = session.query(s1 + c3 + s2, QueryFilter.EMPTY, false);
-        assertEquals(Collections.singletonList(doc3.getId()), res.list);
+        assertEquals(Collections.singletonList(doc3.getId()), res);
 
         res = session.query(s1 + c4 + s2, QueryFilter.EMPTY, false);
-        assertEquals(Collections.singletonList(doc4.getId()), res.list);
+        assertEquals(Collections.singletonList(doc4.getId()), res);
 
         res = session.query(s1 + c1 + o + c2 + s2, QueryFilter.EMPTY, false);
-        assertEquals(2, res.list.size());
+        assertEquals(2, res.size());
 
         res = session.query(s1 + c1 + o + c3 + s2, QueryFilter.EMPTY, false);
-        assertEquals(2, res.list.size());
+        assertEquals(2, res.size());
 
         res = session.query(s1 + c1 + o + c4 + s2, QueryFilter.EMPTY, false);
-        assertEquals(2, res.list.size());
+        assertEquals(2, res.size());
 
         res = session.query(s1 + c2 + o + c3 + s2, QueryFilter.EMPTY, false);
-        assertEquals(2, res.list.size());
+        assertEquals(2, res.size());
 
         res = session.query(s1 + c2 + o + c4 + s2, QueryFilter.EMPTY, false);
-        assertEquals(2, res.list.size());
+        assertEquals(2, res.size());
 
         res = session.query(s1 + c3 + o + c4 + s2, QueryFilter.EMPTY, false);
-        assertEquals(2, res.list.size());
+        assertEquals(2, res.size());
 
         res = session.query(s1 + c1 + o + c2 + o + c3 + s2, QueryFilter.EMPTY, false);
-        assertEquals(3, res.list.size());
+        assertEquals(3, res.size());
 
         res = session.query(s1 + c1 + o + c2 + o + c4 + s2, QueryFilter.EMPTY, false);
-        assertEquals(3, res.list.size());
+        assertEquals(3, res.size());
 
         res = session.query(s1 + c1 + o + c3 + o + c4 + s2, QueryFilter.EMPTY, false);
-        assertEquals(3, res.list.size());
+        assertEquals(3, res.size());
 
         res = session.query(s1 + c2 + o + c3 + o + c4 + s2, QueryFilter.EMPTY, false);
-        assertEquals(3, res.list.size());
+        assertEquals(3, res.size());
 
         res = session.query(s1 + c1 + o + c2 + o + c3 + o + c4 + s2, QueryFilter.EMPTY, false);
-        assertEquals(4, res.list.size());
+        assertEquals(4, res.size());
     }
 
     @Test
@@ -4151,16 +4151,16 @@ public class TestSQLBackend extends SQLBackendTestCase {
         PartialList<Serializable> res;
 
         res = session.query(String.format(query, "nosuchid"), QueryFilter.EMPTY, false);
-        assertEquals(0, res.list.size());
+        assertEquals(0, res.size());
 
         res = session.query(String.format(query, root.getId()), QueryFilter.EMPTY, false);
-        assertEquals(3, res.list.size());
+        assertEquals(3, res.size());
 
         res = session.query(String.format(query, folder1.getId()), QueryFilter.EMPTY, false);
-        assertEquals(2, res.list.size());
+        assertEquals(2, res.size());
 
         res = session.query(String.format(query, folder2.getId()), QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
+        assertEquals(1, res.size());
     }
 
     @Test
@@ -4272,7 +4272,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, nodes.size());
         String sql = "SELECT * FROM TestDoc WHERE ecm:path STARTSWITH '/r1'";
         res = session.query(sql, QueryFilter.EMPTY, false);
-        assertEquals(4, res.list.size());
+        assertEquals(4, res.size());
 
         // reopen repository with path optimization to populate the ancestors
         // table
@@ -4284,7 +4284,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         nodes = session.getNodesByIds(ids);
         assertEquals(1, nodes.size());
         res = session.query(sql, QueryFilter.EMPTY, false);
-        assertEquals(4, res.list.size());
+        assertEquals(4, res.size());
     }
 
     @Test
@@ -4344,7 +4344,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         QueryFilter qf = new QueryFilter(null, new String[] { "members", "bob" }, new String[] { "Read", "Everything" },
                 null, Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
         PartialList<Serializable> res = session.query(query, qf, false);
-        assertEquals(1, res.list.size());
+        assertEquals(1, res.size());
     }
 
     protected class PrepareUserReadAclsJob implements Runnable {

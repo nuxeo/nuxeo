@@ -1410,9 +1410,9 @@ public class DBSSession implements Session {
         PartialList<String> pl = doQuery(query, queryType, queryFilter, (int) countUpTo);
 
         // get Documents in bulk
-        List<Document> docs = getDocuments(pl.list);
+        List<Document> docs = getDocuments(pl);
 
-        return new PartialList<>(docs, pl.totalSize);
+        return new PartialList<>(docs, pl.totalSize());
     }
 
     protected PartialList<String> doQuery(String query, String queryType, QueryFilter queryFilter, int countUpTo) {
@@ -1422,12 +1422,12 @@ public class DBSSession implements Session {
             PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, false, countUpTo,
                     idKeyHolder);
             String idKey = idKeyHolder.getValue();
-            List<String> ids = new ArrayList<>(pl.list.size());
-            for (Map<String, Serializable> map : pl.list) {
+            List<String> ids = new ArrayList<>(pl.size());
+            for (Map<String, Serializable> map : pl) {
                 String id = (String) map.get(idKey);
                 ids.add(id);
             }
-            return new PartialList<>(ids, pl.totalSize);
+            return new PartialList<>(ids, pl.totalSize());
         } finally {
             long duration = timerContext.stop();
             if (LOG_MIN_DURATION_NS >= 0 && duration > LOG_MIN_DURATION_NS) {
@@ -1514,11 +1514,10 @@ public class DBSSession implements Session {
         }
 
         // query the repository
-        PartialList<Map<String, Serializable>> pl = repository.queryAndFetch(evaluator, repoOrderByClause,
+        PartialList<Map<String, Serializable>> projections = repository.queryAndFetch(evaluator, repoOrderByClause,
                 distinctDocuments, repoLimit, repoOffset, countUpTo);
 
-        List<Map<String, Serializable>> projections = pl.list;
-        long totalSize = pl.totalSize;
+        long totalSize = projections.totalSize();
         if (totalSize >= 0) {
             if (countUpTo == -1) {
                 // count full size
@@ -1541,15 +1540,11 @@ public class DBSSession implements Session {
             // LIMIT / OFFSET
             if (limit != 0) {
                 int size = projections.size();
-                projections.subList(0, offset > size ? size : offset).clear();
-                size = projections.size();
-                if (limit < size) {
-                    projections.subList(limit, size).clear();
-                }
+                projections = projections.subList(offset > size ? size - 1 : offset, limit <= size ? limit : size);
             }
         }
 
-        return new PartialList<>(projections, totalSize);
+        return projections;
     }
 
     /** Does an ORDER BY clause include ecm:path */
@@ -1727,8 +1722,8 @@ public class DBSSession implements Session {
         protected long pos;
 
         protected DBSQueryResult(PartialList<Map<String, Serializable>> pl) {
-            this.maps = pl.list;
-            this.totalSize = pl.totalSize;
+            this.maps = pl;
+            this.totalSize = pl.totalSize();
         }
 
         @Override
