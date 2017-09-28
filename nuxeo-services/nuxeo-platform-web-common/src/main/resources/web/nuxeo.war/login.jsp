@@ -46,9 +46,9 @@ boolean useExternalProviders = providers!=null && providers.size()>0;
 boolean showNews = screenConfig.getDisplayNews();
 String iframeUrl = screenConfig.getNewsIframeUrl();
 
-String backgroundPath = LoginScreenHelper.getValueWithDefault(screenConfig.getBackgroundImage(), context + "/img/login_bg.svg");
+String backgroundPath = LoginScreenHelper.getValueWithDefault(screenConfig.getBackgroundImage(), context + "/img/login_bg.jpg");
 String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + backgroundPath + "') no-repeat center center fixed #006ead");
-String loginButtonBackgroundColor = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginButtonBackgroundColor(), "#ff452a");
+String loginButtonBackgroundColor = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginButtonBackgroundColor(), "#0066ff");
 String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "none repeat scroll 0 0");
 String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
 boolean disableBackgroundSizeCover = Boolean.TRUE.equals(screenConfig.getDisableBackgroundSizeCover());
@@ -103,7 +103,7 @@ html, body {
   padding: 0;
 }
 body {
-  font: normal 14px/18pt "Lucida Grande", Arial, sans-serif;
+  font: normal 14px/18pt "Helvetica", Arial;
   background: <%=bodyBackgroundStyle%>;
   color: #343434;
   <% if (!disableBackgroundSizeCover) { %>
@@ -148,7 +148,7 @@ video {
 
 footer {
   padding: 1em 1.5em;
-  color: #b6b6b6;
+  color: #ffffff;
   font-size: .65em;
   text-transform: uppercase;
   letter-spacing: .03em;
