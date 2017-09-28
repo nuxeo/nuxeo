@@ -319,33 +319,33 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     }
 
     @Test
-    public void testChangeNoSqlDatabase() throws Exception {
+    public void testChangeSecondaryDatabase() throws Exception {
         String originalTemplates = configGenerator.getUserConfig()
                                                   .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
-        configGenerator.changeDBTemplate("mongodb");
-        assertEquals("Failed to set NoSQL database to mongodb", originalTemplates.concat(",mongodb"),
+        configGenerator.changeDBTemplate("marklogic");
+        assertEquals("Failed to set secondary database to marklogic", originalTemplates.concat(",marklogic"),
                 configGenerator.getUserTemplates());
     }
 
     @Test
-    public void testChangeNoSqlDatabaseFromCustom() throws Exception {
+    public void testChangeSecondaryDatabaseFromCustom() throws Exception {
         configGenerator.changeTemplates("testinclude2");
         String originalTemplates = configGenerator.getUserConfig()
                                                   .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
-        configGenerator.changeDBTemplate("mongodb");
-        assertEquals("Failed to set NoSQL database to mongodb", originalTemplates.concat(",mongodb"),
+        configGenerator.changeDBTemplate("marklogic");
+        assertEquals("Failed to set Secondary database to marklogic", originalTemplates.concat(",marklogic"),
                 configGenerator.getUserTemplates());
         Map<String, String> customParameters = new HashMap<>();
-        customParameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBNOSQL_NAME, "mongodb");
+        customParameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBSECONDARY_NAME, "marklogic");
         configGenerator.saveFilteredConfiguration(customParameters);
         // Check stored value
         assertTrue(configGenerator.init(true));
-        assertEquals("Failed to set NoSQL database to mongodb", originalTemplates.concat(",mongodb"),
+        assertEquals("Failed to set Secondary database to marklogic", originalTemplates.concat(",marklogic"),
                 configGenerator.getUserTemplates());
-        assertEquals("Failed to set NoSQL database to mongodb", originalTemplates.concat(",mongodb"),
+        assertEquals("Failed to set Secondary database to marklogic", originalTemplates.concat(",marklogic"),
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
-        assertEquals("Failed to set NoSQL database to mongodb", "mongodb",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNOSQL_NAME));
+        assertEquals("Failed to set Secondary database to marklogic", "marklogic",
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBSECONDARY_NAME));
     }
 
     @Test
@@ -370,7 +370,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertEquals("Failed to set NoSQL database to marklogic", originalTemplates.concat(",marklogic"),
                 configGenerator.getUserTemplates());
         Map<String, String> customParameters = new HashMap<>();
-        customParameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBNOSQL_NAME, "marklogic");
+        customParameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBSECONDARY_NAME, "marklogic");
         configGenerator.saveFilteredConfiguration(customParameters);
         // Check stored value
         assertTrue(configGenerator.init(true));
@@ -379,7 +379,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertEquals("Failed to set NoSQL database to marklogic", originalTemplates.concat(",marklogic"),
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
         assertEquals("Failed to set NoSQL database to marklogic", "marklogic",
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNOSQL_NAME));
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBSECONDARY_NAME));
     }
 
     @Test
