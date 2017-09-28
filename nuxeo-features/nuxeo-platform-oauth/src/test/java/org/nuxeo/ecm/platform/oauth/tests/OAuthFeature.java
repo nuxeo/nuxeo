@@ -26,7 +26,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features(PlatformFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.platform.oauth" })
-@LocalDeploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/directory-test-config.xml")
 public class OAuthFeature extends SimpleFeature {
 
 }
