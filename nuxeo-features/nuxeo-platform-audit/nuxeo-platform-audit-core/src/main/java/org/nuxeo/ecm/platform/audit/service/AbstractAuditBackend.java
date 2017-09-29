@@ -199,8 +199,8 @@ public abstract class AbstractAuditBackend implements AuditBackend {
                     }
                     continue;
                 } catch (DocumentNotFoundException e) {
-                    if (entry.getEventId() != "documentRemoved") {
-                        log.error("Not found: " + e.getMessage() + ", entry: " + entry, e);
+                    if (! DocumentEventTypes.DOCUMENT_REMOVED.equals(entry.getEventId())) {
+                        log.error(String.format("Not found: %s, entry: %s", e.getMessage(), entry, e));
                     }
                     continue;
                 } catch (ELException e) {

@@ -42,6 +42,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -64,6 +65,9 @@ import org.nuxeo.ecm.platform.audit.api.comment.UIAuditComment;
         @NamedQuery(name = "LogEntry.findEventIds", query = "select distinct log.eventId from LogEntry log") })
 @Table(name = "NXP_LOGS")
 public class LogEntryImpl implements LogEntry {
+
+    @JsonProperty("entity-type")
+    protected String entityType;
 
     private static final long serialVersionUID = 3037187381843636097L;
 
@@ -325,6 +329,7 @@ public class LogEntryImpl implements LogEntry {
     // }
 
     @Override
+    @JsonProperty("extended")
     @OneToMany(cascade = CascadeType.ALL, targetEntity = ExtendedInfoImpl.class)
     @JoinTable(name = "NXP_LOGS_MAPEXTINFOS", joinColumns = { @JoinColumn(name = "LOG_FK") }, inverseJoinColumns = {
             @JoinColumn(name = "INFO_FK") })
