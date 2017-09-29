@@ -1236,7 +1236,7 @@ public abstract class Dialect {
     /**
      * Additional things to execute after CREATE TABLE.
      */
-    public List<String> getCustomPostCreateSqls(Table table) {
+    public List<String> getCustomPostCreateSqls(Table table, Model model) {
         return Collections.emptyList();
     }
 

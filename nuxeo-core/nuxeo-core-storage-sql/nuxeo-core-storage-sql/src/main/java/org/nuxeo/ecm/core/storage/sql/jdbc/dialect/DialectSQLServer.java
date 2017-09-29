@@ -756,7 +756,7 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public List<String> getCustomPostCreateSqls(Table table) {
+    public List<String> getCustomPostCreateSqls(Table table, Model model) {
         if (!needsClusteredColumn(table)) {
             return Collections.emptyList();
         }

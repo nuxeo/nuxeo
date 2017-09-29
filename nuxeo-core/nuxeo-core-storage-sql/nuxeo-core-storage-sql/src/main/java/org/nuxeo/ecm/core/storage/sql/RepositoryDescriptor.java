@@ -283,6 +283,13 @@ public class RepositoryDescriptor {
         return defaultTrue(childNameUniqueConstraintEnabled);
     }
 
+    @XNode("collectionUniqueConstraintEnabled")
+    private Boolean collectionUniqueConstraintEnabled;
+
+    public boolean getCollectionUniqueConstraintEnabled() {
+        return defaultTrue(collectionUniqueConstraintEnabled);
+    }
+
     @XNode("indexing/queryMaker@class")
     public void setQueryMakerDeprecated(String klass) {
         log.warn("Setting queryMaker from repository configuration is now deprecated");
@@ -432,6 +439,8 @@ public class RepositoryDescriptor {
         proxiesEnabled = other.proxiesEnabled;
         schemaFields = FieldDescriptor.copyList(other.schemaFields);
         arrayColumns = other.arrayColumns;
+        childNameUniqueConstraintEnabled = other.childNameUniqueConstraintEnabled;
+        collectionUniqueConstraintEnabled = other.collectionUniqueConstraintEnabled;
         idType = other.idType;
         clusterNodeId = other.clusterNodeId;
         clusteringEnabled = other.clusteringEnabled;
@@ -518,6 +527,12 @@ public class RepositoryDescriptor {
         }
         if (other.arrayColumns != null) {
             arrayColumns = other.arrayColumns;
+        }
+        if (other.childNameUniqueConstraintEnabled != null) {
+            childNameUniqueConstraintEnabled = other.childNameUniqueConstraintEnabled;
+        }
+        if (other.collectionUniqueConstraintEnabled != null) {
+            collectionUniqueConstraintEnabled = other.collectionUniqueConstraintEnabled;
         }
         if (other.fulltextAnalyzer != null) {
             fulltextAnalyzer = other.fulltextAnalyzer;
