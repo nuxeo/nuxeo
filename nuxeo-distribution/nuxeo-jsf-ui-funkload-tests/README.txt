@@ -90,14 +90,6 @@ Layout
   members accounts (the ones present in the password.txt files) and will add
   a new workspace and folder with few file documents.
 
-* test_drive.py, Drive.conf
-
-  Deprecated since 7.4, replaced by a dedicated Gatling bench.
-  See https://github.com/nuxeo/nuxeo-drive-server/tree/master/nuxeo-drive-bench
-
-  A test suite for Nuxeo Drive, you must have a Nuxeo DM (not a CAP), Nuxeo
-  Drive and token auth installed.
-
 * credential.conf, passwd.txt, groups.txt
 
   Credential xmlrpc configuration with unix like passwd/groups files used by
@@ -155,12 +147,6 @@ You need a Nuxeo Server running instance with the JSF UI package installed.
 
 * make test-nuxeo
   Run the test_nuxeo suite.
-
-* make init drive
-  Run the Nuxeo Drive test (you need to run init once to create the test accounts).
-
-  Deprecated since 7.4, replaced by a dedicated Gatling bench.
-  See https://github.com/nuxeo/nuxeo-drive-server/tree/master/nuxeo-drive-bench
 
 To run test on remote site use the URL option:
 
