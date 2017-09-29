@@ -587,7 +587,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 try {
                     begin();
                     try {
-                        updateArray();
+                        updateArrayMaybeRetry();
                     } finally {
                         commit();
                     }
@@ -597,6 +597,32 @@ public class TestSQLBackend extends SQLBackendTestCase {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+        }
+
+        protected static final int TRIES = 10;
+
+        protected static final Random RANDOM = new Random();
+
+        protected void updateArrayMaybeRetry() {
+            for (int i = 0; i < TRIES; i++) {
+                try {
+                    updateArray();
+                    return;
+                } catch (ConcurrentUpdateException e) {
+                }
+                // retry after flushing caches and making new database state visible
+                ((SessionImpl) session).clearCaches();
+                TransactionHelper.commitOrRollbackTransaction();
+                // randomized wait to avoid everyone being in sync
+                try {
+                    Thread.sleep(Math.abs(RANDOM.nextInt() % 100));
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(e);
+                }
+                TransactionHelper.startTransaction();
+            }
+            throw new ConcurrentUpdateException("Cannot update, too much concurrency");
         }
 
         protected void updateArray() {
@@ -1116,6 +1142,28 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node doc2 = session2.getChildNode(root2, "foo", false);
         List<Node> friends = session2.getChildren(doc2, "tst:friends", true);
         assertEquals(2, friends.size());
+    }
+
+    @Test
+    public void testConcurrentCollectionPosCreation() throws Exception {
+        // two docs with same name (possible at this low level)
+        Session session1 = repository.getConnection();
+        Node root1 = session1.getRootNode();
+        Node foo1 = session1.addChildNode(root1, "foo", null, "TestDoc", false);
+        session1.save();
+        Session session2 = repository.getConnection();
+        Node root2 = session2.getRootNode();
+        Node foo2 = session2.getChildNode(root2, "foo", false);
+
+        foo1.setCollectionProperty("tst:subjects", new String[] { "a" });
+        session1.save();
+        try {
+            foo2.setCollectionProperty("tst:subjects", new String[] { "a" });
+            session2.save();
+            fail("Should get concurrent udpate exception");
+        } catch (ConcurrentUpdateException e) {
+            // low-level duplicates are disabled (through unique indexes or constraints)
+        }
     }
 
     @Test

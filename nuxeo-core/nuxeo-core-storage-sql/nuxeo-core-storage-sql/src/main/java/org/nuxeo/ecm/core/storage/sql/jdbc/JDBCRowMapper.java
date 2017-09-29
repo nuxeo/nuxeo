@@ -576,6 +576,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             io.executeInserts(ps, rowus, columns, supportsBatchUpdates, sql, this);
         } catch (SQLException e) {
+            checkConcurrentUpdate(e);
             throw new NuxeoException("Could not insert: " + sql, e);
         }
     }

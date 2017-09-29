@@ -245,7 +245,7 @@ public class TableImpl implements Table {
     @Override
     public List<String> getPostCreateSqls(Model model) {
         List<String> sqls = new LinkedList<String>();
-        List<String> custom = dialect.getCustomPostCreateSqls(this);
+        List<String> custom = dialect.getCustomPostCreateSqls(this, model);
         sqls.addAll(custom);
         for (Column column : columns.values()) {
             postAddColumn(column, sqls, model);
