@@ -40,6 +40,9 @@
       "ignore_above": 256,
       "copy_to": "all_field"
     },
+    "ecm:acl": {
+      "type": "keyword"
+    },
     "ecm:binarytext": {
       "type": "text",
       "analyzer": "fulltext",
