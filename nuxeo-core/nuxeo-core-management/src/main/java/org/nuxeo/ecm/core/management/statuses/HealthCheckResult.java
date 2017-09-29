@@ -20,17 +20,18 @@ package org.nuxeo.ecm.core.management.statuses;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Returns the status of the application
@@ -39,7 +40,7 @@ import org.nuxeo.ecm.core.management.api.ProbeInfo;
  */
 public class HealthCheckResult {
 
-    public final Log log = LogFactory.getLog(HealthCheckResult.class);
+    private static final Log log = LogFactory.getLog(HealthCheckResult.class);
 
     protected Collection<ProbeInfo> probes;
 
@@ -58,27 +59,24 @@ public class HealthCheckResult {
 
     public String toJson() {
         try {
-            return buildResponse(probes).getString();
+            return buildResponse().getString();
         } catch (IOException e) {
             log.error("Unable to compute detailed healthCheck status", e);
             return StringUtils.EMPTY; // don't fail as the probes might have been sucessful
         }
     }
 
-    protected Blob buildResponse(Collection<ProbeInfo> probes) {
-        JSONArray array = new JSONArray();
+    protected Blob buildResponse() {
+        ObjectMapper om = new ObjectMapper();
+        Map<String, String> res = new HashMap<String, String>();
         try {
             for (ProbeInfo probe : probes) {
-                JSONObject o = new JSONObject();
-                o.put(probe.getShortcutName(), (probe.getStatus().isSuccess() ? "ok" : "failed"));
-                array.put(o);
+                res.put(probe.getShortcutName(), (probe.getStatus().isSuccess() ? "ok" : "failed"));
             }
-            JSONObject result = new JSONObject();
-            result.put("healthCheck", array);
-            return Blobs.createBlob(result.toString(), "application/json");
-        } catch (JSONException e) {
-            log.error("Unable to compute detailed healthCheck status", e);
+            return Blobs.createJSONBlob(om.writeValueAsString(res));
+        } catch (JsonProcessingException e) {
+            return Blobs.createJSONBlob(StringUtils.EMPTY);
         }
-        return new StringBlob(StringUtils.EMPTY);
+
     }
 }

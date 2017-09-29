@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
  * Servlet for retrieving Nuxeo services running status
  * 
  * @since 9.3 
- * returns a status based of all the probes registered for the healthCheck 
+ * Returns a status based of all the probes registered for the healthCheck 
  * GET /runningstatus?info=probe&key=probeName returns a healthCheck status based on a probe
  */
 public class StatusServlet extends HttpServlet {
@@ -64,6 +64,8 @@ public class StatusServlet extends HttpServlet {
     public static final String PROBE_PARAM = "probe";
 
     private AbstractRuntimeService runtimeService;
+
+    protected ProbeManager pm;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -113,7 +115,7 @@ public class StatusServlet extends HttpServlet {
     }
 
     protected void sendResponse(HttpServletResponse resp, String response) throws IOException {
-        resp.setContentType("text/plain");
+        resp.setContentType("application/json");
         resp.setContentLength(response.getBytes().length);
         OutputStream out = resp.getOutputStream();
         out.write(response.getBytes());
@@ -150,13 +152,21 @@ public class StatusServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         log.debug("Ready.");
+        pm = Framework.getService(ProbeManager.class);
     }
 
     protected HealthCheckResult getOrRunHealthCheck(String probe) {
         if (StringUtils.isEmpty(probe)) { // run all healthCheck probes
-            return Framework.getService(ProbeManager.class).getOrRunHealthCheck();
+            return getProbeManager().getOrRunHealthChecks();
         }
-        return Framework.getService(ProbeManager.class).getOrRunHealthCheckSingleProbe(probe);
+        return getProbeManager().getOrRunHealthCheck(probe);
 
+    }
+
+    protected ProbeManager getProbeManager() {
+        if (pm == null) {
+            pm = Framework.getService(ProbeManager.class);
+        }
+        return pm;
     }
 }

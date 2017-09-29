@@ -66,7 +66,7 @@ public class TestProbes {
     @Test
     public void testService() {
 
-        ProbeManager pm = Framework.getLocalService(ProbeManager.class);
+        ProbeManager pm = Framework.getService(ProbeManager.class);
 
         pm.runAllProbes();
 
@@ -91,39 +91,39 @@ public class TestProbes {
     public void testHealthCheck() throws IOException {
 
         ProbeManager pm = Framework.getLocalService(ProbeManager.class);
-        Collection<ProbeInfo> healthCheckProbes = pm.getAllContributeToHealthCheckProbeInfos();
+        Collection<ProbeInfo> healthCheckProbes = pm.getHealthCheckProbes();
         assertEquals(2, healthCheckProbes.size());
         ProbeInfo probeInfo = (ProbeInfo) healthCheckProbes.toArray()[0];
 
-        HealthCheckResult result = pm.getOrRunHealthCheck();
+        HealthCheckResult result = pm.getOrRunHealthChecks();
         assertTrue(result.isHealthy());
         assertTrue(probeInfo.getStatus().isSuccess());
-        assertEquals("{\"healthCheck\":[{\"runtimeStatus\":\"ok\"},{\"repositoryStatus\":\"ok\"}]}", result.toJson());
+        assertEquals("{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\"}", result.toJson());
 
-        result = pm.getOrRunHealthCheckSingleProbe("runtimeStatus");
+        result = pm.getOrRunHealthCheck("runtimeStatus");
         probeInfo = pm.getProbeInfo("runtimeStatus");
 
         assertTrue(result.isHealthy());
         assertTrue(probeInfo.getStatus().isSuccess());
-        assertEquals("{\"healthCheck\":[{\"runtimeStatus\":\"ok\"}]}", result.toJson());
+        assertEquals("{\"runtimeStatus\":\"ok\"}", result.toJson());
 
-        result = pm.getOrRunHealthCheckSingleProbe("repositoryStatus");
+        result = pm.getOrRunHealthCheck("repositoryStatus");
         probeInfo = pm.getProbeInfo("repositoryStatus");
         assertTrue(result.isHealthy());
         assertTrue(probeInfo.getStatus().isSuccess());
-        assertEquals("{\"healthCheck\":[{\"repositoryStatus\":\"ok\"}]}", result.toJson());
+        assertEquals("{\"repositoryStatus\":\"ok\"}", result.toJson());
 
         // delete the root document
         // the first check will still return healthy as the probe won't be run
         session.removeDocument(session.getRootDocument().getRef());
         session.save();
 
-        result = pm.getOrRunHealthCheckSingleProbe("repositoryStatus");
+        result = pm.getOrRunHealthCheck("repositoryStatus");
         probeInfo = pm.getProbeInfo("repositoryStatus");
         assertEquals(1, probeInfo.getRunnedCount()); // check that the probe was run only once in the past 20 s
         assertTrue(result.isHealthy()); //
         assertTrue(probeInfo.getStatus().isSuccess());
-        assertEquals("{\"healthCheck\":[{\"repositoryStatus\":\"ok\"}]}", result.toJson());
+        assertEquals("{\"repositoryStatus\":\"ok\"}", result.toJson());
 
         // force run again and should fail
         probeInfo = pm.runProbe(probeInfo);

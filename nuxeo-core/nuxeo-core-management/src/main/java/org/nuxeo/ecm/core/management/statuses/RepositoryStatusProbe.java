@@ -63,6 +63,6 @@ public class RepositoryStatusProbe implements Probe {
     }
 
     protected List<String> getRepositoryName() {
-        return Framework.getLocalService(RepositoryService.class).getRepositoryNames();
+        return Framework.getService(RepositoryService.class).getRepositoryNames();
     }
 }

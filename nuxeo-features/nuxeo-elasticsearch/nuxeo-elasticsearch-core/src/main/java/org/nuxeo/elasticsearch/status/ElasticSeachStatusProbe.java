@@ -33,12 +33,12 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ElasticSeachStatusProbe implements Probe {
 
-    protected ElasticSearchAdmin esa;
-
     @Override
     public ProbeStatus run() {
         String[] indices = getIndexNames();
-        ClusterHealthStatus clusterStatus = getElasticSearchAdmin().getClient().getHealthStatus(indices);
+        ClusterHealthStatus clusterStatus = Framework.getService(ElasticSearchAdmin.class)
+                                                     .getClient()
+                                                     .getHealthStatus(indices);
         switch (clusterStatus) {
         case GREEN:
             return ProbeStatus.newSuccess(clusterStatus.toString());
@@ -50,19 +50,13 @@ public class ElasticSeachStatusProbe implements Probe {
     }
 
     protected String[] getIndexNames() {
-        List<String> repositoryNames = getElasticSearchAdmin().getRepositoryNames();
+        List<String> repositoryNames = Framework.getService(ElasticSearchAdmin.class).getRepositoryNames();
         String indices[] = new String[repositoryNames.size()];
         int i = 0;
         for (String repo : repositoryNames) {
-            indices[i++] = getElasticSearchAdmin().getIndexNameForRepository(repo);
+            indices[i++] = Framework.getService(ElasticSearchAdmin.class).getIndexNameForRepository(repo);
         }
         return indices;
     }
 
-    protected ElasticSearchAdmin getElasticSearchAdmin() {
-        if (esa == null) {
-            esa = Framework.getLocalService(ElasticSearchAdmin.class);
-        }
-        return esa;
-    }
 }

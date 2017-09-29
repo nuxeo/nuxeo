@@ -39,34 +39,33 @@ public interface ProbeManager extends ProbeRunnerMBean {
     ProbeInfo getProbeInfo(String name);
 
     ProbeInfo getProbeInfo(Class<? extends Probe> probeClass);
-    
+
     /**
      * List of probes evaluated for a health check
+     *
      * @since 9.3
      */
-    Collection<ProbeInfo> getAllContributeToHealthCheckProbeInfos();
-    
+    Collection<ProbeInfo> getHealthCheckProbes();
+
     /**
-     * 
-     * Return the status of all the probes evaluated for a healthCheck.
-     * Run them before if the last run was more than 20s ago
+     * Return the status of all the probes evaluated for a healthCheck. The probes are run if the last run was more than
+     * a short while ago
+     *
      * @since 9.3
      */
-    HealthCheckResult getOrRunHealthCheck();
-    
+    HealthCheckResult getOrRunHealthChecks();
+
     /**
-     * 
-     * The probe is taken into account for the healthCheck
+     * This probe is taken into account for the healthCheck
+     *
      * @since 9.3
      */
     void registerProbeForHealthCheck(HealthCheckProbesDescriptor descriptor);
-    
+
     /**
-     * 
-     * Return the status of the given probe
-     * Run them before if the last run was more than 20s ago
-     * 
+     * Return the status of the given probe. The probe is run only if the last run was more than a short while ago
+     *
      * @since 9.3
      */
-    HealthCheckResult getOrRunHealthCheckSingleProbe(String probe);
+    HealthCheckResult getOrRunHealthCheck(String probe);
 }

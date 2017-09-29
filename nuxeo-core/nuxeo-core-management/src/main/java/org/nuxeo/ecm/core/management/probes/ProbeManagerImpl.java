@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -54,7 +55,7 @@ public class ProbeManagerImpl implements ProbeManager {
 
     protected final Set<ProbeInfo> succeed = new HashSet<ProbeInfo>();
 
-    protected final int healthCheckIntervalInSec = 20;
+    public static final int DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS = 20;
 
     protected Set<String> doExtractProbesName(Collection<ProbeInfo> runners) {
         Set<String> names = new HashSet<String>();
@@ -158,9 +159,6 @@ public class ProbeManagerImpl implements ProbeManager {
         infosByTypes.put(probeClass, info);
         infosByShortcuts.put(descriptor.getShortcut(), info);
         probesByShortcuts.put(descriptor.getShortcut(), probe);
-        if (probesForHealthCheck.containsKey(descriptor.getShortcut())) {
-            probesForHealthCheck.put(descriptor.getShortcut(), info);
-        }
     }
 
     public void unregisterProbe(ProbeDescriptor descriptor) {
@@ -239,18 +237,21 @@ public class ProbeManagerImpl implements ProbeManager {
                 return;
             }
         }
-        probesForHealthCheck.put(name, infosByShortcuts.containsKey(name) ? getProbeInfo(name) : null);
+        if (infosByShortcuts.containsKey(name)) {
+            probesForHealthCheck.put(name, getProbeInfo(name));
+        }
     }
 
     @Override
-    public Collection<ProbeInfo> getAllContributeToHealthCheckProbeInfos() {
+    public Collection<ProbeInfo> getHealthCheckProbes() {
         return Collections.unmodifiableCollection(probesForHealthCheck.values());
     }
 
     @Override
-    public HealthCheckResult getOrRunHealthCheck() {
-        for (String probeName : probesForHealthCheck.keySet()) {
-            ProbeInfo probe = probesForHealthCheck.get(probeName);
+    public HealthCheckResult getOrRunHealthChecks() {
+        for (Entry<String, ProbeInfo> es : probesForHealthCheck.entrySet()) {
+            String probeName = es.getKey();
+            ProbeInfo probe = es.getValue();
             if (probe == null) {
                 log.warn("Probe:" + probeName + " does not exist, skipping it for the health check");
                 continue;
@@ -261,12 +262,12 @@ public class ProbeManagerImpl implements ProbeManager {
     }
 
     @Override
-    public HealthCheckResult getOrRunHealthCheckSingleProbe(String name) {
-        ProbeInfo probe = probesForHealthCheck.get(name);
-        if (probe == null) {
+    public HealthCheckResult getOrRunHealthCheck(String name) {
+        if (!probesForHealthCheck.containsKey(name)) {
             log.warn("Probe:" + name + " does not exist, or not registed for the healthCheck");
             return new HealthCheckResult(Collections.emptyList());
         }
+        ProbeInfo probe = probesForHealthCheck.get(name);
         getStatusOrRunProbe(probe);
         return new HealthCheckResult(Collections.singletonList(probe));
     }
@@ -276,7 +277,7 @@ public class ProbeManagerImpl implements ProbeManager {
         Date lastRunDate = probe.getLastRunnedDate();
         LocalDateTime lastRunDateTime = lastRunDate != null ? LocalDateTime.ofInstant(lastRunDate.toInstant(),
                 ZoneId.systemDefault()) : LocalDateTime.MIN;
-        if (ChronoUnit.SECONDS.between(lastRunDateTime, now) > healthCheckIntervalInSec) {
+        if (ChronoUnit.SECONDS.between(lastRunDateTime, now) > DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS) {
             doRunProbe(probe);
         }
     }

@@ -31,7 +31,7 @@ public class RuntimeStartedProbe implements Probe {
 
     @Override
     public ProbeStatus run() {
-        if (Framework.getRuntime().isStarted()) {
+        if (Framework.getRuntime() != null && Framework.getRuntime().isStarted()) {
             return ProbeStatus.newSuccess("Runtime started");
         }
         return ProbeStatus.newFailure("Runtime not started");

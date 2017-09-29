@@ -68,4 +68,5 @@ public class ProbeDescriptor {
     public Class<? extends Probe> getProbeClass() {
         return probeClass;
     }
+
 }

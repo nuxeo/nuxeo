@@ -4,7 +4,7 @@
 
   <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent" point="probes">
     <probe name="elasticSearchStatus" class="org.nuxeo.elasticsearch.status.ElasticSeachStatusProbe">
-      <label>ES probe</label>
+      <label>Elastic Search probe</label>
     </probe>
   </extension>
 
