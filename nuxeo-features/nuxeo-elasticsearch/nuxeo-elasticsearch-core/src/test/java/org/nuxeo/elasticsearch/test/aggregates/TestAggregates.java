@@ -219,7 +219,7 @@ public class TestAggregates {
                         "      \"aggregations\" : {\n" +
                         "        \"fulltext\" : {\n" +
                         "          \"terms\" : {\n" +
-                        "            \"field\" : \"_all\",\n" +
+                        "            \"field\" : \"all_field\",\n" +
                         "            \"size\" : 10,\n" +
                         "            \"min_doc_count\" : 1,\n" +
                         "            \"shard_min_doc_count\" : 0,\n" +

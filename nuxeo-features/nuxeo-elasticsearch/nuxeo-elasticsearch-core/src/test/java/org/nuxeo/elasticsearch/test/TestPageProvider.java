@@ -795,7 +795,7 @@ public class TestPageProvider {
                 "        \"simple_query_string\" : {\n" +
                 "          \"query\" : \"you know for search\",\n" +
                 "          \"fields\" : [\n" +
-                "            \"_all^1.0\"\n" +
+                "            \"all_field^1.0\"\n" +
                 "          ],\n" +
                 "          \"analyzer\" : \"fulltext\",\n" +
                 "          \"flags\" : -1,\n" +

@@ -13,14 +13,6 @@
         "length": 256,
         "type": "truncate"
       },
-      "word_delimiter_filter": {
-        "type": "word_delimiter",
-        "preserve_original": true
-      },
-      "asciifolding_filter": {
-        "type": "asciifolding",
-        "preserve_original": true
-      },
       "en_stem_filter": {
         "name": "minimal_english",
         "type": "stemmer"
@@ -30,6 +22,14 @@
           "_english_"
         ],
         "type": "stop"
+      },
+      "word_delimiter_filter": {
+        "type": "word_delimiter",
+        "preserve_original": true
+      },
+      "asciifolding_filter": {
+        "type": "asciifolding",
+        "preserve_original": true
       },
       "fr_elision_filter": {
         "articles": [
@@ -59,6 +59,11 @@
       "path_tokenizer": {
         "delimiter": "/",
         "type": "path_hierarchy"
+      },
+      "ngram_tokenizer": {
+        "type": "nGram",
+        "min_gram": 3,
+        "max_gram": 12
       }
     },
     "analyzer": {
@@ -103,6 +108,13 @@
           "asciifolding"
         ],
         "tokenizer": "keyword"
+      },
+      "ngram_analyzer": {
+        "type": "custom",
+        "filter": [
+          "lowercase"
+        ],
+        "tokenizer": "ngram_tokenizer"
       },
       "default": {
         "type": "custom",

@@ -1,15 +1,95 @@
 {
   "_all": {
-    "analyzer": "fulltext"
+    "enabled": false
   },
+  "dynamic_templates": [
+    {
+      "no_thumbnail_template": {
+        "mapping": {
+          "index": false
+        },
+        "path_match": "thumb:thumbnail.*"
+      }
+    },
+    {
+      "no_picture_template": {
+        "mapping": {
+          "index": false
+        },
+        "path_match": "picture:views.*"
+      }
+    },
+    {
+      "strings": {
+        "mapping": {
+          "type": "keyword",
+          "copy_to": "all_field",
+          "ignore_above": 256
+        },
+        "match_mapping_type": "string"
+      }
+    }
+  ],
   "properties": {
+    "all_field": {
+      "type": "text",
+      "analyzer": "fulltext"
+    },
+    "ecm:name": {
+      "type": "keyword",
+      "ignore_above": 256,
+      "copy_to": "all_field"
+    },
+    "ecm:binarytext": {
+      "type": "text",
+      "analyzer": "fulltext",
+      "copy_to": "all_field"
+    },
+    "ecm:path": {
+      "fields": {
+        "children": {
+          "type": "text",
+          "search_analyzer": "keyword",
+          "analyzer": "path_analyzer"
+        }
+      },
+      "type": "keyword"
+    },
+    "ecm:pos": {
+      "type": "integer"
+    },
+    "ecm:isCheckedIn": {
+      "type": "boolean"
+    },
+    "ecm:isLatestMajorVersion": {
+      "type": "boolean"
+    },
+    "ecm:isLatestVersion": {
+      "type": "boolean"
+    },
+    "ecm:isProxy": {
+      "type": "boolean"
+    },
+    "ecm:isVersion": {
+      "type": "boolean"
+    },
+    "common:icon": {
+      "index": false,
+      "type": "keyword"
+    },
+    "dc:modified": {
+      "type": "date",
+      "copy_to": "all_field"
+    },
     "dc:title": {
       "type": "text",
+      "copy_to": "all_field",
+      "fielddata": true,
       "fields": {
         "fulltext": {
-          "boost": 2,
+          "analyzer": "fulltext",
           "type": "text",
-          "analyzer": "fulltext"
+          "boost": 2
         },
         "lowercase": {
           "analyzer": "lowercase_analyzer",
@@ -23,9 +103,12 @@
     },
     "dc:description": {
       "type": "text",
+      "copy_to": "all_field",
       "fields": {
-        "dc:description": {
-          "type": "keyword"
+        "fulltext": {
+          "analyzer": "fulltext",
+          "type": "text",
+          "boost": 1.5
         },
         "lowercase": {
           "analyzer": "lowercase_analyzer",
@@ -33,31 +116,24 @@
         }
       }
     },
-    "ecm:binarytext*": {
-      "type": "text"
+    "dc:created": {
+      "type": "date",
+      "copy_to": "all_field"
     },
-    "ecm:path": {
+    "dc:expired": {
+      "type": "date",
+      "copy_to": "all_field"
+    },
+    "note:note": {
       "type": "keyword",
+      "copy_to": "all_field",
+      "ignore_above": 256,
       "fields": {
-        "children": {
-          "analyzer": "path_analyzer",
-          "search_analyzer": "keyword",
+        "fulltext": {
+          "analyzer": "fulltext",
           "type": "text"
-        },
-        "ecm:path": {
-          "type": "keyword"
         }
       }
-    },
-    "ecm:pos": {
-      "type": "integer"
-    },
-    "dc:created": {
-      "type": "date"
-    },
-    "dc:modified": {
-      "type": "date"
     }
   }
 }
-

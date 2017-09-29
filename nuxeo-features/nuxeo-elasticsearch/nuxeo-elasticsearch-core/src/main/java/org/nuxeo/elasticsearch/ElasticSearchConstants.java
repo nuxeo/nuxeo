@@ -71,7 +71,7 @@ public final class ElasticSearchConstants {
 
     public static final String ID_FIELD = "_id";
 
-    public static final String FULLTEXT_FIELD = "_all";
+    public static final String FULLTEXT_FIELD = "all_field";
 
     /**
      * Elasticsearch type name used to index Nuxeo documents

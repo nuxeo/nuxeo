@@ -1,17 +1,8 @@
 {
   "_all": {
-    "analyzer": "fulltext"
+    "enabled": false
   },
   "dynamic_templates": [
-    {
-      "strings": {
-        "mapping": {
-          "ignore_above": 256,
-          "type": "keyword"
-        },
-        "match_mapping_type": "string"
-      }
-    },
     {
       "no_thumbnail_template": {
         "mapping": {
@@ -27,12 +18,32 @@
         },
         "path_match": "picture:views.*"
       }
+    },
+    {
+      "strings": {
+        "mapping": {
+          "type": "keyword",
+          "copy_to": "all_field",
+          "ignore_above": 256
+        },
+        "match_mapping_type": "string"
+      }
     }
   ],
   "properties": {
+    "all_field": {
+      "type": "text",
+      "analyzer": "fulltext"
+    },
+    "ecm:name": {
+      "type": "keyword",
+      "ignore_above": 256,
+      "copy_to": "all_field"
+    },
     "ecm:binarytext": {
+      "type": "text",
       "analyzer": "fulltext",
-      "type": "text"
+      "copy_to": "all_field"
     },
     "ecm:path": {
       "fields": {
@@ -47,49 +58,71 @@
     "ecm:pos": {
       "type": "integer"
     },
+    "ecm:isCheckedIn": {
+      "type": "boolean"
+    },
+    "ecm:isLatestMajorVersion": {
+      "type": "boolean"
+    },
+    "ecm:isLatestVersion": {
+      "type": "boolean"
+    },
+    "ecm:isProxy": {
+      "type": "boolean"
+    },
+    "ecm:isVersion": {
+      "type": "boolean"
+    },
     "common:icon": {
       "index": false,
-      "type": "text"
+      "type": "keyword"
     },
     "dc:modified": {
-      "type": "date"
+      "type": "date",
+      "copy_to": "all_field"
     },
     "dc:title": {
+      "type": "text",
+      "copy_to": "all_field",
+      "fielddata": true,
       "fields": {
         "fulltext": {
           "analyzer": "fulltext",
           "type": "text",
           "boost": 2
         }
-      },
-      "type": "text",
-      "fielddata": true
+      }
     },
     "dc:description": {
+      "type": "keyword",
+      "copy_to": "all_field",
+      "ignore_above": 32765,
       "fields": {
         "fulltext": {
           "analyzer": "fulltext",
           "type": "text",
           "boost": 1.5
         }
-      },
-      "type": "text"
+      }
     },
     "dc:created": {
-      "type": "date"
+      "type": "date",
+      "copy_to": "all_field"
     },
     "dc:expired": {
-      "type": "date"
+      "type": "date",
+      "copy_to": "all_field"
     },
     "note:note": {
+      "type": "keyword",
+      "copy_to": "all_field",
+      "ignore_above": 256,
       "fields": {
         "fulltext": {
           "analyzer": "fulltext",
           "type": "text"
         }
-      },
-      "type": "text"
+      }
     }
   }
 }
-
