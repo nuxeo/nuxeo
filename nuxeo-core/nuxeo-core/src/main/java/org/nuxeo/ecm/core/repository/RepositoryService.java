@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -61,7 +62,17 @@ public class RepositoryService extends DefaultComponent {
     @Override
     public void start(ComponentContext context) {
         TransactionHelper.runInTransaction(this::doCreateRepositories);
-        initRepositories(); // call all RepositoryInitializationHandler
+        Framework.getRuntime().getComponentManager().addListener(new ComponentManager.LifeCycleHandler() {
+            @Override
+            public void afterStart(ComponentManager mgr, boolean isResume) {
+                initRepositories(); // call all RepositoryInitializationHandler
+            }
+
+            @Override
+            public void afterStop(ComponentManager mgr, boolean isStandby) {
+                Framework.getRuntime().getComponentManager().removeListener(this);
+            }
+        });
     }
 
     @Override
