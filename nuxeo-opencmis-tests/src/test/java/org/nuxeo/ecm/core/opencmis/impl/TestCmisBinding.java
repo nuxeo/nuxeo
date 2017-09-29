@@ -2231,8 +2231,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", getString(ob, "dc:title"));
 
-        PropertyData<?> propTitle = factory.createPropertyStringData("dc:title", "new title1");
-        PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new description1");
+        PropertyData<?> propTitle = factory.createPropertyStringData("dc:title", "new titleone");
+        PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new descriptionone");
         Properties properties = factory.createPropertiesData(Arrays.asList(propTitle, propDescription));
 
         Holder<String> objectIdHolder = new Holder<>(ob.getId());
@@ -2245,32 +2245,32 @@ public class TestCmisBinding extends TestCmisBindingBase {
         ObjectList res;
         String statement;
 
-        statement = "SELECT cmis:name FROM File WHERE CONTAINS('title1')";
+        statement = "SELECT cmis:name FROM File WHERE CONTAINS('titleone')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("new titleone", getString(res.getObjects().get(0), PropertyIds.NAME));
 
-        statement = "SELECT cmis:name FROM File WHERE CONTAINS('description1')";
+        statement = "SELECT cmis:name FROM File WHERE CONTAINS('descriptionone')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("new titleone", getString(res.getObjects().get(0), PropertyIds.NAME));
 
         if (supportsMultipleFulltextIndexes()) {
             // specific query for title index (the description token do not
             // match)
-            statement = "SELECT cmis:name FROM File WHERE CONTAINS('nx:title:description1')";
+            statement = "SELECT cmis:name FROM File WHERE CONTAINS('nx:title:descriptionone')";
             res = query(statement);
             assertEquals(0, res.getNumItems().intValue());
 
-            statement = "SELECT cmis:name FROM File WHERE CONTAINS('nx:title:title1')";
+            statement = "SELECT cmis:name FROM File WHERE CONTAINS('nx:title:titleone')";
             res = query(statement);
             assertEquals(1, res.getNumItems().intValue());
-            assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
+            assertEquals("new titleone", getString(res.getObjects().get(0), PropertyIds.NAME));
 
             // query for invalid index name
             try {
                 statement = "SELECT cmis:name FROM File" //
-                        + " WHERE CONTAINS('nx:borked:title1')";
+                        + " WHERE CONTAINS('nx:borked:titleone')";
                 res = query(statement);
                 if (!useElasticsearch()) { // ES turns this into the regular fulltext query
                     fail();
@@ -2302,8 +2302,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", getString(ob, "dc:title"));
 
-        PropertyData<?> propTitle = factory.createPropertyStringData("dc:title", "new title1");
-        PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new description1");
+        PropertyData<?> propTitle = factory.createPropertyStringData("dc:title", "new titleone");
+        PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new descriptionone");
         Properties properties = factory.createPropertiesData(Arrays.asList(propTitle, propDescription));
         Holder<String> objectIdHolder = new Holder<>(ob.getId());
         Holder<String> changeTokenHolder = getChangeTokenHolder(ob);
@@ -2313,13 +2313,13 @@ public class TestCmisBinding extends TestCmisBindingBase {
         waitForIndexing();
         ObjectList res;
 
-        res = query("SELECT cmis:name FROM File WHERE CONTAINS('title1') OR CONTAINS('anotherTitle')");
+        res = query("SELECT cmis:name FROM File WHERE CONTAINS('titleone') OR CONTAINS('anotherTitle')");
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("new titleone", getString(res.getObjects().get(0), PropertyIds.NAME));
 
-        res = query("SELECT cmis:name FROM File WHERE CONTAINS('description1') OR CONTAINS('anotherDescription')");
+        res = query("SELECT cmis:name FROM File WHERE CONTAINS('descriptionone') OR CONTAINS('anotherDescription')");
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("new titleone", getString(res.getObjects().get(0), PropertyIds.NAME));
     }
 
     @Test
@@ -2346,8 +2346,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", getString(ob, "dc:title"));
 
-        PropertyData<?> propTitle = factory.createPropertyStringData("dc:title", "new title1");
-        PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new description1");
+        PropertyData<?> propTitle = factory.createPropertyStringData("dc:title", "new titleone");
+        PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new descriptionone");
         Properties properties = factory.createPropertiesData(Arrays.asList(propTitle, propDescription));
 
         Holder<String> objectIdHolder = new Holder<>(ob.getId());
@@ -2358,10 +2358,10 @@ public class TestCmisBinding extends TestCmisBindingBase {
         waitForIndexing();
 
         // this failed in CMISQL -> SQL mode (NXP-17512)
-        String statement = "SELECT f.* FROM File f WHERE CONTAINS(f, 'title1')";
+        String statement = "SELECT f.* FROM File f WHERE CONTAINS(f, 'titleone')";
         ObjectList res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("new titleone", getString(res.getObjects().get(0), PropertyIds.NAME));
     }
 
     @Test
@@ -2369,8 +2369,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", getString(ob, "dc:title"));
 
-        PropertyData<?> propTitle = factory.createPropertyStringData("dc:title", "new title1");
-        PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new description1");
+        PropertyData<?> propTitle = factory.createPropertyStringData("dc:title", "new titleone");
+        PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new descriptionone");
         Properties properties = factory.createPropertiesData(Arrays.asList(propTitle, propDescription));
 
         Holder<String> objectIdHolder = new Holder<>(ob.getId());
@@ -2383,20 +2383,20 @@ public class TestCmisBinding extends TestCmisBindingBase {
         ObjectList res;
         String statement;
 
-        statement = "SELECT cmis:name FROM File WHERE CONTAINS('title1 description1')";
+        statement = "SELECT cmis:name FROM File WHERE CONTAINS('titleone descriptionone')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("new titleone", getString(res.getObjects().get(0), PropertyIds.NAME));
 
-        statement = "SELECT cmis:name FROM File WHERE CONTAINS('title1 AND description1')";
+        statement = "SELECT cmis:name FROM File WHERE CONTAINS('titleone AND descriptionone')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("new titleone", getString(res.getObjects().get(0), PropertyIds.NAME));
 
-        statement = "SELECT cmis:name FROM File WHERE CONTAINS('title1 OR blorgzap')";
+        statement = "SELECT cmis:name FROM File WHERE CONTAINS('titleone OR blorgzap')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("new titleone", getString(res.getObjects().get(0), PropertyIds.NAME));
     }
 
     @Test
