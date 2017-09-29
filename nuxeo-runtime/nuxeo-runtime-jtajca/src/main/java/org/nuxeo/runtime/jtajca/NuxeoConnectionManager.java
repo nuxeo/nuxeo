@@ -16,7 +16,6 @@
 package org.nuxeo.runtime.jtajca;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.resource.ResourceException;
@@ -192,7 +192,7 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
             coordinator.addTracker(this);
         }
 
-        final Map<ConnectionInfo, TimeToLive> ttls = new HashMap<>();
+        final Map<ConnectionInfo, TimeToLive> ttls = new ConcurrentHashMap<>();
 
         long killedCount = 0L;
 
@@ -216,7 +216,7 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
         }
 
         @Override
-        public synchronized void handleObtained(ConnectionTrackingInterceptor connectionTrackingInterceptor,
+        public void handleObtained(ConnectionTrackingInterceptor connectionTrackingInterceptor,
                 ConnectionInfo connectionInfo, boolean reassociate) throws ResourceException {
             int delay = ttl();
             if (delay > 0) {
@@ -226,7 +226,7 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
         }
 
         @Override
-        public synchronized void handleReleased(ConnectionTrackingInterceptor connectionTrackingInterceptor,
+        public void handleReleased(ConnectionTrackingInterceptor connectionTrackingInterceptor,
                 ConnectionInfo connectionInfo, ConnectionReturnAction connectionReturnAction) {
             ttls.remove(connectionInfo);
         }
@@ -241,7 +241,7 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
          * @return information about the killed connections
          * @since 8.4
          */
-        public synchronized List<TimeToLive> killTimedoutConnections(long clock) {
+        public List<TimeToLive> killTimedoutConnections(long clock) {
             List<TimeToLive> killed = new LinkedList<>();
             Iterator<TimeToLive> it = ttls.values().iterator();
             while (it.hasNext()) {
