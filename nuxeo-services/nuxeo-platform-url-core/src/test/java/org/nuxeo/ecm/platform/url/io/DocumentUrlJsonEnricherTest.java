@@ -31,9 +31,9 @@ import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.runtime.test.runner.Deploy;
 
-@Deploy({ "org.nuxeo.ecm.platform.url.core" })
-public class DocumentUrlJsonEnricherTest extends
-        AbstractJsonWriterTest.External<DocumentModelJsonWriter, DocumentModel> {
+@Deploy({ "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core" })
+public class DocumentUrlJsonEnricherTest
+        extends AbstractJsonWriterTest.External<DocumentModelJsonWriter, DocumentModel> {
 
     public DocumentUrlJsonEnricherTest() {
         super(DocumentModelJsonWriter.class, DocumentModel.class);
@@ -45,10 +45,19 @@ public class DocumentUrlJsonEnricherTest extends
     @Test
     public void test() throws Exception {
         DocumentModel root = session.getDocument(new PathRef("/"));
-        JsonAssert json = jsonAssert(root, CtxBuilder.enrichDoc("documentURL").get());
+        // Use the given URL codec name
+        JsonAssert json = jsonAssert(root, CtxBuilder.enrichDoc("documentURL").param("URLCodecName", "docid").get());
         json = json.has("contextParameters").isObject();
         json.properties(1);
-        json = json.has("documentURL").isNull(); // no TypeInfo adapter on root
+        json = json.has("documentURL").isText();
+        json.isEquals(String.format("http://fake-url.nuxeo.com/nxdoc/%s/%s", root.getRepositoryName(), root.getId()));
+
+        // No codec name parameter, as there is no UI installed thus no "notificationDocId" codec contributed
+        // documentURL should be null
+        json = jsonAssert(root, CtxBuilder.enrichDoc("documentURL").get());
+        json = json.has("contextParameters").isObject();
+        json.properties(1);
+        json = json.has("documentURL").isNull();
     }
 
 }
