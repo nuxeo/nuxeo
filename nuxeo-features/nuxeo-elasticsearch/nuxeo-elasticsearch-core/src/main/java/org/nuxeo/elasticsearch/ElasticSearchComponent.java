@@ -174,6 +174,10 @@ public class ElasticSearchComponent extends DefaultComponent
 
     @Override
     public void stop(ComponentContext context) {
+        if (esa == null) {
+            // Elasticsearch service was disabled
+            return;
+        }
         try {
             shutdownListenerThreadPool();
         } finally {
