@@ -58,7 +58,7 @@ public class TestProbes {
     @Test
     public void testServiceLookup() {
 
-        ProbeManager pm = Framework.getLocalService(ProbeManager.class);
+        ProbeManager pm = Framework.getService(ProbeManager.class);
         assertNotNull(pm);
 
     }

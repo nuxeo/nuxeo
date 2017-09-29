@@ -37,12 +37,8 @@ public class RepositoryStatusProbe implements Probe {
 
     @Override
     public ProbeStatus run() {
-        boolean started;
-        if (started = TransactionHelper.isNoTransaction()) {
-            // needs a transaction to create the unrestricted core session
-            TransactionHelper.startTransaction();
-        }
-        try {
+        ProbeStatus status;
+        status = TransactionHelper.runInTransaction(() -> {
             List<String> repositories = getRepositoryName();
             boolean success = !repositories.isEmpty();
             for (String repository : repositories) {
@@ -54,11 +50,8 @@ public class RepositoryStatusProbe implements Probe {
                 return ProbeStatus.newSuccess("Repository started");
             }
             return ProbeStatus.newFailure("Repository not started corectly");
-        } finally {
-            if (started) {
-                TransactionHelper.commitOrRollbackTransaction();
-            }
-        }
+        });
+        return status;
 
     }
 

@@ -41,7 +41,6 @@ public class ElasticSeachStatusProbe implements Probe {
                                                      .getHealthStatus(indices);
         switch (clusterStatus) {
         case GREEN:
-            return ProbeStatus.newSuccess(clusterStatus.toString());
         case YELLOW:
             return ProbeStatus.newSuccess(clusterStatus.toString());
         default:

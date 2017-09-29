@@ -152,21 +152,13 @@ public class StatusServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         log.debug("Ready.");
-        pm = Framework.getService(ProbeManager.class);
     }
 
     protected HealthCheckResult getOrRunHealthCheck(String probe) {
+        ProbeManager pm = Framework.getService(ProbeManager.class);
         if (StringUtils.isEmpty(probe)) { // run all healthCheck probes
-            return getProbeManager().getOrRunHealthChecks();
+            return pm.getOrRunHealthChecks();
         }
-        return getProbeManager().getOrRunHealthCheck(probe);
-
-    }
-
-    protected ProbeManager getProbeManager() {
-        if (pm == null) {
-            pm = Framework.getService(ProbeManager.class);
-        }
-        return pm;
+        return pm.getOrRunHealthCheck(probe);
     }
 }
