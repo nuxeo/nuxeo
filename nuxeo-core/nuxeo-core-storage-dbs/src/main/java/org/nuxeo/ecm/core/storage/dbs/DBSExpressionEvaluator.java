@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.storage.dbs;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.FACETED_TAG;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.FACETED_TAG_LABEL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
@@ -550,6 +552,11 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
      * @return the canonical reference (with resolved uncorrelated wildcards)
      */
     protected ValueInfo parseReference(String name) {
+
+        if (name.startsWith(NXQL.ECM_TAG)) {
+            name = FACETED_TAG + "/*1/" + FACETED_TAG_LABEL;
+        }
+
         String[] parts = name.split("/");
 
         // convert first part to internal representation, and canonicalize prefixed schema
