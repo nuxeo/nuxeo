@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.management.statuses;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,8 +25,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -48,9 +45,7 @@ public class HealthCheckResult {
 
     public HealthCheckResult(Collection<ProbeInfo> probesToCheck) {
         this.probes = probesToCheck;
-        for (ProbeInfo probeInfo : probesToCheck) {
-            healthy = healthy && probeInfo.getStatus().isSuccess();
-        }
+        healthy = probes.stream().allMatch(p -> p.getStatus().isSuccess());
     }
 
     public boolean isHealthy() {
@@ -58,25 +53,19 @@ public class HealthCheckResult {
     }
 
     public String toJson() {
-        try {
-            return buildResponse().getString();
-        } catch (IOException e) {
-            log.error("Unable to compute detailed healthCheck status", e);
-            return StringUtils.EMPTY; // don't fail as the probes might have been sucessful
+        if (probes.isEmpty()) {
+            return StringUtils.EMPTY;
         }
-    }
-
-    protected Blob buildResponse() {
         ObjectMapper om = new ObjectMapper();
         Map<String, String> res = new HashMap<String, String>();
         try {
             for (ProbeInfo probe : probes) {
                 res.put(probe.getShortcutName(), (probe.getStatus().isSuccess() ? "ok" : "failed"));
             }
-            return Blobs.createJSONBlob(om.writeValueAsString(res));
+            return om.writeValueAsString(res);
         } catch (JsonProcessingException e) {
-            return Blobs.createJSONBlob(StringUtils.EMPTY);
+            log.error(e);
+            return StringUtils.EMPTY;
         }
-
     }
 }

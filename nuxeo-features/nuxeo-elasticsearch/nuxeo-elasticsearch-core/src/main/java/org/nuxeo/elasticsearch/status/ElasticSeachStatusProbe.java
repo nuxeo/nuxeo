@@ -49,11 +49,12 @@ public class ElasticSeachStatusProbe implements Probe {
     }
 
     protected String[] getIndexNames() {
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
         List<String> repositoryNames = Framework.getService(ElasticSearchAdmin.class).getRepositoryNames();
         String indices[] = new String[repositoryNames.size()];
         int i = 0;
         for (String repo : repositoryNames) {
-            indices[i++] = Framework.getService(ElasticSearchAdmin.class).getIndexNameForRepository(repo);
+            indices[i++] = esa.getIndexNameForRepository(repo);
         }
         return indices;
     }

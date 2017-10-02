@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpStatus;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.runtime.AbstractRuntimeService;
@@ -82,7 +81,7 @@ public class StatusServlet extends HttpServlet {
         if (result.healthy) {
             resp.setStatus(HttpServletResponse.SC_OK);
         } else {
-            resp.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         sendResponse(resp, result.toJson());
     }
@@ -109,7 +108,11 @@ public class StatusServlet extends HttpServlet {
         } else if (requestedInfo.equals(PROBE_PARAM)) {
             String probetoEval = req.getParameter(PARAM_SUMMARY_KEY);
             HealthCheckResult result = getOrRunHealthCheck(probetoEval);
-            sendHealthCheckResponse(resp, result);
+            if (result.toJson().isEmpty()) {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            } else {
+                sendHealthCheckResponse(resp, result);
+            }
         }
         sendResponse(resp, response.toString());
     }
@@ -158,7 +161,8 @@ public class StatusServlet extends HttpServlet {
         ProbeManager pm = Framework.getService(ProbeManager.class);
         if (StringUtils.isEmpty(probe)) { // run all healthCheck probes
             return pm.getOrRunHealthChecks();
+        } else {
+            return pm.getOrRunHealthCheck(probe);
         }
-        return pm.getOrRunHealthCheck(probe);
     }
 }

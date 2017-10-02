@@ -48,8 +48,9 @@ public class RepositoryStatusProbe implements Probe {
             }
             if (success) {
                 return ProbeStatus.newSuccess("Repository started");
+            } else {
+                return ProbeStatus.newFailure("Repository not started corectly");
             }
-            return ProbeStatus.newFailure("Repository not started corectly");
         });
         return status;
 

@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.management.statuses.HealthCheckResult;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -55,18 +54,16 @@ public class TestProbes {
     @Inject
     CoreSession session;
 
+    @Inject
+    ProbeManager pm;
+
     @Test
     public void testServiceLookup() {
-
-        ProbeManager pm = Framework.getService(ProbeManager.class);
         assertNotNull(pm);
-
     }
 
     @Test
     public void testService() {
-
-        ProbeManager pm = Framework.getService(ProbeManager.class);
 
         pm.runAllProbes();
 
@@ -90,25 +87,38 @@ public class TestProbes {
     @Test
     public void testHealthCheck() throws IOException {
 
-        ProbeManager pm = Framework.getLocalService(ProbeManager.class);
         Collection<ProbeInfo> healthCheckProbes = pm.getHealthCheckProbes();
         assertEquals(2, healthCheckProbes.size());
-        ProbeInfo probeInfo = (ProbeInfo) healthCheckProbes.toArray()[0];
 
         HealthCheckResult result = pm.getOrRunHealthChecks();
         assertTrue(result.isHealthy());
-        assertTrue(probeInfo.getStatus().isSuccess());
         assertEquals("{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\"}", result.toJson());
 
-        result = pm.getOrRunHealthCheck("runtimeStatus");
-        probeInfo = pm.getProbeInfo("runtimeStatus");
+    }
+
+    @Test
+    public void testSingleProbeStatus() throws IOException {
+
+        HealthCheckResult result = pm.getOrRunHealthCheck("runtimeStatus");
+        ProbeInfo probeInfo = pm.getProbeInfo("runtimeStatus");
 
         assertTrue(result.isHealthy());
         assertTrue(probeInfo.getStatus().isSuccess());
         assertEquals("{\"runtimeStatus\":\"ok\"}", result.toJson());
+    }
+    
+    @Test
+    public void testInvalidProbe() {
+        HealthCheckResult result = pm.getOrRunHealthCheck("invalidProbe");
+        assertTrue(result.isHealthy());
+        assertEquals("", result.toJson());
+    }
 
-        result = pm.getOrRunHealthCheck("repositoryStatus");
-        probeInfo = pm.getProbeInfo("repositoryStatus");
+    @Test
+    public void testRepositoryStatusProbe() throws IOException {
+
+        HealthCheckResult result = pm.getOrRunHealthCheck("repositoryStatus");
+        ProbeInfo probeInfo = pm.getProbeInfo("repositoryStatus");
         assertTrue(result.isHealthy());
         assertTrue(probeInfo.getStatus().isSuccess());
         assertEquals("{\"repositoryStatus\":\"ok\"}", result.toJson());
@@ -129,6 +139,8 @@ public class TestProbes {
         probeInfo = pm.runProbe(probeInfo);
         assertEquals(2, probeInfo.getRunnedCount());
         assertTrue(probeInfo.isInError());
-
+        result = pm.getOrRunHealthCheck("repositoryStatus");
+        assertTrue(probeInfo.getStatus().isFailure());
+        assertEquals("{\"repositoryStatus\":\"failed\"}", result.toJson());
     }
 }
