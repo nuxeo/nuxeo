@@ -98,7 +98,7 @@ public class Expression implements Operand {
     public int hashCode() {
         int result = 17;
         result = 37 * result + operator.hashCode();
-        result = 37 * result + lvalue.hashCode();
+        result = 37 * result + (lvalue == null ? 0 : lvalue.hashCode());
         result = 37 * result + (rvalue == null ? 0 : rvalue.hashCode());
         return result;
     }

@@ -60,7 +60,6 @@ import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
  *   }
  * }
  * </pre>
- *
  * </p>
  *
  * @since 7.2
@@ -69,6 +68,8 @@ import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 public class DocumentUrlJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
     public static final String NAME = "documentURL";
+
+    public static final String NOTIFICATION_DOCUMENT_ID_CODEC_NAME = "notificationDocId";
 
     @Inject
     private DocumentViewCodecManager viewCodecManager;
@@ -81,15 +82,19 @@ public class DocumentUrlJsonEnricher extends AbstractJsonEnricher<DocumentModel>
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
         DocumentLocation docLoc = new DocumentLocationImpl(document);
         String pCodecName = ctx.getParameter(CODEC_PARAMETER_NAME);
-        String codecName = isBlank(pCodecName) ? viewCodecManager.getDefaultCodecName() : pCodecName;
+        String codecName = isBlank(pCodecName) ? NOTIFICATION_DOCUMENT_ID_CODEC_NAME : pCodecName;
         TypeInfo adapter = document.getAdapter(TypeInfo.class);
         if (adapter == null) {
             jg.writeNullField(NAME);
             return;
         }
         DocumentView docView = new DocumentViewImpl(docLoc, adapter.getDefaultView());
-        String url = ctx.getBaseUrl() + viewCodecManager.getUrlFromDocumentView(codecName, docView, false, null);
-        jg.writeStringField(NAME, url);
+        String url = viewCodecManager.getUrlFromDocumentView(codecName, docView, false, null);
+        if (url == null) {
+            jg.writeNullField(NAME);
+            return;
+        }
+        jg.writeStringField(NAME, ctx.getBaseUrl() + url);
     }
 
 }

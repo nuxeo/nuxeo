@@ -22,7 +22,7 @@ package org.nuxeo.wizard;
 
 import static org.nuxeo.common.Environment.NUXEO_DATA_DIR;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.DB_EXCLUDE_CHECK_LIST;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.DB_NOSQL_LIST;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.DB_SECONDARY_LIST;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.INSTALL_AFTER_RESTART;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_BIND_ADDRESS;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_HOST;
@@ -33,7 +33,7 @@ import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_USER;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_MONGODB_NAME;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_MONGODB_SERVER;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBNAME;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBNOSQL_NAME;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBSECONDARY_NAME;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_WIZARD_DONE;
 
 import java.io.File;
@@ -41,7 +41,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.URLEncoder;
-import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -287,7 +286,7 @@ public class RouterServlet extends HttpServlet {
         ParamCollector collector = ctx.getCollector();
 
         String templateDbName = collector.getConfigurationParam(PARAM_TEMPLATE_DBNAME);
-        String templateDbNoSQLName = collector.getConfigurationParam(PARAM_TEMPLATE_DBNOSQL_NAME);
+        String templateDbNoSQLName = collector.getConfigurationParam(PARAM_TEMPLATE_DBSECONDARY_NAME);
         if ("true".equals(req.getParameter("refresh"))) {
             collector.changeDBTemplate(templateDbName);
             collector.changeDBTemplate(templateDbNoSQLName);
@@ -336,8 +335,8 @@ public class RouterServlet extends HttpServlet {
             }
         }
 
-        // Check NoSQL database
-        if (!DB_EXCLUDE_CHECK_LIST.contains(templateDbNoSQLName) && DB_NOSQL_LIST.contains(templateDbNoSQLName)) {
+        // Check MongoDB settings
+        if ("mongodb".equals(templateDbName)) {
             if (collector.getConfigurationParam(PARAM_MONGODB_NAME).isEmpty()) {
                 ctx.trackError(PARAM_MONGODB_NAME, "error.dbname.required");
             }

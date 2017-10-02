@@ -1,51 +1,128 @@
 {
   "_all": {
-    "analyzer": "fulltext"
+    "enabled": false
   },
+  "dynamic_templates": [
+    {
+      "no_thumbnail_template": {
+        "mapping": {
+          "index": false
+        },
+        "path_match": "thumb:thumbnail.*"
+      }
+    },
+    {
+      "no_picture_template": {
+        "mapping": {
+          "index": false
+        },
+        "path_match": "picture:views.*"
+      }
+    },
+    {
+      "strings": {
+        "mapping": {
+          "type": "keyword",
+          "copy_to": "all_field",
+          "ignore_above": 256
+        },
+        "match_mapping_type": "string"
+      }
+    }
+  ],
   "properties": {
-    "dc:title": {
+    "all_field": {
       "type": "text",
-      "fields": {
-        "fulltext": {
-          "boost": 2,
-          "type": "text",
-          "analyzer": "fulltext"
-        }
-      }
+      "analyzer": "fulltext"
     },
-    "dc:description": {
+    "ecm:name": {
+      "type": "keyword",
+      "ignore_above": 256,
+      "copy_to": "all_field"
+    },
+    "ecm:binarytext": {
       "type": "text",
-      "fields": {
-        "lowercase": {
-          "analyzer": "lowercase_analyzer",
-          "type": "text"
-        }
-      }
-    },
-    "ecm:binarytext*": {
-      "type": "text"
+      "analyzer": "fulltext",
+      "copy_to": "all_field"
     },
     "ecm:path": {
-      "type": "keyword",
       "fields": {
         "children": {
-          "analyzer": "path_analyzer",
+          "type": "text",
           "search_analyzer": "keyword",
-          "type": "text"
-        },
-        "ecm:path": {
-          "type": "keyword"
+          "analyzer": "path_analyzer"
         }
-      }
+      },
+      "type": "keyword"
     },
     "ecm:pos": {
       "type": "integer"
     },
-    "dc:created": {
-      "type": "date"
+    "ecm:isCheckedIn": {
+      "type": "boolean"
+    },
+    "ecm:isLatestMajorVersion": {
+      "type": "boolean"
+    },
+    "ecm:isLatestVersion": {
+      "type": "boolean"
+    },
+    "ecm:isProxy": {
+      "type": "boolean"
+    },
+    "ecm:isVersion": {
+      "type": "boolean"
+    },
+    "common:icon": {
+      "index": false,
+      "type": "keyword"
     },
     "dc:modified": {
-      "type": "date"
+      "type": "date",
+      "copy_to": "all_field"
+    },
+    "dc:title": {
+      "type": "text",
+      "copy_to": "all_field",
+      "fielddata": true,
+      "fields": {
+        "fulltext": {
+          "analyzer": "fulltext",
+          "type": "text",
+          "boost": 2
+        }
+      }
+    },
+    "dc:description": {
+      "type": "keyword",
+      "copy_to": "all_field",
+      "ignore_above": 32765,
+      "fields": {
+        "fulltext": {
+          "analyzer": "fulltext",
+          "type": "text",
+          "boost": 1.5
+        }
+      }
+    },
+    "dc:created": {
+      "type": "date",
+      "copy_to": "all_field"
+    },
+    "dc:expired": {
+      "type": "date",
+      "copy_to": "all_field"
+    },
+    "note:note": {
+      "type": "keyword",
+      "copy_to": "all_field",
+      "ignore_above": 256,
+      "fields": {
+        "fulltext": {
+          "analyzer": "fulltext",
+          "type": "text"
+        }
+      }
     },
     "files:files": {
       "properties": {

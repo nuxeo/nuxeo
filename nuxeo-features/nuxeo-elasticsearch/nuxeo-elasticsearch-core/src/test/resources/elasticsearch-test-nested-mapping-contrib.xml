@@ -2,7 +2,6 @@
 <component name="org.nuxeo.elasticsearch.test.nested.mapping.contrib">
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">
     <elasticSearchIndex name="nxutest" type="doc" repository="test">
-      <settings file="nested-settings.json" />
       <mapping file="nested-mapping.json" />
     </elasticSearchIndex>
   </extension>

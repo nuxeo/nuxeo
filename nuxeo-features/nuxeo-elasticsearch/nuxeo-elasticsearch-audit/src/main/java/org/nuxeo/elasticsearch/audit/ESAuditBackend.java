@@ -19,7 +19,20 @@
  */
 package org.nuxeo.elasticsearch.audit;
 
-import org.apache.commons.collections.MapUtils;
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
@@ -47,7 +60,6 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryParseContext;
-import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchModule;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -57,17 +69,22 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.query.sql.model.Literals;
+import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
+import org.nuxeo.ecm.core.query.sql.model.Operand;
+import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
+import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
-import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
-import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
 import org.nuxeo.ecm.platform.audit.service.AbstractAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.BaseLogEntryProvider;
@@ -82,19 +99,6 @@ import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 /**
  * Implementation of the {@link AuditBackend} interface using Elasticsearch persistence
@@ -135,21 +139,6 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             addLogEntries(entries);
         }
 
-        @Override
-        public List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
-            throw new UnsupportedOperationException("Not implemented yet!");
-        }
-
-        @Override
-        public List<LogEntry> getLogEntriesFor(String uuid) {
-            throw new UnsupportedOperationException("Not implemented yet!");
-        }
-
-        @Override
-        public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap,
-                                               boolean doDefaultSort) {
-            throw new UnsupportedOperationException("Not implemented yet!");
-        }
     };
 
     protected ESClient getClient() {
@@ -219,54 +208,101 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     }
 
     @Override
-    public List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
-        TermQueryBuilder docFilter = QueryBuilders.termQuery("docUUID", uuid);
-        TermQueryBuilder repoFilter = QueryBuilders.termQuery("repositoryId", repositoryId);
-        QueryBuilder filter;
-        filter = QueryBuilders.boolQuery().must(docFilter);
-        filter = QueryBuilders.boolQuery().must(repoFilter);
-        return getLogEntries(filter, false);
-    }
+    @SuppressWarnings("unchecked")
+    public List<LogEntry> queryLogs(AuditQueryBuilder builder) {
+        // prepare parameters
+        Predicate andPredicate = builder.predicate();
+        OrderByList orders = builder.orders();
+        long offset = builder.offset();
+        long limit = builder.limit();
+        // cast parameters
+        // current implementation only support a MultiExpression with AND operator
+        List<Predicate> predicates = (List<Predicate>) ((List<?>) ((MultiExpression) andPredicate).values);
 
-    @Override
-    public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-        TermQueryBuilder docFilter = QueryBuilders.termQuery("docUUID", uuid);
-        QueryBuilder filter;
-        if (MapUtils.isEmpty(filterMap)) {
-            filter = docFilter;
-        } else {
-            filter = QueryBuilders.boolQuery().must(docFilter);
-            for (String key : filterMap.keySet()) {
-                FilterMapEntry entry = filterMap.get(key);
-                ((BoolQueryBuilder) filter).must(QueryBuilders.termQuery(entry.getColumnName(), entry.getObject()));
-            }
-        }
-        return getLogEntries(filter, doDefaultSort);
-    }
+        // create ES query builder
+        QueryBuilder query = createQueryBuilder(predicates);
 
-    protected List<LogEntry> getLogEntries(QueryBuilder filter, boolean doDefaultSort) {
+        // create ES source
+        SearchSourceBuilder source = new SearchSourceBuilder().query(QueryBuilders.constantScoreQuery(query)).size(100);
+
+        // create sort
+        orders.forEach(order -> source.sort(order.reference.name, order.isDescending ? SortOrder.DESC : SortOrder.ASC));
+
+        // Perform search
+        List<LogEntry> logEntries;
         SearchRequest request = createSearchRequest();
-        TimeValue keepAlive = TimeValue.timeValueMinutes(1);
-        request.scroll(keepAlive);
-        request.source(new SearchSourceBuilder().query(QueryBuilders.constantScoreQuery(filter)).size(100));
-        if (doDefaultSort) {
-            request.source().sort("eventDate", SortOrder.DESC);
-        }
-        logSearchRequest(request);
-        SearchResponse searchResponse = esClient.search(request);
-        logSearchResponse(searchResponse);
+        request.source(source);
+        if (limit == 0) {
+            // return all result -> use the scroll api
+            // offset is not taking into account when querying all results
+            TimeValue keepAlive = TimeValue.timeValueMinutes(1);
+            request.scroll(keepAlive);
+            // the size here is the size of each scrolls
+            source.size(100);
 
-        // Build log entries
-        List<LogEntry> logEntries = buildLogEntries(searchResponse);
-        // Scroll on next results
-        for (; //
-             searchResponse.getHits().getHits().length > 0
-                     && logEntries.size() < searchResponse.getHits().getTotalHits(); //
-             searchResponse = runNextScroll(searchResponse.getScrollId(), keepAlive)) {
+            // run request
+            logSearchRequest(request);
+            SearchResponse searchResponse = esClient.search(request);
+            logSearchResponse(searchResponse);
+
             // Build log entries
-            logEntries.addAll(buildLogEntries(searchResponse));
+            logEntries = buildLogEntries(searchResponse);
+            // Scroll on next results
+            for (; //
+                 searchResponse.getHits().getHits().length > 0
+                         && logEntries.size() < searchResponse.getHits().getTotalHits(); //
+                 searchResponse = runNextScroll(searchResponse.getScrollId(), keepAlive)) {
+                // Build log entries
+                logEntries.addAll(buildLogEntries(searchResponse));
+            }
+        } else {
+            // return a page -> use a regular search
+            source.from((int) offset).size((int) limit);
+
+            // run request
+            logSearchRequest(request);
+            SearchResponse searchResponse = esClient.search(request);
+            logSearchResponse(searchResponse);
+
+            // Build log entries
+            logEntries = buildLogEntries(searchResponse);
         }
+
         return logEntries;
+    }
+
+    protected QueryBuilder createQueryBuilder(List<Predicate> predicates) {
+        // current implementation only use Predicate/OrderByExpr with a simple Reference for left and right
+        Function<Operand, String> getFieldName = operand -> ((Reference) operand).name;
+
+        QueryBuilder query;
+        if (predicates.isEmpty()) {
+            query = QueryBuilders.matchAllQuery();
+        } else {
+            BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+            for (Predicate predicate : predicates) {
+                String leftName = getFieldName.apply(predicate.lvalue);
+                Operator operator = predicate.operator;
+                Object rightValue = Literals.valueOf(predicate.rvalue);
+                if (Operator.EQ.equals(operator)) {
+                    boolQuery.must(QueryBuilders.termQuery(leftName, rightValue));
+                } else if (Operator.NOTEQ.equals(operator)) {
+                    boolQuery.mustNot(QueryBuilders.termQuery(leftName, rightValue));
+                } else if (Operator.LT.equals(operator)) {
+                    boolQuery.must(QueryBuilders.rangeQuery(leftName).lt(rightValue));
+                } else if (Operator.LTEQ.equals(operator)) {
+                    boolQuery.must(QueryBuilders.rangeQuery(leftName).lte(rightValue));
+                } else if (Operator.GTEQ.equals(operator)) {
+                    boolQuery.must(QueryBuilders.rangeQuery(leftName).gte(rightValue));
+                } else if (Operator.GT.equals(operator)) {
+                    boolQuery.must(QueryBuilders.rangeQuery(leftName).gt(rightValue));
+                } else if (Operator.IN.equals(operator)) {
+                    boolQuery.must(QueryBuilders.termsQuery(leftName, (List<?>) rightValue));
+                }
+            }
+            query = boolQuery;
+        }
+        return query;
     }
 
     SearchResponse runNextScroll(String scrollId, TimeValue keepAlive) {
@@ -417,22 +453,6 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         SearchResponse searchResponse = esClient.search(request);
         logSearchResponse(searchResponse);
         return buildLogEntries(searchResponse);
-    }
-
-    @Override
-    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String[] categories, String path,
-                                          int pageNb, int pageSize) {
-
-        Date limit = null;
-        if (dateRange != null) {
-            try {
-                limit = DateRangeParser.parseDateRangeQuery(new Date(), dateRange);
-            } catch (AuditQueryException aqe) {
-                aqe.addInfo("Wrong date range query. Query was " + dateRange);
-                throw aqe;
-            }
-        }
-        return queryLogsByPage(eventIds, limit, categories, path, pageNb, pageSize);
     }
 
     @Override

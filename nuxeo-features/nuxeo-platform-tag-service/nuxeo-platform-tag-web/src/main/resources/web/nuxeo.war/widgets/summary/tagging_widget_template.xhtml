@@ -30,35 +30,47 @@
       </c:if>
     </c:if>
 
-    <a4j:jsFunction name="listDocumentsForTag"
-      action="#{tagSelect2Support.listDocumentsForTag}">
-      <a4j:param name="param1" assignTo="#{tagSelect2Support.label}" />
-    </a4j:jsFunction>
+    <c:if test="#{currentDocument.proxy}">
+      <c:forEach var="tag" items="#{currentDocumentTags}">
+        <span class="tag">
+          <h:commandLink value="#{tag.label}" action="#{tagActions.listDocumentsForTag(tag.label)}"/>
+        </span>
+      </c:forEach>
+    </c:if>
 
-    <a4j:jsFunction name="addTagging"
-      render="#{ajaxReRender}"
-      action="#{tagSelect2Support.addTagging}">
-      <a4j:param name="param1" assignTo="#{tagSelect2Support.label}" />
-    </a4j:jsFunction>
+    <c:if test="#{!currentDocument.proxy}">
 
-    <a4j:jsFunction name="removeTagging"
-      render="#{ajaxReRender}"
-      action="#{tagSelect2Support.removeTagging}">
-      <a4j:param name="param1" assignTo="#{tagSelect2Support.label}" />
-    </a4j:jsFunction>
+      <a4j:jsFunction name="listDocumentsForTag"
+                      action="#{tagSelect2Support.listDocumentsForTag}">
+        <a4j:param name="param1" assignTo="#{tagSelect2Support.label}" />
+      </a4j:jsFunction>
 
-    <ui:include src="/incl/select2_js.xhtml" />
+      <a4j:jsFunction name="addTagging"
+        render="#{ajaxReRender}"
+        action="#{tagSelect2Support.addTagging}">
+        <a4j:param name="param1" assignTo="#{tagSelect2Support.label}" />
+      </a4j:jsFunction>
 
-    <a4j:region>
-      <h:inputHidden id="#{widget.id}_select2" value="#{documentTagIds}">
-        <f:converter converterId="select2Converter" />
-      </h:inputHidden>
-      <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
-        value="#{resolveDocumentTags}" />
-    </a4j:region>
+      <a4j:jsFunction name="removeTagging"
+        render="#{ajaxReRender}"
+        action="#{tagSelect2Support.removeTagging}">
+        <a4j:param name="param1" assignTo="#{tagSelect2Support.label}" />
+      </a4j:jsFunction>
 
-    <h:inputHidden readonly="true" id="#{widget.id}_select2_params"
-      value="#{tagSelect2Support.encodeParametersForCurrentDocument(widgetProperties)}" />
+      <ui:include src="/incl/select2_js.xhtml" />
+
+      <a4j:region>
+        <h:inputHidden id="#{widget.id}_select2" value="#{documentTagIds}">
+          <f:converter converterId="select2Converter" />
+        </h:inputHidden>
+        <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
+          value="#{resolveDocumentTags}" />
+      </a4j:region>
+
+      <h:inputHidden readonly="true" id="#{widget.id}_select2_params"
+        value="#{tagSelect2Support.encodeParametersForCurrentDocument(widgetProperties)}" />
+
+    </c:if>
 
   </c:if>
 

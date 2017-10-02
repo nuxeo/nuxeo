@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,21 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.audit.api;
 
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
+
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
+import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
 
 /**
  * Interface for reading data from the Audit service.
@@ -40,27 +46,37 @@ public interface AuditReader {
      * @return a list of log entries
      * @since 8.4
      */
-    List<LogEntry> getLogEntriesFor(String uuid, String repositoryId);
+    default List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
+        return queryLogs(
+                new AuditQueryBuilder().predicates(Predicates.eq(LOG_DOC_UUID, uuid),
+                        Predicates.eq(LOG_REPOSITORY_ID, repositoryId)).defaultOrder());
+    }
 
     /**
      * Returns the logs given a doc uuid.
      *
      * @param uuid the document uuid
      * @return a list of log entries
-     * @deprecated since 8.4, use {@link (org.nuxeo.ecm.platform.audit.api.AuditReader.getLogEntriesFor(String,
-     *             String))} instead.
+     * @deprecated since 8.4, use {@link #getLogEntriesFor(String, String))} instead.
      */
     @Deprecated
-    List<LogEntry> getLogEntriesFor(String uuid);
+    default List<LogEntry> getLogEntriesFor(String uuid) {
+        return queryLogs(
+                new AuditQueryBuilder().predicates(Predicates.eq(LOG_DOC_UUID, uuid))
+                                       .defaultOrder());
+    }
 
     /**
      * Returns the logs given a doc uuid, a map of filters and a default sort.
      *
      * @param uuid the document uuid
      * @param filterMap the map of filters to apply
-     * @param doDefaultSort the default sort to set
+     * @param doDefaultSort the default sort to set (eventDate desc)
      * @return a list of log entries
+     * @deprecated since 9.3, this method doesn't take into account the document repository, use
+     *             {@link #queryLogs(AuditQueryBuilder)} instead.
      */
+    @Deprecated
     List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort);
 
     /**
@@ -72,6 +88,15 @@ public interface AuditReader {
     LogEntry getLogEntryByID(long id);
 
     /**
+     * Returns the logs given a collection of predicates and a default sort.
+     *
+     * @param builder the query builder to fetch log entries
+     * @return a list of log entries
+     * @since 9.3
+     */
+    List<LogEntry> queryLogs(AuditQueryBuilder builder);
+
+    /**
      * Returns the list of log entries.
      * <p>
      * Note we will use NXQL in the future when the search engine will index history.
@@ -81,7 +106,9 @@ public interface AuditReader {
      * @param dateRange a preset date range.
      * @return a list of log entries.
      */
-    List<LogEntry> queryLogs(String[] eventIds, String dateRange);
+    default List<LogEntry> queryLogs(String[] eventIds, String dateRange) {
+        return queryLogsByPage(eventIds, (String) null, (String[]) null, null, 0, 10000);
+    }
 
     /**
      * Returns the batched list of log entries.
@@ -97,11 +124,25 @@ public interface AuditReader {
      * @param pageSize number of results per page
      * @return a list of log entries.
      */
-    List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String category, String path, int pageNb,
-            int pageSize);
+    default List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String category, String path, int pageNb,
+            int pageSize) {
+        return queryLogsByPage(eventIds, dateRange, new String[] { category }, path, pageNb, pageSize);
+    }
 
-    List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String[] category, String path, int pageNb,
-            int pageSize);
+    default List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String[] categories, String path, int pageNb,
+            int pageSize) {
+
+        Date limit = null;
+        if (dateRange != null) {
+            try {
+                limit = DateRangeParser.parseDateRangeQuery(new Date(), dateRange);
+            } catch (AuditQueryException aqe) {
+                aqe.addInfo("Wrong date range query. Query was " + dateRange);
+                throw aqe;
+            }
+        }
+        return queryLogsByPage(eventIds, limit, categories, path, pageNb, pageSize);
+    }
 
     /**
      * Returns the batched list of log entries.
@@ -117,10 +158,12 @@ public interface AuditReader {
      * @param pageSize number of results per page
      * @return a list of log entries.
      */
-    List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String category, String path, int pageNb,
-            int pageSize);
+    default List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String category, String path, int pageNb,
+            int pageSize) {
+        return queryLogsByPage(eventIds, limit, new String[] { category }, path, pageNb, pageSize);
+    }
 
-    List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String[] category, String path, int pageNb,
+    List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String[] categories, String path, int pageNb,
             int pageSize);
 
     /**
@@ -128,14 +171,21 @@ public interface AuditReader {
      * be used if implementation of audit backend is JPA (< 7.3 or audit.elasticsearch.enabled=false) and JSON if
      * implementation is Elasticsearch.
      */
-    List<LogEntry> nativeQueryLogs(String whereClause, int pageNb, int pageSize);
+    default List<LogEntry> nativeQueryLogs(String whereClause, int pageNb, int pageSize) {
+        return nativeQuery(whereClause, pageNb, pageSize).stream()
+                                                         .filter(LogEntry.class::isInstance)
+                                                         .map(LogEntry.class::cast)
+                                                         .collect(Collectors.toCollection(LinkedList::new));
+    }
 
     /**
      * Returns a batched list of entries. query string is a native query clause for the backend : here EJBQL 3.0 must be
      * used if implementation of audit backend is JPA (< 7.3 or audit.elasticsearch.enabled=false) and JSON if
      * implementation is Elasticsearch.
      */
-    List<?> nativeQuery(String query, int pageNb, int pageSize);
+    default List<?> nativeQuery(String query, int pageNb, int pageSize) {
+        return nativeQuery(query, Collections.<String, Object> emptyMap(), pageNb, pageSize);
+    }
 
     /**
      * Returns a batched list of entries.

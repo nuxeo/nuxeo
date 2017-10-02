@@ -92,15 +92,16 @@ public class TestAuditWithMongoDB {
         assertEquals(2, trail.size());
 
         LogEntry entry = trail.get(0);
-        long startId = entry.getId();
+        assertEquals(2L, entry.getId());
+        assertEquals("documentModified", entry.getEventId());
+        assertEquals("eventDocumentCategory", entry.getCategory());
+        assertEquals("A modified File", entry.getExtendedInfos().get("title").getValue(String.class));
+
+        entry = trail.get(1);
+        assertEquals(1L, entry.getId());
         assertEquals("documentCreated", entry.getEventId());
         assertEquals("eventDocumentCategory", entry.getCategory());
         assertEquals("A File", entry.getExtendedInfos().get("title").getValue(String.class));
-
-        assertEquals(startId + 1, trail.get(1).getId());
-        assertEquals("documentModified", trail.get(1).getEventId());
-        assertEquals("eventDocumentCategory", trail.get(1).getCategory());
-        assertEquals("A modified File", trail.get(1).getExtendedInfos().get("title").getValue(String.class));
 
         LogEntry entryById = reader.getLogEntryByID(entry.getId());
         assertEquals(entry.getId(), entryById.getId());

@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.audit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,8 +28,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,10 +43,12 @@ import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.document.DocumentHistoryPageProvider;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
+import org.nuxeo.ecm.platform.audit.provider.LatestCreatedUsersOrGroupsPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -70,6 +75,9 @@ public class TestPageProvider {
 
     @Inject
     CoreSession session;
+
+    @Inject
+    UserManager userManager;
 
     @Before
     public void createTestEntries() {
@@ -408,5 +416,47 @@ public class TestPageProvider {
         long nbPages = pp.getNumberOfPages();
 
         assertEquals(1, nbPages);
+    }
+
+    /**
+     * @since 9.3
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testLatestUserGroupPageProvider() throws Exception {
+
+        DocumentModel userModel = userManager.getBareUserModel();
+        String schemaName = userManager.getUserSchemaName();
+        userModel.setProperty(schemaName, "username", "Foo");
+        userModel = userManager.createUser(userModel);
+
+        DocumentModel userModel2 = userManager.getBareUserModel();
+        schemaName = userManager.getUserSchemaName();
+        userModel2.setProperty(schemaName, "username", "Bar");
+        userModel2 = userManager.createUser(userModel2);
+
+        waitForAsyncCompletion();
+
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        assertNotNull(pps);
+
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition(
+                LatestCreatedUsersOrGroupsPageProvider.LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER);
+        assertNotNull(ppdef);
+
+        PageProvider<?> pp = pps.getPageProvider(
+                LatestCreatedUsersOrGroupsPageProvider.LATEST_CREATED_USERS_OR_GROUPS_PROVIDER, null, Long.valueOf(6),
+                Long.valueOf(0), new HashMap<String, Serializable>());
+
+        assertNotNull(pp);
+
+        List<DocumentModel> entries = (List<DocumentModel>) pp.getCurrentPage();
+
+        assertNotNull(entries);
+        assertEquals(2, entries.size());
+    }
+
+    protected void waitForAsyncCompletion() throws InterruptedException {
+        assertTrue(Framework.getLocalService(AuditLogger.class).await(10, TimeUnit.SECONDS));
     }
 }

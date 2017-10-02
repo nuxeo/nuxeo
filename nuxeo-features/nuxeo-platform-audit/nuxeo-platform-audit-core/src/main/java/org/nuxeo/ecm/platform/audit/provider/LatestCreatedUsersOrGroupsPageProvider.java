@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  *
  * Contributors:
- *     Guillaume Renard
- *     Kevin Leturc
+ *     "Guillaume Renard"
  */
-package org.nuxeo.mongodb.audit.pageprovider;
+
+package org.nuxeo.ecm.platform.audit.provider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +25,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -34,15 +36,17 @@ import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 9.1
+ * @since 8.2
  */
 public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider<DocumentModel> {
 
     private static final long serialVersionUID = 1L;
 
-    public final static String LATEST_CREATED_USERS_OR_GROUPS_PROVIDER = "LATEST_CREATED_USERS_OR_GROUPS_PROVIDER";
+    public static final String LATEST_CREATED_USERS_OR_GROUPS_PROVIDER = "LATEST_CREATED_USERS_OR_GROUPS_PROVIDER";
 
-    public final static String LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER = "LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER";
+    public static final String LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER = "LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER";
+
+    protected static final String CORE_SESSION_PROPERTY = "coreSession";
 
     protected List<DocumentModel> currentPage;
 
@@ -51,9 +55,9 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
         if (currentPage != null) {
             return currentPage;
         }
-        currentPage = new ArrayList<>();
+        currentPage = new ArrayList<DocumentModel>();
         PageProviderService pps = Framework.getService(PageProviderService.class);
-        CoreSession coreSession = (CoreSession) getProperties().get(MongoDBAuditPageProvider.CORE_SESSION_PROPERTY);
+        CoreSession coreSession = (CoreSession) getProperties().get(CORE_SESSION_PROPERTY);
         PageProvider<?> pp = pps.getPageProvider(LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER, null, getPageSize(),
                 getCurrentPageIndex(), getProperties(),
                 coreSession != null ? coreSession.getRootDocument().getId() : new Object[] { null });
@@ -61,22 +65,25 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
         if (entries != null) {
             UserManager um = Framework.getService(UserManager.class);
-            for (LogEntry e : entries) {
-                String id = (String) e.getExtendedInfos().get("id").getSerializableValue();
-                if (StringUtils.isNotBlank(id)) {
-                    DocumentModel doc;
-                    if (UserManagerImpl.GROUPCREATED_EVENT_ID.equals(e.getEventId())) {
-                        doc = um.getGroupModel(id);
-                    } else if (UserManagerImpl.USERCREATED_EVENT_ID.equals(e.getEventId())) {
-                        doc = um.getUserModel(id);
-                    } else {
-                        break;
+            DirectoryService directoryService = Framework.getService(DirectoryService.class);
+            try (Session userDir = directoryService.open(um.getUserDirectoryName(), null)) {
+                for (LogEntry e : entries) {
+                    String id = (String) e.getExtendedInfos().get("id").getSerializableValue();
+                    if (StringUtils.isNotBlank(id)) {
+                        DocumentModel doc;
+                        if (UserManagerImpl.GROUPCREATED_EVENT_ID.equals(e.getEventId())) {
+                            doc = um.getGroupModel(id);
+                        } else if (UserManagerImpl.USERCREATED_EVENT_ID.equals(e.getEventId())) {
+                            doc = um.getUserModel(id);
+                        } else {
+                            continue;
+                        }
+                        if (doc == null) {
+                            // probably user/group does not exist anymore
+                            continue;
+                        }
+                        currentPage.add(doc);
                     }
-                    if (doc == null) {
-                        // probably user/group does not exist anymore
-                        break;
-                    }
-                    currentPage.add(doc);
                 }
             }
         }

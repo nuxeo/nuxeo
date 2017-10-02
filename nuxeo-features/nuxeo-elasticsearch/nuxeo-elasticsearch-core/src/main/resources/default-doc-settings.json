@@ -1,7 +1,7 @@
 {
-  "mapping.single_type": true,
   "number_of_replicas": 0,
   "number_of_shards": 1,
+  "mapping.single_type": true,
   "analysis": {
     "filter": {
       "truncate_filter": {
@@ -17,21 +17,35 @@
           "_english_"
         ],
         "type": "stop"
+      },
+      "word_delimiter_filter": {
+        "type": "word_delimiter",
+        "preserve_original": true
+      },
+      "asciifolding_filter": {
+        "type": "asciifolding",
+        "preserve_original": true
       }
     },
     "tokenizer": {
       "path_tokenizer": {
         "delimiter": "/",
         "type": "path_hierarchy"
+      },
+      "ngram_tokenizer": {
+        "type": "nGram",
+        "min_gram": 3,
+        "max_gram": 12
       }
     },
     "analyzer": {
       "fulltext": {
         "filter": [
+          "word_delimiter_filter",
           "lowercase",
           "en_stop_filter",
           "en_stem_filter",
-          "asciifolding"
+          "asciifolding_filter"
         ],
         "type": "custom",
         "tokenizer": "standard"
@@ -39,6 +53,21 @@
       "path_analyzer": {
         "type": "custom",
         "tokenizer": "path_tokenizer"
+      },
+      "lowercase_analyzer": {
+        "type": "custom",
+        "filter": [
+          "lowercase",
+          "asciifolding"
+        ],
+        "tokenizer": "keyword"
+      },
+      "ngram_analyzer": {
+        "type": "custom",
+        "filter": [
+          "lowercase"
+        ],
+        "tokenizer": "ngram_tokenizer"
       },
       "default": {
         "type": "custom",

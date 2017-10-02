@@ -115,10 +115,6 @@
       <maxPageSize>100</maxPageSize>
     </genericPageProvider>
 
-    <genericPageProvider name="LATEST_CREATED_USERS_OR_GROUPS_PROVIDER"
-                         class="org.nuxeo.mongodb.audit.pageprovider.LatestCreatedUsersOrGroupsPageProvider">
-    </genericPageProvider>
-
   </extension>
 
 </component>

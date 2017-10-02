@@ -18,17 +18,18 @@
  */
 package org.nuxeo.ecm.core.api;
 
-import java.util.Iterator;
+import java.util.AbstractList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * The bundling of a list and a total size.
  */
-public class PartialList<E> implements Iterable<E> {
+public class PartialList<E> extends AbstractList<E> {
 
-    public final List<E> list;
+    protected final List<E> list;
 
-    public final long totalSize;
+    protected final long totalSize;
 
     /**
      * Constructs a partial list.
@@ -42,8 +43,31 @@ public class PartialList<E> implements Iterable<E> {
     }
 
     @Override
-    public Iterator<E> iterator() {
-        return list.iterator();
+    public E get(int index) {
+        return list.get(index);
     }
 
+    @Override
+    public int size() {
+        return list.size();
+    }
+
+    @Override
+    public void sort(Comparator<? super E> c) {
+        list.sort(c);
+    }
+
+    @Override
+    public PartialList<E> subList(int fromIndex, int toIndex) {
+        return new PartialList<>(list.subList(fromIndex, toIndex), totalSize);
+    }
+
+    /**
+     * Returns the total size of the bigger list this is a part of.
+     *
+     * @since 9.3
+     */
+    public long totalSize() {
+        return totalSize;
+    }
 }

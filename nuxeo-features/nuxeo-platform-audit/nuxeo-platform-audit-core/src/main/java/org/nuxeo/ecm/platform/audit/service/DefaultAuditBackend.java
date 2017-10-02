@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.runtime.api.Framework;
@@ -68,7 +69,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
     }
 
     @Override
-    public void onShutdown() {
+    public void onApplicationStopped() {
         try {
             persistenceProvider.closePersistenceUnit();
         } finally {
@@ -232,6 +233,20 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
     }
 
     @Override
+    public List<LogEntry> queryLogs(AuditQueryBuilder builder) {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+            @Override
+            public List<LogEntry> runWith(EntityManager em) {
+                return queryLogs(em, builder);
+            }
+        });
+    }
+
+    protected List<LogEntry> queryLogs(EntityManager em, AuditQueryBuilder builder) {
+        return LogEntryProvider.createProvider(em).queryLogs(builder);
+    }
+
+    @Override
     public List<LogEntry> queryLogs(final String[] eventIds, final String dateRange) {
         return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
             @Override
@@ -243,23 +258,6 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
 
     protected List<LogEntry> queryLogs(EntityManager em, String[] eventIds, String dateRange) {
         return LogEntryProvider.createProvider(em).queryLogs(eventIds, dateRange);
-    }
-
-    @Override
-    public List<LogEntry> queryLogsByPage(final String[] eventIds, final String dateRange, final String[] category,
-            final String path, final int pageNb, final int pageSize) {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
-            @Override
-            public List<LogEntry> runWith(EntityManager em) {
-                return queryLogsByPage(em, eventIds, dateRange, category, path, pageNb, pageSize);
-            }
-        });
-    }
-
-    protected List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds, String dateRange, String[] category,
-            String path, int pageNb, int pageSize) {
-        return LogEntryProvider.createProvider(em).queryLogsByPage(eventIds, dateRange, category, path, pageNb,
-                pageSize);
     }
 
     @Override
@@ -320,20 +318,6 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
 
     protected List<String> getLoggedEventIds(EntityManager em) {
         return LogEntryProvider.createProvider(em).findEventIds();
-    }
-
-    // Compat APIs
-
-    protected List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds, String dateRange, String category,
-            String path, int pageNb, int pageSize) {
-        String[] categories = { category };
-        return queryLogsByPage(em, eventIds, dateRange, categories, path, pageNb, pageSize);
-    }
-
-    protected List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds, Date limit, String category,
-            String path, int pageNb, int pageSize) {
-        String[] categories = { category };
-        return queryLogsByPage(em, eventIds, limit, categories, path, pageNb, pageSize);
     }
 
     @Override

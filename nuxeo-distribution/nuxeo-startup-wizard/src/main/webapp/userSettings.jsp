@@ -4,19 +4,19 @@
 
 <%
 String directoryType = collector.getConfigurationParam("nuxeo.directory.type");
-if (directoryType==null || directoryType.equals("")) {
-    directoryType="default";
+if (directoryType == null || directoryType.equals("")) {
+    directoryType = "default";
 }
 String userGroupStorage = collector.getConfigurationParam("nuxeo.user.group.storage");
-if (userGroupStorage==null || userGroupStorage.equals("")) {
-    userGroupStorage="default";
+if (userGroupStorage == null || userGroupStorage.equals("")) {
+    userGroupStorage = "default";
 }
 
 String directorytyle = "display:none";
 String userWarnStyle = "display:block";
 
 if (!directoryType.equals("default")) {
-    directorytyle="display:block";
+    directorytyle = "display:block";
     userWarnStyle = "display:none";
 }
 
@@ -24,11 +24,11 @@ if (!directoryType.equals("default")) {
 <script language="javascript">
 function switchDirectory() {
   var value = document.getElementById("directoryTypeSelector").value;
-  if (value=='default') {
+  if (value === 'default') {
     $('#directory').css('display','none');
     $('#userWarn').css('display','none');
   } else {
-	if (value == 'ldap') {
+	if (value === 'ldap') {
 		$('#userGroupStorageSelector').val('default');
 	} else {
 		$('#userGroupStorageSelector').val('multiUserGroup');
@@ -202,9 +202,6 @@ if (ctx.hasInfos()) {%>
     </tr>
     <% } %>
   </table>
- <div id="userWarn" style="<%=userWarnStyle%>" class="warnBlock">
-      <fmt:message key="label.userSettings.warning"/>
- </div>
 
  <div id="directory" style="<%=directorytyle%>">
   <%if (!"default".equals(directoryType)){%>

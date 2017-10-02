@@ -100,6 +100,9 @@ public class TestGetOrCreateDocument {
                                                             .map(CompletableFuture::join)
                                                             .collect(Collectors.toList());
 
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
         for (DocumentModelList list : docModelsPerThread) {
             assertEquals(NB_FILES, list.size());
             for (int i = 0; i < NB_FILES; i++) {

@@ -796,46 +796,5 @@ class FolderPage(BasePage):
         fl.get(doc_url, description="View a random document")
         return DocumentPage(self.fl)
 
-    def driveSynchronizeCurrentDocument(self):
-        fl = self.fl
-        if 'driveUnsynchronizeCurrentDocument' in fl.getBody():
-            # Already sync
-            return
-        fl.assert_('driveSynchronizeCurrentDocument' in fl.getBody(),
-                   "No sync button found")
-        fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['nxw_driveSynchronizeCurrentDocument_form', 'nxw_driveSynchronizeCurrentDocument_form'],
-            ['javax.faces.ViewState', extractJsfState(fl.getBody())],
-            ['nxw_driveSynchronizeCurrentDocument_form:nxw_driveSynchronizeCurrentDocument', 'nxw_driveSynchronizeCurrentDocument_form:nxw_driveSynchronizeCurrentDocument']],
-            description="Synchronize the current document with Drive")
-        fl.assert_('driveUnsynchronizeCurrentDocument' in fl.getBody()
-                   or 'currentUserSyncRoots' in fl.getBody(),
-                   "Can not synchronize the folder")
-        return self
-
-    def driveUnsynchronizeCurrentDocument(self):
-        fl = self.fl
-        fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['nxw_driveUnsynchronizeCurrentDocument_form', 'nxw_driveUnsynchronizeCurrentDocument_form'],
-            ['javax.faces.ViewState', extractJsfState(fl.getBody())],
-            ['nxw_driveUnsynchronizeCurrentDocument_form:nxw_driveUnsynchronizeCurrentDocument', 'nxw_driveUnsynchronizeCurrentDocument_form:nxw_driveUnsynchronizeCurrentDocument']],
-            description="Unsynchronize the current document with Drive")
-        fl.assert_('driveSynchronizeCurrentDocument' in fl.getBody())
-        return self
-
-    def driveRevokeFirstToken(self):
-        fl = self.fl
-        # TODO: migrate to JSF2
-        fl.post(fl.server_url + "/view_home.faces", params=[
-            ['AJAXREQUEST', '_viewRoot'],
-            ['currentUserAuthTokenBindings', 'currentUserAuthTokenBindings'],
-            ['autoScroll', ''],
-            ['javax.faces.ViewState', extractJsfState(fl)],
-            ['currentUserAuthTokenBindings:nxl_authTokenBindings_1:nxl_authTokenBindings_1_deleteButton', 'currentUserAuthTokenBindings:nxl_authTokenBindings_1:nxl_authTokenBindings_1_deleteButton'],
-            ['AJAX:EVENTS_COUNT', '1']],
-            description="Post /nuxeo/view_home.faces")
-        return self
-
-
 class DocumentPage(BasePage):
     """Document page."""

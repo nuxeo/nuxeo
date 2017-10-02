@@ -5,11 +5,11 @@
     <script type="text/javascript" src="${skinPath}/script/jquery/jquery.js"></script>
     <style>
       html, body {
-        background-color: #e6f3fa;
+        background-color: #ffffff;
         border: 0;
         box-sizing: border-box;
         color: #42444e;
-        font-family: Arial, sans-serif;
+        font-family: Helvetica, Arial;
         font-size: 16px;
         height: 100%;
         margin: 0;
@@ -39,7 +39,7 @@
         width: 50%;
       }
       h1 {
-        color: #213f7d;
+        color: #0066FF;
       }
     </style>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />

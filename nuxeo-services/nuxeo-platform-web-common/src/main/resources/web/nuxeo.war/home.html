@@ -5,9 +5,10 @@
   <style type="text/css">
     <!--
     body {
-      font: normal 14px "Lucida Grande", sans-serif;
-      background: #213f7d url(img/home_bg.png) no-repeat right bottom;
-      color: #343434;
+      font: normal 14px "Neue Hass Grotesk", Helvetica, Arial;
+      background: url(img/home_bg.jpg) no-repeat center;
+      background-size: cover;
+      color: #7F8284;
       margin: 0;
     }
 
@@ -21,19 +22,26 @@
       padding: 1.5em 3em;
     }
 
+    h1 {
+      color: #1f28bf;
+      text-align: left;
+      margin: 0;
+    }
+
     h2 {
-      color: #157dcc;
-      text-align: center;
+      color: #0067ff;
+      text-align: left;
+      margin-top: 0;
     }
 
     a {
-      color: #157dcc;
+      color: #00aded;
       text-decoration: none;
       transition: all .2s ease-in-out;
     }
 
     a:hover, .footer a:hover {
-      color: #00adff;
+      color: #73d2cf;
     }
 
     .logo img {
@@ -41,13 +49,12 @@
     }
 
     .footer {
-      color: #d6d6d6;
+      color: #ffffff;
       font-size: 9px;
     }
 
     .welcome {
       background: #fff;
-      opacity: 0.8;
       filter: alpha(opacity=80);
       width: 500px;
       box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
@@ -57,15 +64,19 @@
 
     .welcomeText {
       text-align: left;
-      color: #454545;
       line-height: 1.5em;
       margin: 0 0 0.8em 0;
+    }
+
+    .box {
+      background: #fafafa;
+      padding: 1.5em;
     }
 
     .footer {
       font-size: 9px;
       text-align: center;
-      color: #ccc;
+      color: #fff;
     }
 
     .footer a {
@@ -82,22 +93,24 @@
   </div>
 </header>
 <div class="welcome">
-  <h2>Welcome to Nuxeo Server</h2>
-  <p class="welcomeText">
-    This Nuxeo Platform distribution allows you to access all the services and features
-    of the Nuxeo Platform through its APIs. It provides no user interface.
-    <a href="https://doc.nuxeo.com/x/moFH" target="_blank">Install</a>
-    the <a href="https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-web-ui" target="_blank">Nuxeo Web UI</a>
-    or <a href="https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-jsf-ui" target="_blank">Nuxeo JSF UI</a>
-    package to benefit from the available user interfaces and use the Nuxeo Platform in your browser.
-  </p>
-  <code>
-    # To install nuxeo-web-ui package
-    $ ./bin/nuxeoctl mp-install nuxeo-web-ui
+  <h1>Welcome</h1><h2>to Nuxeo Server</h2>
+  <div class="box">
+    <p class="welcomeText">
+      This Nuxeo Platform distribution allows you to access all the services and features
+      of the Nuxeo Platform through its APIs. It provides no user interface.
+      <a href="https://doc.nuxeo.com/x/moFH" target="_blank">Install</a>
+      the <a href="https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-web-ui" target="_blank">Nuxeo Web UI</a>
+      or <a href="https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-jsf-ui" target="_blank">Nuxeo JSF UI</a>
+      package to benefit from the available user interfaces and use the Nuxeo Platform in your browser.
+    </p>
+    <code>
+      # To install nuxeo-web-ui package
+      $ ./bin/nuxeoctl mp-install nuxeo-web-ui
 
-    # To install nuxeo-jsf-ui
-    $ ./bin/nuxeoctl mp-install nuxeo-jsf-ui
-  </code>
+      # To install nuxeo-jsf-ui
+      $ ./bin/nuxeoctl mp-install nuxeo-jsf-ui
+    </code>
+  </div>
 </div>
 <div class="footer">Copyright &copy; 2001-2017 Nuxeo <a href="https://nuxeo.com" target="_blank">nuxeo.com</a> and
   others.

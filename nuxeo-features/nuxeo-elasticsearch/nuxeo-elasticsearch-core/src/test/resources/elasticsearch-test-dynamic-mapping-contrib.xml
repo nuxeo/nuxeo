@@ -2,7 +2,6 @@
 <component name="org.nuxeo.elasticsearch.test.dynamic.mapping.contrib">
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">
     <elasticSearchIndex name="nxutest" type="doc" repository="test">
-      <settings file="dynamic-settings.json" />
       <mapping file="dynamic-mapping.json" />
     </elasticSearchIndex>
   </extension>

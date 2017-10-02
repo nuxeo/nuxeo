@@ -10,17 +10,12 @@
   if (dbTemplate==null || dbTemplate.equals("")) {
     dbTemplate="default";
   }
-  String dbnosqlTemplate = collector.getConfigurationParam(ConfigurationGenerator.PARAM_TEMPLATE_DBNOSQL_NAME);
-  if (dbnosqlTemplate==null || dbnosqlTemplate.equals("")) {
-      dbnosqlTemplate="none";
-  }
 
   String dbSettingStyle = "display:none";
   String dbWarnStyle = "display:block";
   String dbOracleWarnStyle = "display:none";
-
-  String dbnosqlSettingsStyle = "display:none";
   String dbMongoWarnStyle = "display:none";
+  String dbMongoSettingsStyle = "display:none";
 
   if (!dbTemplate.equals("default")) {
     dbSettingStyle="display:block";
@@ -29,11 +24,10 @@
   if (dbTemplate.equals("oracle")) {
     dbOracleWarnStyle = "display:block";
   }
-  if (!dbnosqlTemplate.equals("none")) {
-    dbnosqlSettingsStyle="display:block";
-  }
-  if (dbnosqlTemplate.equals("mongodb")) {
-      dbMongoWarnStyle = "display:block";
+  if (dbTemplate.equals("mongodb")) {
+    dbMongoWarnStyle = "display:block";
+    dbSettingStyle = "display:none";
+    dbMongoSettingsStyle = "display:block";
   }
 %>
 <script language="javascript">
@@ -49,12 +43,14 @@
         };
 
         var dbValue = document.getElementById("dbTemplateSelector").value;
-        hideOrDisplay("dbSettings", dbValue !== 'default');
+        // handle warns
         hideOrDisplay("dbWarn", dbValue === 'default');
         hideOrDisplay("dbOracleWarn", dbValue === "oracle");
+        hideOrDisplay("dbMongoWarn", dbValue === "mongodb");
 
-        var dbNosqlValue = document.getElementById("dbnosqlTemplateSelector").value;
-        hideOrDisplay("dbnosqlSettings", dbNosqlValue !== 'none');
+        // display settings
+        hideOrDisplay("dbSettings", dbValue !== 'default' && dbValue !== 'mongodb');
+        hideOrDisplay("mongoSettings", dbValue === 'mongodb');
     }
 
     $(function() {
@@ -76,14 +72,15 @@
 <input id="refresh" type='hidden' name="refresh" value="false" />
 
 <div>
-  <h3><fmt:message key="label.db.relational" /></h3>
   <table>
     <tr>
-      <td class="labelCell"><fmt:message key="label.nuxeo.dbtemplate" /></td>
+      <td class="labelCell"><fmt:message key="label.nuxeo.dbtemplate"/></td>
       <td><select id="dbTemplateSelector" name="nuxeo.dbtemplate" onchange="updateDBSettings()">
+        <optgroup label="Test">
           <option <%if ("default".equals(dbTemplate)) {%> selected <%}%> value="default"><fmt:message
-              key="label.dbSettings.default" /></option>
-
+              key="label.dbSettings.default"/></option>
+        </optgroup>
+        <optgroup label="SQL">
           <option <%if ("postgresql".equals(dbTemplate)) {%> selected <%}%> value="postgresql">PostgreSQL</option>
 
           <option <%if ("oracle".equals(dbTemplate)) {%> selected <%}%> value="oracle">Oracle</option>
@@ -91,6 +88,11 @@
           <option <%if ("mssql".equals(dbTemplate)) {%> selected <%}%> value="mssql">MS SQL Server</option>
 
           <option <%if ("mysql".equals(dbTemplate)) {%> selected <%}%> value="mysql">MySQL</option>
+        </optgroup>
+
+        <optgroup label="NoSQL">
+          <option <%if ("mongodb".equals(dbTemplate)) {%> selected <%}%> value="mongodb">MongoDB</option>
+        </optgroup>
       </select></td>
     </tr>
   </table>
@@ -100,6 +102,12 @@
   </div>
   <div id="dbOracleWarn" style="<%=dbOracleWarnStyle%>" class="warnBlock">
     <fmt:message key="label.dbSettings.oracle.warning" />
+  </div>
+  <div id="dbMongoWarn" style="<%=dbMongoWarnStyle%>" class="warnBlock">
+    <fmt:message key="label.dbSettings.mongodb" />
+    <a href="https://doc.nuxeo.com/x/yAEuAQ" target="doc">
+      <fmt:message key="label.dbSettings.doclink" />
+    </a>
   </div>
 
   <div id="dbSettings" style="<%=dbSettingStyle%>">
@@ -127,48 +135,21 @@
         <td><input type="text" name="nuxeo.db.port" value="<%=collector.getConfigurationParam("nuxeo.db.port")%>"
           size="5" /></td>
       </tr>
-      <tr>
-        <td></td>
-        <td class="helpCell"><fmt:message key="label.dbSettings.doc" /> <a href="http://doc.nuxeo.com/x/AYxH"
-            target="doc">
-            <fmt:message key="label.dbSettings.doclink" />
-          </a></td>
-      </tr>
     </table>
-  </div>
-</div>
 
-<div>
-  <h3><fmt:message key="label.db.nosql" /></h3>
-  <table>
-    <tr>
-      <td class="labelCell"><fmt:message key="label.nuxeo.dbtemplate" /></td>
-      <td><select id="dbnosqlTemplateSelector" name="nuxeo.dbnosqltemplate" onchange="updateDBSettings()">
-          <option <%if ("none".equals(dbnosqlTemplate)) {%> selected <%}%> value="none"><fmt:message
-              key="label.nuxeo.dbnosql.none" /></option>
-          <option <%if ("mongodb".equals(dbnosqlTemplate)) {%> selected <%}%> value="mongodb">MongoDB</option>
-      </select></td>
-    </tr>
-  </table>
-
-  <div id="dbMongoWarn" style="<%=dbMongoWarnStyle%>" class="warnBlock">
-    <fmt:message key="label.dbSettings.mongodb" />
-    <a href="https://doc.nuxeo.com/x/yAEuAQ" target="doc">
-      <fmt:message key="label.dbSettings.doclink" />
-    </a>
   </div>
 
-  <div id="dbnosqlSettings" style="<%=dbnosqlSettingsStyle%>">
+  <div id="mongoSettings" style="<%=dbSettingStyle%>">
     <table>
       <tr>
         <td class="labelCell"><fmt:message key="label.nuxeo.mongodb.dbname" /></td>
         <td><input type="text" name="<%=ConfigurationGenerator.PARAM_MONGODB_NAME %>"
-          value="<%=collector.getConfigurationParam(ConfigurationGenerator.PARAM_MONGODB_NAME)%>" /></td>
+                   value="<%=collector.getConfigurationParam(ConfigurationGenerator.PARAM_MONGODB_NAME)%>" /></td>
       </tr>
       <tr>
         <td class="labelCell"><fmt:message key="label.nuxeo.mongodb.server" /></td>
         <td><input type="text" name="<%=ConfigurationGenerator.PARAM_MONGODB_SERVER %>"
-          value="<%=collector.getConfigurationParam(ConfigurationGenerator.PARAM_MONGODB_SERVER)%>" /></td>
+                   value="<%=collector.getConfigurationParam(ConfigurationGenerator.PARAM_MONGODB_SERVER)%>" /></td>
       </tr>
     </table>
   </div>

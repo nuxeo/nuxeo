@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-
 package org.nuxeo.ecm.platform.audit.service;
 
 import java.util.List;
@@ -32,7 +31,7 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
  */
 public interface BaseLogEntryProvider {
 
-    public abstract void addLogEntry(LogEntry entry);
+    void addLogEntry(LogEntry entry);
 
     /**
      * Returns the logs given a doc uuid and a repository id.
@@ -41,20 +40,25 @@ public interface BaseLogEntryProvider {
      * @param repositoryId the repository id
      * @return a list of log entries
      * @since 8.4
+     * @deprecated since 9.3, use {@link AuditBackend} APIs instead.
      */
-    public abstract List<LogEntry> getLogEntriesFor(String uuid, String repositoryId);
+    @Deprecated
+    default List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
+        throw new UnsupportedOperationException("Not implemented yet and deprecated!");
+    }
 
     /**
      * Returns the logs given a doc uuid.
      *
      * @param uuid the document uuid
      * @return a list of log entries
-     * @deprecated since 8.4, use
-     *             {@link (org.nuxeo.ecm.platform.audit.service.BaseLogEntryProvider.getLogEntriesFor(String, String))}
-     *             instead.
+     * @since 8.4
+     * @deprecated since 8.4, use {@link #getLogEntriesFor(String, String))} instead.
      */
     @Deprecated
-    public abstract List<LogEntry> getLogEntriesFor(String uuid);
+    default List<LogEntry> getLogEntriesFor(String uuid) {
+        throw new UnsupportedOperationException("Not implemented yet and deprecated!");
+    }
 
     /**
      * Returns the logs given a doc uuid, a map of filters and a default sort.
@@ -63,12 +67,14 @@ public interface BaseLogEntryProvider {
      * @param filterMap the map of filters to apply
      * @param doDefaultSort the default sort to set
      * @return a list of log entries
-     * @deprecated
+     * @since 8.4
+     * @deprecated since 8.4
      */
     @Deprecated
-    public abstract List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap,
-            boolean doDefaultSort);
+    default List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
+        throw new UnsupportedOperationException("Not implemented yet and deprecated!");
+    }
 
-    public abstract int removeEntries(String eventId, String pathPattern);
+    int removeEntries(String eventId, String pathPattern);
 
 }
