@@ -32,16 +32,17 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.mongodb.seqgen.MongoDBUIDSequencer;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.runtime.mongodb.MongoDBFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, MongoDBFeature.class })
+@Features(MongoDBFeature.class)
+@Deploy("org.nuxeo.ecm.core:OSGI-INF/uidgenerator-service.xml")
 @LocalDeploy({ "org.nuxeo.ecm.core.mongodb.test:OSGI-INF/mongodb-seqgen-test-contrib.xml" })
 public class TestSequenceGeneratorWithMongoDB {
 
