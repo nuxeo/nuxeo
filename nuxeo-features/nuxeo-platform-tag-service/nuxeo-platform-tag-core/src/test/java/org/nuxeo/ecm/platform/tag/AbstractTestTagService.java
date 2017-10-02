@@ -629,6 +629,9 @@ public abstract class AbstractTestTagService {
 
         createTags();
 
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
         file1 = session.getDocument(new PathRef("/file1"));
 
         nxql = nxql("SELECT * FROM File WHERE ecm:tag = 'tag0'");
@@ -704,10 +707,12 @@ public abstract class AbstractTestTagService {
         res.close();
 
         // explicit DISTINCT
-        nxql = nxql("SELECT DISTINCT ecm:tag FROM File");
-        res = session.queryAndFetch(nxql, NXQL.NXQL);
-        assertIterableQueryResult(res, 2, "ecm:tag", "tag1", "tag2");
-        res.close();
+        if (!coreFeature.getStorageConfiguration().isDBS()) {
+            nxql = nxql("SELECT DISTINCT ecm:tag FROM File");
+            res = session.queryAndFetch(nxql, NXQL.NXQL);
+            assertIterableQueryResult(res, 2, "ecm:tag", "tag1", "tag2");
+            res.close();
+        }
 
         nxql = nxql("SELECT ecm:tag FROM File WHERE dc:title = 'file1'");
         res = session.queryAndFetch(nxql, NXQL.NXQL);

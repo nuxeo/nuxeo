@@ -82,6 +82,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableAlias;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.ArraySubQuery;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Transformer of NXQL queries into underlying SQL queries to the actual database.
@@ -181,6 +183,16 @@ public class NXQLQueryMaker implements QueryMaker {
     public static final String ECM_SIMPLE_ACP_STATUS = NXQL.ECM_ACL + "/*/" + NXQL.ECM_ACL_STATUS;
 
     public static final String ECM_TAG_STAR = NXQL.ECM_TAG + "/*";
+
+    /**
+     *@since 9.3
+     */
+    public static final String FACETED_TAG = "nxtag:tags";
+
+    /**
+     *@since 9.3
+     */
+    public static final String FACETED_TAG_LABEL = "label";
 
     protected static final String TABLE_HIER_ALIAS = "_H";
 
@@ -1598,31 +1610,44 @@ public class NXQLQueryMaker implements QueryMaker {
             } else if (name.startsWith(NXQL.ECM_FULLTEXT)) {
                 throw new QueryParseException(NXQL.ECM_FULLTEXT + " must be used as left-hand operand");
             } else if (NXQL.ECM_TAG.equals(name) || name.startsWith(ECM_TAG_STAR)) {
-                /*
-                 * JOIN relation _F1 ON hierarchy.id = _F1.source JOIN hierarchy _F2 ON _F1.id = _F2.id AND
-                 * _F2.primarytype = 'Tagging' and returns _F2.name
-                 */
-                String suffix;
-                if (name.startsWith(ECM_TAG_STAR)) {
-                    suffix = name.substring(ECM_TAG_STAR.length());
-                    if (suffix.isEmpty()) {
-                        // any
-                        suffix = "/*-" + getUniqueJoinIndex();
-                    } else {
-                        // named
-                        suffix = "/*" + suffix;
+                boolean facetedTag = Framework.getService(ConfigurationService.class)
+                                              .isBooleanPropertyTrue("nuxeo.faceted.tag.service.enabled");
+                if (facetedTag) {
+                    String newName = FACETED_TAG + "/*";
+                    if (name.startsWith(ECM_TAG_STAR)) {
+                        newName += name.substring(ECM_TAG_STAR.length()) + "/" + FACETED_TAG_LABEL;
                     }
+                    else {
+                        newName += "1/" + FACETED_TAG_LABEL;
+                    }
+                    return getRegularColumnInfo(newName);
                 } else {
-                    suffix = "";
+                    /*
+                     * JOIN relation _F1 ON hierarchy.id = _F1.source JOIN hierarchy _F2 ON _F1.id = _F2.id AND
+                     * _F2.primarytype = 'Tagging' and returns _F2.name
+                     */
+                    String suffix;
+                    if (name.startsWith(ECM_TAG_STAR)) {
+                        suffix = name.substring(ECM_TAG_STAR.length());
+                        if (suffix.isEmpty()) {
+                            // any
+                            suffix = "/*-" + getUniqueJoinIndex();
+                        } else {
+                            // named
+                            suffix = "/*" + suffix;
+                        }
+                    } else {
+                        suffix = "";
+                    }
+                    String relContextKey = "_tag_relation" + suffix;
+                    Table rel = getFragmentTable(Join.INNER, dataHierTable, relContextKey, RELATION_TABLE, "source", -1,
+                            false, null);
+                    String fragmentName = Model.HIER_TABLE_NAME;
+                    fragmentKey = Model.HIER_CHILD_NAME_KEY;
+                    String hierContextKey = "_tag_hierarchy" + suffix;
+                    table = getFragmentTable(Join.INNER, rel, hierContextKey, fragmentName, Model.MAIN_KEY, -1, false,
+                            TYPE_TAGGING);
                 }
-                String relContextKey = "_tag_relation" + suffix;
-                Table rel = getFragmentTable(Join.INNER, dataHierTable, relContextKey, RELATION_TABLE, "source", -1,
-                        false, null);
-                String fragmentName = Model.HIER_TABLE_NAME;
-                fragmentKey = Model.HIER_CHILD_NAME_KEY;
-                String hierContextKey = "_tag_hierarchy" + suffix;
-                table = getFragmentTable(Join.INNER, rel, hierContextKey, fragmentName, Model.MAIN_KEY, -1, false,
-                        TYPE_TAGGING);
             } else if (name.startsWith(NXQL.ECM_ACL)) {
                 // get index and suffix; we already checked that there are two slashes
                 int i = name.indexOf('/');

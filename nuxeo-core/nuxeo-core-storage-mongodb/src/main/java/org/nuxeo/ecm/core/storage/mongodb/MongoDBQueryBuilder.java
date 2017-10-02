@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.FACETED_TAG;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.FACETED_TAG_LABEL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
@@ -74,6 +76,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
+import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
@@ -969,6 +972,16 @@ public class MongoDBQueryBuilder {
         if (prop.startsWith(NXQL.ECM_PREFIX)) {
             if (prop.startsWith(NXQL.ECM_ACL + "/")) {
                 return parseACP(prop, parts);
+            }
+            if (prop.startsWith(NXQL.ECM_TAG)) {
+                String field;
+                if (prop.equals(NXQL.ECM_TAG)) {
+                    field = FACETED_TAG + ".*1." + FACETED_TAG_LABEL;
+                } else {
+                    field = FACETED_TAG + "." + parts[1] + "." + FACETED_TAG_LABEL;
+                }
+                String queryField = FACETED_TAG + "." + FACETED_TAG_LABEL;
+                return new FieldInfo(prop, field, queryField, queryField, StringType.INSTANCE, true);
             }
             // simple field
             String field = DBSSession.convToInternal(prop);

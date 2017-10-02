@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.storage.dbs;
 
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.api.AbstractSession.DISABLED_ISLATESTVERSION_PROPERTY;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.FACETED_TAG;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.FACETED_TAG_LABEL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_BEGIN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_CREATOR;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_END;
@@ -1476,6 +1478,19 @@ public class DBSSession implements Session {
             String idKey = operand instanceof Reference ? ((Reference) operand).name : NXQL.ECM_UUID;
             idKeyHolder.setValue(idKey);
         }
+
+        // Replace select clause for tags
+        String ecmTag = selectClause.elements.keySet()
+                                             .stream()
+                                             .filter(k -> k.startsWith(NXQL.ECM_TAG))
+                                             .findFirst()
+                                             .orElse(null);
+        String keyTag = null;
+        if (ecmTag != null) {
+            keyTag = FACETED_TAG + "/*1/" + FACETED_TAG_LABEL;
+            selectClause.elements.replace(ecmTag, new Reference(keyTag));
+        }
+
         // Add useful select clauses, used for order by path
         selectClause.elements.putIfAbsent(NXQL.ECM_UUID, new Reference(NXQL.ECM_UUID));
         selectClause.elements.putIfAbsent(NXQL.ECM_PARENTID, new Reference(NXQL.ECM_PARENTID));
@@ -1517,6 +1532,11 @@ public class DBSSession implements Session {
         PartialList<Map<String, Serializable>> projections = repository.queryAndFetch(evaluator, repoOrderByClause,
                 distinctDocuments, repoLimit, repoOffset, countUpTo);
 
+        for (Map<String, Serializable> proj : projections) {
+            if (proj.containsKey(keyTag)) {
+                proj.put(ecmTag, proj.remove(keyTag));
+            }
+        }
         long totalSize = projections.totalSize();
         if (totalSize >= 0) {
             if (countUpTo == -1) {
@@ -1849,7 +1869,6 @@ public class DBSSession implements Session {
         case NXQL.ECM_ACL:
             return KEY_ACP;
         case NXQL.ECM_FULLTEXT:
-        case NXQL.ECM_TAG:
             throw new UnsupportedOperationException(name);
         }
         throw new QueryParseException("No such property: " + name);

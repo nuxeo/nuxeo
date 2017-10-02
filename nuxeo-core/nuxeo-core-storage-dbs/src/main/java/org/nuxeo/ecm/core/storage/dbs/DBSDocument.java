@@ -196,6 +196,16 @@ public class DBSDocument extends BaseDocument<State> {
 
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 
+    /**
+     * @since 9.3
+     */
+    public static final String FACETED_TAG = "nxtag:tags";
+
+    /**
+     * @since 9.3
+     */
+    public static final String FACETED_TAG_LABEL = "label";
+
     public static final Long INITIAL_SYS_CHANGE_TOKEN = Long.valueOf(0);
 
     public static final Long INITIAL_CHANGE_TOKEN = Long.valueOf(0);
@@ -838,7 +848,8 @@ public class DBSDocument extends BaseDocument<State> {
         if (proxyToken == null && targetToken == null) {
             return true;
         }
-        return proxyState.validateUserVisibleChangeToken(proxyToken) && targetState.validateUserVisibleChangeToken(targetToken);
+        return proxyState.validateUserVisibleChangeToken(proxyToken)
+                && targetState.validateUserVisibleChangeToken(targetToken);
     }
 
     @Override
