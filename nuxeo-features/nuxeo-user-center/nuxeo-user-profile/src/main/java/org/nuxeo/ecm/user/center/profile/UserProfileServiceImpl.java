@@ -43,6 +43,7 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.google.common.cache.Cache;
@@ -185,12 +186,32 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
     }
 
     @Override
+    public int getApplicationStartedOrder() {
+        return 101; // after RepositoryService
+    }
+
+    @Override
     public void start(ComponentContext context) {
         if (config == null || config.getDataFileName() == null) {
             return;
         }
+        Framework.getRuntime().getComponentManager().addListener(new ComponentManager.LifeCycleHandler() {
+            @Override
+            public void afterStart(ComponentManager mgr, boolean isResume) {
+                // needs to run after RepositoryInitializationHandlers, run by RepositoryService
+                scheduleImport();
+            }
+
+            @Override
+            public void afterStop(ComponentManager mgr, boolean isStandby) {
+                Framework.getRuntime().getComponentManager().removeListener(this);
+            }
+        });
+    }
+
+    protected void scheduleImport() {
         WorkManager wm = Framework.getService(WorkManager.class);
-        if (wm!=null) {
+        if (wm != null) {
             wm.schedule(new UserProfileImporterWork(), Scheduling.IF_NOT_RUNNING_OR_SCHEDULED, true);
         }
     }
