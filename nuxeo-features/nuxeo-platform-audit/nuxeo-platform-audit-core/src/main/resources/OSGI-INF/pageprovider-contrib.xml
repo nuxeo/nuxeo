@@ -26,6 +26,21 @@
       <pageSize>10</pageSize>
     </genericPageProvider>
 
+    <genericPageProvider name="LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER"
+      class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
+      <whereClause docType="BasicAuditSearch">
+        <fixedPart>
+          log.eventId = 'user_created' OR log.eventId = 'group_created'
+        </fixedPart>
+      </whereClause>
+      <sort column="log.eventDate" ascending="false" />
+      <pageSize>10</pageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="LATEST_CREATED_USERS_OR_GROUPS_PROVIDER"
+      class="org.nuxeo.ecm.platform.audit.provider.LatestCreatedUsersOrGroupsPageProvider">
+    </genericPageProvider>
+
     <genericPageProvider name="DOCUMENT_HISTORY_PROVIDER"
       class="org.nuxeo.ecm.platform.audit.api.document.DocumentHistoryPageProvider">
       <whereClause docType="BasicAuditSearch">
