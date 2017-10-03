@@ -42,10 +42,6 @@ public class BaseUserTest extends BaseTest {
 
     /**
      * Returns the json representation of a group
-     *
-     * @param group
-     * @return
-     * @throws IOException
      */
     protected String getGroupAsJson(NuxeoGroup group) throws IOException {
         RenderingContext ctx = CtxBuilder.get();
@@ -56,10 +52,6 @@ public class BaseUserTest extends BaseTest {
 
     /**
      * Assert that the given node represents a group which properties are given in parameters
-     *
-     * @param groupName
-     * @param groupLabel
-     * @param node
      */
     protected void assertEqualsGroup(String groupName, String groupLabel, JsonNode node) {
         assertEquals("group", node.get("entity-type").getValueAsText());
@@ -69,10 +61,6 @@ public class BaseUserTest extends BaseTest {
 
     /**
      * Returns the Json representation of a user.
-     *
-     * @param user
-     * @return
-     * @throws IOException
      */
     protected String getPrincipalAsJson(NuxeoPrincipal user) throws IOException {
         return MarshallerHelper.objectToJson(user, CtxBuilder.get());
@@ -80,11 +68,6 @@ public class BaseUserTest extends BaseTest {
 
     /**
      * Assert that the given node represents a user which properties are given in parameters.
-     *
-     * @param username
-     * @param firstname
-     * @param lastname
-     * @param node
      */
     protected void assertEqualsUser(String username, String firstname, String lastname, JsonNode node) {
         assertEquals("user", node.get("entity-type").getValueAsText());
