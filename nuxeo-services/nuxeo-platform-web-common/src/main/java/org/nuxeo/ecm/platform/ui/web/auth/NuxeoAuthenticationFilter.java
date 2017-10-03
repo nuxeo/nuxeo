@@ -68,8 +68,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -729,14 +731,6 @@ public class NuxeoAuthenticationFilter implements Filter {
             session.removeAttribute(SESSION_TIMEOUT);
         }
 
-        // avoid redirect if not useful
-        for (String startupPagePath : LoginScreenHelper.getStartupPagePaths()) {
-            if (requestPage.startsWith(startupPagePath)
-                    && LoginScreenHelper.getStartupPagePath().equals(startupPagePath)) {
-                return true;
-            }
-        }
-
         // avoid saving to session is start page is not valid or if it's
         // already in the request params
         if (isStartPageValid(requestPage)) {
@@ -744,6 +738,14 @@ public class NuxeoAuthenticationFilter implements Filter {
                 session.setAttribute(START_PAGE_SAVE_KEY, requestPage);
             }
             return true;
+        }
+
+        // avoid redirect if not useful
+        for (String startupPagePath : LoginScreenHelper.getStartupPagePaths()) {
+            if (requestPage.startsWith(startupPagePath)
+                    && LoginScreenHelper.getStartupPagePath().equals(startupPagePath)) {
+                return true;
+            }
         }
 
         return false;
@@ -788,6 +790,24 @@ public class NuxeoAuthenticationFilter implements Filter {
                     if (SSO_INITIAL_URL_REQUEST_KEY.equals(cookie.getName())) {
                         requestedPage = cookie.getValue();
                         cookie.setPath("/");
+                        // enforce cookie removal
+                        cookie.setMaxAge(0);
+                        httpResponse.addCookie(cookie);
+                    }
+                }
+            }
+        }
+
+        if (requestedPage != null) {
+            // retrieve URL fragment from cookie
+            Cookie[] cookies = httpRequest.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (NXAuthConstants.START_PAGE_FRAGMENT_KEY.equals(cookie.getName())) {
+                        requestedPage = UriBuilder.fromUri(requestedPage)
+                                                  .fragment(cookie.getValue())
+                                                  .build()
+                                                  .toString();
                         // enforce cookie removal
                         cookie.setMaxAge(0);
                         httpResponse.addCookie(cookie);
@@ -976,7 +996,27 @@ public class NuxeoAuthenticationFilter implements Filter {
                 if (descriptor.getNeedStartingURLSaving()) {
                     saveRequestedURLBeforeRedirect(httpRequest, httpResponse);
                 }
-                return Boolean.TRUE.equals(plugin.handleLoginPrompt(httpRequest, httpResponse, baseURL));
+
+                HttpServletResponse response = new HttpServletResponseWrapper(httpResponse) {
+                    @Override
+                    public void sendRedirect(String location) throws IOException {
+                        HttpServletResponse response = (HttpServletResponse) getResponse();
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("<script type=\"text/javascript\">\n");
+                        sb.append("var h = window.location.hash.substring(1) || '';");
+                        sb.append("document.cookie = '" + NXAuthConstants.START_PAGE_FRAGMENT_KEY
+                                + "=' + h.replace(/'/g, '\\\''); + '; path=/';\n");
+                        sb.append("window.location = '" + location + "';\n");
+                        sb.append("</script>");
+                        String script = sb.toString();
+
+                        response.setStatus(SC_UNAUTHORIZED);
+                        response.setContentType("text/html;charset=UTF-8");
+                        response.setContentLength(script.length());
+                        response.getWriter().write(script);
+                    }
+                };
+                return Boolean.TRUE.equals(plugin.handleLoginPrompt(httpRequest, response, baseURL));
             }
         }
 

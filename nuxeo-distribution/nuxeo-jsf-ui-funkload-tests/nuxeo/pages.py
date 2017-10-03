@@ -90,9 +90,7 @@ class BasePage:
         """Log out the current user."""
         fl = self.fl
         fl.get(fl.server_url + '/logout',
-               description="Log out")
-        fl.assert_('login' in fl.getLastUrl(),
-                   "Not redirected to login page.")
+               description="Log out", ok_codes=[302, 401])
         fl.current_login = None
         return LoginPage(self.fl)
 
@@ -126,9 +124,8 @@ class BasePage:
             ['user_password', password],
             ['form_submitted_marker', ''],
             ['Submit', 'Connexion']],
-            description="Login invalid user " + user)
-        fl.assert_('loginFailed=true' in fl.getLastUrl(),
-                   'Invalid login expected for %s:%s.'  %  (user, password))
+            description="Login invalid user " + user,
+            ok_codes = [401])
         return self
 
     def viewDocumentPath(self, path, description=None, raiseOn404=True,
