@@ -68,7 +68,7 @@ import freemarker.template.TemplateException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = SendMail.ID, category = Constants.CAT_NOTIFICATION, label = "Send E-Mail", description = "Send an email using the input document to the specified recipients. You can use the HTML parameter to specify whether you message is in HTML format or in plain text. Also you can attach any blob on the current document to the message by using the comma separated list of xpath expressions 'files'. If you xpath points to a blob list all blobs in the list will be attached. Return back the input document(s). If rollbackOnError is true, the whole chain will be rollbacked if an error occurs while trying to send the email (for instance if no SMTP server is configured), else a simple warning will be logged and the chain will continue.", aliases = {
-        "Notification.SendMail"})
+        "Notification.SendMail" })
 public class SendMail {
 
     protected static final Log log = LogFactory.getLog(SendMail.class);
@@ -116,13 +116,13 @@ public class SendMail {
     @Param(name = "message", widget = Constants.W_MAIL_TEMPLATE)
     protected String message;
 
-    @Param(name = "HTML", required = false, values = {"false"})
+    @Param(name = "HTML", required = false, values = { "false" })
     protected boolean asHtml = false;
 
     @Param(name = "files", required = false)
     protected StringList blobXpath;
 
-    @Param(name = "rollbackOnError", required = false, values = {"true"})
+    @Param(name = "rollbackOnError", required = false, values = { "true" })
     protected boolean rollbackOnError = true;
 
     /**
@@ -131,7 +131,7 @@ public class SendMail {
     @Param(name = "Strict User Resolution", required = false)
     protected boolean isStrict = true;
 
-    @Param(name = "viewId", required = false, values = {"view_documents"})
+    @Param(name = "viewId", required = false, values = { "view_documents" })
     protected String viewId = "view_documents";
 
     @OperationMethod(collector = DocumentModelCollector.class)
@@ -165,7 +165,8 @@ public class SendMail {
             Map<String, Object> map = Scripting.initBindings(ctx);
             // do not use document wrapper which is working only in mvel.
             map.put("Document", doc);
-            map.put("docUrl", createDocUrlWithToken(MailTemplateHelper.getDocumentUrl(doc, viewId), (String) map.get("token")));
+            map.put("docUrl",
+                    createDocUrlWithToken(MailTemplateHelper.getDocumentUrl(doc, viewId), (String) map.get("token")));
             map.put("subject", subject);
             map.put("to", to);
             map.put("toResolved", MailBox.fetchPersonsFromList(to, isStrict));
@@ -199,10 +200,10 @@ public class SendMail {
         }
     }
 
-
     @VisibleForTesting
     protected String createDocUrlWithToken(String documentUrl, String token) {
-        return token != null ? UriBuilder.fromUri(documentUrl).queryParam("token", token).build().toString() : documentUrl;
+        return token != null ? UriBuilder.fromUri(documentUrl).queryParam("token", token).build().toString()
+                : documentUrl;
     }
 
     /**
@@ -276,7 +277,7 @@ public class SendMail {
     }
 
     /**
-     * @param o:     the object to introspect to find a blob
+     * @param o: the object to introspect to find a blob
      * @param blobs: the Blob list where the blobs are put during property introspection
      * @since 5.7
      */
