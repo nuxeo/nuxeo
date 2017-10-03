@@ -46,10 +46,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
 import org.junit.Before;
@@ -84,10 +81,11 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, LogCaptureFeature.class })
+@Features({ CoreFeature.class, LogFeature.class, LogCaptureFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
         "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-permissions-contrib.xml" })
@@ -95,6 +93,9 @@ public class TestSQLRepositorySecurity {
 
     @Inject
     protected CoreFeature coreFeature;
+
+    @Inject
+    protected LogFeature logFeature;
 
     @Inject
     protected CoreSession session;
@@ -820,25 +821,6 @@ public class TestSQLRepositorySecurity {
     @Inject
     LogCaptureFeature.Result logCaptureResults;
 
-    private Priority consoleThresold;
-
-    protected void hideWarnFromConsole() {
-        Logger rootLogger = Logger.getRootLogger();
-        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
-        consoleThresold = consoleAppender.getThreshold();
-        consoleAppender.setThreshold(Level.ERROR);
-    }
-
-    protected void restoreConsoleLog() {
-        if (consoleThresold == null) {
-            return;
-        }
-        Logger rootLogger = Logger.getRootLogger();
-        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
-        consoleAppender.setThreshold(consoleThresold);
-        consoleThresold = null;
-    }
-
     @Test
     @LogCaptureFeature.FilterWith(value = LogDuplicateFilter.class)
     public void shouldRemoveDuplicateACE() throws Exception {
@@ -855,11 +837,11 @@ public class TestSQLRepositorySecurity {
 
         // Using setACEs at your own risk
         ACE[] aces = {ace, ace2, ace, acedup};
-        hideWarnFromConsole();
+        logFeature.hideWarningFromConsoleLog();
         try {
             acl.setACEs(aces);
         } finally {
-            restoreConsoleLog();
+            logFeature.restoreConsoleLog();
         }
         assertEquals(4, acl.size());
         // at least we have a warning about duplicate

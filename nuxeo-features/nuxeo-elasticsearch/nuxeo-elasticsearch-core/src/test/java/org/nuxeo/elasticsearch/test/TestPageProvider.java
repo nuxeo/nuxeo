@@ -47,6 +47,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import java.io.Serializable;
@@ -68,6 +69,9 @@ import static org.junit.Assert.assertNotNull;
         "org.nuxeo.elasticsearch.core:schemas-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml"})
 public class TestPageProvider {
+
+    @Inject
+    protected LogFeature logFeature;
 
     @Inject
     protected CoreSession session;
@@ -108,23 +112,6 @@ public class TestPageProvider {
         }
         Assert.assertEquals(0, esa.getPendingWorkerCount());
         commandProcessed = esa.getTotalCommandProcessed();
-    }
-
-    protected void hideWarningFromConsoleLog() {
-        Logger rootLogger = Logger.getRootLogger();
-        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
-        consoleThresold = consoleAppender.getThreshold();
-        consoleAppender.setThreshold(Level.ERROR);
-    }
-
-    protected void restoreConsoleLog() {
-        if (consoleThresold == null) {
-            return;
-        }
-        Logger rootLogger = Logger.getRootLogger();
-        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
-        consoleAppender.setThreshold(consoleThresold);
-        consoleThresold = null;
     }
 
     @Before
@@ -348,9 +335,9 @@ public class TestPageProvider {
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<?> pp = pps.getPageProvider("INVALID_PP", ppdef, null, null, (long) 0, (long) 0, props);
         assertNotNull(pp);
-        hideWarningFromConsoleLog();
+        logFeature.hideWarningFromConsoleLog();
         List<?> p = pp.getCurrentPage();
-        restoreConsoleLog();
+        logFeature.restoreConsoleLog();
         assertNotNull(p);
         assertEquals(0, p.size());
         assertEquals("Syntax error: Invalid token <ORDER BY> at offset 29", pp.getErrorMessage());
