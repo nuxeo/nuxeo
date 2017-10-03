@@ -6,31 +6,57 @@
 
     <elasticSearchIndex name="audit" type="entry" >
       <mapping>
-{
-  "_all": {
-    "analyzer": "fulltext"
-  },
-  "dynamic_templates": [
-    {
-      "strings": {
-        "match_mapping_type": "string",
-        "mapping": {
-          "type": "keyword",
-          "ignore_above": 256
+      {
+        "_all": {
+          "enabled": false
+        },
+        "dynamic_templates": [
+          {
+            "strings": {
+              "match_mapping_type": "string",
+              "mapping": {
+                "type": "keyword",
+                "copy_to": "all_field",
+                "ignore_above": 256
+              }
+            }
+          }
+        ],
+        "properties": {
+          "all_field": {
+            "type": "text",
+            "analyzer": "fulltext"
+          },
+          "docPath": {
+            "type": "keyword",
+            "fields": {
+              "children": {
+                "type": "text",
+                "analyzer": "path_analyzer"
+              }
+            }
+          },
+          "logDate": {
+            "type": "date"
+          },
+          "eventDate": {
+            "type": "date"
+          },
+          "comment": {
+            "type": "text",
+            "copy_to": "all_field",
+            "fields": {
+              "fulltext": {
+                "analyzer": "fulltext",
+                "type": "text"
+              }
+            }
+          },
+          "id": {
+            "type": "long"
+          }
         }
       }
-    }
-  ],
-  "properties": {
-    "eventDate": {
-      "type": "date"
-    },
-    "logDate": {
-      "type": "date"
-    }
-  }
-}
-
       </mapping>
     </elasticSearchIndex>
 
