@@ -27,35 +27,33 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class})
+@Features({ RuntimeFeature.class })
 public class SendMailTest {
 
-    private final  String TOKEN = "ABC";
+    private final String TOKEN = "ABC";
+
     private SendMail sendMail = new SendMail();
 
     @Test
-    public void shouldReturnNullWhenDocUrlIsNull(){
-       assertNull(sendMail.createDocUrlWithToken(null, null));
+    public void shouldReturnNullWhenDocUrlIsNull() {
+        assertNull(sendMail.createDocUrlWithToken(null, null));
     }
 
     @Test
-    public void shouldReturnDocUrlWhenTokenIsNull(){
+    public void shouldReturnDocUrlWhenTokenIsNull() {
         final String docUrl = "http://www.nuxeo.com";
         assertEquals(docUrl, sendMail.createDocUrlWithToken(docUrl, null));
     }
 
     @Test
-    public void shouldPlaceTokenWhenUrlHasNoFragment(){
+    public void shouldPlaceTokenWhenUrlHasNoFragment() {
         final String docUrl = "http://www.nuxeo.com";
-        assertEquals(docUrl+"?token="+TOKEN, sendMail.createDocUrlWithToken(docUrl, TOKEN));
+        assertEquals(docUrl + "?token=" + TOKEN, sendMail.createDocUrlWithToken(docUrl, TOKEN));
     }
 
-
-
     @Test
-    public void shouldPlaceTokenWhenUrlHasFragment(){
+    public void shouldPlaceTokenWhenUrlHasFragment() {
         final String docUrl = "http://www.nuxeo.com/#/server";
         assertEquals("http://www.nuxeo.com/?token=ABC#/server", sendMail.createDocUrlWithToken(docUrl, TOKEN));
     }
