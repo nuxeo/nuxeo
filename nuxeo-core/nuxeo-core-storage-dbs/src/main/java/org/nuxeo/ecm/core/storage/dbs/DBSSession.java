@@ -1540,7 +1540,9 @@ public class DBSSession implements Session {
             // LIMIT / OFFSET
             if (limit != 0) {
                 int size = projections.size();
-                projections = projections.subList(offset > size ? size - 1 : offset, limit <= size ? limit : size);
+                int fromIndex = offset > size ? size : offset;
+                int toIndex = fromIndex + limit > size ? size : fromIndex + limit;
+                projections = projections.subList(fromIndex, toIndex);
             }
         }
 
