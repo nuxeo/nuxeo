@@ -21,13 +21,15 @@ package org.nuxeo.ecm.automation.core.operations.notification;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.ws.rs.core.UriBuilder;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -200,7 +202,7 @@ public class SendMail {
         }
     }
 
-    @VisibleForTesting
+    // Only visible for testing purposes
     protected String createDocUrlWithToken(String documentUrl, String token) {
         return token != null ? UriBuilder.fromUri(documentUrl).queryParam("token", token).build().toString()
                 : documentUrl;

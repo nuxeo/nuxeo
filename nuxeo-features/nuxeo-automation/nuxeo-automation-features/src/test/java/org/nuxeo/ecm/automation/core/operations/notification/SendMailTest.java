@@ -31,7 +31,7 @@ import static org.junit.Assert.assertNull;
 @Features({ RuntimeFeature.class })
 public class SendMailTest {
 
-    private final String TOKEN = "ABC";
+    protected static final String TOKEN = "ABC";
 
     private SendMail sendMail = new SendMail();
 
@@ -55,6 +55,6 @@ public class SendMailTest {
     @Test
     public void shouldPlaceTokenWhenUrlHasFragment() {
         final String docUrl = "http://www.nuxeo.com/#/server";
-        assertEquals("http://www.nuxeo.com/?token=ABC#/server", sendMail.createDocUrlWithToken(docUrl, TOKEN));
+        assertEquals("http://www.nuxeo.com/?token="+TOKEN+"#/server", sendMail.createDocUrlWithToken(docUrl, TOKEN));
     }
 }
