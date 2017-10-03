@@ -49,6 +49,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import java.util.Arrays;
@@ -94,6 +95,9 @@ public class TestReindex {
 
     @Inject
     LogCaptureFeature.Result logCaptureResult;
+
+    @Inject
+    LogFeature logFeature;
 
     private boolean syncMode = false;
 
@@ -220,33 +224,16 @@ public class TestReindex {
     @LogCaptureFeature.FilterOn(logLevel = "WARN", loggerName = "org.nuxeo.elasticsearch.core.ElasticSearchIndexingImpl")
     public void shouldReindexDocumentWithSmallBulkSize() throws Exception {
         try {
-            hideWarningFromConsoleLog();
+            logFeature.hideWarningFromConsoleLog();
             System.setProperty(INDEX_BULK_MAX_SIZE_PROPERTY, "4096");
             shouldReindexDocument();
             List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
             Assert.assertFalse("Expecting warn message", events.isEmpty());
             Assert.assertTrue(events.get(events.size() - 1).getRenderedMessage().contains("Max bulk size reached"));
         } finally {
-            restoreConsoleLog();
+            logFeature.restoreConsoleLog();
             System.clearProperty(INDEX_BULK_MAX_SIZE_PROPERTY);
         }
-    }
-
-    protected void hideWarningFromConsoleLog() {
-        Logger rootLogger = Logger.getRootLogger();
-        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
-        consoleThresold = consoleAppender.getThreshold();
-        consoleAppender.setThreshold(Level.ERROR);
-    }
-
-    protected void restoreConsoleLog() {
-        if (consoleThresold == null) {
-            return;
-        }
-        Logger rootLogger = Logger.getRootLogger();
-        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
-        consoleAppender.setThreshold(consoleThresold);
-        consoleThresold = null;
     }
 
 }
