@@ -1,6 +1,6 @@
 {
   "_all": {
-    "analyzer": "fulltext"
+    "enabled": false
   },
   "dynamic_templates": [
     {
@@ -8,20 +8,25 @@
         "match_mapping_type": "string",
         "mapping": {
           "type": "keyword",
+          "copy_to": "all_field",
           "ignore_above": 256
         }
       }
     }
   ],
   "properties": {
+    "all_field": {
+      "type": "text",
+      "analyzer": "fulltext"
+    },
     "docPath": {
+      "type": "keyword",
       "fields": {
         "children": {
           "type": "text",
           "analyzer": "path_analyzer"
         }
-      },
-      "type": "keyword"
+      }
     },
     "logDate": {
       "type": "date"
@@ -30,13 +35,14 @@
       "type": "date"
     },
     "comment": {
+      "type": "text",
+      "copy_to": "all_field",
       "fields": {
         "fulltext": {
           "analyzer": "fulltext",
           "type": "text"
         }
-      },
-      "type": "text"
+      }
     },
     "id": {
       "type": "long"
