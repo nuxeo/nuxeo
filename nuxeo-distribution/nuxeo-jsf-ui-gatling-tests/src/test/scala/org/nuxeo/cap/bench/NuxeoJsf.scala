@@ -61,7 +61,7 @@ object NuxeoJsf {
   def logout() = {
     http("Logout")
       .post("/logout")
-      .check(status.is(200)).check(currentLocationRegex(".*login.jsp").exists)
+      .check(status.is(401))
   }
 
   def viewDocumentTab(description: String, path: String, tab: String) = {

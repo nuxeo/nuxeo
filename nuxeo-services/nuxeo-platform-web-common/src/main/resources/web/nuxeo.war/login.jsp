@@ -521,15 +521,12 @@ a.mobileAppLink:hover {
 </div>
 
 <script type="text/javascript">
-  // Since the #! part of an URL is not sent to the server, ensure it is part of the requested URL
-  // and the mobile app links
-  // Required for the Web UI
+  // Build mobile app links if the mobile banner is displayed
   var indexOfHash = window.location.href.indexOf('#!');
   if (indexOfHash > -1) {
     // lastPart = #!/doc/default/f6fa9686-3618-47a8-9419-ff1cc76fc857
     // or lastPart = #!/doc/f6fa9686-3618-47a8-9419-ff1cc76fc857
     var lastPart = window.location.href.substring(indexOfHash);
-    document.getElementById('requestedUrl').value += lastPart;
 
     var docPart;
     var parts = lastPart.split('/');

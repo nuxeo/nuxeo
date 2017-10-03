@@ -46,9 +46,10 @@ class Pages(NuxeoTestCase):
              .login(*self.cred_admin)
              .getRootWorkspaces()
              .logout())
-        # test redirection after login
-        p = BasePage(self).viewDocumentPath("workspaces")
-        p = p.login(*self.cred_admin)
+
+        p = (LoginPage(self)
+             .login(*self.cred_admin)
+             .viewDocumentPath("workspaces"))
         # TODO assert we are on workspaces
         ret = p.viewDocumentPath("workspaces/that/does/not/exists",
                                  raiseOn404=False)
