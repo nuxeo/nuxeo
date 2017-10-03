@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
@@ -166,7 +167,8 @@ public class SendMail {
             Map<String, Object> map = Scripting.initBindings(ctx);
             // do not use document wrapper which is working only in mvel.
             map.put("Document", doc);
-            map.put("docUrl", MailTemplateHelper.getDocumentUrl(doc, viewId));
+            map.put("docUrl",
+                    createDocUrlWithToken(MailTemplateHelper.getDocumentUrl(doc, viewId), (String) map.get("token")));
             map.put("subject", subject);
             map.put("to", to);
             map.put("toResolved", MailBox.fetchPersonsFromList(to, isStrict));
@@ -198,6 +200,12 @@ public class SendMail {
                         ID), e);
             }
         }
+    }
+
+    // Only visible for testing purposes
+    protected String createDocUrlWithToken(String documentUrl, String token) {
+        return token != null ? UriBuilder.fromUri(documentUrl).queryParam("token", token).build().toString()
+                : documentUrl;
     }
 
     /**
