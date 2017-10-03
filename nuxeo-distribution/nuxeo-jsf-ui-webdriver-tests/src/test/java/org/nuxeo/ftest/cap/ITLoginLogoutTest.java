@@ -64,6 +64,7 @@ public class ITLoginLogoutTest extends AbstractTest {
         try (WebClient client = new WebClient()) {
             WebClientOptions options = client.getOptions();
             options.setJavaScriptEnabled(false);
+            options.setThrowExceptionOnFailingStatusCode(false);
             client.getPage(NUXEO_URL + "/logout");
 
             // POST
@@ -78,8 +79,7 @@ public class ITLoginLogoutTest extends AbstractTest {
             // GET
             page = client.getPage(NUXEO_URL + "/nxstartup.faces?user_name=Administrator&user_password=Administrator");
             // Expect redirection to the login page
-            assertEquals(HttpServletResponse.SC_OK, page.getWebResponse().getStatusCode());
-            assertEquals("Nuxeo Platform", page.getTitleText());
+            assertEquals(HttpServletResponse.SC_UNAUTHORIZED, page.getWebResponse().getStatusCode());
             client.getPage(NUXEO_URL + "/logout");
         }
 

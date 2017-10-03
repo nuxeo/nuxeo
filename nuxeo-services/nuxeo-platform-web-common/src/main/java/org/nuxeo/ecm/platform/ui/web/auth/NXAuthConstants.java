@@ -69,6 +69,8 @@ public final class NXAuthConstants {
 
     public static final String SSO_INITIAL_URL_REQUEST_KEY = "sso.initial.url.request";
 
+    public static final String START_PAGE_FRAGMENT_KEY = "nuxeo.start.url.fragment";
+
     public static final String START_PAGE_SAVE_KEY = "Nuxeo5_Start_Page";
 
     /**

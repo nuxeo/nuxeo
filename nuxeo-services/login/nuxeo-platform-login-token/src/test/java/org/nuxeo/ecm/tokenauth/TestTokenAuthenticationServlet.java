@@ -67,8 +67,8 @@ public class TestTokenAuthenticationServlet {
             getMethod = new GetMethod(
                     "http://localhost:18080/authentication/token?applicationName=myFavoriteApp&deviceId=dead-beaf-cafe-babe&permission=rw");
             int status = executeGetMethod(httpClient, getMethod, "Administrator", "badPassword");
-            // Receives 404 because of redirection to error page
-            assertEquals(404, status);
+            // Receives 401 because of because of unauthorized user
+            assertEquals(401, status);
 
             // ------------ Test omitting required parameters ----------------
             // Token acquisition

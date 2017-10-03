@@ -85,10 +85,9 @@ class Nuxeo(NuxeoTestCase):
     def testWriter(self):
         lipsum = self._lipsum
         tag = self.tag
-        # Go to bench folder using redirection after login
-        p = (BasePage(self)
-             .viewDocumentPath(self.dir_path)
-             .login(self.cred_member[0], self.cred_member[1]))
+        p = (LoginPage(self).view().login(self.cred_member[0], self.cred_member[1])
+             .viewDocumentPath(self.dir_path))
+
         # create files and publish
         for i in range(self.nb_write):
             file_path = random.choice(self.files)
