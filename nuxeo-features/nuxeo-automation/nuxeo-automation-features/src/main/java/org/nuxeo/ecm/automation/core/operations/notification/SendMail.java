@@ -279,9 +279,9 @@ public class SendMail {
     }
 
     /**
+     * @since 5.7
      * @param o: the object to introspect to find a blob
      * @param blobs: the Blob list where the blobs are put during property introspection
-     * @since 5.7
      */
     @SuppressWarnings("unchecked")
     private void getBlob(Object o, List<Blob> blobs) {
