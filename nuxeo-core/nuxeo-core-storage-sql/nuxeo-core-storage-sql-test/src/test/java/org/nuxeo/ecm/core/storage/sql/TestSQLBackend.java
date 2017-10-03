@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -1158,12 +1159,20 @@ public class TestSQLBackend extends SQLBackendTestCase {
         foo1.setCollectionProperty("tst:subjects", new String[] { "a" });
         session1.save();
         try {
-            foo2.setCollectionProperty("tst:subjects", new String[] { "a" });
+            foo2.setCollectionProperty("tst:subjects", new String[] { "b" });
             session2.save();
-            fail("Should get concurrent udpate exception");
         } catch (ConcurrentUpdateException e) {
             // low-level duplicates are disabled (through unique indexes or constraints)
+            // no need to test further
+            return;
         }
+        // on read we get both
+        session2.close();
+        session2 = repository.getConnection();
+        root2 = session2.getRootNode();
+        foo2 = session2.getChildNode(root2, "foo", false);
+        String[] subjects = foo2.getCollectionProperty("tst:subjects").getStrings();
+        assertArrayEquals(new String[] { "a", "b" }, subjects);
     }
 
     @Test
