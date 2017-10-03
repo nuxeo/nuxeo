@@ -31,6 +31,9 @@ import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -70,23 +73,33 @@ public abstract class AbstractKeyValueStoreTest {
     protected void sleepForTTLExpiration() {
     }
 
+    protected Set<String> storeKeys() {
+        return store.keyStream().collect(Collectors.toSet());
+    }
+
     @Test
     public void testPutGet() {
         String key = "foo";
 
+        assertEquals(Collections.emptySet(), storeKeys());
         assertNull(store.get(key));
         assertNull(store.getString(key));
         store.put(key, (byte[]) null);
         assertNull(store.get(key));
+        assertEquals(Collections.emptySet(), storeKeys());
+
         store.put(key, BAR_B);
         assertEquals(BAR, new String(store.get(key)));
         assertEquals(BAR, store.getString(key));
+        assertEquals(Collections.singleton(key), storeKeys());
         store.put(key, GEE_B);
         assertEquals(GEE, new String(store.get(key)));
         assertEquals(GEE, store.getString(key));
+        assertEquals(Collections.singleton(key), storeKeys());
         store.put(key, MOO);
         assertEquals(MOO, new String(store.get(key)));
         assertEquals(MOO, store.getString(key));
+        assertEquals(Collections.singleton(key), storeKeys());
 
         // check value is copied on put and get
         byte[] bytes = ZAP.getBytes();
@@ -99,6 +112,7 @@ public abstract class AbstractKeyValueStoreTest {
 
         store.put(key, (String) null);
         assertNull(store.get(key));
+        assertEquals(Collections.emptySet(), storeKeys());
     }
 
     @Test
@@ -175,8 +189,11 @@ public abstract class AbstractKeyValueStoreTest {
         String key = "foo";
         store.put(key, BAR_B);
         assertEquals(BAR, new String(store.get(key)));
+        assertEquals(Collections.singleton(key), storeKeys());
+
         ((KeyValueStoreProvider) store).clear();
         assertNull(store.get(key));
+        assertEquals(Collections.emptySet(), storeKeys());
     }
 
     @Test

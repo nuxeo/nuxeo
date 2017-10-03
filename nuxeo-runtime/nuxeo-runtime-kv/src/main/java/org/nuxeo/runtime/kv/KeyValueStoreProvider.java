@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.kv;
 
+import java.util.stream.Stream;
+
 /**
  * Key/Value Store SPI.
  *
@@ -31,6 +33,16 @@ public interface KeyValueStoreProvider extends KeyValueStore {
      * @param descriptor the store provider descriptor
      */
     void initialize(KeyValueStoreDescriptor descriptor);
+
+    /**
+     * Returns a {@link Stream} of the keys contained in this Key/Value store provider.
+     * <p>
+     * This operation may be slow and should only be used for management or debug purposes.
+     *
+     * @return the stream of keys
+     * @since 9.3
+     */
+    Stream<String> keyStream();
 
     /**
      * Closes this Key/Value store provider.
