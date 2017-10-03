@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import javax.inject.Inject;
@@ -387,6 +388,15 @@ public class UserGroupTest extends BaseUserTest {
         // Then it doesn't contain the password at all
         assertNull("", node.get("properties").get("password"));
 
+    }
+
+    @Test
+    public void itCanFetchATransientUser() throws IOException {
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/user/transient/foo@bar.com/666")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEqualsUser("transient/foo@bar.com/666", "foo@bar.com", "null", "foo@bar.com", node);
+        }
     }
 
     /**
