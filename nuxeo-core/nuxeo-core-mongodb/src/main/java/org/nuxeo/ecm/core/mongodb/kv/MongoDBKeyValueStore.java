@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.mongodb.kv;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Updates.set;
 import static com.mongodb.client.model.Updates.unset;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -28,6 +29,8 @@ import java.nio.charset.CharacterCodingException;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -98,6 +101,12 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
         // make sure TTL works by creating the appropriate index
         IndexOptions indexOptions = new IndexOptions().expireAfter(Long.valueOf(0), TimeUnit.SECONDS);
         coll.createIndex(new Document(TTL_KEY, ONE), indexOptions);
+    }
+
+    @Override
+    public Stream<String> keyStream() {
+        return StreamSupport.stream(coll.find().projection(include(ID_KEY)).spliterator(), false)
+                            .map(doc -> doc.getString(ID_KEY));
     }
 
     @Override

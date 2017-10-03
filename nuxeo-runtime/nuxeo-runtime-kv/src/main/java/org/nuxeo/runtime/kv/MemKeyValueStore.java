@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import java.util.stream.Stream;
 
 import net.jodah.expiringmap.ExpiringMap;
 
@@ -53,6 +54,11 @@ public class MemKeyValueStore extends AbstractKeyValueStoreProvider {
     @Override
     public void initialize(KeyValueStoreDescriptor descriptor) {
         this.name = descriptor.name;
+    }
+
+    @Override
+    public Stream<String> keyStream() {
+        return map.keySet().stream();
     }
 
     @Override

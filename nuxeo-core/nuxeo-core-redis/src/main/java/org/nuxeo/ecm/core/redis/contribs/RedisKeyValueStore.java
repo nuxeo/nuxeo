@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -83,6 +85,14 @@ public class RedisKeyValueStore extends AbstractKeyValueStoreProvider {
         } catch (IOException e) {
             throw new NuxeoException("Cannot load Redis script", e);
         }
+    }
+
+    @Override
+    public Stream<String> keyStream() {
+        RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
+        int namespaceLength = namespace.length();
+        Set<String> keys = redisExecutor.execute(jedis -> jedis.keys(namespace + "*"));
+        return keys.stream().map(key -> key.substring(namespaceLength));
     }
 
     @Override
