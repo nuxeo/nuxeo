@@ -7,6 +7,9 @@ nuxeo.mongodb.server=localhost:27017
 nuxeo.mongodb.dbname=nuxeo
 nuxeo.quartz.enable=true
 
+## MongoDB directories activation
+nuxeo.mongodb.directories.enabled=true
+
 ## Cache Configuration ##
 nuxeo.dbs.cache.enabled=true
 nuxeo.dbs.cache.maxSize=1000
