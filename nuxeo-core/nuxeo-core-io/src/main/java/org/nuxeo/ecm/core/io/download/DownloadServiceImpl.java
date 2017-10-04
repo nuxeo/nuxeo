@@ -62,6 +62,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.impl.blob.AsyncBlob;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
@@ -610,6 +611,12 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     protected String fixXPath(String xpath) {
         // Hack for Flash Url wich doesn't support ':' char
         return xpath == null ? null : xpath.replace(';', ':');
+    }
+
+    @Override
+    public Blob resolveBlob(DocumentModel doc) {
+        BlobHolderAdapterService blobHolderAdapterService = Framework.getService(BlobHolderAdapterService.class);
+        return blobHolderAdapterService.getBlobHolderAdapter(doc, "download").getBlob();
     }
 
     @Override

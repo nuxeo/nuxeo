@@ -41,6 +41,15 @@ public interface BlobHolderAdapterService {
     BlobHolder getBlobHolderAdapter(DocumentModel doc);
 
     /**
+     * Get a blob holder adapter instantiated by given factory name.
+     *
+     * @param factoryName the factory name
+     * @return a blob holder adapter
+     * @since 9.3
+     */
+    BlobHolder getBlobHolderAdapter(DocumentModel doc, String factoryName);
+
+    /**
      * Returns an external blob from given uri.
      *
      * @see ExternalBlobAdapter
