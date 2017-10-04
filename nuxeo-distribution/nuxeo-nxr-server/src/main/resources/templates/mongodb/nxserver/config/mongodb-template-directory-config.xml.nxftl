@@ -2,6 +2,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.template.directory.mongodb">
 
+  <#if "${nuxeo.mongodb.directories.enabled}" == "true">
   <require>org.nuxeo.ecm.directories</require>
   <require>org.nuxeo.template.directory.sql</require>
   <extension target="org.nuxeo.directory.mongodb.MongoDBDirectoryFactory" point="directories">
@@ -17,6 +18,9 @@
     <directory name="template-group" template="true" extends="template-directory" />
 
   </extension>
+  <#else>
+  <!-- Directories are stored in the SQL backend -->
+  </#if>
 
 </component>
 </#escape>
