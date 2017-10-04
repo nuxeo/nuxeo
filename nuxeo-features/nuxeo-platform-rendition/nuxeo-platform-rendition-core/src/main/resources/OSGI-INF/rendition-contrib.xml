@@ -43,6 +43,7 @@
         <filter-id>folder</filter-id>
       </filters>
     </renditionDefinition>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"

@@ -141,7 +141,8 @@ public class TestRenditionService {
     public void testDeclaredRenditionDefinitions() {
         List<RenditionDefinition> renditionDefinitions = renditionService.getDeclaredRenditionDefinitions();
         assertRenditionDefinitions(renditionDefinitions, PDF_RENDITION_DEFINITION,
-                "renditionDefinitionWithUnknownOperationChain", "zipExport", "zipTreeExport", "zipTreeExportLazily");
+                "renditionDefinitionWithUnknownOperationChain", "mainBlob", "zipExport", "zipTreeExport",
+                "zipTreeExportLazily");
 
         RenditionDefinition rd = renditionDefinitions.stream()
                                                      .filter(renditionDefinition -> PDF_RENDITION_DEFINITION.equals(
@@ -181,7 +182,7 @@ public class TestRenditionService {
 
         // rendition should be available now
         renditionDefinitions = renditionService.getAvailableRenditionDefinitions(file);
-        assertEquals(availableRenditionDefinitionCount + 1, renditionDefinitions.size());
+        assertEquals(availableRenditionDefinitionCount + 2, renditionDefinitions.size());
 
     }
 

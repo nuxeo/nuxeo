@@ -51,4 +51,37 @@
     <object class="org.nuxeo.ecm.platform.rendition.service.StoredRenditionManagerDescriptor" />
   </extension-point>
 
+  <extension-point name="defaultRendition">
+    <documentation>
+      Defines the default rendition of a given document. Contributions are of the form:
+      <code>
+        <defaultRendition>
+          <script language="JavaScript">
+            function run() {
+              if (CurrentUser.getName() != "bob") {
+                return null;
+              }
+              if (!CurrentUser.getGroups().contains("members")) {
+                return 'aRenditionName`;
+              }
+              if (Document.getPropertyValue("dc:format") != "pdf") {
+                return 'pdfRendition';
+              }
+              if (Reason == "download" || doc.getType() == "Picture") {
+                return 'watermarkedImageRendition';
+              }
+              return 'aDefaultRendition';
+          </script>
+        </defaultRendition>
+      </code>
+      The language can be any JVM scripting language, the default is "JavaScript".
+
+      The script must define a "run()" function that returns a string which is the name of the rendition to be used.
+      The method will get called with the following global context (some values may be null):
+      Document (DocumentModel) CurrentUser (NuxeoPrincipal),
+      Reason (String), Infos (Map).
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.rendition.service.DefaultRenditionDescriptor" />
+  </extension-point>
+
 </component>
