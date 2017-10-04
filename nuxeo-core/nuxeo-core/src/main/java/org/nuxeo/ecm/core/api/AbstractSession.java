@@ -632,6 +632,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentModel createDocumentModel(String parentPath, String name, String typeName) {
+        if (parentPath == null && name == null) {
+            return createDocumentModel(typeName);
+        }
+
         Map<String, Serializable> options = new HashMap<>();
         options.put(CoreEventConstants.PARENT_PATH, parentPath);
         options.put(CoreEventConstants.DOCUMENT_MODEL_ID, name);
