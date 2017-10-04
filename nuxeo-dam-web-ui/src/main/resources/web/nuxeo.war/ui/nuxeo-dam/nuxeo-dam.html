@@ -14,6 +14,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
+
+<link rel="import" href="nuxeo-picture-document-page.html">
+
 <nuxeo-slot-content name="damSearchMenuButtons" slot="DRAWER_ITEMS" order="45">
   <template>
     <nuxeo-menu-icon id="assetsSearchButton" name="assetsSearch" icon="icons:perm-media" label="dam.assets.heading">
@@ -26,5 +29,15 @@ limitations under the License.
     <nuxeo-search-form name="assetsSearch" search-name="assets" auto display-auto-control
                        provider="assets_search"
                        schemas="dublincore,common,uid,thumbnail"></nuxeo-search-form>
+  </template>
+</nuxeo-slot-content>
+
+<nuxeo-slot-content name="pictureDocumentViewPage" slot="DOCUMENT_VIEWS_PAGES" order="5">
+  <template>
+    <nuxeo-filter document="[[document]]" type="Picture">
+      <template>
+        <nuxeo-picture-document-page name="view" document="[[document]]"></nuxeo-picture-document-page>
+      </template>
+    </nuxeo-filter>
   </template>
 </nuxeo-slot-content>
