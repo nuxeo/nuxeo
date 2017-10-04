@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.restapi.server.jaxrs.adapters.EmptyDocumentAdapter;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
@@ -78,7 +79,11 @@ public class RepositoryObject extends DefaultObject {
         }
 
         return newObject("bulk", new DocumentModelListImpl(docs));
+    }
 
+    @Path("@" + EmptyDocumentAdapter.NAME)
+    public Object getEmptyDocumentModel() {
+        return newObject("emptyDocumentAdapter");
     }
 
     /**

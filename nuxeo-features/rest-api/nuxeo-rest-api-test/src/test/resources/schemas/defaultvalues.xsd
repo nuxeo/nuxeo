@@ -12,4 +12,22 @@
   <xs:element name="simpleWithDefault" type="xs:string" default="value" />
   <xs:element name="simpleWithoutDefault" type="xs:string" />
 
+  <xs:complexType name="complexTypeWithoutDefault">
+    <xs:sequence>
+      <xs:element name="foo" type="xs:string" />
+      <xs:element name="bar" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="complexWithoutDefault" type="nxs:complexTypeWithoutDefault" />
+
+  <xs:complexType name="complexTypeWithDefault">
+    <xs:sequence>
+      <xs:element name="foo" type="xs:string" />
+      <xs:element name="bar" type="xs:string" default="value" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="complexWithDefault" type="nxs:complexTypeWithDefault" />
+
 </xs:schema>
