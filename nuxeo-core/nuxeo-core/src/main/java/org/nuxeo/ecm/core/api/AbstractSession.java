@@ -2467,7 +2467,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentModel getOrCreateDocument(DocumentModel docModel) {
-        return getOrCreateDocument(docModel, null);
+        return getOrCreateDocument(docModel, Function.identity());
     }
 
     @Override
@@ -2480,27 +2480,22 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
         // handle placeless documents, no locks are needed in this case
         if (docModel.getParentRef() == null) {
-            DocumentModel doc = createDocument(docModel);
-            if (postCreate != null) {
-                return postCreate.apply(doc);
-            }
-            return doc;
+            return postCreate.apply(createDocument(docModel));
         }
         String key = computeKeyForAtomicCreation(docModel);
         return LockHelper.doAtomically(key, () -> {
             if (exists(ref)) {
                 return getDocument(ref);
             }
-            DocumentModel doc = createDocument(docModel);
-            if (postCreate != null) {
-                return postCreate.apply(doc);
-            }
-            return doc;
+            return postCreate.apply(createDocument(docModel));
         });
     }
 
     protected String computeKeyForAtomicCreation(DocumentModel docModel) {
         String repositoryName = docModel.getRepositoryName();
+        if (repositoryName == null) {
+            repositoryName = getRepositoryName();
+        }
         String parentId = getDocument(docModel.getParentRef()).getId();
         String name = docModel.getName();
         return repositoryName + "-" + parentId + "-" + name;

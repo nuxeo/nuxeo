@@ -228,7 +228,23 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         if (session.exists(rootref)) {
             return rootref;
         }
-        return new PathRef(new UnrestrictedRootCreator(rootref, username, session).create().getPathAsString());
+
+        String path = CoreInstance.doPrivileged(session, s -> {
+            DocumentModel docModel;
+            try {
+                DocumentModel uwsRootModel = doCreateUserWorkspacesRoot(session, rootref);
+                docModel = s.getOrCreateDocument(uwsRootModel, doc -> initCreateUserWorkspacesRoot(s, doc));
+            } catch (DocumentNotFoundException e) {
+                // domain may have been removed !
+                targetDomainName = null;
+                PathRef ref = new PathRef(computePathUserWorkspaceRoot(s, username, null));
+                DocumentModel rootModel = doCreateUserWorkspacesRoot(s, ref);
+                docModel = s.getOrCreateDocument(rootModel, doc -> initCreateUserWorkspacesRoot(s, doc));
+            }
+            return docModel.getPathAsString();
+        });
+
+        return new PathRef(path);
     }
 
     protected PathRef getExistingUserWorkspace(CoreSession session, PathRef rootref, Principal principal,
@@ -251,10 +267,12 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         }
         if (freeRef != null) {
             PathRef ref = freeRef; // effectively final
-            CoreInstance.doPrivileged(session, s -> {
-                doCreateUserWorkspace(s, ref, principal, username);
+            String path = CoreInstance.doPrivileged(session, s -> {
+                DocumentModel uwsModel = doCreateUserWorkspace(session, ref, username);
+                return s.getOrCreateDocument(uwsModel, doc -> initCreateUserWorkspace(s, doc, username))
+                        .getPathAsString();
             });
-            return freeRef;
+            return new PathRef(path);
         }
         // couldn't find anything, because we lacked permission to existing docs (collision)
         throw new DocumentSecurityException(username);
@@ -306,7 +324,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         return uws.getPath().isPrefixOf(doc.getPath());
     }
 
-    protected String buildUserWorkspaceTitle(Principal principal, String userName) {
+    protected String buildUserWorkspaceTitle(String userName) {
         if (userName == null) {// avoid looking for UserManager for nothing
             return null;
         }
@@ -375,43 +393,6 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
                 .fireEvent(event);
     }
 
-    protected class UnrestrictedRootCreator extends UnrestrictedSessionRunner {
-        public UnrestrictedRootCreator(PathRef ref, String username, CoreSession session) {
-            super(session);
-            this.ref = ref;
-            this.username = username;
-        }
-        PathRef ref;
-        final String username;
-        DocumentModel doc;
-
-        @Override
-        public void run() {
-            if (session.exists(ref)) {
-                doc = session.getDocument(ref);
-            } else {
-                try {
-                    doc = doCreateUserWorkspacesRoot(session, ref);
-                } catch (DocumentNotFoundException e) {
-                    // domain may have been removed !
-                    targetDomainName = null;
-                    ref = new PathRef(computePathUserWorkspaceRoot(session, username, null));
-                    doc = doCreateUserWorkspacesRoot(session, ref);
-                }
-            }
-            doc.detach(true);
-            assert (doc.getPathAsString()
-                    .equals(ref.toString()));
-        }
-
-        DocumentModel create() {
-            synchronized (UnrestrictedRootCreator.class) {
-                runUnrestricted();
-                return doc;
-            }
-        }
-    }
-
     protected class UnrestrictedUserWorkspaceFinder extends UnrestrictedSessionRunner {
 
         protected DocumentModel userWorkspace;
@@ -475,7 +456,12 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
 
     protected abstract DocumentModel doCreateUserWorkspacesRoot(CoreSession unrestrictedSession, PathRef rootRef);
 
+    protected abstract DocumentModel initCreateUserWorkspacesRoot(CoreSession unrestrictedSession, DocumentModel doc);
+
     protected abstract DocumentModel doCreateUserWorkspace(CoreSession unrestrictedSession, PathRef wsRef,
-            Principal principal, String userName);
+            String username);
+
+    protected abstract DocumentModel initCreateUserWorkspace(CoreSession unrestrictedSession, DocumentModel doc,
+            String username);
 
 }

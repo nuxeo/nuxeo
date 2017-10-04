@@ -76,6 +76,7 @@ import com.google.inject.Binder;
 @Deploy({ "org.nuxeo.runtime.management", //
         "org.nuxeo.runtime.metrics", //
         "org.nuxeo.runtime.reload", // required by #CoreDeployer
+        "org.nuxeo.runtime.kv", //
         "org.nuxeo.ecm.core.schema", //
         "org.nuxeo.ecm.core.query", //
         "org.nuxeo.ecm.core.api", //
