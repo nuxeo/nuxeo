@@ -63,12 +63,7 @@ public class Watch {
     }
 
     public Watch start(String interval) {
-        TimeInterval ti = intervals.get(interval);
-        if (ti == null) {
-            ti = new TimeInterval(interval);
-            intervals.put(interval, ti);
-        }
-        ti.start();
+        intervals.computeIfAbsent(interval, TimeInterval::new).start();
         return this;
     }
 
@@ -87,7 +82,7 @@ public class Watch {
     public long elapsed(String name, TimeUnit unit) {
         TimeInterval ti = intervals.get(name);
         if (ti != null) {
-            return total.elapsed(unit);
+            return ti.elapsed(unit);
         }
         return 0;
     }
@@ -102,14 +97,18 @@ public class Watch {
 
     public static class TimeInterval implements Comparable<TimeInterval> {
 
-        public String name;
+        protected final String name;
 
-        public long t0;
+        protected long t0;
 
-        public long t1;
+        protected long t1;
 
         public TimeInterval(String name) {
             this.name = name;
+        }
+
+        public String getName() {
+            return name;
         }
 
         /**
@@ -129,6 +128,10 @@ public class Watch {
 
         protected void stop() {
             this.t1 = System.nanoTime();
+        }
+
+        public boolean isStopped() {
+            return t1 != 0;
         }
 
         @Override

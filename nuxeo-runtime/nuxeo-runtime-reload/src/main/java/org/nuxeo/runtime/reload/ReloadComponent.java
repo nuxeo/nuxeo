@@ -175,6 +175,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     @Override
     public void deployBundles(List<File> files, boolean reloadResources) throws BundleException {
+        long begin = System.currentTimeMillis();
         List<String> missingNames = files.stream()
                                          .filter(file -> getOSGIBundleName(file) == null)
                                          .map(File::getAbsolutePath)
@@ -223,14 +224,16 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
 
         if (log.isInfoEnabled()) {
-            StringBuilder builder = new StringBuilder("After deploy bundles\n");
+            StringBuilder builder = new StringBuilder("After deploy bundles.\n");
             Framework.getRuntime().getStatusMessage(builder);
             log.info(builder.toString());
+            log.info(String.format("Hot deploy was done in %s ms.", System.currentTimeMillis() - begin));
         }
     }
 
     @Override
     public void undeployBundles(List<String> bundleNames, boolean reloadResources) throws BundleException {
+        long begin = System.currentTimeMillis();
         if (log.isInfoEnabled()) {
             StringBuilder builder = new StringBuilder("Before undeploy bundles\n");
             Framework.getRuntime().getStatusMessage(builder);
@@ -273,9 +276,10 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
 
         if (log.isInfoEnabled()) {
-            StringBuilder builder = new StringBuilder("After undeploy bundles\n");
+            StringBuilder builder = new StringBuilder("After undeploy bundles.\n");
             Framework.getRuntime().getStatusMessage(builder);
             log.info(builder.toString());
+            log.info(String.format("Hot undeploy was done in %s ms.", System.currentTimeMillis() - begin));
         }
     }
 
@@ -331,6 +335,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     @Override
     public void runDeploymentPreprocessor() throws IOException {
+        long begin = System.currentTimeMillis();
         log.debug("Start running deployment preprocessor");
         String rootPath = Environment.getDefault().getRuntimeHome().getAbsolutePath();
         File root = new File(rootPath);
@@ -340,6 +345,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         // and predeploy
         processor.predeploy();
         log.debug("Deployment preprocessing done");
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Deployment preprocessor was done in %s ms.", System.currentTimeMillis() - begin));
+        }
     }
 
     protected static File getAppDir() {
