@@ -58,24 +58,6 @@ public class DefaultUserWorkspaceServiceImpl extends AbstractUserWorkspaceImpl i
         return getComponent().getConfiguration().getUserWorkspaceType();
     }
 
-    protected void setUserWorkspaceRootACL(DocumentModel doc) {
-        ACP acp = new ACPImpl();
-        ACE denyEverything = new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
-        ACL acl = new ACLImpl();
-        acl.setACEs(new ACE[] { denyEverything });
-        acp.addACL(acl);
-        doc.setACP(acp, true);
-    }
-
-    protected void setUserWorkspaceACL(DocumentModel doc, String userName) {
-        ACP acp = new ACPImpl();
-        ACE grantEverything = new ACE(userName, SecurityConstants.EVERYTHING, true);
-        ACL acl = new ACLImpl();
-        acl.setACEs(new ACE[] { grantEverything });
-        acp.addACL(acl);
-        doc.setACP(acp, true);
-    }
-
     @Override
     protected DocumentModel doCreateUserWorkspacesRoot(CoreSession unrestrictedSession, PathRef rootRef) {
         String parentPath = new Path(rootRef.toString()).removeLastSegments(1).toString();
@@ -83,34 +65,49 @@ public class DefaultUserWorkspaceServiceImpl extends AbstractUserWorkspaceImpl i
                 UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT, getUserWorkspaceRootType());
         doc.setProperty("dublincore", "title", UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT);
         doc.setProperty("dublincore", "description", "");
-        doc = unrestrictedSession.createDocument(doc);
-
-        setUserWorkspaceRootACL(doc);
 
         return doc;
     }
 
     @Override
-    protected DocumentModel doCreateUserWorkspace(CoreSession unrestrictedSession, PathRef wsRef, Principal principal,
-            String userName) {
+    protected DocumentModel initCreateUserWorkspacesRoot(CoreSession unrestrictedSession, DocumentModel doc) {
+        ACP acp = new ACPImpl();
+        ACE denyEverything = new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
+        ACL acl = new ACLImpl();
+        acl.setACEs(new ACE[] { denyEverything });
+        acp.addACL(acl);
 
+        doc.setACP(acp, true);
+        return doc;
+    }
+
+    @Override
+    protected DocumentModel doCreateUserWorkspace(CoreSession unrestrictedSession, PathRef wsRef, String userName) {
         String parentPath = new Path(wsRef.toString()).removeLastSegments(1).toString();
         String wsName = new Path(wsRef.toString()).lastSegment();
         DocumentModel doc = unrestrictedSession.createDocumentModel(parentPath, wsName, getUserWorkspaceType());
-
-        doc.setProperty("dublincore", "title", buildUserWorkspaceTitle(principal, userName));
+        doc.setProperty("dublincore", "title", buildUserWorkspaceTitle(userName));
         doc.setProperty("dublincore", "description", "");
-        doc = unrestrictedSession.createDocument(doc);
 
-        setUserWorkspaceACL(doc, userName);
+        return doc;
+    }
 
-        /**
-         * @since 5.7
-         */
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put("username", userName);
+    @Override
+    protected DocumentModel initCreateUserWorkspace(CoreSession unrestrictedSession, DocumentModel doc,
+            String username) {
+        ACP acp = new ACPImpl();
+        ACE grantEverything = new ACE(username, SecurityConstants.EVERYTHING, true);
+        ACL acl = new ACLImpl();
+        acl.setACEs(new ACE[] { grantEverything });
+        acp.addACL(acl);
+
+        doc.setACP(acp, true);
+
+        Map<String, Serializable> properties = new HashMap<>();
+        properties.put("username", username);
         notifyEvent(unrestrictedSession, doc, (NuxeoPrincipal) unrestrictedSession.getPrincipal(),
                 DocumentEventTypes.USER_WORKSPACE_CREATED, properties);
+
         return doc;
     }
 
