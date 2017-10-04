@@ -183,6 +183,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     }
 
     protected synchronized void reloadDevBundles(DevBundle[] bundles) throws ReflectiveOperationException {
+        long begin = System.currentTimeMillis();
 
         if (devBundles != null) { // clear last context
             try {
@@ -200,6 +201,9 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
             } finally {
                 devBundles = bundles;
             }
+        }
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Hot reload has been run in %s ms", System.currentTimeMillis() - begin));
         }
     }
 

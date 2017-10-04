@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -74,6 +76,8 @@ import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
+import org.nuxeo.runtime.util.Watch;
+import org.nuxeo.runtime.util.Watch.TimeInterval;
 
 /**
  * Manages JSF views for Package Management.
@@ -419,6 +423,7 @@ public class AppCenterViewsManager implements Serializable {
                     status.addError(String.format("Cannot perform validation: remote package '%s' not found", packageId));
                     return;
                 }
+
                 PackageDependency[] pkgDeps = remotePkg.getDependencies();
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("%s target platforms: %s", remotePkg,
@@ -462,12 +467,14 @@ public class AppCenterViewsManager implements Serializable {
 
             // Effective install
             if (Framework.isDevModeSet()) {
+                Watch watch = new Watch().start();
                 try {
                     PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
                     LocalPackage pkg = pus.getPackage(packageId);
 
                     // Uninstall and/or remove if needed
                     if (pkg != null) {
+                        watch.start("uninstall");
                         log.info(String.format("Removing package %s before update...", pkg));
                         if (pkg.getPackageState().isInstalled()) {
                             // First remove it to allow SNAPSHOT upgrade
@@ -481,9 +488,11 @@ public class AppCenterViewsManager implements Serializable {
                             }
                         }
                         pus.removePackage(packageId);
+                        watch.stop("uninstall");
                     }
 
                     // Download
+                    watch.start("download");
                     setStatus(SnapshotStatus.downloading, null);
                     DownloadingPackage downloadingPkg = pm.download(packageId);
                     while (!downloadingPkg.isCompleted()) {
@@ -493,8 +502,10 @@ public class AppCenterViewsManager implements Serializable {
                     }
                     studioSnapshotDownloadProgress = downloadingPkg.getDownloadProgress();
                     setStatus(SnapshotStatus.saving, null);
+                    watch.stop("download");
 
                     // Install
+                    watch.start("install");
                     setStatus(SnapshotStatus.installing, null);
                     log.info("Installing " + packageId);
                     pkg = pus.getPackage(packageId);
@@ -514,6 +525,7 @@ public class AppCenterViewsManager implements Serializable {
                     pkg = pus.getPackage(packageId);
                     lastUpdate = pus.getInstallDate(packageId);
                     setStatus(SnapshotStatus.completed, null);
+                    watch.stop("install");
                 } catch (ConnectServerError e) {
                     setStatus(SnapshotStatus.error, e.getMessage());
                 } catch (InterruptedException e) {
@@ -523,6 +535,21 @@ public class AppCenterViewsManager implements Serializable {
                 } catch (PackageException e) {
                     log.error("Error while installing studio snapshot", e);
                     setStatus(SnapshotStatus.error, translate("label.studio.update.installation.error", e.getMessage()));
+                } finally {
+                    watch.stop();
+                    if (log.isInfoEnabled()) {
+                        StringBuilder message = new StringBuilder();
+                        message.append("Hot reload has been done in ")
+                               .append(watch.getTotal().elapsed(TimeUnit.MILLISECONDS))
+                               .append(" ms, detailed steps:\n");
+                        Stream.of(watch.getIntervals()).filter(TimeInterval::isStopped).forEach(
+                                i -> message.append("\n- ")
+                                            .append(i.getName())
+                                            .append(": ")
+                                            .append(i.elapsed(TimeUnit.MILLISECONDS))
+                                            .append(" ms"));
+                        log.info(message.toString());
+                    }
                 }
             } else {
                 InstallAfterRestart.addPackageForInstallation(packageId);
