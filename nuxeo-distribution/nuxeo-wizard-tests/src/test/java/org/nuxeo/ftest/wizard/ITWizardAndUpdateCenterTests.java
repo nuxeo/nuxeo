@@ -48,15 +48,15 @@ import org.nuxeo.functionaltests.pages.wizard.WizardPage;
 
 public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
-    protected static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.0.6";
+    private static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.0.6";
 
-    protected static final String STUDIO_PACKAGE_ID_FIRST = "junit4tester-SANDBOX-0.0.1";
+    private static final String STUDIO_PACKAGE_ID_FIRST = "junit4tester-SANDBOX-0.0.1";
 
-    protected static final String STUDIO_PACKAGE_ID_SECOND = "junit4tester-SANDBOX-0.0.2";
+    private static final String STUDIO_PACKAGE_ID_SECOND = "junit4tester-SANDBOX-0.0.2";
 
-    protected static final String SMTP_SERVER_HOST = "someSMTPServer.com";
+    private static final String SMTP_SERVER_HOST = "someSMTPServer.com";
 
-    protected static final String SMTP_SERVER_PORT = "27";
+    private static final String SMTP_SERVER_PORT = "27";
 
     protected static final String NX_LOGIN = "Administrator";
 
@@ -68,7 +68,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
     protected static final String CONNECT_PROJECT_SELECTOR_UUID = "575954be-6027-45b7-8cd1-77a6bcb0832d";
 
-    protected static final String CONNECT_FORM_TITLE = "Nuxeo Online Services";
+    public static final String CONNECT_FORM_TITLE = "Nuxeo Online Services";
 
     @Ignore("NXP-15177: failing randomly")
     @Test
