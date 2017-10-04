@@ -41,7 +41,7 @@ public class HealthCheckResult {
 
     protected Collection<ProbeInfo> probes;
 
-    protected boolean healthy = true;
+    protected boolean healthy;
 
     public HealthCheckResult(Collection<ProbeInfo> probesToCheck) {
         this.probes = probesToCheck;
@@ -53,9 +53,6 @@ public class HealthCheckResult {
     }
 
     public String toJson() {
-        if (probes.isEmpty()) {
-            return StringUtils.EMPTY;
-        }
         ObjectMapper om = new ObjectMapper();
         Map<String, String> res = new HashMap<String, String>();
         try {

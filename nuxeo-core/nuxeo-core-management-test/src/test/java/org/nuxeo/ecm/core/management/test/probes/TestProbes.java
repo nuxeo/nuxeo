@@ -119,9 +119,13 @@ public class TestProbes {
 
     @Test
     public void testInvalidProbe() {
-        HealthCheckResult result = pm.getOrRunHealthCheck("invalidProbe");
-        assertTrue(result.isHealthy());
-        assertEquals("", result.toJson());
+        IllegalArgumentException e = null;
+        try {
+            pm.getOrRunHealthCheck("invalidProbe");
+        } catch (IllegalArgumentException e1) {
+            e = e1;
+        }
+        assertNotNull(e);
     }
 
     @Test

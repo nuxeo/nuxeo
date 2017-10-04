@@ -38,11 +38,9 @@ import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Servlet for retrieving Nuxeo services running status
+ * Servlet for retrieving Nuxeo services running status.
  * 
- * @since 9.3 
- * Returns a status based of all the probes registered for the healthCheck 
- * GET /runningstatus?info=probe&key=probeName returns a healthCheck status based on a probe
+ * @since 9.3 this servlet returns a status based of all the probes registered for the healthCheck.
  */
 public class StatusServlet extends HttpServlet {
 
@@ -107,11 +105,11 @@ public class StatusServlet extends HttpServlet {
             }
         } else if (requestedInfo.equals(PROBE_PARAM)) {
             String probetoEval = req.getParameter(PARAM_SUMMARY_KEY);
-            HealthCheckResult result = getOrRunHealthCheck(probetoEval);
-            if (result.toJson().isEmpty()) {
-                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            } else {
+            try {
+                HealthCheckResult result = getOrRunHealthCheck(probetoEval);
                 sendHealthCheckResponse(resp, result);
+            } catch (IllegalArgumentException e) {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
         }
         sendResponse(resp, response.toString());

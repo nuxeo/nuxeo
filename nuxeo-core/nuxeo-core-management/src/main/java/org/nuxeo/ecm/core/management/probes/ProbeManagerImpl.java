@@ -252,8 +252,6 @@ public class ProbeManagerImpl implements ProbeManager {
 
     @Override
     public HealthCheckResult getOrRunHealthChecks() {
-        int refreshSeconds = Integer.parseInt(Framework.getProperty(DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY,
-                DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS));
         for (Entry<String, ProbeInfo> es : probesForHealthCheck.entrySet()) {
             String probeName = es.getKey();
             ProbeInfo probe = es.getValue();
@@ -261,21 +259,19 @@ public class ProbeManagerImpl implements ProbeManager {
                 log.warn("Probe:" + probeName + " does not exist, skipping it for the health check");
                 continue;
             }
-            getStatusOrRunProbe(probe, refreshSeconds);
+            getStatusOrRunProbe(probe, getDefaultCheckInterval());
         }
         return new HealthCheckResult(probesForHealthCheck.values());
     }
 
     @Override
-    public HealthCheckResult getOrRunHealthCheck(String name) {
-        int refreshSeconds = Integer.parseInt(Framework.getProperty(DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY,
-                DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS));
+    public HealthCheckResult getOrRunHealthCheck(String name) throws IllegalArgumentException {
+
         if (!probesForHealthCheck.containsKey(name)) {
-            log.warn("Probe:" + name + " does not exist, or not registed for the healthCheck");
-            return new HealthCheckResult(Collections.emptyList());
+            throw new IllegalArgumentException("Probe:" + name + " does not exist, or not registed for the healthCheck");
         }
         ProbeInfo probe = probesForHealthCheck.get(name);
-        getStatusOrRunProbe(probe, refreshSeconds);
+        getStatusOrRunProbe(probe, getDefaultCheckInterval());
         return new HealthCheckResult(Collections.singletonList(probe));
     }
 
@@ -287,5 +283,11 @@ public class ProbeManagerImpl implements ProbeManager {
         if (ChronoUnit.SECONDS.between(lastRunDateTime, now) > refreshSeconds) {
             doRunProbe(probe);
         }
+    }
+
+    private int getDefaultCheckInterval() {
+        return Integer.parseInt(Framework.getProperty(DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY,
+                DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS));
+
     }
 }
