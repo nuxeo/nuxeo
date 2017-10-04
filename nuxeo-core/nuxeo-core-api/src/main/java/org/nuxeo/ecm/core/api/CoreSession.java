@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -1441,12 +1442,30 @@ public interface CoreSession extends AutoCloseable {
     /**
      * Gets a document if it exists, otherwise creates it. This is done atomically to prevent different threads from
      * trying to create the same document. If the document did not exist and is therefore created, the current
-     * transaction is committed and the newly-created document is also committed in its own transaction
+     * transaction is committed and the newly-created document is also committed in its own transaction.
+     * <p>
+     * WARNING: As the current transaction is impacted, using this method instead of
+     * {@link #createDocument(DocumentModel)} could lead to inconsistent behaviour in case of rollback.
      *
      * @param docModel the document model
      * @return the existing or created document
      * @since 9.3
      */
     DocumentModel getOrCreateDocument(DocumentModel docModel);
+
+    /**
+     * Gets a document if it exists, otherwise creates it. This is done atomically to prevent different threads from
+     * trying to create the same document. If the document did not exist and is therefore created, the current
+     * transaction is committed and the newly-created document is also committed in its own transaction.
+     * <p>
+     * WARNING: As the current transaction is impacted, using this method instead of
+     * {@link #createDocument(DocumentModel)} could lead to inconsistent behaviour in case of rollback.
+     *
+     * @param docModel the document model
+     * @param postCreate the function to apply after creating the document
+     * @return the existing or created document
+     * @since 9.3
+     */
+    DocumentModel getOrCreateDocument(DocumentModel docModel, Function<DocumentModel, DocumentModel> postCreate);
 
 }

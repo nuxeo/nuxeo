@@ -53,6 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -2466,6 +2467,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentModel getOrCreateDocument(DocumentModel docModel) {
+        return getOrCreateDocument(docModel, null);
+    }
+
+    @Override
+    public DocumentModel getOrCreateDocument(DocumentModel docModel,
+            Function<DocumentModel, DocumentModel> postCreate) {
         DocumentRef ref = docModel.getRef();
         // Check if the document exists
         if (exists(ref)) {
@@ -2473,14 +2480,22 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
         // handle placeless documents, no locks are needed in this case
         if (docModel.getParentRef() == null) {
-            return createDocument(docModel);
+            DocumentModel doc = createDocument(docModel);
+            if (postCreate != null) {
+                return postCreate.apply(doc);
+            }
+            return doc;
         }
         String key = computeKeyForAtomicCreation(docModel);
         return LockHelper.doAtomically(key, () -> {
             if (exists(ref)) {
                 return getDocument(ref);
             }
-            return createDocument(docModel);
+            DocumentModel doc = createDocument(docModel);
+            if (postCreate != null) {
+                return postCreate.apply(doc);
+            }
+            return doc;
         });
     }
 
