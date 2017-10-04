@@ -70,10 +70,18 @@ public class BaseUserTest extends BaseTest {
      * Assert that the given node represents a user which properties are given in parameters.
      */
     protected void assertEqualsUser(String username, String firstname, String lastname, JsonNode node) {
+        assertEqualsUser(username, firstname, lastname, null, node);
+    }
+
+    protected void assertEqualsUser(String username, String firstname, String lastname, String email, JsonNode node) {
         assertEquals("user", node.get("entity-type").getValueAsText());
         assertEquals(username, node.get("id").getValueAsText());
-        assertEquals(firstname, node.get("properties").get("firstName").getValueAsText());
-        assertEquals(lastname, node.get("properties").get("lastName").getValueAsText());
+        JsonNode properties = node.get("properties");
+        assertEquals(firstname, properties.get("firstName").getValueAsText());
+        assertEquals(lastname, properties.get("lastName").getValueAsText());
+        if (email != null) {
+            assertEquals(email, properties.get("email").getValueAsText());
+        }
     }
 
 }
