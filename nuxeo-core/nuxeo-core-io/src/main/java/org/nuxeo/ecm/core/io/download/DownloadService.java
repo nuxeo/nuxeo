@@ -280,6 +280,15 @@ public interface DownloadService {
     Blob resolveBlob(DocumentModel doc, String xpath);
 
     /**
+     * Finds a document's blob.
+     *
+     * @param doc the document
+     * @return the blob, or {@code null} if not available
+     * @since 9.3
+     */
+    Blob resolveBlob(DocumentModel doc);
+
+    /**
      * Checks whether the download of the blob is allowed.
      *
      * @param doc the doc for which this download occurs, if available

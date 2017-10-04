@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -54,6 +55,8 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements Blob
 
     protected Map<String, BlobHolderFactory> factoriesByFacets = new HashMap<>();
 
+    protected Map<String, BlobHolderFactory> factoriesByName = new HashMap<>();
+
     protected static final Map<String, ExternalBlobAdapter> externalBlobAdapters = new HashMap<>();
 
     @Override
@@ -61,6 +64,10 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements Blob
 
         if (BLOBHOLDERFACTORY_EP.equals(extensionPoint)) {
             BlobHolderFactoryDescriptor desc = (BlobHolderFactoryDescriptor) contribution;
+            String name = desc.getName();
+            if (StringUtils.isNotBlank(name)) {
+                factoriesByName.put(name, desc.getFactory());
+            }
             String docType = desc.getDocType();
             if (docType != null) {
                 factories.put(docType, desc.getFactory());
@@ -123,7 +130,12 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements Blob
     }
 
     @Override
-    public BlobHolder getBlobHolderAdapter(DocumentModel doc) {
+    public BlobHolder getBlobHolderAdapter(DocumentModel doc, String factoryName) {
+        if (factoryName != null && factoriesByName.containsKey(factoryName)) {
+            BlobHolderFactory factory = factoriesByName.get(factoryName);
+            return factory.getBlobHolder(doc);
+        }
+
         if (factories.containsKey(doc.getType())) {
             BlobHolderFactory factory = factories.get(doc.getType());
             return factory.getBlobHolder(doc);
@@ -153,6 +165,11 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements Blob
             return new DocumentStringBlobHolder(doc, "note:note", mt);
         }
         return null;
+    }
+
+    @Override
+    public BlobHolder getBlobHolderAdapter(DocumentModel doc) {
+        return getBlobHolderAdapter(doc, null);
     }
 
 }
