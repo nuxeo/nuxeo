@@ -93,6 +93,10 @@
         {
             "path": "/oauth2.{format}",
             "description": "Retrieve OAuth2 authentication data for the current user"
+        },
+        {
+            "path": "/emptyDocAdapter.{format}",
+            "description": "Initialize an empty document"
         }
     ],
     "authorizations": {
