@@ -21,6 +21,9 @@ package org.nuxeo.ecm.core.management.api;
 
 import java.util.Collection;
 
+import org.nuxeo.ecm.core.management.probes.HealthCheckProbesDescriptor;
+import org.nuxeo.ecm.core.management.statuses.HealthCheckResult;
+
 public interface ProbeManager extends ProbeRunnerMBean {
 
     Collection<ProbeInfo> getAllProbeInfos();
@@ -37,4 +40,32 @@ public interface ProbeManager extends ProbeRunnerMBean {
 
     ProbeInfo getProbeInfo(Class<? extends Probe> probeClass);
 
+    /**
+     * List of probes evaluated for a health check
+     *
+     * @since 9.3
+     */
+    Collection<ProbeInfo> getHealthCheckProbes();
+
+    /**
+     * Return the status of all the probes evaluated for a healthCheck. The probes are run if the last run was more than
+     * a short while ago
+     *
+     * @since 9.3
+     */
+    HealthCheckResult getOrRunHealthChecks();
+
+    /**
+     * This probe is taken into account for the healthCheck
+     *
+     * @since 9.3
+     */
+    void registerProbeForHealthCheck(HealthCheckProbesDescriptor descriptor);
+
+    /**
+     * Return the status of the given probe. The probe is run only if the last run was more than a short while ago
+     *
+     * @since 9.3
+     */
+    HealthCheckResult getOrRunHealthCheck(String probe);
 }

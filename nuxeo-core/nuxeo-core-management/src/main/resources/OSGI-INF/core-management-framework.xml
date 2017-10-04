@@ -36,5 +36,10 @@
     <object
       class="org.nuxeo.ecm.core.management.storage.DocumentStoreHandlerDescriptor" />
   </extension-point>
+  
+  <extension-point name="healthCheck">
+    <!-- @since 9.3, list of probes to be evaluated for the healthCheck -->
+    <object class="org.nuxeo.ecm.core.management.probes.HealthCheckProbesDescriptor" />
+  </extension-point>
 
 </component>

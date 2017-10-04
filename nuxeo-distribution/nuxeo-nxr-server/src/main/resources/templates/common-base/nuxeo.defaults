@@ -110,3 +110,5 @@ seqgen.elasticsearch.indexName=${elasticsearch.indexName}-uidgen
 audit.elasticsearch.migration=false
 # Batch size for audit logs migration, only useful with audit.elasticsearch.migration=true
 audit.elasticsearch.migration.batchSize=1000
+# Refresh interval for the health check
+nuxeo.healthcheck.refresh.interval.seconds=20
