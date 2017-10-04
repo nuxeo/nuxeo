@@ -18,12 +18,16 @@
  */
 package org.nuxeo.ecm.core.management.probes;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -32,6 +36,8 @@ import org.nuxeo.ecm.core.management.api.Probe;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.management.api.ProbeStatus;
+import org.nuxeo.ecm.core.management.statuses.HealthCheckResult;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ManagementRuntimeException;
 
 public class ProbeManagerImpl implements ProbeManager {
@@ -44,9 +50,15 @@ public class ProbeManagerImpl implements ProbeManager {
 
     protected final Map<String, Probe> probesByShortcuts = new HashMap<String, Probe>();
 
+    protected final Map<String, ProbeInfo> probesForHealthCheck = new HashMap<String, ProbeInfo>();
+
     protected final Set<ProbeInfo> failed = new HashSet<ProbeInfo>();
 
     protected final Set<ProbeInfo> succeed = new HashSet<ProbeInfo>();
+
+    public static final String DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY = "nuxeo.healthcheck.refresh.interval.seconds";
+
+    public static final String DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS = "20";
 
     protected Set<String> doExtractProbesName(Collection<ProbeInfo> runners) {
         Set<String> names = new HashSet<String>();
@@ -156,6 +168,7 @@ public class ProbeManagerImpl implements ProbeManager {
         Class<? extends Probe> probeClass = descriptor.getProbeClass();
         infosByTypes.remove(probeClass);
         infosByShortcuts.remove(descriptor.getShortcut());
+        probesForHealthCheck.remove(descriptor.getShortcut());
     }
 
     protected void doRun() {
@@ -218,4 +231,63 @@ public class ProbeManagerImpl implements ProbeManager {
         }
     }
 
+    @Override
+    public void registerProbeForHealthCheck(HealthCheckProbesDescriptor descriptor) {
+        String name = descriptor.getName();
+        if (!descriptor.isEnabled()) {
+            if (probesForHealthCheck.containsKey(name)) {
+                probesForHealthCheck.remove(name);
+                return;
+            }
+        }
+        if (infosByShortcuts.containsKey(name)) {
+            probesForHealthCheck.put(name, getProbeInfo(name));
+        }
+    }
+
+    @Override
+    public Collection<ProbeInfo> getHealthCheckProbes() {
+        return Collections.unmodifiableCollection(probesForHealthCheck.values());
+    }
+
+    @Override
+    public HealthCheckResult getOrRunHealthChecks() {
+        for (Entry<String, ProbeInfo> es : probesForHealthCheck.entrySet()) {
+            String probeName = es.getKey();
+            ProbeInfo probe = es.getValue();
+            if (probe == null) {
+                log.warn("Probe:" + probeName + " does not exist, skipping it for the health check");
+                continue;
+            }
+            getStatusOrRunProbe(probe, getDefaultCheckInterval());
+        }
+        return new HealthCheckResult(probesForHealthCheck.values());
+    }
+
+    @Override
+    public HealthCheckResult getOrRunHealthCheck(String name) throws IllegalArgumentException {
+
+        if (!probesForHealthCheck.containsKey(name)) {
+            throw new IllegalArgumentException("Probe:" + name + " does not exist, or not registed for the healthCheck");
+        }
+        ProbeInfo probe = probesForHealthCheck.get(name);
+        getStatusOrRunProbe(probe, getDefaultCheckInterval());
+        return new HealthCheckResult(Collections.singletonList(probe));
+    }
+
+    protected void getStatusOrRunProbe(ProbeInfo probe, int refreshSeconds) {
+        LocalDateTime now = LocalDateTime.now();
+        Date lastRunDate = probe.getLastRunnedDate();
+        LocalDateTime lastRunDateTime = lastRunDate != null ? LocalDateTime.ofInstant(lastRunDate.toInstant(),
+                ZoneId.systemDefault()) : LocalDateTime.MIN;
+        if (ChronoUnit.SECONDS.between(lastRunDateTime, now) > refreshSeconds) {
+            doRunProbe(probe);
+        }
+    }
+
+    private int getDefaultCheckInterval() {
+        return Integer.parseInt(Framework.getProperty(DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY,
+                DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS));
+
+    }
 }
