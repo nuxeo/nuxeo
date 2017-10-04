@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.rendition.download.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
+    point="renditionDefinitions">
+
+    <renditionDefinition name="mainBlob" visible="false">
+      <operationChain>mainBlob</operationChain>
+      <contentType></contentType>
+    </renditionDefinition>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
+    point="defaultRendition">
+    <defaultRendition>
+      <script language="JavaScript">
+        function run() {
+          if (Reason == 'download') {
+            if (Document.getType() == "File") {
+              return 'mainBlob';
+            } else if (Document.getType() == 'Picture') {
+              return 'mainBlob';
+            } else if (Document.getType() == 'Video') {
+              return 'mainBlob';
+            } else if (Document.getType() == 'Audio') {
+              return 'mainBlob';
+            } else if (Document.getType() == 'Note') {
+              return 'pdf';
+            } else {
+              return 'xmlExport';
+            }
+          } else {
+            return '';
+          }
+        }
+      </script>
+    </defaultRendition>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="chains">
+
+    <chain id="mainBlob">
+      <operation id="Context.PopDocument" />
+      <operation id="Document.GetBlob" />
+    </chain>
+
+  </extension>
+
+</component>

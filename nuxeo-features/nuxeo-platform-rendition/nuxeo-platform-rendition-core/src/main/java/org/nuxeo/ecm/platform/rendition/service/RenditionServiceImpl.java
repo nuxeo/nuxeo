@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIO
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -30,6 +31,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.script.Invocable;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -40,8 +48,10 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.platform.rendition.Rendition;
@@ -67,6 +77,8 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     public static final String RENDITION_DEFINITIONS_EP = "renditionDefinitions";
 
     public static final String RENDITON_DEFINION_PROVIDERS_EP = "renditionDefinitionProviders";
+
+    public static final String DEFAULT_RENDITION_EP = "defaultRendition";
 
     /**
      * @since 8.1
@@ -94,12 +106,22 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     protected RenditionDefinitionProviderRegistry renditionDefinitionProviderRegistry;
 
+    protected List<DefaultRenditionDescriptor> defaultRenditionDescriptors = new ArrayList<>();;
+
+    protected DefaultRenditionDescriptor defaultRenditionDescriptor;
+
     protected static final StoredRenditionManager DEFAULT_STORED_RENDITION_MANAGER = new DefaultStoredRenditionManager();
 
     /**
      * @since 8.1
      */
     protected Deque<StoredRenditionManagerDescriptor> storedRenditionManagerDescriptors = new LinkedList<>();
+
+    protected final ScriptEngineManager scriptEngineManager;
+
+    public RenditionServiceImpl() {
+        scriptEngineManager = new ScriptEngineManager();
+    }
 
     /**
      * @since 8.1
@@ -239,6 +261,10 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             renditionDefinitionProviderRegistry.addContribution((RenditionDefinitionProviderDescriptor) contribution);
         } else if (STORED_RENDITION_MANAGERS_EP.equals(extensionPoint)) {
             storedRenditionManagerDescriptors.add(((StoredRenditionManagerDescriptor) contribution));
+        } else if (DEFAULT_RENDITION_EP.equals(extensionPoint)) {
+            defaultRenditionDescriptor = ((DefaultRenditionDescriptor) contribution);
+            // Save contribution
+            defaultRenditionDescriptors.add((DefaultRenditionDescriptor) contribution);
         }
     }
 
@@ -312,6 +338,15 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
                     (RenditionDefinitionProviderDescriptor) contribution);
         } else if (STORED_RENDITION_MANAGERS_EP.equals(extensionPoint)) {
             storedRenditionManagerDescriptors.remove(((StoredRenditionManagerDescriptor) contribution));
+        } else if (DEFAULT_RENDITION_EP.equals(extensionPoint)) {
+            defaultRenditionDescriptors.remove(contribution);
+            if (defaultRenditionDescriptors.size() == 0) {
+                // We don't have any default rendition descriptor
+                defaultRenditionDescriptor = null;
+            } else {
+                // Go back to the last contribution added
+                defaultRenditionDescriptor = defaultRenditionDescriptors.get(defaultRenditionDescriptors.size() - 1);
+            }
         }
     }
 
@@ -495,6 +530,55 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
                 processedSourceIds += BATCH_SIZE;
             }
         }
+    }
+
+    @Override
+    public Rendition getDefaultRendition(DocumentModel doc, String reason, Map<String, Serializable> extendedInfos) {
+        if (defaultRenditionDescriptor == null) {
+            return null;
+        }
+        Map<String, Object> context = new HashMap<>();
+        Map<String, Serializable> ei = extendedInfos == null ? Collections.emptyMap() : extendedInfos;
+        NuxeoPrincipal currentUser = ClientLoginModule.getCurrentPrincipal();
+        context.put("Document", doc);
+        context.put("Reason", reason);
+        context.put("Infos", ei);
+        context.put("CurrentUser", currentUser);
+        ScriptEngine engine = scriptEngineManager.getEngineByName(defaultRenditionDescriptor.getScriptLanguage());
+        if (engine == null) {
+            throw new NuxeoException(
+                    "Engine not found for language: " + defaultRenditionDescriptor.getScriptLanguage());
+        }
+        if (!(engine instanceof Invocable)) {
+            throw new NuxeoException("Engine " + engine.getClass().getName() + " not Invocable for language: "
+                    + defaultRenditionDescriptor.getScriptLanguage());
+        }
+        Rendition rendition = null;
+        try {
+            engine.eval(defaultRenditionDescriptor.getScript());
+            engine.getBindings(ScriptContext.ENGINE_SCOPE).putAll(context);
+            Object result = ((Invocable) engine).invokeFunction("run");
+            if (!(result instanceof String)) {
+                log.error("Failed to get rendition name (" + result + ")");
+            } else {
+                String defaultRenditionName = (String) result;
+                if (StringUtils.isBlank(defaultRenditionName)) {
+                    log.info("Default rendition name cannot be evaluated, returning null");
+                } else {
+                    try {
+                        rendition = getRendition(doc, defaultRenditionName);
+                    } catch (NuxeoException e) {
+                        log.error("Unable to use default rendition " + defaultRenditionName, e);
+                    }
+                }
+            }
+
+        } catch (NoSuchMethodException e) {
+            throw new NuxeoException("Script does not contain function: run() in defaultRendition: ", e);
+        } catch (ScriptException e) {
+            log.error("Failed to evaluate script: ", e);
+        }
+        return rendition;
     }
 
 }

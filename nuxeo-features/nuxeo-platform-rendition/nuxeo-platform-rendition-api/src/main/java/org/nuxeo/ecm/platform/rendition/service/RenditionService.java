@@ -18,7 +18,9 @@
  */
 package org.nuxeo.ecm.platform.rendition.service;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -78,6 +80,19 @@ public interface RenditionService {
      * @return the {@link Rendition} object
      */
     Rendition getRendition(DocumentModel doc, String renditionName);
+
+    /**
+     * Return the default {@link Rendition} object for the given {@link DocumentModel}.
+     * <p>
+     * A stored rendition is returned if found and up to date, a new Rendition is created otherwise.
+     *
+     * @param doc the document to render
+     * @param reason the reason the rendition is being rendered (optional)
+     * @param extendedInfos map of extended info added in the default rendition computation (optional)
+     * @since 9.3
+     * @return the default {@link Rendition} object
+     */
+    Rendition getDefaultRendition(DocumentModel doc, String reason, Map<String, Serializable> extendedInfos);
 
     /**
      * Return the {@link Rendition} object for the given {@link DocumentModel} and a rendition definition name.

@@ -75,7 +75,7 @@ public class TestRenditionProvider {
         assertNotNull(renderable);
 
         List<RenditionDefinition> defs = renderable.getAvailableRenditionDefinitions();
-        assertEquals(4, defs.size());
+        assertEquals(5, defs.size());
 
         Collections.sort(defs, RENDITION_DEFINITION_CMP);
         RenditionDefinition def = defs.get(0);
@@ -83,7 +83,7 @@ public class TestRenditionProvider {
         assertEquals("dummy/pdf", def.getContentType());
 
         List<Rendition> renditions = renditionService.getAvailableRenditions(file);
-        assertEquals(4, renditions.size());
+        assertEquals(5, renditions.size());
 
         Rendition ren = renditionService.getRendition(file, "dummyRendition");
         assertNotNull(ren);
@@ -99,10 +99,10 @@ public class TestRenditionProvider {
         assertNotNull(renderable);
 
         List<RenditionDefinition> defs = renderable.getAvailableRenditionDefinitions();
-        assertEquals(4, defs.size());
+        assertEquals(5, defs.size());
 
         Collections.sort(defs, RENDITION_DEFINITION_CMP);
-        RenditionDefinition def = defs.get(1);
+        RenditionDefinition def = defs.get(2);
         assertEquals("pdf", def.getName());
         assertEquals("application/pdf", def.getContentType());
 
@@ -117,6 +117,21 @@ public class TestRenditionProvider {
         assertEquals("application/pdf", blob.getMimeType());
     }
 
+    /**
+     * @since 9.3
+     */
+    @Test
+    public void testDefaultRendition() throws Exception {
+        DocumentModel file = createBlobDoc("File");
+        Renderable renderable = file.getAdapter(Renderable.class);
+        assertNotNull(renderable);
+
+        Rendition ren = renditionService.getDefaultRendition(file, "download", null);
+        assertNotNull(ren);
+        Blob blob = ren.getBlob();
+        assertEquals("text/plain", blob.getMimeType());
+    }
+
     @Test
     public void testPdfRenditionStoredFromNote() throws Exception {
         DocumentModel note = createBlobDoc("Note");
@@ -124,10 +139,10 @@ public class TestRenditionProvider {
         assertNotNull(renderable);
 
         List<RenditionDefinition> defs = renderable.getAvailableRenditionDefinitions();
-        assertEquals(4, defs.size());
+        assertEquals(5, defs.size());
 
         Collections.sort(defs, RENDITION_DEFINITION_CMP);
-        RenditionDefinition def = defs.get(1);
+        RenditionDefinition def = defs.get(2);
         assertEquals("pdf", def.getName());
         assertEquals("application/pdf", def.getContentType());
 
