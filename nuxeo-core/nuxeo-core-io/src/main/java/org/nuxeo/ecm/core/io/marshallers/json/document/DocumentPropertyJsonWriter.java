@@ -71,7 +71,6 @@ import org.nuxeo.runtime.api.Framework;
  * [ ... ] <- for list property
  * }
  * </pre>
- *
  * </p>
  *
  * @since 7.2
@@ -92,14 +91,12 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
             writeScalarProperty(jg, prop);
         } else if (prop.isList()) {
             writeListProperty(jg, prop);
-        } else {
-            if (prop.isPhantom()) {
-                jg.writeNull();
-            } else if (prop instanceof BlobProperty) { // a blob
-                writeBlobProperty(jg, prop);
-            } else { // a complex property
-                writeComplexProperty(jg, prop);
-            }
+        } else if (prop instanceof BlobProperty) { // a blob
+            writeBlobProperty(jg, prop);
+        } else if (prop.isComplex()) {
+            writeComplexProperty(jg, prop);
+        } else if (prop.isPhantom()) {
+            jg.writeNull();
         }
     }
 
