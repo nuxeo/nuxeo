@@ -52,7 +52,10 @@ public abstract class AbstractUMRootObject<T> extends PaginableObject<T> {
         query = request.getParameter("q");
     }
 
-    @Path("{artName:((?:(?!(/@|(user/|group/))).)*)}")
+    // match everything until:
+    // - '/@' for web adapters
+    // - '/user/' or '/group/' when adding a user to a group
+    @Path("{artName:((?:(?!(/@|(/user/|/group/))).)*)}")
     public Object getArtifactWebObject(@PathParam("artName") String artName) {
         try {
             T artifact = getArtifact(artName);
