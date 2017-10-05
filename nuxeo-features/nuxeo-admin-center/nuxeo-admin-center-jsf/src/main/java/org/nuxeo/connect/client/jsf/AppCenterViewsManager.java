@@ -541,7 +541,7 @@ public class AppCenterViewsManager implements Serializable {
                         StringBuilder message = new StringBuilder();
                         message.append("Hot reload has been done in ")
                                .append(watch.getTotal().elapsed(TimeUnit.MILLISECONDS))
-                               .append(" ms, detailed steps:\n");
+                               .append(" ms, detailed steps:");
                         Stream.of(watch.getIntervals()).filter(TimeInterval::isStopped).forEach(
                                 i -> message.append("\n- ")
                                             .append(i.getName())
