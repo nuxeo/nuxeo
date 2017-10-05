@@ -199,14 +199,15 @@ public abstract class AbstractKeyValueStoreTest {
     @Test
     public void testTTL() throws Exception {
         assumeFalse("Ignored because of slow TTL expiration", hasSlowTTLExpiration());
+        int longTTL = 30; // 30s
+        int shortTTL = 3; // 3s
 
         String key = "foo";
-        int longTTL = 30; // 30s
         assertFalse(store.setTTL(key, 0)); // no such key
         assertFalse(store.setTTL(key, longTTL)); // no such key
         store.put(key, BAR_B, longTTL);
         assertEquals(BAR, new String(store.get(key)));
-        int shortTTL = 3; // 3s
+
         assertTrue(store.setTTL(key, shortTTL)); // set shorter TTL
         Thread.sleep((shortTTL + 2) * 1000); // sleep a bit more in case expiration is late
         sleepForTTLExpiration();
@@ -217,6 +218,21 @@ public abstract class AbstractKeyValueStoreTest {
         Thread.sleep((shortTTL + 2) * 1000); // sleep a bit more in case expiration is late
         sleepForTTLExpiration();
         assertEquals(BAR, new String(store.get(key)));
+
+        // compareAndSet with TTL
+
+        assertTrue(store.compareAndSet(key, BAR, GEE, shortTTL));
+        assertEquals(GEE, store.getString(key));
+        Thread.sleep((shortTTL + 2) * 1000); // sleep a bit more in case expiration is late
+        sleepForTTLExpiration();
+        assertNull(store.get(key));
+
+        assertTrue(store.compareAndSet(key, null, MOO, shortTTL));
+        assertEquals(MOO, store.getString(key));
+        Thread.sleep((shortTTL + 2) * 1000); // sleep a bit more in case expiration is late
+        sleepForTTLExpiration();
+        assertNull(store.get(key));
+
     }
 
 }

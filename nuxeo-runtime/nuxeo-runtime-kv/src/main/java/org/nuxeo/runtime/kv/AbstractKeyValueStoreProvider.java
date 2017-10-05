@@ -78,8 +78,18 @@ public abstract class AbstractKeyValueStoreProvider implements KeyValueStoreProv
     }
 
     @Override
+    public boolean compareAndSet(String key, byte[] expected, byte[] value) {
+        return compareAndSet(key, expected, value, 0);
+    }
+
+    @Override
     public boolean compareAndSet(String key, String expected, String value) {
-        return compareAndSet(key, stringToBytes(expected), stringToBytes(value));
+        return compareAndSet(key, expected, value, 0);
+    }
+
+    @Override
+    public boolean compareAndSet(String key, String expected, String value, long ttl) {
+        return compareAndSet(key, stringToBytes(expected), stringToBytes(value), ttl);
     }
 
 }

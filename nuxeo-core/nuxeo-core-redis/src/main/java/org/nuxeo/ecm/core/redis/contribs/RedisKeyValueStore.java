@@ -143,7 +143,7 @@ public class RedisKeyValueStore extends AbstractKeyValueStoreProvider {
     }
 
     @Override
-    public boolean compareAndSet(String key, byte[] expected, byte[] value) {
+    public boolean compareAndSet(String key, byte[] expected, byte[] value, long ttl) {
         if (expected == null && value == null) {
             return get(key) == null;
         } else {
@@ -162,7 +162,12 @@ public class RedisKeyValueStore extends AbstractKeyValueStoreProvider {
             }
             RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
             Object result = redisExecutor.evalsha(sha, keys, args);
-            return ONE.equals(result);
+            boolean set = ONE.equals(result);
+            if (set && value != null && ttl != 0) {
+                // no need to be atomic and to a SETEX, so just do the EXPIRE now
+                setTTL(key, ttl);
+            }
+            return set;
         }
     }
 

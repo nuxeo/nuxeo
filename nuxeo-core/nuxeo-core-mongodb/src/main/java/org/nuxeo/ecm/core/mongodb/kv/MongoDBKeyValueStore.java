@@ -209,13 +209,17 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
             coll.deleteOne(filter);
         } else {
             Document doc = new Document(VALUE_KEY, value);
-            if (ttl != 0) {
-                doc.append(TTL_KEY, getDateFromTTL(ttl));
-            }
+            addTTL(doc, ttl);
             if (log.isTraceEnabled()) {
                 log.trace("MongoDB: PUT " + key + " = " + value + (ttl == 0 ? "" : " (TTL " + ttl + ")"));
             }
             coll.replaceOne(filter, doc, new UpdateOptions().upsert(true));
+        }
+    }
+
+    protected void addTTL(Document doc, long ttl) {
+        if (ttl != 0) {
+            doc.append(TTL_KEY, getDateFromTTL(ttl));
         }
     }
 
@@ -236,16 +240,16 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
     }
 
     @Override
-    public boolean compareAndSet(String key, byte[] expected, byte[] value) {
-        return compareAndSet(key, toStorage(expected), toStorage(value));
+    public boolean compareAndSet(String key, byte[] expected, byte[] value, long ttl) {
+        return compareAndSet(key, toStorage(expected), toStorage(value), ttl);
     }
 
     @Override
-    public boolean compareAndSet(String key, String expected, String value) {
-        return compareAndSet(key, (Object) expected, (Object) value);
+    public boolean compareAndSet(String key, String expected, String value, long ttl) {
+        return compareAndSet(key, (Object) expected, (Object) value, ttl);
     }
 
-    protected boolean compareAndSet(String key, Object expected, Object value) {
+    protected boolean compareAndSet(String key, Object expected, Object value, long ttl) {
         Bson filter = eq(ID_KEY, key);
         if (expected == null && value == null) {
             // check that document doesn't exist
@@ -262,6 +266,7 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
         } else if (expected == null) {
             // set value if no document already exists: regular insert
             Document doc = new Document(ID_KEY, key).append(VALUE_KEY, value);
+            addTTL(doc, ttl);
             boolean set;
             try {
                 coll.insertOne(doc);
@@ -297,6 +302,7 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
             // replace if previous value exists
             filter = and(filter, eq(VALUE_KEY, expected));
             Document doc = new Document(VALUE_KEY, value);
+            addTTL(doc, ttl);
             UpdateResult res = coll.replaceOne(filter, doc);
             boolean set = res.getModifiedCount() == 1;
             if (log.isTraceEnabled()) {
