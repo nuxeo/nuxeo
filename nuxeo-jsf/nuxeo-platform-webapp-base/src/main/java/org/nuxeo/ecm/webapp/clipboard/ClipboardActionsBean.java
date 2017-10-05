@@ -863,10 +863,11 @@ public class ClipboardActionsBean extends InputController implements ClipboardAc
 
     @Override
     public String exportWorklistAsZip(List<DocumentModel> documents, boolean exportAllBlobs) throws ClientException {
+        File tmpFile = null;
         try {
             FacesContext context = FacesContext.getCurrentInstance();
             DocumentListZipExporter zipExporter = new DocumentListZipExporter();
-            File tmpFile = zipExporter.exportWorklistAsZip(documents, documentManager, exportAllBlobs);
+            tmpFile = zipExporter.exportWorklistAsZip(documents, documentManager, exportAllBlobs);
             if (tmpFile == null) {
                 // empty zip file, do nothing
                 setFacesMessage("label.clipboard.emptyDocuments");
@@ -891,6 +892,10 @@ public class ClipboardActionsBean extends InputController implements ClipboardAc
             }
         } catch (IOException io) {
             throw ClientException.wrap(io);
+        } finally {
+            if (tmpFile != null) {
+                tmpFile.delete();
+            }
         }
     }
 }
