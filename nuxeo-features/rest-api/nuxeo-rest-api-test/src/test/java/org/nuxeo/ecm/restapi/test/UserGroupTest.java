@@ -233,9 +233,13 @@ public class UserGroupTest extends BaseUserTest {
     }
 
     @Test
-    public void itCanAddAGroupToAUser() throws Exception {
-        // Given a user and a group
-        NuxeoPrincipal principal = um.getPrincipal("user1");
+    public void itCanAddAGroupToAUser() {
+        checkCanAddAGroupToAUser("user1");
+        checkCanAddAGroupToAUser("foouser");
+    }
+
+    protected void checkCanAddAGroupToAUser(String username) {
+        NuxeoPrincipal principal = um.getPrincipal(username);
         NuxeoGroup group = um.getGroup("group2");
         assertFalse(principal.isMemberOf(group.getName()));
 
@@ -248,14 +252,17 @@ public class UserGroupTest extends BaseUserTest {
         nextTransaction(); // see committed changes
         principal = um.getPrincipal(principal.getName());
         assertTrue(principal.isMemberOf(group.getName()));
-
     }
 
     @Test
-    public void itCanAddAUserToAGroup() throws Exception {
-        // Given a user and a group
+    public void itCanAddAUserToAGroup() {
+        checkCanAddAUserToAGroup("group2");
+        checkCanAddAUserToAGroup("foogroup");
+    }
+
+    protected void checkCanAddAUserToAGroup(String groupName) {
         NuxeoPrincipal principal = um.getPrincipal("user1");
-        NuxeoGroup group = um.getGroup("group2");
+        NuxeoGroup group = um.getGroup(groupName);
         assertFalse(principal.isMemberOf(group.getName()));
 
         // When i POST this group
@@ -314,12 +321,12 @@ public class UserGroupTest extends BaseUserTest {
     @Test
     public void itCanPaginateUsers() throws Exception {
 
-        String[][] expectedPages = new String[][] { new String[] { "Administrator", "Guest", "user0" },
-                new String[] { "user1", "user2", "user3" }, new String[] {"user4"} };
+        String[][] expectedPages = new String[][] { new String[] { "Administrator", "foouser", "Guest" },
+                new String[] { "user0", "user1", "user2" }, new String[] { "user3", "user4" } };
 
         for (int i = 0; i < expectedPages.length; i++) {
             JsonNode node = getResponseAsJson(RequestType.GET, "/user/search", getQueryParamsForPage(i));
-            assertPaging(i, 3, 3, 7, expectedPages[i].length, node);
+            assertPaging(i, 3, 3, 8, expectedPages[i].length, node);
             assertUserEntries(node, expectedPages[i]);
 
         }
@@ -346,12 +353,13 @@ public class UserGroupTest extends BaseUserTest {
     @Test
     public void itCanPaginateGroups() throws Exception {
 
-        String[][] expectedResults = new String[][] { new String[] { "administrators", "group0", "group1" },
-                new String[] { "group2", "group3", "members" }, new String[] { "powerusers" }, new String[0], };
+        String[][] expectedResults = new String[][] { new String[] { "administrators", "foogroup", "group0" },
+                new String[] { "group1", "group2", "group3" }, new String[] { "members", "powerusers" },
+                new String[0], };
 
         for (int i = 0; i < expectedResults.length; i++) {
             JsonNode node = getResponseAsJson(RequestType.GET, "/group/search", getQueryParamsForPage(i));
-            assertPaging(i, 3, 3, 7, expectedResults[i].length, node);
+            assertPaging(i, 3, 3, 8, expectedResults[i].length, node);
             assertGroupEntries(node, expectedResults[i]);
 
         }
@@ -365,11 +373,11 @@ public class UserGroupTest extends BaseUserTest {
     public void itCanPaginateGroupMembers() throws Exception {
 
         String[][] expectedResults = new String[][] { new String[] { "dummy", "dummy", "dummy" },
-                new String[] { "dummy" }};
+                new String[] { "dummy", "foouser" } };
 
         for (int i = 0; i < expectedResults.length; i++) {
             JsonNode node = getResponseAsJson(RequestType.GET, "/group/group1/@users", getQueryParamsForPage(i));
-            assertPaging(i, 3, 2, 4, expectedResults[i].length, node);
+            assertPaging(i, 3, 2, 5, expectedResults[i].length, node);
         }
 
     }
