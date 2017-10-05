@@ -88,7 +88,7 @@ public class SendMail {
     @Param(name = "from")
     protected String from;
 
-    @Param(name = "to")
+    @Param(name = "to", required = false)
     protected StringList to;
 
     // Useful for tests.
