@@ -341,6 +341,17 @@ public class DirectoryTest extends BaseTest {
 
     }
 
+    @Test
+    public void itCanQueryDirectoryEntryWithIdContainingSlashes() throws Exception {
+        DocumentModel docEntry = dirSession.getEntry("id/with/slash");
+        JsonNode node = getResponseAsJson(RequestType.GET, "/directory/" + TESTDIRNAME + "/id/with/slash");
+
+        assertEquals(DirectoryEntryJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+        assertEquals(TESTDIRNAME, node.get("directoryName").getValueAsText());
+        assertEquals(docEntry.getPropertyValue("vocabulary:label"),
+                node.get("properties").get("label").getValueAsText());
+    }
+
     private String getDirectoryEntryAsJson(DocumentModel dirEntry) throws IOException, JsonGenerationException {
         return getDirectoryEntryAsJson(TESTDIRNAME, dirEntry);
     }
