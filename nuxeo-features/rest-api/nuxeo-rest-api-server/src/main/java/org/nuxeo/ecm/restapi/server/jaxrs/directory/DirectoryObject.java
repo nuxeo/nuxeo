@@ -120,9 +120,8 @@ public class DirectoryObject extends DefaultObject {
         }
     }
 
-    @Path("{entryId}")
+    @Path("{entryId:((?:(?!/@).)*)}")
     public Object getEntry(@PathParam("entryId") final String entryId) {
-
         return withDirectorySession(directory, new DirectorySessionRunner<Object>() {
 
             @Override
