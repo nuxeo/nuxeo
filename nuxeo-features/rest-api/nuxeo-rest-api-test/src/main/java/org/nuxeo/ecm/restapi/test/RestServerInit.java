@@ -139,26 +139,11 @@ public class RestServerInit implements RepositoryInit {
             createGroup(um, groupId, groupLabel);
         }
 
-
         for (int idx = 0; idx < 5; idx++) {
             String userId = "user" + idx;
-
-            NuxeoPrincipal principal = um.getPrincipal(userId);
-
-            if (principal != null) {
-                um.deleteUser(principal.getModel());
-            }
-
-            DocumentModel userModel = um.getBareUserModel();
-            String schemaName = um.getUserSchemaName();
-            userModel.setProperty(schemaName, "username", userId);
-            userModel.setProperty(schemaName, "firstName", FIRSTNAMES[idx]);
-            userModel.setProperty(schemaName, "lastName", LASTNAMES[idx]);
-            userModel.setProperty(schemaName, "password", userId);
-            userModel = um.createUser(userModel);
-            principal = um.getPrincipal(userId);
-            principal.setGroups(Arrays.asList(new String[] { "group1" }));
-            um.updateUser(principal.getModel());
+            String firstName = FIRSTNAMES[idx];
+            String lastName = LASTNAMES[idx];
+            createUser(um, userId, firstName, lastName);
         }
 
         // Create the power user group
@@ -166,8 +151,11 @@ public class RestServerInit implements RepositoryInit {
 
         // Add the power user group to user0
         NuxeoPrincipal principal = um.getPrincipal(POWER_USER_LOGIN);
-        principal.setGroups(Arrays.asList(new String[] { "powerusers" }));
+        principal.setGroups(Arrays.asList("powerusers"));
         um.updateUser(principal.getModel());
+
+        createGroup(um, "foogroup", "foo group");
+        createUser(um, "foouser", "Foo", "Foo");
     }
 
     private void createGroup(UserManager um, String groupId, String groupLabel) throws
@@ -182,6 +170,25 @@ public class RestServerInit implements RepositoryInit {
         groupModel.setProperty(schemaName, "groupname", groupId);
         groupModel.setProperty(schemaName, "grouplabel", groupLabel);
         groupModel = um.createGroup(groupModel);
+    }
+
+    protected void createUser(UserManager um, String userId, String firstName, String lastName) {
+        NuxeoPrincipal principal = um.getPrincipal(userId);
+
+        if (principal != null) {
+            um.deleteUser(principal.getModel());
+        }
+
+        DocumentModel userModel = um.getBareUserModel();
+        String schemaName = um.getUserSchemaName();
+        userModel.setProperty(schemaName, "username", userId);
+        userModel.setProperty(schemaName, "firstName", firstName);
+        userModel.setProperty(schemaName, "lastName", lastName);
+        userModel.setProperty(schemaName, "password", userId);
+        um.createUser(userModel);
+        principal = um.getPrincipal(userId);
+        principal.setGroups(Arrays.asList("group1"));
+        um.updateUser(principal.getModel());
     }
 
     public static DocumentModel getFolder(int index, CoreSession session) {
