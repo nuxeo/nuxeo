@@ -42,6 +42,12 @@ public class ImporterConfigurationDescriptor {
     @XNode("repository")
     protected String repository;
 
+    /**
+     * @since 9.3
+     */
+    @XNode("enablePerfLogging")
+    protected Boolean enablePerfLogging;
+
     @XObject("documentModelFactory")
     public static class DocumentModelFactory {
 
@@ -87,4 +93,11 @@ public class ImporterConfigurationDescriptor {
         return bulkMode;
     }
 
+    /**
+     * @since 9.3
+     * @return true if the GenericMultiThreadImporter should log performance metrics, false otherwise
+     */
+    public Boolean getEnablePerfLogging() {
+        return enablePerfLogging;
+    }
 }

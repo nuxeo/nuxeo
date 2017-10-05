@@ -54,6 +54,8 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
 
     private boolean bulkMode = true;
 
+    protected boolean enablePerfLogging = true;
+
     @Override
     public void importDocuments(String destinationPath, String sourcePath, boolean skipRootContainerCreation,
             int batchSize, int noImportingThreads) {
@@ -90,6 +92,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
                 destinationPath, executor.getLogger()).skipRootContainerCreation(skipRootContainerCreation).batchSize(
                 batchSize).nbThreads(noImportingThreads).repository(repositoryName).build();
         GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(configuration);
+        runner.setEnablePerfLogging(enablePerfLogging);
         runner.setTransactionTimeout(transactionTimeout);
         ImporterFilter filter = new EventServiceConfiguratorFilter(false, false, false, false, bulkMode);
         runner.addFilter(filter);
@@ -222,4 +225,13 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         this.bulkMode = bulkMode;
     }
 
+    @Override
+    public void setEnablePerfLogging(boolean enablePerfLogging) {
+        this.enablePerfLogging = enablePerfLogging;
+    }
+
+    @Override
+    public boolean getEnablePerfLogging() {
+        return this.enablePerfLogging;
+    }
 }
