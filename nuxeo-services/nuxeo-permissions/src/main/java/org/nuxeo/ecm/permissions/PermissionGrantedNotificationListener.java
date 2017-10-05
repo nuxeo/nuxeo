@@ -156,8 +156,16 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
             }
 
             OperationChain chain = new OperationChain("SendMail");
-            chain.add(SendMail.ID).set("from", from).set("to", to).set("HTML", true).set("subject", subject)
-                    .set("message", ACE_GRANTED_TEMPLATE);
+
+            // if there is more than one recipient use "bcc:" instead of "to:" for avoiding email sharing
+            final boolean useBcc = to.size() > 1;
+            chain.add(SendMail.ID)
+                 .set("from", from)
+                 .set("to", useBcc ? null : to)
+                 .set("bcc", useBcc ? to : null)
+                 .set("HTML", true)
+                 .set("subject", subject)
+                 .set("message", ACE_GRANTED_TEMPLATE);
             Framework.getService(AutomationService.class).run(ctx, chain);
         } catch (OperationException e) {
             log.warn("Unable to notify user", e);
