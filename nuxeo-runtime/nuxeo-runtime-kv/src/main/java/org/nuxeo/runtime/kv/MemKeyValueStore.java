@@ -101,16 +101,20 @@ public class MemKeyValueStore extends AbstractKeyValueStoreProvider {
         if (value == null) {
             return false;
         }
+        doSetTTL(key, ttl);
+        return true;
+    }
+
+    protected void doSetTTL(String key, long ttl) {
         if (ttl == 0) {
             map.setExpiration(key, Integer.MAX_VALUE, TimeUnit.DAYS);
         } else {
             map.setExpiration(key, ttl, TimeUnit.SECONDS);
         }
-        return true;
     }
 
     @Override
-    public boolean compareAndSet(String key, byte[] expected, byte[] value) {
+    public boolean compareAndSet(String key, byte[] expected, byte[] value, long ttl) {
         Objects.requireNonNull(key);
         // clone is not needed if the comparison fails
         // but we are optimistic and prefer to do the clone outside the lock
@@ -125,6 +129,7 @@ public class MemKeyValueStore extends AbstractKeyValueStoreProvider {
                     map.remove(key);
                 } else {
                     map.put(key, value);
+                    doSetTTL(key, ttl);
                 }
             }
             return equal;

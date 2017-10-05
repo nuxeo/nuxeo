@@ -107,6 +107,21 @@ public interface KeyValueStore {
     boolean compareAndSet(String key, byte[] expected, byte[] value);
 
     /**
+     * Atomically sets the value associated to the key to the given value, with the given TTL, if the current value is
+     * the expected value.
+     * <p>
+     * Note value comparison is done by value and not by reference.
+     *
+     * @param key the key
+     * @param expected the expected value, which may be {@code null}
+     * @param value the updated value, which may be {@code null}
+     * @param ttl the TTL, in seconds (0 for infinite)
+     * @return {@code true} if the value was updated, or {@code false} if not (the expected value was not found)
+     * @since 9.3
+     */
+    boolean compareAndSet(String key, byte[] expected, byte[] value, long ttl);
+
+    /**
      * Atomically sets the value associated to the key to the given value if the current value is the expected value.
      * <p>
      * Note value comparison is done by value and not by reference.
@@ -118,5 +133,20 @@ public interface KeyValueStore {
      * @since 9.3
      */
     boolean compareAndSet(String key, String expected, String value);
+
+    /**
+     * Atomically sets the value associated to the key to the given value, with the given TTL, if the current value is
+     * the expected value.
+     * <p>
+     * Note value comparison is done by value and not by reference.
+     *
+     * @param key the key
+     * @param expected the expected value, which may be {@code null}
+     * @param value the updated value, which may be {@code null}
+     * @param ttl the TTL, in seconds (0 for infinite)
+     * @return {@code true} if the value was updated, or {@code false} if not (the expected value was not found)
+     * @since 9.3
+     */
+    boolean compareAndSet(String key, String expected, String value, long ttl);
 
 }
