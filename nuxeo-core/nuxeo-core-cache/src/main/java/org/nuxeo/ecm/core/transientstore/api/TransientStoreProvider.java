@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.core.transientstore.api;
 
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Transient Store SPI.
@@ -46,7 +48,16 @@ public interface TransientStoreProvider extends TransientStore {
      *
      * @since 8.3
      */
-    Set<String> keySet();
+    default Set<String> keySet() {
+        return keyStream().collect(Collectors.toSet());
+    }
+
+    /**
+     * Returns a {@link Stream} of keys for all entries.
+     *
+     * @since 9.3
+     */
+    Stream<String> keyStream();
 
     /**
      * Returns the size (in MB) of the disk storage used for blobs.
