@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -82,6 +83,11 @@ public class SimpleTransientStore extends AbstractTransientStore {
         keys.addAll(getL1Cache().asMap().keySet());
         keys.addAll(getL2Cache().asMap().keySet());
         return keys;
+    }
+
+    @Override
+    public Stream<String> keyStream() {
+        return keySet().stream();
     }
 
     @Override

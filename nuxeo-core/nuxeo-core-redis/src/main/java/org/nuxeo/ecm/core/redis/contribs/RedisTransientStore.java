@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -143,13 +143,12 @@ public class RedisTransientStore extends AbstractTransientStore {
     }
 
     @Override
-    public Set<String> keySet() {
-        return redisExecutor.execute((RedisCallable<Set<String>>) jedis -> {
-            return jedis.keys(namespace + "*")
+    public Stream<String> keyStream() {
+        return redisExecutor.execute((RedisCallable<Stream<String>>) jedis -> {
+            return jedis.keys(namespace + "*") //
                         .stream()
                         .map(keyMatcher)
-                        .filter(key -> !SIZE_KEY.equals(key))
-                        .collect(Collectors.toSet());
+                        .filter(key -> !SIZE_KEY.equals(key));
         });
     }
 
