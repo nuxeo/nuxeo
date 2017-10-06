@@ -61,6 +61,7 @@ public class TestDefaultImporterServiceWithMeta {
         String targetPath = "/default-domain/workspaces/";
 
         importerService.importDocuments(targetPath, source.getPath(), false, 5, 5);
+        assertEquals(true, importerService.getEnablePerfLogging());
 
         session.save();
 

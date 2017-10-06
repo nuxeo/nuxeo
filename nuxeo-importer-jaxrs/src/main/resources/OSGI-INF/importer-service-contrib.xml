@@ -4,6 +4,7 @@
   <extension target="org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent" point="importerConfiguration">
    <importerConfig sourceNodeClass ="org.nuxeo.ecm.platform.importer.source.FileWithMetadataSourceNode" >
        <documentModelFactory leafType="File" folderishType="Folder" documentModelFactoryClass="org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory" />
+       <enablePerfLogging>true</enablePerfLogging>
    </importerConfig>
   </extension>
 </component>

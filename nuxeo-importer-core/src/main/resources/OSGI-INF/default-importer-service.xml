@@ -12,6 +12,7 @@
             leafType="File" folderishType="Folder" />
           <repository>default</repository>
           <bulkMode>true</bulkMode>
+          <enablePerfLogging>true</enablePerfLogging>
         </importerConfig>
       </extension>
     </code>

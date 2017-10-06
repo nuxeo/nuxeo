@@ -82,12 +82,14 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
                             .nbThreads(nbThreads)
                             .build();
         GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(configuration);
+        runner.setEnablePerfLogging(Framework.getLocalService(
+                DefaultImporterService.class).getEnablePerfLogging());
 
         ImporterFilter filter = new EventServiceConfiguratorFilter(blockSyncPostCommitProcessing, blockAsyncProcessing,
                 !onlyText, blockIndexing, bulkMode);
         runner.addFilter(filter);
         if (transactionTimeout != null) {
-            Framework.getService(DefaultImporterService.class).setTransactionTimeout(transactionTimeout);
+            runner.setTransactionTimeout(transactionTimeout);
         }
         String res = run(runner, interactive);
         return res;
