@@ -23,7 +23,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,6 +41,7 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.ZipUtils;
+import org.nuxeo.osgi.application.DevMutableClassLoader;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
@@ -45,6 +51,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.util.Watch;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -97,6 +104,11 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         bundle = null;
     }
 
+    /**
+     * @deprecated since 9.3, this method is only used in deployBundles and undeployBundles which are deprecated. Keep
+     *             it for backward compatibility.
+     */
+    @Deprecated
     protected void refreshComponents() {
         String reloadStrategy = Framework.getProperty(RELOAD_STRATEGY_PARAMETER, RELOAD_STRATEGY_VALUE_DEFAULT);
         if (log.isInfoEnabled()) {
@@ -104,7 +116,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
         // reload components / contributions
         ComponentManager mgr = Framework.getRuntime().getComponentManager();
-        switch(reloadStrategy) {
+        switch (reloadStrategy) {
         case RELOAD_STRATEGY_VALUE_UNSTASH:
             // compat mode
             mgr.unstash();
@@ -173,7 +185,11 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         setFlushedNow();
     }
 
+    /**
+     * @deprecated since 9.3 use {@link #reloadBundles(List, List)} instead.
+     */
     @Override
+    @Deprecated
     public void deployBundles(List<File> files, boolean reloadResources) throws BundleException {
         long begin = System.currentTimeMillis();
         List<String> missingNames = files.stream()
@@ -202,22 +218,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         // Deploy bundles
         Transaction tx = TransactionHelper.suspendTransaction();
         try {
-            BundleContext bundleContext = getBundleContext();
-            for (File file : files) {
-                String path = file.getAbsolutePath();
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Before deploy bundle for file at '%s'", path));
-                }
-                Bundle bundle = bundleContext.installBundle(path);
-                if (bundle == null) {
-                    // TODO check why this is necessary, our implementation always return sth
-                    throw new IllegalArgumentException("Could not find a valid bundle at path: " + path);
-                }
-                bundle.start();
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Deploy done for bundle with name '%s'", bundle.getSymbolicName()));
-                }
-            }
+            _deployBundles(files);
             refreshComponents();
         } finally {
             TransactionHelper.resumeTransaction(tx);
@@ -231,7 +232,11 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
     }
 
+    /**
+     * @deprecated since 9.3 use {@link #reloadBundles(List, List)} instead.
+     */
     @Override
+    @Deprecated
     public void undeployBundles(List<String> bundleNames, boolean reloadResources) throws BundleException {
         long begin = System.currentTimeMillis();
         if (log.isInfoEnabled()) {
@@ -241,38 +246,18 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
 
         // Undeploy bundles
-        BundleContext ctx = getBundleContext();
-        ServiceReference ref = ctx.getServiceReference(PackageAdmin.class.getName());
-        PackageAdmin srv = (PackageAdmin) ctx.getService(ref);
         Transaction tx = TransactionHelper.suspendTransaction();
-        // use a stream builder because it is optimized for one element only
-        Stream.Builder<String> paths = Stream.builder();
+        List<URL> undeployedBundleURLs = Collections.emptyList();
         try {
-            for (String bundleName : bundleNames) {
-                for (Bundle bundle : srv.getBundles(bundleName, null)) {
-                    if (bundle != null && bundle.getState() == Bundle.ACTIVE) {
-                        if (log.isInfoEnabled()) {
-                            log.info(String.format("Before undeploy bundle with name '%s'.", bundleName));
-                        }
-                        paths.add(bundle.getLocation());
-                        bundle.stop();
-                        bundle.uninstall();
-                        if (log.isInfoEnabled()) {
-                            log.info(String.format("After undeploy bundle with name '%s'.", bundleName));
-                        }
-                    }
-                }
-            }
+            undeployedBundleURLs = _undeployBundles(bundleNames);
             refreshComponents();
         } finally {
             TransactionHelper.resumeTransaction(tx);
-            ctx.ungetService(ref);
         }
 
         // Reload resources
         if (reloadResources) {
-            List<URL> urls = paths.build().map(File::new).map(this::toURL).collect(Collectors.toList());
-            Framework.reloadResourceLoader(null, urls);
+            Framework.reloadResourceLoader(null, undeployedBundleURLs);
         }
 
         if (log.isInfoEnabled()) {
@@ -283,11 +268,211 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
     }
 
+    @Override
+    public void reloadBundles(List<String> bundlesNamesToUndeploy, List<File> bundlesToDeploy) throws BundleException {
+        Watch watch = new Watch(new LinkedHashMap<>()).start();
+        if (log.isInfoEnabled()) {
+            StringBuilder builder = new StringBuilder("Before updating Nuxeo server\n");
+            Framework.getRuntime().getStatusMessage(builder);
+            log.info(builder.toString());
+        }
+        // get class loader
+        Optional<DevMutableClassLoader> classLoader = Optional.of(getClass().getClassLoader())
+                                                              .filter(DevMutableClassLoader.class::isInstance)
+                                                              .map(DevMutableClassLoader.class::cast);
+
+        // Suspend current transaction
+        Transaction tx = TransactionHelper.suspendTransaction();
+
+        try {
+            // Stop or Standby the component manager
+            ComponentManager componentManager = Framework.getRuntime().getComponentManager();
+            String reloadStrategy = Framework.getProperty(RELOAD_STRATEGY_PARAMETER, RELOAD_STRATEGY_VALUE_DEFAULT);
+            if (log.isInfoEnabled()) {
+                log.info("Component reload strategy=" + reloadStrategy);
+            }
+
+            watch.start("stop/standby");
+            if (RELOAD_STRATEGY_VALUE_RESTART.equals(reloadStrategy)) {
+                componentManager.stop();
+            } else {
+                // standby strategy by default
+                componentManager.standby();
+            }
+            watch.stop("stop/standby");
+
+            List<URL> urlsToAdd = bundlesToDeploy.stream().map(this::toURL).collect(Collectors.toList());
+            List<URL> urlsToRemove = Collections.emptyList();
+
+            // Undeploy bundles
+            if (!bundlesNamesToUndeploy.isEmpty()) {
+                watch.start("undeploy-bundles");
+                log.info("Before undeploy bundles");
+                logComponentManagerStatus();
+
+                urlsToRemove = _undeployBundles(bundlesNamesToUndeploy);
+                componentManager.unstash();
+
+                // Clear the class loader
+                classLoader.ifPresent(DevMutableClassLoader::clearPreviousClassLoader);
+                // TODO shall we do a GC here ? see DevFrameworkBootstrap#clearClassLoader
+
+                log.info("After undeploy bundles");
+                logComponentManagerStatus();
+                watch.stop("undeploy-bundles");
+            }
+
+            // Reload resources
+            watch.start("reload-resources");
+            Framework.reloadResourceLoader(urlsToAdd, urlsToRemove);
+            watch.stop("reload-resources");
+
+            // Deploy bundles
+            if (!bundlesToDeploy.isEmpty()) {
+                watch.start("deploy-bundles");
+                log.info("Before deploy bundles");
+                logComponentManagerStatus();
+
+                // Fill the class loader
+                classLoader.ifPresent(cl -> cl.addClassLoader(urlsToAdd.toArray(new URL[0])));
+
+                _deployBundles(bundlesToDeploy);
+                componentManager.unstash();
+
+                log.info("After deploy bundles");
+                logComponentManagerStatus();
+                watch.stop("deploy-bundles");
+            }
+
+            // Start or Resume the component manager
+            watch.start("start/resume");
+            if (RELOAD_STRATEGY_VALUE_RESTART.equals(reloadStrategy)) {
+                componentManager.start();
+            } else {
+                // standby strategy by default
+                componentManager.resume();
+            }
+            watch.stop("start/resume");
+
+            try {
+                // run deployment preprocessor
+                watch.start("deployment-preprocessor");
+                runDeploymentPreprocessor();
+                watch.stop("deployment-preprocessor");
+            } catch (IOException e) {
+                throw new BundleException("Unable to run deployment preprocessor", e);
+            }
+
+            try {
+                // reload
+                watch.start("reload-properties");
+                reloadProperties();
+                watch.stop("reload-properties");
+            } catch (IOException e) {
+                throw new BundleException("Unable to reload properties", e);
+            }
+        } finally {
+            TransactionHelper.resumeTransaction(tx);
+        }
+        if (log.isInfoEnabled()) {
+            StringBuilder builder = new StringBuilder("After updating Nuxeo server\n");
+            Framework.getRuntime().getStatusMessage(builder);
+            log.info(builder.toString());
+        }
+
+        watch.stop();
+        if (log.isInfoEnabled()) {
+            StringBuilder message = new StringBuilder();
+            message.append("Hot reload was done in ")
+                   .append(watch.getTotal().elapsed(TimeUnit.MILLISECONDS))
+                   .append(" ms, detailed steps:");
+            Stream.of(watch.getIntervals())
+                  .forEach(i -> message.append("\n- ")
+                                       .append(i.getName())
+                                       .append(": ")
+                                       .append(i.elapsed(TimeUnit.MILLISECONDS))
+                                       .append(" ms"));
+            log.info(message.toString());
+        }
+    }
+
+    /*
+     * TODO Change this method name when deployBundles will be removed.
+     */
+    protected void _deployBundles(List<File> bundlesToDeploy) throws BundleException {
+        BundleContext bundleContext = getBundleContext();
+        for (File file : bundlesToDeploy) {
+            String path = file.getAbsolutePath();
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Before deploy bundle for file at '%s'", path));
+            }
+            Bundle bundle = bundleContext.installBundle(path);
+            if (bundle == null) {
+                // TODO check why this is necessary, our implementation always return sth
+                throw new IllegalArgumentException("Could not find a valid bundle at path: " + path);
+            }
+            bundle.start();
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Deploy done for bundle with name '%s'", bundle.getSymbolicName()));
+            }
+        }
+    }
+
+    /*
+     * TODO Change this method name when undeployBundles will be removed.
+     */
+    protected List<URL> _undeployBundles(List<String> bundleNames) throws BundleException {
+        BundleContext ctx = getBundleContext();
+        ServiceReference ref = ctx.getServiceReference(PackageAdmin.class.getName());
+        PackageAdmin srv = (PackageAdmin) ctx.getService(ref);
+        List<URL> bundleURLs = new ArrayList<>(bundleNames.size());
+        try {
+            for (String bundleName : bundleNames) {
+                for (Bundle bundle : srv.getBundles(bundleName, null)) {
+                    if (bundle != null && bundle.getState() == Bundle.ACTIVE) {
+                        if (log.isInfoEnabled()) {
+                            log.info(String.format("Before undeploy bundle with name '%s'.", bundleName));
+                        }
+                        bundleURLs.add(toURL(bundle));
+                        bundle.stop();
+                        bundle.uninstall();
+                        if (log.isInfoEnabled()) {
+                            log.info(String.format("After undeploy bundle with name '%s'.", bundleName));
+                        }
+                    }
+                }
+            }
+        } finally {
+            ctx.ungetService(ref);
+        }
+        return bundleURLs;
+    }
+
+    /**
+     * This method needs to be called before bundle uninstallation, otherwise {@link Bundle#getLocation()} throw a NPE.
+     */
+    protected URL toURL(Bundle bundle) {
+        String location = bundle.getLocation();
+        File file = new File(location);
+        return toURL(file);
+    }
+
     protected URL toURL(File file) {
         try {
             return file.toURI().toURL();
         } catch (MalformedURLException e) {
             throw new RuntimeServiceException(e);
+        }
+    }
+
+    /**
+     * Logs the {@link ComponentManager} status.
+     */
+    protected void logComponentManagerStatus() {
+        if (log.isDebugEnabled()) {
+            StringBuilder builder = new StringBuilder("ComponentManager status:\n");
+            Framework.getRuntime().getStatusMessage(builder);
+            log.debug(builder.toString());
         }
     }
 
@@ -335,7 +520,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     @Override
     public void runDeploymentPreprocessor() throws IOException {
-        long begin = System.currentTimeMillis();
         log.debug("Start running deployment preprocessor");
         String rootPath = Environment.getDefault().getRuntimeHome().getAbsolutePath();
         File root = new File(rootPath);
@@ -345,9 +529,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         // and predeploy
         processor.predeploy();
         log.debug("Deployment preprocessing done");
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Deployment preprocessor was done in %s ms.", System.currentTimeMillis() - begin));
-        }
     }
 
     protected static File getAppDir() {
@@ -374,7 +555,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
         return bundleName;
     }
-
 
     /**
      * @deprecated since 9.3 should not be needed anymore

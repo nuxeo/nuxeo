@@ -58,6 +58,9 @@ public class NuxeoSeamHotReloadContextKeeper implements Serializable {
     @In(create = true)
     protected NuxeoSeamHotReloader seamReload;
 
+    /*
+     * Called from {@link RestfulPhaseListener}.s
+     */
     public void triggerReloadIdNeeded() {
         if (lastCacheKey == null) {
             doLog("No last cache key => no hot reload triggered");

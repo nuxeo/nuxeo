@@ -21,6 +21,7 @@ package org.nuxeo.runtime.util;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -43,9 +44,18 @@ import java.util.concurrent.TimeUnit;
  */
 public class Watch {
 
-    public final TimeInterval total = new TimeInterval("total");
+    public final TimeInterval total;
 
-    public final Map<String, TimeInterval> intervals = new HashMap<>();
+    public final Map<String, TimeInterval> intervals;
+
+    public Watch() {
+        this(new HashMap<>());
+    }
+
+    public Watch(Map<String, TimeInterval> intervals) {
+        this.total = new TimeInterval("total");
+        this.intervals = Objects.requireNonNull(intervals, "Given intervals can't be null");
+    }
 
     public Watch start() {
         // reset if needed

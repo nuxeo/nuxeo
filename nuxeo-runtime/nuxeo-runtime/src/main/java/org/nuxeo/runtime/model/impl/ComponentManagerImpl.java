@@ -945,14 +945,13 @@ public class ComponentManagerImpl implements ComponentManager {
 
     /**
      * Tests whether new registrations should be stashed at registration time. If the component manager was started then
-     * new components should be stashed otherwise they can be registered. When in standby mode components are not
-     * stashed.
+     * new components should be stashed otherwise they can be registered.
      * <p />
      * TODO: current implementation is stashing after the start completion. Should we also stashing while start is in
      * progress?
      */
     protected boolean shouldStash() {
-        return this.started != null && !isFlushingStash;
+        return isRunning() && !isFlushingStash;
     }
 
     protected synchronized void applyStash(Stash stash) {
