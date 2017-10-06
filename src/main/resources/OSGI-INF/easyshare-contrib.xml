@@ -4,16 +4,16 @@
  <extension point="openUrl"
   target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
   <openUrl name="EasyShare">
-   <grantPattern>/nuxeo/site/easyshare/.*</grantPattern>
+   <grantPattern>${org.nuxeo.ecm.contextPath}/site/easyshare/.*</grantPattern>
   </openUrl>
   <openUrl name="EasyShareSkins">
-   <grantPattern>/nuxeo/site/skin/easyshare/.*</grantPattern>
+   <grantPattern>${org.nuxeo.ecm.contextPath}/site/skin/easyshare/.*</grantPattern>
   </openUrl>
   <openUrl name="EasyShareCss">
-   <grantPattern>/nuxeo/site/skin/easyshare/css/.*</grantPattern>
+   <grantPattern>${org.nuxeo.ecm.contextPath}/site/skin/easyshare/css/.*</grantPattern>
   </openUrl>
   <openUrl name="EasyShareImages">
-   <grantPattern>/nuxeo/site/skin/easyshare/image/.*</grantPattern>
+   <grantPattern>${org.nuxeo.ecm.contextPath}/site/skin/easyshare/image/.*</grantPattern>
   </openUrl>
  </extension>
 
