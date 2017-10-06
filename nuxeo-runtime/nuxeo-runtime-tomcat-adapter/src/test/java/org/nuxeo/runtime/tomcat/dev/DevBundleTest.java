@@ -57,11 +57,14 @@ public class DevBundleTest {
         }
     }
 
-
     private void assertDevBundle(String expectedPath, DevBundleType expectedBundleType, DevBundle actualDevBundle) {
         // no name extracted from file
         assertNull(actualDevBundle.getName());
-        assertEquals(expectedPath, actualDevBundle.getPath());
+        // we can't use getPath() here because it is using a File to get absolute path
+        // this causes assertions errors on windows and replacement made by new File(..).getAbsolutePath() could lead to
+        // errors in case of several root under windows
+        // so directly assert the path field which contains the exact value from test resources
+        assertEquals(expectedPath, actualDevBundle.path);
         assertEquals(expectedBundleType, actualDevBundle.getDevBundleType());
     }
 
