@@ -113,7 +113,9 @@ public interface ReloadService extends TimestampedService {
      *
      * @since 5.5
      * @see #deployBundles(List, boolean)
+     * @deprecated since 9.3 use {@link #reloadBundles(List, List)} instead. Kept for backward compatibility.
      */
+    @Deprecated
     default void deployBundle(File file) throws BundleException {
         deployBundle(file, false);
     }
@@ -123,7 +125,9 @@ public interface ReloadService extends TimestampedService {
      *
      * @since 5.5
      * @see #deployBundles(List, boolean)
+     * @deprecated since 9.3 use {@link #reloadBundles(List, List)} instead. Kept for backward compatibility.
      */
+    @Deprecated
     default void deployBundle(File file, boolean reloadResources) throws BundleException {
         deployBundles(Collections.singletonList(file), reloadResources);
     }
@@ -133,7 +137,9 @@ public interface ReloadService extends TimestampedService {
      *
      * @since 9.3
      * @see #deployBundles(List, boolean)
+     * @deprecated since 9.3 use {@link #reloadBundles(List, List)} instead. Kept for backward compatibility.
      */
+    @Deprecated
     default void deployBundles(List<File> files) throws BundleException {
         deployBundles(files, false);
     }
@@ -142,7 +148,9 @@ public interface ReloadService extends TimestampedService {
      * Deploys bundles to the runtime, gives possibility to control resources reloading.
      *
      * @since 9.3
+     * @deprecated since 9.3 use {@link #reloadBundles(List, List)} instead. Kept for backward compatibility.
      */
+    @Deprecated
     void deployBundles(List<File> files, boolean reloadResources) throws BundleException;
 
     /**
@@ -150,7 +158,9 @@ public interface ReloadService extends TimestampedService {
      *
      * @since 5.6
      * @see #undeployBundles(List, boolean)
+     * @deprecated since 9.3 use {@link #reloadBundles(List, List)} instead. Kept for backward compatibility.
      */
+    @Deprecated
     default void undeployBundle(String bundleName) throws BundleException {
         undeployBundle(bundleName, false);
     }
@@ -160,7 +170,9 @@ public interface ReloadService extends TimestampedService {
      *
      * @since 9.3
      * @see #undeployBundles(List, boolean)
+     * @deprecated since 9.3 use {@link #reloadBundles(List, List)} instead. Kept for backward compatibility.
      */
+    @Deprecated
     default void undeployBundle(String bundleName, boolean reloadResources) throws BundleException {
         undeployBundles(Collections.singletonList(bundleName), reloadResources);
     }
@@ -170,7 +182,9 @@ public interface ReloadService extends TimestampedService {
      *
      * @since 9.3
      * @see #undeployBundles(List, boolean)
+     * @deprecated since 9.3 use {@link #reloadBundles(List, List)} instead. Kept for backward compatibility.
      */
+    @Deprecated
     default void undeployBundles(List<String> bundleNames) throws BundleException {
         undeployBundles(bundleNames, false);
     }
@@ -179,8 +193,17 @@ public interface ReloadService extends TimestampedService {
      * Undeploys bundles from the runtime, gives possibility to control resources reloading.
      *
      * @since 9.3
+     * @deprecated since 9.3 use {@link #reloadBundles(List, List)} instead. Kept for backward compatibility.
      */
+    @Deprecated
     void undeployBundles(List<String> bundleNames, boolean reloadResources) throws BundleException;
+
+    /**
+     * Called by ReloadServiceInvoker#hotReloadBundles.
+     *
+     * @since 9.3
+     */
+    void reloadBundles(List<String> bundlesNamesToUndeploy, List<File> bundlesToDeploy) throws BundleException;
 
     /**
      * Runs the deployment preprocessor.

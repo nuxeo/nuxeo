@@ -54,3 +54,6 @@ nuxeo.cache.type=redis
 nuxeo.cache.ttl=20
 nuxeo.cache.maxsize=100
 nuxeo.cache.concurrencylevel=500
+
+# boolean to switch back to former hot reload mechanism
+nuxeo.hotreload.former.mechanism=false

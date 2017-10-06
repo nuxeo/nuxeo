@@ -30,15 +30,31 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 
-import org.nuxeo.osgi.application.MutableClassLoader;
+import org.nuxeo.osgi.application.DevMutableClassLoader;
 import org.nuxeo.runtime.tomcat.NuxeoWebappClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 
-public class NuxeoDevWebappClassLoader extends NuxeoWebappClassLoader implements MutableClassLoader,
+public class NuxeoDevWebappClassLoader extends NuxeoWebappClassLoader implements DevMutableClassLoader,
         WebResourcesCacheFlusher {
+
+    /**
+     * @since 9.3
+     */
+    @Override
+    public void clearPreviousClassLoader() {
+        clear();
+    }
+
+    /**
+     * @since 9.3
+     */
+    @Override
+    public void addClassLoader(URL... urls) {
+        createLocalClassLoader(urls);
+    }
 
     public LocalClassLoader createLocalClassLoader(URL... urls) {
         LocalClassLoader cl = new LocalURLClassLoader(urls, this);

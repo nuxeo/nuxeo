@@ -48,7 +48,7 @@ public class DevBundle implements Serializable {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
             List<DevBundle> bundles = new ArrayList<>();
             String line;
-                while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 line = line.trim();
                 if (line.length() > 0 && !line.startsWith("#")) {
                     bundles.add(parseDevBundleLine(line));
@@ -92,6 +92,16 @@ public class DevBundle implements Serializable {
      */
     public DevBundleType getDevBundleType() {
         return devBundleType;
+    }
+
+    /**
+     * Converts the {@link DevBundle} to String with the same format as the one expected in
+     * {@link DevBundle#parseDevBundleLine(String) parseDevBundleLine}.
+     *
+     * @since 9.3
+     */
+    public String toString() {
+        return devBundleType.toString().toLowerCase() + ':' + path;
     }
 
 }

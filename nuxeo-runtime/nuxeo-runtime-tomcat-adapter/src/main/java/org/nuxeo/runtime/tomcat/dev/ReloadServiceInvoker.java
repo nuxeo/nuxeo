@@ -42,6 +42,11 @@ public class ReloadServiceInvoker {
     protected Method undeployBundles;
 
     /**
+     * @since 9.3
+     */
+    protected Method reloadBundles;
+
+    /**
      * Method to run the deployment preprocessor, previously handled by the deployBundle method
      *
      * @since 5.6
@@ -76,9 +81,9 @@ public class ReloadServiceInvoker {
         Class<?> reloadServiceClass = cl.loadClass("org.nuxeo.runtime.reload.ReloadService");
         Method getLocalService = frameworkClass.getDeclaredMethod("getLocalService", Class.class);
         reloadService = getLocalService.invoke(null, reloadServiceClass);
-        // TODO REVIEW - should we reload resources when deploying and undeploying ?
         deployBundles = reloadServiceClass.getDeclaredMethod("deployBundles", List.class);
         undeployBundles = reloadServiceClass.getDeclaredMethod("undeployBundles", List.class);
+        reloadBundles = reloadServiceClass.getDeclaredMethod("reloadBundles", List.class, List.class);
         runDeploymentPreprocessor = reloadServiceClass.getDeclaredMethod("runDeploymentPreprocessor");
         installWebResources = reloadServiceClass.getDeclaredMethod("installWebResources", File.class);
         flush = reloadServiceClass.getDeclaredMethod("flush");
@@ -88,6 +93,11 @@ public class ReloadServiceInvoker {
         getOSGIBundleName = reloadServiceClass.getDeclaredMethod("getOSGIBundleName", File.class);
     }
 
+    /**
+     * @deprecated since 9.3, use {@link #hotReloadBundles(DevBundle[], DevBundle[])} instead, keep it for backward
+     *             compatibility
+     */
+    @Deprecated
     public void hotDeployBundles(DevBundle[] bundles) throws ReflectiveOperationException {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
@@ -128,6 +138,11 @@ public class ReloadServiceInvoker {
         }
     }
 
+    /**
+     * @deprecated since 9.3, use {@link #hotReloadBundles(DevBundle[], DevBundle[])} instead, keep it for backward
+     *             compatibility
+     */
+    @Deprecated
     public void hotUndeployBundles(DevBundle[] bundles) throws ReflectiveOperationException {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
@@ -153,14 +168,62 @@ public class ReloadServiceInvoker {
         }
     }
 
+    public void hotReloadBundles(DevBundle[] devBundlesToUndeploy, DevBundle[] devBundlesToDeploy)
+            throws ReflectiveOperationException {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(reloadService.getClass().getClassLoader());
+
+            // Try to not flush in this implementation, also don't reload seam components
+            // Wasn't able to not flush, seam context need it to reload several stuffs, keep it here for now and check
+            // if we can do that just on seam layer
+            // fyi:
+            // - seam use ReloadComponent#lastFlushed() to trigger the refresh
+            // - in jsf ui there's action to trigger a flush (under the user dropdown), try to decouple flush and reload
+            flush();
+
+            List<String> bundlesNamesToUndeploy = Stream.of(devBundlesToUndeploy)
+                                                        .filter(bundle -> bundle.devBundleType == DevBundleType.Bundle)
+                                                        .map(DevBundle::getName)
+                                                        .filter(Objects::nonNull)
+                                                        .collect(Collectors.toList());
+
+            // don't use stream here, cause of ReflectiveOperationException
+            List<File> bundlesToDeploy = new ArrayList<>(devBundlesToDeploy.length);
+            for (DevBundle bundle : devBundlesToDeploy) {
+                if (bundle.getDevBundleType() == DevBundleType.Bundle) {
+                    File file = bundle.file();
+                    // fill dev bundle with its OSGI bundle name in order to allow SDK to undeploy them
+                    // this is how admin center get bundle name
+                    bundle.name = getOSGIBundleName(file);
+                    bundlesToDeploy.add(file);
+                }
+            }
+
+            // update Nuxeo server
+            reloadBundles(bundlesNamesToUndeploy, bundlesToDeploy);
+        } finally {
+            Thread.currentThread().setContextClassLoader(cl);
+        }
+    }
+
+    /**
+     * @deprecated since 9.3, use {@link #reloadBundles(List, List)} instead. Kept for backward compatibility.
+     */
     protected void deployBundles(List<File> files) throws ReflectiveOperationException {
-        // instantiate an object array in order to prevent array to var-args
         deployBundles.invoke(reloadService, files);
     }
 
+    /**
+     * @deprecated since 9.3, use {@link #reloadBundles(List, List)} instead. Kept for backward compatibility.
+     */
     protected void undeployBundles(List<String> bundleNames) throws ReflectiveOperationException {
-        // instantiate an object array in order to prevent array to var-args
         undeployBundles.invoke(reloadService, bundleNames);
+    }
+
+    protected void reloadBundles(List<String> bundlesNamesToUndeploy, List<File> bundlesToDeploy)
+            throws ReflectiveOperationException {
+        reloadBundles.invoke(reloadService, bundlesNamesToUndeploy, bundlesToDeploy);
     }
 
     protected void flush() throws ReflectiveOperationException {
