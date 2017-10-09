@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.runtime.stream.service" version="1.0">
+
+  <documentation>
+    The component allows to register log configurations and Log and Stream processors.
+  </documentation>
+
+  <implementation class="org.nuxeo.runtime.stream.StreamServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.runtime.stream.StreamService" />
+  </service>
+
+  <extension-point name="logConfig">
+    <object class="org.nuxeo.runtime.stream.LogConfigDescriptor" />
+  </extension-point>
+
+  <extension-point name="streamProcessor">
+    <object class="org.nuxeo.runtime.stream.StreamProcessorDescriptor" />
+  </extension-point>
+
+</component>

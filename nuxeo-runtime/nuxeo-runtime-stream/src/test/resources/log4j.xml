@@ -45,19 +45,11 @@
     <priority value="WARN" />
   </category>
 
-  <category name="org.nuxeo.lib.stream">
+  <category name="org.nuxeo.runtime.osgi.OSGiRuntimeService">
     <priority value="WARN" />
   </category>
 
-  <category name="org.nuxeo.lib.stream.log.kafka">
-    <priority value="WARN" />
-  </category>
-
-  <category name="org.nuxeo.lib.stream.computation">
-    <priority value="WARN" />
-  </category>
-
-  <category name="org.nuxeo.lib.stream.tests.computation">
+  <category name="com.codahale.metrics.jvm">
     <priority value="WARN" />
   </category>
 
