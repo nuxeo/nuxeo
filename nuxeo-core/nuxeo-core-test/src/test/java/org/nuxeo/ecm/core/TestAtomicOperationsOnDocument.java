@@ -21,6 +21,7 @@
 package org.nuxeo.ecm.core;
 
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
@@ -158,6 +159,7 @@ public class TestAtomicOperationsOnDocument {
     }
 
     @Test
+    @Ignore
     public void testExceptionWhenCreatingDocumentInAnotherThread() throws Exception {
 
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
