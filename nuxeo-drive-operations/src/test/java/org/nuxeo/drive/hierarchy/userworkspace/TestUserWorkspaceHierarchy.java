@@ -163,6 +163,9 @@ public class TestUserWorkspaceHierarchy {
 
         storageConfiguration = coreFeature.getStorageConfiguration();
 
+        // Create user workspace for Administrator
+        userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
+
         // Create test user
         createUser("user1", "user1");
 
