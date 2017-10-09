@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-SymbolicName: org.nuxeo.lib.core.mqueues;singleton:=true
+Bundle-Name: MQueues Core
+Bundle-Vendor: Nuxeo
