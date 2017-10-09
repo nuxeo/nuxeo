@@ -19,8 +19,10 @@
 
 package org.nuxeo.ecm.admin.operation;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
@@ -29,8 +31,10 @@ import org.nuxeo.connect.connector.ConnectServerError;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.packages.PackageManager;
+import org.nuxeo.connect.packages.dependencies.DependencyResolution;
 import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
 import org.nuxeo.connect.update.LocalPackage;
+import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageUpdateService;
@@ -42,10 +46,15 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Operation to trigger a Hot reload of the Studio Snapshot package. You must be an administrator to trigger it.
@@ -71,46 +80,110 @@ public class HotReloadStudioSnapshot {
     protected boolean validate = true;
 
     @OperationMethod
-    public void run() throws Exception {
+    public Blob run() {
+
+        JSONArray result = new JSONArray();
+        JSONObject resultJSON = new JSONObject();
+
         if (updateInProgress) {
-            return;
+            resultJSON.put("status", "inProgress");
+            result.add(resultJSON);
+            return Blobs.createJSONBlob(result.toString());
         }
 
         if (!((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
-            throw new NuxeoException("Must be Administrator to use this function");
+            resultJSON.put("status", "error");
+            resultJSON.put("message", "Must be Administrator to use this function");
+            result.add(resultJSON);
+            return Blobs.createJSONBlob(result.toString());
         }
 
         if (!Framework.isDevModeSet()) {
-            throw new NuxeoException("You must enable Dev mode to Hot reload your Studio Snapshot package.");
+            resultJSON.put("status", "error");
+            resultJSON.put("message", "You must enable Dev mode to Hot reload your Studio Snapshot package.");
+            result.add(resultJSON);
+            return Blobs.createJSONBlob(result.toString());
         }
 
         List<DownloadablePackage> pkgs = pm.listRemoteAssociatedStudioPackages();
         DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
 
         if (snapshotPkg == null) {
-            throw new NuxeoException("No Snapshot Package was found.");
+            resultJSON.put("status", "error");
+            resultJSON.put("message", "No Snapshot Package was found.");
+            result.add(resultJSON);
+            return Blobs.createJSONBlob(result.toString());
         }
 
         try {
             updateInProgress = true;
-            hotReloadPackage(snapshotPkg);
+            hotReloadPackage(snapshotPkg, resultJSON);
+            result.add(resultJSON);
+            return Blobs.createJSONBlob(result.toString());
         } finally {
             updateInProgress = false;
         }
     }
 
-    public void hotReloadPackage(DownloadablePackage remotePkg) {
+    public void hotReloadPackage(DownloadablePackage remotePkg, JSONObject resultJSON) {
+
         if (validate) {
             pm.flushCache();
 
             String targetPlatform = PlatformVersionHelper.getPlatformFilter();
             if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(remotePkg, targetPlatform)) {
-                throw new NuxeoException(
+                resultJSON.put("status", "error");
+                resultJSON.put("message",
                         String.format("This package is not validated for your current platform: %s", targetPlatform));
+                return;
+            }
+
+            PackageDependency[] pkgDeps = remotePkg.getDependencies();
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("%s target platforms: %s", remotePkg,
+                        ArrayUtils.toString(remotePkg.getTargetPlatforms())));
+                log.debug(String.format("%s dependencies: %s", remotePkg, ArrayUtils.toString(pkgDeps)));
+            }
+
+            String packageId = remotePkg.getId();
+
+            // check deps requirements
+            if (pkgDeps != null && pkgDeps.length > 0) {
+                DependencyResolution resolution = pm.resolveDependencies(packageId, targetPlatform);
+                if (resolution.isFailed() && targetPlatform != null) {
+                    // retry without PF filter in case it gives more information
+                    resolution = pm.resolveDependencies(packageId, null);
+                }
+                if (resolution.isFailed()) {
+                    resultJSON.put("status", "dependency_error");
+                    resultJSON.put("message",
+                            String.format("Dependency check has failed for package '%s' (%s)", packageId, resolution));
+                    return;
+                } else {
+                    List<String> pkgToInstall = resolution.getInstallPackageIds();
+                    if (pkgToInstall != null && pkgToInstall.size() == 1 && packageId.equals(pkgToInstall.get(0))) {
+                        // ignore
+                    } else if (resolution.requireChanges()) {
+                        // do not install needed deps: they may not be hot-reloadable and that's not what the
+                        // "update snapshot" button is for.
+                        // status.addError(resolution.toString().trim().replaceAll("\n", "<br />"));
+                        List<String> dependencies = new ArrayList<>();
+                        for (String dependency : resolution.getInstallPackageNames()) {
+                            if (!dependency.contains(remotePkg.getName())) {
+                                dependencies.add(dependency);
+                            }
+                        }
+                        resultJSON.put("status", "dependency_error");
+                        resultJSON.put("message",
+                                "A dependency mismatch has been detected. Please check your Studio project settings and your server configuration.");
+                        resultJSON.put("deps", dependencies);
+                        return;
+                    }
+                }
             }
         }
 
-        // Effective install
+        // Install
         try {
             PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
             String packageId = remotePkg.getId();
@@ -128,7 +201,6 @@ public class HotReloadStudioSnapshot {
                 Thread.sleep(100);
             }
 
-            // Install
             log.info("Installing " + packageId);
             pkg = pus.getPackage(packageId);
             if (pkg == null || PackageState.DOWNLOADED != pkg.getPackageState()) {
@@ -137,6 +209,8 @@ public class HotReloadStudioSnapshot {
             Task installTask = pkg.getInstallTask();
             try {
                 performTask(installTask);
+                resultJSON.put("status", "success");
+                resultJSON.put("message", "Studio package installed.");
             } catch (PackageException e) {
                 installTask.rollback();
                 throw e;
@@ -147,6 +221,7 @@ public class HotReloadStudioSnapshot {
         } catch (PackageException | ConnectServerError e) {
             throw new NuxeoException("Error while installing studio snapshot", e);
         }
+
     }
 
     protected static void removePackage(PackageUpdateService pus, LocalPackage pkg) throws PackageException {
