@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.runtime.stream.kafka.service" version="1.0">
+
+  <documentation>
+    The component allows to register Kafka configuration and producer and consumer properties.
+  </documentation>
+
+  <implementation class="org.nuxeo.runtime.kafka.KafkaConfigServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.runtime.kafka.KafkaConfigService" />
+  </service>
+
+  <extension-point name="kafkaConfig">
+    <object class="org.nuxeo.runtime.kafka.KafkaConfigDescriptor" />
+  </extension-point>
+
+</component>

@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
-Bundle-SymbolicName: org.nuxeo.lib.core.mqueues;singleton:=true
-Bundle-Name: MQueues Core
+Bundle-SymbolicName: org.nuxeo.lib.stream;singleton:=true
+Bundle-Name: Nuxeo Stream
 Bundle-Vendor: Nuxeo

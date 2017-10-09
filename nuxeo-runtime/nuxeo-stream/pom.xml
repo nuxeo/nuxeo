@@ -8,17 +8,13 @@
   </parent>
 
   <artifactId>nuxeo-stream</artifactId>
-  <groupId>org.nuxeo.lib.core</groupId>
+  <groupId>org.nuxeo.lib.stream</groupId>
   <name>Nuxeo Stream</name>
   <description>Nuxeo stream is a log based message broker with with computation stream pattern. Not tied to
     Nuxeo.
   </description>
 
   <dependencies>
-    <dependency>
-      <groupId>com.codahale.metrics</groupId>
-      <artifactId>metrics-core</artifactId>
-    </dependency>
     <dependency>
       <groupId>net.openhft</groupId>
       <artifactId>chronicle-queue</artifactId>
@@ -34,10 +30,6 @@
     <dependency>
       <groupId>net.openhft</groupId>
       <artifactId>chronicle-bytes</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>net.jodah</groupId>
-      <artifactId>failsafe</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -63,7 +55,7 @@
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
     </dependency>
- </dependencies>
+  </dependencies>
 
   <build>
     <plugins>
@@ -78,6 +70,26 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>kafka</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <kafka>true</kafka>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <properties>
     <it.failsafe.argLine>-Xloggc:gc.log -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps
     </it.failsafe.argLine>

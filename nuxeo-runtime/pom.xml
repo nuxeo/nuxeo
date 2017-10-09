@@ -17,6 +17,7 @@
 
   <modules>
     <module>nuxeo-stream</module>
+    <module>nuxeo-runtime-stream</module>
     <module>nuxeo-runtime</module>
     <module>nuxeo-runtime-deploy</module>
     <module>nuxeo-runtime-reload</module>

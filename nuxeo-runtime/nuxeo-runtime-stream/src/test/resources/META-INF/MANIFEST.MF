@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Runtime Stream Test
+Bundle-SymbolicName: org.nuxeo.runtime.stream.test;singleton:=true
+Bundle-Vendor: Nuxeo
