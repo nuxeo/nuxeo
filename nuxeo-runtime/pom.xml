@@ -16,6 +16,7 @@
   <description>Nuxeo Runtime: Parent.</description>
 
   <modules>
+    <module>nuxeo-stream</module>
     <module>nuxeo-runtime</module>
     <module>nuxeo-runtime-deploy</module>
     <module>nuxeo-runtime-reload</module>
