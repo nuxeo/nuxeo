@@ -64,6 +64,14 @@ import net.sf.json.JSONObject;
 @Operation(id = HotReloadStudioSnapshot.ID, category = Constants.CAT_SERVICES, label = "Hot Reload Studio Snapshot Package", description = "Updates Studio project with latest snapshot.")
 public class HotReloadStudioSnapshot {
 
+    protected static final String inProgress = "updateInProgress";
+
+    protected static final String success = "success";
+
+    protected static final String error = "error";
+
+    protected static final String dependencyMismatch = "dependencyMismatch";
+
     public static final String ID = "Service.HotReloadStudioSnapshot";
 
     protected static boolean updateInProgress = false;
@@ -86,56 +94,42 @@ public class HotReloadStudioSnapshot {
         JSONObject resultJSON = new JSONObject();
 
         if (updateInProgress) {
-            resultJSON.put("status", "inProgress");
-            result.add(resultJSON);
-            return Blobs.createJSONBlob(result.toString());
+            return jsonHelper(inProgress, "Update in progress.", null);
         }
 
         if (!((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
-            resultJSON.put("status", "error");
-            resultJSON.put("message", "Must be Administrator to use this function");
-            result.add(resultJSON);
-            return Blobs.createJSONBlob(result.toString());
+            return jsonHelper(error, "Must be Administrator to use this function.", null);
         }
 
         if (!Framework.isDevModeSet()) {
-            resultJSON.put("status", "error");
-            resultJSON.put("message", "You must enable Dev mode to Hot reload your Studio Snapshot package.");
-            result.add(resultJSON);
-            return Blobs.createJSONBlob(result.toString());
+            return jsonHelper(error, "You must enable Dev mode to Hot reload your Studio Snapshot package.", null);
         }
 
         List<DownloadablePackage> pkgs = pm.listRemoteAssociatedStudioPackages();
         DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
 
         if (snapshotPkg == null) {
-            resultJSON.put("status", "error");
-            resultJSON.put("message", "No Snapshot Package was found.");
-            result.add(resultJSON);
-            return Blobs.createJSONBlob(result.toString());
+            return jsonHelper(error, "No Snapshot Package was found.", null);
         }
 
         try {
             updateInProgress = true;
-            hotReloadPackage(snapshotPkg, resultJSON);
-            result.add(resultJSON);
-            return Blobs.createJSONBlob(result.toString());
+            return hotReloadPackage(snapshotPkg);
         } finally {
             updateInProgress = false;
         }
     }
 
-    public void hotReloadPackage(DownloadablePackage remotePkg, JSONObject resultJSON) {
+    public Blob hotReloadPackage(DownloadablePackage remotePkg) {
 
         if (validate) {
             pm.flushCache();
 
             String targetPlatform = PlatformVersionHelper.getPlatformFilter();
             if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(remotePkg, targetPlatform)) {
-                resultJSON.put("status", "error");
-                resultJSON.put("message",
-                        String.format("This package is not validated for your current platform: %s", targetPlatform));
-                return;
+                return jsonHelper(error,
+                        String.format("This package is not validated for your current platform: %s", targetPlatform),
+                        null);
             }
 
             PackageDependency[] pkgDeps = remotePkg.getDependencies();
@@ -155,10 +149,9 @@ public class HotReloadStudioSnapshot {
                     resolution = pm.resolveDependencies(packageId, null);
                 }
                 if (resolution.isFailed()) {
-                    resultJSON.put("status", "dependency_error");
-                    resultJSON.put("message",
-                            String.format("Dependency check has failed for package '%s' (%s)", packageId, resolution));
-                    return;
+                    return jsonHelper(dependencyMismatch,
+                            String.format("Dependency check has failed for package '%s' (%s)", packageId, resolution),
+                            null);
                 } else {
                     List<String> pkgToInstall = resolution.getInstallPackageIds();
                     if (pkgToInstall != null && pkgToInstall.size() == 1 && packageId.equals(pkgToInstall.get(0))) {
@@ -166,18 +159,16 @@ public class HotReloadStudioSnapshot {
                     } else if (resolution.requireChanges()) {
                         // do not install needed deps: they may not be hot-reloadable and that's not what the
                         // "update snapshot" button is for.
-                        // status.addError(resolution.toString().trim().replaceAll("\n", "<br />"));
+                        // Returns missing dependencies in message instead of status
                         List<String> dependencies = new ArrayList<>();
                         for (String dependency : resolution.getInstallPackageNames()) {
                             if (!dependency.contains(remotePkg.getName())) {
                                 dependencies.add(dependency);
                             }
                         }
-                        resultJSON.put("status", "dependency_error");
-                        resultJSON.put("message",
-                                "A dependency mismatch has been detected. Please check your Studio project settings and your server configuration.");
-                        resultJSON.put("deps", dependencies);
-                        return;
+                        return jsonHelper(dependencyMismatch,
+                                "A dependency mismatch has been detected. Please check your Studio project settings and your server configuration.",
+                                dependencies);
                     }
                 }
             }
@@ -209,8 +200,7 @@ public class HotReloadStudioSnapshot {
             Task installTask = pkg.getInstallTask();
             try {
                 performTask(installTask);
-                resultJSON.put("status", "success");
-                resultJSON.put("message", "Studio package installed.");
+                return jsonHelper(success, "Studio package installed.", null);
             } catch (PackageException e) {
                 installTask.rollback();
                 throw e;
@@ -251,5 +241,17 @@ public class HotReloadStudioSnapshot {
                     + validationStatus.getWarnings());
         }
         task.run(null);
+    }
+
+    protected static Blob jsonHelper(String status, String message, List<String> dependencies) {
+        JSONObject resultJSON = new JSONObject();
+        JSONArray result = new JSONArray();
+        resultJSON.put("status", status);
+        resultJSON.put("message", message);
+        if (dependencies != null) {
+            resultJSON.put("deps", dependencies);
+        }
+        result.add(resultJSON);
+        return Blobs.createJSONBlob(result.toString());
     }
 }
