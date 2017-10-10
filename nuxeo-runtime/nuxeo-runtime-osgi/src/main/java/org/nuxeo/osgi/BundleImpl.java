@@ -59,6 +59,8 @@ public class BundleImpl implements Bundle {
 
     protected final BundleFile file;
 
+    protected final String location;
+
     protected final ClassLoader loader;
 
     protected int state;
@@ -80,6 +82,7 @@ public class BundleImpl implements Bundle {
         this.osgi = osgi;
         this.loader = loader;
         this.file = file;
+        this.location = file.getLocation();
         Manifest mf = file.getManifest();
         if (mf == null) {
             headers = null;
@@ -133,7 +136,7 @@ public class BundleImpl implements Bundle {
 
     @Override
     public String getLocation() {
-        return file.getLocation();
+        return location;
     }
 
     @Override

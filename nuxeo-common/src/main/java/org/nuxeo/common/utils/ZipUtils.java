@@ -26,8 +26,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.CopyOption;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.function.Function;
@@ -48,6 +58,45 @@ public final class ZipUtils {
 
     // This is an utility class
     private ZipUtils() {
+    }
+
+    /**
+     * Zips recursively the content of {@code source} to the {@code target} zip file.
+     *
+     * @since 9.3
+     */
+    public static Path zipDirectory(Path source, Path target, CopyOption... options) throws IOException {
+        if (!Files.isDirectory(source)) {
+            throw new IllegalArgumentException("Source argument must be a directory to zip");
+        }
+        // locate file system by using the syntax defined in java.net.JarURLConnection
+        URI uri = URI.create("jar:file:" + target.toString());
+
+        try (FileSystem zipfs = FileSystems.newFileSystem(uri, Collections.singletonMap("create", "true"))) {
+            Files.walkFileTree(source, new SimpleFileVisitor<java.nio.file.Path>() {
+
+                @Override
+                public FileVisitResult preVisitDirectory(java.nio.file.Path dir, BasicFileAttributes attrs) throws IOException {
+                    if (source.equals(dir)) {
+                        // don't process root element
+                        return FileVisitResult.CONTINUE;
+                    }
+                    return visitFile(dir, attrs);
+                }
+
+                @Override
+                public FileVisitResult visitFile(java.nio.file.Path file, BasicFileAttributes attrs) throws IOException {
+                    // retrieve the destination path in zip
+                    java.nio.file.Path relativePath = source.relativize(file);
+                    java.nio.file.Path pathInZipFile = zipfs.getPath(relativePath.toString());
+                    // copy a file into the zip file
+                    Files.copy(file, pathInZipFile, options);
+                    return FileVisitResult.CONTINUE;
+                }
+
+            });
+        }
+        return target;
     }
 
     // _____________________________ ZIP ________________________________
@@ -281,7 +330,7 @@ public final class ZipUtils {
     }
 
     private static Predicate<ZipEntry> toPredicate(PathFilter filter) {
-        return entry -> filter.accept(new Path(entry.getName()));
+        return entry -> filter.accept(new org.nuxeo.common.utils.Path(entry.getName()));
     }
 
     // ________________ Entries ________________

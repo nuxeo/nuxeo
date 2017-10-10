@@ -201,9 +201,10 @@ public interface ReloadService extends TimestampedService {
     /**
      * Called by ReloadServiceInvoker#hotReloadBundles.
      *
+     * @return the result of hot reload operation
      * @since 9.3
      */
-    void reloadBundles(List<String> bundlesNamesToUndeploy, List<File> bundlesToDeploy) throws BundleException;
+    ReloadResult reloadBundles(ReloadContext context) throws BundleException;
 
     /**
      * Runs the deployment preprocessor.
