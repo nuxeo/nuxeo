@@ -215,7 +215,7 @@ public class MetricsDescriptor implements Serializable {
         public static final String ENABLED_PROPERTY = "metrics.log4j.enabled";
 
         @XNode("@enabled")
-        protected boolean enabled = Boolean.getBoolean(Framework.getProperty(ENABLED_PROPERTY, "false"));
+        protected boolean enabled = Boolean.parseBoolean(Framework.getProperty(ENABLED_PROPERTY, "false"));
 
         private InstrumentedAppender appender;
 
@@ -230,6 +230,7 @@ public class MetricsDescriptor implements Serializable {
             }
             LogFactory.getLog(MetricsServiceImpl.class).info(this);
             appender = new InstrumentedAppender(registry);
+            appender.activateOptions();
             LogManager.getRootLogger().addAppender(appender);
         }
 
