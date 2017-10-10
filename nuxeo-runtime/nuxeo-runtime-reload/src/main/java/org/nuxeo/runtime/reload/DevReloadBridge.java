@@ -52,8 +52,8 @@ public class DevReloadBridge {
     public Map<String, String> reloadBundles(List<String> bundleNamesToUndeploy, List<File> bundlesToDeploy) {
         ReloadService reloadService = Framework.getService(ReloadService.class);
 
-        ReloadContext context = new ReloadContext().undeploy(bundleNamesToUndeploy.toArray(new String[0]))
-                                                   .deploy(bundlesToDeploy.toArray(new File[0]));
+        ReloadContext context = new ReloadContext("dev-bundles").undeploy(bundleNamesToUndeploy)
+                                                                .deploy(bundlesToDeploy);
 
         try {
             // reload server
@@ -62,8 +62,7 @@ public class DevReloadBridge {
             // furthermore, we just need the deployed bundles list in DevFrameworkBootstrap
             return result.deployedBundles()
                          .stream()
-                         .collect(Collectors.toMap(Bundle::getSymbolicName, Bundle
-                                 ::getLocation));
+                         .collect(Collectors.toMap(Bundle::getSymbolicName, Bundle::getLocation));
         } catch (BundleException e) {
             throw new RuntimeServiceException("Unable to reload server", e);
         }

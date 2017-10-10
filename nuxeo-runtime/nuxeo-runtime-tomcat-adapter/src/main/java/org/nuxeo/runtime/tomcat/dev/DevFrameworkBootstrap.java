@@ -63,6 +63,8 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
 
     public static final String USE_FORMER_HOT_RELOAD = "nuxeo.hotreload.former.mechanism";
 
+    protected static final String DEV_BUNDLES_CP = "dev-bundles/*";
+
     protected final Log log = LogFactory.getLog(DevFrameworkBootstrap.class);
 
     protected DevBundle[] devBundles;
@@ -108,6 +110,13 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
         server.registerMBean(this, new ObjectName(DEV_BUNDLES_NAME));
         server.registerMBean(cl, new ObjectName(WEB_RESOURCES_NAME));
+    }
+
+    @Override
+    protected void initializeEnvironment() throws IOException {
+        super.initializeEnvironment();
+        // add the dev-bundles to classpath
+        env.computeIfPresent(BUNDLES, (k, v) -> v + ":" + DEV_BUNDLES_CP);
     }
 
     @Override
