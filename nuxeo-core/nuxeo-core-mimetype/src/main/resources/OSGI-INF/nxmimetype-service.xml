@@ -741,6 +741,15 @@
       </extensions>
     </mimetype>
 
+    <mimetype normalized="image/svg+xml" binary="false" iconPath="image.gif">
+      <mimetypes>
+        <mimetype>image/svg+xml</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>svg</extension>
+      </extensions>
+    </mimetype>
+
     <!-- Adobe Illustrator -->
    <mimetype normalized="application/illustrator" binary="false" iconPath="image.gif">
      <mimetypes>
