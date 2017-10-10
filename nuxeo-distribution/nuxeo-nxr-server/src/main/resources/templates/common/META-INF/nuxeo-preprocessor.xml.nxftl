@@ -19,6 +19,9 @@
     installPath="nuxeo.war/WEB-INF/sun-jaxws.xml" required="false" />
 
   <directory>bundles</directory>
+<#if "${nuxeo.server.sdk}" == "true">
+  <directory>dev-bundles</directory>
+</#if>
   <directory>plugins</directory>
 
   <install>

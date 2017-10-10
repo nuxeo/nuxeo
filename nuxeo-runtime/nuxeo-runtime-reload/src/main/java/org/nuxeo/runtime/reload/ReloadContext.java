@@ -25,6 +25,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The reload actions to perform when reloading the Nuxeo server.
@@ -41,19 +42,41 @@ public class ReloadContext {
     protected final Path bundlesDestination;
 
     public ReloadContext() {
+        this("bundles");
+    }
+
+    /**
+     * Constructor which takes the destination as argument. The given path must be relative to nxserver directory.
+     */
+    public ReloadContext(String bundlesDestination) {
+        this(Paths.get(bundlesDestination));
+    }
+
+    /**
+     * Constructor which takes the destination as argument. The given path must be relative to nxserver directory.
+     */
+    public ReloadContext(Path bundlesDestination) {
         bundlesNamesToUndeploy = new ArrayList<>();
         bundlesToDeploy = new ArrayList<>();
-        bundlesDestination = Paths.get("bundles");
+        this.bundlesDestination = Objects.requireNonNull(bundlesDestination, "Bundles destination must not be null");
+    }
+
+    public ReloadContext undeploy(List<String> bundleNames) {
+        bundlesNamesToUndeploy.addAll(bundleNames);
+        return this;
     }
 
     public ReloadContext undeploy(String... bundleNames) {
-        bundlesNamesToUndeploy.addAll(Arrays.asList(bundleNames));
+        return undeploy(Arrays.asList(bundleNames));
+    }
+
+    public ReloadContext deploy(List<File> bundleFiles) {
+        bundlesToDeploy.addAll(bundleFiles);
         return this;
     }
 
     public ReloadContext deploy(File... bundleFiles) {
-        bundlesToDeploy.addAll(Arrays.asList(bundleFiles));
-        return this;
+        return deploy(Arrays.asList(bundleFiles));
     }
 
 }
