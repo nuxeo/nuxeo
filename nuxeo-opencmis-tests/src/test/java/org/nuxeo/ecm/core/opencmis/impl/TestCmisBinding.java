@@ -2764,6 +2764,14 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals(1, res.getNumItems().intValue());
         res = discService.query(repositoryId, statement, null, null, null, null, null, null, null);
         assertEquals(1, res.getNumItems().intValue());
+
+        statement = "SELECT major_version, minor_version, cmis:versionLabel FROM File WHERE cmis:name = 'testfile1_Title'";
+        res = discService.query(repositoryId, statement, Boolean.FALSE, null, null, null, null, null, null);
+        assertEquals(1, res.getNumItems().intValue());
+        ObjectData singleResult = res.getObjects().get(0);
+        assertEquals("2.0", getValue(singleResult, PropertyIds.VERSION_LABEL));
+        assertEquals(BigInteger.valueOf(2), getValue(singleResult, "major_version"));
+        assertEquals(BigInteger.valueOf(0), getValue(singleResult, "minor_version"));
     }
 
     @Test
@@ -2786,6 +2794,35 @@ public class TestCmisBinding extends TestCmisBindingBase {
         searchAllVersions = null;
         res = discService.query(repositoryId, statement, searchAllVersions, null, null, null, null, null, null);
         assertEquals(1, res.getNumItems().intValue());
+    }
+
+
+    @Test
+    //NXP-23164
+    public void testNonPrefixedFields() throws Exception {
+        ObjectList res;
+        String statement;
+
+        String id = objService.createDocument(repositoryId, createBaseDocumentProperties("nonpref_doc", "File"),
+                rootFolderId, null, VersioningState.MINOR, null, null, null, null);
+        assertNotNull(id);
+        ObjectData ob = getObject(id);
+
+        //Initially icon is null
+        checkValue("icon", null, ob);
+        Properties props = createProperties("icon", "my/icon");
+        Holder idHolder = new Holder<>(ob.getId());
+        Holder<String> changeTokenHolder = getChangeTokenHolder(ob);
+        objService.updateProperties(repositoryId, idHolder, changeTokenHolder, props, null);
+
+        waitForIndexing();
+
+        statement = "SELECT icon, minor_version FROM File WHERE cmis:objectId = '"+id+"'";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        ObjectData singleResult = res.getObjects().get(0);
+        assertEquals(BigInteger.valueOf(1), getValue(singleResult, "minor_version"));
+        assertEquals("my/icon", getValue(singleResult, "icon"));
     }
 
     @Test
