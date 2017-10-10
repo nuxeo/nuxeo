@@ -157,25 +157,5 @@ public class TestProbes {
         assertTrue(result.isHealthy());
         assertTrue(probeInfo.getStatus().isSuccess());
         assertEquals("{\"repositoryStatus\":\"ok\"}", result.toJson());
-
-        // delete the root document
-        // the first check will still return healthy as the probe won't be run
-        session.removeDocument(session.getRootDocument().getRef());
-        session.save();
-
-        result = pm.getOrRunHealthCheck("repositoryStatus");
-        probeInfo = pm.getProbeInfo("repositoryStatus");
-        assertEquals(1, probeInfo.getRunnedCount()); // check that the probe was run only once in the past 20 s
-        assertTrue(result.isHealthy()); //
-        assertTrue(probeInfo.getStatus().isSuccess());
-        assertEquals("{\"repositoryStatus\":\"ok\"}", result.toJson());
-
-        // force run again and should fail
-        probeInfo = pm.runProbe(probeInfo);
-        assertEquals(2, probeInfo.getRunnedCount());
-        assertTrue(probeInfo.isInError());
-        result = pm.getOrRunHealthCheck("repositoryStatus");
-        assertTrue(probeInfo.getStatus().isFailure());
-        assertEquals("{\"repositoryStatus\":\"failed\"}", result.toJson());
     }
 }
