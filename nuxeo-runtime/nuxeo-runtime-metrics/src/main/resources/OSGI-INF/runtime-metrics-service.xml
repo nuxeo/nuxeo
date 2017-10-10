@@ -29,6 +29,19 @@
       </metrics>
       </extension>
 
+      Since 9.3, the list of metrics reported to Graphite can be filtered by setting the allowed ones
+      with the metrics.graphite.filter property. If a metric name starts with any item of this list,
+      then it will be reported. The 'ALL' value means that every metrics will be reported.
+      This property can be overridden with the previous EP like this:
+
+      <graphiteReporter enabled="true" periodInSecond="20"
+        host="graphite.server.name" port="2003" prefix="servers.${hostname}.nuxeo.">
+        <filters>
+          <filter>nuxeo.directories.userDirectory</filter>
+          <filter>nuxeo.directories.groupDirectory</filter>
+        </filters>
+      </graphiteReporter>
+
     </documentation>
     <object class="org.nuxeo.runtime.metrics.MetricsDescriptor" />
   </extension-point>

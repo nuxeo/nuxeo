@@ -25,9 +25,13 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
@@ -37,6 +41,7 @@ import org.apache.log4j.LogManager;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ServerLocator;
@@ -81,6 +86,23 @@ public class MetricsDescriptor implements Serializable {
 
         public static final String PREFIX_PROPERTY = "metrics.graphite.prefix";
 
+        /**
+         * A list of metrics that if defined should be kept reported, separated by commas
+         *
+         * @since 9.3
+         */
+        public static final String FILTER_PROPERTY = "metrics.graphite.filter";
+
+        /**
+         * @since 9.3
+         */
+        public static final String DEFAULT_METRICS = "nuxeo.cache.user-entry-cache,nuxeo.cache.group-entry-cache,nuxeo.directories.userDirectory,nuxeo.directories.groupDirectory";
+
+        /**
+         * @since 9.3
+         */
+        public static final String ALL_METRICS = "ALL";
+
         @XNode("@enabled")
         protected Boolean enabled = Boolean.valueOf(Framework.getProperty(ENABLED_PROPERTY, "false"));
 
@@ -96,6 +118,14 @@ public class MetricsDescriptor implements Serializable {
         @XNode("@prefix")
         public String prefix = prefix();
 
+        /**
+         * A list of metrics that if defined should be kept reported
+         *
+         * @since 9.3
+         */
+        @XNodeList(value = "filters/filter", type = ArrayList.class, componentType = String.class)
+        public List<String> filters;
+
         public String prefix() {
             if (prefix == null) {
                 prefix = Framework.getProperty(PREFIX_PROPERTY, "servers.${hostname}.nuxeo");
@@ -107,6 +137,19 @@ public class MetricsDescriptor implements Serializable {
                 hostname = "unknown";
             }
             return prefix.replace("${hostname}", hostname);
+        }
+
+        protected boolean filter(String name) {
+            if (filters == null || filters.isEmpty()) {
+                String filters = Framework.getProperty(FILTER_PROPERTY, DEFAULT_METRICS);
+                return matchesFilter(name, Arrays.stream(filters.split(",")));
+            } else {
+                return matchesFilter(name, filters.stream());
+            }
+        }
+
+        protected boolean matchesFilter(String name, Stream<String> filters) {
+            return filters.anyMatch(f -> ALL_METRICS.equals(f) || name.startsWith(f));
         }
 
         @Override
@@ -121,10 +164,15 @@ public class MetricsDescriptor implements Serializable {
             if (!enabled) {
                 return;
             }
+
             InetSocketAddress address = new InetSocketAddress(host, port);
             Graphite graphite = new Graphite(address);
-            reporter = GraphiteReporter.forRegistry(registry).convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(
-                    TimeUnit.MICROSECONDS).prefixedWith(prefix()).build(graphite);
+            reporter = GraphiteReporter.forRegistry(registry)
+                                       .convertRatesTo(TimeUnit.SECONDS)
+                                       .convertDurationsTo(TimeUnit.MICROSECONDS)
+                                       .prefixedWith(prefix())
+                                       .filter((name, metric) -> filter(name))
+                                       .build(graphite);
             reporter.start(period, TimeUnit.SECONDS);
         }
 
