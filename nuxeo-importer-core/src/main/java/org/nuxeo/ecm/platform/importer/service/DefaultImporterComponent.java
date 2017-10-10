@@ -92,6 +92,10 @@ public class DefaultImporterComponent extends DefaultComponent {
             if (descriptor.getBulkMode() != null) {
                 importerService.setBulkMode(descriptor.getBulkMode().booleanValue());
             }
+
+            if (descriptor.getEnablePerfLogging() != null) {
+                importerService.setEnablePerfLogging(descriptor.getEnablePerfLogging().booleanValue());
+            }
         }
     }
 
