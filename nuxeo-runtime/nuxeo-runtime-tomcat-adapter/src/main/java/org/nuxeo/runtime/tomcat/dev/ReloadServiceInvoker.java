@@ -23,6 +23,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,11 +41,6 @@ public class ReloadServiceInvoker {
     protected Method deployBundles;
 
     protected Method undeployBundles;
-
-    /**
-     * @since 9.3
-     */
-    protected Method reloadBundles;
 
     /**
      * Method to run the deployment preprocessor, previously handled by the deployBundle method
@@ -74,6 +70,16 @@ public class ReloadServiceInvoker {
     /**
      * @since 9.3
      */
+    protected Object devReloadBridge;
+
+    /**
+     * @since 9.3
+     */
+    protected Method reloadBundles;
+
+    /**
+     * @since 9.3
+     */
     protected Method getOSGIBundleName;
 
     public ReloadServiceInvoker(ClassLoader cl) throws ReflectiveOperationException {
@@ -83,7 +89,6 @@ public class ReloadServiceInvoker {
         reloadService = getLocalService.invoke(null, reloadServiceClass);
         deployBundles = reloadServiceClass.getDeclaredMethod("deployBundles", List.class);
         undeployBundles = reloadServiceClass.getDeclaredMethod("undeployBundles", List.class);
-        reloadBundles = reloadServiceClass.getDeclaredMethod("reloadBundles", List.class, List.class);
         runDeploymentPreprocessor = reloadServiceClass.getDeclaredMethod("runDeploymentPreprocessor");
         installWebResources = reloadServiceClass.getDeclaredMethod("installWebResources", File.class);
         flush = reloadServiceClass.getDeclaredMethod("flush");
@@ -91,6 +96,10 @@ public class ReloadServiceInvoker {
         flushSeam = reloadServiceClass.getDeclaredMethod("flushSeamComponents");
         reloadSeam = reloadServiceClass.getDeclaredMethod("reloadSeamComponents");
         getOSGIBundleName = reloadServiceClass.getDeclaredMethod("getOSGIBundleName", File.class);
+        // instantiate the DevReloadBridge
+        Class<?> devReloadBridgeClass = cl.loadClass("org.nuxeo.runtime.reload.DevReloadBridge");
+        devReloadBridge = devReloadBridgeClass.newInstance();
+        reloadBundles = devReloadBridgeClass.getDeclaredMethod("reloadBundles", List.class, List.class);
     }
 
     /**
@@ -168,7 +177,11 @@ public class ReloadServiceInvoker {
         }
     }
 
-    public void hotReloadBundles(DevBundle[] devBundlesToUndeploy, DevBundle[] devBundlesToDeploy)
+    /**
+     * @return the deployed dev bundles
+     * @since 9.3
+     */
+    public DevBundle[] hotReloadBundles(DevBundle[] devBundlesToUndeploy, DevBundle[] devBundlesToDeploy)
             throws ReflectiveOperationException {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
@@ -201,7 +214,12 @@ public class ReloadServiceInvoker {
             }
 
             // update Nuxeo server
-            reloadBundles(bundlesNamesToUndeploy, bundlesToDeploy);
+            Map<String, String> deployedBundles = reloadBundles(bundlesNamesToUndeploy, bundlesToDeploy);
+            return deployedBundles.entrySet().stream().map(entry -> {
+                DevBundle devBundle = new DevBundle(entry.getValue(), DevBundleType.Bundle);
+                devBundle.name = entry.getKey();
+                return devBundle;
+            }).toArray(DevBundle[]::new);
         } finally {
             Thread.currentThread().setContextClassLoader(cl);
         }
@@ -219,11 +237,6 @@ public class ReloadServiceInvoker {
      */
     protected void undeployBundles(List<String> bundleNames) throws ReflectiveOperationException {
         undeployBundles.invoke(reloadService, bundleNames);
-    }
-
-    protected void reloadBundles(List<String> bundlesNamesToUndeploy, List<File> bundlesToDeploy)
-            throws ReflectiveOperationException {
-        reloadBundles.invoke(reloadService, bundlesNamesToUndeploy, bundlesToDeploy);
     }
 
     protected void flush() throws ReflectiveOperationException {
@@ -260,6 +273,15 @@ public class ReloadServiceInvoker {
     @Deprecated
     protected void installWebResources(File file) throws ReflectiveOperationException {
         installWebResources.invoke(reloadService, file);
+    }
+
+    /**
+     * @since 9.3
+     */
+    @SuppressWarnings("unchecked")
+    protected Map<String, String> reloadBundles(List<String> bundlesToUndeploy, List<File> bundlesToDeploy)
+            throws ReflectiveOperationException {
+        return (Map<String, String>) reloadBundles.invoke(devReloadBridge, bundlesToUndeploy, bundlesToDeploy);
     }
 
 }

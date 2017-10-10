@@ -23,8 +23,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
@@ -186,7 +188,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     /**
-     * @deprecated since 9.3 use {@link #reloadBundles(List, List)} instead.
+     * @deprecated since 9.3 use {@link #reloadBundles(ReloadContext)} instead.
      */
     @Override
     @Deprecated
@@ -233,7 +235,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     /**
-     * @deprecated since 9.3 use {@link #reloadBundles(List, List)} instead.
+     * @deprecated since 9.3 use {@link #reloadBundles(ReloadContext)} instead.
      */
     @Override
     @Deprecated
@@ -247,9 +249,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
         // Undeploy bundles
         Transaction tx = TransactionHelper.suspendTransaction();
-        List<URL> undeployedBundleURLs = Collections.emptyList();
+        ReloadResult result = new ReloadResult();
         try {
-            undeployedBundleURLs = _undeployBundles(bundleNames);
+            result.merge(_undeployBundles(bundleNames));
             refreshComponents();
         } finally {
             TransactionHelper.resumeTransaction(tx);
@@ -257,6 +259,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
         // Reload resources
         if (reloadResources) {
+            List<URL> undeployedBundleURLs = result.undeployedBundles.stream()
+                                                                     .map(this::toURL)
+                                                                     .collect(Collectors.toList());
             Framework.reloadResourceLoader(null, undeployedBundleURLs);
         }
 
@@ -269,7 +274,10 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void reloadBundles(List<String> bundlesNamesToUndeploy, List<File> bundlesToDeploy) throws BundleException {
+    public ReloadResult reloadBundles(ReloadContext context) throws BundleException {
+        ReloadResult result = new ReloadResult();
+        List<String> bundlesNamesToUndeploy = context.bundlesNamesToUndeploy;
+
         Watch watch = new Watch(new LinkedHashMap<>()).start();
         if (log.isInfoEnabled()) {
             StringBuilder builder = new StringBuilder("Before updating Nuxeo server\n");
@@ -301,16 +309,13 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             }
             watch.stop("stop/standby");
 
-            List<URL> urlsToAdd = bundlesToDeploy.stream().map(this::toURL).collect(Collectors.toList());
-            List<URL> urlsToRemove = Collections.emptyList();
-
             // Undeploy bundles
             if (!bundlesNamesToUndeploy.isEmpty()) {
                 watch.start("undeploy-bundles");
                 log.info("Before undeploy bundles");
                 logComponentManagerStatus();
 
-                urlsToRemove = _undeployBundles(bundlesNamesToUndeploy);
+                result.merge(_undeployBundles(bundlesNamesToUndeploy));
                 componentManager.unstash();
 
                 // Clear the class loader
@@ -321,6 +326,19 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                 logComponentManagerStatus();
                 watch.stop("undeploy-bundles");
             }
+
+            watch.start("delete-copy");
+            // Delete old bundles
+            List<URL> urlsToRemove = result.undeployedBundles.stream()
+                                                             .map(Bundle::getLocation)
+                                                             .map(File::new)
+                                                             .peek(File::delete)
+                                                             .map(this::toURL)
+                                                             .collect(Collectors.toList());
+            // Then copy new ones
+            List<File> bundlesToDeploy = copyBundlesToDeploy(context);
+            List<URL> urlsToAdd = bundlesToDeploy.stream().map(this::toURL).collect(Collectors.toList());
+            watch.stop("delete-copy");
 
             // Reload resources
             watch.start("reload-resources");
@@ -336,7 +354,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                 // Fill the class loader
                 classLoader.ifPresent(cl -> cl.addClassLoader(urlsToAdd.toArray(new URL[0])));
 
-                _deployBundles(bundlesToDeploy);
+                result.merge(_deployBundles(bundlesToDeploy));
                 componentManager.unstash();
 
                 log.info("After deploy bundles");
@@ -394,12 +412,43 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                                        .append(" ms"));
             log.info(message.toString());
         }
+        return result;
+    }
+
+    protected List<File> copyBundlesToDeploy(ReloadContext context) throws BundleException {
+        List<File> bundlesToDeploy = new ArrayList<>();
+        Path homePath = Framework.getRuntime().getHome().toPath();
+        Path destinationPath = homePath.resolve(context.bundlesDestination);
+        try {
+            Files.createDirectories(destinationPath);
+            for (File bundle : context.bundlesToDeploy) {
+                Path bundlePath = bundle.toPath();
+                // check if the bundle is located under the desired destination
+                // if not copy it to the desired destination
+                if (!bundlePath.startsWith(destinationPath)) {
+                    if (Files.isDirectory(bundlePath)) {
+                        // If it's a directory, assume that it's an exploded jar
+                        bundlePath = ZipUtils.zipDirectory(bundlePath,
+                                destinationPath.resolve("hotreload-bundle-" + System.currentTimeMillis() + ".jar"),
+                                StandardCopyOption.REPLACE_EXISTING);
+                    } else {
+                        bundlePath = Files.copy(bundlePath, destinationPath.resolve(bundle.getName()),
+                                StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+                bundlesToDeploy.add(bundlePath.toFile());
+            }
+            return bundlesToDeploy;
+        } catch (IOException e) {
+            throw new BundleException("Unable to copy bundles to " + destinationPath, e);
+        }
     }
 
     /*
      * TODO Change this method name when deployBundles will be removed.
      */
-    protected void _deployBundles(List<File> bundlesToDeploy) throws BundleException {
+    protected ReloadResult _deployBundles(List<File> bundlesToDeploy) throws BundleException {
+        ReloadResult result = new ReloadResult();
         BundleContext bundleContext = getBundleContext();
         for (File file : bundlesToDeploy) {
             String path = file.getAbsolutePath();
@@ -412,20 +461,22 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                 throw new IllegalArgumentException("Could not find a valid bundle at path: " + path);
             }
             bundle.start();
+            result.deployedBundles.add(bundle);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Deploy done for bundle with name '%s'", bundle.getSymbolicName()));
             }
         }
+        return result;
     }
 
     /*
      * TODO Change this method name when undeployBundles will be removed.
      */
-    protected List<URL> _undeployBundles(List<String> bundleNames) throws BundleException {
+    protected ReloadResult _undeployBundles(List<String> bundleNames) throws BundleException {
+        ReloadResult result = new ReloadResult();
         BundleContext ctx = getBundleContext();
         ServiceReference ref = ctx.getServiceReference(PackageAdmin.class.getName());
         PackageAdmin srv = (PackageAdmin) ctx.getService(ref);
-        List<URL> bundleURLs = new ArrayList<>(bundleNames.size());
         try {
             for (String bundleName : bundleNames) {
                 for (Bundle bundle : srv.getBundles(bundleName, null)) {
@@ -433,9 +484,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                         if (log.isInfoEnabled()) {
                             log.info(String.format("Before undeploy bundle with name '%s'.", bundleName));
                         }
-                        bundleURLs.add(toURL(bundle));
                         bundle.stop();
                         bundle.uninstall();
+                        result.undeployedBundles.add(bundle);
                         if (log.isInfoEnabled()) {
                             log.info(String.format("After undeploy bundle with name '%s'.", bundleName));
                         }
@@ -445,7 +496,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         } finally {
             ctx.ungetService(ref);
         }
-        return bundleURLs;
+        return result;
     }
 
     /**

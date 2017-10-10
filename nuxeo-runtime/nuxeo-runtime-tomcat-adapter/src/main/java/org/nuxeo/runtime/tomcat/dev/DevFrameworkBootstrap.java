@@ -34,7 +34,6 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.stream.Stream;
 
 import javax.management.JMException;
 import javax.management.MBeanServer;
@@ -239,23 +237,18 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
                 }
             }
         } else {
-            DevBundle[] devBundlesToDeploy = bundles;
+            // symbolicName of bundlesToDeploy will be filled by hotReloadBundles before hot reload
+            // -> this allows server to be hot reloaded again in case of errors
+            // if everything goes fine, bundlesToDeploy will be replaced by result of hot reload containing symbolic
+            // name and the new bundle path
+            DevBundle[] bundlesToDeploy = bundles;
             try {
-                // copy bundles to deploy
-                devBundlesToDeploy = copyDevBundles(devBundlesToDeploy);
-
-                reloadServiceInvoker.hotReloadBundles(devBundles, devBundlesToDeploy);
-
-                // remove previous bundles
-                Stream.of(devBundles)
-                      .filter(b -> b.devBundleType.isJar)
-                      .map(DevBundle::file)
-                      .forEach(File::delete);
+                bundlesToDeploy = reloadServiceInvoker.hotReloadBundles(devBundles, bundlesToDeploy);
 
                 // write the new dev bundles location to the file
-                writeDevBundles(devBundlesToDeploy);
+                writeDevBundles(bundlesToDeploy);
             } finally {
-                devBundles = devBundlesToDeploy;
+                devBundles = bundlesToDeploy;
             }
         }
         if (log.isInfoEnabled()) {
@@ -288,37 +281,6 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
                 toggleTimer();
             }
         }
-    }
-
-    /**
-     * Copies the dev bundles to the {@code nxserver/bundles} directory. This will allow us to use the deployment
-     * preprocessor. Furthermore, we can give up the pre-load and post-load dev bundles steps, as the bundles are now
-     * in the server bundles directory.
-     *
-     * @since 9.3
-     */
-    protected DevBundle[] copyDevBundles(DevBundle[] devBundlesToDeploy) throws IOException {
-        List<DevBundle> newDevBundles = new ArrayList<>();
-        for (DevBundle devBundle : devBundlesToDeploy) {
-            if (!devBundle.devBundleType.isJar) {
-                newDevBundles.add(devBundle);
-                continue;
-            }
-            File bundle = devBundle.file();
-            Path bundlePath = bundle.toPath();
-            Path nxserverBundles = getHome().toPath().resolveSibling("nxserver/bundles");
-            Path destinationPath;
-            if (bundle.isDirectory()) {
-                destinationPath = zipDirectory(bundlePath,
-                        nxserverBundles.resolve("dev-hotreload-bundle-" + System.currentTimeMillis() + ".jar"),
-                        StandardCopyOption.REPLACE_EXISTING);
-            } else {
-                destinationPath = Files.copy(bundlePath, nxserverBundles.resolve(bundle.getName()),
-                        StandardCopyOption.REPLACE_EXISTING);
-            }
-            newDevBundles.add(new DevBundle(destinationPath.toAbsolutePath().toString(), devBundle.devBundleType));
-        }
-        return newDevBundles.toArray(new DevBundle[0]);
     }
 
     /**
