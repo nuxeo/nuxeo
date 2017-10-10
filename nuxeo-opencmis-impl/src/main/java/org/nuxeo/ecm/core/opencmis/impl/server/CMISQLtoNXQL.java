@@ -73,6 +73,8 @@ import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -430,8 +432,20 @@ public class CMISQLtoNXQL {
         if (propertyId.startsWith(CMIS_PREFIX) || propertyId.startsWith(NX_PREFIX)) {
             return getSystemColumn(propertyId);
         } else {
-            // CMIS property names are identical to NXQL ones
-            // for non-system properties
+            if (propertyId.indexOf(':') == -1) {
+                SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+
+                for (Schema schema : schemaManager.getSchemas()) {
+                    if (!schema.getNamespace().hasPrefix()) {
+                        // schema without prefix, try it
+                        if (schema.hasField(propertyId)) {
+                            propertyId = schema.getName() + ":" + propertyId;
+                            break;
+                        }
+                    }
+                }
+            }
+            // CMIS property names are identical to NXQL ones for non-system properties
             return propertyId;
         }
     }
