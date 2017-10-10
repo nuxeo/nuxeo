@@ -554,7 +554,11 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
     protected ValueInfo parseReference(String name) {
 
         if (name.startsWith(NXQL.ECM_TAG)) {
-            name = FACETED_TAG + "/*1/" + FACETED_TAG_LABEL;
+            if (name.equals(NXQL.ECM_TAG)) {
+                name = FACETED_TAG + "/*1/" + FACETED_TAG_LABEL;
+            } else {
+                name = FACETED_TAG + name.substring(NXQL.ECM_TAG.length()) + "/" + FACETED_TAG_LABEL;
+            }
         }
 
         String[] parts = name.split("/");
