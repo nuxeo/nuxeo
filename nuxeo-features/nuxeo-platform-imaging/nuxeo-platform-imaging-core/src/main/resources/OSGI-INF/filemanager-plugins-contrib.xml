@@ -39,6 +39,8 @@
       <filter>image/raw</filter>
       <filter>image/x-raw</filter>
 
+      <filter>image/svg.*</filter>
+
       <filter>application/photoshop</filter>
       <filter>application/illustrator</filter>
       <filter>application/postscript</filter>
