@@ -23,7 +23,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features({ NuxeoDriveFeature.class, EmbeddedAutomationServerFeature.class })
-@Deploy({ "org.nuxeo.drive.operations", "org.nuxeo.ecm.user.center.profile" })
+@Deploy({ "org.nuxeo.drive.operations", "org.nuxeo.ecm.user.center.profile", "org.nuxeo.ecm.platform.login.token" })
 public class NuxeoDriveAutomationFeature extends SimpleFeature {
 
 }
