@@ -87,8 +87,8 @@
         <aggregate id="dc_created_agg" type="date_histogram" parameter="dc:created">
           <field schema="default_search" name="dc_created_agg" />
           <properties>
-            <property name="interval">year</property>
-            <property name="format">yyyy</property>
+            <property name="interval">month</property>
+            <property name="format">MM-yyyy</property>
             <property name="order">key desc</property>
           </properties>
         </aggregate>
@@ -150,7 +150,7 @@
     <coreQueryPageProvider name="expired_search" class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <trackUsage>true</trackUsage>
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
-      <whereClause docType="ExpriredSearch">
+      <whereClause docType="ExpiredSearch">
         <fixedPart>
           ecm:isCheckedInVersion = 0 AND
           ecm:mixinType !=
@@ -172,6 +172,14 @@
           <field schema="expired_search" name="dc_creator_agg" />
           <properties>
             <property name="size">10</property>
+          </properties>
+        </aggregate>
+        <aggregate id="dc_expired_agg" type="date_histogram" parameter="dc:expired">
+          <field schema="expired_search" name="dc_expired_agg" />
+          <properties>
+            <property name="interval">month</property>
+            <property name="format">MM-yyyy</property>
+            <property name="order">key asc</property>
           </properties>
         </aggregate>
       </aggregates>

@@ -28,7 +28,9 @@
   <xs:element name="isCheckedInVersion" type="xs:boolean" default="false"/>
   <xs:element name="searchpath" type="nxs:stringList" />
 
+  <!-- aggregates field-->
   <xs:element name="dc_creator_agg" type="nxs:stringList" />
+  <xs:element name="dc_expired_agg" type="nxs:stringList" />
   
   <xs:element name="currentLifeCycleState" type="xs:string" />
   <xs:element name="currentLifeCycleStates" type="nxs:stringList" />
