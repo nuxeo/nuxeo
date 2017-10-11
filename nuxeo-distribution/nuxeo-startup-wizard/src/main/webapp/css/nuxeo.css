@@ -384,7 +384,7 @@ table.smtp,
     width: 100%
 }
 
-/* Step: Modules download */
+/* Step: Addons download */
 .formPadding {
     overflow: auto;
     border-style: solid;
@@ -403,7 +403,7 @@ table.smtp,
     padding: 0 0 .5em;
 }
 
-/* Step: Modules selection */
+/* Step: Addons selection */
 #tree ul {
     margin-left: 0;
 }
