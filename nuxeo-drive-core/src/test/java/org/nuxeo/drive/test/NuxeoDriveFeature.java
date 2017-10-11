@@ -16,14 +16,13 @@
  */
 package org.nuxeo.drive.test;
 
-import org.nuxeo.ecm.core.management.jtajca.JtajcaManagementFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-@Features({ JtajcaManagementFeature.class, PlatformFeature.class, SQLAuditFeature.class })
+@Features({ PlatformFeature.class, SQLAuditFeature.class })
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.core.io", "org.nuxeo.runtime.reload", "org.nuxeo.ecm.core.cache",
         "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.collections.core",
