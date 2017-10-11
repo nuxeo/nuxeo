@@ -31,7 +31,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.mongodb.MongoClient;
-import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.AbstractDirectory;
@@ -43,7 +42,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
 
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
 
 /**
  * MongoDB implementation of a {@link Directory}
@@ -65,19 +63,7 @@ public class MongoDBDirectory extends AbstractDirectory {
         addMongoDBReferences(descriptor.getMongoDBReferences());
 
         // cache fallback
-        CacheService cacheService = Framework.getService(CacheService.class);
-        if (cacheService != null) {
-            if (descriptor.cacheEntryName == null && descriptor.getCacheMaxSize() != 0) {
-                cache.setEntryCacheName("cache-" + getName());
-                cacheService.registerCache("cache-" + getName(), descriptor.getCacheMaxSize(),
-                        descriptor.getCacheTimeout() / 60);
-            }
-            if (descriptor.cacheEntryWithoutReferencesName == null && descriptor.getCacheMaxSize() != 0) {
-                cache.setEntryCacheWithoutReferencesName("cacheWithoutReference-" + getName());
-                cacheService.registerCache("cacheWithoutReference-" + getName(), descriptor.getCacheMaxSize(),
-                        descriptor.getCacheTimeout() / 60);
-            }
-        }
+        fallbackOnDefaultCache();
 
         countersCollectionName = getName() + ".counters";
 
