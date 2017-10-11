@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.core.cache;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.nuxeo.ecm.core.cache.CacheDescriptor.DEFAULT_MAX_SIZE;
+import static org.nuxeo.ecm.core.cache.CacheDescriptor.DEFAULT_TTL;
 import static org.nuxeo.ecm.core.cache.CacheDescriptor.OPTION_MAX_SIZE;
 
 import java.io.IOException;
@@ -222,13 +224,29 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     @Override
     public void registerCache(String name, int maxSize, int timeout) {
+        registerCache(name, maxSize, timeout, new CacheDescriptor());
+    }
+
+    @Override
+    public void registerCache(String name) {
         // start from default or empty
         CacheDescriptor defaultDescriptor = registry.getCacheDescriptor(DEFAULT_CACHE_ID);
-        CacheDescriptor desc = defaultDescriptor == null ? new CacheDescriptor() : defaultDescriptor.clone();
+        if (defaultDescriptor == null) {
+            registerCache(name, DEFAULT_MAX_SIZE, DEFAULT_TTL, new CacheDescriptor());
+        } else {
+            registerCache(name, defaultDescriptor.clone());
+        }
+    }
+
+    protected void registerCache(String name, long maxSize, long timeout, CacheDescriptor desc) {
         // add explicit configuration
-        desc.name = name;
-        desc.ttl = Long.valueOf(timeout);
+        desc.ttl = timeout;
         desc.options.put(OPTION_MAX_SIZE, String.valueOf(maxSize));
+        registerCache(name, desc);
+    }
+
+    protected void registerCache(String name, CacheDescriptor desc) {
+        desc.name = name;
         // add to registry (merging if needed)
         registerCacheDescriptor(desc);
         // start if needed
@@ -320,6 +338,13 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     @Override
     public Cache getCache(String name) {
         return caches.get(name);
+    }
+
+    /**
+     * @since 9.3
+     */
+    public CacheDescriptor getCacheDescriptor(String descriptor) {
+        return registry.getCacheDescriptor(descriptor);
     }
 
 }
