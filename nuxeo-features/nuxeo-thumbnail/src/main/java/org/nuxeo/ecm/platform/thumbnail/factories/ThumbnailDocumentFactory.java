@@ -28,10 +28,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -44,7 +43,6 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
-import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -115,18 +113,12 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
             return null;
         }
 
-        ServletContext servletContext = ServletHelper.getServletContext();
-        String path = servletContext.getRealPath(iconPath);
-        if (path == null) {
-            return null;
-        }
-
         try {
-            File iconFile = new File(path);
+            File iconFile = FileUtils.getResourceFileFromContext("nuxeo.war" + File.separator + iconPath);
             if (iconFile.exists()) {
-                String mimeType = servletContext.getMimeType(path);
+                MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
+                String mimeType = mimetypeRegistry.getMimetypeFromFile(iconFile);
                 if (mimeType == null) {
-                    MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
                     mimeType = mimetypeRegistry.getMimetypeFromFilename(iconPath);
                 }
                 return Blobs.createBlob(iconFile, mimeType);
