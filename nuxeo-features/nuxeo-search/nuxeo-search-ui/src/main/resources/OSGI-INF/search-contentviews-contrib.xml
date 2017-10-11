@@ -233,48 +233,6 @@
       </subWidgets>
     </widget>
 
-    <widget name="default_created_search" type="container">
-      <handlingLabels>true</handlingLabels>
-      <labels>
-        <label mode="any">label.dublincore.creationDate</label>
-      </labels>
-      <translated>true</translated>
-      <properties widgetMode="any">
-        <property name="hideSubLabels">true</property>
-      </properties>
-      <subWidgets>
-        <widget name="dc_creationDate" type="datetimeRange">
-          <fields>
-            <field>defaults:dc_created_min</field>
-            <field>defaults:dc_created_max</field>
-          </fields>
-          <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
-              'hidden' : 'edit'}</mode>
-          </widgetModes>
-          <properties widgetMode="edit">
-            <property name="styleClass">dataInputTextDate</property>
-            <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
-          </properties>
-        </widget>
-        <widget name="dc_created_agg" type="selectManyCheckboxDateHistogramAggregate">
-          <fields>
-            <field>defaults:dc_created_agg</field>
-          </fields>
-          <widgetModes>
-            <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
-              'edit' : 'hidden'}</mode>
-          </widgetModes>
-          <properties widgetMode="any">
-            <property name="selectOptions">#{contentView.pageProvider.aggregates['dc_created_agg'].extendedBuckets}</property>
-          </properties>
-          <controls mode="any">
-            <control name="supportInsideInputWidgetEffects">true</control>
-          </controls>
-        </widget>
-      </subWidgets>
-    </widget>
-
     <widget name="default_modified_search" type="container">
       <handlingLabels>true</handlingLabels>
       <labels>
@@ -733,9 +691,6 @@
         </row>
         <row>
           <widget>default_tags_search</widget>
-        </row>
-        <row>
-          <widget>default_created_search</widget>
         </row>
         <row>
           <widget>default_modified_search</widget>
