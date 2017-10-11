@@ -129,6 +129,8 @@ public class DBSDocument extends BaseDocument<State> {
 
     public static final String KEY_READ_ACL = "ecm:racl";
 
+    public static final String KEY_IS_RETENTION_ACTIVE = "ecm:isRetentionActive";
+
     public static final String KEY_IS_CHECKED_IN = "ecm:isCheckedIn";
 
     public static final String KEY_IS_VERSION = "ecm:isVersion";
@@ -487,6 +489,18 @@ public class DBSDocument extends BaseDocument<State> {
         }
         Runnable markDirty = () -> docState.markDirty();
         visitBlobs(docState.getState(), blobVisitor, markDirty);
+    }
+
+    @Override
+    public boolean isRetentionActive() {
+        DBSDocumentState docState = getStateOrTarget();
+        return TRUE.equals(docState.get(KEY_IS_RETENTION_ACTIVE));
+    }
+
+    @Override
+    public void setRetentionActive(boolean retentionActive) {
+        DBSDocumentState docState = getStateOrTarget();
+        docState.put(KEY_IS_RETENTION_ACTIVE, retentionActive ? TRUE : null);
     }
 
     @Override

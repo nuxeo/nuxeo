@@ -1289,36 +1289,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             try (ResultSet rs = ps.executeQuery()) {
                 countExecute();
                 while (rs.next()) {
-                    Serializable id = null;
-                    Serializable parentId = null;
-                    String primaryType = null;
-                    Boolean isProperty = null;
-                    Serializable targetId = null;
-                    Serializable versionableId = null;
-                    int i = 1;
-                    for (Column column : columns) {
-                        String key = column.getKey();
-                        Serializable value = column.getFromResultSet(rs, i++);
-                        if (key.equals(Model.MAIN_KEY)) {
-                            id = value;
-                        } else if (key.equals(Model.HIER_PARENT_KEY)) {
-                            parentId = value;
-                        } else if (key.equals(Model.MAIN_PRIMARY_TYPE_KEY)) {
-                            primaryType = (String) value;
-                        } else if (key.equals(Model.HIER_CHILD_ISPROPERTY_KEY)) {
-                            isProperty = (Boolean) value;
-                        } else if (key.equals(Model.PROXY_TARGET_KEY)) {
-                            targetId = value;
-                        } else if (key.equals(Model.PROXY_VERSIONABLE_KEY)) {
-                            versionableId = value;
-                        }
-                        // no mixins (not useful to caller)
-                        // no versions (not fileable)
-                    }
-                    descendants.add(new NodeInfo(id, parentId, primaryType, isProperty, versionableId, targetId));
+                    NodeInfo info = getNodeInfo(rs, columns);
+                    descendants.add(info);
                     if (debugValues != null) {
                         if (debugValues.size() < DEBUG_MAX_TREE) {
-                            debugValues.add(id + "/" + primaryType);
+                            debugValues.add(info.id + "/" + info.primaryType);
                         }
                     }
                 }
@@ -1394,32 +1369,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             rs = ps.executeQuery()) {
                 countExecute();
                 while (rs.next()) {
-                    Serializable id = null;
-                    Serializable parentId = null;
-                    String primaryType = null;
-                    Boolean isProperty = Boolean.FALSE;
-                    Serializable targetId = null;
-                    Serializable versionableId = null;
-                    int i = 1;
-                    for (Column column : select.whatColumns) {
-                        String key = column.getKey();
-                        Serializable value = column.getFromResultSet(rs, i++);
-                        if (key.equals(Model.MAIN_KEY)) {
-                            id = value;
-                        } else if (key.equals(Model.HIER_PARENT_KEY)) {
-                            parentId = value;
-                        } else if (key.equals(Model.MAIN_PRIMARY_TYPE_KEY)) {
-                            primaryType = (String) value;
-                        } else if (key.equals(Model.PROXY_TARGET_KEY)) {
-                            targetId = value;
-                        } else if (key.equals(Model.PROXY_VERSIONABLE_KEY)) {
-                            versionableId = value;
-                        }
-                    }
-                    children.add(new NodeInfo(id, parentId, primaryType, isProperty, versionableId, targetId));
+                    NodeInfo info = getNodeInfo(rs, select.whatColumns);
+                    children.add(info);
                     if (debugValues != null) {
                         if (debugValues.size() < DEBUG_MAX_TREE) {
-                            debugValues.add(id + "/" + primaryType);
+                            debugValues.add(info.id + "/" + info.primaryType);
                         }
                     }
                 }
@@ -1434,6 +1388,41 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         } catch (SQLException e) {
             throw new NuxeoException("Failed to get descendants", e);
         }
+    }
+
+    protected NodeInfo getNodeInfo(ResultSet rs, List<Column> columns) throws SQLException {
+        Serializable id = null;
+        Serializable parentId = null;
+        String primaryType = null;
+        Boolean isProperty = null;
+        Serializable targetId = null;
+        Serializable versionableId = null;
+        boolean isRetentionActive = false;
+        int i = 1;
+        for (Column column : columns) {
+            String key = column.getKey();
+            Serializable value = column.getFromResultSet(rs, i++);
+            if (key.equals(Model.MAIN_KEY)) {
+                id = value;
+            } else if (key.equals(Model.HIER_PARENT_KEY)) {
+                parentId = value;
+            } else if (key.equals(Model.MAIN_PRIMARY_TYPE_KEY)) {
+                primaryType = (String) value;
+            } else if (key.equals(Model.HIER_CHILD_ISPROPERTY_KEY)) {
+                isProperty = (Boolean) value;
+            } else if (key.equals(Model.PROXY_TARGET_KEY)) {
+                targetId = value;
+            } else if (key.equals(Model.PROXY_VERSIONABLE_KEY)) {
+                versionableId = value;
+            } else if (key.equals(Model.MAIN_IS_RETENTION_ACTIVE_KEY)) {
+                isRetentionActive = Boolean.TRUE.equals(value);
+            }
+            // no mixins (not useful to caller)
+            // no versions (not fileable)
+        }
+        NodeInfo nodeInfo = new NodeInfo(id, parentId, primaryType, isProperty, versionableId, targetId,
+                isRetentionActive);
+        return nodeInfo;
     }
 
 }

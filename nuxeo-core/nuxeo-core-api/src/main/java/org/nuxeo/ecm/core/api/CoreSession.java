@@ -63,6 +63,8 @@ public interface CoreSession extends AutoCloseable {
 
     String IMPORT_VERSION_MINOR = "ecm:minorVersion";
 
+    String IMPORT_IS_RETENTION_ACTIVE = "ecm:isRetentionActive";
+
     String IMPORT_PROXY_TARGET_ID = "ecm:proxyTargetId";
 
     String IMPORT_PROXY_VERSIONABLE_ID = "ecm:proxyVersionableId";
@@ -1143,6 +1145,24 @@ public interface CoreSession extends AutoCloseable {
     // TODO: (Hardcoded at the moment. In the future wil get data from
     // LDAP/database.)
     List<String> getAvailableSecurityPermissions();
+
+    /**
+     * Checks whether a document is under active retention.
+     *
+     * @param docRef the document reference
+     * @return {@code true} if the document is under active retention
+     * @since 9.3
+     */
+    boolean isRetentionActive(DocumentRef docRef);
+
+    /**
+     * Sets or unsets a document as under active retention.
+     *
+     * @param docRef the document reference
+     * @param retentionActive whether the retention should be set or unset as active
+     * @since 9.3
+     */
+    void setRetentionActive(DocumentRef docRef, boolean retentionActive);
 
     /**
      * Returns the life cycle of the document.

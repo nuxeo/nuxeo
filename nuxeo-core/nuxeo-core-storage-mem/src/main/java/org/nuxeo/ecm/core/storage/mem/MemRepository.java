@@ -18,18 +18,15 @@
  */
 package org.nuxeo.ecm.core.storage.mem;
 
-import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.core.storage.State.NOP;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -46,6 +43,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Stream;
 
 import javax.resource.spi.ConnectionManager;
 
@@ -267,36 +265,18 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
-            Map<String, Object[]> targetProxies) {
+    public Stream<State> getDescendants(String rootId, Set<String> keys) {
         if (log.isTraceEnabled()) {
-            log.trace("Mem: QUERY " + key + " = " + value);
+            log.trace("Mem: QUERY " + KEY_ANCESTOR_IDS + " = " + rootId);
         }
-        STATE: for (State state : states.values()) {
-            Object[] array = (Object[]) state.get(key);
-            String id = (String) state.get(KEY_ID);
-            if (array != null) {
-                for (Object v : array) {
-                    if (value.equals(v)) {
-                        ids.add(id);
-                        if (proxyTargets != null && TRUE.equals(state.get(KEY_IS_PROXY))) {
-                            String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
-                            proxyTargets.put(id, targetId);
-                        }
-                        if (targetProxies != null) {
-                            Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
-                            if (proxyIds != null) {
-                                targetProxies.put(id, proxyIds);
-                            }
-                        }
-                        continue STATE;
-                    }
-                }
-            }
-        }
-        if (log.isTraceEnabled() && !ids.isEmpty()) {
-            log.trace("Mem:    -> " + ids.size());
-        }
+        return states.values() //
+                     .stream()
+                     .filter(state -> hasAncestor(state, rootId));
+    }
+
+    protected static boolean hasAncestor(State state, String id) {
+        Object[] array = (Object[]) state.get(KEY_ANCESTOR_IDS);
+        return array == null ? false : Arrays.asList(array).contains(id);
     }
 
     @Override

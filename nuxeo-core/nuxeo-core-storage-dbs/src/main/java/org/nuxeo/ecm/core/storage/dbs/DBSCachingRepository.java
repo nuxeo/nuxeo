@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -346,9 +347,8 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     @Override
-    public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
-            Map<String, Object[]> targetProxies) {
-        repository.queryKeyValueArray(key, value, ids, proxyTargets, targetProxies);
+    public Stream<State> getDescendants(String id, Set<String> keys) {
+        return repository.getDescendants(id, keys);
     }
 
     @Override
