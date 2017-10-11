@@ -17,7 +17,7 @@
       <schema name="default_search" />
     </doctype>
 
-    <doctype name="ExpriredSearch" extends="SavedSearch">
+    <doctype name="ExpiredSearch" extends="SavedSearch">
       <schema name="expired_search" />
     </doctype>
 
