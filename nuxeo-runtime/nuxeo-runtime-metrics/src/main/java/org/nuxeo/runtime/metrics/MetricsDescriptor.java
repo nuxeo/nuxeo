@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -87,16 +88,28 @@ public class MetricsDescriptor implements Serializable {
         public static final String PREFIX_PROPERTY = "metrics.graphite.prefix";
 
         /**
-         * A list of metrics that if defined should be kept reported, separated by commas
+         * A list of metric prefixes that if defined should be kept reported, separated by commas
          *
          * @since 9.3
          */
-        public static final String FILTER_PROPERTY = "metrics.graphite.filter";
+        public static final String ALLOWED_METRICS_PROPERTY = "metrics.graphite.allowedMetrics";
+
+        /**
+         * A list of metric prefixes that if defined should not be reported, separated by commas
+         *
+         * @since 9.3
+         */
+        public static final String DENIED_METRICS_PROPERTY = "metrics.graphite.deniedMetrics";
 
         /**
          * @since 9.3
          */
-        public static final String DEFAULT_METRICS = "nuxeo.cache.user-entry-cache,nuxeo.cache.group-entry-cache,nuxeo.directories.userDirectory,nuxeo.directories.groupDirectory";
+        public static final String DEFAULT_ALLOWED_METRICS = "nuxeo.cache.user-entry-cache,nuxeo.cache.group-entry-cache,nuxeo.directories.userDirectory,nuxeo.directories.groupDirectory";
+
+        /**
+         * @since 9.3
+         */
+        public static final String DEFAULT_DENIED_METRICS = "nuxeo.cache,nuxeo.directories";
 
         /**
          * @since 9.3
@@ -119,12 +132,22 @@ public class MetricsDescriptor implements Serializable {
         public String prefix = prefix();
 
         /**
-         * A list of metrics that if defined should be kept reported
+         * A list of metric prefixes that if defined should be kept reported
          *
          * @since 9.3
          */
-        @XNodeList(value = "filters/filter", type = ArrayList.class, componentType = String.class)
-        public List<String> filters;
+        @XNodeList(value = "allowedMetrics/metric", type = ArrayList.class, componentType = String.class)
+        public List<String> allowedMetrics = Arrays.asList(
+                Framework.getProperty(ALLOWED_METRICS_PROPERTY, DEFAULT_ALLOWED_METRICS).split(","));
+
+        /**
+         * A list of metric prefixes that if defined should not be reported
+         *
+         * @since 9.3
+         */
+        @XNodeList(value = "deniedMetrics/metric", type = ArrayList.class, componentType = String.class)
+        public List<String> deniedMetrics = Arrays.asList(
+                Framework.getProperty(DENIED_METRICS_PROPERTY, DEFAULT_DENIED_METRICS).split(","));
 
         public String prefix() {
             if (prefix == null) {
@@ -139,17 +162,9 @@ public class MetricsDescriptor implements Serializable {
             return prefix.replace("${hostname}", hostname);
         }
 
-        protected boolean filter(String name) {
-            if (filters == null || filters.isEmpty()) {
-                String filters = Framework.getProperty(FILTER_PROPERTY, DEFAULT_METRICS);
-                return matchesFilter(name, Arrays.stream(filters.split(",")));
-            } else {
-                return matchesFilter(name, filters.stream());
-            }
-        }
-
-        protected boolean matchesFilter(String name, Stream<String> filters) {
-            return filters.anyMatch(f -> ALL_METRICS.equals(f) || name.startsWith(f));
+        public boolean filter(String name) {
+            return allowedMetrics.stream().anyMatch(f -> ALL_METRICS.equals(f) || name.startsWith(f))
+                    || deniedMetrics.stream().noneMatch(f -> ALL_METRICS.equals(f) || name.startsWith(f));
         }
 
         @Override

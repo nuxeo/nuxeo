@@ -29,17 +29,27 @@
       </metrics>
       </extension>
 
-      Since 9.3, the list of metrics reported to Graphite can be filtered by setting the allowed ones
-      with the metrics.graphite.filter property. If a metric name starts with any item of this list,
-      then it will be reported. The 'ALL' value means that every metrics will be reported.
-      This property can be overridden with the previous EP like this:
+      Since 9.3, you can filter the list of metrics reported to Graphite. The ones enabled can be
+      defined with the metrics.graphite.allowedMetrics property and the ones ignored with the
+      metrics.graphite.deniedMetrics property.
 
-      <graphiteReporter enabled="true" periodInSecond="20"
-        host="graphite.server.name" port="2003" prefix="servers.${hostname}.nuxeo.">
-        <filters>
-          <filter>nuxeo.directories.userDirectory</filter>
-          <filter>nuxeo.directories.groupDirectory</filter>
-        </filters>
+      About the allowed metrics, if a metric name starts with any item of this list, then it will be reported.
+      The 'ALL' value means that every metrics will be reported.
+      About the denied metrics, if a metric name starts with any item of this list, then it will be ignored
+      (unless it is part of the allowed metrics). The 'ALL' value means that every metrics will be ignored.
+
+      These properties can be overridden with the previous extension point like this:
+
+      <graphiteReporter enabled="true" periodInSecond="20" host="graphite.server.name" port="2003"
+        prefix="servers.${hostname}.nuxeo.">
+        <allowedMetrics>
+          <metric>nuxeo.cache.user-entry-cache</metric>
+          <metric>nuxeo.cache.group-entry-cache</metric>
+        </allowedMetrics>
+        <deniedMetrics>
+          <metric>nuxeo.cache</metric>
+          <metric>nuxeo.directories</metric>
+        </deniedMetrics>
       </graphiteReporter>
 
     </documentation>
