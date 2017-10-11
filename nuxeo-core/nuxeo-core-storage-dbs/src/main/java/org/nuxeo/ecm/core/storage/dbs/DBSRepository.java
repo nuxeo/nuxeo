@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
@@ -179,16 +180,17 @@ public interface DBSRepository extends Repository, LockManager {
     List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored);
 
     /**
-     * Queries the repository for document ids having value in key (an array).
+     * Returns a stream of descendants from a given root document, in no particular order. This does not include
+     * information about the root document itself.
+     * <p>
+     * THE STREAM MUST BE CLOSED WHEN DONE to release resources.
      *
-     * @param key the key
-     * @param value the value
-     * @param ids the set which receives the documents ids
-     * @param proxyTargets returns a map of proxy to target among the documents found
-     * @param targetProxies returns a map of target to proxies among the document found
+     * @param id the root document id
+     * @param keys what to collect about the descendants in addition to their ids
+     * @return a stream of {@link State}s; THE STREAM MUST BE CLOSED WHEN DONE
+     * @since 9.3
      */
-    void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
-            Map<String, Object[]> targetProxies);
+    Stream<State> getDescendants(String id, Set<String> keys);
 
     /**
      * Queries the repository to check if there are documents having key = value.

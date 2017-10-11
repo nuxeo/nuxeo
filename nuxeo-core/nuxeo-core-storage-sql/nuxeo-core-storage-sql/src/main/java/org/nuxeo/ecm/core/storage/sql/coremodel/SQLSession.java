@@ -313,6 +313,7 @@ public class SQLSession implements Session {
             if (importLockCreatedProp != null) {
                 props.put(Model.LOCK_CREATED_PROP, importLockCreatedProp);
             }
+            props.put(Model.MAIN_IS_RETENTION_ACTIVE_PROP, properties.get(CoreSession.IMPORT_IS_RETENTION_ACTIVE));
 
             props.put(Model.MAIN_MAJOR_VERSION_PROP, properties.get(CoreSession.IMPORT_VERSION_MAJOR));
             props.put(Model.MAIN_MINOR_VERSION_PROP, properties.get(CoreSession.IMPORT_VERSION_MINOR));

@@ -101,6 +101,10 @@ public class Model {
 
     public static final String MAIN_MIXIN_TYPES_KEY = "mixintypes";
 
+    public static final String MAIN_IS_RETENTION_ACTIVE_PROP = "ecm:isRetentionActive";
+
+    public static final String MAIN_IS_RETENTION_ACTIVE_KEY = "isretentionactive";
+
     public static final String MAIN_BASE_VERSION_PROP = "ecm:baseVersion";
 
     public static final String MAIN_BASE_VERSION_KEY = "baseversionid";
@@ -1302,6 +1306,8 @@ public class Model {
                 LongType.INSTANCE, ColumnType.INTEGER);
         addPropertyInfo(MAIN_IS_VERSION_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_IS_VERSION_KEY, false,
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
+        addPropertyInfo(MAIN_IS_RETENTION_ACTIVE_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME,
+                MAIN_IS_RETENTION_ACTIVE_KEY, false, BooleanType.INSTANCE, ColumnType.BOOLEAN);
         if (changeTokenEnabled) {
             addPropertyInfo(MAIN_SYS_CHANGE_TOKEN_PROP, PropertyType.LONG, HIER_TABLE_NAME, MAIN_SYS_CHANGE_TOKEN_KEY, false,
                     LongType.INSTANCE, ColumnType.LONG);

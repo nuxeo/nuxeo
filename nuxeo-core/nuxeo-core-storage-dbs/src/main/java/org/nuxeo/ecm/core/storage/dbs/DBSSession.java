@@ -43,6 +43,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_CHECKED_IN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_LATEST_MAJOR_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_LATEST_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_RETENTION_ACTIVE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LIFECYCLE_POLICY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LIFECYCLE_STATE;
@@ -68,6 +69,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -81,8 +83,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -150,6 +154,9 @@ import com.codahale.metrics.Timer;
 public class DBSSession implements Session {
 
     private static final Log log = LogFactory.getLog(DBSSession.class);
+
+    protected static final Set<String> KEYS_RETENTION_ACTIVE_AND_PROXIES = new HashSet<>(
+            Arrays.asList(KEY_IS_RETENTION_ACTIVE, KEY_IS_PROXY, KEY_PROXY_TARGET_ID, KEY_PROXY_IDS));
 
     protected final DBSRepository repository;
 
@@ -834,43 +841,61 @@ public class DBSSession implements Session {
      * raise an error if a proxy still exists for that target.
      * </ul>
      */
-    protected void remove(String id) {
+    protected void remove(String rootId) {
         transaction.save();
 
-        State state = transaction.getStateForRead(id);
+        State rootState = transaction.getStateForRead(rootId);
         String versionSeriesId;
-        if (TRUE.equals(state.get(KEY_IS_VERSION))) {
-            versionSeriesId = (String) state.get(KEY_VERSION_SERIES_ID);
+        if (TRUE.equals(rootState.get(KEY_IS_VERSION))) {
+            versionSeriesId = (String) rootState.get(KEY_VERSION_SERIES_ID);
         } else {
             versionSeriesId = null;
         }
-        // find all sub-docs and whether they're proxies
-        Map<String, String> proxyTargets = new HashMap<>();
-        Map<String, Object[]> targetProxies = new HashMap<>();
-        Set<String> removedIds = transaction.getSubTree(id, proxyTargets, targetProxies);
 
-        // add this node
-        removedIds.add(id);
-        if (TRUE.equals(state.get(KEY_IS_PROXY))) {
-            String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
-            proxyTargets.put(id, targetId);
+        // find all sub-docs
+        Set<String> removedIds = new HashSet<>();
+        Set<String> retentionActiveIds = new HashSet<>();
+        Set<String> targetIds = new HashSet<>();
+        Map<String, Object[]> targetProxies = new HashMap<>();
+
+        Consumer<State> collector = state -> {
+            String id = (String) state.get(KEY_ID);
+            removedIds.add(id);
+            if (TRUE.equals(state.get(KEY_IS_RETENTION_ACTIVE))) {
+                retentionActiveIds.add(id);
+            }
+            if (TRUE.equals(state.get(KEY_IS_PROXY))) {
+                String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
+                targetIds.add(targetId);
+            }
+            Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
+            if (proxyIds != null) {
+                targetProxies.put(id, proxyIds);
+            }
+        };
+        collector.accept(rootState); // add the root node too
+        try (Stream<State> states = transaction.getDescendants(rootId, KEYS_RETENTION_ACTIVE_AND_PROXIES)) {
+            states.forEach(collector);
         }
-        Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
-        if (proxyIds != null) {
-            targetProxies.put(id, proxyIds);
+
+        // if a subdocument is under active retention, removal fails
+        if (!retentionActiveIds.isEmpty()) {
+            if (retentionActiveIds.contains(rootId)) {
+                throw new DocumentExistsException("Cannot remove " + rootId + ", it is under active retention");
+            } else {
+                throw new DocumentExistsException("Cannot remove " + rootId + ", subdocument "
+                        + retentionActiveIds.iterator().next() + " is under active retention");
+            }
         }
 
         // if a proxy target is removed, check that all proxies to it
         // are removed
         for (Entry<String, Object[]> en : targetProxies.entrySet()) {
             String targetId = en.getKey();
-            if (!removedIds.contains(targetId)) {
-                continue;
-            }
             for (Object proxyId : en.getValue()) {
                 if (!removedIds.contains(proxyId)) {
                     throw new DocumentExistsException(
-                            "Cannot remove " + id + ", subdocument " + targetId + " is the target of proxy " + proxyId);
+                            "Cannot remove " + rootId + ", subdocument " + targetId + " is the target of proxy " + proxyId);
                 }
             }
         }
@@ -879,7 +904,6 @@ public class DBSSession implements Session {
         transaction.removeStates(removedIds);
 
         // fix proxies back-pointers on proxy targets
-        Set<String> targetIds = new HashSet<>(proxyTargets.values());
         for (String targetId : targetIds) {
             if (removedIds.contains(targetId)) {
                 // the target was also removed, skip
@@ -1058,6 +1082,10 @@ public class DBSSession implements Session {
             Serializable importLockCreatedProp = properties.get(CoreSession.IMPORT_LOCK_CREATED);
             if (importLockCreatedProp != null) {
                 props.put(KEY_LOCK_CREATED, importLockCreatedProp);
+            }
+            Serializable isRetentionActiveProp = properties.get(CoreSession.IMPORT_IS_RETENTION_ACTIVE);
+            if (TRUE.equals(isRetentionActiveProp)) {
+                props.put(KEY_IS_RETENTION_ACTIVE, TRUE);
             }
 
             props.put(KEY_MAJOR_VERSION, properties.get(CoreSession.IMPORT_VERSION_MAJOR));

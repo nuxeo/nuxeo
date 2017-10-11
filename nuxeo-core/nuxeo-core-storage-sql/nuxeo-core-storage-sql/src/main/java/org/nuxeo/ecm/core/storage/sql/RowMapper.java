@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import static java.lang.Boolean.TRUE;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -333,17 +335,20 @@ public interface RowMapper {
 
         public final Serializable targetId;
 
+        public final boolean isRetentionActive;
+
         /**
          * Creates node info for a node that may also be a proxy.
          */
         public NodeInfo(Serializable id, Serializable parentId, String primaryType, Boolean isProperty,
-                Serializable versionSeriesId, Serializable targetId) {
+                Serializable versionSeriesId, Serializable targetId, boolean isRetentionActive) {
             this.id = id;
             this.parentId = parentId;
             this.primaryType = primaryType;
             this.isProperty = isProperty;
             this.versionSeriesId = versionSeriesId;
             this.targetId = targetId;
+            this.isRetentionActive = isRetentionActive;
         }
 
         /**
@@ -364,6 +369,7 @@ public interface RowMapper {
                 versionSeriesId = ps;
                 targetId = proxyFragment.get(Model.PROXY_TARGET_KEY);
             }
+            isRetentionActive = TRUE.equals(hierFragment.get(Model.MAIN_IS_RETENTION_ACTIVE_KEY));
         }
     }
 

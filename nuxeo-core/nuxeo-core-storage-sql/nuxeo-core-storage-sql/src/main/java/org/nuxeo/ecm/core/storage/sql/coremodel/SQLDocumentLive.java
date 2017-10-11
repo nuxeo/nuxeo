@@ -366,6 +366,20 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     /*
+     * ----- Retention -----
+     */
+
+    @Override
+    public void setRetentionActive(boolean retentionActive) {
+        setPropertyValue(Model.MAIN_IS_RETENTION_ACTIVE_PROP, retentionActive ? Boolean.TRUE : null);
+    }
+
+    @Override
+    public boolean isRetentionActive() {
+        return Boolean.TRUE.equals(getPropertyValue(Model.MAIN_IS_RETENTION_ACTIVE_PROP));
+    }
+
+    /*
      * ----- LifeCycle -----
      */
 

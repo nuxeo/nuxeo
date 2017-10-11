@@ -299,6 +299,20 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     /*
+     * ----- Retention -----
+     */
+
+    @Override
+    public void setRetentionActive(boolean retentionActive) {
+        target.setRetentionActive(retentionActive);
+    }
+
+    @Override
+    public boolean isRetentionActive() {
+        return target.isRetentionActive();
+    }
+
+    /*
      * ----- LifeCycle -----
      */
 

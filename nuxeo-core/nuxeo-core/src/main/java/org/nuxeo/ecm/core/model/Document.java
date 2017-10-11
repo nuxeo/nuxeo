@@ -187,6 +187,20 @@ public interface Document {
     void remove();
 
     /**
+     * Checks whether this document is under active retention.
+     *
+     * @since 9.3
+     */
+    boolean isRetentionActive();
+
+    /**
+     * Sets or unsets this document as under active retention.
+     *
+     * @since 9.3
+     */
+    void setRetentionActive(boolean retentionActive);
+
+    /**
      * Gets the life cycle state of this document.
      *
      * @return the life cycle state

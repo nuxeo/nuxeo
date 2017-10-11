@@ -2017,6 +2017,25 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
+    public boolean isRetentionActive(DocumentRef docRef) {
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ);
+        return doc.isRetentionActive();
+    }
+
+    @Override
+    public void setRetentionActive(DocumentRef docRef, boolean retentionActive) {
+        Document doc = resolveReference(docRef);
+        if (isRetentionActive(docRef) == retentionActive) {
+            // if unchanged don't do anything
+            return;
+        }
+        // require WriteSecurity to unset retention active
+        checkPermission(doc, retentionActive ? WRITE : WRITE_SECURITY);
+        doc.setRetentionActive(retentionActive);
+    }
+
+    @Override
     public String getCurrentLifeCycleState(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_LIFE_CYCLE);

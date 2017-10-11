@@ -485,6 +485,7 @@ public class SQLInfo {
         whatColumns.add(mainColumn);
         whatColumns.add(hierTable.getColumn(Model.HIER_PARENT_KEY));
         whatColumns.add(hierTable.getColumn(Model.MAIN_PRIMARY_TYPE_KEY));
+        whatColumns.add(hierTable.getColumn(Model.MAIN_IS_RETENTION_ACTIVE_KEY));
         Table proxyTable = null;
         if (proxiesEnabled) {
             proxyTable = database.getTable(Model.PROXY_TABLE_NAME);
@@ -788,9 +789,11 @@ public class SQLInfo {
             proxyTable = database.getTable(Model.PROXY_TABLE_NAME);
         }
         Column mainColumn = hierTable.getColumn(Model.MAIN_KEY);
-        List<Column> whatCols = new ArrayList<>(Arrays.asList(mainColumn, hierTable.getColumn(Model.HIER_PARENT_KEY),
-                hierTable.getColumn(Model.MAIN_PRIMARY_TYPE_KEY),
-                hierTable.getColumn(Model.HIER_CHILD_ISPROPERTY_KEY)));
+        List<Column> whatCols = new ArrayList<>(Arrays.asList(mainColumn, //
+                hierTable.getColumn(Model.HIER_PARENT_KEY), //
+                hierTable.getColumn(Model.MAIN_PRIMARY_TYPE_KEY), //
+                hierTable.getColumn(Model.HIER_CHILD_ISPROPERTY_KEY), //
+                hierTable.getColumn(Model.MAIN_IS_RETENTION_ACTIVE_KEY)));
         if (proxiesEnabled) {
             whatCols.add(proxyTable.getColumn(Model.PROXY_VERSIONABLE_KEY));
             whatCols.add(proxyTable.getColumn(Model.PROXY_TARGET_KEY));

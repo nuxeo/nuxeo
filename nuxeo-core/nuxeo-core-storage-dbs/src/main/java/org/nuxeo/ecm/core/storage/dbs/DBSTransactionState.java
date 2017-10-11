@@ -61,6 +61,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -400,8 +401,12 @@ public class DBSTransactionState {
      */
     public void updateAncestors(String id, int ndel, Object[] ancestorIds) {
         int nadd = ancestorIds.length;
-        Set<String> ids = getSubTree(id, null, null);
+        Set<String> ids = new HashSet<>();
         ids.add(id);
+        try (Stream<State> states = getDescendants(id, Collections.emptySet())) {
+            states.forEach(state -> ids.add((String) state.get(KEY_ID)));
+        }
+        // we collect all ids first to avoid reentrancy to the repository
         for (String cid : ids) {
             // XXX TODO oneShot update, don't pollute transient space
             DBSDocumentState docState = getStateForUpdate(cid);
@@ -423,8 +428,12 @@ public class DBSTransactionState {
      */
     public void updateTreeReadAcls(String id) {
         // versions too XXX TODO
-        Set<String> ids = getSubTree(id, null, null);
+        Set<String> ids = new HashSet<>();
         ids.add(id);
+        try (Stream<State> states = getDescendants(id, Collections.emptySet())) {
+            states.forEach(state -> ids.add((String) state.get(KEY_ID)));
+        }
+        // we collect all ids first to avoid reentrancy to the repository
         ids.forEach(this::updateDocumentReadAcls);
     }
 
@@ -487,20 +496,8 @@ public class DBSTransactionState {
         return racl.toArray(new String[racl.size()]);
     }
 
-    /**
-     * Gets all the ids under a given one, recursively.
-     * <p>
-     * Doesn't check transient (assumes save is done).
-     *
-     * @param id the root of the tree (not included in results)
-     * @param proxyTargets returns a map of proxy to target among the documents found
-     * @param targetProxies returns a map of target to proxies among the document found
-     */
-    protected Set<String> getSubTree(String id, Map<String, String> proxyTargets, Map<String, Object[]> targetProxies) {
-        Set<String> ids = new HashSet<>();
-        // check repository
-        repository.queryKeyValueArray(KEY_ANCESTOR_IDS, id, ids, proxyTargets, targetProxies);
-        return ids;
+    protected Stream<State> getDescendants(String id, Set<String> keys) {
+        return repository.getDescendants(id, keys);
     }
 
     public List<DBSDocumentState> getKeyValuedStates(String key, Object value) {

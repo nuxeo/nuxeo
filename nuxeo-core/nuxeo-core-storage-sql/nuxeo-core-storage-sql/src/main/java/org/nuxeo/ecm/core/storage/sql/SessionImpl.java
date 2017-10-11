@@ -1114,8 +1114,23 @@ public class SessionImpl implements Session, XAResource {
         // find all descendants
         List<NodeInfo> nodeInfos = context.getNodeAndDescendantsInfo(node.getHierFragment());
 
+        // check that there is no active retention
+        Set<Serializable> retentionActiveIds = nodeInfos.stream() //
+                                                        .filter(info -> info.isRetentionActive)
+                                                        .map(info -> info.id)
+                                                        .collect(Collectors.toSet());
+        if (!retentionActiveIds.isEmpty()) {
+            if (retentionActiveIds.contains(id)) {
+                throw new DocumentExistsException(
+                        "Cannot remove " + id + ", it is under active retention");
+            } else {
+                throw new DocumentExistsException("Cannot remove " + id + ", subdocument "
+                        + retentionActiveIds.iterator().next() + " is under active retention");
+            }
+        }
+
+        // if a proxy target is removed, check that all proxies to it are removed
         if (repository.getRepositoryDescriptor().getProxiesEnabled()) {
-            // if a proxy target is removed, check that all proxies to it are removed
             Set<Serializable> removedIds = nodeInfos.stream().map(info -> info.id).collect(Collectors.toSet());
             // find proxies pointing to any removed document
             Set<Serializable> proxyIds = context.getTargetProxies(removedIds);

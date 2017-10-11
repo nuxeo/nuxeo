@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.storage.mongodb;
 
-import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_STATUS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
@@ -29,14 +28,12 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LIFECYCLE_STATE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_VERSION_SERIES_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_READ_ACL;
@@ -52,6 +49,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.resource.spi.ConnectionManager;
 
@@ -443,34 +442,29 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
-            Map<String, Object[]> targetProxies) {
-        DBObject query = new BasicDBObject(key, value);
+    public Stream<State> getDescendants(String rootId, Set<String> keys) {
+        DBObject query = new BasicDBObject(KEY_ANCESTOR_IDS, rootId);
         DBObject fields = new BasicDBObject();
         if (useCustomId) {
             fields.put(MONGODB_ID, ZERO);
         }
         fields.put(idKey, ONE);
-        fields.put(KEY_IS_PROXY, ONE);
-        fields.put(KEY_PROXY_TARGET_ID, ONE);
-        fields.put(KEY_PROXY_IDS, ONE);
+        keys.forEach(key -> fields.put(key, ONE));
         if (log.isTraceEnabled()) {
             logQuery(query, fields);
         }
-        try (DBCursor cursor = coll.find(query, fields)) {
-            for (DBObject ob : cursor) {
-                String id = (String) ob.get(idKey);
-                ids.add(id);
-                if (proxyTargets != null && TRUE.equals(ob.get(KEY_IS_PROXY))) {
-                    String targetId = (String) ob.get(KEY_PROXY_TARGET_ID);
-                    proxyTargets.put(id, targetId);
-                }
-                if (targetProxies != null) {
-                    Object[] proxyIds = (Object[]) converter.bsonToValue(ob.get(KEY_PROXY_IDS));
-                    if (proxyIds != null) {
-                        targetProxies.put(id, proxyIds);
-                    }
-                }
+        boolean completedAbruptly = true;
+        DBCursor cursor = coll.find(query, fields);
+        try {
+            Stream<State> stream = StreamSupport.stream(cursor.spliterator(), false) //
+                                                .onClose(cursor::close)
+                                                .map(converter::bsonToState);
+            // the stream takes responsibility for closing the session
+            completedAbruptly = false;
+            return stream;
+        } finally {
+            if (completedAbruptly) {
+                cursor.close();
             }
         }
     }

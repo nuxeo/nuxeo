@@ -4394,6 +4394,41 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
+    public void testRetentionActive() {
+        DocumentModel folder = session.createDocumentModel("/", "fold", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel subFolder = session.createDocumentModel("/fold", "subfold", "Folder");
+        session.createDocument(subFolder);
+        DocumentModel doc = session.createDocumentModel("/fold/subfold", "doc", "File");
+        doc = session.createDocument(doc);
+        DocumentRef docRef = doc.getRef();
+
+        assertFalse(session.isRetentionActive(docRef));
+        session.setRetentionActive(docRef, true);
+        assertTrue(session.isRetentionActive(docRef));
+
+        // check that the document cannot be deleted now, even by system user
+        assertTrue(((NuxeoPrincipal) session.getPrincipal()).isAdministrator());
+        try {
+            session.removeDocument(docRef);
+            fail("remove should fail");
+        } catch (DocumentExistsException e) {
+            assertEquals("Cannot remove " + doc.getId() + ", it is under active retention", e.getMessage());
+        }
+
+        // check that the document cannot be deleted through a parent
+        assertTrue(((NuxeoPrincipal) session.getPrincipal()).isAdministrator());
+        try {
+            session.removeDocument(folder.getRef());
+            fail("remove should fail");
+        } catch (DocumentExistsException e) {
+            assertEquals(
+                    "Cannot remove " + folder.getId() + ", subdocument " + doc.getId() + " is under active retention",
+                    e.getMessage());
+        }
+    }
+
+    @Test
     public void testChangeToken() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         maybeCreateChangeToken(doc);
