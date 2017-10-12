@@ -18,16 +18,13 @@
  */
 package org.nuxeo.ecm.core.storage.marklogic;
 
-import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 
 import java.io.Serializable;
 import java.security.GeneralSecurityException;
@@ -68,6 +65,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
+import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
@@ -323,27 +321,13 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
-            Map<String, Object[]> targetProxies) {
+    public Stream<State> getDescendants(String rootId, Set<String> keys) {
         MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(rangeElementIndexes);
-        builder.eq(key, value);
-        try (Stream<State> states = findAll(builder.build(), KEY_ID, KEY_IS_PROXY, KEY_PROXY_TARGET_ID,
-                KEY_PROXY_IDS)) {
-            states.forEach(state -> {
-                String id = (String) state.get(KEY_ID);
-                ids.add(id);
-                if (proxyTargets != null && TRUE.equals(state.get(KEY_IS_PROXY))) {
-                    String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
-                    proxyTargets.put(id, targetId);
-                }
-                if (targetProxies != null) {
-                    Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
-                    if (proxyIds != null) {
-                        targetProxies.put(id, proxyIds);
-                    }
-                }
-            });
-        }
+        builder.eq(KEY_ANCESTOR_IDS, rootId);
+        List<String> selects = new ArrayList<>();
+        selects.add(KEY_ID);
+        selects.addAll(keys);
+        return findAll(builder.build(), selects.toArray(new String[0]));
     }
 
     @Override
