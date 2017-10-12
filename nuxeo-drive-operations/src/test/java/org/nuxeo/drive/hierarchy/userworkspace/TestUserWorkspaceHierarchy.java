@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -163,9 +164,6 @@ public class TestUserWorkspaceHierarchy {
 
         storageConfiguration = coreFeature.getStorageConfiguration();
 
-        // Create user workspace for Administrator
-        userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
-
         // Create test user
         createUser("user1", "user1");
 
@@ -214,8 +212,21 @@ public class TestUserWorkspaceHierarchy {
 
     @After
     public void tearDown() {
+
+        // Unregister synchronization roots for user1
+        nuxeoDriveManager.unregisterSynchronizationRoot(session1.getPrincipal(),
+                session1.getDocument(user1Folder4.getRef()), session1);
+        nuxeoDriveManager.unregisterSynchronizationRoot(session1.getPrincipal(),
+                session1.getDocument(user1Folder3.getRef()), session1);
+
+        // Delete test user workspace
+        session.removeDocument(userWorkspace1.getRef());
+
         // Close test user core session
         session1.close();
+
+        // Reset test user permissions on the root document
+        resetPermissions(session.getRootDocument(), "user1");
 
         // Delete test user
         deleteUser("user1");
@@ -517,6 +528,20 @@ public class TestUserWorkspaceHierarchy {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         localACL.add(new ACE(userName, permission, isGranted));
+        session.setACP(doc.getRef(), acp, true);
+        session.save();
+    }
+
+    protected void resetPermissions(DocumentModel doc, String userName) {
+        ACP acp = session.getACP(doc.getRef());
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        Iterator<ACE> localACLIt = localACL.iterator();
+        while (localACLIt.hasNext()) {
+            ACE ace = localACLIt.next();
+            if (userName.equals(ace.getUsername())) {
+                localACLIt.remove();
+            }
+        }
         session.setACP(doc.getRef(), acp, true);
         session.save();
     }
