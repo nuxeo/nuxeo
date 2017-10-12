@@ -37,6 +37,11 @@
         <extendedInfo expression="${message.properties.id}" key="id" />
       </extendedInfos>
     </event>
+    <event name="retentionActiveChanged">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.retentionActive}" key="retentionActive" />
+      </extendedInfos>
+    </event>
   </extension>
 
 </component>

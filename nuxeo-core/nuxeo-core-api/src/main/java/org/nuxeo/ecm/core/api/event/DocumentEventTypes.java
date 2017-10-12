@@ -150,6 +150,13 @@ public final class DocumentEventTypes {
      */
     public static final String ACE_STATUS_UPDATED = "ACEStatusUpdated";
 
+    /**
+     * Event triggered when the active state of the retention changes.
+     *
+     * @since 9.3
+     */
+    public static final String RETENTION_ACTIVE_CHANGED = "retentionActiveChanged";
+
     // Constant utility class
     private DocumentEventTypes() {
     }

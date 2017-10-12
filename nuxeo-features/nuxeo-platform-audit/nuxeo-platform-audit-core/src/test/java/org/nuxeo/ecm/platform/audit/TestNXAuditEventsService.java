@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.platform.audit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -364,6 +365,38 @@ public class TestNXAuditEventsService {
         event.setImmediate(true);
         eventService.fireEvent(event);
         waitForAsyncCompletion();
+    }
+
+    @Test
+    public void testLogRetentionActiveChange() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+
+        // set retention active
+        session.setRetentionActive(doc.getRef(), true);
+
+        // an event is logged
+        waitForAsyncCompletion();
+        long id = serviceUnderTest.getLatestLogId(session.getRepositoryName(), "retentionActiveChanged");
+        assertNotEquals(0, id);
+        LogEntry logEntry = serviceUnderTest.getLogEntryByID(id);
+        assertEquals("retentionActiveChanged", logEntry.getEventId());
+        assertEquals(doc.getId(), logEntry.getDocUUID());
+        assertEquals(Boolean.TRUE, logEntry.getExtendedInfos().get("retentionActive").getSerializableValue());
+        assertEquals("true", logEntry.getComment());
+
+        // unset retention active
+        session.setRetentionActive(doc.getRef(), false);
+
+        // an event is logged
+        waitForAsyncCompletion();
+        id = serviceUnderTest.getLatestLogId(session.getRepositoryName(), "retentionActiveChanged");
+        assertNotEquals(0, id);
+        logEntry = serviceUnderTest.getLogEntryByID(id);
+        assertEquals("retentionActiveChanged", logEntry.getEventId());
+        assertEquals(doc.getId(), logEntry.getDocUUID());
+        assertEquals(Boolean.FALSE, logEntry.getExtendedInfos().get("retentionActive").getSerializableValue());
+        assertEquals("false", logEntry.getComment());
     }
 
 }

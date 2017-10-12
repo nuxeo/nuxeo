@@ -126,6 +126,13 @@ public final class CoreEventConstants {
      */
     public static final String RESET_CREATOR = "resetCreator";
 
+    /**
+     * Passed with retentionActiveChanged event, status of the retention (active or not, a Boolean).
+     *
+     * @since 9.3
+     */
+    public static final String RETENTION_ACTIVE = "retentionActive";
+
     // Constant utility class
     private CoreEventConstants() {
     }
