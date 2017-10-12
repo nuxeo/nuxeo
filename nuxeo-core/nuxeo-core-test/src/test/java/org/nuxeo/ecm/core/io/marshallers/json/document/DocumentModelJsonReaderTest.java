@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.io.marshallers.json.document;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -165,6 +166,32 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         // then the property with the default value must null
         Map<String, Object> values = noteDocument.getDataModel("defaultvalue").getMap();
         assertNull(values.get("dv:multiWithDefault"));
+    }
+
+    @Test
+    public void testReadContextData() throws Exception {
+        String noteJson = "{" //
+                + "\"entity-type\": \"document\"," //
+                + "\"type\": \"DocDefaultValue\"," //
+                + "\"name\": \"aDoc\"," //
+                + "\"contextData\": {"//
+                + "  \"request/comment\": \"a comment\"," //
+                + "  \"foo\": true," //
+                + "  \"bar\": 45," //
+                + "  \"null\": null" //
+                + "  }"//
+                + "}";
+
+        DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
+        JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson);
+        JsonNode jn = jp.readValueAsTree();
+        DocumentModel noteDocument = reader.read(jn);
+        assertNotNull(noteDocument);
+        assertEquals("a comment", noteDocument.getContextData("request/comment"));
+        assertEquals(true, noteDocument.getContextData("foo"));
+        assertEquals(45, noteDocument.getContextData("bar"));
+        assertFalse(noteDocument.getContextData().containsKey("null"));
+        assertEquals(null, noteDocument.getContextData("null"));
     }
 
 }

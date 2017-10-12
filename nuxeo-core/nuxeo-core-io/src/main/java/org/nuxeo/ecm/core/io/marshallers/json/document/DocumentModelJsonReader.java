@@ -28,7 +28,9 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
@@ -72,7 +74,6 @@ import org.nuxeo.runtime.api.Framework;
  *   "properties": ...  <-- see {@link DocumentPropertiesJsonReader}
  * }
  * </pre>
- *
  * </p>
  *
  * @since 7.2
@@ -87,7 +88,8 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
     }
 
     @Override
-    public DocumentModel read(Class<?> clazz, Type genericType, MediaType mediaType, InputStream in) throws IOException {
+    public DocumentModel read(Class<?> clazz, Type genericType, MediaType mediaType, InputStream in)
+            throws IOException {
         Reader<DocumentModel> reader = ctx.getParameter(LEGACY_MODE_READER);
         if (reader != null) {
             DocumentModel doc = reader.read(clazz, genericType, mediaType, in);
@@ -124,8 +126,12 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
             }
         }
 
-        DocumentModel doc = null;
+        JsonNode contextDataNode = jn.get("contextData");
+        if (contextDataNode != null && !contextDataNode.isNull() && contextDataNode.isObject()) {
+            readContextData(contextDataNode, simpleDoc);
+        }
 
+        DocumentModel doc;
         String uid = getStringField(jn, "uid");
         if (StringUtils.isNotBlank(uid)) {
             try (SessionWrapper wrapper = ctx.getSession(null)) {
@@ -133,6 +139,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
             }
             avoidBlobUpdate(simpleDoc, doc);
             applyDirtyPropertyValues(simpleDoc, doc);
+            doc.copyContextData(simpleDoc);
             String changeToken = getStringField(jn, "changeToken");
             doc.putContextData(CoreSession.CHANGE_TOKEN, changeToken);
         } else if (StringUtils.isNotBlank(type)) {
@@ -142,6 +149,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
             }
             createdDoc.setType(simpleDoc.getType());
             applyAllPropertyValues(simpleDoc, createdDoc);
+            createdDoc.copyContextData(simpleDoc);
             doc = createdDoc;
         } else {
             doc = simpleDoc;
@@ -249,6 +257,32 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
             return data;
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Fills the {@code doc} context data with values from the {@code contextDataNode}.
+     * <p>
+     * Only handle values that are Number, Boolean or String.
+     *
+     * @since 9.3
+     */
+    protected void readContextData(JsonNode contextDataNode, DocumentModel doc) {
+        for (Iterator<Map.Entry<String, JsonNode>> it = contextDataNode.getFields(); it.hasNext();) {
+            Map.Entry<String, JsonNode> entry = it.next();
+            JsonNode jsonNode = entry.getValue();
+            Serializable value = null;
+            if (jsonNode.isNumber()) {
+                value = jsonNode.getNumberValue();
+            } else if (jsonNode.isBoolean()) {
+                value = jsonNode.getBooleanValue();
+            } else if (jsonNode.isTextual()) {
+                value = jsonNode.getTextValue();
+            }
+
+            if (value != null) {
+                doc.putContextData(entry.getKey(), value);
+            }
         }
     }
 
