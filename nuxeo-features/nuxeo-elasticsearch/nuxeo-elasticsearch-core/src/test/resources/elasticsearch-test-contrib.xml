@@ -8,14 +8,17 @@
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchClient">
 
-    <elasticSearchClient class="org.nuxeo.elasticsearch.client.ESTransportClientFactory">
-      <option name="addressList">localhost:9300</option>
-      <option name="clusterName">elasticsearch</option>
-      <option name="clientTransportSniff">false</option>
-      <option name="clientTransportIgnoreClusterName">false</option>
-      <option name="clientTransportPingTimeout">5s</option>
-      <option name="clientTransportNodesSamplerInterval">5s</option>
-    </elasticSearchClient>
+    <!--This client choose between rest and transport client depending environment variable -->
+    <elasticSearchClient class="org.nuxeo.elasticsearch.test.ESTestClientFactory" />
+
+    <!--<elasticSearchClient class="org.nuxeo.elasticsearch.client.ESTransportClientFactory">-->
+      <!--<option name="addressList">localhost:9300</option>-->
+      <!--<option name="clusterName">elasticsearch</option>-->
+      <!--<option name="clientTransportSniff">false</option>-->
+      <!--<option name="clientTransportIgnoreClusterName">false</option>-->
+      <!--<option name="clientTransportPingTimeout">5s</option>-->
+      <!--<option name="clientTransportNodesSamplerInterval">5s</option>-->
+    <!--</elasticSearchClient>-->
 
     <!--<elasticSearchClient class="org.nuxeo.elasticsearch.client.ESRestClientFactory">-->
       <!--<option name="addressList">localhost:9200</option>-->
