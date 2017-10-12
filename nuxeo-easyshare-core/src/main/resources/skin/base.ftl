@@ -24,8 +24,10 @@
 <body>
 
 <section>
-  <div class="wrapper">
+  <div class="header">
     <div class="nuxeo-logo"></div>
+  </div>
+  <div class="wrapper">
     <main class="share-box">
     <@block name="content">${Context.getMessage("easyshare.label.content")}</@block>
     </main>
