@@ -38,4 +38,9 @@ public class RestConstants {
      */
     public static final String SOURCE = "source";
 
+    /**
+     * @since 9.3
+     */
+    public static final String UPDATE_COMMENT_HEADER = "Update-Comment";
+
 }

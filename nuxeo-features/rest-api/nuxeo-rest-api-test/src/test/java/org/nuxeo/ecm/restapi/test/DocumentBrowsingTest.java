@@ -68,6 +68,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -154,6 +155,30 @@ public class DocumentBrowsingTest extends BaseTest {
             fetchInvalidations();
             note = RestServerInit.getNote(0, session);
             assertEquals("New title", note.getTitle());
+        }
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.restapi.test:test-listener-contrib.xml")
+    public void iCanUpdateADocumentWithAComment() throws Exception {
+        JSONDocumentNode jsonDoc;
+        DocumentModel note = RestServerInit.getNote(0, session);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + note.getId())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
+        }
+
+        jsonDoc.setPropertyValue("dc:title", "Another title");
+        Map<String, String> headers = new HashMap<>();
+        headers.put(RestConstants.UPDATE_COMMENT_HEADER, "a simple comment");
+        DummyUpdateCommentListener.comment = null;
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson(),
+                headers)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            fetchInvalidations();
+            note = RestServerInit.getNote(0, session);
+            assertEquals("Another title", note.getTitle());
+            assertEquals("a simple comment", DummyUpdateCommentListener.comment);
         }
     }
 

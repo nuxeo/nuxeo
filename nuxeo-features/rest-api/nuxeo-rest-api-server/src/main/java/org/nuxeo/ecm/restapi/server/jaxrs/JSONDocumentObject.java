@@ -81,6 +81,7 @@ public class JSONDocumentObject extends DocumentObject {
         DocumentModelJsonReader.applyPropertyValues(inputDoc, doc);
         CoreSession session = ctx.getCoreSession();
         versioningDocFromHeaderIfExists(headers);
+        updateCommentFromHeader(headers);
         try {
             doc = session.saveDocument(doc);
             session.save();
@@ -164,6 +165,19 @@ public class JSONDocumentObject extends DocumentObject {
         } else if (sourceHeader != null && !sourceHeader.isEmpty()) {
             doc.putContextData(CoreSession.SOURCE, sourceHeader.get(0));
             isVersioning = true;
+        }
+    }
+
+    /**
+     * Fills the {@code doc} context data with a comment from the {@code Update-Comment} header if present.
+     *
+     * @since 9.3
+     */
+    protected void updateCommentFromHeader(HttpHeaders headers) {
+        List<String> updateCommentHeader = headers.getRequestHeader(RestConstants.UPDATE_COMMENT_HEADER);
+        if (updateCommentHeader != null && !updateCommentHeader.isEmpty()) {
+            String comment = updateCommentHeader.get(0);
+            doc.putContextData("comment", comment);
         }
     }
 }
