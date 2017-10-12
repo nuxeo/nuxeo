@@ -46,7 +46,7 @@ public class ESRestClientFactory implements ESClientFactory {
     }
 
     protected ESClient createLocalRestClient(ElasticSearchEmbeddedServerConfig serverConfig) {
-        if (serverConfig.httpEnabled()) {
+        if (! serverConfig.httpEnabled()) {
             throw new IllegalArgumentException("Embedded configuration has no HTTP port enable, use TransportClient instead of Rest");
         }
         RestClient lowLevelRestClient = RestClient.builder(
