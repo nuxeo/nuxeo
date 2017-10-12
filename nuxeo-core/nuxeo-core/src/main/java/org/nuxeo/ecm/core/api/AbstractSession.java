@@ -2033,6 +2033,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // require WriteSecurity to unset retention active
         checkPermission(doc, retentionActive ? WRITE : WRITE_SECURITY);
         doc.setRetentionActive(retentionActive);
+        // send an event for audit logging
+        Map<String, Serializable> options = new HashMap<>();
+        options.put(CoreEventConstants.RETENTION_ACTIVE, Boolean.valueOf(retentionActive));
+        options.put("comment", Boolean.toString(retentionActive)); // for audit
+        DocumentModel docModel = readModel(doc);
+        notifyEvent(DocumentEventTypes.RETENTION_ACTIVE_CHANGED, docModel, options, null, null, true, false);
     }
 
     @Override

@@ -2,7 +2,7 @@
 <component name="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService">
 
   <require>org.nuxeo.runtime.metrics.MetricsService</require>
-  
+
   <documentation>
     Service that deals with audit.
     <p />
@@ -89,12 +89,12 @@
 
     <object class="org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor" />
   </extension-point>
-  
+
   <extension-point name="bulk">
      <documentation>
-      Allows to configure bulk processing 
+      Allows to configure bulk processing
     </documentation>
-    
+
     <object class="org.nuxeo.ecm.platform.audit.service.extension.AuditBulkerDescriptor"/>
   </extension-point>
 
@@ -116,6 +116,7 @@
     <event name="documentLocked" />
     <event name="documentUnlocked" />
     <event name="documentSecurityUpdated" />
+    <event name="retentionActiveChanged" />
     <event name="lifecycle_transition_event" />
     <event name="loginSuccess" />
     <event name="loginFailed" />
