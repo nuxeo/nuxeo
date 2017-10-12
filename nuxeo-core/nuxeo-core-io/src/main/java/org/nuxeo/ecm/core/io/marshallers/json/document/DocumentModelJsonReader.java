@@ -72,7 +72,6 @@ import org.nuxeo.runtime.api.Framework;
  *   "properties": ...  <-- see {@link DocumentPropertiesJsonReader}
  * }
  * </pre>
- *
  * </p>
  *
  * @since 7.2
@@ -87,7 +86,8 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
     }
 
     @Override
-    public DocumentModel read(Class<?> clazz, Type genericType, MediaType mediaType, InputStream in) throws IOException {
+    public DocumentModel read(Class<?> clazz, Type genericType, MediaType mediaType, InputStream in)
+            throws IOException {
         Reader<DocumentModel> reader = ctx.getParameter(LEGACY_MODE_READER);
         if (reader != null) {
             DocumentModel doc = reader.read(clazz, genericType, mediaType, in);
