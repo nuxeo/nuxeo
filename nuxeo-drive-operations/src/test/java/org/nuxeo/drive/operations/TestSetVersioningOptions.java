@@ -45,7 +45,8 @@ import org.nuxeo.runtime.test.runner.Jetty;
  */
 @RunWith(FeaturesRunner.class)
 @Features(EmbeddedAutomationServerFeature.class)
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations", "org.nuxeo.ecm.core.cache" })
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations", "org.nuxeo.ecm.core.cache",
+        "org.nuxeo.ecm.platform.login.token" })
 @Jetty(port = 18080)
 public class TestSetVersioningOptions {
 

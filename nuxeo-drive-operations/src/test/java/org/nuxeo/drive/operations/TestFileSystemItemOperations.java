@@ -87,8 +87,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(EmbeddedAutomationServerFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.webapp.types", "org.nuxeo.drive.core",
-        "org.nuxeo.drive.operations", "org.nuxeo.ecm.core.cache",
+        "org.nuxeo.ecm.platform.webapp.types", "org.nuxeo.drive.core", "org.nuxeo.drive.operations",
+        "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.platform.login.token",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-descendants-scrolling-cache-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)

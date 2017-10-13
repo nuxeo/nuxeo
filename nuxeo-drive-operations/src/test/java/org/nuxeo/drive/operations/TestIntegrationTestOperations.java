@@ -68,7 +68,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(EmbeddedAutomationServerFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.user.center.profile", "org.nuxeo.drive.operations" })
+        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.user.center.profile", "org.nuxeo.drive.operations",
+        "org.nuxeo.ecm.platform.login.token" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Jetty(port = 18080)
 public class TestIntegrationTestOperations {

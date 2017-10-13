@@ -89,7 +89,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.platform.types.core", "org.nuxeo.drive.core", "org.nuxeo.drive.operations",
-        "org.nuxeo.ecm.core.cache", "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-userworkspace-contrib.xml",
+        "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.platform.login.token",
+        "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-userworkspace-contrib.xml",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-descendants-scrolling-cache-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)

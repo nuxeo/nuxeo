@@ -27,7 +27,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.drive.NuxeoDriveConstants;
 import org.nuxeo.ecm.automation.client.Session;
@@ -46,7 +45,8 @@ import org.nuxeo.runtime.test.runner.Jetty;
  */
 @RunWith(FeaturesRunner.class)
 @Features(EmbeddedAutomationServerFeature.class)
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations", "org.nuxeo.ecm.core.cache" })
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations", "org.nuxeo.ecm.core.cache",
+        "org.nuxeo.ecm.platform.login.token" })
 @Jetty(port = 18080)
 public class TestGetClientUpdateInfo {
 
