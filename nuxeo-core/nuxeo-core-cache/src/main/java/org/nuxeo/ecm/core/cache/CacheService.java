@@ -42,7 +42,9 @@ public interface CacheService {
      * @param size the maximum number of elements
      * @param timeout the entry timeout (in minutes)
      * @since 8.2
+     * @deprecated since 9.3, seems unused, use {@link #registerCache(String)} instead.
      */
+    @Deprecated
     public void registerCache(String name, int size, int timeout);
 
     /**
