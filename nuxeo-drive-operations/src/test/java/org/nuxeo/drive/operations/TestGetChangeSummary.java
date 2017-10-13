@@ -58,6 +58,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(EmbeddedAutomationServerFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations", "org.nuxeo.ecm.core.cache",
+        "org.nuxeo.ecm.platform.login.token",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 @LocalDeploy("org.nuxeo.drive.operations:OSGI-INF/test-nuxeodrive-change-finder-contrib.xml")
 @Jetty(port = 18080)
