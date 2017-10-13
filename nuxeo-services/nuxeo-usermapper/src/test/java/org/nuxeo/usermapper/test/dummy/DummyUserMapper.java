@@ -50,7 +50,7 @@ public class DummyUserMapper extends AbstractUserMapper implements UserMapper {
             Map<String, Serializable> userAttributes, Map<String, Serializable> profileAttributes) {
         if (userObject instanceof DummyUser) {
             DummyUser du = (DummyUser) userObject;
-            searchAttributes.put(userManager.getUserIdField(), du.login);
+            searchAttributes.put(getUserManager().getUserIdField(), du.login);
             if (du.getName().getFirstName() != null) {
                 userAttributes.put("firstName", du.getName().getFirstName());
             }
