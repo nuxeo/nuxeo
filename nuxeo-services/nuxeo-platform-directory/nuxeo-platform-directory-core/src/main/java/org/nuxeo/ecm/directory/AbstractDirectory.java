@@ -288,12 +288,14 @@ public abstract class AbstractDirectory implements Directory {
         CacheService cacheService = Framework.getService(CacheService.class);
         if (cacheService != null) {
             if (descriptor.cacheEntryName == null) {
-                cache.setEntryCacheName("cache-" + getName());
-                cacheService.registerCache("cache-" + getName());
+                String cacheEntryName = "cache-" + getName();
+                cache.setEntryCacheName(cacheEntryName);
+                cacheService.registerCache(cacheEntryName);
             }
             if (descriptor.cacheEntryWithoutReferencesName == null) {
-                cache.setEntryCacheWithoutReferencesName("cacheWithoutReference-" + getName());
-                cacheService.registerCache("cacheWithoutReference-" + getName());
+                String cacheEntryWithoutReferencesName = "cacheWithoutReference-" + getName();
+                cache.setEntryCacheWithoutReferencesName(cacheEntryWithoutReferencesName);
+                cacheService.registerCache(cacheEntryWithoutReferencesName);
             }
         }
     }
