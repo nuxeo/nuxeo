@@ -22,7 +22,6 @@ package org.nuxeo.directory.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.ecm.core.cache.CacheDescriptor.OPTION_MAX_SIZE;
-import static org.nuxeo.ecm.core.cache.CacheServiceImpl.DEFAULT_CACHE_ID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,9 +66,6 @@ public class TestCacheFallbackOnDirectory {
 
     @Test
     public void testGetFromCache() throws Exception {
-
-        // Register default cache
-        cacheService.registerCache(DEFAULT_CACHE_ID, 5, 100);
 
         Directory dir = directoryService.getDirectory("userDirectory");
         try (Session session = dir.getSession()) {
