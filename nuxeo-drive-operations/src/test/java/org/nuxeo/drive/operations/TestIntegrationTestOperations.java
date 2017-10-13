@@ -111,8 +111,10 @@ public class TestIntegrationTestOperations {
         // ---------------------------------------------------------
         // Setup the integration tests environment as Administrator
         // ---------------------------------------------------------
-        Blob testUserCredentialsBlob = (Blob) clientSession.newRequest(NuxeoDriveSetupIntegrationTests.ID).set(
-                "userNames", "joe,jack").set("permission", "ReadWrite").execute();
+        Blob testUserCredentialsBlob = (Blob) clientSession.newRequest(NuxeoDriveSetupIntegrationTests.ID)
+                                                           .set("userNames", "joe,jack")
+                                                           .set("permission", "ReadWrite")
+                                                           .execute();
         assertNotNull(testUserCredentialsBlob);
         // Invalidate VCS cache
         TransactionHelper.commitOrRollbackTransaction();
@@ -155,8 +157,11 @@ public class TestIntegrationTestOperations {
         // Setup the integration tests environment with other user names without
         // having teared it down previously => should start by cleaning it up
         // ----------------------------------------------------------------------
-        testUserCredentialsBlob = (Blob) clientSession.newRequest(NuxeoDriveSetupIntegrationTests.ID).set("userNames",
-                "sarah").set("useMembersGroup", true).set("permission", "ReadWrite").execute();
+        testUserCredentialsBlob = (Blob) clientSession.newRequest(NuxeoDriveSetupIntegrationTests.ID)
+                                                      .set("userNames", "sarah")
+                                                      .set("useMembersGroup", true)
+                                                      .set("permission", "ReadWrite")
+                                                      .execute();
         assertNotNull(testUserCredentialsBlob);
 
         // Check cleanup
@@ -209,8 +214,10 @@ public class TestIntegrationTestOperations {
         String sarahPassword = sarahCredentials.substring(sarahCredentials.indexOf(':') + 1);
         Session unauthorizedSession = automationClient.getSession("drivesarah", sarahPassword);
         try {
-            unauthorizedSession.newRequest(NuxeoDriveSetupIntegrationTests.ID).set("userNames", "john,bob").set(
-                    "permission", "ReadWrite").execute();
+            unauthorizedSession.newRequest(NuxeoDriveSetupIntegrationTests.ID)
+                               .set("userNames", "john,bob")
+                               .set("permission", "ReadWrite")
+                               .execute();
             fail("NuxeoDrive.SetupIntegrationTests operation should not be callable by a non administrator.");
         } catch (Exception e) {
             // Expected

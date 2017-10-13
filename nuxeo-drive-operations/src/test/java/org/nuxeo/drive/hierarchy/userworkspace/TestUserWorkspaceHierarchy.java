@@ -164,7 +164,6 @@ public class TestUserWorkspaceHierarchy {
      *   |     |-- user1File3
      *   |-- user1Folder4       (synchronization root)
      *   |     |-- user1File4
-     *
      * </pre>
      */
     @Before
@@ -242,7 +241,6 @@ public class TestUserWorkspaceHierarchy {
      *   |-- user1Folder1
      *   |     |-- user1File1
      *   |     |-- user1Folder2
-     *
      * </pre>
      */
     @Test
@@ -392,7 +390,8 @@ public class TestUserWorkspaceHierarchy {
         checkFileItem(fileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1File2, userWorkspace1ItemId,
                 userWorkspace1ItemPath, "user1File2.txt", "user1", "user1");
         // user1Folder1
-        DocumentBackedFolderItem folderItem = mapper.readValue(topLevelChildrenNodes[2], DocumentBackedFolderItem.class);
+        DocumentBackedFolderItem folderItem = mapper.readValue(topLevelChildrenNodes[2],
+                DocumentBackedFolderItem.class);
         checkFolderItem(folderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1Folder1, userWorkspace1ItemId,
                 userWorkspace1ItemPath, "user1Folder1", "user1", "user1");
         Blob folderItemChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
@@ -472,8 +471,8 @@ public class TestUserWorkspaceHierarchy {
                 fileItem.getDigest());
     }
 
-    protected void checkFolderItem(FolderItem folderItem, String folderItemIdPrefix, DocumentModel doc,
-            String parentId, String parentPath, String name, String creator, String lastContributor) {
+    protected void checkFolderItem(FolderItem folderItem, String folderItemIdPrefix, DocumentModel doc, String parentId,
+            String parentPath, String name, String creator, String lastContributor) {
 
         String expectedFolderItemId = folderItemIdPrefix + doc.getId();
         assertEquals(expectedFolderItemId, folderItem.getId());
