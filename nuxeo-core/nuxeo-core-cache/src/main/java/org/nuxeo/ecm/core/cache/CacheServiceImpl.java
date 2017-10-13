@@ -240,7 +240,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     @Override
     public void registerCache(String name) {
-        CacheDescriptor defaultDescriptor = registry.getDefaultDescriptor();
+        CacheDescriptor defaultDescriptor = registry.getDefaultDescriptor().clone();
         defaultDescriptor.name = name;
         // add to registry (merging if needed)
         registerCacheDescriptor(defaultDescriptor);
