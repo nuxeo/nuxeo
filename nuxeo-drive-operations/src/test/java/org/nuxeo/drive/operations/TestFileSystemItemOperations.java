@@ -307,7 +307,8 @@ public class TestFileSystemItemOperations {
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).execute();
         assertNotNull(fileSystemItemJSON);
 
-        DocumentBackedFileItem fileItem = mapper.readValue(fileSystemItemJSON.getStream(), DocumentBackedFileItem.class);
+        DocumentBackedFileItem fileItem = mapper.readValue(fileSystemItemJSON.getStream(),
+                DocumentBackedFileItem.class);
         assertNotNull(fileItem);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId(), fileItem.getId());
         assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId(), fileItem.getParentId());
@@ -362,7 +363,8 @@ public class TestFileSystemItemOperations {
                 SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).set("name", "newFolder").execute();
         assertNotNull(newFolderJSON);
 
-        DocumentBackedFolderItem newFolder = mapper.readValue(newFolderJSON.getStream(), DocumentBackedFolderItem.class);
+        DocumentBackedFolderItem newFolder = mapper.readValue(newFolderJSON.getStream(),
+                DocumentBackedFolderItem.class);
         assertNotNull(newFolder);
 
         // Need to flush VCS cache to be aware of changes in the session used by the file system item
@@ -401,7 +403,8 @@ public class TestFileSystemItemOperations {
         DocumentModel newFileDoc = session.getDocument(new PathRef("/folder1/subFolder1/New file.odt"));
         assertEquals("File", newFileDoc.getType());
         assertEquals("New file.odt", newFileDoc.getTitle());
-        org.nuxeo.ecm.core.api.Blob newFileBlob = (org.nuxeo.ecm.core.api.Blob) newFileDoc.getPropertyValue("file:content");
+        org.nuxeo.ecm.core.api.Blob newFileBlob = (org.nuxeo.ecm.core.api.Blob) newFileDoc.getPropertyValue(
+                "file:content");
         assertNotNull(newFileBlob);
         assertEquals("New file.odt", newFileBlob.getFilename());
         assertEquals("This is the content of a new file.", newFileBlob.getString());
@@ -429,7 +432,8 @@ public class TestFileSystemItemOperations {
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).setInput(blob).execute();
         assertNotNull(updatedFileJSON);
 
-        DocumentBackedFileItem updatedFile = mapper.readValue(updatedFileJSON.getStream(), DocumentBackedFileItem.class);
+        DocumentBackedFileItem updatedFile = mapper.readValue(updatedFileJSON.getStream(),
+                DocumentBackedFileItem.class);
         assertNotNull(updatedFile);
 
         // Need to flush VCS cache to be aware of changes in the session used by the file system item
@@ -438,7 +442,8 @@ public class TestFileSystemItemOperations {
         DocumentModel updatedFileDoc = session.getDocument(new IdRef(file1.getId()));
         assertEquals("File", updatedFileDoc.getType());
         assertEquals("file1", updatedFileDoc.getTitle());
-        org.nuxeo.ecm.core.api.Blob updatedFileBlob = (org.nuxeo.ecm.core.api.Blob) updatedFileDoc.getPropertyValue("file:content");
+        org.nuxeo.ecm.core.api.Blob updatedFileBlob = (org.nuxeo.ecm.core.api.Blob) updatedFileDoc.getPropertyValue(
+                "file:content");
         assertNotNull(updatedFileBlob);
         assertEquals("Updated file 1.odt", updatedFileBlob.getFilename());
         assertEquals("This is the updated content of file 1.", updatedFileBlob.getString());
@@ -487,10 +492,11 @@ public class TestFileSystemItemOperations {
         // Delete top level folder: should be unsupported
         // ------------------------------------------------------
         try {
-            clientSession.newRequest(NuxeoDriveDelete.ID).set(
-                    "id",
-                    fileSystemItemAdapterService.getTopLevelFolderItemFactory().getTopLevelFolderItem(
-                            session.getPrincipal()).getId()).execute();
+            clientSession.newRequest(NuxeoDriveDelete.ID)
+                         .set("id", fileSystemItemAdapterService.getTopLevelFolderItemFactory()
+                                                                .getTopLevelFolderItem(session.getPrincipal())
+                                                                .getId())
+                         .execute();
             fail("Top level folder item deletion should be unsupported.");
         } catch (Exception e) {
             assertEquals("Failed to invoke operation: NuxeoDrive.Delete", e.getMessage());
@@ -517,7 +523,8 @@ public class TestFileSystemItemOperations {
 
         DocumentModel renamedFileDoc = session.getDocument(new IdRef(file1.getId()));
         assertEquals("file1", renamedFileDoc.getTitle());
-        org.nuxeo.ecm.core.api.Blob renamedFileBlob = (org.nuxeo.ecm.core.api.Blob) renamedFileDoc.getPropertyValue("file:content");
+        org.nuxeo.ecm.core.api.Blob renamedFileBlob = (org.nuxeo.ecm.core.api.Blob) renamedFileDoc.getPropertyValue(
+                "file:content");
         assertNotNull(renamedFileBlob);
         assertEquals("Renamed file 1.odt", renamedFileBlob.getFilename());
         assertEquals("nxfile/test/" + file1.getId() + "/blobholder:0/Renamed%20file%201.odt",
@@ -567,10 +574,12 @@ public class TestFileSystemItemOperations {
         // Top level folder
         // ------------------------------------------------------
         try {
-            clientSession.newRequest(NuxeoDriveRename.ID).set(
-                    "id",
-                    fileSystemItemAdapterService.getTopLevelFolderItemFactory().getTopLevelFolderItem(
-                            session.getPrincipal()).getId()).set("name", "New name for top level folder").execute();
+            clientSession.newRequest(NuxeoDriveRename.ID)
+                         .set("id", fileSystemItemAdapterService.getTopLevelFolderItemFactory()
+                                                                .getTopLevelFolderItem(session.getPrincipal())
+                                                                .getId())
+                         .set("name", "New name for top level folder")
+                         .execute();
             fail("Top level folder renaming shoud be unsupported.");
         } catch (Exception e) {
             assertEquals("Failed to invoke operation: NuxeoDrive.Rename", e.getMessage());
@@ -752,7 +761,8 @@ public class TestFileSystemItemOperations {
         DocumentModel movedFileDoc = session.getDocument(new IdRef(file1.getId()));
         assertEquals("/folder2/file1", movedFileDoc.getPathAsString());
         assertEquals("file1", movedFileDoc.getTitle());
-        org.nuxeo.ecm.core.api.Blob movedFileBlob = (org.nuxeo.ecm.core.api.Blob) movedFileDoc.getPropertyValue("file:content");
+        org.nuxeo.ecm.core.api.Blob movedFileBlob = (org.nuxeo.ecm.core.api.Blob) movedFileDoc.getPropertyValue(
+                "file:content");
         assertNotNull(movedFileBlob);
         assertEquals("First file.odt", movedFileBlob.getFilename());
         assertEquals("MD5", movedFileItem.getDigestAlgorithm());

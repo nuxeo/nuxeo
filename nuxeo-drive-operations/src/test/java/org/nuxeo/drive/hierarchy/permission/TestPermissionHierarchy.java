@@ -175,7 +175,6 @@ public class TestPermissionHierarchy {
      *   |-- user2File2
      *   |-- user2Folder3       (registered as a synchronization root with ReadWrite permission for user1)
      *   |     |-- user2File3
-     *
      * </pre>
      */
     @Before
@@ -310,7 +309,6 @@ public class TestPermissionHierarchy {
          *   |     |     |-- user2Folder2
          *   |     |-- user2Folder3
          *   |     |     |-- user2File3
-         *
          * </pre>
          */
         TransactionHelper.commitOrRollbackTransaction();
@@ -362,8 +360,11 @@ public class TestPermissionHierarchy {
         // --------------------------------------------
         // Check user synchronization roots
         // --------------------------------------------
-        Blob userSyncRootsJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID).set("id",
-                userSyncRootParent.getId()).execute();
+
+        // Get children
+        Blob userSyncRootsJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
+                                                      .set("id", userSyncRootParent.getId())
+                                                      .execute();
 
         ArrayNode userSyncRoots = mapper.readValue(userSyncRootsJSON.getStream(), ArrayNode.class);
         assertNotNull(userSyncRoots);
@@ -494,7 +495,6 @@ public class TestPermissionHierarchy {
          *   |     |     |-- user2Folder2
          *   |     |-- user2Folder3
          *   |     |     |-- user2File3
-         *
          * </pre>
          */
         TransactionHelper.commitOrRollbackTransaction();
@@ -554,7 +554,6 @@ public class TestPermissionHierarchy {
          *   |     |     |-- user2Folder2
          *   |     |-- user2Folder3
          *   |     |     |-- user2File3
-         *
          * </pre>
          */
         TransactionHelper.commitOrRollbackTransaction();
@@ -608,7 +607,6 @@ public class TestPermissionHierarchy {
          *   |-- Other Docs
          *   |     |-- user2Folder3
          *   |     |     |-- user2File3
-         *
          * </pre>
          */
         TransactionHelper.commitOrRollbackTransaction();
@@ -659,7 +657,6 @@ public class TestPermissionHierarchy {
          *   |     |-- user1Folder4
          *   |
          *   |-- Other Docs
-         *
          * </pre>
          */
         resetPermissions(user2Folder3.getRef(), "user1");
@@ -713,8 +710,8 @@ public class TestPermissionHierarchy {
                 fileItem.getDigest());
     }
 
-    protected void checkFolderItem(FolderItem folderItem, String folderItemIdPrefix, DocumentModel doc,
-            String parentId, String parentPath, String name, String creator, String lastContributor) {
+    protected void checkFolderItem(FolderItem folderItem, String folderItemIdPrefix, DocumentModel doc, String parentId,
+            String parentPath, String name, String creator, String lastContributor) {
 
         String expectedFolderItemId = folderItemIdPrefix + doc.getId();
         assertEquals(expectedFolderItemId, folderItem.getId());
