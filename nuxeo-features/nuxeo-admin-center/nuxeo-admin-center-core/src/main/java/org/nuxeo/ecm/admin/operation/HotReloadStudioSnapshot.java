@@ -90,9 +90,6 @@ public class HotReloadStudioSnapshot {
     @OperationMethod
     public Blob run() {
 
-        JSONArray result = new JSONArray();
-        JSONObject resultJSON = new JSONObject();
-
         if (updateInProgress) {
             return jsonHelper(inProgress, "Update in progress.", null);
         }
