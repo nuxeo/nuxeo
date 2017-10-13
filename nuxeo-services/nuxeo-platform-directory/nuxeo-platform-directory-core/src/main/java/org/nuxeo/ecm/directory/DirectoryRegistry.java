@@ -64,6 +64,10 @@ public class DirectoryRegistry {
 
     public synchronized void addContribution(BaseDirectoryDescriptor contrib) {
         String id = contrib.name;
+        if (id.contains("/") && log.isWarnEnabled()) {
+            log.warn("Directory " + id + " should not contain forward slashes in its name, as they are not supported."
+                    + " Operations with the REST API on this directory won't work.");
+        }
         log.info("Registered directory" + (contrib.template ? " template" : "") + ": " + id);
         allDescriptors.computeIfAbsent(id, k -> new ArrayList<>()).add(contrib);
         contributionChanged(contrib);
@@ -171,7 +175,7 @@ public class DirectoryRegistry {
             BaseDirectoryDescriptor descriptor = descriptors.get(id);
             if (descriptor != null) {
                 dir = descriptor.newDirectory();
-                directories.put(id,  dir);
+                directories.put(id, dir);
             }
         }
         return dir;
