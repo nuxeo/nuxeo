@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.management.es.tests">
+
+  <!-- use a different repository for the administrative status docs to skip index these in tests -->
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent" point="storageConfiguration">
+    <configuration repository="estest" />
+  </extension>
+
+</component>
