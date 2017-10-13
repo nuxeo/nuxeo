@@ -41,6 +41,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import javax.inject.Inject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.assertEquals;
@@ -55,6 +57,8 @@ import static org.junit.Assert.assertTrue;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.runtime.kv")
 public class TestAtomicOperationsOnDocument {
+
+    protected static final int NB_THREADS = 5;
 
     @Inject
     protected CoreFeature coreFeature;
@@ -159,25 +163,28 @@ public class TestAtomicOperationsOnDocument {
     }
 
     @Test
-    @Ignore
-    public void testExceptionWhenCreatingDocumentInAnotherThread() throws Exception {
+    public void testConcurrentUpdateException() throws Exception {
 
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
 
-        CountDownLatch latch = new CountDownLatch(1);
-
-        GetOrCreateDocumentThread t = new GetOrCreateDocumentThread(doc, latch);
-        Thread thread1 = new Thread(t);
-        thread1.start();
-
+        CountDownLatch latch = new CountDownLatch(NB_THREADS - 1);
         MutableObject<String> me = new MutableObject<>();
-        GetOrCreateDocumentThread t2 = new GetOrCreateDocumentThread(doc, latch);
-        Thread thread2 = new Thread(t2);
-        thread2.setUncaughtExceptionHandler((thread, throwable) -> me.setValue(throwable.getMessage()));
-        thread2.start();
 
-        thread1.join();
-        thread2.join();
+        List<Thread> threads = new ArrayList<>();
+        for (int i = 0; i < NB_THREADS; i++) {
+            threads.add(new Thread(new GetOrCreateDocumentThread(doc, latch)));
+        }
+
+        // One of the threads will fail with a concurrent update exception thanks to the latch,
+        // so check every one of them to keep error message if this exception occurs.
+        threads.forEach(t -> {
+            t.setUncaughtExceptionHandler((thread, throwable) -> me.setValue(throwable.getMessage()));
+            t.start();
+        });
+
+        for (Thread t : threads) {
+            t.join();
+        }
 
         assertEquals("Failed to acquire the lock on key " + computeKey(session, doc), me.getValue());
 
