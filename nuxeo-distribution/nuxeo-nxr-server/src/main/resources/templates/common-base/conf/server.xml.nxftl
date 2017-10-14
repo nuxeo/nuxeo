@@ -1,7 +1,6 @@
 <#escape x as x?xml>
-<#assign isTomcat7 = tomcat.version?split(".")[0]?number == 7>
 <#assign isWizard = (nuxeo.wizard?? && nuxeo.wizard.done?? && nuxeo.wizard.done == "false")>
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   Licensed to the Apache Software Foundation (ASF) under one or more
   contributor license agreements.  See the NOTICE file distributed with
@@ -23,16 +22,12 @@
      Documentation at /docs/config/server.html
  -->
 <Server address="${nuxeo.server.tomcat_admin.host}" port="${nuxeo.server.tomcat_admin.port}" shutdown="SHUTDOWN">
-
-
+  <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
+  <!-- Security listener. Documentation at /docs/config/listeners.html
+  <Listener className="org.apache.catalina.security.SecurityListener" />
+  -->
   <!--APR library loader. Documentation at /docs/apr.html -->
   <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
-  <!--Initialize Jasper prior to webapps are loaded. Documentation at /docs/jasper-howto.html -->
-  <Listener className="org.apache.catalina.core.JasperListener" />
-  <!-- JMX Support for the Tomcat server. Documentation at /docs/non-existent.html -->
-<#if !isTomcat7>
-  <Listener className="org.apache.catalina.mbeans.ServerLifecycleListener" />
-</#if>
   <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
 
   <!-- Global JNDI resources
@@ -65,10 +60,10 @@
 
     <!-- A "Connector" represents an endpoint by which requests are received
          and responses are returned. Documentation at :
-         Java HTTP Connector: /docs/config/http.html (blocking & non-blocking)
+         Java HTTP Connector: /docs/config/http.html
          Java AJP  Connector: /docs/config/ajp.html
          APR (HTTP/AJP) Connector: /docs/apr.html
-         Define a non-SSL HTTP/1.1 Connector on port ${nuxeo.server.http.port}
+         Define a non-SSL/TLS HTTP/1.1 Connector on port 8080
     -->
     <Connector port="${nuxeo.server.http.port}" protocol="HTTP/1.1" URIEncoding="UTF-8"
 <#if nuxeo.server.https.port == "0">
@@ -84,20 +79,24 @@
                compressionMinSize="512"
                compressableMimeType="text/css,application/javascript,text/xml,text/html"
                connectionTimeout="20000" />
+
     <!-- A "Connector" using the shared thread pool-->
     <!--
     <Connector executor="tomcatThreadPool"
-               port="${nuxeo.server.http.port}" protocol="HTTP/1.1"
-               address="${nuxeo.bind.address}"
+               port="8080" protocol="HTTP/1.1"
                connectionTimeout="20000"
-               redirectPort="${nuxeo.server.https.port}" />
+               redirectPort="8443" />
     -->
 <#if nuxeo.server.https.port != "0">
-    <!-- Define a SSL HTTP/1.1 Connector on port ${nuxeo.server.https.port}
-         This connector uses the JSSE configuration, when using APR, the
-         connector should be using the OpenSSL style configuration
-         described in the APR documentation -->
-    <Connector port="${nuxeo.server.https.port}" protocol="HTTP/1.1" SSLEnabled="true"
+    <!-- Define a SSL/TLS HTTP/1.1 Connector on port 8443
+         This connector uses the NIO implementation. The default
+         SSLImplementation will depend on the presence of the APR/native
+         library and the useOpenSSL attribute of the
+         AprLifecycleListener.
+         Either JSSE or OpenSSL style configuration may be used regardless of
+         the SSLImplementation selected. JSSE style configuration is used below.
+    -->
+    <Connector port="${nuxeo.server.https.port}" protocol="org.apache.coyote.http11.Http11NioProtocol"
                address="${nuxeo.bind.address}"
 <#if nuxeo.server.signature??>
                server="${nuxeo.server.signature}"
@@ -105,13 +104,37 @@
                compression="on"
                compressionMinSize="512"
                compressableMimeType="text/css,application/javascript,text/xml,text/html"
-               maxThreads="150" scheme="https" secure="true"
+               scheme="https" secure="true"
                keystoreFile="${nuxeo.server.https.keystoreFile}"
                keystorePass="${nuxeo.server.https.keystorePass}"
-               clientAuth="false" sslProtocol="TLS" />
+               clientAuth="false" sslProtocol="TLS"
+               maxThreads="150" SSLEnabled="true">
+        <SSLHostConfig>
+            <Certificate certificateKeystoreFile="conf/localhost-rsa.jks"
+                         type="RSA" />
+        </SSLHostConfig>
+    </Connector>
 </#if>
+    <!-- Define a SSL/TLS HTTP/1.1 Connector on port 8443 with HTTP/2
+         This connector uses the APR/native implementation which always uses
+         OpenSSL for TLS.
+         Either JSSE or OpenSSL style configuration may be used. OpenSSL style
+         configuration is used below.
+    -->
+    <!--
+    <Connector port="8443" protocol="org.apache.coyote.http11.Http11AprProtocol"
+               maxThreads="150" SSLEnabled="true" >
+        <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol" />
+        <SSLHostConfig>
+            <Certificate certificateKeyFile="conf/localhost-rsa-key.pem"
+                         certificateFile="conf/localhost-rsa-cert.pem"
+                         certificateChainFile="conf/localhost-rsa-chain.pem"
+                         type="RSA" />
+        </SSLHostConfig>
+    </Connector>
+    -->
 
-    <!-- Define an AJP 1.3 Connector on port ${nuxeo.server.ajp.port} -->
+    <!-- Define an AJP 1.3 Connector on port 8009 -->
     <Connector port="${nuxeo.server.ajp.port}" protocol="AJP/1.3"
                address="${nuxeo.bind.address}"
                redirectPort="${nuxeo.server.https.port}" />
@@ -135,19 +158,12 @@
       <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster"/>
       -->
 
-      <!-- The request dumper valve dumps useful debugging information about
-           the request and response data received and sent by Tomcat.
-           Documentation at: /docs/config/valve.html -->
-      <!--
-      <Valve className="org.apache.catalina.valves.RequestDumperValve"/>
-      -->
-
-      <!-- This Realm uses the UserDatabase configured in the global JNDI
-           resources under the key "UserDatabase".  Any edits
-           that are performed against this UserDatabase are immediately
-           available for use by the Realm.  -->
-      <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
-             resourceName="UserDatabase"/>
+        <!-- This Realm uses the UserDatabase configured in the global JNDI
+             resources under the key "UserDatabase".  Any edits
+             that are performed against this UserDatabase are immediately
+             available for use by the Realm.  -->
+        <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+               resourceName="UserDatabase"/>
 
       <!-- Define the default virtual host
            Note: XML Schema validation will not work with Xerces 2.2.

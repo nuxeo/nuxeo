@@ -45,13 +45,12 @@ public class ApplicationManager implements BundleTrackerCustomizer {
 
     protected BundleTracker tracker;
 
-    protected Map<String, ApplicationHost> apps;
+    protected final Map<String, ApplicationHost> apps = new HashMap<>();
 
     public ApplicationManager() {
     }
 
     public synchronized void start(BundleContext context) {
-        apps = new HashMap<>();
         tracker = new BundleTracker(context, Bundle.ACTIVE | Bundle.STARTING | Bundle.RESOLVED, this);
         tracker.open();
     }
@@ -59,7 +58,7 @@ public class ApplicationManager implements BundleTrackerCustomizer {
     public synchronized void stop(BundleContext context) {
         tracker.close();
         tracker = null;
-        apps = null;
+        apps.clear();
     }
 
     public synchronized ApplicationHost getOrCreateApplication(String name) {

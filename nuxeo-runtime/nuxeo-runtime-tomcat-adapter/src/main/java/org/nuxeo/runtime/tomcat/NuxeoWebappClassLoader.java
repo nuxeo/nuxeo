@@ -43,11 +43,6 @@ public class NuxeoWebappClassLoader extends WebappClassLoader implements Mutable
         super.addURL(url);
     }
 
-    @Override
-    public void setParentClassLoader(ClassLoader pcl) {
-        super.setParentClassLoader(pcl);
-    }
-
     public ClassLoader getParentClassLoader() {
         return parent;
     }

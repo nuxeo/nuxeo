@@ -49,12 +49,6 @@
     <copy tofile="${tomcat}/bin/nuxeo-launcher.jar">
     	<artifact:file key="org.nuxeo:nuxeo-launcher:::jar-with-dependencies" />
     </copy>
-    <copy tofile="${tomcat}/bin/tomcat-juli.jar">
-      <artifact:resolveFile key="org.apache.tomcat.extras:tomcat-extras-juli" />
-    </copy>
-    <copy tofile="${tomcat}/lib/tomcat-juli-adapters.jar">
-      <artifact:resolveFile key="org.apache.tomcat.extras:tomcat-extras-juli-adapters" />
-    </copy>
     <copy todir="${tomcat}">
       <fileset dir="src/main/resources/tomcat" />
     </copy>

@@ -4,11 +4,10 @@
   <require>org.nuxeo.runtime.nuxeo-runtime-deploy</require>
 
   <extension target="web#LISTENER">
-    <listener>
-      <listener-class>
-        com.sun.faces.config.ConfigureListener
-      </listener-class>
-    </listener>
+    <!-- Don't register com.sun.faces.config.ConfigureListener
+      it is already discovered when Jasper scans jsf-impl's jsf_core.tld
+      which already contains a listener-class for it.
+      And StandardContext.listenerStart doesn't de-duplicate correctly. -->
     <listener>
       <listener-class>org.jboss.seam.servlet.SeamListener</listener-class>
     </listener>
