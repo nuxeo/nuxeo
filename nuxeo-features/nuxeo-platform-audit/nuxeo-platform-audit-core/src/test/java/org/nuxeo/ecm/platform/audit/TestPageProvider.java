@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditPageProvider;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
@@ -78,6 +79,13 @@ public class TestPageProvider {
 
     @Inject
     UserManager userManager;
+
+    @Inject
+    TransactionalFeature txFeature;
+
+    public void waitForAsyncCompletion() throws InterruptedException {
+        txFeature.nextTransaction(20,  TimeUnit.SECONDS);
+    }
 
     @Before
     public void createTestEntries() {
@@ -456,7 +464,4 @@ public class TestPageProvider {
         assertEquals(2, entries.size());
     }
 
-    protected void waitForAsyncCompletion() throws InterruptedException {
-        assertTrue(Framework.getLocalService(AuditLogger.class).await(10, TimeUnit.SECONDS));
-    }
 }

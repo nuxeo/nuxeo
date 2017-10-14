@@ -43,6 +43,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -330,6 +331,7 @@ public class LogEntryImpl implements LogEntry {
 
     @Override
     @JsonProperty("extended")
+    @JsonDeserialize(keyAs = String.class, contentAs = ExtendedInfoImpl.StringInfo.class)
     @OneToMany(cascade = CascadeType.ALL, targetEntity = ExtendedInfoImpl.class)
     @JoinTable(name = "NXP_LOGS_MAPEXTINFOS", joinColumns = { @JoinColumn(name = "LOG_FK") }, inverseJoinColumns = {
             @JoinColumn(name = "INFO_FK") })

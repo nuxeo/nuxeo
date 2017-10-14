@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.audit.tests.stream.audit" version="1.0">
+  <require>org.nuxeo.runtime.stream.service</require>
+  <require>org.nuxeo.ecm.platform.audit.service.NXAuditEventsService</require>
+
+  <!-- New sync lister based on Nuxeo stream since 9.3 -->
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <!-- Override the audit listener with our sync impl -->
+    <listener name="auditLoggerListener" async="false" postCommit="false" priority="500"
+      class="org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
+    <logConfig name="audit" type="chronicle" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="auditLogWriter" logConfig="audit" defaultConcurrency="1" defaultPartitions="1"
+      class="org.nuxeo.ecm.platform.audit.impl.StreamAuditWriter">
+      <option name="batchSize">10</option>
+      <option name="batchTimeThresholdMs">200</option>
+    </streamProcessor>
+  </extension>
+
+</component>

@@ -168,6 +168,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
 
     @SuppressWarnings("unchecked")
     protected M messageOf(Bytes value) {
+        // TODO: switch to commons-lang3 SerializationUtils
         ByteArrayInputStream bis = new ByteArrayInputStream(value.get());
         ObjectInput in = null;
         try {
