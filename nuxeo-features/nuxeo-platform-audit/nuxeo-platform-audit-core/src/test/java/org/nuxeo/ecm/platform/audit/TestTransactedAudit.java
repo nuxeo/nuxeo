@@ -38,10 +38,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -51,6 +53,13 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class TestTransactedAudit {
 
     protected @Inject CoreSession repo;
+
+    @Inject
+    TransactionalFeature txFeature;
+
+    public void waitForAsyncCompletion() throws InterruptedException {
+        txFeature.nextTransaction(20,  TimeUnit.SECONDS);
+    }
 
     @Before
     public void isInjected() {
@@ -69,7 +78,7 @@ public class TestTransactedAudit {
         String undeletedLifeCycle = doc.getCurrentLifeCycleState();
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        assertThat(Framework.getLocalService(AuditLogger.class).await(10, TimeUnit.SECONDS), is(true));
+        waitForAsyncCompletion();
 
         // test audit trail
         AuditReader reader = Framework.getLocalService(AuditReader.class);
@@ -119,8 +128,7 @@ public class TestTransactedAudit {
         // log
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        assertThat(Framework.getLocalService(AuditLogger.class).await(10, TimeUnit.SECONDS), is(true));
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        waitForAsyncCompletion();
 
         // test audit trail
         AuditReader reader = Framework.getLocalService(AuditReader.class);

@@ -207,7 +207,7 @@ public class TestNXAuditEventsService {
         int n = eventIds.size();
 
         EventContext ctx = new EventContextImpl(); // not:DocumentEventContext
-        Event event = ctx.newEvent("documentModified"); // auditable
+        Event event = ctx.newEvent("documentDuplicated"); // auditable
         event.setInline(false);
         event.setImmediate(true);
         eventService.fireEvent(event);
