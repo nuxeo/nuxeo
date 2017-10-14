@@ -36,8 +36,6 @@ import javax.servlet.Filter;
 import javax.servlet.Servlet;
 
 import org.apache.catalina.Wrapper;
-import org.apache.catalina.deploy.FilterDef;
-import org.apache.catalina.deploy.FilterMap;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.api.SessionFactory;
@@ -50,7 +48,9 @@ import org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.coyote.ProtocolHandler;
-import org.apache.tomcat.util.net.JIoEndpoint;
+import org.apache.tomcat.util.descriptor.web.FilterDef;
+import org.apache.tomcat.util.descriptor.web.FilterMap;
+import org.apache.tomcat.util.net.AbstractEndpoint;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
@@ -248,7 +248,7 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
         tomcat.setHostname(HOST);
         tomcat.setPort(PORT);
         ProtocolHandler p = tomcat.getConnector().getProtocolHandler();
-        JIoEndpoint endpoint = (JIoEndpoint) getFieldValue(p, "endpoint");
+        AbstractEndpoint<?> endpoint = (AbstractEndpoint<?>) getFieldValue(p, "endpoint");
         // ServerSocketFactory factory = new
         // ReuseAddrServerSocketFactory(endpoint);
         // endpoint.setServerSocketFactory(factory);
