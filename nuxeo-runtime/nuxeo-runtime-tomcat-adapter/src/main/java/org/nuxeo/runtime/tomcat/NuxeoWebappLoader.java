@@ -46,7 +46,9 @@ public class NuxeoWebappLoader extends WebappLoader {
 
     public File getBaseDir() throws ReflectiveOperationException {
         if (baseDir == null) {
-            Container container = getContainer();
+            Method m = getClass().getSuperclass().getDeclaredMethod("getContainer");
+            m.setAccessible(true);
+            Container container = (Container) m.invoke(this);
             Method method = StandardContext.class.getDeclaredMethod("getBasePath");
             method.setAccessible(true);
             String path = (String) method.invoke(container);
