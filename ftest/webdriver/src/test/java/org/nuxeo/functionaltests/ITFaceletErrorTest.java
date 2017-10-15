@@ -19,6 +19,7 @@
 package org.nuxeo.functionaltests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.functionaltests.pages.ErrorPage.ERROR_OCCURED_TITLE;
 import static org.nuxeo.functionaltests.pages.ErrorPage.ERROR_OCCURED_MESSAGE;
 
@@ -38,7 +39,7 @@ public class ITFaceletErrorTest extends AbstractTest {
 
     private static final String FACELET_NOT_FOUND_MESSAGE = "ERROR: facelet not found at '/path/to/non/existing/template'";
 
-    private static final String RELATIVE_FACELET_NOT_FOUND_MESSAGE = "ERROR: facelet not found at '/localhost/nuxeo/error_test_web/path/to/non/existing/template'";
+    private static final String RELATIVE_FACELET_NOT_FOUND_REGEXP = "ERROR: facelet not found at '.*/error_test_web/path/to/non/existing/template'";
 
     @Test
     public void testUiIncludeNotFound() throws Exception {
@@ -53,7 +54,8 @@ public class ITFaceletErrorTest extends AbstractTest {
         driver.get(NUXEO_URL);
         AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText(GO_TO_ERROR_PAGE));
         AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("Error ui:include relative not found"));
-        assertEquals(RELATIVE_FACELET_NOT_FOUND_MESSAGE, driver.findElementByXPath(ERROR_MESSAGE_XPATH).getText());
+        String error = driver.findElementByXPath(ERROR_MESSAGE_XPATH).getText();
+        assertTrue(error, error.matches(RELATIVE_FACELET_NOT_FOUND_REGEXP));
     }
 
     @Test
