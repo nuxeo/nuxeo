@@ -46,16 +46,6 @@ public class CacheDescriptor {
      */
     public static final long DEFAULT_MAX_SIZE = 100;
 
-    /**
-     * Maximum number of entries the cache may contain.
-     *
-     * @since 9.3
-     */
-    public static final String OPTION_MAX_SIZE = "maxSize";
-
-    /** @since 9.3 */
-    public static final String OPTION_CONCURRENCY_LEVEL = "concurrencyLevel";
-
     @XNode("@name")
     public String name;
 
@@ -67,6 +57,16 @@ public class CacheDescriptor {
 
     @XNode("ttl")
     public Long ttl;
+
+    /** @since 9.3 */
+    public static final String OPTION_CONCURRENCY_LEVEL = "concurrencyLevel";
+
+    /**
+     * Maximum number of entries the cache may contain.
+     *
+     * @since 9.3
+     */
+    public static final String OPTION_MAX_SIZE = "maxSize";
 
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> options = new HashMap<String, String>();

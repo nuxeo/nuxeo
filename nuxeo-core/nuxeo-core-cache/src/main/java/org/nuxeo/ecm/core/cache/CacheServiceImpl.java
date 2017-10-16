@@ -135,16 +135,6 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
         public Collection<CacheDescriptor> getCacheDescriptors() {
             return effectiveDescriptors.values();
         }
-
-        public CacheDescriptor getDefaultDescriptor() {
-            CacheDescriptor defaultDescriptor = getCacheDescriptor(DEFAULT_CACHE_ID);
-            if (defaultDescriptor == null) {
-                defaultDescriptor = new CacheDescriptor();
-                defaultDescriptor.ttl = DEFAULT_TTL;
-                defaultDescriptor.options.put(OPTION_MAX_SIZE, String.valueOf(DEFAULT_MAX_SIZE));
-            }
-            return defaultDescriptor;
-        }
     }
 
     protected static class CacheInvalidation implements SerializableMessage {
@@ -233,17 +223,32 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     }
 
     @Override
-    @Deprecated
     public void registerCache(String name, int maxSize, int timeout) {
-        registerCache(name);
+        registerCache(name, maxSize, timeout, new CacheDescriptor());
     }
 
     @Override
     public void registerCache(String name) {
-        CacheDescriptor defaultDescriptor = registry.getDefaultDescriptor();
-        defaultDescriptor.name = name;
+        // start from default or empty
+        CacheDescriptor defaultDescriptor = registry.getCacheDescriptor(DEFAULT_CACHE_ID);
+        if (defaultDescriptor == null) {
+            registerCache(name, DEFAULT_MAX_SIZE, DEFAULT_TTL, new CacheDescriptor());
+        } else {
+            registerCache(name, defaultDescriptor.clone());
+        }
+    }
+
+    protected void registerCache(String name, long maxSize, long timeout, CacheDescriptor desc) {
+        // add explicit configuration
+        desc.ttl = timeout;
+        desc.options.put(OPTION_MAX_SIZE, String.valueOf(maxSize));
+        registerCache(name, desc);
+    }
+
+    protected void registerCache(String name, CacheDescriptor desc) {
+        desc.name = name;
         // add to registry (merging if needed)
-        registerCacheDescriptor(defaultDescriptor);
+        registerCacheDescriptor(desc);
         // start if needed
         maybeStart(name);
     }
