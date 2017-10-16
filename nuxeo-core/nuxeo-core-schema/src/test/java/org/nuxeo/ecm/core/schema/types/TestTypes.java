@@ -21,6 +21,7 @@
 
 package org.nuxeo.ecm.core.schema.types;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -229,7 +230,7 @@ public class TestTypes extends NXRuntimeTestCase {
     // Custom types
     @Test
     public void testListType() throws TypeException {
-        ListType type = new ListTypeImpl(SchemaNames.BUILTIN, "list type", AnyType.INSTANCE);
+        ListType type = new ListTypeImpl(SchemaNames.BUILTIN, "list type", StringType.INSTANCE);
 
         assertTrue(type.isListType());
         assertEquals("list type", type.getName());
@@ -238,7 +239,7 @@ public class TestTypes extends NXRuntimeTestCase {
         assertFalse(type.isComplexType());
         assertFalse(type.isAnyType());
         assertNull(type.getSuperType());
-        assertEquals(Type.ANY, type.getFieldType());
+        assertEquals(StringType.INSTANCE, type.getFieldType());
 
         // Validation tests
         assertTrue(type.validate(new Integer[3]));
@@ -246,6 +247,11 @@ public class TestTypes extends NXRuntimeTestCase {
         assertFalse(type.validate(0));
         assertFalse(type.validate(""));
         assertFalse(type.validate(true));
+
+        // Conversion tests
+        assertNull(type.decode(""));
+        Object[] array = (Object[]) type.decode("foo bar");
+        assertEquals(Arrays.asList("foo", "bar"), Arrays.asList(array));
 
         // TODO: add tests for collections once this is implemented
     }
