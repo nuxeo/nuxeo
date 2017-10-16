@@ -365,7 +365,12 @@ public class ChronicleLogAppender<M extends Externalizable> implements LogAppend
 
     @Override
     public String toString() {
-        return "ChronicleLogAppender{" + "nbQueues=" + nbQueues + ", basePath=" + basePath + ", name='" + name + '\''
-                + ", retentionNbCycles=" + retentionNbCycles + ", closed=" + closed + '}';
+        return "ChronicleLogAppender{" +
+                "nbQueues=" + nbQueues +
+                ", basePath=" + basePath +
+                ", name='" + name + '\'' +
+                ", retentionNbCycles=" + retentionNbCycles +
+                ", closed=" + closed +
+                '}';
     }
 }
