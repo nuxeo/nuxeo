@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -167,8 +168,15 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     protected DocumentModel createCollection(final String newTitle, final String newDescription,
             final DocumentModel context, final CoreSession session) {
         DocumentModel defaultCollections = getUserDefaultCollections(context, session);
-        DocumentModel newCollection = session.createDocumentModel(defaultCollections.getPath().toString(), newTitle,
-                CollectionConstants.COLLECTION_TYPE);
+
+        Map<String, Object> options = new HashMap<>();
+        options.put(CoreEventConstants.PARENT_PATH, defaultCollections.getPath().toString());
+        options.put(CoreEventConstants.DOCUMENT_MODEL_ID, newTitle);
+        options.put(CoreEventConstants.DESTINATION_NAME, newTitle);
+        DocumentModel newCollection = session.createDocumentModel(CollectionConstants.COLLECTION_TYPE, options);
+
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
+        newCollection.setPathInfo(defaultCollections.getPath().toString(), pss.generatePathSegment(newTitle));
         newCollection.setPropertyValue("dc:title", newTitle);
         newCollection.setPropertyValue("dc:description", newDescription);
         return session.createDocument(newCollection);
