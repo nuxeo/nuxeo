@@ -108,8 +108,8 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
     public void commit(long offset) {
         ExcerptAppender appender = offsetQueue.acquireAppender();
         appender.writeBytes(b -> b.writeInt(partition).writeLong(offset).writeLong(System.currentTimeMillis()));
-        // System.out.println(String.format("COMMIT %s, partition: %s, offset: %s, pos: %s",
-        // offsetQueue.file(), partition, offset, appender.lastIndexAppended()));
+        //        System.out.println(String.format("COMMIT %s, partition: %s, offset: %s, pos: %s",
+        //                offsetQueue.file(), partition, offset, appender.lastIndexAppended()));
         lastCommittedOffset = offset;
     }
 

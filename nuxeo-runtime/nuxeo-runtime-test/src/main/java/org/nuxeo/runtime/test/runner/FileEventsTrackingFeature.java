@@ -72,7 +72,8 @@ public class FileEventsTrackingFeature extends SimpleFeature {
                                                                   // with
                                                                   // contains
             for (File each : created) {
-                Assert.assertThat(each.exists(), CoreMatchers.is(false));
+                Assert.assertThat("File should have been deleted: " + each,
+                        each.exists(), CoreMatchers.is(false));
             }
         } finally {
             tracked.clear();

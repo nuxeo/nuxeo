@@ -42,6 +42,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.logging.SequenceTracer;
+import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
@@ -140,7 +141,8 @@ public class WorkManagerTest {
         service = (WorkManagerImpl) Framework.getService(WorkManager.class);
     }
 
-    void assertSetEquals(List<String> expected, List<String> actual) {
+    void assertWorkIdsEquals(List<String> expected, Work.State state) {
+        List<String> actual = service.listWorkIds(QUEUE, state);
         assertEquals(new HashSet<>(expected), new HashSet<>(actual));
     }
 
@@ -184,7 +186,7 @@ public class WorkManagerTest {
         assertTrue(work.getSchedulingTime() != 0);
 
         Thread.sleep(duration / 3);
-        assertEquals(RUNNING, service.getWorkState(work.getId()));
+        assertState(RUNNING, work);
         tracker.assertDiff(0, 1, 0, 0);
 
         Thread.sleep(duration);
@@ -193,6 +195,10 @@ public class WorkManagerTest {
         // assertTrue(work.getStartTime() != 0);
         // assertTrue(work.getCompletionTime() != 0);
         // assertTrue(work.getCompletionTime() - work.getStartTime() > 0);
+    }
+
+    protected void assertState(Work.State state, SleepWork work) {
+        assertEquals(state, service.getWorkState(work.getId()));
     }
 
     @Test
@@ -208,27 +214,27 @@ public class WorkManagerTest {
 
         Thread.sleep(duration / 2);
         tracker.assertDiff(1, 2, 0, 0);
-        assertEquals(RUNNING, service.getWorkState("1"));
-        assertEquals(RUNNING, service.getWorkState("2"));
-        assertEquals(SCHEDULED, service.getWorkState("3"));
-        assertEquals(Collections.singletonList("3"), service.listWorkIds(QUEUE, SCHEDULED));
-        assertSetEquals(Arrays.asList("1", "2"), service.listWorkIds(QUEUE, RUNNING));
-        assertSetEquals(Arrays.asList("1", "2", "3"), service.listWorkIds(QUEUE, null));
+        assertState(RUNNING, work1);
+        assertState(RUNNING, work2);
+        assertState(SCHEDULED, work3);
+        assertWorkIdsEquals(Collections.singletonList("3"), SCHEDULED);
+        assertWorkIdsEquals(Arrays.asList("1", "2"), RUNNING);
+        assertWorkIdsEquals(Arrays.asList("1", "2", "3"), null);
 
         // disabled IF_NOT_* features
         if (Boolean.FALSE.booleanValue()) {
             SleepWork work4 = new SleepWork(duration, false, "3"); // id=3
             service.schedule(work4, Scheduling.IF_NOT_SCHEDULED);
-            assertEquals(UNKNOWN, work4.getWorkInstanceState());
+            assertState(UNKNOWN, work4);
 
             SleepWork work5 = new SleepWork(duration, false, "1"); // id=1
             service.schedule(work5, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
-            assertEquals(UNKNOWN, work5.getWorkInstanceState());
+            assertState(UNKNOWN, work5);
         }
 
         SleepWork work7 = new SleepWork(duration, false, "3"); // id=3
         service.schedule(work7, Scheduling.CANCEL_SCHEDULED);
-        assertEquals(SCHEDULED, work7.getWorkInstanceState());
+        assertState(SCHEDULED, work7);
         tracker.assertDiff(1, 2, 0, 1);
 
         SleepAndFailWork work8 = new SleepAndFailWork(0, false, "4");
@@ -238,9 +244,31 @@ public class WorkManagerTest {
         assertTrue(service.awaitCompletion(duration * 3, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 4, 1);
 
-        assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, SCHEDULED));
-        assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, RUNNING));
-        assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, null));
+        assertWorkIdsEquals(Collections.emptyList(), SCHEDULED);
+        assertWorkIdsEquals(Collections.emptyList(), RUNNING);
+        assertWorkIdsEquals(Collections.emptyList(), null);
+    }
+
+    @Test
+    public void testWorkManagerCancelScheduling() throws Exception {
+        MetricsTracker tracker = new MetricsTracker();
+        int duration = 5000; // 2s
+        SleepWork work1 = new SleepWork(duration, false, "1");
+        SleepWork work2 = new SleepWork(duration, false, "2");
+        SleepWork work3 = new SleepWork(duration, false, "3");
+        service.schedule(work1);
+        service.schedule(work2);
+        service.schedule(work3);
+        Thread.sleep(duration / 2);
+        tracker.assertDiff(1, 2, 0, 0);
+
+        // cancel the scheduled task
+        SleepWork work4 = new SleepWork(duration, false, "3"); // id=3
+        service.schedule(work4, Scheduling.CANCEL_SCHEDULED);
+        // wait
+        assertTrue(service.awaitCompletion(2 * duration, TimeUnit.MILLISECONDS));
+        // canceled are taken in account as completed and canceled
+        tracker.assertDiff(0, 0, 3, 1);
     }
 
     public void testDuplicatedWorks() throws Exception {
@@ -274,9 +302,9 @@ public class WorkManagerTest {
         service.schedule(work3);
 
         Thread.sleep(duration / 2);
-        assertEquals(RUNNING, service.getWorkState("1"));
-        assertEquals(RUNNING, service.getWorkState("2"));
-        assertEquals(SCHEDULED, service.getWorkState("3"));
+        assertState(RUNNING, work1);
+        assertState(RUNNING, work2);
+        assertState(SCHEDULED, work3);
 
         // shutdown workmanager service
         // work1 and work2 get a suspended notice and stop
@@ -289,9 +317,9 @@ public class WorkManagerTest {
         assertTrue(terminated);
 
         // check work state
-        assertEquals(SCHEDULED, work1.getWorkInstanceState());
-        assertEquals(SCHEDULED, work2.getWorkInstanceState());
-        assertEquals(persistent() ? SCHEDULED : UNKNOWN, work3.getWorkInstanceState());
+        assertState(SCHEDULED, work1);
+        assertState(SCHEDULED, work2);
+        assertState(persistent() ? SCHEDULED : UNKNOWN, work3);
         long remaining1 = work1.durationMillis;
         long remaining2 = work2.durationMillis;
         long remaining3 = work3.durationMillis;
