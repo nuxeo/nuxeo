@@ -19,12 +19,14 @@
  */
 package org.nuxeo.ecm.core.schema.types;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 
 /**
@@ -126,20 +128,25 @@ public class ListTypeImpl extends AbstractType implements ListType {
 
     @Override
     public Object decode(String string) {
-        // XXX: OG: I do not really know how this is suppose to work
-        // I need this to decode default values and I could
-        // not find how XMLSchema defines default values for sequences thus the
-        // following naive splitting of the string representation of the default
-        // value
-        if (string != null) {
-            List<Object> decoded = new ArrayList<Object>();
-            for (String component : string.split(DEFAULT_VALUE_SEPARATOR)) {
-                decoded.add(type.decode(component));
-            }
-            return decoded;
-        } else {
+        if (StringUtils.isBlank(string)) {
             return null;
         }
+        String[] split = string.split(DEFAULT_VALUE_SEPARATOR);
+        List<Object> decoded = new ArrayList<>(split.length);
+        Class<?> klass = null;
+        for (String s : split) {
+            Object o = type.decode(s);
+            if (klass == null && o != null) {
+                klass = o.getClass();
+            }
+            decoded.add(o);
+        }
+        if (klass == null) {
+            klass = Object.class;
+        }
+        // turn the list into a properly-typed array for the elements
+        Object[] array = (Object[]) Array.newInstance(klass, decoded.size());
+        return decoded.toArray(array);
     }
 
     @Override
