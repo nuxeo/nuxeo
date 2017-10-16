@@ -1,0 +1,9 @@
+<component name="org.nuxeo.rest.api.auth.test.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="openUrl">
+    <openUrl name="foo">
+      <grantPattern>/api/v1/foo/unauthenticated</grantPattern>
+    </openUrl>
+  </extension>
+
+</component>
