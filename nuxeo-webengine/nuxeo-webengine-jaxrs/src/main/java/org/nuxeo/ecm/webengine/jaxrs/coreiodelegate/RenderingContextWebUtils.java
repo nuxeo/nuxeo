@@ -108,11 +108,13 @@ public final class RenderingContextWebUtils {
         if (request instanceof HttpServletRequest) {
             HttpServletRequest webRequest = (HttpServletRequest) request;
             // base url
-            @SuppressWarnings("deprecation")
-            String baseURL = VirtualHostHelper.getBaseURL(webRequest);
+            String baseURL = VirtualHostHelper.getBaseURL(request);
+            builder.base(baseURL);
             // current session
-            CoreSession session = SessionFactory.getSession(webRequest);
-            builder.base(baseURL).session(session);
+            builder.sessionWrapperSupplier(() -> {
+                CoreSession session = SessionFactory.getSession(webRequest);
+                return session == null ? null : new RenderingContext.SessionWrapper(session, false);
+            });
             // gets the locale from the request or takes the server's default
             Locale locale = request.getLocale();
             if (locale != null) {
