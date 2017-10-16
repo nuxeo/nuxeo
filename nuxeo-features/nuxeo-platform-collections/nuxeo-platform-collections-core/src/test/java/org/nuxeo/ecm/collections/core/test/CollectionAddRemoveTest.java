@@ -179,6 +179,25 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
     }
 
     /**
+     * Tests that we can add a collection with invalid names
+     */
+    @Test
+    public void testAddCollectionWithInvalidName() {
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+                "Workspace");
+        testWorkspace = session.createDocument(testWorkspace);
+        DocumentModel testFile = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
+        testFile = session.createDocument(testFile);
+        collectionManager.addToNewCollection("not/valid", COLLECTION_DESCRIPTION, testFile, session);
+
+        assertTrue(session.exists(new PathRef(COLLECTION_FOLDER_PATH)));
+        final String newlyCreatedCollectionPath = COLLECTION_FOLDER_PATH + "/" + "not-valid";
+
+        DocumentRef newCollectionRef = new PathRef(newlyCreatedCollectionPath);
+        assertTrue(session.exists(newCollectionRef));
+
+    }
+    /**
      * Check that a copied document does not belong to the collections of the original documents.
      *
      * @since 7.3
