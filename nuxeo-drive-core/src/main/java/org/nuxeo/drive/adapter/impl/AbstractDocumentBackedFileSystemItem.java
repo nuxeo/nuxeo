@@ -96,23 +96,26 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
         }
         try {
             if (parentDoc == null) {
-                log.trace("We either reached the root of the repository or a document for which the current user doesn't have read access to its parent,"
-                        + " without being adapted to a (possibly virtual) descendant of the top level folder item."
-                        + " Let's raise a marker exception and let the caller give more information on the source document.");
+                log.trace(
+                        "We either reached the root of the repository or a document for which the current user doesn't have read access to its parent,"
+                                + " without being adapted to a (possibly virtual) descendant of the top level folder item."
+                                + " Let's raise a marker exception and let the caller give more information on the source document.");
                 throw new RootlessItemException();
             } else {
                 FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(parentDoc, true,
                         relaxSyncRootConstraint, getLockInfo);
                 if (parent == null) {
-                    log.trace("We reached a document for which the parent document cannot be  adapted to a (possibly virtual) descendant of the top level folder item."
-                            + " Let's raise a marker exception and let the caller give more information on the source document.");
+                    log.trace(
+                            "We reached a document for which the parent document cannot be  adapted to a (possibly virtual) descendant of the top level folder item."
+                                    + " Let's raise a marker exception and let the caller give more information on the source document.");
                     throw new RootlessItemException();
                 }
                 parentId = parent.getId();
                 path = parent.getPath() + '/' + id;
             }
         } catch (RootlessItemException e) {
-            log.trace("Let's try to adapt the document as a member of a collection sync root, if not the case let's raise a marker exception and let the caller give more information on the source document.");
+            log.trace(
+                    "Let's try to adapt the document as a member of a collection sync root, if not the case let's raise a marker exception and let the caller give more information on the source document.");
             if (!handleCollectionMember(doc, docSession, relaxSyncRootConstraint, getLockInfo)) {
                 throw new RootlessItemException();
             }
@@ -189,9 +192,8 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
         DocumentRef parentRef = doc.getParentRef();
         canDelete = !doc.hasFacet(FacetNames.PUBLISH_SPACE) && !doc.isProxy()
                 && docSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE);
-        if (canDelete
-                && Framework.getService(ConfigurationService.class).isBooleanPropertyFalse(
-                        PERMISSION_CHECK_OPTIMIZED_PROPERTY)) {
+        if (canDelete && Framework.getService(ConfigurationService.class)
+                                  .isBooleanPropertyFalse(PERMISSION_CHECK_OPTIMIZED_PROPERTY)) {
             // In non optimized mode check RemoveChildren on the parent
             canDelete = parentRef == null || docSession.hasPermission(parentRef, SecurityConstants.REMOVE_CHILDREN);
         }
@@ -227,10 +229,9 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
                 String parentRepositoryName = idFragments[1];
                 String parentDocId = idFragments[2];
                 if (!parentRepositoryName.equals(repositoryName)) {
-                    throw new UnsupportedOperationException(
-                            String.format(
-                                    "Found collection member: %s [repo=%s] in a different repository from the collection one: %s [repo=%s].",
-                                    doc, repositoryName, parentDocId, parentRepositoryName));
+                    throw new UnsupportedOperationException(String.format(
+                            "Found collection member: %s [repo=%s] in a different repository from the collection one: %s [repo=%s].",
+                            doc, repositoryName, parentDocId, parentRepositoryName));
                 }
                 DocumentModel collection = getDocumentById(parentDocId, session);
                 Framework.getService(CollectionManager.class).removeFromCollection(collection, doc, session);
@@ -330,10 +331,9 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
         // fileSystemItemFactoryName#repositoryName#docId
         String[] idFragments = id.split(FILE_SYSTEM_ITEM_ID_SEPARATOR);
         if (idFragments.length != 3) {
-            throw new IllegalArgumentException(
-                    String.format(
-                            "FileSystemItem id %s is not valid. Should match the 'fileSystemItemFactoryName#repositoryName#docId' pattern.",
-                            id));
+            throw new IllegalArgumentException(String.format(
+                    "FileSystemItem id %s is not valid. Should match the 'fileSystemItemFactoryName#repositoryName#docId' pattern.",
+                    id));
         }
         return idFragments;
     }
