@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -59,6 +60,8 @@ public class RenderingContextImpl implements RenderingContext {
     private Locale locale = DEFAULT_LOCALE;
 
     private CoreSession session = null;
+
+    private Supplier<SessionWrapper> sessionWrapperSupplier;
 
     private final Map<String, List<Object>> parameters = new ConcurrentHashMap<>();
 
@@ -91,6 +94,14 @@ public class RenderingContextImpl implements RenderingContext {
         if (session != null) {
             return new SessionWrapper(session, false);
         }
+
+        if (sessionWrapperSupplier != null) {
+            SessionWrapper sessionWrapper = sessionWrapperSupplier.get();
+            if (sessionWrapper != null) {
+                return sessionWrapper;
+            }
+        }
+
         String repoNameFound = getParameter("X-NXRepository");
         if (StringUtils.isBlank(repoNameFound)) {
             repoNameFound = getParameter("nxrepository");
@@ -340,6 +351,14 @@ public class RenderingContextImpl implements RenderingContext {
 
         public RenderingContextBuilder session(CoreSession session) {
             ctx.session = session;
+            return this;
+        }
+
+        /**
+         * @since 9.3
+         */
+        public RenderingContextBuilder sessionWrapperSupplier(Supplier<SessionWrapper> supplier) {
+            ctx.sessionWrapperSupplier = supplier;
             return this;
         }
 
