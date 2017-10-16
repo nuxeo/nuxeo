@@ -35,6 +35,10 @@ public class LogFeature extends SimpleFeature {
     protected Priority consoleThresold;
 
     public void hideWarningFromConsoleLog() {
+        if (consoleThresold != null) {
+            return;
+        }
+
         Logger rootLogger = Logger.getRootLogger();
         ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender(CONSOLE_APPENDER_NAME);
         consoleThresold = consoleAppender.getThreshold();
@@ -45,6 +49,7 @@ public class LogFeature extends SimpleFeature {
         if (consoleThresold == null) {
             return;
         }
+
         Logger rootLogger = Logger.getRootLogger();
         ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender(CONSOLE_APPENDER_NAME);
         consoleAppender.setThreshold(consoleThresold);
