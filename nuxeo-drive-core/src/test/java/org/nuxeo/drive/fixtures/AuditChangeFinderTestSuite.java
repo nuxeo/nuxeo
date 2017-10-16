@@ -1016,6 +1016,336 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
         }
     }
 
+    /**
+     * <pre>
+     * /folder1                 -> isMemberOf(collectionFolder)
+     *   |-- collectionFolder
+     * /collectionSyncRoot      -> synchronization root
+     * /testDoc                 -> isMemberOf(collectionFolder, collectionSyncRoot)
+     * </pre>
+     */
+    @Test
+    public void testFolderishCollection() throws Exception {
+        DocumentModel collectionSyncRoot;
+        DocumentModel testDoc;
+        List<FileSystemItemChange> changes;
+        try {
+            log.trace("testFolderishCollection():"
+                    + "\nCreate a folder with the Collection facet (\"collectionFolder\") inside a folder (\"folder1\");"
+                    + "\nAdd \"folder1\" to the \"collectionFolder\" collection;"
+                    + "\nCreate a collection \"collectionSyncRoot\" and register it as a synchronization root;"
+                    + "\nCreate a document \"testDoc\" and add it to both collections \"collectionFolder\" and \"collectionSyncRoot\".\n");
+            DocumentModel collectionFolder = session.createDocumentModel("/folder1", "collectionFolder",
+                    "FolderishCollection");
+            collectionFolder = session.createDocument(collectionFolder);
+            collectionManager.addToCollection(collectionFolder, folder1, session);
+            collectionSyncRoot = collectionManager.createCollection(session, "collectionSyncRoot", null, "/");
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), collectionSyncRoot, session);
+            testDoc = session.createDocumentModel("/", "testDoc", "File");
+            testDoc.setPropertyValue("file:content", new StringBlob("The content of testDoc."));
+            testDoc = session.createDocument(testDoc);
+            collectionManager.addToCollection(collectionFolder, testDoc, session);
+            collectionManager.addToCollection(collectionSyncRoot, testDoc, session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Expecting 6 (among which 5 distinct) changes:
+            // - addedToCollection for testDoc
+            // - documentModified for collectionSyncRoot
+            // - addedToCollection for testDoc
+            // - documentCreated for testDoc
+            // - rootRegistered for collectionSyncRoot
+            // - documentCreated for collectionSyncRoot
+            changes = getChanges(session.getPrincipal());
+            assertEquals(6, changes.size());
+
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
+            expectedChanges.add(new SimpleFileSystemItemChange(testDoc.getId(), "addedToCollection"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot.getId(), "documentModified"));
+            expectedChanges.add(new SimpleFileSystemItemChange(testDoc.getId(), "documentCreated"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot.getId(), "rootRegistered"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot.getId(), "documentCreated"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
+    /**
+     * <pre>
+     * /folder1                 -> isMemberOf(collectionFolder2)
+     *   |-- collectionFolder1
+     *   |-- collectionFolder2
+     * /collectionSyncRoot      -> synchronization root
+     * /testDoc                 -> isMemberOf(collectionFolder1, collectionSyncRoot)
+     * </pre>
+     */
+    @Test
+    public void testFolderishCollection1() throws Exception {
+        DocumentModel collectionSyncRoot;
+        DocumentModel testDoc;
+        List<FileSystemItemChange> changes;
+        try {
+            log.trace("testFolderishCollection1():"
+                    + "\nCreate a folder with the Collection facet (\"collectionFolder1\") inside a folder (\"folder1\");"
+                    + "\nCreate a folder with the Collection facet (\"collectionFolder2\") inside a folder (\"folder1\");"
+                    + "\nAdd \"folder1\" to the \"collectionFolder2\" collection;"
+                    + "\nCreate a collection \"collectionSyncRoot\" and register it as a synchronization root;"
+                    + "\nCreate a document \"testDoc\" and add it to both collections \"collectionFolder1\" and \"collectionSyncRoot\".\n");
+            DocumentModel collectionFolder1 = session.createDocumentModel("/folder1", "collectionFolder",
+                    "FolderishCollection");
+            collectionFolder1 = session.createDocument(collectionFolder1);
+            DocumentModel collectionFolder2 = session.createDocumentModel("/folder1", "collectionFolder",
+                    "FolderishCollection");
+            collectionFolder2 = session.createDocument(collectionFolder2);
+            collectionManager.addToCollection(collectionFolder2, folder1, session);
+            collectionSyncRoot = collectionManager.createCollection(session, "collectionSyncRoot", null, "/");
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), collectionSyncRoot, session);
+            testDoc = session.createDocumentModel("/", "testDoc", "File");
+            testDoc.setPropertyValue("file:content", new StringBlob("The content of testDoc."));
+            testDoc = session.createDocument(testDoc);
+            collectionManager.addToCollection(collectionFolder1, testDoc, session);
+            collectionManager.addToCollection(collectionSyncRoot, testDoc, session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Expecting 6 (among which 5 distinct) changes:
+            // - addedToCollection for testDoc
+            // - documentModified for collectionSyncRoot
+            // - addedToCollection for testDoc
+            // - documentCreated for testDoc
+            // - rootRegistered for collectionSyncRoot
+            // - documentCreated for collectionSyncRoot
+            changes = getChanges(session.getPrincipal());
+            assertEquals(6, changes.size());
+
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
+            expectedChanges.add(new SimpleFileSystemItemChange(testDoc.getId(), "addedToCollection"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot.getId(), "documentModified"));
+            expectedChanges.add(new SimpleFileSystemItemChange(testDoc.getId(), "documentCreated"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot.getId(), "rootRegistered"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot.getId(), "documentCreated"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
+    /**
+     * <pre>
+     * /folder1                 -> synchronization root && isMemberOf(collectionFolder)
+     *   |-- collectionFolder
+     * /collectionSyncRoot      -> synchronization root
+     * /testDoc                 -> isMemberOf(collectionFolder, collectionSyncRoot)
+     * </pre>
+     */
+    @Test
+    public void testFolderishCollection2() throws Exception {
+        DocumentModel collectionFolder;
+        DocumentModel collectionSyncRoot;
+        DocumentModel testDoc;
+        List<FileSystemItemChange> changes;
+        try {
+            log.trace("testFolderishCollection2():"
+                    + "\nCreate a folder with the Collection facet (\"collectionFolder\") inside a folder (\"folder1\");"
+                    + "\nAdd \"folder1\" to the \"collectionFolder\" collection;"
+                    + "\nRegister \"folder1\" as a synchronization root;"
+                    + "\nCreate a collection \"collectionSyncRoot\" and register it as a synchronization root;"
+                    + "\nCreate a document \"testDoc\" and add it to both collections \"collectionFolder\" and \"collectionSyncRoot\".\n");
+            collectionFolder = session.createDocumentModel("/folder1", "collectionFolder", "FolderishCollection");
+            collectionFolder = session.createDocument(collectionFolder);
+            collectionManager.addToCollection(collectionFolder, folder1, session);
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder1, session);
+            collectionSyncRoot = collectionManager.createCollection(session, "collectionSyncRoot", null, "/");
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), collectionSyncRoot, session);
+            testDoc = session.createDocumentModel("/", "testDoc", "File");
+            testDoc.setPropertyValue("file:content", new StringBlob("The content of testDoc."));
+            testDoc = session.createDocument(testDoc);
+            collectionManager.addToCollection(collectionFolder, testDoc, session);
+            collectionManager.addToCollection(collectionSyncRoot, testDoc, session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Expecting 12 (among which 10 distinct) changes:
+            // - addedToCollection for testDoc
+            // - documentModified for collectionSyncRoot
+            // - addedToCollection for testDoc
+            // - documentModified for collectionFolder
+            // - documentCreated for testDoc
+            // - rootRegistered for collectionSyncRoot
+            // - documentCreated for collectionSyncRoot
+            // - rootRegistered for folder1
+            // - addedToCollection for folder1
+            // - documentModified for collectionFolder
+            // - documentCreated for collectionFolder
+            // - documentCreated for folder1
+            changes = getChanges(session.getPrincipal());
+            assertEquals(12, changes.size());
+
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
+            expectedChanges.add(new SimpleFileSystemItemChange(testDoc.getId(), "addedToCollection"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot.getId(), "documentModified"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionFolder.getId(), "documentModified"));
+            expectedChanges.add(new SimpleFileSystemItemChange(testDoc.getId(), "documentCreated"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot.getId(), "rootRegistered"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot.getId(), "documentCreated"));
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered"));
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "addedToCollection"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionFolder.getId(), "documentCreated"));
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "documentCreated"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
+    /**
+     * <pre>
+     * /folder1                 -> isMemberOf(collectionFolder)
+     *   |-- collectionFolder   -> synchronization root
+     * /collectionSyncRoot      -> synchronization root
+     * /testDoc                 -> isMemberOf(collectionFolder, collectionSyncRoot)
+     * </pre>
+     */
+    @Test
+    public void testFolderishCollection3() throws Exception {
+        DocumentModel collectionFolder;
+        DocumentModel collectionSyncRoot;
+        DocumentModel testDoc;
+        List<FileSystemItemChange> changes;
+        try {
+            log.trace("testFolderishCollection3():"
+                    + "\nCreate a folder with the Collection facet (\"collectionFolder\") inside a folder (\"folder1\") and register it as a sycnhronization root;"
+                    + "\nAdd \"folder1\" to the \"collectionFolder\" collection;"
+                    + "\nCreate a collection \"collectionSyncRoot\" and register it as a synchronization root;"
+                    + "\nCreate a document \"testDoc\" and add it to both collections \"collectionFolder\" and \"collectionSyncRoot\".\n");
+            collectionFolder = session.createDocumentModel("/folder1", "collectionFolder", "FolderishCollection");
+            collectionFolder = session.createDocument(collectionFolder);
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), collectionFolder, session);
+            collectionManager.addToCollection(collectionFolder, folder1, session);
+            collectionSyncRoot = collectionManager.createCollection(session, "collectionSyncRoot", null, "/");
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), collectionSyncRoot, session);
+            testDoc = session.createDocumentModel("/", "testDoc", "File");
+            testDoc.setPropertyValue("file:content", new StringBlob("The content of testDoc."));
+            testDoc = session.createDocument(testDoc);
+            collectionManager.addToCollection(collectionFolder, testDoc, session);
+            collectionManager.addToCollection(collectionSyncRoot, testDoc, session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Expecting 12 (among which 10 distinct) changes:
+            // - addedToCollection for testDoc
+            // - documentModified for collectionSyncRoot
+            // - addedToCollection for testDoc
+            // - documentModified for collectionFolder
+            // - documentCreated for testDoc
+            // - rootRegistered for collectionSyncRoot
+            // - documentCreated for collectionSyncRoot
+            // - addedToCollection for folder1
+            // - documentModified for collectionFolder
+            // - rootRegistered for collectionFolder
+            // - documentCreated for collectionFolder
+            // - documentCreated for folder1
+            changes = getChanges(session.getPrincipal());
+            assertEquals(12, changes.size());
+
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
+            expectedChanges.add(new SimpleFileSystemItemChange(testDoc.getId(), "addedToCollection"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot.getId(), "documentModified"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionFolder.getId(), "documentModified"));
+            expectedChanges.add(new SimpleFileSystemItemChange(testDoc.getId(), "documentCreated"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot.getId(), "rootRegistered"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot.getId(), "documentCreated"));
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "addedToCollection"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionFolder.getId(), "rootRegistered"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionFolder.getId(), "documentCreated"));
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "documentCreated"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
+    /**
+     * <pre>
+     * /collectionSyncRoot1     -> synchronization root
+     * /folder1                 -> isMemberOf(collectionSyncRoot1)
+     *   |-- collectionFolder
+     * /collectionSyncRoot2     -> synchronization root
+     * /testDoc                 -> isMemberOf(collectionFolder, collectionSyncRoot2)
+     * </pre>
+     */
+    @Test
+    public void testFolderishCollection4() throws Exception {
+        DocumentModel collectionSyncRoot1;
+        DocumentModel collectionSyncRoot2;
+        DocumentModel testDoc;
+        List<FileSystemItemChange> changes;
+        try {
+            log.trace("testFolderishCollection4():"
+                    + "\nCreate a collection \"collectionSyncRoot1\" and register it as a synchronization root;"
+                    + "\nAdd \"folder1\" to the \"collectionSyncRoot1\" collection;"
+                    + "\nCreate a folder with the Collection facet (\"collectionFolder\") inside (\"folder1\");"
+                    + "\nCreate a collection \"collectionSyncRoot\" and register it as a synchronization root;"
+                    + "\nCreate a document \"testDoc\" and add it to both collections \"collectionFolder\" and \"collectionSyncRoot\".\n");
+            collectionSyncRoot1 = collectionManager.createCollection(session, "collectionSyncRoot1", null, "/");
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), collectionSyncRoot1, session);
+            collectionManager.addToCollection(collectionSyncRoot1, folder1, session);
+            DocumentModel collectionFolder = session.createDocumentModel("/folder1", "collectionFolder",
+                    "FolderishCollection");
+            collectionFolder = session.createDocument(collectionFolder);
+            collectionSyncRoot2 = collectionManager.createCollection(session, "collectionSyncRoot2", null, "/");
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), collectionSyncRoot2, session);
+            testDoc = session.createDocumentModel("/", "testDoc", "File");
+            testDoc.setPropertyValue("file:content", new StringBlob("The content of testDoc."));
+            testDoc = session.createDocument(testDoc);
+            collectionManager.addToCollection(collectionFolder, testDoc, session);
+            collectionManager.addToCollection(collectionSyncRoot2, testDoc, session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Expecting 11 (among which 10 distinct) changes:
+            // - addedToCollection for testDoc
+            // - documentModified for collectionSyncRoot2
+            // - addedToCollection for testDoc
+            // - documentCreated for testDoc
+            // - rootRegistered for collectionSyncRoot2
+            // - documentCreated for collectionSyncRoot2
+            // - addedToCollection for folder1
+            // - documentModified for collectionSyncRoot1
+            // - rootRegistered for collectionSyncRoot1
+            // - documentCreated for collectionSyncRoot1
+            // - documentCreated for folder1
+            changes = getChanges(session.getPrincipal());
+            assertEquals(11, changes.size());
+
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
+            expectedChanges.add(new SimpleFileSystemItemChange(testDoc.getId(), "addedToCollection"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot2.getId(), "documentModified"));
+            expectedChanges.add(new SimpleFileSystemItemChange(testDoc.getId(), "documentCreated"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot2.getId(), "rootRegistered"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot2.getId(), "documentCreated"));
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "addedToCollection"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot1.getId(), "documentModified"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot1.getId(), "rootRegistered"));
+            expectedChanges.add(new SimpleFileSystemItemChange(collectionSyncRoot1.getId(), "documentCreated"));
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "documentCreated"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
     @Test
     public void testRegisterParentSyncRoot() throws Exception {
         DocumentModel subFolder;

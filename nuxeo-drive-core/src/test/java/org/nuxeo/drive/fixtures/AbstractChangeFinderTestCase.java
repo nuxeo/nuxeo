@@ -106,7 +106,7 @@ public abstract class AbstractChangeFinderTestCase {
 
         lastEventLogId = 0;
         lastSyncActiveRootDefinitions = "";
-        Framework.getProperties().put("org.nuxeo.drive.document.change.limit", "10");
+        Framework.getProperties().put("org.nuxeo.drive.document.change.limit", "20");
 
         // Create test users
         try (Session userDir = directoryService.open("userDirectory")) {
