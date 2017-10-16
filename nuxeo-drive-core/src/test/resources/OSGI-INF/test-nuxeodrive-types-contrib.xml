@@ -21,6 +21,10 @@
       <schema name="dublincore" />
     </doctype>
 
+    <doctype name="FolderishCollection" extends="Folder">
+      <facet name="Collection" />
+    </doctype>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"

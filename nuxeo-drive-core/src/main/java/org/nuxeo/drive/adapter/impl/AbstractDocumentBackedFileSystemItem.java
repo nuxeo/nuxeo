@@ -29,6 +29,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.service.FileSystemItemFactory;
+import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.CollectionSyncRootFolderItemFactory;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
@@ -141,8 +142,24 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
             Iterator<DocumentModel> it = docCollections.iterator();
             while (it.hasNext() && parent == null) {
                 collection = it.next();
-                parent = getFileSystemItemAdapterService().getFileSystemItem(collection, true, relaxSyncRootConstraint,
-                        getLockInfo);
+                // Prevent infinite loop in case the collection is a descendant of the document being currently adapted
+                // as a FileSystemItem and this collection is not a synchronization root for the current user
+                if (collection.getPathAsString().startsWith(doc.getPathAsString() + "/")
+                        && !Framework.getService(NuxeoDriveManager.class).isSynchronizationRoot(session.getPrincipal(),
+                                collection)) {
+                    continue;
+                }
+                try {
+                    parent = getFileSystemItemAdapterService().getFileSystemItem(collection, true,
+                            relaxSyncRootConstraint, getLockInfo);
+                } catch (RootlessItemException e) {
+                    if (log.isTraceEnabled()) {
+                        log.trace(String.format(
+                                "The collection %s (%s) of which doc %s (%s) is a member cannot be adapted as a FileSystemItem.",
+                                collection.getPathAsString(), collection.getId(), doc.getPathAsString(), doc.getId()));
+                    }
+                    continue;
+                }
             }
             if (parent == null) {
                 if (log.isTraceEnabled()) {
