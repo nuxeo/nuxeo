@@ -44,13 +44,4 @@ public interface CacheService {
      * @since 8.2
      */
     public void registerCache(String name, int size, int timeout);
-
-    /**
-     * Programmatically registers a cache with the given name, with the the size and the timeout given by the default
-     * cache.
-     *
-     * @param name the cache name
-     * @since 9.3
-     */
-    void registerCache(String name);
 }

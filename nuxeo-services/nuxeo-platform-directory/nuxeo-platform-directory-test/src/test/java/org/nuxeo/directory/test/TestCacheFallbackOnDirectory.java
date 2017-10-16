@@ -21,16 +21,11 @@ package org.nuxeo.directory.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.nuxeo.ecm.core.cache.CacheDescriptor.OPTION_MAX_SIZE;
-import static org.nuxeo.ecm.core.cache.CacheServiceImpl.DEFAULT_CACHE_ID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.cache.CacheDescriptor;
 import org.nuxeo.ecm.core.cache.CacheFeature;
-import org.nuxeo.ecm.core.cache.CacheService;
-import org.nuxeo.ecm.core.cache.CacheServiceImpl;
 import org.nuxeo.ecm.core.cache.InMemoryCacheImpl;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryCache;
@@ -55,40 +50,24 @@ import javax.inject.Inject;
 @Features(DirectoryFeature.class)
 @Deploy("org.nuxeo.ecm.core.cache")
 @LocalDeploy({ "org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml",
-        "org.nuxeo.ecm.directory.tests:directory-default-user-contrib.xml",
-        "org.nuxeo.ecm.directory.tests:directory-cache-config.xml" })
+        "org.nuxeo.ecm.directory.tests:directory-default-user-contrib.xml" })
 public class TestCacheFallbackOnDirectory {
 
     @Inject
     protected DirectoryService directoryService;
 
-    @Inject
-    protected CacheService cacheService;
-
     @Test
     public void testGetFromCache() throws Exception {
 
-        // Register default cache
-        cacheService.registerCache(DEFAULT_CACHE_ID, 5, 100);
-
         Directory dir = directoryService.getDirectory("userDirectory");
-        try (Session session = dir.getSession()) {
+        try (Session sqlSession = dir.getSession()) {
 
             DirectoryCache cache = dir.getCache();
             assertNotNull(cache.getEntryCache());
             assertEquals("cache-" + dir.getName(), cache.getEntryCache().getName());
-
-            CacheDescriptor desc = ((CacheServiceImpl) cacheService).getCacheDescriptor("cache-" + dir.getName());
-            assertEquals(5L, desc.getTTL());
-            assertEquals(100L, Long.parseLong(desc.options.get(OPTION_MAX_SIZE)));
-
             assertNotNull(CacheFeature.unwrapImpl(InMemoryCacheImpl.class, cache.getEntryCache()));
             assertNotNull(cache.getEntryCacheWithoutReferences());
             assertEquals("cacheWithoutReference-" + dir.getName(), cache.getEntryCacheWithoutReferences().getName());
-
-            desc = ((CacheServiceImpl) cacheService).getCacheDescriptor("cacheWithoutReference-" + dir.getName());
-            assertEquals(5L, desc.getTTL());
-            assertEquals(100L, Long.parseLong(desc.options.get(OPTION_MAX_SIZE)));
 
             MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
             Counter hitsCounter = metrics.counter(
@@ -99,24 +78,24 @@ public class TestCacheFallbackOnDirectory {
             long baseMissesCount = missesCounter.getCount();
 
             // First call will update cache
-            DocumentModel entry = session.getEntry("user_1");
+            DocumentModel entry = sqlSession.getEntry("user_1");
             assertNotNull(entry);
             assertEquals(baseHitsCount, hitsCounter.getCount());
             assertEquals(baseMissesCount + 1, missesCounter.getCount());
 
             // Second call will use the cache
-            entry = session.getEntry("user_1");
+            entry = sqlSession.getEntry("user_1");
             assertNotNull(entry);
             assertEquals(baseHitsCount + 1, hitsCounter.getCount());
             assertEquals(baseMissesCount + 1, missesCounter.getCount());
 
             // Test if cache size (set to 1) is taken into account
-            entry = session.getEntry("user_3");
+            entry = sqlSession.getEntry("user_3");
             assertNotNull(entry);
             assertEquals(baseHitsCount + 1, hitsCounter.getCount());
             assertEquals(baseMissesCount + 2, missesCounter.getCount());
 
-            entry = session.getEntry("user_3");
+            entry = sqlSession.getEntry("user_3");
             assertNotNull(entry);
             assertEquals(baseHitsCount + 2, hitsCounter.getCount());
             assertEquals(baseMissesCount + 2, missesCounter.getCount());

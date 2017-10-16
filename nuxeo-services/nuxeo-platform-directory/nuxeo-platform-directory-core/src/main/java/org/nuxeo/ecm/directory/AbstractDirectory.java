@@ -31,10 +31,8 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
-import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
@@ -282,19 +280,5 @@ public abstract class AbstractDirectory implements Directory {
     @Override
     public Map<String, Field> getSchemaFieldMap() {
         return schemaFieldMap;
-    }
-
-    protected void fallbackOnDefaultCache() {
-        CacheService cacheService = Framework.getService(CacheService.class);
-        if (cacheService != null) {
-            if (descriptor.cacheEntryName == null) {
-                cache.setEntryCacheName("cache-" + getName());
-                cacheService.registerCache("cache-" + getName());
-            }
-            if (descriptor.cacheEntryWithoutReferencesName == null) {
-                cache.setEntryCacheWithoutReferencesName("cacheWithoutReference-" + getName());
-                cacheService.registerCache("cacheWithoutReference-" + getName());
-            }
-        }
     }
 }

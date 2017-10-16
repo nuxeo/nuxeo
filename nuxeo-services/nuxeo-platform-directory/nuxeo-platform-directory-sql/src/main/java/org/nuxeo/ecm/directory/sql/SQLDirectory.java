@@ -32,6 +32,7 @@ import javax.transaction.Synchronization;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -130,7 +131,22 @@ public class SQLDirectory extends AbstractDirectory {
         nativeCase = Boolean.TRUE.equals(descriptor.nativeCase);
 
         // Cache fallback
-        fallbackOnDefaultCache();
+        CacheService cacheService = Framework.getLocalService(CacheService.class);
+        if (cacheService != null) {
+            if (descriptor.cacheEntryName == null && descriptor.getCacheMaxSize() != 0) {
+                cache.setEntryCacheName("cache-" + getName());
+                cacheService.registerCache("cache-" + getName(),
+                        descriptor.getCacheMaxSize(),
+                        descriptor.getCacheTimeout() / 60);
+            }
+            if (descriptor.cacheEntryWithoutReferencesName == null && descriptor.getCacheMaxSize() != 0) {
+                cache.setEntryCacheWithoutReferencesName(
+                        "cacheWithoutReference-" + getName());
+                cacheService.registerCache("cacheWithoutReference-" + getName(),
+                        descriptor.getCacheMaxSize(),
+                        descriptor.getCacheTimeout() / 60);
+            }
+        }
     }
 
     @Override

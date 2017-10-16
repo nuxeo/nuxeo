@@ -39,13 +39,6 @@ public class CacheDescriptor {
     /** Default TTL in minutes. */
     public static final long DEFAULT_TTL = 1;
 
-    /**
-     * Default max size
-     *
-     * @since 9.3
-     */
-    public static final long DEFAULT_MAX_SIZE = 100;
-
     @XNode("@name")
     public String name;
 

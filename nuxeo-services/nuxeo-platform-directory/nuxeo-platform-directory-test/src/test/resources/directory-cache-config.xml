@@ -3,11 +3,6 @@
 
   <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
 
-    <cache name="default-cache">
-      <ttl>5</ttl>
-      <option name="maxSize">100</option>
-    </cache>
-
     <cache name="entry-cache">
       <maxSize>100</maxSize>
       <ttl>1</ttl><!-- minutes -->

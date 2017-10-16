@@ -16,6 +16,8 @@
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>test-users.csv</dataFile>
       <createTablePolicy>always</createTablePolicy>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1</cacheMaxSize>
       <references>
         <reference field="groups" directory="groupDirectory"
                    name="user2group" source="userId"
