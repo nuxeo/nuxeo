@@ -48,7 +48,10 @@ public abstract class AbstractUserMapper implements UserMapper {
 
     protected static final Log log = LogFactory.getLog(AbstractUserMapper.class);
 
+    protected final UserManager userManager;
+
     public AbstractUserMapper() {
+        userManager = Framework.getService(UserManager.class);
     }
 
     @Override
@@ -71,8 +74,6 @@ public abstract class AbstractUserMapper implements UserMapper {
         }
 
         resolveAttributes(userObject, searchAttributes, userAttributes, profileAttributes);
-
-        UserManager userManager = getUserManager();
 
         String userId = (String) searchAttributes.get(userManager.getUserIdField());
 
@@ -131,7 +132,6 @@ public abstract class AbstractUserMapper implements UserMapper {
     }
 
     protected void updatePrincipal(Map<String, Serializable> attributes, DocumentModel userModel) {
-        UserManager userManager = getUserManager();
         DataModel dm = userModel.getDataModel(userManager.getUserSchemaName());
         for (String key : attributes.keySet()) {
             dm.setValue(key, attributes.get(key));
@@ -148,7 +148,7 @@ public abstract class AbstractUserMapper implements UserMapper {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected DocumentModel createPrincipal(Map<String, Serializable> attributes) {
-        UserManager userManager = getUserManager();
+
         DocumentModel userModel = userManager.getBareUserModel();
         userModel.getDataModel(userManager.getUserSchemaName()).setMap((Map) attributes);
         return userManager.createUser(userModel);
@@ -157,7 +157,4 @@ public abstract class AbstractUserMapper implements UserMapper {
     protected abstract void resolveAttributes(Object userObject, Map<String, Serializable> searchAttributes,
             Map<String, Serializable> userAttributes, Map<String, Serializable> profileAttributes);
 
-    public UserManager getUserManager() {
-        return Framework.getService(UserManager.class);
-    }
 }
