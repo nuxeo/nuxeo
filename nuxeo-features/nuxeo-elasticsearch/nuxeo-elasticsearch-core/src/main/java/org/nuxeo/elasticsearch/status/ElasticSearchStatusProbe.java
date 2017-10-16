@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
  * 
  * @since 9.3
  */
-public class ElasticSeachStatusProbe implements Probe {
+public class ElasticSearchStatusProbe implements Probe {
 
     @Override
     public ProbeStatus run() {
