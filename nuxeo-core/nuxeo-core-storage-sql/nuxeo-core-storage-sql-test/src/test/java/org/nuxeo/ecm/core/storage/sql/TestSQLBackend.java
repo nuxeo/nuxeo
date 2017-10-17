@@ -1145,6 +1145,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(2, friends.size());
     }
 
+    @Ignore("NXP-23349")
     @Test
     public void testConcurrentCollectionPosCreation() throws Exception {
         // two docs with same name (possible at this low level)
