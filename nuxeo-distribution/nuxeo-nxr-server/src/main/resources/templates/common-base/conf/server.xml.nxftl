@@ -75,6 +75,8 @@
 <#if nuxeo.server.signature??>
                server="${nuxeo.server.signature}"
 </#if>
+               maxThreads="${nuxeo.server.http.maxThreads}"
+               acceptCount="${nuxeo.server.http.acceptCount}"
                compression="on"
                compressionMinSize="512"
                compressableMimeType="text/css,application/javascript,text/xml,text/html"
@@ -108,13 +110,33 @@
                keystoreFile="${nuxeo.server.https.keystoreFile}"
                keystorePass="${nuxeo.server.https.keystorePass}"
                clientAuth="false" sslProtocol="TLS"
-               maxThreads="150" SSLEnabled="true">
+               maxThreads="${nuxeo.server.http.maxThreads}"
+               acceptCount="${nuxeo.server.http.acceptCount}"
+               SSLEnabled="true">
         <SSLHostConfig>
             <Certificate certificateKeystoreFile="conf/localhost-rsa.jks"
                          type="RSA" />
         </SSLHostConfig>
     </Connector>
 </#if>
+
+
+<#if nuxeo.server.http.drivePort??>
+<!-- Http Connector for Nuxeo Drive taffic -->
+<Connector port="${nuxeo.server.http.drivePort}" protocol="HTTP/1.1" URIEncoding="UTF-8"
+               address="${nuxeo.bind.address}"
+<#if nuxeo.server.signature??>
+               server="${nuxeo.server.signature}"
+</#if>
+               maxThreads="${nuxeo.server.http.maxThreads}"
+               acceptCount="${nuxeo.server.http.acceptCount}"
+               compression="on"
+               compressionMinSize="512"
+               compressableMimeType="text/css,application/javascript,text/xml,text/html"
+               connectionTimeout="20000" />
+</#if>
+
+
     <!-- Define a SSL/TLS HTTP/1.1 Connector on port 8443 with HTTP/2
          This connector uses the APR/native implementation which always uses
          OpenSSL for TLS.
