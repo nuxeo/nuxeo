@@ -92,7 +92,7 @@ public class LDAPSession extends BaseSession {
     // set to false for debugging
     private static final boolean HIDE_PASSWORD_IN_LOGS = true;
 
-    protected final DirContext dirContext;
+    protected DirContext dirContext;
 
     protected final String idAttribute;
 
@@ -112,9 +112,8 @@ public class LDAPSession extends BaseSession {
 
     protected final String passwordHashAlgorithm;
 
-    public LDAPSession(LDAPDirectory directory, DirContext dirContext) {
+    public LDAPSession(LDAPDirectory directory) {
         super(directory, LDAPReference.class);
-        this.dirContext = LdapRetryHandler.wrap(dirContext, directory.getServer().getRetries());
         DirectoryFieldMapper fieldMapper = directory.getFieldMapper();
         idAttribute = fieldMapper.getBackendField(getIdField());
         LDAPDirectoryDescriptor descriptor = directory.getDescriptor();
@@ -134,6 +133,13 @@ public class LDAPSession extends BaseSession {
     }
 
     public DirContext getContext() {
+        if (dirContext == null) {
+            // Initialize directory context lazily
+            LDAPDirectory ldapDirectory = (LDAPDirectory) directory;
+            ContextProvider testServer = ldapDirectory.getTestServer();
+            DirContext context = testServer == null ? ldapDirectory.createContext() : testServer.getContext();
+            dirContext = LdapRetryHandler.wrap(context, ldapDirectory.getServer().getRetries());
+        }
         return dirContext;
     }
 
@@ -206,7 +212,7 @@ public class LDAPSession extends BaseSession {
                 log.debug(String.format("LDAPSession.createEntry(%s=%s): LDAP bind dn='%s' attrs='%s' [%s]", idField,
                         fieldMap.get(idField), dn, logAttrs, this));
             }
-            dirContext.bind(dn, null, attrs);
+            getContext().bind(dn, null, attrs);
 
             String dnFieldName = getDirectory().getFieldMapper()
                                                .getDirectoryField(LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY);
@@ -285,13 +291,13 @@ public class LDAPSession extends BaseSession {
                     log.debug(String.format("LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
                             + "mod_op='REMOVE_ATTRIBUTE' attr='%s' [%s]", docModel, dn, attrsToDel, this));
                 }
-                dirContext.modifyAttributes(dn, DirContext.REMOVE_ATTRIBUTE, attrsToDel);
+                getContext().modifyAttributes(dn, DirContext.REMOVE_ATTRIBUTE, attrsToDel);
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
                             + "mod_op='REPLACE_ATTRIBUTE' attr='%s' [%s]", docModel, dn, attrs, this));
                 }
-                dirContext.modifyAttributes(dn, DirContext.REPLACE_ATTRIBUTE, attrs);
+                getContext().modifyAttributes(dn, DirContext.REPLACE_ATTRIBUTE, attrs);
             }
         } catch (NamingException e) {
             handleException(e, "updateEntry failed:");
@@ -308,7 +314,7 @@ public class LDAPSession extends BaseSession {
                 log.debug(String.format("LDAPSession.deleteEntry(%s): LDAP destroySubcontext dn='%s' [%s]", id,
                         result.getNameInNamespace(), this));
             }
-            dirContext.destroySubcontext(result.getNameInNamespace());
+            getContext().destroySubcontext(result.getNameInNamespace());
         } catch (NamingException e) {
             handleException(e, "deleteEntry failed for: " + id);
         }
@@ -351,7 +357,7 @@ public class LDAPSession extends BaseSession {
         }
         NamingEnumeration<SearchResult> results;
         try {
-            results = dirContext.search(searchBaseDn, filterExpr, filterArgs, scts);
+            results = getContext().search(searchBaseDn, filterExpr, filterArgs, scts);
         } catch (NameNotFoundException nnfe) {
             // sometimes ActiveDirectory have some query fail with: LDAP:
             // error code 32 - 0000208D: NameErr: DSID-031522C9, problem
@@ -393,7 +399,6 @@ public class LDAPSession extends BaseSession {
         }
         return result;
     }
-
 
     protected void handleException(Exception e, String message) {
         LdapExceptionProcessor processor = getDirectory().getDescriptor().getExceptionProcessor();
@@ -504,7 +509,8 @@ public class LDAPSession extends BaseSession {
                         searchBaseDn, filterExpr, StringUtils.join(filterArgs, ","), scts.getSearchScope(), this));
             }
             try {
-                NamingEnumeration<SearchResult> results = dirContext.search(searchBaseDn, filterExpr, filterArgs, scts);
+                NamingEnumeration<SearchResult> results = getContext().search(searchBaseDn, filterExpr, filterArgs,
+                        scts);
                 DocumentModelList entries = ldapResultsToDocumentModels(results, fetchReferences);
 
                 if (orderBy != null && !orderBy.isEmpty()) {
@@ -531,7 +537,7 @@ public class LDAPSession extends BaseSession {
     @Override
     public void close() throws DirectoryException {
         try {
-            dirContext.close();
+            getContext().close();
         } catch (NamingException e) {
             throw new DirectoryException("close failed", e);
         } finally {
@@ -888,7 +894,7 @@ public class LDAPSession extends BaseSession {
         try {
             List<String> mandatoryAttributes = new ArrayList<String>();
 
-            DirContext schema = dirContext.getSchema("");
+            DirContext schema = getContext().getSchema("");
             List<String> objectClasses = new ArrayList<String>();
             if (objectClassesAttribute == null) {
                 // use the creation classes as reference schema for this entry
