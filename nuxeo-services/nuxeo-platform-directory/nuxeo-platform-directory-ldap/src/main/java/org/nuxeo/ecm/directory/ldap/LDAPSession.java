@@ -68,13 +68,13 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
 import org.nuxeo.ecm.directory.EntryAdaptor;
 import org.nuxeo.ecm.directory.PasswordHelper;
 import org.nuxeo.ecm.directory.Reference;
-import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 
 /**
  * This class represents a session against an LDAPDirectory.
@@ -282,11 +282,8 @@ public class LDAPSession extends BaseSession {
                 }
 
                 if (log.isDebugEnabled()) {
-                    log.debug(
-                            String.format(
-                                    "LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
-                                            + "mod_op='REMOVE_ATTRIBUTE' attr='%s' [%s]",
-                                    docModel, dn, attrsToDel, this));
+                    log.debug(String.format("LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
+                            + "mod_op='REMOVE_ATTRIBUTE' attr='%s' [%s]", docModel, dn, attrsToDel, this));
                 }
                 dirContext.modifyAttributes(dn, DirContext.REMOVE_ATTRIBUTE, attrsToDel);
 
@@ -347,9 +344,10 @@ public class LDAPSession extends BaseSession {
         SearchControls scts = getDirectory().getSearchControls(fetchAllAttributes);
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("LDAPSession.getLdapEntry(%s, %s): LDAP search base='%s' filter='%s' "
-                    + " args='%s' scope='%s' [%s]", id, fetchAllAttributes, searchBaseDn, filterExpr, id,
-                    scts.getSearchScope(), this));
+            log.debug(String.format(
+                    "LDAPSession.getLdapEntry(%s, %s): LDAP search base='%s' filter='%s' "
+                            + " args='%s' scope='%s' [%s]",
+                    id, fetchAllAttributes, searchBaseDn, filterExpr, id, scts.getSearchScope(), this));
         }
         NamingEnumeration<SearchResult> results;
         try {
@@ -375,17 +373,19 @@ public class LDAPSession extends BaseSession {
             if (results.hasMore()) {
                 result = results.next();
                 String dn2 = result.getNameInNamespace();
-                String msg = String.format("Unable to fetch entry for '%s': found more than one match,"
-                        + " for instance: '%s' and '%s'", id, dn, dn2);
+                String msg = String.format(
+                        "Unable to fetch entry for '%s': found more than one match," + " for instance: '%s' and '%s'",
+                        id, dn, dn2);
                 log.error(msg);
                 // ignore entries that are ambiguous while giving enough info
                 // in the logs to let the LDAP admin be able to fix the issue
                 return null;
             }
             if (log.isDebugEnabled()) {
-                log.debug(String.format("LDAPSession.getLdapEntry(%s, %s): LDAP search base='%s' filter='%s' "
-                        + " args='%s' scope='%s' => found: %s [%s]", id, fetchAllAttributes, searchBaseDn, filterExpr,
-                        id, scts.getSearchScope(), dn, this));
+                log.debug(String.format(
+                        "LDAPSession.getLdapEntry(%s, %s): LDAP search base='%s' filter='%s' "
+                                + " args='%s' scope='%s' => found: %s [%s]",
+                        id, fetchAllAttributes, searchBaseDn, filterExpr, id, scts.getSearchScope(), dn, this));
             }
         } catch (UnsupportedOperationException e) {
             // ignore unsupported operation thrown by the Apache DS server in
@@ -426,8 +426,8 @@ public class LDAPSession extends BaseSession {
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext,
-            Map<String, String> orderBy, boolean fetchReferences) throws DirectoryException {
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws DirectoryException {
         if (!hasPermission(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
         }
