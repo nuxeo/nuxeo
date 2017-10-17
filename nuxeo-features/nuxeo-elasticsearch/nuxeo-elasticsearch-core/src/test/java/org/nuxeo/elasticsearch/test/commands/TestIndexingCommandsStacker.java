@@ -18,6 +18,11 @@
  */
 package org.nuxeo.elasticsearch.test.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,11 +33,6 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.elasticsearch.commands.IndexingCommands;
 import org.nuxeo.elasticsearch.commands.IndexingCommandsStacker;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Test that the logic for transforming CoreEvents in ElasticSearch commands
@@ -94,36 +94,6 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
         if (asyncCommands.size() > 0) {
             fireAsyncIndexing(asyncCommands);
         }
-    }
-
-    public final class MockDocumentModel extends DocumentModelImpl {
-
-        private static final long serialVersionUID = 1L;
-
-        protected String uid;
-
-        protected boolean folder = false;
-
-        public MockDocumentModel(String uid) {
-            this(uid, false);
-        }
-
-        public MockDocumentModel(String uid, boolean folder) {
-            super();
-            this.uid = uid;
-            this.folder = folder;
-        }
-
-        @Override
-        public String getId() {
-            return uid;
-        }
-
-        @Override
-        public boolean isFolder() {
-            return folder;
-        }
-
     }
 
     @Test
@@ -244,5 +214,35 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
         flushCommands();
         Assert.assertEquals(1, flushedSyncCommands.size());
         Assert.assertEquals(1, flushedAsyncCommands.size());
+    }
+
+    public final class MockDocumentModel extends DocumentModelImpl {
+
+        private static final long serialVersionUID = 1L;
+
+        protected String uid;
+
+        protected boolean folder = false;
+
+        public MockDocumentModel(String uid) {
+            this(uid, false);
+        }
+
+        public MockDocumentModel(String uid, boolean folder) {
+            super();
+            this.uid = uid;
+            this.folder = folder;
+        }
+
+        @Override
+        public String getId() {
+            return uid;
+        }
+
+        @Override
+        public boolean isFolder() {
+            return folder;
+        }
+
     }
 }

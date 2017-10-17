@@ -35,9 +35,8 @@ public final class DateHelper {
      * Returns a new datetime plus the specified duration.
      *
      * @param origin the initial datetime
-     * @param duration can be expressed with a noun: hour, day, month, quarter, year
-     *                 or expression: 2d, 3h, 5w, 2M, 3y
-     *                 or a number of ms: 1234
+     * @param duration can be expressed with a noun: hour, day, month, quarter, year or expression: 2d, 3h, 5w, 2M, 3y
+     *            or a number of ms: 1234
      * @throws IllegalArgumentException if the duration cannot be parsed
      * @return a new datetime
      */
@@ -54,20 +53,20 @@ public final class DateHelper {
     private static DateTime plusDurationAsExpression(DateTime origin, String duration) {
         int k = getFactor(duration);
         switch (duration.substring(duration.length() - 1, duration.length())) {
-            case "s":
-                return origin.plusSeconds(k);
-            case "m":
-                return origin.plusMinutes(k);
-            case "h":
-                return origin.plusHours(k);
-            case "d":
-                return origin.plusDays(k);
-            case "w":
-                return origin.plusWeeks(k);
-            case "M":
-                return origin.plusMonths(k);
-            case "y":
-                return origin.plusYears(k);
+        case "s":
+            return origin.plusSeconds(k);
+        case "m":
+            return origin.plusMinutes(k);
+        case "h":
+            return origin.plusHours(k);
+        case "d":
+            return origin.plusDays(k);
+        case "w":
+            return origin.plusWeeks(k);
+        case "M":
+            return origin.plusMonths(k);
+        case "y":
+            return origin.plusYears(k);
         }
         return invalid(duration);
     }
@@ -83,22 +82,22 @@ public final class DateHelper {
 
     private static DateTime plusDurationAsNoun(DateTime origin, String duration) {
         switch (duration.toLowerCase()) {
-            case "second":
-                return origin.plusSeconds(1);
-            case "minute":
-                return origin.plusMinutes(1);
-            case "hour":
-                return origin.plusHours(1);
-            case "day":
-                return origin.plusDays(1);
-            case "week":
-                return origin.plusWeeks(1);
-            case "month":
-                return origin.plusMonths(1);
-            case "quarter":
-                return origin.plusMonths(3);
-            case "year":
-                return origin.plusYears(1);
+        case "second":
+            return origin.plusSeconds(1);
+        case "minute":
+            return origin.plusMinutes(1);
+        case "hour":
+            return origin.plusHours(1);
+        case "day":
+            return origin.plusDays(1);
+        case "week":
+            return origin.plusWeeks(1);
+        case "month":
+            return origin.plusMonths(1);
+        case "quarter":
+            return origin.plusMonths(3);
+        case "year":
+            return origin.plusYears(1);
         }
         return invalid(duration);
     }

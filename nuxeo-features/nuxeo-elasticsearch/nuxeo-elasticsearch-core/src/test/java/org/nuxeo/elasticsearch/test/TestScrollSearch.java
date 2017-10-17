@@ -18,6 +18,16 @@
  */
 package org.nuxeo.elasticsearch.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,23 +45,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 /**
  * Tests the scroll search API exposed by {@link ElasticSearchService}.
  *
  * @since 8.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
+@Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestScrollSearch {
 

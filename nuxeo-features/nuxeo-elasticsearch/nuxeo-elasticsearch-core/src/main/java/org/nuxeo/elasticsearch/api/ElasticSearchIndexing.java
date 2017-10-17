@@ -20,9 +20,9 @@
 
 package org.nuxeo.elasticsearch.api;
 
-import org.nuxeo.elasticsearch.commands.IndexingCommand;
-
 import java.util.List;
+
+import org.nuxeo.elasticsearch.commands.IndexingCommand;
 
 /**
  * Interface to process indexing of documents
@@ -69,7 +69,8 @@ public interface ElasticSearchIndexing {
 
     /**
      * Same as {@link ElasticSearchIndexing#indexNonRecursive(org.nuxeo.elasticsearch.commands.IndexingCommand)} but
-     * process the list command using a bulk request.</p>
+     * process the list command using a bulk request.
+     * </p>
      *
      * @since 7.1
      */

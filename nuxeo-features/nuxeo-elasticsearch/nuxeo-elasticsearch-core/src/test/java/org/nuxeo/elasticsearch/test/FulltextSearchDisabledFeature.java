@@ -24,6 +24,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 public class FulltextSearchDisabledFeature extends SimpleFeature {
     private static final String KEY = "nuxeo.test.fulltext.search.disabled";
+
     private String flag;
 
     @Override

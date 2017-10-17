@@ -18,6 +18,17 @@
  */
 package org.nuxeo.elasticsearch.core;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.BindException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.common.settings.Settings;
@@ -30,25 +41,18 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
 import org.nuxeo.runtime.api.Framework;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.net.BindException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * @since 9.3
  */
 public class ElasticSearchEmbeddedNode implements Closeable {
     private static final Log log = LogFactory.getLog(ElasticSearchEmbeddedNode.class);
+
     private static final int DEFAULT_RETRY = 3;
+
     protected final ElasticSearchEmbeddedServerConfig config;
+
     protected Node node;
+
     protected int retry = DEFAULT_RETRY;
 
     public ElasticSearchEmbeddedNode(ElasticSearchEmbeddedServerConfig config) {
@@ -63,18 +67,18 @@ public class ElasticSearchEmbeddedNode implements Closeable {
         }
         Settings.Builder buidler = Settings.builder();
         buidler.put("http.enabled", config.httpEnabled())
-                .put("network.host", config.getNetworkHost())
-                .put("path.home", config.getHomePath())
-                .put("path.data", config.getDataPath())
-                .put("cluster.name", config.getClusterName())
-                .put("node.name", config.getNodeName())
-                .put("http.netty.worker_count", 4)
-                .put("http.cors.enabled", true)
-                .put("http.cors.allow-origin", "*")
-                .put("http.cors.allow-credentials", true)
-                .put("http.cors.allow-headers", "Authorization, X-Requested-With, Content-Type, Content-Length")
-                .put("cluster.routing.allocation.disk.threshold_enabled", false)
-                .put("http.port", config.getHttpPort());
+               .put("network.host", config.getNetworkHost())
+               .put("path.home", config.getHomePath())
+               .put("path.data", config.getDataPath())
+               .put("cluster.name", config.getClusterName())
+               .put("node.name", config.getNodeName())
+               .put("http.netty.worker_count", 4)
+               .put("http.cors.enabled", true)
+               .put("http.cors.allow-origin", "*")
+               .put("http.cors.allow-credentials", true)
+               .put("http.cors.allow-headers", "Authorization, X-Requested-With, Content-Type, Content-Length")
+               .put("cluster.routing.allocation.disk.threshold_enabled", false)
+               .put("http.port", config.getHttpPort());
         if (config.getIndexStorageType() != null) {
             buidler.put("index.store.type", config.getIndexStorageType());
         }
@@ -130,7 +134,8 @@ public class ElasticSearchEmbeddedNode implements Closeable {
 
     protected void deleteLuceneFileLock(String root) throws IOException {
         List<Path> locks = Files.walk(Paths.get(root))
-                .filter(f -> f.getFileName().toString().equals("node.lock")).collect(Collectors.toList());
+                                .filter(f -> f.getFileName().toString().equals("node.lock"))
+                                .collect(Collectors.toList());
         if (!locks.isEmpty()) {
             locks.forEach(f -> log.warn("Found lock on close, deleting: " + f));
             locks.forEach(f -> f.toFile().delete());

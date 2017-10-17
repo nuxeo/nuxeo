@@ -19,6 +19,10 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,15 +47,11 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 /**
  * Test "on the fly" indexing via the listener system
  */
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
+@Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestFulltextEnabled {
 
@@ -59,14 +59,14 @@ public class TestFulltextEnabled {
 
     private static final String TYPE_NAME = "doc";
 
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
     @Inject
     protected CoreSession session;
 
     @Inject
     protected ElasticSearchService ess;
-
-    @Inject
-    ElasticSearchAdmin esa;
 
     @Inject
     protected WorkManager workManager;
@@ -77,10 +77,10 @@ public class TestFulltextEnabled {
     @Inject
     protected CoreFeature coreFeature;
 
-    private int commandProcessed;
+    @Inject
+    ElasticSearchAdmin esa;
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
+    private int commandProcessed;
 
     // Number of processed command since the startTransaction
     public void assertNumberOfCommandProcessed(int processed) throws Exception {

@@ -20,6 +20,9 @@
 
 package org.nuxeo.elasticsearch.client;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.client.transport.TransportClient;
@@ -30,9 +33,6 @@ import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * @since 9.3
@@ -45,16 +45,13 @@ public class ESTransportClientFactory implements ESClientFactory {
 
     public Settings.Builder getSetting(ElasticSearchClientConfig config) {
         return Settings.builder()
-                .put("cluster.name",
-                        config.getOption("clusterName", "elasticsearch"))
-                .put("client.transport.nodes_sampler_interval",
-                        config.getOption("clientTransportNodesSamplerInterval", "5s"))
-                .put("client.transport.ping_timeout",
-                        config.getOption("clientTransportPingTimeout", "5s"))
-                .put("client.transport.ignore_cluster_name",
-                        config.getOption("clientTransportIgnoreClusterName", "false"))
-                .put("client.transport.sniff",
-                        config.getOption("clientTransportSniff", "true"));
+                       .put("cluster.name", config.getOption("clusterName", "elasticsearch"))
+                       .put("client.transport.nodes_sampler_interval",
+                               config.getOption("clientTransportNodesSamplerInterval", "5s"))
+                       .put("client.transport.ping_timeout", config.getOption("clientTransportPingTimeout", "5s"))
+                       .put("client.transport.ignore_cluster_name",
+                               config.getOption("clientTransportIgnoreClusterName", "false"))
+                       .put("client.transport.sniff", config.getOption("clientTransportSniff", "true"));
     }
 
     @Override

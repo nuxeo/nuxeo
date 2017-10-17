@@ -18,6 +18,8 @@
  */
 package org.nuxeo.elasticsearch.test;
 
+import java.security.Principal;
+
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
@@ -31,18 +33,15 @@ import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 import org.nuxeo.ecm.core.security.AbstractSecurityPolicy;
 import org.nuxeo.ecm.core.security.SecurityPolicy;
 
-import java.security.Principal;
-
 /**
  * Dummy security policy denying all access to File objects for non Admin.
- *
  */
 public class NoFileSecurityPolicy extends AbstractSecurityPolicy implements SecurityPolicy {
     public static final SQLQuery.Transformer NO_FILE_TRANSFORMER = new NoFileTransformer();
 
     @Override
     public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
-                                  String[] resolvedPermissions, String[] additionalPrincipals) {
+            String[] resolvedPermissions, String[] additionalPrincipals) {
         if (doc.getType().getName().equals("File")) {
             return Access.DENY;
         }
@@ -58,9 +57,19 @@ public class NoFileSecurityPolicy extends AbstractSecurityPolicy implements Secu
         return NO_FILE_TRANSFORMER;
     }
 
+    @Override
+    public boolean isExpressibleInQuery(String repositoryName) {
+        return true;
+    }
+
     public static class NoFileTransformer implements SQLQuery.Transformer {
-        private static final long serialVersionUID = 1L;
         public static final Predicate NO_FILE;
+
+        private static final long serialVersionUID = 1L;
+
+        static {
+            NO_FILE = new Predicate(new Reference("ecm:primaryType"), Operator.NOTEQ, new StringLiteral("File"));
+        }
 
         public NoFileTransformer() {
         }
@@ -77,17 +86,9 @@ public class NoFileSecurityPolicy extends AbstractSecurityPolicy implements Secu
                 predicate = NO_FILE;
             }
 
-            SQLQuery newQuery = new SQLQuery(query.select, query.from, new WhereClause(predicate), query.groupBy, query.having, query.orderBy, query.limit, query.offset);
+            SQLQuery newQuery = new SQLQuery(query.select, query.from, new WhereClause(predicate), query.groupBy,
+                    query.having, query.orderBy, query.limit, query.offset);
             return newQuery;
         }
-
-        static {
-            NO_FILE = new Predicate(new Reference("ecm:primaryType"), Operator.NOTEQ, new StringLiteral("File"));
-        }
-    }
-
-    @Override
-    public boolean isExpressibleInQuery(String repositoryName) {
-        return true;
     }
 }

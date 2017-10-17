@@ -18,6 +18,14 @@
  */
 package org.nuxeo.elasticsearch.test.io;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.junit.Assert;
@@ -40,20 +48,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 /**
  * @since 5.9.5
  */
 
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
+@Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestDocumentModelReader {
 
@@ -130,7 +130,8 @@ public class TestDocumentModelReader {
 
         // search and retrieve from ES
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM File").fetchFromElasticsearch());
+        DocumentModelList docs = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM File").fetchFromElasticsearch());
         Assert.assertEquals(1, docs.totalSize());
         DocumentModel esDoc = docs.get(0);
         // esDoc.detach(false);

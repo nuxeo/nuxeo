@@ -19,6 +19,8 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import javax.inject.Inject;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,16 +35,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import javax.inject.Inject;
-
 /**
- *
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
-@LocalDeploy({"org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-test-dynamic-mapping-contrib.xml"})
+@Features({ RepositoryElasticSearchFeature.class })
+@LocalDeploy({ "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml",
+        "org.nuxeo.elasticsearch.core:elasticsearch-test-dynamic-mapping-contrib.xml" })
 public class TestDynamicMapping extends TestMapping {
 
     @Inject
@@ -60,11 +59,9 @@ public class TestDynamicMapping extends TestMapping {
 
         DocumentModel doc = session.createDocumentModel("/", "note", "Note");
         // put some raw json in the node and checked is indexed dynamically
-        doc.setPropertyValue(
-                "note:note",
-                String.format(
-                        "{\"type1\":[{\"type1:id_int\":10},{\"type1:name_string\":\"test\"},{\"type1:creation_date\":\"%s\"}]}",
-                        "2015-01-01T12:30:00"));
+        doc.setPropertyValue("note:note", String.format(
+                "{\"type1\":[{\"type1:id_int\":10},{\"type1:name_string\":\"test\"},{\"type1:creation_date\":\"%s\"}]}",
+                "2015-01-01T12:30:00"));
         doc = session.createDocument(doc);
 
         TransactionHelper.commitOrRollbackTransaction();
@@ -81,16 +78,20 @@ public class TestDynamicMapping extends TestMapping {
         // check that the custom mapping applied
 
         // Since ES 2.x we need to express the full path of property: type1:id_int becomes dynamic/type1/type1:id_int
-        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:id_int = 11"));
+        DocumentModelList ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:id_int = 11"));
         Assert.assertEquals(0, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:id_int = 10 AND ecm:isCheckedInVersion = 0"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE dynamic/type1/type1:id_int = 10 AND ecm:isCheckedInVersion = 0"));
         Assert.assertEquals(1, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:name_string LIKE 'test' AND ecm:isCheckedInVersion = 0"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE dynamic/type1/type1:name_string LIKE 'test' AND ecm:isCheckedInVersion = 0"));
         Assert.assertEquals(1, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:creation_date BETWEEN DATE '2015-01-01' AND DATE '2015-01-02' AND ecm:isCheckedInVersion = 0"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE dynamic/type1/type1:creation_date BETWEEN DATE '2015-01-01' AND DATE '2015-01-02' AND ecm:isCheckedInVersion = 0"));
         Assert.assertEquals(1, ret.totalSize());
     }
 }

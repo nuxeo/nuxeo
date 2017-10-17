@@ -19,6 +19,10 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,15 +39,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
-@Deploy({"org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.ws", "org.nuxeo.ecm.automation.core"})
-@LocalDeploy({"org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-test-mapping-contrib.xml"})
+@Features({ RepositoryElasticSearchFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.ws", "org.nuxeo.ecm.automation.core" })
+@LocalDeploy({ "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml",
+        "org.nuxeo.elasticsearch.core:elasticsearch-test-mapping-contrib.xml" })
 public class TestMapping {
 
     @Inject
@@ -105,13 +105,15 @@ public class TestMapping {
         assertNumberOfCommandProcessed(3);
 
         startTransaction();
-        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description ILIKE '%Case%'"));
+        DocumentModelList ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description ILIKE '%Case%'"));
         Assert.assertEquals(3, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description ILIKE 'Upper%'"));
         Assert.assertEquals(1, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description ILIKE 'mixED case desc'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE dc:description ILIKE 'mixED case desc'"));
         Assert.assertEquals(1, ret.totalSize());
 
         // case sensitive for other operation
@@ -143,25 +145,31 @@ public class TestMapping {
         waitForIndexing();
 
         startTransaction();
-        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'new-york.jpg'"));
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'new-york.jpg'"));
         Assert.assertEquals(1, ret.totalSize());
 
         // The standard tokenizer first split new-york.jpg in "new" "york.jpg"
         // then the word delimiter gives: "new" york" "jpg" "york.jpg"
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'new york jpg'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'new york jpg'"));
         Assert.assertEquals(1, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'new-york'"));
+        ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'new-york'"));
         Assert.assertEquals(1, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'york new'"));
+        ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'york new'"));
         Assert.assertEquals(1, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'york -new-york'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'york -new-york'"));
         Assert.assertEquals(1, ret.totalSize());
         Assert.assertEquals("testDoc2", ret.get(0).getName());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'NewYork'"));
+        ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'NewYork'"));
         Assert.assertEquals(1, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'jpg'"));
@@ -186,30 +194,38 @@ public class TestMapping {
         startTransaction();
 
         // Common left/right truncature with a ILIKE, translated into wilcard search *oba* with poor performance
-        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:title ILIKE '%Oba%'"));
+        DocumentModelList ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:title ILIKE '%Oba%'"));
         Assert.assertEquals(2, ret.totalSize());
 
         // Use an ngram index
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) ANALYZER(lowercase_analyzer) OPERATOR(match) */ dc:title = 'ObA'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) ANALYZER(lowercase_analyzer) OPERATOR(match) */ dc:title = 'ObA'"));
         Assert.assertEquals(2, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) ANALYZER(lowercase_analyzer) OPERATOR(match) */ dc:title = 'fOObar42'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) ANALYZER(lowercase_analyzer) OPERATOR(match) */ dc:title = 'fOObar42'"));
         Assert.assertEquals(1, ret.totalSize());
 
         // No tokenizer mind the space
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) ANALYZER(lowercase_analyzer) OPERATOR(match) */ dc:title = '2 t'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) ANALYZER(lowercase_analyzer) OPERATOR(match) */ dc:title = '2 t'"));
         Assert.assertEquals(1, ret.totalSize());
 
         // need to provide min_ngram (3) or more characters
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) ANALYZER(lowercase_analyzer) OPERATOR(match) */ dc:title = '42'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) ANALYZER(lowercase_analyzer) OPERATOR(match) */ dc:title = '42'"));
         Assert.assertEquals(0, ret.totalSize());
 
         // If we don't set the proper analyzer the searched term is also ngramized matching too much
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) OPERATOR(match) */ dc:title = 'ZOObar'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) OPERATOR(match) */ dc:title = 'ZOObar'"));
         Assert.assertEquals(2, ret.totalSize());
 
-        // Using the lowercase analyzer for the search term and a ngram max_gram greater than the search term make it work
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) ANALYZER(lowercase_analyzer) OPERATOR(match) */ dc:title = 'ZOObar'"));
+        // Using the lowercase analyzer for the search term and a ngram max_gram greater than the search term make it
+        // work
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) ANALYZER(lowercase_analyzer) OPERATOR(match) */ dc:title = 'ZOObar'"));
         Assert.assertEquals(0, ret.totalSize());
 
     }

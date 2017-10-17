@@ -18,6 +18,19 @@
  */
 package org.nuxeo.elasticsearch.test;
 
+import static org.junit.Assume.assumeTrue;
+
+import java.io.Serializable;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -53,21 +66,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.io.Serializable;
-import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
-import static org.junit.Assume.assumeTrue;
-
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
+@Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestTreeIndexing {
 
@@ -76,13 +76,13 @@ public class TestTreeIndexing {
     private static final String TYPE_NAME = "doc";
 
     @Inject
+    protected WorkManager workManager;
+
+    @Inject
     CoreSession session;
 
     @Inject
     ElasticSearchService ess;
-
-    @Inject
-    protected WorkManager workManager;
 
     @Inject
     ElasticSearchAdmin esa;
@@ -157,13 +157,13 @@ public class TestTreeIndexing {
 
     protected SearchResponse searchAll() {
         SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .source(new SearchSourceBuilder().from(0).size(60));
+                                                           .source(new SearchSourceBuilder().from(0).size(60));
         return esa.getClient().search(request);
     }
 
     protected SearchResponse search(QueryBuilder query) {
         SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .source(new SearchSourceBuilder().from(0).size(60));
+                                                           .source(new SearchSourceBuilder().from(0).size(60));
         request.source(new SearchSourceBuilder().query(query));
         return esa.getClient().search(request);
     }

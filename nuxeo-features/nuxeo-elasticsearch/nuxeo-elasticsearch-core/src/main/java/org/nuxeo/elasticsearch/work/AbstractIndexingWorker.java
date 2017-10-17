@@ -19,12 +19,12 @@
 
 package org.nuxeo.elasticsearch.work;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Abstract class for sharing code between ElasticSearch related workers

@@ -17,13 +17,13 @@
 
 package org.nuxeo.elasticsearch.test.aggregates;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.elasticsearch.aggregate.DateHelper;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class TestDateHelper {
 

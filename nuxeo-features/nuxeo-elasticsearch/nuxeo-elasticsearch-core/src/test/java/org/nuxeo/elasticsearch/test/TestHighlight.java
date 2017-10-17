@@ -20,6 +20,16 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,21 +49,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 /**
  * @since 9.1
  */
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
+@Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
 public class TestHighlight {
 
@@ -109,22 +109,23 @@ public class TestHighlight {
         SearchSourceBuilder request = new SearchSourceBuilder();
         List<String> highlightFields = Arrays.asList("dc:title.fulltext", "ecm:binarytext");
 
-        NxQueryBuilder queryBuilder = new NxQueryBuilder(session)
-                .nxql("SELECT * FROM Document WHERE ecm:fulltext='search'")
-                .highlight(highlightFields);
+        NxQueryBuilder queryBuilder = new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE ecm:fulltext='search'").highlight(highlightFields);
         queryBuilder.updateRequest(request);
         DocumentModelList ret = ess.query(queryBuilder);
 
         assertEquals(2, ret.totalSize());
 
-        Map<String, List<String>> highlights = (Map<String, List<String>>) ret.get(0).getContextData(PageProvider.HIGHLIGHT_CTX_DATA);
+        Map<String, List<String>> highlights = (Map<String, List<String>>) ret.get(0).getContextData(
+                PageProvider.HIGHLIGHT_CTX_DATA);
         assertEquals(2, highlights.size());
         assertTrue(highlights.containsKey("dc:title.fulltext"));
         assertTrue(highlights.containsKey("ecm:binarytext"));
         assertEquals("<em>Search</em> me", highlights.get("dc:title.fulltext").get(0));
         assertEquals("you know for <em>search</em>", highlights.get("ecm:binarytext").get(0));
 
-        Map<String, List<String>> highlights2 = (Map<String, List<String>>) ret.get(1).getContextData(PageProvider.HIGHLIGHT_CTX_DATA);
+        Map<String, List<String>> highlights2 = (Map<String, List<String>>) ret.get(1).getContextData(
+                PageProvider.HIGHLIGHT_CTX_DATA);
         assertEquals("test my <em>search</em> with highlight", highlights2.get("ecm:binarytext").get(0));
     }
 
@@ -177,15 +178,15 @@ public class TestHighlight {
 
         List<String> highlightFields = Arrays.asList("dc:title", "ecm:binarytext");
 
-        NxQueryBuilder queryBuilder = new NxQueryBuilder(session)
-                .nxql("SELECT * FROM Document WHERE ecm:fulltext='vehicula'")
-                .highlight(highlightFields);
+        NxQueryBuilder queryBuilder = new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE ecm:fulltext='vehicula'").highlight(highlightFields);
         queryBuilder.updateRequest(request);
         DocumentModelList ret = ess.query(queryBuilder);
 
         assertEquals(1, ret.totalSize());
 
-        Map<String, List<String>> highlights = (Map<String, List<String>>) ret.get(0).getContextData(PageProvider.HIGHLIGHT_CTX_DATA);
+        Map<String, List<String>> highlights = (Map<String, List<String>>) ret.get(0).getContextData(
+                PageProvider.HIGHLIGHT_CTX_DATA);
         assertEquals(1, highlights.size());
         assertEquals(3, highlights.get("ecm:binarytext").size());
         assertEquals(

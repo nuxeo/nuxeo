@@ -18,6 +18,18 @@
  */
 package org.nuxeo.elasticsearch.test.nxql;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,20 +58,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
+@Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestCompareQueryAndFetch {
@@ -189,7 +189,8 @@ public class TestCompareQueryAndFetch {
     @Test
     public void testSimpleSearchWithSort() throws Exception {
         compareESAndCore("select ecm:uuid, dc:title, dc:nature from Document order by ecm:uuid");
-        compareESAndCore("select ecm:uuid, dc:title from Document where ecm:currentLifeCycleState != 'deleted' order by ecm:uuid");
+        compareESAndCore(
+                "select ecm:uuid, dc:title from Document where ecm:currentLifeCycleState != 'deleted' order by ecm:uuid");
         compareESAndCore("select ecm:uuid, dc:nature from File order by dc:nature, ecm:uuid");
         // TODO some timezone issues here...
         // compareESAndCore("select ecm:uuid, dc:issued from File order by ecm:uuid");
@@ -198,7 +199,8 @@ public class TestCompareQueryAndFetch {
     @Test
     public void testIteratorWithLimit() throws Exception {
         int LIMIT = 5;
-        EsResult esRes = ess.queryAndAggregate(new NxQueryBuilder(session).nxql("select ecm:uuid From Document").limit(LIMIT));
+        EsResult esRes = ess.queryAndAggregate(
+                new NxQueryBuilder(session).nxql("select ecm:uuid From Document").limit(LIMIT));
         try (IterableQueryResult res = esRes.getRows()) {
             // the number of doc in the iterator
             Assert.assertEquals(LIMIT, res.size());

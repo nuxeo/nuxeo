@@ -19,6 +19,11 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -42,20 +47,15 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 /**
  * Test servcie declaration as well as basic indexing API
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
-@LocalDeploy({"org.nuxeo.elasticsearch.core:disable-listener-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml"})
+@Features({ RepositoryElasticSearchFeature.class })
+@LocalDeploy({ "org.nuxeo.elasticsearch.core:disable-listener-contrib.xml",
+        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml" })
 public class TestManualIndexing {
 
     private static final String IDX_NAME = "nxutest";
@@ -72,10 +72,10 @@ public class TestManualIndexing {
     protected ElasticSearchIndexing esi;
 
     @Inject
-    ElasticSearchAdmin esa;
+    protected WorkManager workManager;
 
     @Inject
-    protected WorkManager workManager;
+    ElasticSearchAdmin esa;
 
     private int commandProcessed;
 
@@ -123,7 +123,7 @@ public class TestManualIndexing {
 
         esa.refresh();
         SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .source(new SearchSourceBuilder().from(0).size(60));
+                                                           .source(new SearchSourceBuilder().from(0).size(60));
         SearchResponse searchResponse = esa.getClient().search(request);
         // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
@@ -152,7 +152,7 @@ public class TestManualIndexing {
 
         // only one doc should be indexed for now
         SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .source(new SearchSourceBuilder().from(0).size(60));
+                                                           .source(new SearchSourceBuilder().from(0).size(60));
         SearchResponse searchResponse = esa.getClient().search(request);
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 

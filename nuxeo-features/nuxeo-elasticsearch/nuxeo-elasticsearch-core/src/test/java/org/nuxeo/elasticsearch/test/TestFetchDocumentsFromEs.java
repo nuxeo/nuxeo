@@ -19,6 +19,10 @@
  */
 package org.nuxeo.elasticsearch.test;
 
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -42,12 +46,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
+@Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestFetchDocumentsFromEs {
 
@@ -115,14 +115,15 @@ public class TestFetchDocumentsFromEs {
 
     protected SearchResponse searchAll() {
         SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .source(new SearchSourceBuilder().from(0).size(60));
+                                                           .source(new SearchSourceBuilder().from(0).size(60));
         return esa.getClient().search(request);
     }
 
     @Test
     public void shouldLoadDocumentFromEs() throws Exception {
         buildAndIndexTree();
-        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document").limit(20).fetchFromElasticsearch());
+        DocumentModelList docs = ess.query(
+                new NxQueryBuilder(session).nxql("select * from Document").limit(20).fetchFromElasticsearch());
         Assert.assertEquals(10, docs.totalSize());
         /*
          * for (DocumentModel doc : docs) { System.out.println(doc); }
@@ -134,23 +135,31 @@ public class TestFetchDocumentsFromEs {
     public void checkNotFetch() throws Exception {
         buildAndIndexTree();
         // onlyElasticsearchResponse is useless on query aPI
-        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document").limit(20).onlyElasticsearchResponse());
+        DocumentModelList docs = ess.query(
+                new NxQueryBuilder(session).nxql("select * from Document").limit(20).onlyElasticsearchResponse());
         Assert.assertNull(docs);
-        docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document").limit(20).fetchFromElasticsearch().onlyElasticsearchResponse());
+        docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document")
+                                                    .limit(20)
+                                                    .fetchFromElasticsearch()
+                                                    .onlyElasticsearchResponse());
         Assert.assertNull(docs);
 
         // using queryAndAggregate we can have the original Elasticsearch response
-        EsResult result = ess.queryAndAggregate(new NxQueryBuilder(session).nxql("select * from Document").limit(20).onlyElasticsearchResponse());
+        EsResult result = ess.queryAndAggregate(
+                new NxQueryBuilder(session).nxql("select * from Document").limit(20).onlyElasticsearchResponse());
         Assert.assertNull(result.getDocuments());
         Assert.assertNull(result.getAggregates());
         Assert.assertEquals(10, result.getElasticsearchResponse().getHits().getTotalHits());
         // System.out.println(result.getElasticsearchResponse());
 
-        result = ess.queryAndAggregate(new NxQueryBuilder(session).nxql("select * from Document").limit(20).fetchFromElasticsearch().onlyElasticsearchResponse());
+        result = ess.queryAndAggregate(new NxQueryBuilder(session).nxql("select * from Document")
+                                                                  .limit(20)
+                                                                  .fetchFromElasticsearch()
+                                                                  .onlyElasticsearchResponse());
         Assert.assertNull(result.getDocuments());
         Assert.assertNull(result.getAggregates());
         Assert.assertEquals(10, result.getElasticsearchResponse().getHits().getTotalHits());
-        //System.out.println(result.getElasticsearchResponse());
+        // System.out.println(result.getElasticsearchResponse());
 
     }
 
@@ -161,7 +170,10 @@ public class TestFetchDocumentsFromEs {
     public void checkPathLevel() throws Exception {
         buildAndIndexTree();
 
-        EsResult result = ess.queryAndAggregate(new NxQueryBuilder(session).nxql("select * from Document").limit(20).fetchFromElasticsearch().onlyElasticsearchResponse());
+        EsResult result = ess.queryAndAggregate(new NxQueryBuilder(session).nxql("select * from Document")
+                                                                           .limit(20)
+                                                                           .fetchFromElasticsearch()
+                                                                           .onlyElasticsearchResponse());
 
         for (SearchHit sh : result.getElasticsearchResponse().getHits()) {
             String path = (String) sh.getSource().get("ecm:path");

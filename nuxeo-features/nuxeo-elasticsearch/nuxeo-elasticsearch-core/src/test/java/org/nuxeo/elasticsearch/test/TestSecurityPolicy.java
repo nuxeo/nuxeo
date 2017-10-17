@@ -18,6 +18,13 @@
  */
 package org.nuxeo.elasticsearch.test;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -46,18 +53,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
-@LocalDeploy({"org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml", "org.nuxeo.elasticsearch" +
-        ".core:security-policy-contrib.xml"})
-//@LocalDeploy({"org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml"})
+@Features({ RepositoryElasticSearchFeature.class })
+@LocalDeploy({ "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml",
+        "org.nuxeo.elasticsearch" + ".core:security-policy-contrib.xml" })
+// @LocalDeploy({"org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml"})
 public class TestSecurityPolicy {
 
     private static final String IDX_NAME = "nxutest";
@@ -65,13 +65,13 @@ public class TestSecurityPolicy {
     private static final String TYPE_NAME = "doc";
 
     @Inject
+    protected WorkManager workManager;
+
+    @Inject
     CoreSession session;
 
     @Inject
     ElasticSearchService ess;
-
-    @Inject
-    protected WorkManager workManager;
 
     @Inject
     ElasticSearchAdmin esa;

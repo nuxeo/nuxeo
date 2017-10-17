@@ -19,6 +19,11 @@
 
 package org.nuxeo.elasticsearch.work;
 
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_BUCKET_READ_PROPERTY;
+
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ScrollResult;
@@ -26,11 +31,6 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import java.util.Collections;
-import java.util.List;
-
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_BUCKET_READ_PROPERTY;
 
 /**
  * Worker to reindex a large amount of document

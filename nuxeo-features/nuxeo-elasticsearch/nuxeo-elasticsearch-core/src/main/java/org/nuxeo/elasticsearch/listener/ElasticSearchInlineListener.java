@@ -20,18 +20,6 @@
 
 package org.nuxeo.elasticsearch.listener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventListener;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
-import org.nuxeo.elasticsearch.commands.IndexingCommand;
-import org.nuxeo.elasticsearch.commands.IndexingCommands;
-import org.nuxeo.elasticsearch.commands.IndexingCommandsStacker;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.transaction.TransactionHelper;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +32,18 @@ import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
+import org.nuxeo.elasticsearch.commands.IndexingCommand;
+import org.nuxeo.elasticsearch.commands.IndexingCommands;
+import org.nuxeo.elasticsearch.commands.IndexingCommandsStacker;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
+
 /**
  * Synchronous Event listener used to record indexing command, submitted after commit completion.
  */
@@ -51,7 +51,28 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker impleme
 
     private static final Log log = LogFactory.getLog(ElasticSearchInlineListener.class);
 
-    protected static ThreadLocal<Map<String, IndexingCommands>> transactionCommands = ThreadLocal.withInitial(() -> new HashMap<>());
+    protected static ThreadLocal<Map<String, IndexingCommands>> transactionCommands = ThreadLocal.withInitial(
+            () -> new HashMap<>());
+
+    public static ThreadLocal<Boolean> useSyncIndexing = new ThreadLocal<Boolean>() {
+        @Override
+        protected Boolean initialValue() {
+            return Boolean.FALSE;
+        }
+
+        @Override
+        public void set(Boolean value) {
+            super.set(value);
+            if (Boolean.TRUE.equals(value)) {
+                // switch existing stack to sync
+                for (IndexingCommands cmds : transactionCommands.get().values()) {
+                    for (IndexingCommand cmd : cmds.getCommands()) {
+                        cmd.makeSync();
+                    }
+                }
+            }
+        }
+    };
 
     protected static ThreadLocal<Boolean> isEnlisted = ThreadLocal.withInitial(() -> Boolean.FALSE);
 
@@ -119,26 +140,6 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker impleme
             useSyncIndexing.set(null);
         }
     }
-
-    public static ThreadLocal<Boolean> useSyncIndexing = new ThreadLocal<Boolean>() {
-        @Override
-        protected Boolean initialValue() {
-            return Boolean.FALSE;
-        }
-
-        @Override
-        public void set(Boolean value) {
-            super.set(value);
-            if (Boolean.TRUE.equals(value)) {
-                // switch existing stack to sync
-                for (IndexingCommands cmds : transactionCommands.get().values()) {
-                    for (IndexingCommand cmd : cmds.getCommands()) {
-                        cmd.makeSync();
-                    }
-                }
-            }
-        }
-    };
 
     protected boolean registerSynchronization(Synchronization sync) {
         try {

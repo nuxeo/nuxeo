@@ -1,33 +1,33 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.test.contrib">
 
-  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchEmbeddedServer">
-    <elasticSearchEmbeddedServer clusterName="nuxeoTestClusterLocal" nodeName="nuxeoTestNode" indexStoreType="mmapfs"
-      httpEnabled="true" />
+  <extension point="elasticSearchEmbeddedServer" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
+    <elasticSearchEmbeddedServer clusterName="nuxeoTestClusterLocal" httpEnabled="true" indexStoreType="mmapfs"
+      nodeName="nuxeoTestNode" />
   </extension>
 
-  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchClient">
+  <extension point="elasticSearchClient" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
 
     <!--This client choose between rest and transport client depending environment variable -->
     <elasticSearchClient class="org.nuxeo.elasticsearch.test.ESTestClientFactory" />
 
     <!--<elasticSearchClient class="org.nuxeo.elasticsearch.client.ESTransportClientFactory">-->
-      <!--<option name="addressList">localhost:9300</option>-->
-      <!--<option name="clusterName">elasticsearch</option>-->
-      <!--<option name="clientTransportSniff">false</option>-->
-      <!--<option name="clientTransportIgnoreClusterName">false</option>-->
-      <!--<option name="clientTransportPingTimeout">5s</option>-->
-      <!--<option name="clientTransportNodesSamplerInterval">5s</option>-->
+    <!--<option name="addressList">localhost:9300</option>-->
+    <!--<option name="clusterName">elasticsearch</option>-->
+    <!--<option name="clientTransportSniff">false</option>-->
+    <!--<option name="clientTransportIgnoreClusterName">false</option>-->
+    <!--<option name="clientTransportPingTimeout">5s</option>-->
+    <!--<option name="clientTransportNodesSamplerInterval">5s</option>-->
     <!--</elasticSearchClient>-->
 
     <!--<elasticSearchClient class="org.nuxeo.elasticsearch.client.ESRestClientFactory">-->
-      <!--<option name="addressList">localhost:9200</option>-->
+    <!--<option name="addressList">localhost:9200</option>-->
     <!--</elasticSearchClient>-->
 
   </extension>
 
-  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">
-    <elasticSearchIndex name="nxutest" type="doc" repository="test" />
+  <extension point="elasticSearchIndex" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
+    <elasticSearchIndex name="nxutest" repository="test" type="doc" />
   </extension>
 
 </component>

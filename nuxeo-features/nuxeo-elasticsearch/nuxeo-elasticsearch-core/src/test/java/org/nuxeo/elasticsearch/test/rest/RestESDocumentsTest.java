@@ -18,6 +18,18 @@
  */
 package org.nuxeo.elasticsearch.test.rest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+
 import org.codehaus.jackson.JsonNode;
 import org.junit.Assert;
 import org.junit.Test;
@@ -54,33 +66,21 @@ import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-import javax.ws.rs.core.Response;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 /**
  * Test the various ways to get elasticsearch Json output.
  *
  * @since 5.9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({RestServerFeature.class, RepositoryElasticSearchFeature.class, DirectoryFeature.class})
+@Features({ RestServerFeature.class, RepositoryElasticSearchFeature.class, DirectoryFeature.class })
 @Jetty(port = 18090)
-@Deploy({"org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.ws"})
-@LocalDeploy({"org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.ws" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml",
         "org.nuxeo.ecm.platform.restapi.test:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:pageprovider2-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:pageprovider2-coretype-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:pageprovider-search-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:test-directory-contrib.xml"})
+        "org.nuxeo.elasticsearch.core:test-directory-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class RestESDocumentsTest extends BaseTest {
 
@@ -186,7 +186,7 @@ public class RestESDocumentsTest extends BaseTest {
         for (int i = 0; i < RestServerInit.MAX_NOTE; i++) {
             DocumentModel doc = RestServerInit.getNote(i, session);
             doc.setPropertyValue("dc:coverage", "europe/France");
-            doc.setPropertyValue("dc:subjects", new String[]{"art/cinema"});
+            doc.setPropertyValue("dc:subjects", new String[] { "art/cinema" });
             doc = session.saveDocument(doc);
         }
 

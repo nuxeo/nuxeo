@@ -18,6 +18,14 @@
  */
 package org.nuxeo.elasticsearch.test.nxql;
 
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,16 +51,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
+@Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestCompareCoreWithES {
@@ -83,7 +83,7 @@ public class TestCompareCoreWithES {
             doc.setPropertyValue("dc:nature", "Nature" + i);
             doc.setPropertyValue("dc:rights", "Rights" + i % 2);
             doc.setPropertyValue("dc:subjects",
-                    (i % 2 == 0) ? new String[]{"Subjects1"} : new String[]{"Subjects1", "Subjects2"});
+                    (i % 2 == 0) ? new String[] { "Subjects1" } : new String[] { "Subjects1", "Subjects2" });
             doc.setPropertyValue("relatedtext:relatedtextresources",
                     (Serializable) Arrays.asList(Collections.singletonMap("relatedtextid", "123")));
             doc = session.createDocument(doc);
@@ -221,20 +221,20 @@ public class TestCompareCoreWithES {
 
     @Test
     public void testSimpleSearchWithSort() throws Exception {
-        testQueries(new String[]{"select * from Document order by dc:title, dc:created",
+        testQueries(new String[] { "select * from Document order by dc:title, dc:created",
                 "select * from Document where ecm:currentLifeCycleState != 'deleted' order by dc:title",
-                "select * from File order by dc:title",});
+                "select * from File order by dc:title", });
     }
 
     @Test
     public void testSearchOnProxies() throws Exception {
-        testQueries(new String[]{"select * from Document where ecm:isProxy=0 order by dc:title",
-                "select * from Document where ecm:isProxy=1 order by dc:title",});
+        testQueries(new String[] { "select * from Document where ecm:isProxy=0 order by dc:title",
+                "select * from Document where ecm:isProxy=1 order by dc:title", });
     }
 
     @Test
     public void testSearchOnVersions() throws Exception {
-        testQueries(new String[]{"select * from Document where ecm:isVersion = 0 order by dc:title",
+        testQueries(new String[] { "select * from Document where ecm:isVersion = 0 order by dc:title",
                 "select * from Document where ecm:isVersion = 1 order by dc:title",
                 "select * from Document where ecm:isCheckedInVersion = 0 order by dc:title",
                 "select * from Document where ecm:isCheckedInVersion = 1 order by dc:title",
@@ -246,33 +246,32 @@ public class TestCompareCoreWithES {
 
     @Test
     public void testSearchOnTypes() throws Exception {
-        testQueries(new String[]{"select * from File order by dc:title", "select * from Folder order by dc:title",
+        testQueries(new String[] { "select * from File order by dc:title", "select * from Folder order by dc:title",
                 "select * from Note order by dc:title",
                 "select * from Note where ecm:primaryType IN ('Note', 'Folder') order by dc:title",
                 "select * from Document where ecm:mixinType = 'Folderish' order by dc:title",
-                "select * from Document where ecm:mixinType != 'Folderish' order by dc:title",});
+                "select * from Document where ecm:mixinType != 'Folderish' order by dc:title", });
     }
 
     @Test
     public void testSearchWithLike() throws Exception {
         // Validate that NXP-14338 is fixed
-        testQueries(new String[]{"SELECT * FROM Document WHERE dc:title LIKE 'nomatch%'",
+        testQueries(new String[] { "SELECT * FROM Document WHERE dc:title LIKE 'nomatch%'",
                 "SELECT * from Document WHERE dc:title LIKE 'File%' ORDER BY dc:title",
                 "SELECT * from Document WHERE dc:title LIKE '%ile%' ORDER BY dc:title",
                 "SELECT * from Document WHERE dc:title NOT LIKE '%ile%' ORDER BY dc:title",
-                "SELECT * from Document WHERE dc:title NOT LIKE '%i%e%' ORDER BY dc:title",});
+                "SELECT * from Document WHERE dc:title NOT LIKE '%i%e%' ORDER BY dc:title", });
     }
 
     @Test
     public void testSearchWithStartsWith() throws Exception {
-        testQueries(new String[]{
+        testQueries(new String[] {
                 // Note that there are differnces between ES and VCS:
                 // ES version document has a path and is searchable with startswith
                 // ES match the root document, VCS only the children
                 "SELECT * from Document WHERE ecm:path STARTSWITH '/nomatch' ORDER BY dc:title",
                 "SELECT * from Document WHERE ecm:path STARTSWITH '/folder' AND ecm:path != '/folder' ORDER BY dc:title",
-                "SELECT * FROM Document WHERE ecm:path STARTSWITH '/' AND ecm:isVersion = 0 ORDER BY dc:title",
-        });
+                "SELECT * FROM Document WHERE ecm:path STARTSWITH '/' AND ecm:isVersion = 0 ORDER BY dc:title", });
     }
 
     @Test
@@ -280,11 +279,9 @@ public class TestCompareCoreWithES {
         DocumentModel folder = session.getDocument(new PathRef("/folder"));
         Assert.assertNotNull(folder);
         String fid = folder.getId();
-        testQueries(new String[]{
-                "SELECT * from Document WHERE ecm:ancestorId = 'non-esisting-id' ORDER BY dc:title",
+        testQueries(new String[] { "SELECT * from Document WHERE ecm:ancestorId = 'non-esisting-id' ORDER BY dc:title",
                 "SELECT * from Document WHERE ecm:ancestorId != 'non-existing-id' ORDER BY dc:title",
-                "SELECT * FROM Document WHERE ecm:ancestorId = '" + fid + "' ORDER BY dc:title",
-        });
+                "SELECT * FROM Document WHERE ecm:ancestorId = '" + fid + "' ORDER BY dc:title", });
     }
 
 }

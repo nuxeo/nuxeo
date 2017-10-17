@@ -90,6 +90,6 @@ public interface ElasticSearchService {
      */
     @Deprecated
     DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
-                            SortInfo... sortInfos);
+            SortInfo... sortInfos);
 
 }

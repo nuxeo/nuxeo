@@ -19,6 +19,10 @@
 
 package org.nuxeo.elasticsearch.query;
 
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -29,10 +33,6 @@ import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
-
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Elasticsearch query builder for Native Page provider.
@@ -46,7 +46,7 @@ public class PageProviderQueryBuilder {
      * Create a ES request from a PP pattern
      */
     public static QueryBuilder makeQuery(final String pattern, final Object[] params,
-                                         final boolean quotePatternParameters, final boolean escapePatternParameters, final boolean useNativeQuery) {
+            final boolean quotePatternParameters, final boolean escapePatternParameters, final boolean useNativeQuery) {
         String query = pattern;
         if (params != null) {
             for (Object param : params) {
@@ -64,7 +64,7 @@ public class PageProviderQueryBuilder {
      * Create a ES request from a PP whereClause
      */
     public static QueryBuilder makeQuery(final DocumentModel model, final WhereClauseDefinition whereClause,
-                                         final Object[] params, final boolean useNativeQuery) {
+            final Object[] params, final boolean useNativeQuery) {
         return makeQuery(model, whereClause, null, params, useNativeQuery);
     }
 
@@ -72,14 +72,15 @@ public class PageProviderQueryBuilder {
      * @since 8.4
      */
     public static QueryBuilder makeQuery(final DocumentModel model, final WhereClauseDefinition whereClause,
-                                         final String additionalFixedPart, final Object[] params, final boolean useNativeQuery) {
+            final String additionalFixedPart, final Object[] params, final boolean useNativeQuery) {
         assert (model != null);
         assert (whereClause != null);
         NxqlQueryConverter.ExpressionBuilder eb = new NxqlQueryConverter.ExpressionBuilder("AND");
         String fixedPart = whereClause.getFixedPart();
         if (!StringUtils.isBlank(additionalFixedPart)) {
             fixedPart = (!StringUtils.isBlank(fixedPart))
-                    ? NXQLQueryBuilder.appendClause(fixedPart, additionalFixedPart) : additionalFixedPart;
+                    ? NXQLQueryBuilder.appendClause(fixedPart, additionalFixedPart)
+                    : additionalFixedPart;
         }
         if (params != null) {
             for (Object param : params) {

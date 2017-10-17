@@ -3,11 +3,11 @@
 
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
 
-  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
-    <schema name="advanced_search" src="schemas/test_advanced_search.xsd" prefix="search" />
+  <extension point="schema" target="org.nuxeo.ecm.core.schema.TypeService">
+    <schema name="advanced_search" prefix="search" src="schemas/test_advanced_search.xsd" />
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+  <extension point="doctype" target="org.nuxeo.ecm.core.schema.TypeService">
 
     <doctype name="AdvancedSearch" extends="Document">
       <schema name="advanced_search" />

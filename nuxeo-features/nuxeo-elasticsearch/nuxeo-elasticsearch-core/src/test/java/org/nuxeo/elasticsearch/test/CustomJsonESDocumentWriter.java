@@ -18,20 +18,20 @@
  */
 package org.nuxeo.elasticsearch.test;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
-import org.nuxeo.ecm.core.api.DocumentModel;
-
 import java.io.IOException;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.ext.Provider;
 
+import org.codehaus.jackson.JsonGenerator;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
+import org.nuxeo.ecm.core.api.DocumentModel;
+
 /**
  * Custom writer to index the content of a note as a raw json
  */
 @Provider
-@Produces({JsonESDocumentWriter.MIME_TYPE})
+@Produces({ JsonESDocumentWriter.MIME_TYPE })
 public class CustomJsonESDocumentWriter extends JsonESDocumentWriter {
 
     @Override

@@ -19,11 +19,9 @@
 
 package org.nuxeo.elasticsearch.config;
 
-import org.apache.commons.io.IOUtils;
-import org.nuxeo.common.Environment;
-import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeList;
-import org.nuxeo.common.xmap.annotation.XObject;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.BINARYTEXT_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,9 +29,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.BINARYTEXT_FIELD;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
+import org.apache.commons.io.IOUtils;
+import org.nuxeo.common.Environment;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * XMap descriptor for configuring an index
@@ -43,26 +43,19 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 @XObject(value = "elasticSearchIndex")
 public class ElasticSearchIndexConfig {
     public static final String DEFAULT_SETTING_FILE = "default-doc-settings.json";
+
     public static final String DEFAULT_MAPPING_FILE = "default-doc-mapping.json";
+
+    private static final String DEFAULT_REPOSITORY_NAME = "default";
 
     @XNode("@enabled")
     protected boolean isEnabled = true;
-
-    @Override
-    public String toString() {
-        if (isEnabled()) {
-            return String.format("EsIndexConfig(%s, %s, %s)", getName(), getRepositoryName(), getType());
-        }
-        return "EsIndexConfig disabled";
-    }
 
     @XNode("@name")
     protected String name;
 
     @XNode("@repository")
     protected String repositoryName;
-
-    private static final String DEFAULT_REPOSITORY_NAME = "default";
 
     @XNode("@type")
     protected String type = DOC_TYPE;
@@ -88,16 +81,24 @@ public class ElasticSearchIndexConfig {
     @XNodeList(value = "fetchFromSource/include", type = String[].class, componentType = String.class)
     protected String[] includes;
 
+    @Override
+    public String toString() {
+        if (isEnabled()) {
+            return String.format("EsIndexConfig(%s, %s, %s)", getName(), getRepositoryName(), getType());
+        }
+        return "EsIndexConfig disabled";
+    }
+
     public String[] getExcludes() {
         if (excludes == null) {
-            return new String[]{BINARYTEXT_FIELD};
+            return new String[] { BINARYTEXT_FIELD };
         }
         return excludes;
     }
 
     public String[] getIncludes() {
         if (includes == null || includes.length == 0) {
-            return new String[]{ALL_FIELDS};
+            return new String[] { ALL_FIELDS };
         }
         return includes;
     }
@@ -145,8 +146,8 @@ public class ElasticSearchIndexConfig {
             ret = this.getClass().getClassLoader().getResourceAsStream(filename);
         }
         if (ret == null) {
-            throw new IllegalArgumentException(String.format("Resource file cannot be found: %s or %s",
-                    file.getAbsolutePath(), filename));
+            throw new IllegalArgumentException(
+                    String.format("Resource file cannot be found: %s or %s", file.getAbsolutePath(), filename));
         }
         return ret;
     }

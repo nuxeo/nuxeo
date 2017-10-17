@@ -18,11 +18,11 @@
  */
 package org.nuxeo.elasticsearch.fetcher;
 
+import java.util.Map;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-
-import java.util.Map;
 
 /**
  * @since 6.0

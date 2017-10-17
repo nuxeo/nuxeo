@@ -18,15 +18,15 @@
  */
 package org.nuxeo.elasticsearch.api;
 
-import org.elasticsearch.search.SearchHit;
-import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.elasticsearch.core.EsSearchHitConverter;
-import org.nuxeo.elasticsearch.query.NxQueryBuilder;
-
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
+import org.elasticsearch.search.SearchHit;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.elasticsearch.core.EsSearchHitConverter;
+import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 
 /**
  * Iterable query result of results of an ElasticSearch scroll query and next ones.
@@ -41,11 +41,11 @@ public class EsIterableQueryResultImpl implements IterableQueryResult, Iterator<
 
     private final ElasticSearchService searchService;
 
-    private EsScrollResult scrollResult;
-
     private final EsSearchHitConverter converter;
 
     private final long size;
+
+    private EsScrollResult scrollResult;
 
     private boolean closed;
 

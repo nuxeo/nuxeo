@@ -18,6 +18,24 @@
  */
 package org.nuxeo.elasticsearch.aggregate;
 
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_EXTENDED_BOUND_MAX_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_EXTENDED_BOUND_MIN_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_FORMAT_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_INTERVAL_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_COUNT_ASC;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_COUNT_DESC;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_KEY_ASC;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_KEY_DESC;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_PRE_ZONE_PROP;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TIME_ZONE_PROP;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -38,24 +56,6 @@ import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_EXTENDED_BOUND_MAX_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_EXTENDED_BOUND_MIN_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_FORMAT_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_INTERVAL_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_COUNT_ASC;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_COUNT_DESC;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_KEY_ASC;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_KEY_DESC;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_PRE_ZONE_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TIME_ZONE_PROP;
-
 /**
  * @since 6.0
  */
@@ -68,9 +68,8 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
     @JsonIgnore
     @Override
     public DateHistogramAggregationBuilder getEsAggregate() {
-        DateHistogramAggregationBuilder ret = AggregationBuilders.dateHistogram(getId())
-                .field(getField())
-                .timeZone(DateTimeZone.getDefault());
+        DateHistogramAggregationBuilder ret = AggregationBuilders.dateHistogram(getId()).field(getField()).timeZone(
+                DateTimeZone.getDefault());
         Map<String, String> props = getProperties();
         if (props.containsKey(AGG_INTERVAL_PROP)) {
             ret.dateHistogramInterval(new DateHistogramInterval(props.get(AGG_INTERVAL_PROP)));
@@ -80,24 +79,25 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
         }
         if (props.containsKey(AGG_ORDER_PROP)) {
             switch (props.get(AGG_ORDER_PROP).toLowerCase()) {
-                case AGG_ORDER_COUNT_DESC:
-                    ret.order(Histogram.Order.COUNT_DESC);
-                    break;
-                case AGG_ORDER_COUNT_ASC:
-                    ret.order(Histogram.Order.COUNT_ASC);
-                    break;
-                case AGG_ORDER_KEY_DESC:
-                    ret.order(Histogram.Order.KEY_DESC);
-                    break;
-                case AGG_ORDER_KEY_ASC:
-                    ret.order(Histogram.Order.KEY_ASC);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid order: " + props.get(AGG_ORDER_PROP));
+            case AGG_ORDER_COUNT_DESC:
+                ret.order(Histogram.Order.COUNT_DESC);
+                break;
+            case AGG_ORDER_COUNT_ASC:
+                ret.order(Histogram.Order.COUNT_ASC);
+                break;
+            case AGG_ORDER_KEY_DESC:
+                ret.order(Histogram.Order.KEY_DESC);
+                break;
+            case AGG_ORDER_KEY_ASC:
+                ret.order(Histogram.Order.KEY_ASC);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid order: " + props.get(AGG_ORDER_PROP));
             }
         }
         if (props.containsKey(AGG_EXTENDED_BOUND_MAX_PROP) && props.containsKey(AGG_EXTENDED_BOUND_MIN_PROP)) {
-            ret.extendedBounds(new ExtendedBounds(props.get(AGG_EXTENDED_BOUND_MIN_PROP), props.get(AGG_EXTENDED_BOUND_MAX_PROP)));
+            ret.extendedBounds(
+                    new ExtendedBounds(props.get(AGG_EXTENDED_BOUND_MIN_PROP), props.get(AGG_EXTENDED_BOUND_MAX_PROP)));
         }
         if (props.containsKey(AGG_TIME_ZONE_PROP)) {
             ret.timeZone(DateTimeZone.forID(props.get(AGG_TIME_ZONE_PROP)));

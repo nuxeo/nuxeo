@@ -19,18 +19,18 @@
 
 package org.nuxeo.elasticsearch.io;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
-import org.nuxeo.ecm.core.io.registry.reflect.Setup;
-import org.nuxeo.ecm.platform.query.api.PageProvider;
+import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
+import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
-import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import org.codehaus.jackson.JsonGenerator;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
+import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
 
 /**
  * @since 9.1

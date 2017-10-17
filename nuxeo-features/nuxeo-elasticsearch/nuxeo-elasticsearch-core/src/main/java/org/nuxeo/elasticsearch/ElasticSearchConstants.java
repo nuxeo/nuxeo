@@ -20,9 +20,6 @@ package org.nuxeo.elasticsearch;
 
 public final class ElasticSearchConstants {
 
-    private ElasticSearchConstants() {
-    }
-
     public static final String AGG_INCLUDE_PROP = "include";
 
     public static final String AGG_SIZE_PROP = "size";
@@ -120,5 +117,8 @@ public final class ElasticSearchConstants {
     public static final String INDEXING_QUEUE_ID = "elasticSearchIndexing";
 
     public static final String EPOCH_MILLIS_FORMAT = "epoch_millis";
+
+    private ElasticSearchConstants() {
+    }
 
 }
