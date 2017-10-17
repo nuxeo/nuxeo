@@ -405,8 +405,8 @@ public class LDAPDirectory extends AbstractDirectory {
         }
 
         @Override
-        public Socket createSocket(String host, int port, InetAddress localHost, int localPort) throws IOException,
-                UnknownHostException {
+        public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
+                throws IOException, UnknownHostException {
             return factory.createSocket(host, port, localHost, localPort);
         }
 

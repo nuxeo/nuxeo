@@ -1064,7 +1064,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testPseudoNormalizeDn() throws Exception {
-        String normalizedDN = LDAPReference.pseudoNormalizeDn("cn=Lamerand\\, Quentin,OU=developper,ou=PEOPLE, dc=nuxeo,dc=com");
+        String normalizedDN = LDAPReference.pseudoNormalizeDn(
+                "cn=Lamerand\\, Quentin,OU=developper,ou=PEOPLE, dc=nuxeo,dc=com");
         assertEquals("cn=lamerand\\, quentin,ou=developper,ou=people,dc=nuxeo,dc=com", normalizedDN);
     }
 }
