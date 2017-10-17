@@ -221,8 +221,8 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
                         targetId, parentDn, filterExpr, StringUtils.join(filterArgs, ", "), sctls.getSearchScope(),
                         this));
             }
-            NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(parentDn, filterExpr, filterArgs,
-                    sctls);
+            NamingEnumeration<SearchResult> results = sourceSession.getContext().search(parentDn, filterExpr,
+                    filterArgs, sctls);
 
             try {
                 while (results.hasMore()) {
@@ -293,8 +293,8 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
                         sourceId, sourceDn, filterExpr, StringUtils.join(filterArgs, ", "), sctls.getSearchScope(),
                         this));
             }
-            NamingEnumeration<SearchResult> results = targetSession.dirContext.search(sourceDn, filterExpr, filterArgs,
-                    sctls);
+            NamingEnumeration<SearchResult> results = targetSession.getContext().search(sourceDn, filterExpr,
+                    filterArgs, sctls);
 
             try {
                 while (results.hasMore()) {

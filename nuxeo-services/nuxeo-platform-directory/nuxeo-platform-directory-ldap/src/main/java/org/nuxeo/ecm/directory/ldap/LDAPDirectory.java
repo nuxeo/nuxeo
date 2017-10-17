@@ -314,13 +314,7 @@ public class LDAPDirectory extends AbstractDirectory {
         if (schemaFieldMap == null) {
             initLDAPConfig();
         }
-        DirContext context;
-        if (testServer != null) {
-            context = testServer.getContext();
-        } else {
-            context = createContext();
-        }
-        Session session = new LDAPSession(this, context);
+        Session session = new LDAPSession(this);
         addSession(session);
         return session;
     }
@@ -339,6 +333,10 @@ public class LDAPDirectory extends AbstractDirectory {
         } else {
             return idFilter;
         }
+    }
+
+    protected ContextProvider getTestServer() {
+        return testServer;
     }
 
     public void setTestServer(ContextProvider testServer) {
