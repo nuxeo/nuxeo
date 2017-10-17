@@ -9,8 +9,8 @@ public class TestDownloadBlobInfo {
 
     @Test
     public void testParseDownloadPath() {
-        assertParsed("blobholder:0", null, "");
-        assertParsed("blobholder:0", null, "/");
+        assertParsed(null, null, "");
+        assertParsed(null, null, "/");
         assertParsed("foo", null, "/foo");
         assertParsed("foo", null, "/foo/");
         assertParsed("foo", "bar", "/foo/bar");

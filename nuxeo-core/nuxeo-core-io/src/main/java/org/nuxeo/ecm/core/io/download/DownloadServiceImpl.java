@@ -454,8 +454,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline)
             throws IOException {
         if (blob == null) {
-            if (doc == null || xpath == null) {
-                throw new NuxeoException("No blob or doc xpath");
+            if (doc == null) {
+                throw new NuxeoException("No doc specified");
             }
             blob = resolveBlob(doc, xpath);
             if (blob == null) {
@@ -621,6 +621,9 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     @Override
     public Blob resolveBlob(DocumentModel doc, String xpath) {
+        if (xpath == null) {
+            return resolveBlob(doc);
+        }
         xpath = fixXPath(xpath);
         Blob blob;
         if (xpath.startsWith(BLOBHOLDER_PREFIX)) {

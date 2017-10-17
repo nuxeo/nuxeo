@@ -262,6 +262,51 @@ public class TestDownloadService {
      * @since 9.3
      */
     @Test
+    @LocalDeploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service-default-download.xml")
+    public void testDocumentDefaultDownloadAndPermission() throws Exception {
+        // blob to download
+        String blobValue = "Hello World";
+        Blob blob = Blobs.createBlob(blobValue);
+        blob.setFilename("myfile.txt");
+        blob.setDigest("12345");
+
+        // mock request
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("GET");
+
+        // mock response
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        ServletOutputStream sos = new ServletOutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                out.write(b);
+            }
+        };
+        PrintWriter printWriter = new PrintWriter(sos);
+        when(response.getOutputStream()).thenReturn(sos);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        // mock document
+        DocumentModel doc = mock(DocumentModel.class);
+        // default Mocked Download Blob Holder returns file:content
+        when(doc.getPropertyValue("file:content")).thenReturn((Serializable) blob);
+
+        // send download request permission denied
+        downloadService.downloadBlob(request, response, doc, null, null, null, null);
+        assertEquals("", out.toString());
+        verify(response, atLeastOnce()).sendError(403, "Permission denied");
+
+        // send download request, should return main content
+        when(doc.getPropertyValue("dc:format")).thenReturn("txt");
+        downloadService.downloadBlob(request, response, doc, null, null, null, null);
+        assertEquals(blobValue, out.toString());
+    }
+
+    /**
+     * @since 9.3
+     */
+    @Test
     public void testAsyncDownload() throws IOException {
         // blob to download
         String blobValue = "Hello World";
