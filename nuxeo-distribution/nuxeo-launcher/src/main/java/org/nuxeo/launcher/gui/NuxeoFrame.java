@@ -112,7 +112,9 @@ public class NuxeoFrame extends JFrame {
         private Image backgroundImage;
 
         public ImagePanel(Icon image, ImageIcon backgroundImage) {
-            this.backgroundImage = backgroundImage.getImage();
+            if (backgroundImage != null) {
+                this.backgroundImage = backgroundImage.getImage();
+            }
             setOpaque(false);
             add(new JLabel(image));
         }
@@ -244,7 +246,7 @@ public class NuxeoFrame extends JFrame {
         // Main frame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setIconImage(appIcon.getImage());
-        getContentPane().setBackground(new Color(35, 37, 59));
+        getContentPane().setBackground(Color.BLACK);
         getContentPane().setLayout(new GridBagLayout());
         constraints = new GridBagConstraints();
 
@@ -323,8 +325,7 @@ public class NuxeoFrame extends JFrame {
     }
 
     protected JComponent buildHeader() {
-        ImagePanel headerLogo = new ImagePanel(getImageIcon("img/nuxeo_control_panel_logo.png"),
-                getImageIcon("img/nuxeo_control_panel_bg.png"));
+        ImagePanel headerLogo = new ImagePanel(getImageIcon("img/nuxeo_control_panel_logo.png"), null);
         headerLogo.setLayout(new GridBagLayout());
         // Main button (start/stop) (added to header)
 
@@ -383,7 +384,7 @@ public class NuxeoFrame extends JFrame {
         ColoredTextPane textArea = new ColoredTextPane();
         textArea.setEditable(false);
         textArea.setAutoscrolls(true);
-        textArea.setBackground(new Color(54, 55, 67));
+        textArea.setBackground(Color.BLACK);
         textArea.setMaxSize(LOG_MAX_SIZE);
 
         JScrollPane logsScroller = new JScrollPane(textArea);
@@ -408,7 +409,7 @@ public class NuxeoFrame extends JFrame {
     protected Component buildSummaryPanel() {
         JPanel summaryPanel = new JPanel();
         summaryPanel.setLayout(new BoxLayout(summaryPanel, BoxLayout.PAGE_AXIS));
-        summaryPanel.setBackground(new Color(35, 37, 59));
+        summaryPanel.setBackground(Color.BLACK);
         summaryPanel.setForeground(Color.WHITE);
 
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>" + NuxeoLauncherGUI.getMessage("summary.status.label")));
