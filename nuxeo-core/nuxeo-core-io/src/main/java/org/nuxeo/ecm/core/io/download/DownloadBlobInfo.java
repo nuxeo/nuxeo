@@ -50,7 +50,7 @@ public class DownloadBlobInfo {
         repository = parts[0];
         docId = parts[1];
         if (length == 2) {
-            xpath = DownloadService.BLOBHOLDER_0;
+            xpath = null;
             filename = null;
         } else if (length == 3) {
             xpath = parts[2];
