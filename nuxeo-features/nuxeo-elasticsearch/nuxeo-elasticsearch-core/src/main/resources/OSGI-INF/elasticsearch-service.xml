@@ -19,8 +19,8 @@
       it is limited to one shard and no replica.
 
       <code>
-        <elasticSearchLocal clusterName="MyCluster" nodeName="MyNuxeo" pathData="/var/lib/nuxeo/elasticsearch/"
-          indexStoreType="mmapfs" httpEnabled="true" />
+        <elasticSearchLocal clusterName="MyCluster" httpEnabled="true" indexStoreType="mmapfs"
+          nodeName="MyNuxeo" pathData="/var/lib/nuxeo/elasticsearch/" />
       </code>
 
       Please refer to the Elasticsearch node configuration
@@ -75,7 +75,7 @@
       The one used to index Nuxeo documents must be of type "doc".
 
       <code>
-        <elasticSearchIndex name="nuxeo" type="doc" create="true">
+        <elasticSearchIndex name="nuxeo" create="true" type="doc">
           <settings></settings>
           <mapping></mapping>
           <fetchFromSources>

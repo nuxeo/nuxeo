@@ -19,9 +19,9 @@
 
 package org.nuxeo.elasticsearch.work;
 
-import org.nuxeo.ecm.core.work.AbstractWork;
-
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEXING_QUEUE_ID;
+
+import org.nuxeo.ecm.core.work.AbstractWork;
 
 /**
  * Abstract class for sharing the worker state

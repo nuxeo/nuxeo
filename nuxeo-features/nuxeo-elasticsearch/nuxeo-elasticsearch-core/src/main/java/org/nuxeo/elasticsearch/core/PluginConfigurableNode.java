@@ -19,12 +19,12 @@
 
 package org.nuxeo.elasticsearch.core;
 
+import java.util.Collection;
+
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.InternalSettingsPreparer;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.plugins.Plugin;
-
-import java.util.Collection;
 
 /**
  * @since 9.2

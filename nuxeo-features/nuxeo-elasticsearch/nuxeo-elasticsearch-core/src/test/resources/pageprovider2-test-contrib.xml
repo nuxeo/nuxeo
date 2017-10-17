@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.provider.testContrib2">
 
-  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
+  <extension point="providers" target="org.nuxeo.ecm.platform.query.api.PageProviderService">
 
     <coreQueryPageProvider name="default_search">
       <property name="coreSession">#{documentManager}</property>
@@ -15,92 +15,92 @@
           AND ecm:currentLifeCycleState != 'deleted'
           AND SORTED_COLUMN IS NOT NULL
         </fixedPart>
-        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
-          <field schema="default_search" name="ecm_fulltext" />
+        <predicate operator="FULLTEXT" parameter="ecm:fulltext">
+          <field name="ecm_fulltext" schema="default_search" />
         </predicate>
-        <predicate parameter="dc:creator" operator="IN">
-          <field schema="default_search" name="dc_creator" />
+        <predicate operator="IN" parameter="dc:creator">
+          <field name="dc_creator" schema="default_search" />
         </predicate>
-        <predicate parameter="dc:created" operator="BETWEEN">
-          <field schema="default_search" name="dc_created_min" />
-          <field schema="default_search" name="dc_created_max" />
+        <predicate operator="BETWEEN" parameter="dc:created">
+          <field name="dc_created_min" schema="default_search" />
+          <field name="dc_created_max" schema="default_search" />
         </predicate>
-        <predicate parameter="dc:modified" operator="BETWEEN">
-          <field schema="default_search" name="dc_modified_min" />
-          <field schema="default_search" name="dc_modified_max" />
+        <predicate operator="BETWEEN" parameter="dc:modified">
+          <field name="dc_modified_min" schema="default_search" />
+          <field name="dc_modified_max" schema="default_search" />
         </predicate>
-        <predicate parameter="dc:nature" operator="IN">
-          <field schema="default_search" name="dc_nature" />
+        <predicate operator="IN" parameter="dc:nature">
+          <field name="dc_nature" schema="default_search" />
         </predicate>
-        <predicate parameter="dc:subjects" operator="STARTSWITH">
-          <field schema="default_search" name="dc_subjects" />
+        <predicate operator="STARTSWITH" parameter="dc:subjects">
+          <field name="dc_subjects" schema="default_search" />
         </predicate>
-        <predicate parameter="dc:coverage" operator="STARTSWITH">
-          <field schema="default_search" name="dc_coverage" />
+        <predicate operator="STARTSWITH" parameter="dc:coverage">
+          <field name="dc_coverage" schema="default_search" />
         </predicate>
-        <predicate parameter="ecm:path" operator="STARTSWITH">
-          <field schema="default_search" name="ecm_path" />
+        <predicate operator="STARTSWITH" parameter="ecm:path">
+          <field name="ecm_path" schema="default_search" />
         </predicate>
-        <predicate parameter="ecm:tag" operator="IN">
-          <field schema="default_search" name="ecm_tags" />
+        <predicate operator="IN" parameter="ecm:tag">
+          <field name="ecm_tags" schema="default_search" />
         </predicate>
-        <predicate parameter="collectionMember:collectionIds" operator="IN">
-          <field schema="default_search" name="ecm_collections" />
+        <predicate operator="IN" parameter="collectionMember:collectionIds">
+          <field name="ecm_collections" schema="default_search" />
         </predicate>
       </whereClause>
       <aggregates>
-        <aggregate id="dc_nature_agg" type="terms" parameter="dc:nature">
-          <field schema="default_search" name="dc_nature_agg" />
+        <aggregate id="dc_nature_agg" parameter="dc:nature" type="terms">
+          <field name="dc_nature_agg" schema="default_search" />
           <properties>
             <property name="size">10</property>
           </properties>
         </aggregate>
-        <aggregate id="dc_subjects_agg" type="terms" parameter="dc:subjects">
-          <field schema="default_search" name="dc_subjects_agg" />
+        <aggregate id="dc_subjects_agg" parameter="dc:subjects" type="terms">
+          <field name="dc_subjects_agg" schema="default_search" />
           <properties>
             <property name="size">10</property>
           </properties>
         </aggregate>
-        <aggregate id="dc_coverage_agg" type="terms" parameter="dc:coverage">
-          <field schema="default_search" name="dc_coverage_agg" />
+        <aggregate id="dc_coverage_agg" parameter="dc:coverage" type="terms">
+          <field name="dc_coverage_agg" schema="default_search" />
           <properties>
             <property name="size">10</property>
           </properties>
         </aggregate>
-        <aggregate id="dc_creator_agg" type="terms" parameter="dc:creator">
-          <field schema="default_search" name="dc_creator_agg" />
+        <aggregate id="dc_creator_agg" parameter="dc:creator" type="terms">
+          <field name="dc_creator_agg" schema="default_search" />
           <properties>
             <property name="size">10</property>
           </properties>
         </aggregate>
-        <aggregate id="common_size_agg" type="range" parameter="file:content/length">
-          <field schema="default_search" name="common_size_agg" />
+        <aggregate id="common_size_agg" parameter="file:content/length" type="range">
+          <field name="common_size_agg" schema="default_search" />
           <ranges>
             <range key="tiny" to="102400" />
-            <range key="small" from="102401" to="1048576" />
-            <range key="medium" from="1048577" to="10485760" />
-            <range key="big" from="10485761" to="104857600" />
-            <range key="huge" from="104857601" />
+            <range from="102401" key="small" to="1048576" />
+            <range from="1048577" key="medium" to="10485760" />
+            <range from="10485761" key="big" to="104857600" />
+            <range from="104857601" key="huge" />
           </ranges>
         </aggregate>
-        <aggregate id="dc_created_agg" type="date_histogram" parameter="dc:created">
-          <field schema="default_search" name="dc_created_agg" />
+        <aggregate id="dc_created_agg" parameter="dc:created" type="date_histogram">
+          <field name="dc_created_agg" schema="default_search" />
           <properties>
             <property name="interval">year</property>
             <property name="format">yyyy</property>
             <property name="order">key desc</property>
           </properties>
         </aggregate>
-        <aggregate id="dc_modified_agg" type="date_range" parameter="dc:modified">
-          <field schema="default_search" name="dc_modified_agg" />
+        <aggregate id="dc_modified_agg" parameter="dc:modified" type="date_range">
+          <field name="dc_modified_agg" schema="default_search" />
           <properties>
             <property name="format">"dd-MM-yyyy"</property>
           </properties>
           <dateRanges>
-            <dateRange key="last24h" fromDate="now-24H" toDate="now" />
-            <dateRange key="lastWeek" fromDate="now-7d" toDate="now-24H" />
-            <dateRange key="lastMonth" fromDate="now-1M" toDate="now-7d" />
-            <dateRange key="lastYear" fromDate="now-1y" toDate="now-1M" />
+            <dateRange fromDate="now-24H" key="last24h" toDate="now" />
+            <dateRange fromDate="now-7d" key="lastWeek" toDate="now-24H" />
+            <dateRange fromDate="now-1M" key="lastMonth" toDate="now-7d" />
+            <dateRange fromDate="now-1y" key="lastYear" toDate="now-1M" />
             <dateRange key="priorToLastYear" toDate="now-1y" />
           </dateRanges>
         </aggregate>

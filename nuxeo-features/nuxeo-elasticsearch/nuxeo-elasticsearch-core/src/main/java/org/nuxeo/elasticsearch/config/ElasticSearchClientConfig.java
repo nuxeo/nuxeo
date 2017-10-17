@@ -19,13 +19,13 @@
 
 package org.nuxeo.elasticsearch.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @since 9.3

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.test.securitypolicy">
 
-  <extension target="org.nuxeo.ecm.core.security.SecurityService" point="policies">
+  <extension point="policies" target="org.nuxeo.ecm.core.security.SecurityService">
     <policy name="test" class="org.nuxeo.elasticsearch.test.NoFileSecurityPolicy" />
   </extension>
 

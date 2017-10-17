@@ -19,6 +19,16 @@
  */
 package org.nuxeo.elasticsearch.commands;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
@@ -31,16 +41,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Holds information about what type of indexing operation must be processed. IndexingCommands are create "on the fly"
@@ -100,8 +100,8 @@ public class IndexingCommand implements Serializable {
         this.recurse = recurse;
         if ((sync && recurse) && commandType != Type.DELETE) {
             // we don't want sync and recursive command
-            throw new IllegalArgumentException("Recurse and synchronous command is not allowed: cmd: " + this
-                    + ", doc: " + document);
+            throw new IllegalArgumentException(
+                    "Recurse and synchronous command is not allowed: cmd: " + this + ", doc: " + document);
         }
         if (document == null) {
             throw new IllegalArgumentException("Target document is null for: " + this);
@@ -138,8 +138,8 @@ public class IndexingCommand implements Serializable {
 
     public void attach(CoreSession session) {
         if (!session.getRepositoryName().equals(repositoryName)) {
-            throw new IllegalArgumentException("Invalid session, expected repo: " + repositoryName + " actual: "
-                    + session.getRepositoryName());
+            throw new IllegalArgumentException(
+                    "Invalid session, expected repo: " + repositoryName + " actual: " + session.getRepositoryName());
         }
         sessionId = session.getSessionId();
         assert sessionId != null : "Attach to session with a null sessionId";

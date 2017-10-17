@@ -114,9 +114,6 @@ public class TestAutomaticIndexing {
     protected TrashService trashService;
 
     @Inject
-    ElasticSearchAdmin esa;
-
-    @Inject
     protected ElasticSearchIndexing esi;
 
     @Inject
@@ -124,6 +121,9 @@ public class TestAutomaticIndexing {
 
     @Inject
     protected WorkManager workManager;
+
+    @Inject
+    ElasticSearchAdmin esa;
 
     private boolean syncMode = false;
 
@@ -195,13 +195,13 @@ public class TestAutomaticIndexing {
 
     protected SearchResponse searchAll() {
         SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .source(new SearchSourceBuilder().from(0).size(60));
+                                                           .source(new SearchSourceBuilder().from(0).size(60));
         return esa.getClient().search(request);
     }
 
     protected SearchResponse search(QueryBuilder query) {
         SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .source(new SearchSourceBuilder().from(0).size(60));
+                                                           .source(new SearchSourceBuilder().from(0).size(60));
         request.source(new SearchSourceBuilder().query(query));
         return esa.getClient().search(request);
     }
@@ -265,7 +265,7 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .source(new SearchSourceBuilder().from(0).size(60));
+                                                           .source(new SearchSourceBuilder().from(0).size(60));
         SearchResponse searchResponse = esa.getClient().search(request);
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
     }
@@ -289,7 +289,7 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .source(new SearchSourceBuilder().from(0).size(60));
+                                                           .source(new SearchSourceBuilder().from(0).size(60));
         SearchResponse searchResponse = esa.getClient().search(request);
 
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
@@ -309,7 +309,7 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         SearchRequest request = new SearchRequest(IDX_NAME).searchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .source(new SearchSourceBuilder().from(0).size(60));
+                                                           .source(new SearchSourceBuilder().from(0).size(60));
         SearchResponse searchResponse = esa.getClient().search(request);
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
@@ -408,8 +408,7 @@ public class TestAutomaticIndexing {
         DocumentModelList ret = ess.query(
                 new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext='search'"));
         Assert.assertEquals(1, ret.totalSize());
-        ret = ess.query(
-                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext='foo'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext='foo'"));
         Assert.assertEquals(1, ret.totalSize());
     }
 
@@ -437,8 +436,7 @@ public class TestAutomaticIndexing {
         DocumentModelList ret = ess.query(
                 new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'search'"));
         Assert.assertEquals(1, ret.totalSize());
-        ret = ess.query(
-                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'bar'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'bar'"));
         Assert.assertEquals(1, ret.totalSize());
 
     }
@@ -576,8 +574,8 @@ public class TestAutomaticIndexing {
     @Test
     public void shouldIndexTag() throws Exception {
 
-        boolean facetedTags = Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(
-                TagServiceImpl.FACETED_TAG_SERVICE_ENABLED);
+        boolean facetedTags = Framework.getService(ConfigurationService.class)
+                                       .isBooleanPropertyTrue(TagServiceImpl.FACETED_TAG_SERVICE_ENABLED);
         assumeTrue("DBS does not support tags based on SQL relations",
                 !coreFeature.getStorageConfiguration().isDBS() || facetedTags);
 
@@ -827,7 +825,8 @@ public class TestAutomaticIndexing {
     public void shouldIndexAfterVersionRestored() throws Exception {
         createADocumentWith3Versions();
 
-        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isVersion = 0 AND dc:title='v3'"));
+        DocumentModelList ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isVersion = 0 AND dc:title='v3'"));
         Assert.assertEquals(1, ret.totalSize());
         DocumentModel doc = ret.get(0);
         Assert.assertEquals("v3", doc.getTitle());
@@ -846,7 +845,8 @@ public class TestAutomaticIndexing {
         waitForCompletion();
         startTransaction();
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isVersion = 0 AND dc:title='v2'"));
+        ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isVersion = 0 AND dc:title='v2'"));
         Assert.assertEquals(1, ret.totalSize());
         Assert.assertEquals("v2", ret.get(0).getTitle());
     }
@@ -868,7 +868,6 @@ public class TestAutomaticIndexing {
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
         startTransaction();
-
 
         // publish
         DocumentModel proxy = session.publishDocument(doc, folder);
@@ -1014,12 +1013,12 @@ public class TestAutomaticIndexing {
 
     }
 
-
     @Test
     public void sortOnUnmappedField() throws Exception {
 
         // sort on a field that does not exist on the mapping and not present in the index
-        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document ORDER BY dc:source"));
+        DocumentModelList ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document ORDER BY dc:source"));
         Assert.assertEquals(0, ret.totalSize());
 
         // sort on internal field

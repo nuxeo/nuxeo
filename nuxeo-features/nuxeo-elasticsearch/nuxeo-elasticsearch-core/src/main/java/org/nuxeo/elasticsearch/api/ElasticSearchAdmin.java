@@ -20,11 +20,12 @@
 
 package org.nuxeo.elasticsearch.api;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import org.elasticsearch.client.Client;
-
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import org.elasticsearch.client.Client;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * Administration interface for Elasticsearch service

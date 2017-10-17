@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="test-directory-contrib">
 
-  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+  <extension point="directories" target="org.nuxeo.ecm.directory.GenericDirectory">
 
     <directory name="l10nsubjects" extends="template-directory">
       <schema>l10nxvocabulary</schema>

@@ -18,17 +18,17 @@
  */
 package org.nuxeo.elasticsearch.core;
 
-import org.elasticsearch.search.SearchHit;
-import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.schema.types.primitives.DateType;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.elasticsearch.search.SearchHit;
+import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 
 /**
  * Converter used to convert a {@link SearchHit} to a {@link Map}&lt;{@link String}, {@link Serializable}&gt;.
@@ -44,6 +44,14 @@ public class EsSearchHitConverter {
     public EsSearchHitConverter(Map<String, Type> selectFieldsAndTypes) {
         this.selectFieldsAndTypes = selectFieldsAndTypes;
         this.emptyRow = buildEmptyRow(selectFieldsAndTypes);
+    }
+
+    private static Map<String, Serializable> buildEmptyRow(Map<String, Type> selectFieldsAndTypes) {
+        Map<String, Serializable> emptyRow = new HashMap<>(selectFieldsAndTypes.size());
+        for (String fieldName : selectFieldsAndTypes.keySet()) {
+            emptyRow.put(fieldName, null);
+        }
+        return emptyRow;
     }
 
     public List<Map<String, Serializable>> convert(SearchHit... hits) {
@@ -67,14 +75,6 @@ public class EsSearchHitConverter {
             row.put(NXQL.ECM_FULLTEXT_SCORE, (double) hit.getScore());
         }
         return row;
-    }
-
-    private static Map<String, Serializable> buildEmptyRow(Map<String, Type> selectFieldsAndTypes) {
-        Map<String, Serializable> emptyRow = new HashMap<>(selectFieldsAndTypes.size());
-        for (String fieldName : selectFieldsAndTypes.keySet()) {
-            emptyRow.put(fieldName, null);
-        }
-        return emptyRow;
     }
 
 }

@@ -18,6 +18,17 @@
  */
 package org.nuxeo.elasticsearch.query;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
+
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -45,17 +56,6 @@ import org.nuxeo.elasticsearch.fetcher.Fetcher;
 import org.nuxeo.elasticsearch.fetcher.VcsFetcher;
 import org.nuxeo.runtime.api.Framework;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
-
 /**
  * Elasticsearch query builder for the Nuxeo ES api.
  *
@@ -64,8 +64,6 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_P
 public class NxQueryBuilder {
 
     private static final int DEFAULT_LIMIT = 10;
-
-    private int limit = DEFAULT_LIMIT;
 
     private static final String AGG_FILTER_SUFFIX = "_filter";
 
@@ -77,6 +75,8 @@ public class NxQueryBuilder {
 
     private final List<AggregateEsBase<? extends Bucket>> aggregates = new ArrayList<>();
 
+    private int limit = DEFAULT_LIMIT;
+
     private int offset = 0;
 
     private String nxql;
@@ -87,7 +87,7 @@ public class NxQueryBuilder {
 
     private boolean searchOnAllRepo = false;
 
-    private String[] selectFields = {ElasticSearchConstants.ID_FIELD};
+    private String[] selectFields = { ElasticSearchConstants.ID_FIELD };
 
     private Map<String, Type> selectFieldsAndTypes;
 
@@ -271,9 +271,10 @@ public class NxQueryBuilder {
         int i = 0;
         for (SortInfo sortInfo : sortInfos) {
             String fieldType = guessFieldType(sortInfo.getSortColumn());
-            ret[i++] = new FieldSortBuilder(sortInfo.getSortColumn()).order(
-                    sortInfo.getSortAscending() ? SortOrder.ASC : SortOrder.DESC)
-                    .unmappedType(fieldType);
+            ret[i++] = new FieldSortBuilder(sortInfo.getSortColumn())
+                                                                     .order(sortInfo.getSortAscending() ? SortOrder.ASC
+                                                                             : SortOrder.DESC)
+                                                                     .unmappedType(fieldType);
         }
         return ret;
     }
@@ -288,12 +289,12 @@ public class NxQueryBuilder {
             fieldType = "string";
         }
         switch (fieldType) {
-            case "integer":
-            case "long":
-            case "boolean":
-            case "date":
-            case "string":
-                return fieldType;
+        case "integer":
+        case "long":
+        case "boolean":
+        case "date":
+        case "string":
+            return fieldType;
         }
         return "string";
     }
@@ -388,8 +389,8 @@ public class NxQueryBuilder {
         // we want an ACL that match principals but we discard
         // unsupported ACE that contains negative ACE
         QueryBuilder aclFilter = QueryBuilders.boolQuery()
-                .must(QueryBuilders.termsQuery(ACL_FIELD, principals))
-                .mustNot(QueryBuilders.termsQuery(ACL_FIELD, UNSUPPORTED_ACL));
+                                              .must(QueryBuilders.termsQuery(ACL_FIELD, principals))
+                                              .mustNot(QueryBuilders.termsQuery(ACL_FIELD, UNSUPPORTED_ACL));
         return QueryBuilders.boolQuery().must(query).filter(aclFilter);
     }
 
@@ -420,7 +421,7 @@ public class NxQueryBuilder {
      */
     public List<String> getSearchRepositories() {
         if (searchOnAllRepo) {
-            return Collections.<String>emptyList();
+            return Collections.<String> emptyList();
         }
         return repositories;
     }

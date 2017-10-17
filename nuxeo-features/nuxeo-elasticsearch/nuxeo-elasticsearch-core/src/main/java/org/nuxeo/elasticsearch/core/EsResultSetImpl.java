@@ -19,15 +19,15 @@
  */
 package org.nuxeo.elasticsearch.core;
 
-import org.elasticsearch.action.search.SearchResponse;
-import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.schema.types.Type;
-
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
+import org.elasticsearch.action.search.SearchResponse;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
  * Iterable query result of the results of an Elasticsearch query.
@@ -42,11 +42,11 @@ public class EsResultSetImpl implements IterableQueryResult, Iterator<Map<String
 
     private final Map<String, Type> selectFieldsAndTypes;
 
-    boolean closed;
-
     protected List<Map<String, Serializable>> maps;
 
     protected long size;
+
+    boolean closed;
 
     private long pos;
 
@@ -79,8 +79,8 @@ public class EsResultSetImpl implements IterableQueryResult, Iterator<Map<String
     }
 
     /**
-     * Returns the number of results available in the iterator.
-     * Note that before 9.1 this method was returning the totalSize.
+     * Returns the number of results available in the iterator. Note that before 9.1 this method was returning the
+     * totalSize.
      *
      * @since 9.1
      */

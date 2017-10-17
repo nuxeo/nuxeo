@@ -35,11 +35,12 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 // TODO: "org.nuxeo.ecm.core.management" is missing but creates test failures
-@Deploy({"org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.automation.server",
+@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.automation.server",
         "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.webengine.core", "org.nuxeo.ecm.webengine.jaxrs",
-        "org.nuxeo.ecm.platform.web.common", "org.nuxeo.elasticsearch.core", "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.core.management" })
+        "org.nuxeo.ecm.platform.web.common", "org.nuxeo.elasticsearch.core", "org.nuxeo.ecm.platform.query.api",
+        "org.nuxeo.ecm.core.management" })
 @Features({ CoreFeature.class, LogFeature.class })
-@LocalDeploy({"org.nuxeo.elasticsearch.core.test:elastic-search-core-management-tests-component.xml" })
+@LocalDeploy({ "org.nuxeo.elasticsearch.core.test:elastic-search-core-management-tests-component.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class RepositoryElasticSearchFeature extends SimpleFeature {
     @Override

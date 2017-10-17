@@ -19,6 +19,12 @@
 
 package org.nuxeo.elasticsearch.provider;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,12 +50,6 @@ import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.query.PageProviderQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ElasticSearchNativePageProvider extends AbstractPageProvider<DocumentModel> {
 
@@ -96,10 +96,10 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         try {
             NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession()).esQuery(query)
-                    .offset((int) getCurrentPageOffset())
-                    .limit((int) getMinMaxPageSize())
-                    .addSort(sortArray)
-                    .addAggregates(buildAggregates());
+                                                                         .offset((int) getCurrentPageOffset())
+                                                                         .limit((int) getMinMaxPageSize())
+                                                                         .addSort(sortArray)
+                                                                         .addAggregates(buildAggregates());
             if (searchOnAllRepositories()) {
                 nxQuery.searchOnAllRepositories();
             }
@@ -166,13 +166,12 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
             String originalPattern = def.getPattern();
             String pattern = quickFiltersClause.isEmpty() ? originalPattern
                     : StringUtils.containsIgnoreCase(originalPattern, " WHERE ")
-                    ? NXQLQueryBuilder.appendClause(originalPattern, quickFiltersClause)
-                    : originalPattern + " WHERE " + quickFiltersClause;
+                            ? NXQLQueryBuilder.appendClause(originalPattern, quickFiltersClause)
+                            : originalPattern + " WHERE " + quickFiltersClause;
 
             ret = PageProviderQueryBuilder.makeQuery(pattern, getParameters(), def.getQuotePatternParameters(),
                     def.getEscapePatternParameters(), isNativeQuery());
         } else {
-
 
             DocumentModel searchDocumentModel = getSearchDocumentModel();
             if (searchDocumentModel == null) {

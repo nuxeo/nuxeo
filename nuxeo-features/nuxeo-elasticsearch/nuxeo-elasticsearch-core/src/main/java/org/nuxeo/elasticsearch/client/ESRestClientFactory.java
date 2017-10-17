@@ -18,6 +18,8 @@
  */
 package org.nuxeo.elasticsearch.client;
 
+import java.io.IOException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHost;
@@ -28,8 +30,6 @@ import org.nuxeo.elasticsearch.api.ESClientFactory;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
-
-import java.io.IOException;
 
 /**
  * @since 9.3
@@ -46,13 +46,14 @@ public class ESRestClientFactory implements ESClientFactory {
     }
 
     protected ESClient createLocalRestClient(ElasticSearchEmbeddedServerConfig serverConfig) {
-        if (! serverConfig.httpEnabled()) {
-            throw new IllegalArgumentException("Embedded configuration has no HTTP port enable, use TransportClient instead of Rest");
+        if (!serverConfig.httpEnabled()) {
+            throw new IllegalArgumentException(
+                    "Embedded configuration has no HTTP port enable, use TransportClient instead of Rest");
         }
         RestClient lowLevelRestClient = RestClient.builder(
                 new HttpHost("localhost", Integer.parseInt(serverConfig.getHttpPort()))).build();
         RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
-        //checkConnection(client);
+        // checkConnection(client);
         return new ESRestClient(lowLevelRestClient, client);
     }
 
@@ -69,7 +70,7 @@ public class ESRestClientFactory implements ESClientFactory {
         }
         RestClient lowLevelRestClient = RestClient.builder(httpHosts).build();
         RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
-        //checkConnection(client);
+        // checkConnection(client);
         return new ESRestClient(lowLevelRestClient, client);
     }
 

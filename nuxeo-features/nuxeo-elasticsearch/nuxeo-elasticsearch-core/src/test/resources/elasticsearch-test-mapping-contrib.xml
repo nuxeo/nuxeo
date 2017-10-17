@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.test.mapping.contrib">
-  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">
-    <elasticSearchIndex name="nxutest" type="doc" repository="test">
+  <extension point="elasticSearchIndex" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
+    <elasticSearchIndex name="nxutest" repository="test" type="doc">
       <mapping file="ngram-mapping.json" />
     </elasticSearchIndex>
   </extension>

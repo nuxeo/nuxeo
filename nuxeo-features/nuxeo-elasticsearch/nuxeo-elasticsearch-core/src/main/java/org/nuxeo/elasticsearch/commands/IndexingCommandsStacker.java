@@ -105,57 +105,57 @@ public abstract class IndexingCommandsStacker {
         Type type;
         boolean recurse = false;
         switch (eventId) {
-            case DOCUMENT_CREATED:
-            case DOCUMENT_IMPORTED:
-                type = Type.INSERT;
-                break;
-            case DOCUMENT_CREATED_BY_COPY:
-                type = Type.INSERT;
-                recurse = isFolderish(doc);
-                break;
-            case BEFORE_DOC_UPDATE:
-            case DOCUMENT_CHECKEDOUT:
-            case BINARYTEXT_UPDATED:
-            case DOCUMENT_TAG_UPDATED:
-            case DOCUMENT_PROXY_UPDATED:
-            case LifeCycleConstants.TRANSITION_EVENT:
-            case DOCUMENT_RESTORED:
-                if (doc.isProxy() && !doc.isImmutable()) {
-                    stackCommand(doc.getCoreSession().getDocument(new IdRef(doc.getSourceId())), BEFORE_DOC_UPDATE, false);
-                }
-                type = Type.UPDATE;
-                break;
-            case DOCUMENT_CHECKEDIN:
-                if (indexIsLatestVersion()) {
-                    CoreSession session = doc.getCoreSession();
-                    if (session != null) {
-                        // The previous doc version with isLastestVersion and isLatestMajorVersion need to be updated
-                        // Here we have no way to get this exact doc version so we reindex all versions
-                        for (DocumentModel version : doc.getCoreSession().getVersions(doc.getRef())) {
-                            stackCommand(version, BEFORE_DOC_UPDATE, false);
-                        }
+        case DOCUMENT_CREATED:
+        case DOCUMENT_IMPORTED:
+            type = Type.INSERT;
+            break;
+        case DOCUMENT_CREATED_BY_COPY:
+            type = Type.INSERT;
+            recurse = isFolderish(doc);
+            break;
+        case BEFORE_DOC_UPDATE:
+        case DOCUMENT_CHECKEDOUT:
+        case BINARYTEXT_UPDATED:
+        case DOCUMENT_TAG_UPDATED:
+        case DOCUMENT_PROXY_UPDATED:
+        case LifeCycleConstants.TRANSITION_EVENT:
+        case DOCUMENT_RESTORED:
+            if (doc.isProxy() && !doc.isImmutable()) {
+                stackCommand(doc.getCoreSession().getDocument(new IdRef(doc.getSourceId())), BEFORE_DOC_UPDATE, false);
+            }
+            type = Type.UPDATE;
+            break;
+        case DOCUMENT_CHECKEDIN:
+            if (indexIsLatestVersion()) {
+                CoreSession session = doc.getCoreSession();
+                if (session != null) {
+                    // The previous doc version with isLastestVersion and isLatestMajorVersion need to be updated
+                    // Here we have no way to get this exact doc version so we reindex all versions
+                    for (DocumentModel version : doc.getCoreSession().getVersions(doc.getRef())) {
+                        stackCommand(version, BEFORE_DOC_UPDATE, false);
                     }
                 }
-                type = Type.UPDATE;
-                break;
-            case DOCUMENT_MOVED:
-                type = Type.UPDATE;
-                recurse = isFolderish(doc);
-                break;
-            case DOCUMENT_REMOVED:
-                type = Type.DELETE;
-                recurse = isFolderish(doc);
-                break;
-            case DOCUMENT_SECURITY_UPDATED:
-                type = Type.UPDATE_SECURITY;
-                recurse = isFolderish(doc);
-                break;
-            case DOCUMENT_CHILDREN_ORDER_CHANGED:
-                type = Type.UPDATE_DIRECT_CHILDREN;
-                recurse = true;
-                break;
-            default:
-                return;
+            }
+            type = Type.UPDATE;
+            break;
+        case DOCUMENT_MOVED:
+            type = Type.UPDATE;
+            recurse = isFolderish(doc);
+            break;
+        case DOCUMENT_REMOVED:
+            type = Type.DELETE;
+            recurse = isFolderish(doc);
+            break;
+        case DOCUMENT_SECURITY_UPDATED:
+            type = Type.UPDATE_SECURITY;
+            recurse = isFolderish(doc);
+            break;
+        case DOCUMENT_CHILDREN_ORDER_CHANGED:
+            type = Type.UPDATE_DIRECT_CHILDREN;
+            recurse = true;
+            break;
+        default:
+            return;
         }
         if (sync && recurse) {
             // split into 2 commands one sync and an async recurse

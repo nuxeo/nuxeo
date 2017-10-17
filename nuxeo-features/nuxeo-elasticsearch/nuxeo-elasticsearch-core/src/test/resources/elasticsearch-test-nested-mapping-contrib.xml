@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.test.nested.mapping.contrib">
-  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">
-    <elasticSearchIndex name="nxutest" type="doc" repository="test">
+  <extension point="elasticSearchIndex" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
+    <elasticSearchIndex name="nxutest" repository="test" type="doc">
       <mapping file="nested-mapping.json" />
     </elasticSearchIndex>
   </extension>
   <!-- custom writer to be used with the dynamic mapper -->
-  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchDocWriter">
+  <extension point="elasticSearchDocWriter" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
     <writer class="org.nuxeo.elasticsearch.test.CustomJsonESDocumentWriter" />
   </extension>
 </component>

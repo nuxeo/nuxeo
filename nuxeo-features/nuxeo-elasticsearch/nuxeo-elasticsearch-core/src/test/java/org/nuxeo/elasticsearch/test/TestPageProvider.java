@@ -19,10 +19,19 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.apache.commons.lang.SystemUtils;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.Assert;
@@ -50,24 +59,12 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 @SuppressWarnings("unchecked")
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
-@LocalDeploy({"org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
+@Features({ RepositoryElasticSearchFeature.class })
+@LocalDeploy({ "org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:schemas-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml"})
+        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml" })
 public class TestPageProvider {
 
     @Inject
@@ -77,13 +74,13 @@ public class TestPageProvider {
     protected CoreSession session;
 
     @Inject
+    protected WorkManager workManager;
+
+    @Inject
     ElasticSearchIndexing esi;
 
     @Inject
     ElasticSearchAdmin esa;
-
-    @Inject
-    protected WorkManager workManager;
 
     @Inject
     ElasticSearchService ess;
@@ -244,7 +241,7 @@ public class TestPageProvider {
         startTransaction();
 
         // get current page
-        String[] params = {"Select * from File where dc:title LIKE 'Test%'"};
+        String[] params = { "Select * from File where dc:title LIKE 'Test%'" };
         pp.setParameters(params);
         List<DocumentModel> p = (List<DocumentModel>) pp.getCurrentPage();
         String esquery = ((ElasticSearchNxqlPageProvider) pp).getCurrentQueryAsEsBuilder().toString();
@@ -294,7 +291,7 @@ public class TestPageProvider {
         Assert.assertNotNull(ppdef);
         HashMap<String, Serializable> props = new HashMap<>();
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
-        String[] sources = {"Source1", "Source2"};
+        String[] sources = { "Source1", "Source2" };
         model.setProperty("advanced_search", "source_agg", sources);
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
@@ -312,7 +309,7 @@ public class TestPageProvider {
         assertNumberOfCommandProcessed(10);
         startTransaction();
 
-        String[] params = {session.getRootDocument().getId()};
+        String[] params = { session.getRootDocument().getId() };
         pp.setParameters(params);
 
         // get current page
@@ -349,7 +346,7 @@ public class TestPageProvider {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         WhereClauseDefinition whereClause = pps.getPageProviderDefinition("TEST_IN").getWhereClause();
         DocumentModel model = new DocumentModelImpl("/", "doc", "File");
-        model.setPropertyValue("dc:subjects", new String[]{"foo", "bar"});
+        model.setPropertyValue("dc:subjects", new String[] { "foo", "bar" });
 
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, null, true);
         assertEqualsEvenUnderWindows("{\n" +
@@ -376,7 +373,7 @@ public class TestPageProvider {
                 "  }\n" +
                 "}", qb.toString());
 
-        model.setPropertyValue("dc:subjects", new String[]{"foo"});
+        model.setPropertyValue("dc:subjects", new String[] { "foo" });
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, null, true);
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
@@ -402,7 +399,7 @@ public class TestPageProvider {
                 "}", qb.toString());
 
         // criteria with no values are removed
-        model.setPropertyValue("dc:subjects", new String[]{});
+        model.setPropertyValue("dc:subjects", new String[] {});
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, null, true);
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"match_all\" : {\n" +
@@ -418,7 +415,7 @@ public class TestPageProvider {
         WhereClauseDefinition whereClause = pps.getPageProviderDefinition("TEST_IN_INTEGERS").getWhereClause();
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
         @SuppressWarnings("boxing")
-        Integer[] array1 = new Integer[]{1, 2, 3};
+        Integer[] array1 = new Integer[] { 1, 2, 3 };
         model.setPropertyValue("search:integerlist", array1);
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, null, true);
         assertEqualsEvenUnderWindows("{\n" +
@@ -484,9 +481,9 @@ public class TestPageProvider {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         Assert.assertNotNull(pps);
         WhereClauseDefinition whereClause = pps.getPageProviderDefinition("ADVANCED_SEARCH").getWhereClause();
-        String[] params = {"foo"};
+        String[] params = { "foo" };
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
-        String[] arrayString = new String[]{"1", "2", "3"};
+        String[] arrayString = new String[] { "1", "2", "3" };
         model.setPropertyValue("search:subjects", arrayString);
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, params, true);
         String json = qb.toString();
@@ -545,11 +542,8 @@ public class TestPageProvider {
         list = new ArrayList<>();
         model.setPropertyValue("search:subjects", (Serializable) list);
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, null, true);
-        assertEqualsEvenUnderWindows("{\n" +
-                "  \"match_all\" : {\n" +
-                "    \"boost\" : 1.0\n" +
-                "  }\n" +
-                "}", qb.toString());
+        assertEqualsEvenUnderWindows("{\n" + "  \"match_all\" : {\n" + "    \"boost\" : 1.0\n" + "  }\n" + "}",
+                qb.toString());
     }
 
     @Test
@@ -559,7 +553,7 @@ public class TestPageProvider {
         Assert.assertNotNull(pps);
 
         WhereClauseDefinition whereClause = pps.getPageProviderDefinition("ADVANCED_SEARCH").getWhereClause();
-        String[] params = {"foo"};
+        String[] params = { "foo" };
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
         model.setPropertyValue("search:title", "bar");
 
@@ -752,7 +746,7 @@ public class TestPageProvider {
         Assert.assertNotNull(pps);
 
         WhereClauseDefinition whereClause = pps.getPageProviderDefinition("ADVANCED_SEARCH").getWhereClause();
-        String[] params = {"foo"};
+        String[] params = { "foo" };
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
         model.setPropertyValue("search:fulltext_all", "you know for search");
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, params, true);

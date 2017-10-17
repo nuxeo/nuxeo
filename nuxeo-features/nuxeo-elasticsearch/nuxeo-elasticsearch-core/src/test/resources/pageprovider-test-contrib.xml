@@ -2,12 +2,12 @@
 
 <component name="org.nuxeo.elasticsearch.provider.testContrib">
 
-  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
+  <extension point="providers" target="org.nuxeo.ecm.platform.query.api.PageProviderService">
 
     <genericPageProvider name="NATIVE_PP_PATTERN"
       class="org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider">
       <pattern>ecm\:primaryType:("File" "Workspace")</pattern>
-      <sort column="dc:title" ascending="false" />
+      <sort ascending="false" column="dc:title" />
     </genericPageProvider>
 
     <genericPageProvider name="NXQL_PP_PATTERN" class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
@@ -17,19 +17,19 @@
         ecm:currentLifeCycleState !='deleted' AND
         SORTED_COLUMN IS NOT NULL
       </pattern>
-      <sort column="dc:title" ascending="false" />
+      <sort ascending="false" column="dc:title" />
     </genericPageProvider>
 
     <genericPageProvider name="NXQL_PP_PATTERN2" class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <pattern>SELECT * FROM Document</pattern>
       <maxPageSize>0</maxPageSize>
-      <sort column="dc:title" ascending="false" />
+      <sort ascending="false" column="dc:title" />
     </genericPageProvider>
 
     <genericPageProvider name="nxql_search" class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>
       <property name="maxResults">10000</property>
-      <pattern quoteParameters="false" escapeParameters="false">?</pattern>
+      <pattern escapeParameters="false" quoteParameters="false">?</pattern>
       <parameter>#{documentSearchActions.nxqlQuery}</parameter>
       <pageSize>20</pageSize>
     </genericPageProvider>
@@ -40,15 +40,15 @@
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <property name="searchAllRepositories">true</property>
       <whereClause docType="AdvancedSearch">
-        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
-          <field schema="advanced_search" name="fulltext_all" />
+        <predicate operator="FULLTEXT" parameter="ecm:fulltext">
+          <field name="fulltext_all" schema="advanced_search" />
         </predicate>
-        <predicate parameter="dc:title" operator="FULLTEXT">
-          <field schema="advanced_search" name="title" />
+        <predicate operator="FULLTEXT" parameter="dc:title">
+          <field name="title" schema="advanced_search" />
         </predicate>
-        <predicate parameter="dc:modified" operator="BETWEEN">
-          <field schema="advanced_search" name="modified_min" />
-          <field schema="advanced_search" name="modified_max" />
+        <predicate operator="BETWEEN" parameter="dc:modified">
+          <field name="modified_min" schema="advanced_search" />
+          <field name="modified_max" schema="advanced_search" />
         </predicate>
         <fixedPart>
           ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
@@ -56,7 +56,7 @@
         </fixedPart>
       </whereClause>
       <parameter>#{currentDocument.id}</parameter>
-      <sort column="dc:title" ascending="true" />
+      <sort ascending="true" column="dc:title" />
       <pageSize>20</pageSize>
     </genericPageProvider>
 
@@ -64,24 +64,24 @@
       class="org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider">
       <property name="coreSession">#{documentManager}</property>
       <whereClause docType="AdvancedSearch">
-        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
-          <field schema="advanced_search" name="fulltext_all" />
+        <predicate operator="FULLTEXT" parameter="ecm:fulltext">
+          <field name="fulltext_all" schema="advanced_search" />
         </predicate>
-        <predicate parameter="dc:title" operator="LIKE">
-          <field schema="advanced_search" name="title" />
+        <predicate operator="LIKE" parameter="dc:title">
+          <field name="title" schema="advanced_search" />
         </predicate>
-        <predicate parameter="dc:modified" operator="IS NULL">
-          <field schema="advanced_search" name="isPresent" />
+        <predicate operator="IS NULL" parameter="dc:modified">
+          <field name="isPresent" schema="advanced_search" />
         </predicate>
-        <predicate parameter="dc:subjects" operator="IN">
-          <field schema="advanced_search" name="subjects" />
+        <predicate operator="IN" parameter="dc:subjects">
+          <field name="subjects" schema="advanced_search" />
         </predicate>
         <fixedPart>
           ecm\:parentId: ?
         </fixedPart>
       </whereClause>
       <parameter>#{currentDocument.id}</parameter>
-      <sort column="dc:title" ascending="true" />
+      <sort ascending="true" column="dc:title" />
       <pageSize>20</pageSize>
     </genericPageProvider>
 
@@ -89,31 +89,31 @@
       class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>
       <whereClause docType="AdvancedSearch">
-        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
-          <field schema="advanced_search" name="fulltext_all" />
+        <predicate operator="FULLTEXT" parameter="ecm:fulltext">
+          <field name="fulltext_all" schema="advanced_search" />
         </predicate>
-        <predicate parameter="dc:title" operator="LIKE">
-          <field schema="advanced_search" name="title" />
+        <predicate operator="LIKE" parameter="dc:title">
+          <field name="title" schema="advanced_search" />
         </predicate>
-        <predicate parameter="dc:modified" operator="IS NULL">
-          <field schema="advanced_search" name="isPresent" />
+        <predicate operator="IS NULL" parameter="dc:modified">
+          <field name="isPresent" schema="advanced_search" />
         </predicate>
-        <predicate parameter="dc:subjects" operator="IN">
-          <field schema="advanced_search" name="subjects" />
+        <predicate operator="IN" parameter="dc:subjects">
+          <field name="subjects" schema="advanced_search" />
         </predicate>
         <fixedPart>
           ecm:parentId = ? AND dc:subject IN ?
         </fixedPart>
       </whereClause>
       <parameter>#{currentDocument.id}</parameter>
-      <sort column="dc:title" ascending="true" />
+      <sort ascending="true" column="dc:title" />
       <pageSize>20</pageSize>
     </genericPageProvider>
 
     <genericPageProvider name="TEST_IN" class="org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider">
       <whereClause docType="AdvancedSearch">
-        <predicate parameter="dc:title" operator="IN">
-          <field schema="dublincore" name="subjects" />
+        <predicate operator="IN" parameter="dc:title">
+          <field name="subjects" schema="dublincore" />
         </predicate>
       </whereClause>
     </genericPageProvider>
@@ -121,8 +121,8 @@
     <genericPageProvider name="TEST_IN_INTEGERS"
       class="org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider">
       <whereClause docType="AdvancedSearch">
-        <predicate parameter="size" operator="IN">
-          <field schema="advanced_search" name="integerlist" />
+        <predicate operator="IN" parameter="size">
+          <field name="integerlist" schema="advanced_search" />
         </predicate>
       </whereClause>
     </genericPageProvider>
@@ -133,45 +133,45 @@
       <pageSize>20</pageSize>
       <pattern>SELECT * FROM Document</pattern>
       <aggregates>
-        <aggregate id="source" type="terms" parameter="dc:source">
-          <field schema="advanced_search" name="source_agg" />
+        <aggregate id="source" parameter="dc:source" type="terms">
+          <field name="source_agg" schema="advanced_search" />
           <properties>
             <property name="size">5</property>
           </properties>
         </aggregate>
-        <aggregate id="coverage" type="terms" parameter="dc:coverage">
-          <field schema="advanced_search" name="coverage_agg" />
+        <aggregate id="coverage" parameter="dc:coverage" type="terms">
+          <field name="coverage_agg" schema="advanced_search" />
           <properties>
             <property name="size">5</property>
           </properties>
         </aggregate>
-        <aggregate id="nature" type="terms" parameter="dc:nature">
-          <field schema="advanced_search" name="nature_agg" />
+        <aggregate id="nature" parameter="dc:nature" type="terms">
+          <field name="nature_agg" schema="advanced_search" />
           <properties>
             <property name="size">5</property>
           </properties>
         </aggregate>
-        <aggregate id="size" type="range" parameter="file:content/length">
-          <field schema="advanced_search" name="size_agg" />
+        <aggregate id="size" parameter="file:content/length" type="range">
+          <field name="size_agg" schema="advanced_search" />
           <ranges>
             <range key="small" to="2048" />
-            <range key="medium" from="2048" to="6144" />
-            <range key="big" from="6144" />
+            <range from="2048" key="medium" to="6144" />
+            <range from="6144" key="big" />
           </ranges>
         </aggregate>
-        <aggregate id="created" type="date_range" parameter="dc:created">
-          <field schema="advanced_search" name="created_agg" />
+        <aggregate id="created" parameter="dc:created" type="date_range">
+          <field name="created_agg" schema="advanced_search" />
           <properties>
             <property name="format">MM-yyy</property>
           </properties>
           <dateRanges>
             <dateRange key="long_time_ago" toDate="now-10w" />
-            <dateRange key="some_time_ago" fromDate="now-10w" toDate="now-3w" />
-            <dateRange key="last_month" fromDate="now-3w" />
+            <dateRange fromDate="now-10w" key="some_time_ago" toDate="now-3w" />
+            <dateRange fromDate="now-3w" key="last_month" />
           </dateRanges>
         </aggregate>
-        <aggregate id="size_histo" type="histogram" parameter="file:content/length">
-          <field schema="advanced_search" name="size_histo_agg" />
+        <aggregate id="size_histo" parameter="file:content/length" type="histogram">
+          <field name="size_histo_agg" schema="advanced_search" />
           <properties>
             <property name="interval">1024</property>
             <property name="extendedBoundsMin">0</property>
@@ -180,8 +180,8 @@
             <property name="order">key asc</property>
           </properties>
         </aggregate>
-        <aggregate id="created_histo" type="date_histogram" parameter="dc:created">
-          <field schema="advanced_search" name="created_histo_agg" />
+        <aggregate id="created_histo" parameter="dc:created" type="date_histogram">
+          <field name="created_histo_agg" schema="advanced_search" />
           <properties>
             <property name="interval">week</property>
             <property name="format">dd-MM-yyy</property>
@@ -199,12 +199,12 @@
     <genericPageProvider name="NXQL_WITH_HINT" class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>
       <whereClause docType="AdvancedSearch">
-        <predicate parameter="dc:title" operator="=" hint="ES: INDEX(dc:title.fulltext)">
-          <field schema="advanced_search" name="fulltext_all" />
+        <predicate hint="ES: INDEX(dc:title.fulltext)" operator="=" parameter="dc:title">
+          <field name="fulltext_all" schema="advanced_search" />
         </predicate>
-        <predicate parameter="dc:description" operator="="
-          hint="ES: INDEX(my_field) ANALYZER(my_analyzer) OPERATOR(fuzzy)">
-          <field schema="advanced_search" name="description" />
+        <predicate hint="ES: INDEX(my_field) ANALYZER(my_analyzer) OPERATOR(fuzzy)" operator="="
+          parameter="dc:description">
+          <field name="description" schema="advanced_search" />
         </predicate>
         <fixedPart>
           /*+ES: INDEX(my_subject) */ dc:subject IN ('foo', 'bar')
@@ -216,12 +216,12 @@
       class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>
       <whereClause docType="AdvancedSearch">
-        <predicate parameter="/*+ES: INDEX(dc:title.fulltext) */ dc:title" operator="=">
-          <field schema="advanced_search" name="fulltext_all" />
+        <predicate operator="=" parameter="/*+ES: INDEX(dc:title.fulltext) */ dc:title">
+          <field name="fulltext_all" schema="advanced_search" />
         </predicate>
-        <predicate parameter="/*+ES: INDEX(my_field) ANALYZER(my_analyzer) OPERATOR(fuzzy) */ dc:description"
-          operator="=">
-          <field schema="advanced_search" name="description" />
+        <predicate operator="="
+          parameter="/*+ES: INDEX(my_field) ANALYZER(my_analyzer) OPERATOR(fuzzy) */ dc:description">
+          <field name="description" schema="advanced_search" />
         </predicate>
         <fixedPart>
           /*+ES: INDEX(my_subject) */ dc:subject IN ('foo', 'bar')
@@ -235,20 +235,20 @@
       <pageSize>20</pageSize>
       <pattern>SELECT * FROM Document</pattern>
       <aggregates>
-        <aggregate id="source" type="terms" parameter="dc:source">
-          <field schema="advanced_search" name="source_agg" />
+        <aggregate id="source" parameter="dc:source" type="terms">
+          <field name="source_agg" schema="advanced_search" />
           <properties>
             <property name="size">5</property>
           </properties>
         </aggregate>
-        <aggregate id="coverage" type="terms" parameter="dc:coverage">
-          <field schema="advanced_search" name="coverage_agg" />
+        <aggregate id="coverage" parameter="dc:coverage" type="terms">
+          <field name="coverage_agg" schema="advanced_search" />
           <properties>
             <property name="size">5</property>
           </properties>
         </aggregate>
-        <aggregate id="nature" type="terms" parameter="dc:nature">
-          <field schema="advanced_search" name="nature_agg" />
+        <aggregate id="nature" parameter="dc:nature" type="terms">
+          <field name="nature_agg" schema="advanced_search" />
           <properties>
             <property name="size">5</property>
           </properties>
@@ -262,14 +262,14 @@
       <pageSize>20</pageSize>
       <pattern>SELECT * FROM Document WHERE ecm:isVersion = 0</pattern>
       <aggregates>
-        <aggregate id="subjects" type="terms" parameter="dc:subjects">
-          <field schema="advanced_search" name="subjects_agg" />
+        <aggregate id="subjects" parameter="dc:subjects" type="terms">
+          <field name="subjects_agg" schema="advanced_search" />
           <properties>
             <property name="size">5</property>
           </properties>
         </aggregate>
-        <aggregate id="coverage" type="terms" parameter="dc:coverage">
-          <field schema="advanced_search" name="coverage_agg" />
+        <aggregate id="coverage" parameter="dc:coverage" type="terms">
+          <field name="coverage_agg" schema="advanced_search" />
           <properties>
             <property name="size">5</property>
           </properties>

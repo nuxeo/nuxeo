@@ -19,9 +19,11 @@
 
 package org.nuxeo.elasticsearch.test;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import javax.inject.Inject;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,14 +38,13 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import javax.inject.Inject;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 @RunWith(FeaturesRunner.class)
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
-@Features({RepositoryElasticSearchFeature.class})
+@Features({ RepositoryElasticSearchFeature.class })
 public class TestService {
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -115,7 +116,7 @@ public class TestService {
     @Test
     public void verifyPrepareWaitForIndexingListener() throws Exception {
         ListenableFuture<Boolean> futureRet = esa.prepareWaitForIndexing();
-        final Boolean[] callbackRet = {false};
+        final Boolean[] callbackRet = { false };
         Futures.addCallback(futureRet, new FutureCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {

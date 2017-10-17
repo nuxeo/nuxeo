@@ -18,6 +18,14 @@
  */
 package org.nuxeo.elasticsearch.aggregate;
 
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_FORMAT_PROP;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -32,15 +40,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
 import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_FORMAT_PROP;
 
 /**
  * @since 6.0

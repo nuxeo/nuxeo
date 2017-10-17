@@ -19,6 +19,15 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -45,22 +54,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 /**
  * Test for native ES queries
  */
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
-@LocalDeploy({"org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-test-nested-mapping-contrib.xml"})
+@Features({ RepositoryElasticSearchFeature.class })
+@LocalDeploy({ "org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml",
+        "org.nuxeo.elasticsearch.core:elasticsearch-test-nested-mapping-contrib.xml" })
 public class TestElasticSearchQuery {
 
     private static final String IDX_NAME = "nxutest";
@@ -77,10 +77,10 @@ public class TestElasticSearchQuery {
     protected ElasticSearchService ess;
 
     @Inject
-    ElasticSearchAdmin esa;
+    protected WorkManager workManager;
 
     @Inject
-    protected WorkManager workManager;
+    ElasticSearchAdmin esa;
 
     private int commandProcessed;
 
@@ -141,31 +141,34 @@ public class TestElasticSearchQuery {
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
         Assert.assertEquals(1, ret.totalSize());
         // search without correlation works
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE files:files/*/file/name = 'testfile1.txt' AND files:files/*/file/length=3"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE files:files/*/file/name = 'testfile1.txt' AND files:files/*/file/length=3"));
         Assert.assertEquals(1, ret.totalSize());
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE files:files/file/name = 'testfile1.txt' AND files:files/file/length=3"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE files:files/file/name = 'testfile1.txt' AND files:files/file/length=3"));
         Assert.assertEquals(1, ret.totalSize());
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE files:files/file/name = 'testfile4.txt' AND files:files/file/length=3"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE files:files/file/name = 'testfile4.txt' AND files:files/file/length=3"));
         Assert.assertEquals(1, ret.totalSize());
         // search with correlation is not supported in NXQL
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE files:files/*1/file/name = 'testfile3.txt' AND files:files/*1/file/length=3"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE files:files/*1/file/name = 'testfile3.txt' AND files:files/*1/file/length=3"));
         Assert.assertEquals(0, ret.totalSize());
 
         // But it is possible using ES nested query along with a proper mapping
         QueryBuilder qb = QueryBuilders.nestedQuery("files:files.file",
-                QueryBuilders.boolQuery()
-                        .must(QueryBuilders.termQuery("files:files.file.name", "testfile1.txt"))
-                        .must(QueryBuilders.termQuery("files:files.file.length", 3)), ScoreMode.Avg);
+                QueryBuilders.boolQuery().must(QueryBuilders.termQuery("files:files.file.name", "testfile1.txt")).must(
+                        QueryBuilders.termQuery("files:files.file.length", 3)),
+                ScoreMode.Avg);
         ret = ess.query(new NxQueryBuilder(session).esQuery(qb));
         Assert.assertEquals(0, ret.totalSize());
 
         qb = QueryBuilders.nestedQuery("files:files.file",
-                QueryBuilders.boolQuery()
-                        .must(QueryBuilders.termQuery("files:files.file.name", "testfile3.txt"))
-                        .must(QueryBuilders.termQuery("files:files.file.length", 3)), ScoreMode.Avg);
+                QueryBuilders.boolQuery().must(QueryBuilders.termQuery("files:files.file.name", "testfile3.txt")).must(
+                        QueryBuilders.termQuery("files:files.file.length", 3)),
+                ScoreMode.Avg);
         ret = ess.query(new NxQueryBuilder(session).esQuery(qb));
         Assert.assertEquals(1, ret.totalSize());
-
 
     }
 

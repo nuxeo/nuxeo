@@ -19,9 +19,25 @@
  */
 package org.nuxeo.elasticsearch;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_ENABLED_PROPERTY;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEXING_QUEUE_ID;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_ON_STARTUP_PROPERTY;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.transaction.Transaction;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -56,24 +72,9 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.transaction.Transaction;
-
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_ENABLED_PROPERTY;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEXING_QUEUE_ID;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_ON_STARTUP_PROPERTY;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 
 /**
  * Component used to configure and manage ElasticSearch integration
@@ -98,6 +99,8 @@ public class ElasticSearchComponent extends DefaultComponent
 
     protected final Map<String, ElasticSearchIndexConfig> indexConfig = new HashMap<>();
 
+    protected final AtomicInteger runIndexingWorkerCount = new AtomicInteger(0);
+
     protected ElasticSearchEmbeddedServerConfig embeddedServerConfig;
 
     protected ElasticSearchClientConfig clientConfig;
@@ -112,49 +115,47 @@ public class ElasticSearchComponent extends DefaultComponent
 
     protected ListeningExecutorService waiterExecutorService;
 
-    protected final AtomicInteger runIndexingWorkerCount = new AtomicInteger(0);
-
     // Nuxeo Component impl ======================================é=============
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         switch (extensionPoint) {
-            case EP_EMBEDDED_SERVER:
-                ElasticSearchEmbeddedServerConfig serverContrib = (ElasticSearchEmbeddedServerConfig) contribution;
-                if (serverContrib.isEnabled()) {
-                    embeddedServerConfig = serverContrib;
-                    log.info("Registering embedded server configuration: " + embeddedServerConfig + ", loaded from "
-                            + contributor.getName());
-                } else if (embeddedServerConfig != null) {
-                    log.info("Disabling previous embedded server configuration, deactivated by " + contributor.getName());
-                    embeddedServerConfig = null;
-                }
-                break;
-            case EP_CLIENT_INIT:
-                clientConfig = (ElasticSearchClientConfig) contribution;
-                break;
-            case EP_INDEX:
-                ElasticSearchIndexConfig idx = (ElasticSearchIndexConfig) contribution;
-                ElasticSearchIndexConfig previous = indexConfig.get(idx.getName());
-                if (idx.isEnabled()) {
-                    idx.merge(previous);
-                    indexConfig.put(idx.getName(), idx);
-                    log.info("Registering index configuration: " + idx + ", loaded from " + contributor.getName());
-                } else if (previous != null) {
-                    log.info("Disabling index configuration: " + previous + ", deactivated by " + contributor.getName());
-                    indexConfig.remove(idx.getName());
-                }
-                break;
-            case EP_DOC_WRITER:
-                ElasticSearchDocWriterDescriptor writerDescriptor = (ElasticSearchDocWriterDescriptor) contribution;
-                try {
-                    jsonESDocumentWriter = writerDescriptor.getKlass().newInstance();
-                } catch (IllegalAccessException | InstantiationException e) {
-                    log.error("Cannot instantiate jsonESDocumentWriter from " + writerDescriptor.getKlass());
-                    throw new NuxeoException(e);
-                }
-                break;
-            default:
-                throw new IllegalStateException("Invalid EP: " + extensionPoint);
+        case EP_EMBEDDED_SERVER:
+            ElasticSearchEmbeddedServerConfig serverContrib = (ElasticSearchEmbeddedServerConfig) contribution;
+            if (serverContrib.isEnabled()) {
+                embeddedServerConfig = serverContrib;
+                log.info("Registering embedded server configuration: " + embeddedServerConfig + ", loaded from "
+                        + contributor.getName());
+            } else if (embeddedServerConfig != null) {
+                log.info("Disabling previous embedded server configuration, deactivated by " + contributor.getName());
+                embeddedServerConfig = null;
+            }
+            break;
+        case EP_CLIENT_INIT:
+            clientConfig = (ElasticSearchClientConfig) contribution;
+            break;
+        case EP_INDEX:
+            ElasticSearchIndexConfig idx = (ElasticSearchIndexConfig) contribution;
+            ElasticSearchIndexConfig previous = indexConfig.get(idx.getName());
+            if (idx.isEnabled()) {
+                idx.merge(previous);
+                indexConfig.put(idx.getName(), idx);
+                log.info("Registering index configuration: " + idx + ", loaded from " + contributor.getName());
+            } else if (previous != null) {
+                log.info("Disabling index configuration: " + previous + ", deactivated by " + contributor.getName());
+                indexConfig.remove(idx.getName());
+            }
+            break;
+        case EP_DOC_WRITER:
+            ElasticSearchDocWriterDescriptor writerDescriptor = (ElasticSearchDocWriterDescriptor) contribution;
+            try {
+                jsonESDocumentWriter = writerDescriptor.getKlass().newInstance();
+            } catch (IllegalAccessException | InstantiationException e) {
+                log.error("Cannot instantiate jsonESDocumentWriter from " + writerDescriptor.getKlass());
+                throw new NuxeoException(e);
+            }
+            break;
+        default:
+            throw new IllegalStateException("Invalid EP: " + extensionPoint);
         }
     }
 
@@ -322,14 +323,6 @@ public class ElasticSearchComponent extends DefaultComponent
         });
     }
 
-    protected static class NamedThreadFactory implements ThreadFactory {
-        @SuppressWarnings("NullableProblems")
-        @Override
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "waitForEsIndexing");
-        }
-    }
-
     protected void initListenerThreadPool() {
         waiterExecutorService = MoreExecutors.listeningDecorator(
                 Executors.newCachedThreadPool(new NamedThreadFactory()));
@@ -378,12 +371,12 @@ public class ElasticSearchComponent extends DefaultComponent
         esa.optimizeIndex(indexName);
     }
 
-    // ES Indexing =============================================================
-
     @Override
     public void indexNonRecursive(IndexingCommand cmd) {
         indexNonRecursive(Collections.singletonList(cmd));
     }
+
+    // ES Indexing =============================================================
 
     @Override
     public void indexNonRecursive(List<IndexingCommand> cmds) {
@@ -522,17 +515,23 @@ public class ElasticSearchComponent extends DefaultComponent
     @Deprecated
     @Override
     public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
-                                   SortInfo... sortInfos) {
-        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder)
-                .limit(limit)
-                .offset(offset)
-                .addSort(sortInfos);
+            SortInfo... sortInfos) {
+        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder).limit(limit).offset(offset).addSort(
+                sortInfos);
         return query(query);
     }
 
     // misc ====================================================================
     protected boolean isReady() {
         return (esa != null) && esa.isReady();
+    }
+
+    protected static class NamedThreadFactory implements ThreadFactory {
+        @SuppressWarnings("NullableProblems")
+        @Override
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "waitForEsIndexing");
+        }
     }
 
 }

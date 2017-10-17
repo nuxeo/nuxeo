@@ -20,10 +20,10 @@
 
 package org.nuxeo.elasticsearch.core;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
-import com.codahale.metrics.Timer.Context;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
+
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,9 +53,10 @@ import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
-import java.util.List;
-
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 
 /**
  * @since 6.0
@@ -96,11 +97,9 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     @Deprecated
     @Override
     public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
-                                   SortInfo... sortInfos) {
-        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder)
-                .limit(limit)
-                .offset(offset)
-                .addSort(sortInfos);
+            SortInfo... sortInfos) {
+        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder).limit(limit).offset(offset).addSort(
+                sortInfos);
         return query(query);
     }
 
@@ -157,7 +156,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     }
 
     protected EsScrollResult getScrollResults(NxQueryBuilder queryBuilder, SearchResponse response, String scrollId,
-                                              long keepAlive) {
+            long keepAlive) {
         if (queryBuilder.returnsDocuments()) {
             DocumentModelListImpl docs = getDocumentModels(queryBuilder, response);
             return new EsScrollResult(docs, response, queryBuilder, scrollId, keepAlive);
@@ -283,8 +282,8 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
             String scroll = request.scroll() != null ? "&scroll=" + request.scroll() : "";
             log.debug(String.format(
                     "Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty&search_type=%s%s' -d '%s'",
-                    getSearchIndexesAsString(query), DOC_TYPE, searchType.toString().toLowerCase(),
-                    scroll, request.source().toString()));
+                    getSearchIndexesAsString(query), DOC_TYPE, searchType.toString().toLowerCase(), scroll,
+                    request.source().toString()));
         }
     }
 

@@ -18,6 +18,9 @@
  */
 package org.nuxeo.elasticsearch.client;
 
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
@@ -43,14 +46,12 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-
 /**
  * @since 9.3
  */
 public class ESTransportClient implements ESClient {
     private static final Log log = LogFactory.getLog(ESTransportClient.class);
+
     protected Client client;
 
     public ESTransportClient(Client client) {
@@ -63,14 +64,14 @@ public class ESTransportClient implements ESClient {
         log.debug("Waiting for cluster yellow health status, indexes: " + Arrays.toString(indexNames));
         try {
             ClusterHealthResponse response = client.admin()
-                    .cluster()
-                    .prepareHealth(indexNames)
-                    .setTimeout(timeout)
-                    .setWaitForYellowStatus()
-                    .get();
+                                                   .cluster()
+                                                   .prepareHealth(indexNames)
+                                                   .setTimeout(timeout)
+                                                   .setWaitForYellowStatus()
+                                                   .get();
             if (response.isTimedOut()) {
-                throw new NuxeoException("Elasticsearch Cluster health status not Yellow after " + timeout + " give up: "
-                        + response);
+                throw new NuxeoException(
+                        "Elasticsearch Cluster health status not Yellow after " + timeout + " give up: " + response);
             }
             if (response.getStatus() != ClusterHealthStatus.GREEN) {
                 log.warn("Elasticsearch Cluster ready but not GREEN: " + response);
@@ -78,8 +79,8 @@ public class ESTransportClient implements ESClient {
             }
             log.info("Elasticsearch Cluster ready: " + response);
         } catch (NoNodeAvailableException e) {
-            throw new NuxeoException("Failed to connect to elasticsearch, check addressList and clusterName: "
-                    + e.getMessage());
+            throw new NuxeoException(
+                    "Failed to connect to elasticsearch, check addressList and clusterName: " + e.getMessage());
         }
         return true;
     }
@@ -106,49 +107,43 @@ public class ESTransportClient implements ESClient {
 
     @Override
     public boolean indexExists(String indexName) {
-        return client.admin()
-                .indices()
-                .prepareExists(indexName)
-                .execute()
-                .actionGet()
-                .isExists();
+        return client.admin().indices().prepareExists(indexName).execute().actionGet().isExists();
     }
 
     @Override
     public boolean mappingExists(String indexName, String type) {
-        return client.admin().indices()
-                .prepareGetMappings(indexName)
-                .execute()
-                .actionGet()
-                .getMappings()
-                .get(indexName)
-                .containsKey(type);
+        return client.admin()
+                     .indices()
+                     .prepareGetMappings(indexName)
+                     .execute()
+                     .actionGet()
+                     .getMappings()
+                     .get(indexName)
+                     .containsKey(type);
     }
 
     @Override
     public void deleteIndex(String indexName, int timeoutSecond) {
         TimeValue timeout = new TimeValue(timeoutSecond, TimeUnit.SECONDS);
-        client.admin().indices().delete(new DeleteIndexRequest(indexName)
-                .timeout(timeout).masterNodeTimeout(timeout)).actionGet();
+        client.admin()
+              .indices()
+              .delete(new DeleteIndexRequest(indexName).timeout(timeout).masterNodeTimeout(timeout))
+              .actionGet();
     }
 
     @Override
     public void createIndex(String indexName, String jsonSettings) {
-        client.admin()
-                .indices()
-                .prepareCreate(indexName)
-                .setSettings(jsonSettings, XContentType.JSON)
-                .get();
+        client.admin().indices().prepareCreate(indexName).setSettings(jsonSettings, XContentType.JSON).get();
     }
 
     @Override
     public void createMapping(String indexName, String type, String jsonMapping) {
         client.admin()
-                .indices()
-                .preparePutMapping(indexName)
-                .setType(type)
-                .setSource(jsonMapping, XContentType.JSON)
-                .get();
+              .indices()
+              .preparePutMapping(indexName)
+              .setType(type)
+              .setSource(jsonMapping, XContentType.JSON)
+              .get();
     }
 
     @Override

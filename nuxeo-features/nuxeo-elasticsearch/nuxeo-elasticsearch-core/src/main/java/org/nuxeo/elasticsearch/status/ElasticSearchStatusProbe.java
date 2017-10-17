@@ -28,7 +28,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Probe to check the status of the ES cluster. Returns success if the cluster is GREEN or YELLOW, Failure otherwise
- * 
+ *
  * @since 9.3
  */
 public class ElasticSearchStatusProbe implements Probe {
@@ -36,9 +36,8 @@ public class ElasticSearchStatusProbe implements Probe {
     @Override
     public ProbeStatus run() {
         String[] indices = getIndexNames();
-        ClusterHealthStatus clusterStatus = Framework.getService(ElasticSearchAdmin.class)
-                                                     .getClient()
-                                                     .getHealthStatus(indices);
+        ClusterHealthStatus clusterStatus = Framework.getService(ElasticSearchAdmin.class).getClient().getHealthStatus(
+                indices);
         switch (clusterStatus) {
         case GREEN:
         case YELLOW:

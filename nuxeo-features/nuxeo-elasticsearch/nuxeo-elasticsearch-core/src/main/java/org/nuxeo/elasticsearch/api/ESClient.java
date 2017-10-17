@@ -65,7 +65,6 @@ public interface ESClient extends AutoCloseable {
 
     String getNodesStats();
 
-
     // -------------------------------------------------------------------
     // Search
     //
@@ -83,6 +82,5 @@ public interface ESClient extends AutoCloseable {
     IndexResponse index(IndexRequest request);
 
     ClearScrollResponse clearScroll(ClearScrollRequest request);
-
 
 }

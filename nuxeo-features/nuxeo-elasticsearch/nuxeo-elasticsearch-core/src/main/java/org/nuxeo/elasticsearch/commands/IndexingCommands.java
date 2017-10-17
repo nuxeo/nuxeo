@@ -19,28 +19,28 @@
  */
 package org.nuxeo.elasticsearch.commands;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 
 /*
  * This class holds a list of indexing commands and manages de-duplication
  */
 public class IndexingCommands {
 
+    protected static final Log log = LogFactory.getLog(IndexingCommands.class);
+
     protected final List<IndexingCommand> commands = new ArrayList<>();
 
     protected final Set<Type> commandTypes = new HashSet<>();
 
     protected DocumentModel targetDocument;
-
-    protected static final Log log = LogFactory.getLog(IndexingCommands.class);
 
     protected IndexingCommands() {
         //

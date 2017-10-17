@@ -20,17 +20,7 @@
 
 package org.nuxeo.elasticsearch.core;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.elasticsearch.api.ESClient;
-import org.nuxeo.elasticsearch.api.ESClientFactory;
-import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
-import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
-import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
-import org.nuxeo.runtime.api.Framework;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,17 +35,28 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.elasticsearch.api.ESClient;
+import org.nuxeo.elasticsearch.api.ESClientFactory;
+import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
+import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
+import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
+import org.nuxeo.runtime.api.Framework;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * @since 6.0
  */
 public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
-    private static final Log log = LogFactory.getLog(ElasticSearchAdminImpl.class);
-
     protected static final int TIMEOUT_WAIT_FOR_CLUSTER_SECOND = 30;
 
     protected static final int TIMEOUT_DELETE_SECOND = 300;
+
+    private static final Log log = LogFactory.getLog(ElasticSearchAdminImpl.class);
 
     final AtomicInteger totalCommandProcessed = new AtomicInteger(0);
 
@@ -65,22 +66,21 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     private final Map<String, ElasticSearchIndexConfig> indexConfig;
 
+    private final ElasticSearchEmbeddedServerConfig embeddedServerConfig;
+
+    private final ElasticSearchClientConfig clientConfig;
+
     private ElasticSearchEmbeddedNode embeddedServer;
 
     private ESClient client;
 
     private boolean indexInitDone = false;
 
-    private final ElasticSearchEmbeddedServerConfig embeddedServerConfig;
-
-    private final ElasticSearchClientConfig clientConfig;
-
     private String[] includeSourceFields;
 
     private String[] excludeSourceFields;
 
     private List<String> repositoryInitialized = new ArrayList<>();
-
 
     /**
      * Init the admin service, remote configuration if not null will take precedence over local embedded configuration.
@@ -89,8 +89,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
      * @since 9.1
      */
     public ElasticSearchAdminImpl(ElasticSearchEmbeddedServerConfig embeddedServerConfig,
-                                  ElasticSearchClientConfig clientConfig,
-                                  Map<String, ElasticSearchIndexConfig> indexConfig) {
+            ElasticSearchClientConfig clientConfig, Map<String, ElasticSearchIndexConfig> indexConfig) {
         this.embeddedServerConfig = embeddedServerConfig;
         this.indexConfig = indexConfig;
         this.clientConfig = clientConfig;

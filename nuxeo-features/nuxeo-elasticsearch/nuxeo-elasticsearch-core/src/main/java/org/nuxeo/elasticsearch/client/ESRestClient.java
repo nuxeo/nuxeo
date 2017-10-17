@@ -18,6 +18,12 @@
  */
 package org.nuxeo.elasticsearch.client;
 
+import static java.util.Collections.emptyMap;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -47,18 +53,14 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-
-import static java.util.Collections.emptyMap;
-
 /**
  * @since 9.3
  */
 public class ESRestClient implements ESClient {
     private static final Log log = LogFactory.getLog(ESRestClient.class);
+
     protected RestClient lowLevelClient;
+
     protected RestHighLevelClient client;
 
     public ESRestClient(RestClient lowLevelRestClient, RestHighLevelClient client) {
@@ -82,16 +84,16 @@ public class ESRestClient implements ESClient {
             throw new NuxeoException(e);
         }
         switch (healthStatus) {
-            case GREEN:
-                log.info("Elasticsearch Cluster ready: " + response);
-                return true;
-            case YELLOW:
-                log.warn("Elasticsearch Cluster ready but not GREEN: " + response);
-                return false;
-            default:
-                String error = "Elasticsearch Cluster health status: " + healthStatus + ", not Yellow after "
-                        + timeoutSecond + " give up: " + response;
-                throw new IllegalStateException(error);
+        case GREEN:
+            log.info("Elasticsearch Cluster ready: " + response);
+            return true;
+        case YELLOW:
+            log.warn("Elasticsearch Cluster ready but not GREEN: " + response);
+            return false;
+        default:
+            String error = "Elasticsearch Cluster health status: " + healthStatus + ", not Yellow after "
+                    + timeoutSecond + " give up: " + response;
+            throw new IllegalStateException(error);
         }
     }
 
@@ -162,8 +164,7 @@ public class ESRestClient implements ESClient {
     public boolean mappingExists(String indexName, String type) {
         Response response;
         try {
-            response = lowLevelClient.performRequest("HEAD",
-                    String.format("/%s/_mapping/%s", indexName, type));
+            response = lowLevelClient.performRequest("HEAD", String.format("/%s/_mapping/%s", indexName, type));
         } catch (IOException e) {
             throw new NuxeoException(e);
         }

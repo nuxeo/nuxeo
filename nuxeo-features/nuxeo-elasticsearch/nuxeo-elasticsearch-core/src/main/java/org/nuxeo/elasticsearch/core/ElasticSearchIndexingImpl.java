@@ -20,10 +20,18 @@
 
 package org.nuxeo.elasticsearch.core;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
-import com.codahale.metrics.Timer.Context;
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEX_BULK_MAX_SIZE_PROPERTY;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
@@ -60,17 +68,10 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEX_BULK_MAX_SIZE_PROPERTY;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 
 /**
  * @since 6.0
@@ -199,8 +200,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             if (log.isDebugEnabled()) {
                 logDebugMessageTruncated(String.format(
                         "Index %d docs (%d bytes) in bulk request: curl -XPOST 'http://localhost:9200/_bulk' -d '%s'",
-                        bulkRequest.numberOfActions(), bulkSize,
-                        bulkRequest.requests().toString()), MAX_CURL_LINE);
+                        bulkRequest.numberOfActions(), bulkSize, bulkRequest.requests().toString()), MAX_CURL_LINE);
             }
             BulkResponse response = esa.getClient().bulk(bulkRequest);
             if (response.hasFailures()) {
@@ -344,8 +344,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                     indexName, DOC_TYPE, keepAlive, query.toString()));
         }
         for (SearchResponse response = esa.getClient().search(request); //
-             response.getHits().getHits().length > 0; //
-             response = runNextScroll(response, keepAlive)) {
+                response.getHits().getHits().length > 0; //
+                response = runNextScroll(response, keepAlive)) {
 
             // Build bulk delete request
             BulkRequest bulkRequest = new BulkRequest();
@@ -376,7 +376,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     String getPathOfDocFromEs(String repository, String docId) {
         String indexName = esa.getIndexNameForRepository(repository);
         GetRequest request = new GetRequest(indexName, DOC_TYPE, docId).fetchSourceContext(
-                new FetchSourceContext(true, new String[]{PATH_FIELD}, null));
+                new FetchSourceContext(true, new String[] { PATH_FIELD }, null));
         if (log.isDebugEnabled()) {
             log.debug(String.format("Get path of doc: curl -XGET 'http://localhost:9200/%s/%s/%s?fields=%s'", indexName,
                     DOC_TYPE, docId, PATH_FIELD));

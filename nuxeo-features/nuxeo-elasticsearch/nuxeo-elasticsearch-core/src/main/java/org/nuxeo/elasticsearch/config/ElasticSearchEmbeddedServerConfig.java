@@ -19,13 +19,13 @@
 
 package org.nuxeo.elasticsearch.config;
 
+import java.io.File;
+import java.io.Serializable;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.File;
-import java.io.Serializable;
 
 /**
  * Configuration of an embedded (same JVM as Nuxeo) Elasticsearch server.
@@ -71,6 +71,10 @@ public class ElasticSearchEmbeddedServerConfig implements Serializable {
         return clusterName;
     }
 
+    public void setClusterName(String clusterName) {
+        this.clusterName = clusterName;
+    }
+
     /**
      * @since 8.4
      */
@@ -83,12 +87,23 @@ public class ElasticSearchEmbeddedServerConfig implements Serializable {
         return homePath;
     }
 
+    /**
+     * @since 8.4
+     */
+    public void setHomePath(String homePath) {
+        this.homePath = homePath;
+    }
+
     public String getDataPath() {
         if (dataPath == null) {
             File dir = new File(Framework.getRuntime().getHome(), "data/elasticsearch");
             dataPath = dir.getPath();
         }
         return dataPath;
+    }
+
+    public void setDataPath(String dataPath) {
+        this.dataPath = dataPath;
     }
 
     public String getIndexStorageType() {
@@ -98,6 +113,10 @@ public class ElasticSearchEmbeddedServerConfig implements Serializable {
         return indexStoreType;
     }
 
+    public void setIndexStorageType(String indexStorageType) {
+        this.indexStoreType = indexStorageType;
+    }
+
     /**
      * @since 7.4
      */
@@ -105,8 +124,19 @@ public class ElasticSearchEmbeddedServerConfig implements Serializable {
         return networkHost;
     }
 
+    /**
+     * @since 7.4
+     */
+    public void setNetworkHost(String networkHost) {
+        this.networkHost = networkHost;
+    }
+
     public String getNodeName() {
         return nodeName;
+    }
+
+    public void setNodeName(String nodeName) {
+        this.nodeName = nodeName;
     }
 
     public boolean httpEnabled() {
@@ -117,42 +147,12 @@ public class ElasticSearchEmbeddedServerConfig implements Serializable {
         return isEnabled;
     }
 
-    public void setClusterName(String clusterName) {
-        this.clusterName = clusterName;
-    }
-
-    public void setDataPath(String dataPath) {
-        this.dataPath = dataPath;
-    }
-
-    /**
-     * @since 8.4
-     */
-    public void setHomePath(String homePath) {
-        this.homePath = homePath;
-    }
-
     public void setEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
     }
 
     public void setHttpEnabled(boolean httpEnabled) {
         this.httpEnabled = httpEnabled;
-    }
-
-    public void setIndexStorageType(String indexStorageType) {
-        this.indexStoreType = indexStorageType;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setNetworkHost(String networkHost) {
-        this.networkHost = networkHost;
-    }
-
-    public void setNodeName(String nodeName) {
-        this.nodeName = nodeName;
     }
 
     public boolean useExternalVersion() {

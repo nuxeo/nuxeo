@@ -18,13 +18,13 @@
  */
 package org.nuxeo.elasticsearch.api;
 
+import java.util.List;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.Bucket;
-
-import java.util.List;
 
 /**
  * @since 6.0
@@ -86,9 +86,8 @@ public class EsResult {
     }
 
     /**
-     * Returns the original Elasticsearch response.
+     * Returns the original Elasticsearch response. Use it at your own risk
      *
-     * Use it at your own risk
      * @since 7.3
      */
     public SearchResponse getElasticsearchResponse() {
