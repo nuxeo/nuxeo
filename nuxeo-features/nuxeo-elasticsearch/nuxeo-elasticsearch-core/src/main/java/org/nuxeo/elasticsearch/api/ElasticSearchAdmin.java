@@ -63,7 +63,19 @@ public interface ElasticSearchAdmin {
      *
      * @since 7.1
      */
-    void dropAndInitRepositoryIndex(String repositoryName);
+    default void dropAndInitRepositoryIndex(String repositoryName) {
+        dropAndInitRepositoryIndex(repositoryName, true);
+    }
+
+    /**
+     * Reinitialize the index of a repository. This will drop the existing index, recreate it with its settings and
+     * mapping, the index will be empty.
+     * When syncAlias is false then search alias is not updated with the new index,
+     * you need to explicitly call {@link #syncSearchAndWriteAlias(String)}
+     *
+     * @since 9.3
+     */
+    void dropAndInitRepositoryIndex(String repositoryName, boolean syncAlias);
 
     /**
      * List repository names that have Elasticsearch support.
@@ -73,7 +85,7 @@ public interface ElasticSearchAdmin {
     List<String> getRepositoryNames();
 
     /**
-     * Get the index name associated with the repository name.
+     * Get the search index name associated with the repository name.
      *
      * @throws NoSuchElementException if there is no Elasticsearch index associated with the requested repository.
      * @since 7.2
@@ -88,12 +100,26 @@ public interface ElasticSearchAdmin {
     List<String> getIndexNamesForType(String type);
 
     /**
-     * Get the first index name with the given type.
+     * Get the first search index name with the given type.
      *
      * @throws NoSuchElementException if there is no Elasticsearch index with the given type.
      * @since 7.10
      */
     String getIndexNameForType(String type);
+
+    /**
+     * Returns the index to use for any write operations.
+     *
+     * @since 9.3
+     */
+    String getWriteIndexName(String searchIndexName);
+
+    /**
+     * Make sure that the search alias point to the same index as the write alias.
+     *
+     * @since 9.3
+     */
+    void syncSearchAndWriteAlias(String searchIndexName);
 
     /**
      * Returns true if there are indexing activities scheduled or running.

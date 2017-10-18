@@ -251,8 +251,8 @@ public class ElasticSearchComponent extends DefaultComponent
     }
 
     @Override
-    public void dropAndInitRepositoryIndex(String repositoryName) {
-        esa.dropAndInitRepositoryIndex(repositoryName);
+    public void dropAndInitRepositoryIndex(String repositoryName, boolean syncAlias) {
+        esa.dropAndInitRepositoryIndex(repositoryName, syncAlias);
     }
 
     @Override
@@ -273,6 +273,16 @@ public class ElasticSearchComponent extends DefaultComponent
     @Override
     public String getIndexNameForType(String type) {
         return esa.getIndexNameForType(type);
+    }
+
+    @Override
+    public String getWriteIndexName(String searchIndexName) {
+        return esa.getWriteIndexName(searchIndexName);
+    }
+
+    @Override
+    public void syncSearchAndWriteAlias(String searchIndexName) {
+        esa.syncSearchAndWriteAlias(searchIndexName);
     }
 
     @SuppressWarnings("deprecation")
@@ -315,7 +325,7 @@ public class ElasticSearchComponent extends DefaultComponent
     public ListenableFuture<Boolean> prepareWaitForIndexing() {
         return waiterExecutorService.submit(() -> {
             WorkManager wm = Framework.getLocalService(WorkManager.class);
-            boolean completed = false;
+            boolean completed;
             do {
                 completed = wm.awaitCompletion(INDEXING_QUEUE_ID, 300, TimeUnit.SECONDS);
             } while (!completed);
@@ -470,13 +480,19 @@ public class ElasticSearchComponent extends DefaultComponent
     }
 
     @Override
-    public void runReindexingWorker(String repositoryName, String nxql) {
+    public void runReindexingWorker(String repositoryName, String nxql, boolean syncAlias) {
         if (nxql == null || nxql.isEmpty()) {
             throw new IllegalArgumentException("Expecting an NXQL query");
         }
-        ScrollingIndexingWorker worker = new ScrollingIndexingWorker(repositoryName, nxql);
+        ScrollingIndexingWorker worker = new ScrollingIndexingWorker(repositoryName, nxql, syncAlias);
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         wm.schedule(worker);
+    }
+
+    @Override
+    public void reindexRepository(String repositoryName) {
+        esa.dropAndInitRepositoryIndex(repositoryName, false);
+        runReindexingWorker(repositoryName, "SELECT ecm:uuid FROM Document", true);
     }
 
     // ES Search ===============================================================

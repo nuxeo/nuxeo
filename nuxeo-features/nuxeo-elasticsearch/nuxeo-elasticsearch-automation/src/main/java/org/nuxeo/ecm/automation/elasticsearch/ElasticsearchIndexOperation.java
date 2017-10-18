@@ -63,8 +63,7 @@ public class ElasticsearchIndexOperation {
     @OperationMethod
     public void run() {
         checkAccess();
-        esa.dropAndInitRepositoryIndex(repo.getRepositoryName());
-        run("SELECT ecm:uuid FROM Document");
+        esi.reindexRepository(repo.getRepositoryName());
     }
 
     private void checkAccess() {

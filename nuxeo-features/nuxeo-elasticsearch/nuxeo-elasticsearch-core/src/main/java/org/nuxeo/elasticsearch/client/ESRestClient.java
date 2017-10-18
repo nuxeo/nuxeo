@@ -57,6 +57,7 @@ import org.nuxeo.elasticsearch.api.ESClient;
  * @since 9.3
  */
 public class ESRestClient implements ESClient {
+    // TODO: add security sanitizer to make sure all parameters used to build requests are clean
     private static final Log log = LogFactory.getLog(ESRestClient.class);
 
     protected RestClient lowLevelClient;
@@ -239,6 +240,81 @@ public class ESRestClient implements ESClient {
             return EntityUtils.toString(response.getEntity());
         } catch (IOException e) {
             throw new NuxeoException(e);
+        }
+    }
+
+    @Override
+    public boolean aliasExists(String aliasName) {
+        Response response;
+        try {
+            response = lowLevelClient.performRequest("HEAD", String.format("/_alias/%s", aliasName));
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
+        int code = response.getStatusLine().getStatusCode();
+        if (code == HttpStatus.SC_OK) {
+            return true;
+        } else if (code == HttpStatus.SC_NOT_FOUND) {
+            return false;
+        }
+        throw new IllegalStateException(String.format("Checking alias %s returns: %s", aliasName, response));
+    }
+
+    @Override
+    public String getFirstIndexForAlias(String aliasName) {
+        if (!aliasExists(aliasName)) {
+            return null;
+        }
+        try {
+            Response response = lowLevelClient.performRequest("GET", String.format("/_alias/%s", aliasName));
+            try (InputStream is = response.getEntity().getContent()) {
+                Map<String, Object> map = XContentHelper.convertToMap(XContentType.JSON.xContent(), is, true);
+                if (map.size() != 1) {
+                    throw new NuxeoException(String.format(
+                            "Expecting alias that point to a single index, alias: %s, got: %s", aliasName, response));
+                }
+                return map.keySet().iterator().next();
+            }
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
+    }
+
+    @Override
+    public void updateAlias(String aliasName, String indexName) {
+        // TODO do this in a single call to make it atomically
+        if (aliasExists(aliasName)) {
+            deleteAlias(aliasName);
+        }
+        if (indexExists(aliasName)) {
+            throw new NuxeoException("Can create an alias because an index with the same name exists: " + aliasName);
+        }
+        createAlias(aliasName, indexName);
+    }
+
+    protected void deleteAlias(String aliasName) {
+        Response response;
+        try {
+            response = lowLevelClient.performRequest("DELETE", String.format("/_all/_alias/%s", aliasName));
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
+        int code = response.getStatusLine().getStatusCode();
+        if (code != HttpStatus.SC_OK) {
+            throw new IllegalStateException(String.format("Deleting %s alias: %s", aliasName, response));
+        }
+    }
+
+    protected void createAlias(String aliasName, String indexName) {
+        Response response;
+        try {
+            response = lowLevelClient.performRequest("PUT", String.format("/%s/_alias/%s", indexName, aliasName),
+                    emptyMap());
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
+        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            throw new NuxeoException("Fail to create alias: " + indexName + " :" + response);
         }
     }
 
