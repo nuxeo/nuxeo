@@ -18,7 +18,15 @@
  */
 package org.nuxeo.ecm.platform.audit.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_NAME;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -31,14 +39,7 @@ import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_NAME;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Computation that consumes a stream of log entries and write them to the audit backend.
@@ -47,11 +48,15 @@ import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STR
  */
 public class StreamAuditWriter implements StreamProcessorTopology {
     private static final Log log = LogFactory.getLog(StreamAuditWriter.class);
+
     public static final String COMPUTATION_NAME = "AuditLogWriter";
 
     public static final String BATCH_SIZE_OPT = "batchSize";
+
     public static final String BATCH_THRESHOLD_MS_OPT = "batchThresholdMs";
+
     public static final int DEFAULT_BATCH_SIZE = 10;
+
     public static final int DEFAULT_BATCH_THRESHOLD_MS = 200;
 
     @Override
@@ -59,15 +64,17 @@ public class StreamAuditWriter implements StreamProcessorTopology {
         int batchSize = getOptionAsInteger(options, BATCH_SIZE_OPT, DEFAULT_BATCH_SIZE);
         int batchThresholdMs = getOptionAsInteger(options, BATCH_THRESHOLD_MS_OPT, DEFAULT_BATCH_THRESHOLD_MS);
         return Topology.builder()
-                .addComputation(
-                        () -> new AuditLogWriterComputation(COMPUTATION_NAME, batchSize, batchThresholdMs),
-                        Collections.singletonList("i1:" + STREAM_NAME))
-                .build();
+                       .addComputation(
+                               () -> new AuditLogWriterComputation(COMPUTATION_NAME, batchSize, batchThresholdMs),
+                               Collections.singletonList("i1:" + STREAM_NAME))
+                       .build();
     }
 
     public class AuditLogWriterComputation extends AbstractComputation {
         protected final int batchSize;
+
         protected final int batchThresholdMs;
+
         protected final List<LogEntry> logEntries;
 
         public AuditLogWriterComputation(String name, int batchSize, int batchThresholdMs) {
@@ -105,8 +112,8 @@ public class StreamAuditWriter implements StreamProcessorTopology {
 
         @Override
         public void destroy() {
-            log.debug(String.format("Destroy computation: %s, pending entries: %d", COMPUTATION_NAME,
-                    logEntries.size()));
+            log.debug(
+                    String.format("Destroy computation: %s, pending entries: %d", COMPUTATION_NAME, logEntries.size()));
         }
 
         protected void writeEntriesToAudit(ComputationContext context) {

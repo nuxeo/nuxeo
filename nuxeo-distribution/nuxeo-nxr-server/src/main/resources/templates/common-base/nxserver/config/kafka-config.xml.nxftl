@@ -1,0 +1,24 @@
+<#escape x as x?xml>
+<?xml version="1.0"?>
+<component name="org.nuxeo.kafka.defaultConfig">
+<#if "${kafka.enabled}" == "true">
+  <require>org.nuxeo.runtime.stream.kafka.service</require>
+
+  <extension point="kafkaConfig" target="org.nuxeo.runtime.stream.kafka.service">
+    <kafkaConfig name="default" zkServers="${kafka.zkServers}" topicPrefix="${kafka.topicPrefix}">
+      <producer>
+        <property name="bootstrap.servers">${kafka.bootstrap.servers}</property>
+      </producer>
+      <consumer>
+        <property name="bootstrap.servers">${kafka.bootstrap.servers}</property>
+        <property name="request.timeout.ms">${kafka.request.timeout.ms}</property>
+        <property name="max.poll.interval.ms">${kafka.max.poll.interval.ms}</property>
+        <property name="session.timeout.ms">${kafka.session.timeout.ms}</property>
+        <property name="heartbeat.interval.ms">${kafka.heartbeat.interval.ms}</property>
+        <property name="max.poll.records">${kafka.max.poll.records}</property>
+      </consumer>
+    </kafkaConfig>
+  </extension>
+</#if>
+</component>
+</#escape>

@@ -116,3 +116,28 @@ audit.elasticsearch.migration=false
 audit.elasticsearch.migration.batchSize=1000
 # Refresh interval for the health check
 nuxeo.healthcheck.refresh.interval.seconds=20
+
+# Kafka
+kafka.enabled=false
+kafka.zkServers=localhost:2181
+kafka.bootstrap.servers=localhost:9092
+kafka.topicPrefix=nuxeo-
+kafka.request.timeout.ms=65000
+kafka.max.poll.interval.ms=60000
+kafka.session.timeout.ms=50000
+kafka.heartbeat.interval.ms=2000
+kafka.max.poll.records=5
+
+# Stream default retention with Chronicle Queue
+nuxeo.stream.chronicle.retention.duration=4d
+
+# Stream WorkManager
+nuxeo.stream.work.enabled=false
+nuxeo.stream.work.log.config=work
+nuxeo.stream.work.over.provisioning.factor=3
+
+# Stream AuditWriter
+nuxeo.stream.audit.enabled=false
+nuxeo.stream.audit.log.config=audit
+nuxeo.stream.audit.batch.size=20
+nuxeo.stream.audit.batch.threshold.ms=300

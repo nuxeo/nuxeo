@@ -72,13 +72,13 @@ import com.codahale.metrics.MetricRegistry;
 public class StreamWorkManager extends WorkManagerImpl {
     protected static final Log log = LogFactory.getLog(StreamWorkManager.class);
 
-    public static final String WORKMANAGER_CONFIG_PROP = "nuxeo.stream.work.config";
+    public static final String WORK_LOG_CONFIG_PROP = "nuxeo.stream.work.log.config";
 
-    public static final String DEFAULT_WORKMANAGER_CONFIG = "work";
+    public static final String DEFAULT_WORK_LOG_CONFIG = "work";
 
-    public static final String WORKMANAGER_OVERPROVISIONING_PROP = "nuxeo.stream.work.over.provisioning";
+    public static final String WORK_OVER_PROVISIONING_PROP = "nuxeo.stream.work.over.provisioning.factor";
 
-    public static final String DEFAULT_WORKMANAGER_OVERPROVISIONING = "3";
+    public static final String DEFAULT_WORK_OVER_PROVISIONING = "3";
 
     public static final int DEFAULT_CONCURRENCY = 4;
 
@@ -93,8 +93,12 @@ public class StreamWorkManager extends WorkManagerImpl {
     protected final Set<String> streamIds = new HashSet<>();
 
     protected int getOverProvisioningFactor() {
-        return Integer.parseInt(
-                Framework.getProperty(WORKMANAGER_OVERPROVISIONING_PROP, DEFAULT_WORKMANAGER_OVERPROVISIONING));
+        // Enable over provisioning only if the log can be distributed
+        if (getLogManager().supportSubscribe()) {
+            return Integer.parseInt(
+                    Framework.getProperty(WORK_OVER_PROVISIONING_PROP, DEFAULT_WORK_OVER_PROVISIONING));
+        }
+        return 1;
     }
 
     @Override
@@ -206,7 +210,7 @@ public class StreamWorkManager extends WorkManagerImpl {
     }
 
     protected String getLogConfig() {
-        return Framework.getProperty(WORKMANAGER_CONFIG_PROP, DEFAULT_WORKMANAGER_CONFIG);
+        return Framework.getProperty(WORK_LOG_CONFIG_PROP, DEFAULT_WORK_LOG_CONFIG);
     }
 
     @Override

@@ -18,6 +18,10 @@
 
 package org.nuxeo.ecm.platform.audit;
 
+import static org.nuxeo.ecm.platform.audit.impl.StreamAuditWriter.COMPUTATION_NAME;
+import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.DEFAULT_LOG_CONFIG;
+import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_NAME;
+
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature.Waiter;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
@@ -30,13 +34,11 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import static org.nuxeo.ecm.platform.audit.impl.StreamAuditWriter.COMPUTATION_NAME;
-import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_CONFIG;
-import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_NAME;
-
-@Features({ManagementFeature.class, PlatformFeature.class})
-@Deploy({"org.nuxeo.runtime.stream", "org.nuxeo.runtime.datasource", "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.audit"})
-@LocalDeploy({"org.nuxeo.ecm.platform.audit:nxaudit-ds.xml", "org.nuxeo.ecm.platform.audit:test-stream-audit-contrib.xml"})
+@Features({ ManagementFeature.class, PlatformFeature.class })
+@Deploy({ "org.nuxeo.runtime.stream", "org.nuxeo.runtime.datasource", "org.nuxeo.runtime.metrics",
+        "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.audit" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.audit:nxaudit-ds.xml",
+        "org.nuxeo.ecm.platform.audit:test-stream-audit-contrib.xml" })
 public class StreamAuditFeature extends AuditFeature {
 
     @Override
@@ -44,12 +46,11 @@ public class StreamAuditFeature extends AuditFeature {
         runner.getFeature(TransactionalFeature.class).addWaiter(new StreamAuditWaiter());
     }
 
-
     protected class StreamAuditWaiter implements Waiter {
         @Override
         public boolean await(long deadline) throws InterruptedException {
             // when there is no lag between producer and consumer we are done
-            while (getMQManager().getLag(STREAM_NAME, COMPUTATION_NAME).lag() > 0) {
+            while (getLogManager().getLag(STREAM_NAME, COMPUTATION_NAME).lag() > 0) {
                 if (System.currentTimeMillis() > deadline) {
                     return false;
                 }
@@ -59,8 +60,8 @@ public class StreamAuditFeature extends AuditFeature {
         }
     }
 
-    protected LogManager getMQManager() {
+    protected LogManager getLogManager() {
         StreamService service = Framework.getService(StreamService.class);
-        return service.getLogManager(STREAM_CONFIG);
+        return service.getLogManager(DEFAULT_LOG_CONFIG);
     }
 }

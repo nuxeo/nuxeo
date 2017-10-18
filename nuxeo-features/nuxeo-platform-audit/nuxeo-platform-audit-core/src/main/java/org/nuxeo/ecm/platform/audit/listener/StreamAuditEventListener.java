@@ -18,20 +18,6 @@
  */
 package org.nuxeo.ecm.platform.audit.listener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventListener;
-import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
-import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
-import org.nuxeo.ecm.platform.audit.api.AuditLogger;
-import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.lib.stream.computation.Record;
-import org.nuxeo.lib.stream.log.LogAppender;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.stream.StreamService;
-import org.nuxeo.runtime.transaction.TransactionHelper;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -44,6 +30,21 @@ import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
+import org.nuxeo.ecm.platform.audit.api.AuditLogger;
+import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.log.LogAppender;
+import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.stream.StreamService;
+import org.nuxeo.runtime.transaction.TransactionHelper;
+
 /**
  * An events collector that write log entries as json record into a stream.
  *
@@ -51,9 +52,15 @@ import javax.transaction.TransactionManager;
  */
 public class StreamAuditEventListener implements EventListener, Synchronization {
     private static final Log log = LogFactory.getLog(StreamAuditEventListener.class);
+
     protected static final ThreadLocal<Boolean> isEnlisted = ThreadLocal.withInitial(() -> Boolean.FALSE);
+
     protected static final ThreadLocal<List<LogEntry>> entries = ThreadLocal.withInitial(ArrayList::new);
-    public static final String STREAM_CONFIG = "audit";
+
+    public static final String AUDIT_LOG_CONFIG_PROP = "nuxeo.stream.audit.log.config";
+
+    public static final String DEFAULT_LOG_CONFIG = "audit";
+
     public static final String STREAM_NAME = "audit";
 
     @Override
@@ -89,8 +96,8 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
     @Override
     public void afterCompletion(int status) {
         try {
-            if (entries.get().isEmpty() ||
-                    (Status.STATUS_MARKED_ROLLBACK == status || Status.STATUS_ROLLEDBACK == status)) {
+            if (entries.get().isEmpty()
+                    || (Status.STATUS_MARKED_ROLLBACK == status || Status.STATUS_ROLLEDBACK == status)) {
                 // This means that in case of rollback there is no event logged
                 return;
             }
@@ -108,8 +115,7 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
         if (entries.get().isEmpty()) {
             return;
         }
-        StreamService service = Framework.getService(StreamService.class);
-        LogAppender<Record> appender = service.getLogManager(STREAM_CONFIG).getAppender(STREAM_NAME);
+        LogAppender<Record> appender = getLogManager().getAppender(STREAM_NAME);
         entries.get().forEach(entry -> writeEntry(appender, entry));
     }
 
@@ -118,8 +124,7 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
         if (json == null) {
             return;
         }
-        appender.append(0, Record.of(String.valueOf(entry.getId()),
-                json.getBytes(StandardCharsets.UTF_8)));
+        appender.append(0, Record.of(String.valueOf(entry.getId()), json.getBytes(StandardCharsets.UTF_8)));
     }
 
     protected String asJson(LogEntry entry) {
@@ -154,4 +159,12 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
         }
     }
 
+    protected LogManager getLogManager() {
+        StreamService service = Framework.getService(StreamService.class);
+        return service.getLogManager(getLogConfig());
+    }
+
+    protected String getLogConfig() {
+        return Framework.getProperty(AUDIT_LOG_CONFIG_PROP, DEFAULT_LOG_CONFIG);
+    }
 }
