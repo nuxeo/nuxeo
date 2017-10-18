@@ -247,7 +247,7 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
     }
 
     @Test
-    public void iframe_url_embeds_the_distribution_package_type_and_version() throws Exception {
+    public void iCanGetNewsIframeURL() throws Exception {
 
         LoginScreenConfig config = new LoginScreenConfig();
         String strUrl = config.getNewsIframeUrl();
@@ -263,5 +263,15 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertThat(query.get(DISTRIBUTION_VERSION)).contains("7.10");
         assertThat(query.get(DISTRIBUTION_PACKAGE)).contains("zip");
 
+        // Testing with contribution
+        config.setNewsIframeUrl("http://example.com?why=testing");
+
+        strUrl = config.getNewsIframeUrl();
+        url = new URL("http:" + strUrl);
+        query = UriComponent.decodeQuery(url.getQuery(), true);
+
+        assertThat(query.keySet()).contains("why");
+        assertFalse(query.keySet().contains(PRODUCT_VERSION));
+        assertThat(query.get("why")).contains("testing");
     }
 }

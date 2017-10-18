@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +37,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -47,6 +50,8 @@ import org.nuxeo.runtime.api.Framework;
 public class LoginScreenConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    public static final String NUXEO_NEWS_URL = "//www.nuxeo.com/login-page-embedded/";
 
     /**
      * @since 8.4
@@ -87,7 +92,7 @@ public class LoginScreenConfig implements Serializable {
 
     protected String footerStyle;
 
-    protected String newsIframeUrl = "//www.nuxeo.com/login-page-embedded/";
+    protected String newsIframeUrl = NUXEO_NEWS_URL;
 
     protected String newsIframeFullUrl = null;
 
@@ -310,17 +315,22 @@ public class LoginScreenConfig implements Serializable {
 
     public String getNewsIframeUrl() {
         if (newsIframeFullUrl == null) {
-            newsIframeFullUrl = UriBuilder.fromPath(newsIframeUrl)
-                                          .queryParam(Environment.PRODUCT_VERSION,
-                                                  Framework.getProperty(Environment.PRODUCT_VERSION))
-                                          .queryParam(Environment.DISTRIBUTION_VERSION,
-                                                  Framework.getProperty(Environment.DISTRIBUTION_VERSION))
-                                          .queryParam(Environment.DISTRIBUTION_PACKAGE,
-                                                  Framework.getProperty(Environment.DISTRIBUTION_PACKAGE))
-                                          .build()
-                                          .toString();
+            UriBuilder newsIFrameBuilder = UriBuilder.fromPath(newsIframeUrl);
+            if (NUXEO_NEWS_URL.equals(newsIframeUrl)) {
+                newsIFrameBuilder.queryParam(Environment.PRODUCT_VERSION,
+                        Framework.getProperty(Environment.PRODUCT_VERSION))
+                                 .queryParam(Environment.DISTRIBUTION_VERSION,
+                                         Framework.getProperty(Environment.DISTRIBUTION_VERSION))
+                                 .queryParam(Environment.DISTRIBUTION_PACKAGE,
+                                         Framework.getProperty(Environment.DISTRIBUTION_PACKAGE));
+            }
+            newsIframeFullUrl = newsIFrameBuilder.build().toString();
         }
-        return newsIframeFullUrl;
+        try {
+            return URLDecoder.decode(newsIframeFullUrl, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new NuxeoException("Cannot decode login iframe URL " + newsIframeFullUrl);
+        }
     }
 
     /**
