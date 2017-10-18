@@ -62,10 +62,10 @@ public class MongoDBUIDSequencer extends AbstractUIDSequencer {
 
     @Override
     public void init() {
-        getCollection();
+        getSequencerCollection();
     }
 
-    protected MongoCollection<Document> getCollection() {
+    public MongoCollection<Document> getSequencerCollection() {
         if (coll == null) {
             // Get collection name
             ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
@@ -90,14 +90,14 @@ public class MongoDBUIDSequencer extends AbstractUIDSequencer {
         FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER);
         Bson filter = Filters.eq(MongoDBSerializationHelper.MONGODB_ID, key);
         Bson update = Updates.inc(SEQUENCE_VALUE_FIELD, ONE);
-        Document sequence = getCollection().findOneAndUpdate(filter, update, options);
+        Document sequence = getSequencerCollection().findOneAndUpdate(filter, update, options);
         // If sequence is null, we need to create it
         if (sequence == null) {
             try {
                 sequence = new Document();
                 sequence.put(MongoDBSerializationHelper.MONGODB_ID, key);
                 sequence.put(SEQUENCE_VALUE_FIELD, ONE);
-                getCollection().insertOne(sequence);
+                getSequencerCollection().insertOne(sequence);
             } catch (MongoWriteException e) {
                 // There was a race condition - just re-run getNextLong
                 if (log.isTraceEnabled()) {

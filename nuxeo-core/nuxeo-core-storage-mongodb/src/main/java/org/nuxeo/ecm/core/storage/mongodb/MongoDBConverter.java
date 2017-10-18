@@ -36,16 +36,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import org.bson.Document;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 /**
  * Convert to and from MongoDB types (bson) and DBS types (diff, state, list, serializable).
@@ -68,7 +66,7 @@ public class MongoDBConverter {
      * <p>
      * We need a list because some cases need two operations to avoid conflicts.
      */
-    public List<DBObject> diffToBson(StateDiff diff) {
+    public List<Document> diffToBson(StateDiff diff) {
         UpdateBuilder updateBuilder = new UpdateBuilder();
         return updateBuilder.build(diff);
     }
@@ -95,19 +93,19 @@ public class MongoDBConverter {
         }
     }
 
-    public DBObject stateToBson(State state) {
-        DBObject ob = new BasicDBObject();
+    public Document stateToBson(State state) {
+        Document doc = new Document();
         for (Entry<String, Serializable> en : state.entrySet()) {
             Object val = valueToBson(en.getValue());
             if (val != null) {
-                ob.put(keyToBson(en.getKey()), val);
+                doc.put(keyToBson(en.getKey()), val);
             }
         }
-        return ob;
+        return doc;
     }
 
     public List<Object> listToBson(List<Object> values) {
-        ArrayList<Object> objects = new ArrayList<Object>(values.size());
+        ArrayList<Object> objects = new ArrayList<>(values.size());
         for (Object value : values) {
             objects.add(valueToBson(value));
         }
@@ -122,17 +120,17 @@ public class MongoDBConverter {
         }
     }
 
-    public State bsonToState(DBObject ob) {
-        if (ob == null) {
+    public State bsonToState(Document doc) {
+        if (doc == null) {
             return null;
         }
-        State state = new State(ob.keySet().size());
-        for (String key : ob.keySet()) {
+        State state = new State(doc.keySet().size());
+        for (String key : doc.keySet()) {
             if (useCustomId && MONGODB_ID.equals(key)) {
                 // skip native id
                 continue;
             }
-            state.put(bsonToKey(key), bsonToValue(ob.get(key)));
+            state.put(bsonToKey(key), bsonToValue(doc.get(key)));
         }
         return state;
     }
@@ -151,10 +149,10 @@ public class MongoDBConverter {
                         break;
                     }
                 }
-                if (DBObject.class.isAssignableFrom(klass)) {
+                if (Document.class.isAssignableFrom(klass)) {
                     List<Serializable> l = new ArrayList<>(list.size());
                     for (Object el : list) {
-                        l.add(bsonToState((DBObject) el));
+                        l.add(bsonToState((Document) el));
                     }
                     return (Serializable) l;
                 } else {
@@ -167,8 +165,8 @@ public class MongoDBConverter {
                     return ar;
                 }
             }
-        } else if (value instanceof DBObject) {
-            return bsonToState((DBObject) value);
+        } else if (value instanceof Document) {
+            return bsonToState((Document) value);
         } else {
             return scalarToSerializable(value);
         }
@@ -209,23 +207,23 @@ public class MongoDBConverter {
      */
     public class UpdateBuilder {
 
-        protected final BasicDBObject set = new BasicDBObject();
+        protected final Document set = new Document();
 
-        protected final BasicDBObject unset = new BasicDBObject();
+        protected final Document unset = new Document();
 
-        protected final BasicDBObject push = new BasicDBObject();
+        protected final Document push = new Document();
 
-        protected final BasicDBObject inc = new BasicDBObject();
+        protected final Document inc = new Document();
 
-        protected final List<DBObject> updates = new ArrayList<>(10);
+        protected final List<Document> updates = new ArrayList<>(10);
 
-        protected DBObject update;
+        protected Document update;
 
         protected Set<String> prefixKeys;
 
         protected Set<String> keys;
 
-        public List<DBObject> build(StateDiff diff) {
+        public List<Document> build(StateDiff diff) {
             processStateDiff(diff, null);
             newUpdate();
             for (Entry<String, Object> en : set.entrySet()) {
@@ -282,7 +280,7 @@ public class MongoDBConverter {
                     // no need to use $each for one element
                     pushed = valueToBson(listDiff.rpush.get(0));
                 } else {
-                    pushed = new BasicDBObject(MONGODB_EACH, listToBson(listDiff.rpush));
+                    pushed = new Document(MONGODB_EACH, listToBson(listDiff.rpush));
                 }
                 push.put(prefix, pushed);
             }
@@ -307,16 +305,16 @@ public class MongoDBConverter {
         }
 
         protected void newUpdate() {
-            updates.add(update = new BasicDBObject());
+            updates.add(update = new Document());
             prefixKeys = new HashSet<>();
             keys = new HashSet<>();
         }
 
         protected void update(String op, String key, Object value) {
             checkForConflict(key);
-            DBObject map = (DBObject) update.get(op);
+            Document map = (Document) update.get(op);
             if (map == null) {
-                update.put(op, map = new BasicDBObject());
+                update.put(op, map = new Document());
             }
             map.put(key, value);
         }

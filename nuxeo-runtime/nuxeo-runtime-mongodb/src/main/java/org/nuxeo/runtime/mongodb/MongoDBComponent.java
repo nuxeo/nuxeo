@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentStartOrders;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry.FragmentList;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
@@ -82,7 +83,7 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         log.info("Activate MongoDB component");
         for (FragmentList<MongoDBConnectionConfig> fragment : registry.getFragments()) {
             MongoDBConnectionConfig conf = fragment.object;
@@ -94,7 +95,7 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
+    public void stop(ComponentContext context) {
         Iterator<Entry<String, MongoClient>> it = clients.entrySet().iterator();
         while (it.hasNext()) {
             Entry<String, MongoClient> entry = it.next();
@@ -107,9 +108,8 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
 
     @Override
     public int getApplicationStartedOrder() {
-        // RepositoryService getApplicationStartedOrder = 100
-        // (org.nuxeo.ecm.core.repository.RepositoryServiceComponent)
-        return 100 + 1;
+        // start before repository
+        return ComponentStartOrders.REPOSITORY - 1;
     }
 
     /**
@@ -117,7 +117,6 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
      * @return the database configured by {@link MongoDBConnectionConfig} for the input id, or the default one if it
      *         doesn't exist
      */
-    @SuppressWarnings("resource")
     @Override
     public MongoDatabase getDatabase(String id) {
         MongoDBConnectionConfig config = registry.getCurrentContribution(id);

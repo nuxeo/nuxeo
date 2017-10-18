@@ -19,25 +19,17 @@
 
   <extension-point name="repository">
     <documentation>
-      Extension points to register MongoDB repositories.
+      Extension points to register MongoDB repositories. The repository will ask for a MongoDB access to
+      MongoDBConnectionService with id 'repository/[repositoryName]'.
 
       Example:
       <code>
         <repository name="default" label="MongoDB Repository" isDefault="true">
-          <server>localhost:27017</server>
           <fulltext disabled="false"/>
         </repository>
       </code>
-      Or to provide credentials, several hosts, or options:
-      <code>
-        <repository name="default" label="MongoDB Repository">
-          <server>mongodb://bob:pass@localhost:27017,otherhost:27018/mydb?replicaSet=test;connectTimeoutMS=300000</server>
-        </repository>
-      </code>
-      See http://docs.mongodb.org/manual/reference/connection-string/ for the mongodb:// URI syntax.
     </documentation>
-    <object
-      class="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryDescriptor" />
+    <object class="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryDescriptor" />
   </extension-point>
 
 </component>

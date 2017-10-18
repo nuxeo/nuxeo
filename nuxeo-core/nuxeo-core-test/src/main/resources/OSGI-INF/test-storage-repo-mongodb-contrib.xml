@@ -1,9 +1,15 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.test.repository">
-  <extension target="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService" point="repository">
-    <repository name="test" label="MongoDB Repository">
+
+  <extension target="org.nuxeo.runtime.mongodb.MongoDBComponent" point="connection">
+    <connection id="default">
       <server>${nuxeo.test.mongodb.server}</server>
       <dbname>${nuxeo.test.mongodb.dbname}</dbname>
+    </connection>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService" point="repository">
+    <repository name="test" label="MongoDB Repository">
       <!--
       <idType>varchar</idType>
       <sequenceBlockSize>1</sequenceBlockSize>
@@ -20,4 +26,5 @@
       </fulltext>
     </repository>
   </extension>
+
 </component>

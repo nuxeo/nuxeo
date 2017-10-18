@@ -43,10 +43,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Spliterators;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,6 +59,8 @@ import javax.resource.spi.ConnectionManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CursorService;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -77,16 +81,25 @@ import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
 import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
+import com.mongodb.Block;
 import com.mongodb.QueryOperators;
-import com.mongodb.WriteResult;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
+import com.mongodb.client.model.CountOptions;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.ReturnDocument;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 
 /**
  * MongoDB implementation of a {@link Repository}.
@@ -97,15 +110,18 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     private static final Log log = LogFactory.getLog(MongoDBRepository.class);
 
+    /**
+     * Prefix used to retrieve a MongoDB connection from {@link MongoDBConnectionService}.
+     * <p />
+     * The connection id will be {@code repository/[REPOSITORY_NAME]}.
+     */
+    public static final String REPOSITORY_CONNECTION_PREFIX = "repository/";
+
     public static final Long LONG_ZERO = Long.valueOf(0);
 
     public static final Double ZERO = Double.valueOf(0);
 
     public static final Double ONE = Double.valueOf(1);
-
-    public static final Double MINUS_ONE = Double.valueOf(-1);
-
-    public static final String DB_DEFAULT = "nuxeo";
 
     public static final String MONGODB_ID = "_id";
 
@@ -123,12 +139,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     public static final String MONGODB_TEXT_SCORE = "textScore";
 
-    private static final String MONGODB_INDEX_TEXT = "text";
-
-    private static final String MONGODB_INDEX_NAME = "name";
-
-    private static final String MONGODB_LANGUAGE_OVERRIDE = "language_override";
-
     private static final String FULLTEXT_INDEX_NAME = "fulltext";
 
     private static final String LANGUAGE_FIELD = "__language";
@@ -137,11 +147,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected static final String COUNTER_FIELD = "seq";
 
-    protected MongoClient mongoClient;
+    protected final MongoCollection<Document> coll;
 
-    protected DBCollection coll;
-
-    protected DBCollection countersColl;
+    protected final MongoCollection<Document> countersColl;
 
     /** The key to use to store the id in the database. */
     protected String idKey;
@@ -160,13 +168,15 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected final MongoDBConverter converter;
 
-    protected final CursorService<DBCursor, DBObject> cursorService = new CursorService<>();
+    protected final CursorService<MongoCursor<Document>, Document> cursorService = new CursorService<>();
 
     public MongoDBRepository(ConnectionManager cm, MongoDBRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
-        mongoClient = MongoDBConnectionHelper.newMongoClient(descriptor.server);
-        coll = getCollection(descriptor, mongoClient);
-        countersColl = getCountersCollection(descriptor, mongoClient);
+        MongoDBConnectionService mongoService = Framework.getService(MongoDBConnectionService.class);
+        // prefix with repository/ to group repository connection
+        MongoDatabase database = mongoService.getDatabase(REPOSITORY_CONNECTION_PREFIX + descriptor.name);
+        coll = database.getCollection(descriptor.name);
+        countersColl = database.getCollection(descriptor.name + ".counters");
         if (Boolean.TRUE.equals(descriptor.nativeId)) {
             idKey = MONGODB_ID;
         } else {
@@ -191,76 +201,52 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public void shutdown() {
         super.shutdown();
         cursorService.clear();
-        mongoClient.close();
-    }
-
-    protected static DBCollection getCollection(MongoClient mongoClient, String dbname, String collection) {
-        if (StringUtils.isBlank(dbname)) {
-            dbname = DB_DEFAULT;
-        }
-        DB db = mongoClient.getDB(dbname);
-        return db.getCollection(collection);
-    }
-
-    // used also by unit tests
-    public static DBCollection getCollection(MongoDBRepositoryDescriptor descriptor, MongoClient mongoClient) {
-        return getCollection(mongoClient, descriptor.dbname, descriptor.name);
-    }
-
-    // used also by unit tests
-    public static DBCollection getCountersCollection(MongoDBRepositoryDescriptor descriptor, MongoClient mongoClient) {
-        return getCollection(mongoClient, descriptor.dbname, descriptor.name + ".counters");
     }
 
     protected void initRepository() {
         // create required indexes
         // code does explicit queries on those
         if (useCustomId) {
-            coll.createIndex(new BasicDBObject(idKey, ONE));
+            coll.createIndex(Indexes.ascending(idKey));
         }
-        coll.createIndex(new BasicDBObject(KEY_PARENT_ID, ONE));
-        coll.createIndex(new BasicDBObject(KEY_ANCESTOR_IDS, ONE));
-        coll.createIndex(new BasicDBObject(KEY_VERSION_SERIES_ID, ONE));
-        coll.createIndex(new BasicDBObject(KEY_PROXY_TARGET_ID, ONE));
-        coll.createIndex(new BasicDBObject(KEY_PROXY_VERSION_SERIES_ID, ONE));
-        coll.createIndex(new BasicDBObject(KEY_READ_ACL, ONE));
-        DBObject parentChild = new BasicDBObject();
-        parentChild.put(KEY_PARENT_ID, ONE);
-        parentChild.put(KEY_NAME, ONE);
-        coll.createIndex(parentChild);
+        coll.createIndex(Indexes.ascending(KEY_PARENT_ID));
+        coll.createIndex(Indexes.ascending(KEY_ANCESTOR_IDS));
+        coll.createIndex(Indexes.ascending(KEY_VERSION_SERIES_ID));
+        coll.createIndex(Indexes.ascending(KEY_PROXY_TARGET_ID));
+        coll.createIndex(Indexes.ascending(KEY_PROXY_VERSION_SERIES_ID));
+        coll.createIndex(Indexes.ascending(KEY_READ_ACL));
+        coll.createIndex(Indexes.ascending(KEY_PARENT_ID, KEY_NAME));
         // often used in user-generated queries
-        coll.createIndex(new BasicDBObject(KEY_PRIMARY_TYPE, ONE));
-        coll.createIndex(new BasicDBObject(KEY_LIFECYCLE_STATE, ONE));
-        coll.createIndex(new BasicDBObject(KEY_FULLTEXT_JOBID, ONE));
-        coll.createIndex(new BasicDBObject(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_USER, ONE));
-        coll.createIndex(new BasicDBObject(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_STATUS, ONE));
+        coll.createIndex(Indexes.ascending(KEY_PRIMARY_TYPE));
+        coll.createIndex(Indexes.ascending(KEY_LIFECYCLE_STATE));
+        coll.createIndex(Indexes.ascending(KEY_FULLTEXT_JOBID));
+        coll.createIndex(Indexes.ascending(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_USER));
+        coll.createIndex(Indexes.ascending(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_STATUS));
         // TODO configure these from somewhere else
-        coll.createIndex(new BasicDBObject("dc:modified", MINUS_ONE));
-        coll.createIndex(new BasicDBObject("rend:renditionName", ONE));
-        coll.createIndex(new BasicDBObject("drv:subscriptions.enabled", ONE));
-        coll.createIndex(new BasicDBObject("collectionMember:collectionIds", ONE));
-        coll.createIndex(new BasicDBObject("nxtag:tags", ONE));
+        coll.createIndex(Indexes.descending("dc:modified"));
+        coll.createIndex(Indexes.ascending("rend:renditionName"));
+        coll.createIndex(Indexes.ascending("drv:subscriptions.enabled"));
+        coll.createIndex(Indexes.ascending("collectionMember:collectionIds"));
+        coll.createIndex(Indexes.ascending("nxtag:tags"));
         if (!isFulltextDisabled()) {
-            DBObject indexKeys = new BasicDBObject();
-            indexKeys.put(KEY_FULLTEXT_SIMPLE, MONGODB_INDEX_TEXT);
-            indexKeys.put(KEY_FULLTEXT_BINARY, MONGODB_INDEX_TEXT);
-            DBObject indexOptions = new BasicDBObject();
-            indexOptions.put(MONGODB_INDEX_NAME, FULLTEXT_INDEX_NAME);
-            indexOptions.put(MONGODB_LANGUAGE_OVERRIDE, LANGUAGE_FIELD);
+            Bson indexKeys = Indexes.compoundIndex( //
+                    Indexes.text(KEY_FULLTEXT_SIMPLE), //
+                    Indexes.text(KEY_FULLTEXT_BINARY) //
+            );
+            IndexOptions indexOptions = new IndexOptions().name(FULLTEXT_INDEX_NAME).languageOverride(LANGUAGE_FIELD);
             coll.createIndex(indexKeys, indexOptions);
         }
         // check root presence
-        DBObject query = new BasicDBObject(idKey, getRootId());
-        if (coll.findOne(query, justPresenceField()) != null) {
+        if (coll.count(Filters.eq(idKey, getRootId())) > 0) {
             return;
         }
         // create basic repository structure needed
         if (idType == IdType.sequence || DEBUG_UUIDS) {
             // create the id counter
-            DBObject idCounter = new BasicDBObject();
+            Document idCounter = new Document();
             idCounter.put(MONGODB_ID, COUNTER_NAME_UUID);
             idCounter.put(COUNTER_FIELD, LONG_ZERO);
-            countersColl.insert(idCounter);
+            countersColl.insertOne(idCounter);
         }
         initRoot();
     }
@@ -269,10 +255,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
         if (sequenceLeft == 0) {
             // allocate a new sequence block
             // the database contains the last value from the last block
-            DBObject query = new BasicDBObject(MONGODB_ID, COUNTER_NAME_UUID);
-            DBObject update = new BasicDBObject(MONGODB_INC,
-                    new BasicDBObject(COUNTER_FIELD, Long.valueOf(sequenceBlockSize)));
-            DBObject idCounter = countersColl.findAndModify(query, null, null, false, update, true, false);
+            Bson filter = Filters.eq(MONGODB_ID, COUNTER_NAME_UUID);
+            Bson update = Updates.inc(COUNTER_FIELD, Long.valueOf(sequenceBlockSize));
+            Document idCounter = countersColl.findOneAndUpdate(filter, update,
+                    new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
             if (idCounter == null) {
                 throw new NuxeoException("Repository id counter not initialized");
             }
@@ -299,43 +285,41 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public void createState(State state) {
-        DBObject ob = converter.stateToBson(state);
+        Document doc = converter.stateToBson(state);
         if (log.isTraceEnabled()) {
-            log.trace("MongoDB: CREATE " + ob.get(idKey) + ": " + ob);
+            log.trace("MongoDB: CREATE " + doc.get(idKey) + ": " + doc);
         }
-        coll.insert(ob);
+        coll.insertOne(doc);
         // TODO dupe exception
         // throw new DocumentException("Already exists: " + id);
     }
 
     @Override
     public void createStates(List<State> states) {
-        List<DBObject> obs = states.stream().map(converter::stateToBson).collect(Collectors.toList());
+        List<Document> docs = states.stream().map(converter::stateToBson).collect(Collectors.toList());
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: CREATE ["
-                    + obs.stream().map(ob -> ob.get(idKey).toString()).collect(Collectors.joining(", "))
-                    + "]: " + obs);
+                    + docs.stream().map(doc -> doc.get(idKey).toString()).collect(Collectors.joining(", "))
+                    + "]: " + docs);
         }
-        coll.insert(obs);
+        coll.insertMany(docs);
     }
 
     @Override
     public State readState(String id) {
-        DBObject query = new BasicDBObject(idKey, id);
-        return findOne(query);
+        return findOne(Filters.eq(idKey, id));
     }
 
     @Override
     public List<State> readStates(List<String> ids) {
-        DBObject query = new BasicDBObject(idKey, new BasicDBObject(QueryOperators.IN, ids));
-        return findAll(query, ids.size());
+        return findAll(Filters.in(idKey, ids));
     }
 
     @Override
     public void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater) {
-        List<DBObject> updates = converter.diffToBson(diff);
-        for (DBObject update : updates) {
-            DBObject query = new BasicDBObject(idKey, id);
+        List<Document> updates = converter.diffToBson(diff);
+        for (Document update : updates) {
+            Document filter = new Document(idKey, id);
             if (changeTokenUpdater == null) {
                 if (log.isTraceEnabled()) {
                     log.trace("MongoDB: UPDATE " + id + ": " + update);
@@ -345,20 +329,20 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 // condition works even if value is null
                 Map<String, Serializable> conditions = changeTokenUpdater.getConditions();
                 Map<String, Serializable> tokenUpdates = changeTokenUpdater.getUpdates();
-                if (update.containsField(MONGODB_SET)) {
-                    ((DBObject) update.get(MONGODB_SET)).putAll(tokenUpdates);
+                if (update.containsKey(MONGODB_SET)) {
+                    ((Document) update.get(MONGODB_SET)).putAll(tokenUpdates);
                 } else {
-                    DBObject set = new BasicDBObject();
+                    Document set = new Document();
                     set.putAll(tokenUpdates);
                     update.put(MONGODB_SET, set);
                 }
                 if (log.isTraceEnabled()) {
                     log.trace("MongoDB: UPDATE " + id + ": IF " + conditions + " THEN " + update);
                 }
-                query.putAll(conditions);
+                filter.putAll(conditions);
             }
-            WriteResult w = coll.update(query, update);
-            if (w.getN() != 1) {
+            UpdateResult w = coll.updateMany(filter, update);
+            if (w.getModifiedCount() != 1) {
                 log.trace("MongoDB:    -> CONCURRENT UPDATE: " + id);
                 throw new ConcurrentUpdateException(id);
             }
@@ -369,95 +353,154 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public void deleteStates(Set<String> ids) {
-        DBObject query = new BasicDBObject(idKey, new BasicDBObject(QueryOperators.IN, ids));
+        Bson filter = Filters.in(idKey, ids);
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: REMOVE " + ids);
         }
-        WriteResult w = coll.remove(query);
-        if (w.getN() != ids.size()) {
-            log.error("Removed " + w.getN() + " docs for " + ids.size() + " ids: " + ids);
+        DeleteResult w = coll.deleteMany(filter);
+        if (w.getDeletedCount() != ids.size()) {
+            log.error("Removed " + w.getDeletedCount() + " docs for " + ids.size() + " ids: " + ids);
         }
     }
 
     @Override
     public State readChildState(String parentId, String name, Set<String> ignored) {
-        DBObject query = getChildQuery(parentId, name, ignored);
-        return findOne(query);
+        Bson filter = getChildQuery(parentId, name, ignored);
+        return findOne(filter);
     }
 
-    protected void logQuery(String id, DBObject fields) {
-        logQuery(new BasicDBObject(idKey, id), fields);
+    protected void logQuery(String id, Bson fields) {
+        logQuery(Filters.eq(idKey, id), fields);
     }
 
-    protected void logQuery(DBObject query, DBObject fields) {
+    protected void logQuery(Bson filter, Bson fields) {
         if (fields == null) {
-            log.trace("MongoDB: QUERY " + query);
+            log.trace("MongoDB: QUERY " + filter);
         } else {
-            log.trace("MongoDB: QUERY " + query + " KEYS " + fields);
+            log.trace("MongoDB: QUERY " + filter + " KEYS " + fields);
         }
     }
 
-    protected void logQuery(DBObject query, DBObject fields, DBObject orderBy, int limit, int offset) {
+    protected void logQuery(Bson query, Bson fields, Bson orderBy, int limit, int offset) {
         log.trace("MongoDB: QUERY " + query + " KEYS " + fields + (orderBy == null ? "" : " ORDER BY " + orderBy)
                 + " OFFSET " + offset + " LIMIT " + limit);
     }
 
     @Override
     public boolean hasChild(String parentId, String name, Set<String> ignored) {
-        DBObject query = getChildQuery(parentId, name, ignored);
-        if (log.isTraceEnabled()) {
-            logQuery(query, justPresenceField());
-        }
-        return coll.findOne(query, justPresenceField()) != null;
+        Document filter = getChildQuery(parentId, name, ignored);
+        return exists(filter);
     }
 
-    protected DBObject getChildQuery(String parentId, String name, Set<String> ignored) {
-        DBObject query = new BasicDBObject();
-        query.put(KEY_PARENT_ID, parentId);
-        query.put(KEY_NAME, name);
-        addIgnoredIds(query, ignored);
-        return query;
+    protected Document getChildQuery(String parentId, String name, Set<String> ignored) {
+        Document filter = new Document();
+        filter.put(KEY_PARENT_ID, parentId);
+        filter.put(KEY_NAME, name);
+        addIgnoredIds(filter, ignored);
+        return filter;
     }
 
-    protected void addIgnoredIds(DBObject query, Set<String> ignored) {
+    protected void addIgnoredIds(Document filter, Set<String> ignored) {
         if (!ignored.isEmpty()) {
-            DBObject notInIds = new BasicDBObject(QueryOperators.NIN, new ArrayList<>(ignored));
-            query.put(idKey, notInIds);
+            Document notInIds = new Document(QueryOperators.NIN, new ArrayList<>(ignored));
+            filter.put(idKey, notInIds);
         }
     }
 
     @Override
     public List<State> queryKeyValue(String key, Object value, Set<String> ignored) {
-        DBObject query = new BasicDBObject(converter.keyToBson(key), value);
-        addIgnoredIds(query, ignored);
-        return findAll(query, 0);
+        Document filter = new Document(converter.keyToBson(key), value);
+        addIgnoredIds(filter, ignored);
+        return findAll(filter);
     }
 
     @Override
     public List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored) {
-        DBObject query = new BasicDBObject(converter.keyToBson(key1), value1);
-        query.put(converter.keyToBson(key2), value2);
-        addIgnoredIds(query, ignored);
-        return findAll(query, 0);
+        Document filter = new Document(converter.keyToBson(key1), value1);
+        filter.put(converter.keyToBson(key2), value2);
+        addIgnoredIds(filter, ignored);
+        return findAll(filter);
     }
 
     @Override
     public Stream<State> getDescendants(String rootId, Set<String> keys) {
-        DBObject query = new BasicDBObject(KEY_ANCESTOR_IDS, rootId);
-        DBObject fields = new BasicDBObject();
+        Bson filter = Filters.eq(KEY_ANCESTOR_IDS, rootId);
+        Document fields = new Document();
         if (useCustomId) {
             fields.put(MONGODB_ID, ZERO);
         }
         fields.put(idKey, ONE);
         keys.forEach(key -> fields.put(key, ONE));
+        return stream(filter, fields);
+    }
+
+    @Override
+    public boolean queryKeyValuePresence(String key, String value, Set<String> ignored) {
+        Document filter = new Document(key, value);
+        addIgnoredIds(filter, ignored);
+        return exists(filter);
+    }
+
+    protected boolean exists(Bson filter) {
+        return exists(filter, justPresenceField());
+    }
+
+    protected boolean exists(Bson filter, Bson projection) {
         if (log.isTraceEnabled()) {
-            logQuery(query, fields);
+            logQuery(filter, projection);
         }
+        return coll.find(filter).projection(projection).first() != null;
+    }
+
+    protected State findOne(Bson filter) {
+        try (Stream<State> stream = stream(filter, null)) {
+            return stream.findAny().orElse(null);
+        }
+    }
+
+
+    protected List<State> findAll(Bson filter) {
+        try (Stream<State> stream = stream(filter)) {
+            return stream.collect(Collectors.toList());
+        }
+    }
+
+    /**
+     * @see #stream(Bson, Bson)
+     */
+    protected Stream<State> stream(Bson filter) {
+        return stream(filter, null);
+    }
+
+    /**
+     * Logs, runs request and constructs a closeable {@link Stream} on top of {@link MongoCursor}.
+     * <p />
+     * We should rely on this method, because it correctly handles cursor closed state.
+     * <p />
+     * Note: Looping on {@link FindIterable} or {@link MongoIterable} could lead to cursor leaks. This is also the case
+     * on some call to {@link MongoIterable#first()}.
+     *
+     * @return a closeable {@link Stream} instance linked to {@link MongoCursor}
+     */
+    protected Stream<State> stream(Bson filter, Bson projection) {
+        if (filter == null) {
+            // empty filter
+            filter = new Document();
+        }
+        // it's ok if projection is null
+        if (log.isTraceEnabled()) {
+            logQuery(filter, projection);
+        }
+
         boolean completedAbruptly = true;
-        DBCursor cursor = coll.find(query, fields);
+        MongoCursor<Document> cursor = coll.find(filter).projection(projection).iterator();
         try {
-            Stream<State> stream = StreamSupport.stream(cursor.spliterator(), false) //
+            Set<String> seen = new HashSet<>();
+            Stream<State> stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(cursor, 0), false) //
                                                 .onClose(cursor::close)
+                                                .filter(doc -> seen.add(doc.getString(idKey)))
+                                                // MongoDB cursors may return the same
+                                                // object several times
                                                 .map(converter::bsonToState);
             // the stream takes responsibility for closing the session
             completedAbruptly = false;
@@ -469,44 +512,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
     }
 
-    @Override
-    public boolean queryKeyValuePresence(String key, String value, Set<String> ignored) {
-        DBObject query = new BasicDBObject(key, value);
-        addIgnoredIds(query, ignored);
-        if (log.isTraceEnabled()) {
-            logQuery(query, justPresenceField());
-        }
-        return coll.findOne(query, justPresenceField()) != null;
-    }
-
-    protected State findOne(DBObject query) {
-        if (log.isTraceEnabled()) {
-            logQuery(query, null);
-        }
-        return converter.bsonToState(coll.findOne(query));
-    }
-
-    protected List<State> findAll(DBObject query, int sizeHint) {
-        if (log.isTraceEnabled()) {
-            logQuery(query, null);
-        }
-        Set<String> seen = new HashSet<>();
-        try (DBCursor cursor = coll.find(query)) {
-            List<State> list = new ArrayList<>(sizeHint);
-            for (DBObject ob : cursor) {
-                if (!seen.add((String) ob.get(idKey))) {
-                    // MongoDB cursors may return the same
-                    // object several times
-                    continue;
-                }
-                list.add(converter.bsonToState(ob));
-            }
-            return list;
-        }
-    }
-
-    protected DBObject justPresenceField() {
-        return new BasicDBObject(MONGODB_ID, ONE);
+    protected Document justPresenceField() {
+        return new Document(MONGODB_ID, ONE);
     }
 
     @Override
@@ -519,60 +526,63 @@ public class MongoDBRepository extends DBSRepositoryBase {
         if (builder.hasFulltext && isFulltextDisabled()) {
             throw new QueryParseException("Fulltext search disabled by configuration");
         }
-        DBObject query = builder.getQuery();
-        addPrincipals(query, evaluator.principals);
-        DBObject orderBy = builder.getOrderBy();
-        DBObject keys = builder.getProjection();
+        Document filter = builder.getQuery();
+        addPrincipals(filter, evaluator.principals);
+        Bson orderBy = builder.getOrderBy();
+        Bson keys = builder.getProjection();
         // Don't do manual projection if there are no projection wildcards, as this brings no new
         // information and is costly. The only difference is several identical rows instead of one.
         boolean manualProjection = !distinctDocuments && builder.hasProjectionWildcard();
         if (manualProjection) {
             // we'll do post-treatment to re-evaluate the query to get proper wildcard projections
             // so we need the full state from the database
-            keys = new BasicDBObject();
+            keys = null;
             evaluator.parse();
         }
 
         if (log.isTraceEnabled()) {
-            logQuery(query, keys, orderBy, limit, offset);
+            logQuery(filter, keys, orderBy, limit, offset);
         }
 
         List<Map<String, Serializable>> projections;
         long totalSize;
-        try (DBCursor cursor = coll.find(query, keys).skip(offset).limit(limit)) {
-            if (orderBy != null) {
-                cursor.sort(orderBy);
-            }
+        try (MongoCursor<Document> cursor = coll.find(filter)
+                                                .projection(keys)
+                                                .skip(offset)
+                                                .limit(limit)
+                                                .sort(orderBy)
+                                                .iterator()) {
             projections = new ArrayList<>();
             DBSStateFlattener flattener = new DBSStateFlattener(builder.propertyKeys);
-            for (DBObject ob : cursor) {
-                State state = converter.bsonToState(ob);
+            Iterable<Document> docs = () -> cursor;
+            for (Document doc : docs) {
+                State state = converter.bsonToState(doc);
                 if (manualProjection) {
                     projections.addAll(evaluator.matches(state));
                 } else {
                     projections.add(flattener.flatten(state));
                 }
             }
-            if (countUpTo == -1) {
-                // count full size
-                if (limit == 0) {
-                    totalSize = projections.size();
-                } else {
-                    totalSize = cursor.count();
-                }
-            } else if (countUpTo == 0) {
-                // no count
-                totalSize = -1; // not counted
+        }
+        if (countUpTo == -1) {
+            // count full size
+            if (limit == 0) {
+                totalSize = projections.size();
             } else {
-                // count only if less than countUpTo
-                if (limit == 0) {
-                    totalSize = projections.size();
-                } else {
-                    totalSize = cursor.copy().limit(countUpTo + 1).count();
-                }
-                if (totalSize > countUpTo) {
-                    totalSize = -2; // truncated
-                }
+                totalSize = coll.count(filter);
+            }
+        } else if (countUpTo == 0) {
+            // no count
+            totalSize = -1; // not counted
+        } else {
+            // count only if less than countUpTo
+            if (limit == 0) {
+                totalSize = projections.size();
+            } else {
+                totalSize = coll.count(filter, new CountOptions().limit(countUpTo + 1));
+            }
+            if (totalSize > countUpTo) {
+                totalSize = -2; // truncated
             }
         }
         if (log.isTraceEnabled() && projections.size() != 0) {
@@ -590,13 +600,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
         if (builder.hasFulltext && isFulltextDisabled()) {
             throw new QueryParseException("Fulltext search disabled by configuration");
         }
-        DBObject query = builder.getQuery();
-        DBObject keys = builder.getProjection();
+        Bson filter = builder.getQuery();
+        Bson keys = builder.getProjection();
         if (log.isTraceEnabled()) {
-            logQuery(query, keys, null, 0, 0);
+            logQuery(filter, keys, null, 0, 0);
         }
 
-        DBCursor cursor = coll.find(query, keys);
+        MongoCursor<Document> cursor = coll.find(filter).projection(keys).batchSize(batchSize).iterator();
         String scrollId = cursorService.registerCursor(cursor, batchSize, keepAliveSeconds);
         return scroll(scrollId);
     }
@@ -606,30 +616,30 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return cursorService.scroll(scrollId, ob -> (String) ob.get(converter.keyToBson(KEY_ID)));
     }
 
-    protected void addPrincipals(DBObject query, Set<String> principals) {
+    protected void addPrincipals(Document query, Set<String> principals) {
         if (principals != null) {
-            DBObject inPrincipals = new BasicDBObject(QueryOperators.IN, new ArrayList<>(principals));
+            Document inPrincipals = new Document(QueryOperators.IN, new ArrayList<>(principals));
             query.put(DBSDocument.KEY_READ_ACL, inPrincipals);
         }
     }
 
     /** Keys used for document projection when marking all binaries for GC. */
-    protected DBObject binaryKeys;
+    protected Bson binaryKeys;
 
     @Override
     protected void initBlobsPaths() {
         MongoDBBlobFinder finder = new MongoDBBlobFinder();
         finder.visit();
-        binaryKeys = finder.binaryKeys;
+        binaryKeys = Projections.fields(finder.binaryKeys);
     }
 
     protected static class MongoDBBlobFinder extends BlobFinder {
-        protected DBObject binaryKeys = new BasicDBObject(MONGODB_ID, ZERO);
+        protected List<Bson> binaryKeys = new ArrayList<>(Collections.singleton(Projections.excludeId()));
 
         @Override
         protected void recordBlobPath() {
             path.addLast(KEY_BLOB_DATA);
-            binaryKeys.put(StringUtils.join(path, "."), ONE);
+            binaryKeys.add(Projections.include(StringUtils.join(path, ".")));
             path.removeLast();
         }
     }
@@ -639,24 +649,21 @@ public class MongoDBRepository extends DBSRepositoryBase {
         DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         // TODO add a query to not scan all documents
         if (log.isTraceEnabled()) {
-            logQuery(new BasicDBObject(), binaryKeys);
+            logQuery(new Document(), binaryKeys);
         }
-        try (DBCursor cursor = coll.find(new BasicDBObject(), binaryKeys)) {
-            for (DBObject ob : cursor) {
-                markReferencedBinaries(ob, blobManager);
-            }
-        }
+        Block<Document> block = doc -> markReferencedBinaries(doc, blobManager);
+        coll.find().projection(binaryKeys).forEach(block);
     }
 
-    protected void markReferencedBinaries(DBObject ob, DocumentBlobManager blobManager) {
+    protected void markReferencedBinaries(Document ob, DocumentBlobManager blobManager) {
         for (String key : ob.keySet()) {
             Object value = ob.get(key);
             if (value instanceof List) {
                 @SuppressWarnings("unchecked")
                 List<Object> list = (List<Object>) value;
                 for (Object v : list) {
-                    if (v instanceof DBObject) {
-                        markReferencedBinaries((DBObject) v, blobManager);
+                    if (v instanceof Document) {
+                        markReferencedBinaries((Document) v, blobManager);
                     } else {
                         markReferencedBinary(v, blobManager);
                     }
@@ -665,8 +672,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 for (Object v : (Object[]) value) {
                     markReferencedBinary(v, blobManager);
                 }
-            } else if (value instanceof DBObject) {
-                markReferencedBinaries((DBObject) value, blobManager);
+            } else if (value instanceof Document) {
+                markReferencedBinaries((Document) value, blobManager);
             } else {
                 markReferencedBinary(value, blobManager);
             }
@@ -681,27 +688,22 @@ public class MongoDBRepository extends DBSRepositoryBase {
         blobManager.markReferencedBinary(key, repositoryName);
     }
 
-    protected static final DBObject LOCK_FIELDS;
+    protected static final Bson LOCK_FIELDS = Projections.include(KEY_LOCK_OWNER, KEY_LOCK_CREATED);
 
-    static {
-        LOCK_FIELDS = new BasicDBObject();
-        LOCK_FIELDS.put(KEY_LOCK_OWNER, ONE);
-        LOCK_FIELDS.put(KEY_LOCK_CREATED, ONE);
-    }
-
-    protected static final DBObject UNSET_LOCK_UPDATE = new BasicDBObject(MONGODB_UNSET, LOCK_FIELDS);
+    protected static final Bson UNSET_LOCK_UPDATE = Updates.combine(Updates.unset(KEY_LOCK_OWNER),
+            Updates.unset(KEY_LOCK_CREATED));
 
     @Override
     public Lock getLock(String id) {
         if (log.isTraceEnabled()) {
             logQuery(id, LOCK_FIELDS);
         }
-        DBObject res = coll.findOne(new BasicDBObject(idKey, id), LOCK_FIELDS);
+        Document res = coll.find(Filters.eq(idKey, id)).projection(LOCK_FIELDS).first();
         if (res == null) {
             // document not found
             throw new DocumentNotFoundException(id);
         }
-        String owner = (String) res.get(KEY_LOCK_OWNER);
+        String owner = res.getString(KEY_LOCK_OWNER);
         if (owner == null) {
             // not locked
             return null;
@@ -712,16 +714,18 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public Lock setLock(String id, Lock lock) {
-        DBObject query = new BasicDBObject(idKey, id);
-        query.put(KEY_LOCK_OWNER, null); // select doc if no lock is set
-        DBObject setLock = new BasicDBObject();
-        setLock.put(KEY_LOCK_OWNER, lock.getOwner());
-        setLock.put(KEY_LOCK_CREATED, converter.serializableToBson(lock.getCreated()));
-        DBObject setLockUpdate = new BasicDBObject(MONGODB_SET, setLock);
+        Bson filter = Filters.and( //
+                Filters.eq(idKey, id), //
+                Filters.exists(KEY_LOCK_OWNER, false) // select doc if no lock is set
+        );
+        Bson setLock = Updates.combine( //
+                Updates.set(KEY_LOCK_OWNER, lock.getOwner()), //
+                Updates.set(KEY_LOCK_CREATED, converter.serializableToBson(lock.getCreated())) //
+        );
         if (log.isTraceEnabled()) {
-            log.trace("MongoDB: FINDANDMODIFY " + query + " UPDATE " + setLockUpdate);
+            log.trace("MongoDB: FINDANDMODIFY " + filter + " UPDATE " + setLock);
         }
-        DBObject res = coll.findAndModify(query, null, null, false, setLockUpdate, false, false);
+        Document res = coll.findOneAndUpdate(filter, setLock);
         if (res != null) {
             // found a doc to lock
             return null;
@@ -731,7 +735,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             if (log.isTraceEnabled()) {
                 logQuery(id, LOCK_FIELDS);
             }
-            DBObject old = coll.findOne(new BasicDBObject(idKey, id), LOCK_FIELDS);
+            Document old = coll.find(Filters.eq(idKey, id)).projection(LOCK_FIELDS).first();
             if (old == null) {
                 // document not found
                 throw new DocumentNotFoundException(id);
@@ -749,15 +753,18 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public Lock removeLock(String id, String owner) {
-        DBObject query = new BasicDBObject(idKey, id);
+        Document filter = new Document(idKey, id);
         if (owner != null) {
             // remove if owner matches or null
             // implements LockManager.canLockBeRemoved inside MongoDB
             Object ownerOrNull = Arrays.asList(owner, null);
-            query.put(KEY_LOCK_OWNER, new BasicDBObject(QueryOperators.IN, ownerOrNull));
+            filter.put(KEY_LOCK_OWNER, new Document(QueryOperators.IN, ownerOrNull));
         } // else unconditional remove
         // remove the lock
-        DBObject old = coll.findAndModify(query, null, null, false, UNSET_LOCK_UPDATE, false, false);
+        if (log.isTraceEnabled()) {
+            log.trace("MongoDB: FINDANDMODIFY " + filter + " UPDATE " + UNSET_LOCK_UPDATE);
+        }
+        Document old = coll.findOneAndUpdate(filter, UNSET_LOCK_UPDATE);
         if (old != null) {
             // found a doc and removed the lock, return previous lock
             String oldOwner = (String) old.get(KEY_LOCK_OWNER);
@@ -775,7 +782,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             if (log.isTraceEnabled()) {
                 logQuery(id, LOCK_FIELDS);
             }
-            old = coll.findOne(new BasicDBObject(idKey, id), LOCK_FIELDS);
+            old = coll.find(Filters.eq(idKey, id)).projection(LOCK_FIELDS).first();
             if (old == null) {
                 // document not found
                 throw new DocumentNotFoundException(id);

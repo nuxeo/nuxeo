@@ -42,6 +42,19 @@ public class MongoDBConnectionConfig implements Serializable {
     @XNode("dbname")
     private String dbname;
 
+    /**
+     * For deserialization
+     */
+    protected MongoDBConnectionConfig() {
+        //nothing
+    }
+
+    public MongoDBConnectionConfig(String id, String server, String dbname) {
+        this.id = id;
+        this.server = server;
+        this.dbname = dbname;
+    }
+
     public String getId() {
         return id;
     }

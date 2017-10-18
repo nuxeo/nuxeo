@@ -862,6 +862,11 @@ public class TestSQLRepositoryQuery {
         assertEquals(7, dml.size());
         assertEquals(7, dml.totalSize());
 
+        // test totalCount=true with an offset + limit
+        dml = session.query(sql, null, 2, 2, 10);
+        assertEquals(2, dml.size());
+        assertEquals(7, dml.totalSize());
+
         // truncate result to 6
         dml = session.query(sql, null, 0, 0, 6);
         assertTrue(dml.totalSize() < 0);

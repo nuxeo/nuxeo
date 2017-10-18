@@ -21,19 +21,15 @@ package org.nuxeo.ecm.core.test;
 import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.mongodb.client.MongoDatabase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.dbs.DBSHelper;
-import org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository;
-import org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.DatabaseDB2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseDerby;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
@@ -49,9 +45,8 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.osgi.framework.Bundle;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 
 /**
  * Description of the specific capabilities of a repository for tests, and helper methods.
@@ -99,10 +94,6 @@ public class StorageConfiguration {
     final CoreFeature feature;
 
     private boolean changeTokenEnabled;
-
-    protected String mongoDBServer;
-
-    protected String mongoDBDbName;
 
     public StorageConfiguration(CoreFeature feature) {
         coreType = defaultSystemProperty(CORE_PROPERTY, DEFAULT_CORE);
@@ -166,26 +157,11 @@ public class StorageConfiguration {
     }
 
     protected void initMongoDB() {
-        mongoDBServer = defaultProperty(MONGODB_SERVER_PROPERTY, DEFAULT_MONGODB_SERVER);
-        mongoDBDbName = defaultProperty(MONGODB_DBNAME_PROPERTY, DEFAULT_MONGODB_DBNAME);
-        MongoDBRepositoryDescriptor descriptor = new MongoDBRepositoryDescriptor();
-        descriptor.name = getRepositoryName();
-        descriptor.server = mongoDBServer;
-        descriptor.dbname = mongoDBDbName;
-        try {
-            clearMongoDB(descriptor);
-        } catch (UnknownHostException e) {
-            throw new NuxeoException(e);
-        }
-    }
-
-    protected void clearMongoDB(MongoDBRepositoryDescriptor descriptor) throws UnknownHostException {
-        MongoClient mongoClient = MongoDBConnectionHelper.newMongoClient(descriptor.server);
-        try {
-            MongoDatabase database = mongoClient.getDatabase(descriptor.dbname);
+        String mongoDBServer = defaultProperty(MONGODB_SERVER_PROPERTY, DEFAULT_MONGODB_SERVER);
+        String mongoDBDbName = defaultProperty(MONGODB_DBNAME_PROPERTY, DEFAULT_MONGODB_DBNAME);
+        try (MongoClient mongoClient = MongoDBConnectionHelper.newMongoClient(mongoDBServer)) {
+            MongoDatabase database = mongoClient.getDatabase(mongoDBDbName);
             database.drop();
-        } finally {
-            mongoClient.close();
         }
     }
 
@@ -302,7 +278,7 @@ public class StorageConfiguration {
     public List<String> getExternalBundles() {
         if (isDBSExternal()) {
             return Arrays.asList(String.format("org.nuxeo.ecm.core.storage.%s", coreType),
-                    String.format("org.nuxeo.ecm.core.storage.%s.test", coreType));
+                                 String.format("org.nuxeo.ecm.core.storage.%s.test", coreType));
         }
         return Collections.emptyList();
     }
@@ -364,20 +340,6 @@ public class StorageConfiguration {
      */
     public String getCoreType() {
         return coreType;
-    }
-
-    /**
-     * @since 9.2
-     */
-    public String getMongoDBServer() {
-        return mongoDBServer;
-    }
-
-    /**
-     * @since 9.2
-     */
-    public String getMongoDBDbName() {
-        return mongoDBDbName;
     }
 
 }

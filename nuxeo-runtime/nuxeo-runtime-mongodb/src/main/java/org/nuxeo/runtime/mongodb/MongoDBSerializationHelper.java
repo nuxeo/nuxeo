@@ -42,12 +42,6 @@ public class MongoDBSerializationHelper {
 
     public static final String MONGODB_ID = "_id";
 
-    public static final String MONGODB_SET = "$set";
-
-    public static final String MONGODB_INC = "$inc";
-
-    public static final String MONGODB_SEQ = "seq";
-
     private MongoDBSerializationHelper() {
         // empty
     }

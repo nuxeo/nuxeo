@@ -32,6 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.ComponentStartOrders;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -56,7 +57,7 @@ public class RepositoryService extends DefaultComponent {
 
     @Override
     public int getApplicationStartedOrder() {
-        return 100;
+        return ComponentStartOrders.REPOSITORY;
     }
 
     @Override

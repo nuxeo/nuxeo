@@ -18,10 +18,15 @@
  */
 package org.nuxeo.ecm.core.storage.mongodb;
 
+import java.util.function.BiConsumer;
+
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.mongodb.MongoDBComponent;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionConfig;
 
 /**
  * Service holding the configuration for MongoDB repositories.
@@ -30,12 +35,16 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class MongoDBRepositoryService extends DefaultComponent {
 
+    public static final String DB_DEFAULT = "nuxeo";
+
     private static final String XP_REPOSITORY = "repository";
 
     @Override
     public void registerContribution(Object contrib, String xpoint, ComponentInstance contributor) {
         if (XP_REPOSITORY.equals(xpoint)) {
             addContribution((MongoDBRepositoryDescriptor) contrib);
+            handleConnectionContribution((MongoDBRepositoryDescriptor) contrib,
+                    (c, d) -> c.registerContribution(d, "connection", contributor));
         } else {
             throw new RuntimeException("Unknown extension point: " + xpoint);
         }
@@ -45,6 +54,8 @@ public class MongoDBRepositoryService extends DefaultComponent {
     public void unregisterContribution(Object contrib, String xpoint, ComponentInstance contributor) {
         if (XP_REPOSITORY.equals(xpoint)) {
             removeContribution((MongoDBRepositoryDescriptor) contrib);
+            handleConnectionContribution((MongoDBRepositoryDescriptor) contrib,
+                    (c, d) -> c.unregisterContribution(d, "connection", contributor));
         } else {
             throw new RuntimeException("Unknown extension point: " + xpoint);
         }
@@ -56,6 +67,27 @@ public class MongoDBRepositoryService extends DefaultComponent {
 
     protected void removeContribution(MongoDBRepositoryDescriptor descriptor) {
         Framework.getService(DBSRepositoryService.class).removeContribution(descriptor, MongoDBRepositoryFactory.class);
+    }
+
+    /**
+     * Backward compatibility for {@link MongoDBRepositoryDescriptor#server descriptor.server} and
+     * {@link MongoDBRepositoryDescriptor#dbname descriptor.dbname}
+     *
+     * @since 9.3
+     * @deprecated since 9.3
+     */
+    @Deprecated
+    protected void handleConnectionContribution(MongoDBRepositoryDescriptor descriptor,
+            BiConsumer<DefaultComponent, MongoDBConnectionConfig> consumer) {
+        if (StringUtils.isNotBlank(descriptor.server)) {
+            String id = "repository/" + descriptor.name;
+            String server = descriptor.server;
+            String dbName = StringUtils.defaultIfBlank(descriptor.dbname, DB_DEFAULT);
+            MongoDBConnectionConfig connection = new MongoDBConnectionConfig(id, server, dbName);
+
+            DefaultComponent component = (DefaultComponent) Framework.getRuntime().getComponent(MongoDBComponent.NAME);
+            consumer.accept(component, connection);
+        }
     }
 
 }
