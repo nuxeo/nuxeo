@@ -19,11 +19,13 @@
 package org.nuxeo.elasticsearch.client;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequestBuilder;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -41,6 +43,8 @@ import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
+import org.elasticsearch.cluster.metadata.AliasMetaData;
+import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -154,6 +158,29 @@ public class ESTransportClient implements ESClient {
     @Override
     public String getNodesStats() {
         return client.admin().cluster().prepareNodesStats().get().toString();
+    }
+
+    @Override
+    public boolean aliasExists(String aliasName) {
+        return client.admin().indices().prepareAliasesExist(aliasName).get().isExists();
+    }
+
+    @Override
+    public String getFirstIndexForAlias(String aliasName) {
+        ImmutableOpenMap<String, List<AliasMetaData>> aliases = client.admin().indices().prepareGetAliases(aliasName).get().getAliases();
+        if (aliases.isEmpty()) {
+            return null;
+        }
+        return aliases.keysIt().next();
+    }
+
+    @Override
+    public void updateAlias(String aliasName, String indexName) {
+        IndicesAliasesRequestBuilder cmd = client.admin().indices().prepareAliases();
+        if (aliasExists(aliasName)) {
+            cmd.removeAlias(getFirstIndexForAlias(aliasName), aliasName);
+        }
+        cmd.addAlias(indexName, aliasName).execute().actionGet();
     }
 
     @Override

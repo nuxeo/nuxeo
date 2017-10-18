@@ -121,7 +121,12 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     @Override
-    public void runReindexingWorker(String repositoryName, String nxql) {
+    public void runReindexingWorker(String repositoryName, String nxql, boolean syncAlias) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public void reindexRepository(String repositoryName) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
@@ -280,7 +285,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
         if (log.isDebugEnabled()) {
             logDebugMessageTruncated(String.format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                    esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE, cmd.getTargetDocumentId(),
+                    getWriteIndexForRepository(cmd.getRepositoryName()), DOC_TYPE, cmd.getTargetDocumentId(),
                     request.toString()), MAX_CURL_LINE);
         }
         try {
@@ -310,7 +315,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     void processDeleteCommandNonRecursive(IndexingCommand cmd) {
-        String indexName = esa.getIndexNameForRepository(cmd.getRepositoryName());
+        String indexName = getWriteIndexForRepository(cmd.getRepositoryName());
         DeleteRequest request = new DeleteRequest(indexName, DOC_TYPE, cmd.getTargetDocumentId());
         if (log.isDebugEnabled()) {
             log.debug(String.format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s'", indexName,
@@ -320,7 +325,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     void processDeleteCommandRecursive(IndexingCommand cmd) {
-        String indexName = esa.getIndexNameForRepository(cmd.getRepositoryName());
+        String indexName = getWriteIndexForRepository(cmd.getRepositoryName());
         // we don't want to rely on target document because the document can be
         // already removed
         String docPath = getPathOfDocFromEs(cmd.getRepositoryName(), cmd.getTargetDocumentId());
@@ -374,7 +379,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
      * Return the ecm:path of an ES document or null if not found.
      */
     String getPathOfDocFromEs(String repository, String docId) {
-        String indexName = esa.getIndexNameForRepository(repository);
+        String indexName = getWriteIndexForRepository(repository);
         GetRequest request = new GetRequest(indexName, DOC_TYPE, docId).fetchSourceContext(
                 new FetchSourceContext(true, new String[] { PATH_FIELD }, null));
         if (log.isDebugEnabled()) {
@@ -404,7 +409,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             OutputStream out = new BytesStreamOutput();
             JsonGenerator jsonGen = factory.createJsonGenerator(out);
             jsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
-            IndexRequest request = new IndexRequest(esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE,
+            IndexRequest request = new IndexRequest(getWriteIndexForRepository(cmd.getRepositoryName()), DOC_TYPE,
                     cmd.getTargetDocumentId()).source(jsonBuilder(out));
             if (useExternalVersion && cmd.getOrder() > 0) {
                 request.versionType(VersionType.EXTERNAL).version(cmd.getOrder());
@@ -413,6 +418,10 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         } catch (IOException e) {
             throw new NuxeoException("Unable to create index request for Document " + cmd.getTargetDocumentId(), e);
         }
+    }
+
+    protected String getWriteIndexForRepository(String repository) {
+        return esa.getWriteIndexName(esa.getIndexNameForRepository(repository));
     }
 
 }

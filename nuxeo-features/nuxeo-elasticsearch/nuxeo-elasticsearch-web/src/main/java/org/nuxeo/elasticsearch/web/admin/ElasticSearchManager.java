@@ -111,8 +111,7 @@ public class ElasticSearchManager implements Serializable {
     public void startReindexAll() {
         String repositoryName = getRepositoryName();
         log.warn("Re-indexing the entire repository: " + repositoryName);
-        esa.dropAndInitRepositoryIndex(repositoryName);
-        esi.runReindexingWorker(repositoryName, "SELECT ecm:uuid FROM Document");
+        esi.reindexRepository(repositoryName);
     }
 
     public void startReindexNxql() {

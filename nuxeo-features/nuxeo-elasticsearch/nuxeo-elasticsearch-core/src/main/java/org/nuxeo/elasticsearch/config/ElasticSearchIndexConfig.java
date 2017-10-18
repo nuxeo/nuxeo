@@ -30,10 +30,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.elasticsearch.core.IncrementalIndexNameGenerator;
 
 /**
  * XMap descriptor for configuring an index
@@ -46,13 +48,23 @@ public class ElasticSearchIndexConfig {
 
     public static final String DEFAULT_MAPPING_FILE = "default-doc-mapping.json";
 
-    private static final String DEFAULT_REPOSITORY_NAME = "default";
+    protected static final String DEFAULT_REPOSITORY_NAME = "default";
+
+    protected static final String WRITE_SUFFIX = "-write";
 
     @XNode("@enabled")
     protected boolean isEnabled = true;
 
     @XNode("@name")
     protected String name;
+
+    // @since 9.3
+    @XNode("@manageAlias")
+    protected boolean manageAlias;
+
+    // @since 9.3
+    @XNode("@writeAlias")
+    protected String writeAlias;
 
     @XNode("@repository")
     protected String repositoryName;
@@ -210,4 +222,33 @@ public class ElasticSearchIndexConfig {
         }
     }
 
+    // @since 9.3
+    public boolean hasExplicitWriteIndex() {
+        return StringUtils.isNotBlank(writeAlias);
+    }
+
+    // @since 9.3
+    public String writeIndexOrAlias() {
+        // Custom alias managed outside of Nuxeo
+        if (hasExplicitWriteIndex()) {
+            return writeAlias;
+        }
+        // Nuxeo manages the write alias
+        if (manageAlias) {
+            return name + WRITE_SUFFIX;
+        }
+        // Simple index
+        return name;
+    }
+
+    // @since 9.3
+    public boolean manageAlias() {
+        return manageAlias;
+    }
+
+    // @since 9.3
+    public String newWriteIndexForAlias(String aliasName, String oldIndexName) {
+        // TODO make the alias resolver configurable
+        return new IncrementalIndexNameGenerator().getNextIndexName(aliasName, oldIndexName);
+    }
 }

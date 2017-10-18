@@ -53,7 +53,24 @@ public interface ElasticSearchIndexing {
      *
      * @since 7.1
      */
-    void runReindexingWorker(String repositoryName, String nxql);
+    default void runReindexingWorker(String repositoryName, String nxql) {
+        runReindexingWorker(repositoryName, nxql, false);
+    }
+
+    /**
+     * Reindex documents matching the NXQL query, This is done in an asynchronous job. When syncAlias is true a call is
+     * made to sync the search alias with write alias once indexing is done.
+     *
+     * @since 9.3
+     */
+    void runReindexingWorker(String repositoryName, String nxql, boolean syncAlias);
+
+    /**
+     * Recreate an index and run an async reindexing worker.
+     *
+     * @since 9.3
+     */
+    void reindexRepository(String repositoryName);
 
     /**
      * Process the {@link IndexingCommand}.

@@ -48,13 +48,20 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
 
     protected final String nxql;
 
+    protected final boolean syncAlias;
+
     protected transient WorkManager workManager;
 
-    protected long documentCount = 0;
+    protected long documentCount;
 
     public ScrollingIndexingWorker(String repositoryName, String nxql) {
+        this(repositoryName, nxql, false);
+    }
+
+    public ScrollingIndexingWorker(String repositoryName, String nxql, boolean syncAlias) {
         this.repositoryName = repositoryName;
         this.nxql = nxql;
+        this.syncAlias = syncAlias;
     }
 
     @Override
@@ -73,7 +80,6 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
         int bucketSize = getBucketSize();
         ScrollResult ret = session.scroll(nxql, bucketSize, 60);
         int bucketCount = 0;
-        boolean warnAtEnd = false;
         try {
             while (ret.hasResults()) {
                 documentCount += ret.getResultIds().size();
@@ -83,15 +89,14 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
                 TransactionHelper.commitOrRollbackTransaction();
                 TransactionHelper.startTransaction();
             }
-            if (documentCount > WARN_DOC_COUNT) {
-                warnAtEnd = true;
-                scheduleBucketWorker(Collections.emptyList(), warnAtEnd);
+            if (syncAlias) {
+                scheduleBucketWorker(Collections.emptyList(), true);
             }
         } finally {
-            if (warnAtEnd || log.isDebugEnabled()) {
+            if (syncAlias|| documentCount > WARN_DOC_COUNT) {
                 String message = String.format("Re-indexing job: %s has submited %d documents in %d bucket workers",
                         jobName, documentCount, bucketCount);
-                if (warnAtEnd) {
+                if (syncAlias) {
                     log.warn(message);
                 } else {
                     log.debug(message);
@@ -100,11 +105,11 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
         }
     }
 
-    protected void scheduleBucketWorker(List<String> bucket, boolean isLast) {
-        if (bucket.isEmpty()) {
+    protected void scheduleBucketWorker(List<String> bucket, boolean syncAlias) {
+        if (bucket.isEmpty() && !syncAlias) {
             return;
         }
-        BucketIndexingWorker subWorker = new BucketIndexingWorker(repositoryName, bucket, isLast);
+        BucketIndexingWorker subWorker = new BucketIndexingWorker(repositoryName, bucket, syncAlias);
         getWorkManager().schedule(subWorker);
     }
 

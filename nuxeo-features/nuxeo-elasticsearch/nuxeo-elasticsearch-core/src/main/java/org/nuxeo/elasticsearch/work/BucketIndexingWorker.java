@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.elasticsearch.Timestamp;
+import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
@@ -50,14 +51,14 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
 
     private static final String DEFAULT_BUCKET_SIZE = "50";
 
-    private final boolean warnAtEnd;
+    private final boolean syncAlias;
 
     private final int documentCount;
 
-    public BucketIndexingWorker(String repositoryName, List<String> docIds, boolean warnAtEnd) {
+    public BucketIndexingWorker(String repositoryName, List<String> docIds, boolean syncAlias) {
         setDocuments(repositoryName, docIds);
         documentCount = docIds.size();
-        this.warnAtEnd = warnAtEnd;
+        this.syncAlias = syncAlias;
     }
 
     @Override
@@ -84,8 +85,10 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
             esi.indexNonRecursive(getIndexingCommands(session, ids));
             ids.clear();
         }
-        if (warnAtEnd) {
+        if (syncAlias) {
             log.warn(String.format("Re-indexing job: %s completed.", getSchedulePath().getParentPath()));
+            ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+            esa.syncSearchAndWriteAlias(esa.getIndexNameForRepository(repositoryName));
         }
     }
 
