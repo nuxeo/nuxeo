@@ -310,6 +310,11 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
         return maxResults.longValue();
     }
 
+    @Override
+    public long getResultsCountLimit() {
+        return getMaxResults();
+    }
+
     /**
      * Returns the page limit. The n first page we know they exist. We don't compute the number of page beyond this
      * limit.

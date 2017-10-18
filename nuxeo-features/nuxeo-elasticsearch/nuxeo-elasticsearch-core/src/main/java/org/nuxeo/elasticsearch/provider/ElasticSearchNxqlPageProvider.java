@@ -19,6 +19,12 @@
 
 package org.nuxeo.elasticsearch.provider;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -39,12 +45,6 @@ import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.query.NxqlQueryConverter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Elasticsearch Page provider that converts the NXQL query build by CoreQueryDocumentPageProvider.
@@ -264,6 +264,11 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
             }
         }
         return maxResultWindow;
+    }
+
+    @Override
+    public long getResultsCountLimit() {
+        return getMaxResultWindow();
     }
 
     /**

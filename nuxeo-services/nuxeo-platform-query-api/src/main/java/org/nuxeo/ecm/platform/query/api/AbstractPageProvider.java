@@ -1106,4 +1106,9 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
 
     }
+
+    @Override
+    public long getResultsCountLimit() {
+        return 0;
+    }
 }

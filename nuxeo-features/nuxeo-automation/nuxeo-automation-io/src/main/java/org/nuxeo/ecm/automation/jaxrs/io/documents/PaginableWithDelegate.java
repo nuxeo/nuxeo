@@ -130,4 +130,9 @@ public class PaginableWithDelegate<T> extends ArrayList<T> implements Paginable<
         return delegate.getCurrentPageOffset();
     }
 
+    @Override
+    public long getResultsCountLimit() {
+        return delegate.getResultsCountLimit();
+    }
+
 }
