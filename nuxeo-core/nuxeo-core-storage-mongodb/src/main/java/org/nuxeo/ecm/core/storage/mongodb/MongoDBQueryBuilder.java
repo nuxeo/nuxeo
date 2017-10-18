@@ -53,6 +53,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.bson.Document;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
@@ -90,8 +91,6 @@ import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.api.Framework;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.QueryOperators;
 
 /**
@@ -133,11 +132,11 @@ public class MongoDBQueryBuilder {
 
     public boolean sortOnFulltextScore;
 
-    protected DBObject query;
+    protected Document query;
 
-    protected DBObject orderBy;
+    protected Document orderBy;
 
-    protected DBObject projection;
+    protected Document projection;
 
     protected Map<String, String> propertyKeys;
 
@@ -164,15 +163,15 @@ public class MongoDBQueryBuilder {
         walkProjection(); // needs hasFulltext and sortOnFulltextScore
     }
 
-    public DBObject getQuery() {
+    public Document getQuery() {
         return query;
     }
 
-    public DBObject getOrderBy() {
+    public Document getOrderBy() {
         return orderBy;
     }
 
-    public DBObject getProjection() {
+    public Document getProjection() {
         return projection;
     }
 
@@ -185,33 +184,33 @@ public class MongoDBQueryBuilder {
         if (orderByClause == null) {
             orderBy = null;
         } else {
-            orderBy = new BasicDBObject();
+            orderBy = new Document();
             for (OrderByExpr ob : orderByClause.elements) {
                 Reference ref = ob.reference;
                 boolean desc = ob.isDescending;
                 String field = walkReference(ref).queryField;
-                if (!orderBy.containsField(field)) {
+                if (!orderBy.containsKey(field)) {
                     Object value;
                     if (KEY_FULLTEXT_SCORE.equals(field)) {
                         if (!desc) {
                             throw new QueryParseException("Cannot sort by " + NXQL.ECM_FULLTEXT_SCORE + " ascending");
                         }
                         sortOnFulltextScore = true;
-                        value = new BasicDBObject(MONGODB_META, MONGODB_TEXT_SCORE);
+                        value = new Document(MONGODB_META, MONGODB_TEXT_SCORE);
                     } else {
                         value = desc ? MINUS_ONE : ONE;
                     }
                     orderBy.put(field, value);
                 }
             }
-            if (sortOnFulltextScore && ((BasicDBObject) orderBy).size() > 1) {
+            if (sortOnFulltextScore && orderBy.size() > 1) {
                 throw new QueryParseException("Cannot sort by " + NXQL.ECM_FULLTEXT_SCORE + " and other criteria");
             }
         }
     }
 
     protected void walkProjection() {
-        projection = new BasicDBObject();
+        projection = new Document();
         boolean projectionOnFulltextScore = false;
         for (Operand op : selectClause.getSelectList().values()) {
             if (!(op instanceof Reference)) {
@@ -236,11 +235,11 @@ public class MongoDBQueryBuilder {
             if (!hasFulltext) {
                 throw new QueryParseException(NXQL.ECM_FULLTEXT_SCORE + " cannot be used without " + NXQL.ECM_FULLTEXT);
             }
-            projection.put(KEY_FULLTEXT_SCORE, new BasicDBObject(MONGODB_META, MONGODB_TEXT_SCORE));
+            projection.put(KEY_FULLTEXT_SCORE, new Document(MONGODB_META, MONGODB_TEXT_SCORE));
         }
     }
 
-    public DBObject walkExpression(Expression expr) {
+    public Document walkExpression(Expression expr) {
         Operator op = expr.operator;
         Operand lvalue = expr.lvalue;
         Operand rvalue = expr.rvalue;
@@ -329,7 +328,7 @@ public class MongoDBQueryBuilder {
         }
     }
 
-    protected DBObject walkEcmPath(Operator op, Operand rvalue) {
+    protected Document walkEcmPath(Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
             throw new QueryParseException(NXQL.ECM_PATH + " requires = or <> operator");
         }
@@ -344,16 +343,16 @@ public class MongoDBQueryBuilder {
         if (id == null) {
             // no such path
             // TODO XXX do better
-            return new BasicDBObject(MONGODB_ID, "__nosuchid__");
+            return new Document(MONGODB_ID, "__nosuchid__");
         }
         if (op == Operator.EQ) {
-            return new BasicDBObject(idKey, id);
+            return new Document(idKey, id);
         } else {
-            return new BasicDBObject(idKey, new BasicDBObject(QueryOperators.NE, id));
+            return new Document(idKey, new Document(QueryOperators.NE, id));
         }
     }
 
-    protected DBObject walkAncestorId(Operator op, Operand rvalue) {
+    protected Document walkAncestorId(Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
             throw new QueryParseException(NXQL.ECM_ANCESTORID + " requires = or <> operator");
         }
@@ -362,13 +361,13 @@ public class MongoDBQueryBuilder {
         }
         String ancestorId = ((StringLiteral) rvalue).value;
         if (op == Operator.EQ) {
-            return new BasicDBObject(DBSDocument.KEY_ANCESTOR_IDS, ancestorId);
+            return new Document(DBSDocument.KEY_ANCESTOR_IDS, ancestorId);
         } else {
-            return new BasicDBObject(DBSDocument.KEY_ANCESTOR_IDS, new BasicDBObject(QueryOperators.NE, ancestorId));
+            return new Document(DBSDocument.KEY_ANCESTOR_IDS, new Document(QueryOperators.NE, ancestorId));
         }
     }
 
-    protected DBObject walkEcmFulltext(String name, Operator op, Operand rvalue) {
+    protected Document walkEcmFulltext(String name, Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.LIKE) {
             throw new QueryParseException(NXQL.ECM_FULLTEXT + " requires = or LIKE operator");
         }
@@ -385,12 +384,12 @@ public class MongoDBQueryBuilder {
             String ft = getMongoDBFulltextQuery(fulltextQuery);
             if (ft == null) {
                 // empty query, matches nothing
-                return new BasicDBObject(MONGODB_ID, "__nosuchid__");
+                return new Document(MONGODB_ID, "__nosuchid__");
             }
-            DBObject textSearch = new BasicDBObject();
+            Document textSearch = new Document();
             textSearch.put(QueryOperators.SEARCH, ft);
             // TODO language?
-            return new BasicDBObject(QueryOperators.TEXT, textSearch);
+            return new Document(QueryOperators.TEXT, textSearch);
         } else {
             // secondary index match with explicit field
             // do a regexp on the field
@@ -465,20 +464,20 @@ public class MongoDBQueryBuilder {
         }
     }
 
-    public DBObject walkNot(Operand value) {
+    public Document walkNot(Operand value) {
         Object val = walkOperand(value);
         Object not = pushDownNot(val);
-        if (!(not instanceof DBObject)) {
+        if (!(not instanceof Document)) {
             throw new QueryParseException("Cannot do NOT on: " + val);
         }
-        return (DBObject) not;
+        return (Document) not;
     }
 
     protected Object pushDownNot(Object object) {
-        if (!(object instanceof DBObject)) {
+        if (!(object instanceof Document)) {
             throw new QueryParseException("Cannot do NOT on: " + object);
         }
-        DBObject ob = (DBObject) object;
+        Document ob = (Document) object;
         Set<String> keySet = ob.keySet();
         if (keySet.size() != 1) {
             throw new QueryParseException("Cannot do NOT on: " + ob);
@@ -486,12 +485,12 @@ public class MongoDBQueryBuilder {
         String key = keySet.iterator().next();
         Object value = ob.get(key);
         if (!key.startsWith("$")) {
-            if (value instanceof DBObject) {
+            if (value instanceof Document) {
                 // push down inside dbobject
-                return new BasicDBObject(key, pushDownNot(value));
+                return new Document(key, pushDownNot(value));
             } else {
                 // k = v -> k != v
-                return new BasicDBObject(key, new BasicDBObject(QueryOperators.NE, value));
+                return new Document(key, new Document(QueryOperators.NE, value));
             }
         }
         if (QueryOperators.NE.equals(key)) {
@@ -511,49 +510,49 @@ public class MongoDBQueryBuilder {
             for (int i = 0; i < list.size(); i++) {
                 list.set(i, pushDownNot(list.get(i)));
             }
-            return new BasicDBObject(op, list);
+            return new Document(op, list);
         }
         if (QueryOperators.IN.equals(key) || QueryOperators.NIN.equals(key)) {
             // boolean algebra
             // IN <-> NIN
             String op = QueryOperators.IN.equals(key) ? QueryOperators.NIN : QueryOperators.IN;
-            return new BasicDBObject(op, value);
+            return new Document(op, value);
         }
         if (QueryOperators.LT.equals(key) || QueryOperators.GT.equals(key) || QueryOperators.LTE.equals(key)
                 || QueryOperators.GTE.equals(key)) {
             // TODO use inverse operators?
-            return new BasicDBObject(QueryOperators.NOT, ob);
+            return new Document(QueryOperators.NOT, ob);
         }
         throw new QueryParseException("Unknown operator for NOT: " + key);
     }
 
-    public DBObject walkIsNull(Operand value) {
+    public Document walkIsNull(Operand value) {
         FieldInfo fieldInfo = walkReference(value);
-        return new FieldInfoDBObject(fieldInfo, null);
+        return new FieldInfoDocument(fieldInfo, null);
     }
 
-    public DBObject walkIsNotNull(Operand value) {
+    public Document walkIsNotNull(Operand value) {
         FieldInfo fieldInfo = walkReference(value);
-        return new FieldInfoDBObject(fieldInfo, new BasicDBObject(QueryOperators.NE, null));
+        return new FieldInfoDocument(fieldInfo, new Document(QueryOperators.NE, null));
     }
 
-    public DBObject walkMultiExpression(MultiExpression expr) {
+    public Document walkMultiExpression(MultiExpression expr) {
         return walkAnd(expr.values);
     }
 
-    public DBObject walkAnd(Operand lvalue, Operand rvalue) {
+    public Document walkAnd(Operand lvalue, Operand rvalue) {
         return walkAnd(Arrays.asList(lvalue, rvalue));
     }
 
-    protected DBObject walkAnd(List<Operand> values) {
+    protected Document walkAnd(List<Operand> values) {
         List<Object> list = walkOperandList(values);
         // check wildcards in the operands, extract common prefixes to use $elemMatch
-        Map<String, List<FieldInfoDBObject>> propBaseKeyToDBOs = new LinkedHashMap<>();
+        Map<String, List<FieldInfoDocument>> propBaseKeyToDBOs = new LinkedHashMap<>();
         Map<String, String> propBaseKeyToFieldBase = new HashMap<>();
         for (Iterator<Object> it = list.iterator(); it.hasNext();) {
             Object ob = it.next();
-            if (ob instanceof FieldInfoDBObject) {
-                FieldInfoDBObject fidbo = (FieldInfoDBObject) ob;
+            if (ob instanceof FieldInfoDocument) {
+                FieldInfoDocument fidbo = (FieldInfoDocument) ob;
                 FieldInfo fieldInfo = fidbo.fieldInfo;
                 if (fieldInfo.hasWildcard) {
                     if (fieldInfo.fieldSuffix != null && fieldInfo.fieldSuffix.contains("*")) {
@@ -569,7 +568,7 @@ public class MongoDBQueryBuilder {
                     }
                     String propBaseKey = fieldInfo.fieldPrefix + "/*" + wildcardNumber;
                     // store object for this key
-                    List<FieldInfoDBObject> dbos = propBaseKeyToDBOs.get(propBaseKey);
+                    List<FieldInfoDocument> dbos = propBaseKeyToDBOs.get(propBaseKey);
                     if (dbos == null) {
                         propBaseKeyToDBOs.put(propBaseKey, dbos = new LinkedList<>());
                     }
@@ -583,20 +582,20 @@ public class MongoDBQueryBuilder {
             }
         }
         // generate $elemMatch items for correlated queries
-        for (Entry<String, List<FieldInfoDBObject>> es : propBaseKeyToDBOs.entrySet()) {
+        for (Entry<String, List<FieldInfoDocument>> es : propBaseKeyToDBOs.entrySet()) {
             String propBaseKey = es.getKey();
-            List<FieldInfoDBObject> fidbos = es.getValue();
+            List<FieldInfoDocument> fidbos = es.getValue();
             if (fidbos.size() == 1) {
                 // regular uncorrelated match
                 list.addAll(fidbos);
             } else {
-                DBObject elemMatch = new BasicDBObject();
-                for (FieldInfoDBObject fidbo : fidbos) {
+                Document elemMatch = new Document();
+                for (FieldInfoDocument fidbo : fidbos) {
                     // truncate field name to just the suffix
                     FieldInfo fieldInfo = fidbo.fieldInfo;
                     Object value = fidbo.get(fieldInfo.queryField);
                     String fieldSuffix = fieldInfo.fieldSuffix.replace("/", ".");
-                    if (elemMatch.containsField(fieldSuffix)) {
+                    if (elemMatch.containsKey(fieldSuffix)) {
                         // ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/principal = 'steve'
                         // cannot match
                         // TODO do better
@@ -605,23 +604,23 @@ public class MongoDBQueryBuilder {
                     elemMatch.put(fieldSuffix, value);
                 }
                 String fieldBase = propBaseKeyToFieldBase.get(propBaseKey);
-                BasicDBObject dbo = new BasicDBObject(fieldBase,
-                        new BasicDBObject(QueryOperators.ELEM_MATCH, elemMatch));
+                Document dbo = new Document(fieldBase,
+                        new Document(QueryOperators.ELEM_MATCH, elemMatch));
                 list.add(dbo);
             }
         }
         if (list.size() == 1) {
-            return (DBObject) list.get(0);
+            return (Document) list.get(0);
         } else {
-            return new BasicDBObject(QueryOperators.AND, list);
+            return new Document(QueryOperators.AND, list);
         }
     }
 
-    public DBObject walkOr(Operand lvalue, Operand rvalue) {
+    public Document walkOr(Operand lvalue, Operand rvalue) {
         Object left = walkOperand(lvalue);
         Object right = walkOperand(rvalue);
         List<Object> list = new ArrayList<>(Arrays.asList(left, right));
-        return new BasicDBObject(QueryOperators.OR, list);
+        return new Document(QueryOperators.OR, list);
     }
 
     protected Object checkBoolean(FieldInfo fieldInfo, Object right) {
@@ -640,7 +639,7 @@ public class MongoDBQueryBuilder {
         return right;
     }
 
-    public DBObject walkEq(Operand lvalue, Operand rvalue) {
+    public Document walkEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
         if (isMixinTypes(fieldInfo)) {
@@ -651,10 +650,10 @@ public class MongoDBQueryBuilder {
         }
         right = checkBoolean(fieldInfo, right);
         // TODO check list fields
-        return new FieldInfoDBObject(fieldInfo, right);
+        return new FieldInfoDocument(fieldInfo, right);
     }
 
-    public DBObject walkNotEq(Operand lvalue, Operand rvalue) {
+    public Document walkNotEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
         if (isMixinTypes(fieldInfo)) {
@@ -665,51 +664,51 @@ public class MongoDBQueryBuilder {
         }
         right = checkBoolean(fieldInfo, right);
         // TODO check list fields
-        return new FieldInfoDBObject(fieldInfo, new BasicDBObject(QueryOperators.NE, right));
+        return new FieldInfoDocument(fieldInfo, new Document(QueryOperators.NE, right));
     }
 
-    public DBObject walkLt(Operand lvalue, Operand rvalue) {
+    public Document walkLt(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
-        return new FieldInfoDBObject(fieldInfo, new BasicDBObject(QueryOperators.LT, right));
+        return new FieldInfoDocument(fieldInfo, new Document(QueryOperators.LT, right));
     }
 
-    public DBObject walkGt(Operand lvalue, Operand rvalue) {
+    public Document walkGt(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
-        return new FieldInfoDBObject(fieldInfo, new BasicDBObject(QueryOperators.GT, right));
+        return new FieldInfoDocument(fieldInfo, new Document(QueryOperators.GT, right));
     }
 
-    public DBObject walkLtEq(Operand lvalue, Operand rvalue) {
+    public Document walkLtEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
-        return new FieldInfoDBObject(fieldInfo, new BasicDBObject(QueryOperators.LTE, right));
+        return new FieldInfoDocument(fieldInfo, new Document(QueryOperators.LTE, right));
     }
 
-    public DBObject walkGtEq(Operand lvalue, Operand rvalue) {
+    public Document walkGtEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
-        return new FieldInfoDBObject(fieldInfo, new BasicDBObject(QueryOperators.GTE, right));
+        return new FieldInfoDocument(fieldInfo, new Document(QueryOperators.GTE, right));
     }
 
-    public DBObject walkBetween(Operand lvalue, Operand rvalue, boolean positive) {
+    public Document walkBetween(Operand lvalue, Operand rvalue, boolean positive) {
         LiteralList l = (LiteralList) rvalue;
         FieldInfo fieldInfo = walkReference(lvalue);
         Object left = walkOperand(l.get(0));
         Object right = walkOperand(l.get(1));
         if (positive) {
-            DBObject range = new BasicDBObject();
+            Document range = new Document();
             range.put(QueryOperators.GTE, left);
             range.put(QueryOperators.LTE, right);
-            return new FieldInfoDBObject(fieldInfo, range);
+            return new FieldInfoDocument(fieldInfo, range);
         } else {
-            DBObject a = new FieldInfoDBObject(fieldInfo, new BasicDBObject(QueryOperators.LT, left));
-            DBObject b = new FieldInfoDBObject(fieldInfo, new BasicDBObject(QueryOperators.GT, right));
-            return new BasicDBObject(QueryOperators.OR, Arrays.asList(a, b));
+            Document a = new FieldInfoDocument(fieldInfo, new Document(QueryOperators.LT, left));
+            Document b = new FieldInfoDocument(fieldInfo, new Document(QueryOperators.GT, right));
+            return new Document(QueryOperators.OR, Arrays.asList(a, b));
         }
     }
 
-    public DBObject walkIn(Operand lvalue, Operand rvalue, boolean positive) {
+    public Document walkIn(Operand lvalue, Operand rvalue, boolean positive) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
         if (!(right instanceof List)) {
@@ -720,11 +719,11 @@ public class MongoDBQueryBuilder {
         }
         // TODO check list fields
         List<Object> list = (List<Object>) right;
-        return new FieldInfoDBObject(fieldInfo,
-                new BasicDBObject(positive ? QueryOperators.IN : QueryOperators.NIN, list));
+        return new FieldInfoDocument(fieldInfo,
+                new Document(positive ? QueryOperators.IN : QueryOperators.NIN, list));
     }
 
-    public DBObject walkLike(Operand lvalue, Operand rvalue, boolean positive, boolean caseInsensitive) {
+    public Document walkLike(Operand lvalue, Operand rvalue, boolean positive, boolean caseInsensitive) {
         FieldInfo fieldInfo = walkReference(lvalue);
         if (!(rvalue instanceof StringLiteral)) {
             throw new QueryParseException("Invalid LIKE/ILIKE, right hand side must be a string: " + rvalue);
@@ -739,9 +738,9 @@ public class MongoDBQueryBuilder {
         if (positive) {
             value = pattern;
         } else {
-            value = new BasicDBObject(QueryOperators.NOT, pattern);
+            value = new Document(QueryOperators.NOT, pattern);
         }
-        return new FieldInfoDBObject(fieldInfo, value);
+        return new FieldInfoDocument(fieldInfo, value);
     }
 
     public Object walkOperand(Operand op) {
@@ -816,7 +815,7 @@ public class MongoDBQueryBuilder {
         throw new UnsupportedOperationException(func.name);
     }
 
-    public DBObject walkStartsWith(Operand lvalue, Operand rvalue) {
+    public Document walkStartsWith(Operand lvalue, Operand rvalue) {
         if (!(lvalue instanceof Reference)) {
             throw new QueryParseException("Invalid STARTSWITH query, left hand side must be a property: " + lvalue);
         }
@@ -837,25 +836,25 @@ public class MongoDBQueryBuilder {
         }
     }
 
-    protected DBObject walkStartsWithPath(String path) {
+    protected Document walkStartsWithPath(String path) {
         // resolve path
         String ancestorId = pathResolver.getIdForPath(path);
         if (ancestorId == null) {
             // no such path
             // TODO XXX do better
-            return new BasicDBObject(MONGODB_ID, "__nosuchid__");
+            return new Document(MONGODB_ID, "__nosuchid__");
         }
-        return new BasicDBObject(DBSDocument.KEY_ANCESTOR_IDS, ancestorId);
+        return new Document(DBSDocument.KEY_ANCESTOR_IDS, ancestorId);
     }
 
-    protected DBObject walkStartsWithNonPath(Operand lvalue, String path) {
+    protected Document walkStartsWithNonPath(Operand lvalue, String path) {
         FieldInfo fieldInfo = walkReference(lvalue);
-        DBObject eq = new FieldInfoDBObject(fieldInfo, path);
+        Document eq = new FieldInfoDocument(fieldInfo, path);
         // escape except alphanumeric and others not needing escaping
         String regex = path.replaceAll("([^a-zA-Z0-9 /])", "\\\\$1");
         Pattern pattern = Pattern.compile(regex + "/.*");
-        DBObject like = new FieldInfoDBObject(fieldInfo, pattern);
-        return new BasicDBObject(QueryOperators.OR, Arrays.asList(eq, like));
+        Document like = new FieldInfoDocument(fieldInfo, pattern);
+        return new Document(QueryOperators.OR, Arrays.asList(eq, like));
     }
 
     protected FieldInfo walkReference(Operand value) {
@@ -951,13 +950,13 @@ public class MongoDBQueryBuilder {
         }
     }
 
-    protected static class FieldInfoDBObject extends BasicDBObject {
+    protected static class FieldInfoDocument extends Document {
 
         private static final long serialVersionUID = 1L;
 
         protected FieldInfo fieldInfo;
 
-        public FieldInfoDBObject(FieldInfo fieldInfo, Object value) {
+        public FieldInfoDocument(FieldInfo fieldInfo, Object value) {
             super(fieldInfo.queryField, value);
             this.fieldInfo = fieldInfo;
         }
@@ -1148,7 +1147,7 @@ public class MongoDBQueryBuilder {
      *              { "ecm:mixinTypes" : { "$nin" : [ "Foo" , "Bar]}}]}
      * </pre>
      */
-    public DBObject walkMixinTypes(List<String> mixins, boolean include) {
+    public Document walkMixinTypes(List<String> mixins, boolean include) {
         /*
          * Primary types that match.
          */
@@ -1177,15 +1176,15 @@ public class MongoDBQueryBuilder {
          * MongoDB query generation.
          */
         // match on primary type
-        DBObject p = new BasicDBObject(DBSDocument.KEY_PRIMARY_TYPE,
-                new BasicDBObject(QueryOperators.IN, matchPrimaryTypes));
+        Document p = new Document(DBSDocument.KEY_PRIMARY_TYPE,
+                new Document(QueryOperators.IN, matchPrimaryTypes));
         // match on mixin types
         // $in/$nin with an array matches if any/no element of the array matches
         String innin = include ? QueryOperators.IN : QueryOperators.NIN;
-        DBObject m = new BasicDBObject(DBSDocument.KEY_MIXIN_TYPES, new BasicDBObject(innin, matchMixinTypes));
+        Document m = new Document(DBSDocument.KEY_MIXIN_TYPES, new Document(innin, matchMixinTypes));
         // and/or between those
         String op = include ? QueryOperators.OR : QueryOperators.AND;
-        return new BasicDBObject(op, Arrays.asList(p, m));
+        return new Document(op, Arrays.asList(p, m));
     }
 
 }

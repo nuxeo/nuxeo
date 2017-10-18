@@ -12,7 +12,8 @@
 
   <extension-point name="connection">
     <documentation>
-      Extension point used to configure access to a MongoDB server or cluster.
+      Extension point used to configure access to a MongoDB server or cluster. The service will return the 'default'
+      access if the asked one hasn't been contributed.
 
       This sets up a MongoClient; server is mandatory.
       <code>

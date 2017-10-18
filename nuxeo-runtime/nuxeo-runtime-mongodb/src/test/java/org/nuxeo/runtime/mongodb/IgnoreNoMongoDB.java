@@ -1,11 +1,11 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,11 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *     Kevin Leturc
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.runtime.mongodb;
-
-import static org.nuxeo.runtime.mongodb.MongoDBFeature.MONGODB_ENABLED;
 
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 
@@ -38,9 +36,6 @@ public final class IgnoreNoMongoDB implements ConditionalIgnoreRule.Condition {
     @Override
     public boolean shouldIgnore() {
         if (MONGODB_FORCE) {
-            return false;
-        }
-        if (Boolean.getBoolean(MONGODB_ENABLED)) {
             return false;
         }
         if (CORE_MONGODB.equals(System.getProperty(CORE_PROPERTY))) {

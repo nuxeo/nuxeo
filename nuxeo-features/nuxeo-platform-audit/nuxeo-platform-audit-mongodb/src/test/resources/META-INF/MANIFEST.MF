@@ -5,4 +5,4 @@ Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/mongodb-audit-contrib.xml,
  OSGI-INF/mongodb-audit-pageprovider-contrib.xml,
  OSGI-INF/mongodb-audit-search-contrib.xml,
- OSGI-INF/mongodb-audit-user-contrib.xml
+ OSGI-INF/mongodb-audit-test-contrib.xml

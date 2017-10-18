@@ -31,9 +31,21 @@ public class MongoDBRepositoryDescriptor extends DBSRepositoryDescriptor {
     public MongoDBRepositoryDescriptor() {
     }
 
+    /**
+     * @deprecated since 9.3 you should now use MongoDBConnectionService to define connections
+     * @see org.nuxeo.runtime.mongodb.MongoDBConnectionService
+     * @see org.nuxeo.runtime.mongodb.MongoDBComponent
+     */
+    @Deprecated
     @XNode("server")
     public String server;
 
+    /**
+     * @deprecated since 9.3 you should now use MongoDBConnectionService to define connections
+     * @see org.nuxeo.runtime.mongodb.MongoDBConnectionService
+     * @see org.nuxeo.runtime.mongodb.MongoDBComponent
+     */
+    @Deprecated
     @XNode("dbname")
     public String dbname;
 

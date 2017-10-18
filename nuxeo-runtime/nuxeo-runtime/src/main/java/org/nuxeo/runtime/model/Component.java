@@ -57,12 +57,12 @@ public interface Component extends Extensible, TimestampedService {
      * @since 5.6
      */
     default int getApplicationStartedOrder() {
-        return 1000;
+        return ComponentStartOrders.DEFAULT;
     }
 
     /**
      * Notify the component that Nuxeo Framework finished starting all Nuxeo bundles. Implementors must migrate the code
-     * of the appicationStarted and move it to {@link Component#start(ComponentContext)} and
+     * of the applicationStarted and move it to {@link Component#start(ComponentContext)} and
      * {@link #stop(ComponentContext)} methods
      *
      * @deprecated since 9.2, since the introduction of {@link Component#start(ComponentContext)} and
