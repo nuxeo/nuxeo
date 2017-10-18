@@ -96,4 +96,13 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
         super.pageChanged();
     }
 
+    @Override
+    public long getResultsCountLimit() {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        @SuppressWarnings("unchecked")
+        PageProvider<?> pp = pps.getPageProvider(LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER, null, null, null,
+                null, null);
+        return pp.getResultsCountLimit();
+    }
+
 }

@@ -266,6 +266,11 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
         return maxResultWindow;
     }
 
+    @Override
+    public long getResultsCountLimit() {
+        return getMaxResultWindow();
+    }
+
     /**
      * Set the max result window where the PP can navigate, for testing purpose.
      *

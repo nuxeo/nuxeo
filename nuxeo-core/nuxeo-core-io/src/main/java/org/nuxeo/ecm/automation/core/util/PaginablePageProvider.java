@@ -128,4 +128,9 @@ public class PaginablePageProvider<T> extends ArrayList<T> implements Paginable<
     public List<QuickFilter> getAvailableQuickFilters() {
         return pageProvider.getAvailableQuickFilters();
     }
+
+    @Override
+    public long getResultsCountLimit() {
+        return pageProvider.getResultsCountLimit();
+    }
 }

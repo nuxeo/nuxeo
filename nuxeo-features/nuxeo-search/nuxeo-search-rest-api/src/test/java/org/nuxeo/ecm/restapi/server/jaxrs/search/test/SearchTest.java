@@ -243,6 +243,19 @@ public class SearchTest extends BaseTest {
         }
     }
 
+    /**
+     * @since 9.3
+     */
+    @Test
+    public void iCanSeeMaxResults() throws IOException {
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("TEST_PP_ALL_NOTE"))) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(4444, node.get("resultsCountLimit").getIntValue());
+        }
+    }
+
     @Test
     public void iCanPerformPageProviderWithNamedParametersOnRepository() throws IOException {
         // Given a repository, when I perform a pageprovider on it

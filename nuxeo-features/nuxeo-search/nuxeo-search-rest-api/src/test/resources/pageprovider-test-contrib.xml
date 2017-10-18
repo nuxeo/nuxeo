@@ -30,6 +30,7 @@
       </pattern>
       <sort ascending="true" column="dc:title" />
       <pageSize>50</pageSize>
+      <property name="maxResults">4444</property>
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="TEST_PP_PARAM">
