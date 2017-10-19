@@ -44,12 +44,15 @@ import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.comment.UIAuditComment;
+import org.nuxeo.ecm.platform.audit.io.ExtendedInfoDeserializer;
+import org.nuxeo.ecm.platform.audit.io.ExtendedInfoSerializer;
 
 /**
  * Log entry implementation.
@@ -331,7 +334,7 @@ public class LogEntryImpl implements LogEntry {
 
     @Override
     @JsonProperty("extended")
-    @JsonDeserialize(keyAs = String.class, contentAs = ExtendedInfoImpl.StringInfo.class)
+    @JsonSerialize(keyAs = String.class, contentUsing = ExtendedInfoSerializer.class)
     @OneToMany(cascade = CascadeType.ALL, targetEntity = ExtendedInfoImpl.class)
     @JoinTable(name = "NXP_LOGS_MAPEXTINFOS", joinColumns = { @JoinColumn(name = "LOG_FK") }, inverseJoinColumns = {
             @JoinColumn(name = "INFO_FK") })
@@ -342,6 +345,7 @@ public class LogEntryImpl implements LogEntry {
     }
 
     @Override
+    @JsonDeserialize(keyAs = String.class, contentUsing = ExtendedInfoDeserializer.class)
     public void setExtendedInfos(Map<String, ExtendedInfo> infos) {
         extendedInfos = (Map) infos;
         // setExtendedInfosImpl((Map)infos);

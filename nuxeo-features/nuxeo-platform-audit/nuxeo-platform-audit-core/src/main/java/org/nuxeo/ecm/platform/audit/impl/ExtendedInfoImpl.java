@@ -111,7 +111,7 @@ public class ExtendedInfoImpl implements ExtendedInfo {
         private LongInfo() {
         }
 
-        private LongInfo(long value) {
+        public LongInfo(long value) {
             this.longValue = value;
         }
 
@@ -142,7 +142,7 @@ public class ExtendedInfoImpl implements ExtendedInfo {
         private DateInfo() {
         }
 
-        private DateInfo(Date value) {
+        public DateInfo(Date value) {
             dateValue = value;
         }
 
@@ -174,7 +174,7 @@ public class ExtendedInfoImpl implements ExtendedInfo {
         private StringInfo() {
         }
 
-        private StringInfo(String value) {
+        public StringInfo(String value) {
             stringValue = value;
         }
 
@@ -205,7 +205,7 @@ public class ExtendedInfoImpl implements ExtendedInfo {
         private DoubleInfo() {
         }
 
-        private DoubleInfo(Double value) {
+        public DoubleInfo(Double value) {
             doubleValue = value;
         }
 
@@ -236,7 +236,7 @@ public class ExtendedInfoImpl implements ExtendedInfo {
         private BooleanInfo() {
         }
 
-        private BooleanInfo(Boolean value) {
+        public BooleanInfo(Boolean value) {
             booleanValue = value;
         }
 
@@ -267,7 +267,7 @@ public class ExtendedInfoImpl implements ExtendedInfo {
         private BlobInfo() {
         }
 
-        private BlobInfo(Serializable value) {
+        public BlobInfo(Serializable value) {
             blobValue = value;
         }
 
