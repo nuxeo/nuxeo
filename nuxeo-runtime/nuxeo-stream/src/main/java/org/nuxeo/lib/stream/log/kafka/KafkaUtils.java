@@ -52,6 +52,8 @@ import kafka.cluster.EndPoint;
 import kafka.coordinator.group.GroupOverview;
 import kafka.utils.ZKStringSerializer$;
 import kafka.utils.ZkUtils;
+import scala.collection.Iterable;
+import scala.collection.IterableLike;
 import scala.collection.Iterator;
 import scala.collection.JavaConversions;
 import scala.collection.Seq;
@@ -266,13 +268,19 @@ public class KafkaUtils implements AutoCloseable {
 
     public Set<String> getBrokerEndPoints() {
         Set<String> ret = new HashSet<>();
-        Seq<Broker> brokers = zkUtils.getAllBrokersInCluster();
+        // don't use "Seq<Broker> brokers" as it causes compilation issues with Eclipse
+        // when calling brokers.iterator()
+        // (The method iterator() is ambiguous for the type Seq<Broker>)
+        IterableLike<Broker, Iterable<Broker>> brokers = zkUtils.getAllBrokersInCluster();
         Broker broker;
         Iterator<Broker> iter = brokers.iterator();
         while (iter.hasNext()) {
             broker = iter.next();
             if (broker != null) {
-                Seq<EndPoint> endPoints = broker.endPoints();
+                // don't use "Seq<EndPoint> endPoints" as it causes compilation issues with Eclipse
+                // when calling endPoints.iterator()
+                // (The method iterator() is ambiguous for the type Seq<EndPoint>)
+                IterableLike<EndPoint, Iterable<EndPoint>> endPoints = broker.endPoints();
                 Iterator<EndPoint> iter2 = endPoints.iterator();
                 while (iter2.hasNext()) {
                     EndPoint endPoint = iter2.next();
