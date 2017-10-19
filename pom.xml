@@ -5033,7 +5033,7 @@
             <nuxeo.test.vcs.user>${nuxeo.test.vcs.user}</nuxeo.test.vcs.user>
             <nuxeo.test.vcs.password>${nuxeo.test.vcs.password}</nuxeo.test.vcs.password>
             <!-- Used by org.nuxeo.ecm.core.test.StorageConfiguration -->
-            <!-- (and org.nuxeo.ecm.core.storage.mongodb.TestGridFSBinaryManager) -->
+            <!-- (and org.nuxeo.runtime.mongodb.MongoDBFeature) -->
             <nuxeo.test.core>${nuxeo.test.core}</nuxeo.test.core>
             <nuxeo.test.mongodb.server>${nuxeo.test.mongodb.server}</nuxeo.test.mongodb.server>
             <nuxeo.test.mongodb.dbname>${nuxeo.test.mongodb.dbname}</nuxeo.test.mongodb.dbname>
