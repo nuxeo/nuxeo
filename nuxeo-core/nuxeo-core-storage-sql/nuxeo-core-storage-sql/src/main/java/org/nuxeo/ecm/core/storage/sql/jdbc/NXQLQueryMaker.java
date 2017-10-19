@@ -83,7 +83,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.ArraySubQuery;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
+import org.nuxeo.runtime.migration.MigrationService;
+import org.nuxeo.runtime.migration.MigrationService.MigrationStatus;
 
 /**
  * Transformer of NXQL queries into underlying SQL queries to the actual database.
@@ -1610,8 +1611,9 @@ public class NXQLQueryMaker implements QueryMaker {
             } else if (name.startsWith(NXQL.ECM_FULLTEXT)) {
                 throw new QueryParseException(NXQL.ECM_FULLTEXT + " must be used as left-hand operand");
             } else if (NXQL.ECM_TAG.equals(name) || name.startsWith(ECM_TAG_STAR)) {
-                boolean facetedTag = Framework.getService(ConfigurationService.class)
-                                              .isBooleanPropertyTrue("nuxeo.faceted.tag.service.enabled");
+                // checking the migration service is a hack but we can't really do better here without refactoring
+                MigrationStatus status = Framework.getService(MigrationService.class).getStatus("tag-storage");
+                boolean facetedTag = "facets".equals(status.getState());
                 if (facetedTag) {
                     String newName = FACETED_TAG + "/*";
                     if (name.startsWith(ECM_TAG_STAR)) {

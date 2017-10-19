@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.platform.tag.TagService.Feature;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,6 +52,16 @@ public class FacetedTagService extends AbstractTagService {
     public static final String LABEL_PROPERTY = "label";
 
     public static final String USERNAME_PROPERTY = "username";
+
+    @Override
+    public boolean hasFeature(Feature feature) {
+        switch (feature) {
+        case TAGS_BELONG_TO_DOCUMENT:
+            return true;
+        default:
+            throw new UnsupportedOperationException(feature.name());
+        }
+    }
 
     @Override
     public void doTag(CoreSession session, String docId, String label, String username) {

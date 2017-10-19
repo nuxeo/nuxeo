@@ -78,6 +78,7 @@ import com.google.inject.Binder;
         "org.nuxeo.runtime.reload", // required by #CoreDeployer
         "org.nuxeo.runtime.kv", //
         "org.nuxeo.runtime.mongodb", //
+        "org.nuxeo.runtime.migration", //
         "org.nuxeo.ecm.core.schema", //
         "org.nuxeo.ecm.core.query", //
         "org.nuxeo.ecm.core.api", //

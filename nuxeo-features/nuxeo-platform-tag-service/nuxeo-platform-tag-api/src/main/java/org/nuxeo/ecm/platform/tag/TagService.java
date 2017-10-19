@@ -88,7 +88,7 @@ public interface TagService {
 
     /**
      * Returns whether or not the current session can untag tag on provided document.
-     * 
+     *
      * @param session the session
      * @param docId the document id
      * @param label the tag, or {@code null} for all tags
@@ -223,5 +223,23 @@ public interface TagService {
      */
     @Deprecated
     List<Tag> getSuggestions(CoreSession session, String label, String username);
+
+    /**
+     * Features of the implementation of the service.
+     *
+     * @see TagService#hasFeature
+     * @since 9.3
+     */
+    enum Feature {
+        /** Tags are properties of the document itself. */
+        TAGS_BELONG_TO_DOCUMENT,
+    }
+
+    /**
+     * Checks if a feature is available.
+     *
+     * @since 9.3
+     */
+    boolean hasFeature(Feature feature);
 
 }

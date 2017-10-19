@@ -47,6 +47,16 @@ import java.util.stream.Collectors;
 public class RelationTagService extends AbstractTagService {
 
     @Override
+    public boolean hasFeature(Feature feature) {
+        switch (feature) {
+        case TAGS_BELONG_TO_DOCUMENT:
+            return false;
+        default:
+            throw new UnsupportedOperationException(feature.name());
+        }
+    }
+
+    @Override
     public void doTag(CoreSession session, String docId, String label, String username) {
         if (session.getDocument(new IdRef(docId)).isProxy()) { // Tags are disabled on proxies
             throw new NuxeoException("Adding tags is not allowed on proxies");

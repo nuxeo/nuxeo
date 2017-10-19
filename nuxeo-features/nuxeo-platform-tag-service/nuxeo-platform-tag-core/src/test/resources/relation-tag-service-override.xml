@@ -1,10 +1,12 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.tag.service.properties.override">
 
-  <require>org.nuxeo.tag.service.properties</require>
+  <require>org.nuxeo.ecm.platform.tag.service.migrator</require>
 
-  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
-    <property name="nuxeo.faceted.tag.service.enabled">false</property>
+  <extension target="org.nuxeo.runtime.migration.MigrationService" point="configuration">
+    <migration id="tag-storage">
+      <defaultState>relations</defaultState>
+    </migration>
   </extension>
 
 </component>

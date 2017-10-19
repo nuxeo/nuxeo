@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.tag;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_RESTORED;
+import static org.nuxeo.ecm.platform.tag.TagService.Feature.TAGS_BELONG_TO_DOCUMENT;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -35,7 +36,6 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Listener that copy tags applied on the live document to a version or proxy of this document or replace the existing
@@ -66,11 +66,11 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
             }
             String docId = doc.getId();
             TagService tagService = Framework.getLocalService(TagService.class);
-            boolean facetedTags = Framework.getService(ConfigurationService.class)
-                                             .isBooleanPropertyTrue(TagServiceImpl.FACETED_TAG_SERVICE_ENABLED);
-            if (doc instanceof DeletedDocumentModel && !facetedTags) {
-                tagService.removeTags(session, docId);
-                return;
+            if (doc instanceof DeletedDocumentModel) {
+                if (!tagService.hasFeature(TAGS_BELONG_TO_DOCUMENT)) {
+                    tagService.removeTags(session, docId);
+                    return;
+                }
             }
             switch (name) {
             case DOCUMENT_PROXY_PUBLISHED:
@@ -84,7 +84,7 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
                 tagService.replaceTags(session, versionUUID, docId);
                 break;
             case DOCUMENT_REMOVED:
-                if (!facetedTags) {
+                if (!tagService.hasFeature(TAGS_BELONG_TO_DOCUMENT)) {
                     tagService.removeTags(session, docId);
                 }
                 break;
