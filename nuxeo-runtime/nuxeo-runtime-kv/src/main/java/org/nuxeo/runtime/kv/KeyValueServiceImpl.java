@@ -35,6 +35,8 @@ public class KeyValueServiceImpl extends DefaultComponent implements KeyValueSer
 
     private static final Log log = LogFactory.getLog(KeyValueServiceImpl.class);
 
+    public static final int APPLICATION_STARTED_ORDER = -500;
+
     public static final String CONFIG_XP = "configuration";
 
     public static final String DEFAULT_STORE_ID = "default";
@@ -75,6 +77,11 @@ public class KeyValueServiceImpl extends DefaultComponent implements KeyValueSer
         registry.removeContribution(descriptor);
         descriptorChanged(descriptor.name);
         log.info("Unregistered key/value store: " + descriptor.name);
+    }
+
+    @Override
+    public int getApplicationStartedOrder() {
+        return APPLICATION_STARTED_ORDER;
     }
 
     // ===== KeyValueService =====
