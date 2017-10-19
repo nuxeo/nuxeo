@@ -58,7 +58,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.spi.LoggingEvent;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -101,7 +100,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
@@ -2293,6 +2291,69 @@ public class TestSQLRepositoryQuery {
         assertEquals("title1", map.get("dc:title"));
         assertEquals("title2", map.get("tst2:title"));
         res.close();
+    }
+
+    /**
+     * @since 9.3
+     */
+    @Test(expected = QueryParseException.class)
+    public void testUnsupportedColumnMappings() throws Exception {
+        //ecm:majorVersion is NOT supported
+        String query = "SELECT ecm:majorVersion FROM File";
+        IterableQueryResult res = session.queryAndFetch(query, "NXQL");
+    }
+
+    /**
+     * @since 9.3
+     */
+    @Test
+    public void testSelectColumnMappings() throws Exception {
+        String query;
+        IterableQueryResult res;
+        Map<String, Serializable> map;
+
+        DocumentModel file = new DocumentModelImpl("/", "testfileForColumns", "File");
+        file.setPropertyValue("dc:title", "special1");
+        String content = "I am feeling elastic.";
+        String filename = "rucontent.txt";
+        Blob blob1 = Blobs.createBlob(content);
+        blob1.setFilename(filename);
+        file.setPropertyValue("content", (Serializable) blob1);
+        file = session.createDocument(file);
+        file.checkIn(VersioningOption.MAJOR, "major version");
+        session.save();
+
+        query = "SELECT dc:title FROM File WHERE dc:title = 'special1' AND ecm:isVersion = 1";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(1, res.size());
+        map = res.iterator().next();
+        assertEquals("special1", map.get("dc:title"));
+
+        query = "SELECT uid:major_version FROM File WHERE dc:title = 'special1' AND ecm:isVersion = 1";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(1, res.size());
+        map = res.iterator().next();
+        assertEquals(1L, map.get("uid:major_version"));
+
+        query = "SELECT major_version, minor_version FROM File WHERE dc:title = 'special1' AND ecm:isVersion = 1";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(1, res.size());
+        map = res.iterator().next();
+        assertEquals(1L, map.get("major_version"));
+        assertEquals(0L, map.get("minor_version"));
+
+        query = "SELECT uid:minor_version FROM File WHERE dc:title = 'special1' AND ecm:isVersion = 1";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(1, res.size());
+        map = res.iterator().next();
+        assertEquals(0L, map.get("uid:minor_version"));
+
+        query = "SELECT content/name, content/length FROM File WHERE dc:title = 'special1' AND ecm:isVersion = 1";
+        res = session.queryAndFetch(query, "NXQL");
+        assertEquals(1, res.size());
+        map = res.iterator().next();
+        assertEquals("rucontent.txt", map.get("content/name"));
+        assertEquals(21L, map.get("content/length"));
     }
 
     @Test
