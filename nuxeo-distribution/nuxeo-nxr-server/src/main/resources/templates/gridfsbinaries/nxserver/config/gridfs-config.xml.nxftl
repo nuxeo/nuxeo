@@ -5,8 +5,6 @@
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
     <blobprovider name="default">
       <class>org.nuxeo.ecm.core.storage.mongodb.GridFSBinaryManager</class>
-      <property name="server">${nuxeo.mongodb.server}</property>
-      <property name="dbname">${nuxeo.mongodb.dbname}</property>
       <property name="bucket">${nuxeo.mongodb.gridfs.bucket}</property>
     </blobprovider>
   </extension>

@@ -35,8 +35,6 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,16 +43,14 @@ import org.nuxeo.ecm.core.blob.binary.Binary;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.mongodb.MongoDBFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
-import com.mongodb.MongoServerException;
+import com.mongodb.client.gridfs.model.GridFSFile;
 
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features(MongoDBFeature.class)
 public class TestGridFSBinaryManager {
 
     protected static final String CONTENT = "this is a file au caf\u00e9";
@@ -71,13 +67,10 @@ public class TestGridFSBinaryManager {
 
     protected static GridFSBinaryManager BINARY_MANAGER;
 
-    // TODO test should be activated only on explicit system property, not by detecting a default instance
     @BeforeClass
     public static void beforeClass() throws Exception {
         BINARY_MANAGER = new GridFSBinaryManager();
         Map<String, String> config = new HashMap<>();
-        config.put("server", Framework.getProperty("nuxeo.mongodb.server", "localhost"));
-        config.put("dbname", Framework.getProperty("nuxeo.mongodb.dbname", "nuxeo"));
         config.put("bucket", Framework.getProperty("nuxeo.mongodb.gridfs.bucket", "test.fs"));
         BINARY_MANAGER.initialize("test", config);
     }
@@ -96,32 +89,8 @@ public class TestGridFSBinaryManager {
 
     protected Set<String> listObjects() throws IOException {
         Set<String> res = new HashSet<>();
-        try (DBCursor cursor = getBinaryManager().getGridFS().getFileList()) {
-            while (cursor.hasNext()) {
-                String digest = (String) cursor.next().get("filename");
-                res.add(digest);
-            }
-        }
+        getBinaryManager().getGridFSBucket().find().map(GridFSFile::getFilename).into(res);
         return res;
-    }
-
-    protected void removeAllObjects() throws IOException {
-        for (String digest : listObjects()) {
-            removeObject(digest);
-        }
-    }
-
-    protected void removeObject(String digest) throws IOException {
-        getBinaryManager().getGridFS().remove(new BasicDBObject("filename", digest));
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        try {
-            removeAllObjects();
-        } catch (MongoServerException e) {
-            Assume.assumeNoException("MongoDB server is not reachable", e);
-        }
     }
 
     @Test

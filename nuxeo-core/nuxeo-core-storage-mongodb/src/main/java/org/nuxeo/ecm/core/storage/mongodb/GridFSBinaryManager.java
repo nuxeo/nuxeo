@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.core.storage.mongodb;
 
-import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.PREVENT_USER_UPDATE;
 
@@ -27,11 +26,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -43,14 +43,20 @@ import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
-import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
+import com.mongodb.Block;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.gridfs.GridFSBucket;
+import com.mongodb.client.gridfs.GridFSBuckets;
+import com.mongodb.client.gridfs.model.GridFSFile;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.ReturnDocument;
+import com.mongodb.client.model.Updates;
 import com.mongodb.gridfs.GridFS;
-import com.mongodb.gridfs.GridFSDBFile;
-import com.mongodb.gridfs.GridFSInputFile;
 
 /**
  * Implements the {@link BinaryManager} and {@link BlobProvider} interface using MongoDB GridFS.
@@ -64,45 +70,65 @@ import com.mongodb.gridfs.GridFSInputFile;
  */
 public class GridFSBinaryManager extends AbstractBinaryManager implements BlobProvider {
 
+    /**
+     * Prefix used to retrieve a MongoDB connection from {@link MongoDBConnectionService}.
+     * <p />
+     * The connection id will be {@code blobProvider/[BLOB_PROVIDER_ID]}.
+     */
+    public static final String BLOB_PROVIDER_CONNECTION_PREFIX = "blobProvider/";
+
+    /**
+     * @deprecated since 9.3 use {@link MongoDBConnectionService} to provide access instead
+     */
+    @Deprecated
     public static final String SERVER_PROPERTY = "server";
 
+    /**
+     * @deprecated since 9.3 use {@link MongoDBConnectionService} to provide access instead
+     */
+    @Deprecated
     public static final String DBNAME_PROPERTY = "dbname";
 
     public static final String BUCKET_PROPERTY = "bucket";
 
+    private static final String METADATA_PROPERTY_FILENAME = "filename";
+
+    private static final String METADATA_PROPERTY_METADATA = "metadata";
+
+    private static final String METADATA_PROPERTY_LENGTH = "length";
+
     protected Map<String, String> properties;
 
-    protected MongoClient client;
-
+    @Deprecated
     protected GridFS gridFS;
+
+    protected GridFSBucket gridFSBucket;
+
+    protected MongoCollection<Document> filesColl;
 
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         super.initialize(blobProviderId, properties);
         this.properties = properties;
-        String server = properties.get(SERVER_PROPERTY);
-        if (StringUtils.isBlank(server)) {
-            throw new NuxeoException("Missing server property in GridFS Binary Manager descriptor: " + blobProviderId);
-        }
-        String dbname = properties.get(DBNAME_PROPERTY);
-        if (StringUtils.isBlank(dbname)) {
-            throw new NuxeoException("Missing dbname property in GridFS Binary Manager descriptor: " + blobProviderId);
+        if (StringUtils.isNotBlank(properties.get(SERVER_PROPERTY))
+                || StringUtils.isNotBlank(properties.get(DBNAME_PROPERTY))) {
+            throw new NuxeoException("Unable to initialize GridFS Binary Manager, properties " + SERVER_PROPERTY
+                    + " and " + DBNAME_PROPERTY + " has been removed. Please configure a connection!");
         }
         String bucket = properties.get(BUCKET_PROPERTY);
         if (StringUtils.isBlank(bucket)) {
             bucket = blobProviderId + ".fs";
         }
-        client = MongoDBConnectionHelper.newMongoClient(server);
-        gridFS = new GridFS(client.getDB(dbname), bucket);
-        garbageCollector = new GridFSBinaryGarbageCollector();
+
+        MongoDBConnectionService mongoService = Framework.getService(MongoDBConnectionService.class);
+        MongoDatabase database = mongoService.getDatabase(BLOB_PROVIDER_CONNECTION_PREFIX + blobProviderId);
+        gridFSBucket = GridFSBuckets.create(database, bucket);
+        filesColl = database.getCollection(bucket + ".files");
+        garbageCollector = new GridFSBinaryGarbageCollector(bucket);
     }
 
     @Override
     public void close() {
-        if (client != null) {
-            client.close();
-            client = null;
-        }
     }
 
     @Override
@@ -110,8 +136,8 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
         return this;
     }
 
-    public GridFS getGridFS() {
-        return gridFS;
+    protected GridFSBucket getGridFSBucket() {
+        return gridFSBucket;
     }
 
     /**
@@ -127,8 +153,7 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
 
         @Override
         public InputStream getStream() {
-            GridFSDBFile dbFile = gridFS.findOne(digest);
-            return dbFile == null ? null : dbFile.getInputStream();
+            return gridFSBucket.openDownloadStream(digest);
         }
     }
 
@@ -138,17 +163,16 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
             return super.getBinary(blob); // just open the stream and call getBinary(InputStream)
         }
         // we already have a file so can compute the length and digest efficiently
-        File file = ((FileBlob) blob).getFile();
+        File file = blob.getFile();
         String digest;
         try (InputStream in = new FileInputStream(file)) {
             digest = DigestUtils.md5Hex(in);
         }
         // if the digest is not already known then save to GridFS
-        GridFSDBFile dbFile = gridFS.findOne(digest);
+        GridFSFile dbFile = gridFSBucket.find(Filters.eq(METADATA_PROPERTY_FILENAME, digest)).first();
         if (dbFile == null) {
             try (InputStream in = new FileInputStream(file)) {
-                GridFSInputFile inputFile = gridFS.createFile(in, digest);
-                inputFile.save();
+                gridFSBucket.uploadFromStream(digest, in);
             }
         }
         return new GridFSBinary(digest, blobProviderId);
@@ -156,27 +180,31 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
 
     @Override
     protected Binary getBinary(InputStream in) throws IOException {
-        // save the file to GridFS
-        GridFSInputFile inputFile = gridFS.createFile(in, true);
-        inputFile.save();
-        // now we know length and digest
-        String digest = inputFile.getMD5();
-        // if the digest is already known then reuse it instead
-        GridFSDBFile dbFile = gridFS.findOne(digest);
-        if (dbFile == null) {
-            // no existing file, set its filename as the digest
-            inputFile.setFilename(digest);
-            inputFile.save();
-        } else {
-            // file already existed, no need for the temporary one
-            gridFS.remove(inputFile);
+        try {
+            // save the file to GridFS
+            String inputName = "tmp-" + System.nanoTime();
+            ObjectId id = gridFSBucket.uploadFromStream(inputName, in);
+            // now we know length and digest
+            GridFSFile inputFile = gridFSBucket.find(Filters.eq(METADATA_PROPERTY_FILENAME, inputName)).first();
+            String digest = inputFile.getMD5();
+            // if the digest is already known then reuse it instead
+            GridFSFile dbFile = gridFSBucket.find(Filters.eq(METADATA_PROPERTY_FILENAME, digest)).first();
+            if (dbFile == null) {
+                // no existing file, set its filename as the digest
+                gridFSBucket.rename(id, digest);
+            } else {
+                // file already existed, no need for the temporary one
+                gridFSBucket.delete(id);
+            }
+            return new GridFSBinary(digest, blobProviderId);
+        } finally {
+            in.close();
         }
-        return new GridFSBinary(digest, blobProviderId);
     }
 
     @Override
     public Binary getBinary(String digest) {
-        GridFSDBFile dbFile = gridFS.findOne(digest);
+        GridFSFile dbFile = gridFSBucket.find(Filters.eq(METADATA_PROPERTY_FILENAME, digest)).first();
         if (dbFile != null) {
             return new GridFSBinary(digest, blobProviderId);
         }
@@ -202,6 +230,8 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
 
     public class GridFSBinaryGarbageCollector implements BinaryGarbageCollector {
 
+        protected final String bucket;
+
         protected BinaryManagerStatus status;
 
         protected volatile long startTime;
@@ -210,9 +240,13 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
 
         protected String msKey;
 
+        public GridFSBinaryGarbageCollector(String bucket) {
+            this.bucket = bucket;
+        }
+
         @Override
         public String getId() {
-            return "gridfs:" + getGridFS().getBucketName();
+            return "gridfs:" + bucket;
         }
 
         @Override
@@ -227,12 +261,12 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
 
         @Override
         public void mark(String digest) {
-            GridFSDBFile dbFile = gridFS.findOne(digest);
+            Document dbFile = filesColl.findOneAndUpdate(Filters.eq(METADATA_PROPERTY_FILENAME, digest),
+                    Updates.set(String.format("%s.%s", METADATA_PROPERTY_METADATA, msKey), TRUE),
+                    new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
             if (dbFile != null) {
-                dbFile.setMetaData(new BasicDBObject(msKey, TRUE));
-                dbFile.save();
                 status.numBinaries += 1;
-                status.sizeBinaries += dbFile.getLength();
+                status.sizeBinaries += dbFile.getLong(METADATA_PROPERTY_LENGTH);
             }
         }
 
@@ -248,15 +282,14 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
 
         @Override
         public void stop(boolean delete) {
-            DBObject query = new BasicDBObject("metadata." + msKey, new BasicDBObject("$exists", FALSE));
-            List<GridFSDBFile> files = gridFS.find(query);
-            for (GridFSDBFile file : files) {
-                status.numBinariesGC += 1;
-                status.sizeBinariesGC += file.getLength();
-                if (delete) {
-                    gridFS.remove(file);
-                }
-            }
+            gridFSBucket.find(Filters.exists(String.format("%s.%s", METADATA_PROPERTY_METADATA, msKey), false)) //
+                        .forEach((Block<GridFSFile>) file -> {
+                            status.numBinariesGC += 1;
+                            status.sizeBinariesGC += file.getLength();
+                            if (delete) {
+                                gridFSBucket.delete(file.getId());
+                            }
+                        });
             startTime = 0;
         }
     }
