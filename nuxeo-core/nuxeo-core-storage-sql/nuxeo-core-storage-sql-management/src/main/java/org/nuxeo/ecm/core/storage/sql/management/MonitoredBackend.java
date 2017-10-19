@@ -37,23 +37,13 @@ public abstract class MonitoredBackend implements RepositoryBackend {
     }
 
     @Override
-    public Mapper newMapper(Model model, PathResolver pathResolver, boolean useInvalidations) {
-        return MetricInvocationHandler.newProxy(wrapped.newMapper(model, pathResolver, useInvalidations), Mapper.class);
+    public Mapper newMapper(PathResolver pathResolver, boolean useInvalidations) {
+        return MetricInvocationHandler.newProxy(wrapped.newMapper(pathResolver, useInvalidations), Mapper.class);
     }
 
     @Override
-    public void initialize(RepositoryImpl repository) {
-        wrapped.initialize(repository);
-    }
-
-    @Override
-    public void initializeDatabase(Model model) {
-        wrapped.initializeDatabase(model);
-    }
-
-    @Override
-    public void initializeModelSetup(ModelSetup modelSetup) {
-        wrapped.initializeModelSetup(modelSetup);
+    public Model initialize(RepositoryImpl repository) {
+        return wrapped.initialize(repository);
     }
 
     @Override

@@ -52,7 +52,7 @@ public class JDBCBackend implements RepositoryBackend {
 
     private RepositoryImpl repository;
 
-    private Dialect dialect;
+    private Model model;
 
     private SQLInfo sqlInfo;
 
@@ -61,10 +61,12 @@ public class JDBCBackend implements RepositoryBackend {
     private boolean isPooledDataSource;
 
     @Override
-    public void initialize(RepositoryImpl repository) {
+    public Model initialize(RepositoryImpl repository) {
         this.repository = repository;
-        String dataSourceName = getDataSourceName();
+        RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
+        String dataSourceName = JDBCConnection.getDataSourceName(repositoryDescriptor.name);
 
+        // check datasource
         try {
             DataSource ds = DataSourceHelper.getDataSource(dataSourceName);
             if (ds instanceof PooledDataSource) {
@@ -74,27 +76,16 @@ public class JDBCBackend implements RepositoryBackend {
             throw new NuxeoException("Cannot acquire datasource: " + dataSourceName, cause);
         }
 
-        // check early that the connection is valid
+        // check connection and get dialect
+        Dialect dialect;
         try (Connection connection = ConnectionHelper.getConnection(dataSourceName)) {
-            // do nothing, just acquire it to test
+            dialect = Dialect.createDialect(connection, repositoryDescriptor);
         } catch (SQLException cause) {
             throw new NuxeoException("Cannot get connection from datasource: " + dataSourceName, cause);
         }
-    }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Opens a connection to get the dialect and finish initializing the {@link ModelSetup}.
-     */
-    @Override
-    public void initializeModelSetup(ModelSetup modelSetup) {
-        String dataSourceName = getDataSourceName();
-        try (Connection connection = ConnectionHelper.getConnection(dataSourceName)) {
-            dialect = Dialect.createDialect(connection, repository.getRepositoryDescriptor());
-        } catch (SQLException cause) {
-            throw new NuxeoException("Cannot connect to database", cause);
-        }
+        // model setup
+        ModelSetup modelSetup = new ModelSetup();
         modelSetup.materializeFulltextSyntheticColumn = dialect.getMaterializeFulltextSyntheticColumn();
         modelSetup.supportsArrayColumns = dialect.supportsArrayColumns();
         switch (dialect.getIdType()) {
@@ -108,27 +99,25 @@ public class JDBCBackend implements RepositoryBackend {
         default:
             throw new AssertionError(dialect.getIdType().toString());
         }
-    }
+        modelSetup.repositoryDescriptor = repositoryDescriptor;
 
-    protected String getDataSourceName() {
-        RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
-        return JDBCConnection.getDataSourceName(repositoryDescriptor.name);
-    }
-
-    @Override
-    public void initializeDatabase(Model model) {
+        // Model and SQLInfo
+        model = new Model(modelSetup);
         sqlInfo = new SQLInfo(model, dialect);
-        RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
+
+        // DDL mode
         String ddlMode = repositoryDescriptor.getDDLMode();
         if (ddlMode == null) {
             // compat
             ddlMode = repositoryDescriptor.getNoDDL() ? RepositoryDescriptor.DDL_MODE_IGNORE
                     : RepositoryDescriptor.DDL_MODE_EXECUTE;
         }
+
+        // create database
         if (ddlMode.equals(RepositoryDescriptor.DDL_MODE_IGNORE)) {
             log.info("Skipping database creation");
         } else {
-            Mapper mapper = newMapper(model, null, false);
+            Mapper mapper = newMapper(null, false);
             try {
                 mapper.createDatabase(ddlMode);
             } finally {
@@ -140,6 +129,8 @@ public class JDBCBackend implements RepositoryBackend {
             log.debug(String.format("Database ready, fulltext: disabled=%b searchDisabled=%b.",
                     fulltextDescriptor.getFulltextDisabled(), fulltextDescriptor.getFulltextSearchDisabled()));
         }
+
+        return model;
     }
 
     @Override
@@ -148,7 +139,7 @@ public class JDBCBackend implements RepositoryBackend {
     }
 
     @Override
-    public Mapper newMapper(Model model, PathResolver pathResolver, boolean useInvalidations) {
+    public Mapper newMapper(PathResolver pathResolver, boolean useInvalidations) {
         boolean noSharing = !useInvalidations;
         ClusterInvalidator cnh = useInvalidations ? clusterInvalidator : null;
         Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo, cnh, repository);
