@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.migration.MigrationService" version="1.0">
+
+  <documentation>
+    The Migration service allows registration and access to migration configurations.
+    A migration configuration contains different states and steps to migrate between these states.
+  </documentation>
+
+  <require>org.nuxeo.runtime.kv.KeyValueService</require>
+
+  <service>
+    <provide interface="org.nuxeo.runtime.migration.MigrationService" />
+  </service>
+
+  <implementation class="org.nuxeo.runtime.migration.MigrationServiceImpl" />
+
+  <extension-point name="configuration">
+    <documentation>
+      Defines migrations:
+      <code>
+        <migration id="my_migration">
+          <description label="my_migration">My Migration</description>
+          <state id="v1">
+            <description label="my_migration.state.v1">Initial state</description>
+          </state>
+          ... other states ...
+
+          <step id="first" fromState="v1" toState="v2">
+            <description label="my_migration.step.first">First step of the migration, from v1 to v2</description>
+            <class>my.class.Migratorv1v2</class>
+          </step>
+          ... other steps ...
+        </migration>
+      </code>
+      The migrator class for each step must implement Runnable.
+    </documentation>
+
+    <object class="org.nuxeo.runtime.migration.MigrationDescriptor" />
+  </extension-point>
+
+</component>
