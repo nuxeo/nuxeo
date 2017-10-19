@@ -38,10 +38,11 @@ public interface RepositoryBackend {
     void initializeModelSetup(ModelSetup modelSetup);
 
     /**
-     * Initializes what's needed after the {@link Model} has been created. Called once lazily at repository
-     * initialization.
+     * Initializes the database, if needed, according to DDL mode.
+     *
+     * @since 9.3
      */
-    void initializeModel(Model model);
+    void initializeDatabase(Model model);
 
     /**
      * Sets the cluster invalidator, to be used by future mappers created.

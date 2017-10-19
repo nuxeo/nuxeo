@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -58,10 +55,6 @@ public class JDBCBackend implements RepositoryBackend {
     private Dialect dialect;
 
     private SQLInfo sqlInfo;
-
-    private boolean firstMapper = true;
-
-    private Boolean initialized;
 
     private ClusterInvalidator clusterInvalidator;
 
@@ -122,14 +115,31 @@ public class JDBCBackend implements RepositoryBackend {
         return JDBCConnection.getDataSourceName(repositoryDescriptor.name);
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Creates the {@link SQLInfo} from the model and the dialect.
-     */
     @Override
-    public void initializeModel(Model model) {
+    public void initializeDatabase(Model model) {
         sqlInfo = new SQLInfo(model, dialect);
+        RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
+        String ddlMode = repositoryDescriptor.getDDLMode();
+        if (ddlMode == null) {
+            // compat
+            ddlMode = repositoryDescriptor.getNoDDL() ? RepositoryDescriptor.DDL_MODE_IGNORE
+                    : RepositoryDescriptor.DDL_MODE_EXECUTE;
+        }
+        if (ddlMode.equals(RepositoryDescriptor.DDL_MODE_IGNORE)) {
+            log.info("Skipping database creation");
+        } else {
+            Mapper mapper = newMapper(model, null, false);
+            try {
+                mapper.createDatabase(ddlMode);
+            } finally {
+                mapper.close();
+            }
+        }
+        if (log.isDebugEnabled()) {
+            FulltextDescriptor fulltextDescriptor = repositoryDescriptor.getFulltextDescriptor();
+            log.debug(String.format("Database ready, fulltext: disabled=%b searchDisabled=%b.",
+                    fulltextDescriptor.getFulltextDisabled(), fulltextDescriptor.getFulltextSearchDisabled()));
+        }
     }
 
     @Override
@@ -140,40 +150,12 @@ public class JDBCBackend implements RepositoryBackend {
     @Override
     public Mapper newMapper(Model model, PathResolver pathResolver, boolean useInvalidations) {
         boolean noSharing = !useInvalidations;
-        RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
-
         ClusterInvalidator cnh = useInvalidations ? clusterInvalidator : null;
         Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo, cnh, repository);
         if (isPooledDataSource) {
             mapper = JDBCMapperConnector.newConnector(mapper, noSharing);
         } else {
             mapper.connect(false);
-        }
-        String repositoryName = repository.getName();
-        if (FALSE.equals(initialized)) {
-            throw new NuxeoException("Database initialization failed previously for: " + repositoryName);
-        }
-        if (firstMapper) {
-            initialized = FALSE;
-            firstMapper = false;
-            String ddlMode = repositoryDescriptor.getDDLMode();
-            if (ddlMode == null) {
-                // compat
-                ddlMode = repositoryDescriptor.getNoDDL() ? RepositoryDescriptor.DDL_MODE_IGNORE
-                        : RepositoryDescriptor.DDL_MODE_EXECUTE;
-            }
-            if (ddlMode.equals(RepositoryDescriptor.DDL_MODE_IGNORE)) {
-                log.info("Skipping database creation");
-            } else {
-                // first connection, initialize the database
-                mapper.createDatabase(ddlMode);
-            }
-            if (log.isDebugEnabled()) {
-                FulltextDescriptor fulltextDescriptor = repositoryDescriptor.getFulltextDescriptor();
-                log.debug(String.format("Database ready, fulltext: disabled=%b searchDisabled=%b.",
-                        fulltextDescriptor.getFulltextDisabled(), fulltextDescriptor.getFulltextSearchDisabled()));
-            }
-            initialized = TRUE;
         }
         return mapper;
     }

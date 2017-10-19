@@ -277,7 +277,7 @@ public class RepositoryImpl implements Repository {
         modelSetup.repositoryDescriptor = repositoryDescriptor;
         backend.initializeModelSetup(modelSetup);
         model = new Model(modelSetup);
-        backend.initializeModel(model);
+        backend.initializeDatabase(model);
         initLockManager();
 
         // create the cluster invalidator
