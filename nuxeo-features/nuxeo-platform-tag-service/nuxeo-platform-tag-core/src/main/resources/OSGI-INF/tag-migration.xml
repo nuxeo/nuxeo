@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.tag.service.migrator" version="1.0">
+
+  <extension target="org.nuxeo.runtime.migration.MigrationService" point="configuration">
+
+    <migration id="tag-storage">
+      <description label="migration.tag-storage">Migration of the tags storage model</description>
+      <defaultState>facets</defaultState>
+      <state id="relations">
+        <description label="migration.tag-storage.relations">Tags stored as relations</description>
+      </state>
+      <state id="facets">
+        <description label="migration.tag-storage.facets">Tags stored as faceted metadata</description>
+      </state>
+
+      <step id="relations-to-facets" fromState="relations" toState="facets">
+        <description label="migration.tag-storage.relations-to-facets">Migrate tags from relations to facets</description>
+        <class>org.nuxeo.ecm.platform.tag.TagsRelationsToFacetsMigrator</class>
+      </step>
+    </migration>
+
+  </extension>
+
+</component>

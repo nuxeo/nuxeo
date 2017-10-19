@@ -30,8 +30,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.tag.operations.RemoveDocumentTags;
 import org.nuxeo.ecm.platform.tag.operations.TagDocument;
 import org.nuxeo.ecm.platform.tag.operations.UntagDocument;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -81,8 +79,7 @@ public class TestTagOperations {
     @Test
     public void testTagOperationsSuite() throws Exception {
 
-        boolean facetedTags = Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(
-                TagServiceImpl.FACETED_TAG_SERVICE_ENABLED);
+        boolean facetedTags = tagService instanceof FacetedTagService;
         assumeTrue("DBS does not support tags based on SQL relations",
                 !coreFeature.getStorageConfiguration().isDBS() || facetedTags);
 
