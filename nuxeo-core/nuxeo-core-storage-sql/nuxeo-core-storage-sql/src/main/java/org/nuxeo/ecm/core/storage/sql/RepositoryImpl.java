@@ -67,7 +67,7 @@ public class RepositoryImpl implements Repository {
 
     protected final Class<? extends FulltextParser> fulltextParserClass;
 
-    private final RepositoryBackend backend;
+    private RepositoryBackend backend;
 
     private final Collection<SessionImpl> sessions;
 
@@ -114,14 +114,14 @@ public class RepositoryImpl implements Repository {
         }
         fulltextParserClass = (Class<? extends FulltextParser>) klass;
 
-        backend = createBackend();
+        initRepository();
+
         repositoryUp = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
                 "instance-up"));
         repositoryUp.inc();
         sessionCount = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
                 "sessions"));
         createMetricsGauges();
-        initRepository();
     }
 
     protected void createMetricsGauges() {
@@ -166,7 +166,6 @@ public class RepositoryImpl implements Repository {
         }
         try {
             RepositoryBackend backend = backendClass.newInstance();
-            backend.initialize(this);
             return backend;
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
@@ -268,16 +267,13 @@ public class RepositoryImpl implements Repository {
      * @since 7.4
      */
     public Mapper newMapper(PathResolver pathResolver, boolean useInvalidations) {
-        return backend.newMapper(model, pathResolver, useInvalidations);
+        return backend.newMapper(pathResolver, useInvalidations);
     }
 
     protected void initRepository() {
         log.debug("Initializing");
-        ModelSetup modelSetup = new ModelSetup();
-        modelSetup.repositoryDescriptor = repositoryDescriptor;
-        backend.initializeModelSetup(modelSetup);
-        model = new Model(modelSetup);
-        backend.initializeDatabase(model);
+        backend = createBackend();
+        model = backend.initialize(this);
         initLockManager();
 
         // create the cluster invalidator

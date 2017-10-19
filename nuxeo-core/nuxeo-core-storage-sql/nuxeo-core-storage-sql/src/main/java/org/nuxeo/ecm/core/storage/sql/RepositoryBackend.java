@@ -30,19 +30,7 @@ public interface RepositoryBackend {
     /**
      * Initializer.
      */
-    void initialize(RepositoryImpl repository);
-
-    /**
-     * Initializes the {@link ModelSetup}. Called once lazily at repository initialization.
-     */
-    void initializeModelSetup(ModelSetup modelSetup);
-
-    /**
-     * Initializes the database, if needed, according to DDL mode.
-     *
-     * @since 9.3
-     */
-    void initializeDatabase(Model model);
+    Model initialize(RepositoryImpl repository);
 
     /**
      * Sets the cluster invalidator, to be used by future mappers created.
@@ -54,11 +42,10 @@ public interface RepositoryBackend {
     /**
      * Creates a new instance a {@link Mapper}. Called once for every new session.
      *
-     * @param model the model
      * @param pathResolver the path resolver
      * @param useInvalidations whether this mapper participates in invalidation propagation
      */
-    Mapper newMapper(Model model, PathResolver pathResolver, boolean useInvalidations);
+    Mapper newMapper(PathResolver pathResolver, boolean useInvalidations);
 
     /**
      * Shuts down the backend.
