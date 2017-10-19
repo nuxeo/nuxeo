@@ -21,7 +21,6 @@
 
 package org.nuxeo.ecm.platform.audit;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -35,7 +34,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RepositoryConfig(init = MyInit.class, cleanup = Granularity.METHOD)
 public class TestNXStreamAuditEventsService extends TestNXAuditEventsService {
 
-    @Ignore("TODO: extended info deserialization to support boolean, int, double")
     @Test
     @Override
     public void testLogRetentionActiveChange() throws Exception {
