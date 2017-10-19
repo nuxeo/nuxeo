@@ -47,8 +47,8 @@ public abstract class MonitoredBackend implements RepositoryBackend {
     }
 
     @Override
-    public void initializeModel(Model model) {
-        wrapped.initializeModel(model);
+    public void initializeDatabase(Model model) {
+        wrapped.initializeDatabase(model);
     }
 
     @Override
