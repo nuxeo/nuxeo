@@ -35,7 +35,6 @@ import org.apache.commons.logging.Log;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.session.UserSession;
@@ -409,7 +408,6 @@ public interface WebContext extends Adaptable {
      * @param template the template to render
      * @param args the arguments to pass
      * @param writer the writer to use
-     * @throws WebException
      */
     void render(String template, Object args, Writer writer);
 
@@ -421,7 +419,6 @@ public interface WebContext extends Adaptable {
      * @param script the template to render
      * @param args the arguments to pass
      * @param writer the writer to use
-     * @throws WebException
      */
     void render(ScriptFile script, Object args, Writer writer);
 

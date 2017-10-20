@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.search;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -42,10 +43,9 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
-import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -83,8 +83,7 @@ public class SearchObject extends QueryExecutor {
 
     @GET
     @Path("lang/{queryLanguage}/execute")
-    public Object doQueryByLang(@Context UriInfo uriInfo, @PathParam("queryLanguage") String queryLanguage)
-            throws RestOperationException {
+    public Object doQueryByLang(@Context UriInfo uriInfo, @PathParam("queryLanguage") String queryLanguage) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         return queryByLang(queryLanguage, queryParams);
     }
@@ -92,7 +91,7 @@ public class SearchObject extends QueryExecutor {
     @GET
     @Path("pp/{pageProviderName}/execute")
     public Object doQueryByPageProvider(@Context UriInfo uriInfo,
-            @PathParam("pageProviderName") String pageProviderName) throws RestOperationException {
+            @PathParam("pageProviderName") String pageProviderName) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         return queryByPageProvider(pageProviderName, queryParams);
     }
@@ -100,14 +99,14 @@ public class SearchObject extends QueryExecutor {
     @GET
     @Path("pp/{pageProviderName}")
     public Object doGetPageProviderDefinition(@PathParam("pageProviderName") String pageProviderName)
-            throws RestOperationException, IOException {
+            throws IOException {
         return buildResponse(Response.Status.OK, MediaType.APPLICATION_JSON,
                 getPageProviderDefinition(pageProviderName));
     }
 
     @GET
     @Path("saved")
-    public List<SavedSearch> doGetSavedSearches(@Context UriInfo uriInfo) throws RestOperationException {
+    public List<SavedSearch> doGetSavedSearches(@Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         DocumentModelList results = queryParams.containsKey(PAGE_PROVIDER_NAME_PARAM)
                 ? queryByPageProvider(SAVED_SEARCHES_PAGE_PROVIDER_PARAMS, queryParams)
@@ -122,7 +121,7 @@ public class SearchObject extends QueryExecutor {
     @POST
     @Path("saved")
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
-    public Response doSaveSearch(SavedSearchRequest request) throws RestOperationException {
+    public Response doSaveSearch(SavedSearchRequest request) {
         try {
             SavedSearch search = savedSearchService.createSavedSearch(ctx.getCoreSession(), request.getTitle(),
                     request.getQueryParams(), null, request.getQuery(), request.getQueryLanguage(),
@@ -131,23 +130,14 @@ public class SearchObject extends QueryExecutor {
             setSaveSearchParams(request.getNamedParams(), search);
             return Response.ok(savedSearchService.saveSavedSearch(ctx.getCoreSession(), search)).build();
         } catch (InvalidSearchParameterException | IOException e) {
-            RestOperationException err = new RestOperationException(e.getMessage());
-            err.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            throw err;
+            throw new NuxeoException(e.getMessage(), SC_BAD_REQUEST);
         }
     }
 
     @GET
     @Path("saved/{id}")
-    public Response doGetSavedSearch(@PathParam("id") String id) throws RestOperationException {
-        SavedSearch search;
-        try {
-            search = savedSearchService.getSavedSearch(ctx.getCoreSession(), id);
-        } catch (DocumentNotFoundException e) {
-            RestOperationException err = new RestOperationException("unknown id: " + e.getMessage());
-            err.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            throw err;
-        }
+    public Response doGetSavedSearch(@PathParam("id") String id) {
+        SavedSearch search = savedSearchService.getSavedSearch(ctx.getCoreSession(), id);
         if (search == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -157,16 +147,8 @@ public class SearchObject extends QueryExecutor {
     @PUT
     @Path("saved/{id}")
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
-    public Response doUpdateSavedSearch(SavedSearchRequest request, @PathParam("id") String id)
-            throws RestOperationException {
-        SavedSearch search;
-        try {
-            search = savedSearchService.getSavedSearch(ctx.getCoreSession(), id);
-        } catch (DocumentNotFoundException e) {
-            RestOperationException err = new RestOperationException("unknown id: " + e.getMessage());
-            err.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            throw err;
-        }
+    public Response doUpdateSavedSearch(SavedSearchRequest request, @PathParam("id") String id) {
+        SavedSearch search = savedSearchService.getSavedSearch(ctx.getCoreSession(), id);
         if (search == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -186,31 +168,22 @@ public class SearchObject extends QueryExecutor {
             setSaveSearchParams(request.getNamedParams(), search);
             search = savedSearchService.saveSavedSearch(ctx.getCoreSession(), search);
         } catch (InvalidSearchParameterException | IOException e) {
-            RestOperationException err = new RestOperationException(e.getMessage());
-            err.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            throw err;
+            throw new NuxeoException(e.getMessage(), SC_BAD_REQUEST);
         }
         return Response.ok(search).build();
     }
 
     @DELETE
     @Path("saved/{id}")
-    public Response doDeleteSavedSearch(@PathParam("id") String id) throws RestOperationException {
-        try {
-            SavedSearch search = savedSearchService.getSavedSearch(ctx.getCoreSession(), id);
-            savedSearchService.deleteSavedSearch(ctx.getCoreSession(), search);
-        } catch (DocumentNotFoundException e) {
-            RestOperationException err = new RestOperationException(e.getMessage());
-            err.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            throw err;
-        }
+    public Response doDeleteSavedSearch(@PathParam("id") String id) {
+        SavedSearch search = savedSearchService.getSavedSearch(ctx.getCoreSession(), id);
+        savedSearchService.deleteSavedSearch(ctx.getCoreSession(), search);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
     @GET
     @Path("saved/{id}/execute")
-    public Object doExecuteSavedSearch(@PathParam("id") String id, @Context UriInfo uriInfo)
-            throws RestOperationException {
+    public Object doExecuteSavedSearch(@PathParam("id") String id, @Context UriInfo uriInfo) {
         MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
         SavedSearch search = savedSearchService.getSavedSearch(ctx.getCoreSession(), id);
         if (search == null) {
@@ -237,8 +210,7 @@ public class SearchObject extends QueryExecutor {
         search.setNamedParams(namedParams);
     }
 
-    protected DocumentModelList executeSavedSearch(SavedSearch search, MultivaluedMap<String, String> params)
-            throws RestOperationException {
+    protected DocumentModelList executeSavedSearch(SavedSearch search, MultivaluedMap<String, String> params) {
         Long pageSize = getPageSize(params);
         Long currentPageIndex = getCurrentPageIndex(params);
         Long currentPageOffset = getCurrentPageOffset(params);
@@ -254,7 +226,8 @@ public class SearchObject extends QueryExecutor {
                     search.getQueryParams(), search.getNamedParams(),
                     sortInfo != null ? sortInfo : getSortInfo(search.getSortBy(), search.getSortOrder()), quickFilters,
                     search.getDocument().getType() != SavedSearchConstants.PARAMETERIZED_SAVED_SEARCH_TYPE_NAME
-                            ? search.getDocument() : null);
+                            ? search.getDocument()
+                            : null);
         } else if (!StringUtils.isEmpty(search.getQuery()) && !StringUtils.isEmpty(search.getQueryLanguage())) {
             return querySavedSearchByLang(search.getQueryLanguage(), search.getQuery(),
                     pageSize != null ? pageSize : search.getPageSize(),
@@ -270,7 +243,7 @@ public class SearchObject extends QueryExecutor {
 
     protected DocumentModelList querySavedSearchByLang(String queryLanguage, String query, Long pageSize,
             Long currentPageIndex, Long currentPageOffset, Long maxResults, String orderedParams,
-            Map<String, String> namedParameters, List<SortInfo> sortInfo) throws RestOperationException {
+            Map<String, String> namedParameters, List<SortInfo> sortInfo) {
         Properties namedParametersProps = getNamedParameters(namedParameters);
         Object[] parameters = replaceParameterPattern(new Object[] { orderedParams });
         Map<String, Serializable> props = getProperties();
@@ -284,8 +257,7 @@ public class SearchObject extends QueryExecutor {
 
     protected DocumentModelList querySavedSearchByPageProvider(String pageProviderName, Long pageSize,
             Long currentPageIndex, Long currentPageOffset, String orderedParams, Map<String, String> namedParameters,
-            List<SortInfo> sortInfo, List<QuickFilter> quickFilters, DocumentModel searchDocumentModel)
-            throws RestOperationException {
+            List<SortInfo> sortInfo, List<QuickFilter> quickFilters, DocumentModel searchDocumentModel) {
         Properties namedParametersProps = getNamedParameters(namedParameters);
         Object[] parameters = orderedParams != null ? replaceParameterPattern(new Object[] { orderedParams })
                 : new Object[0];

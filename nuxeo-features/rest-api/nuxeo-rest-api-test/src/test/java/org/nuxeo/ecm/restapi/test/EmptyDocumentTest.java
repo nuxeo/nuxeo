@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.restapi.test;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -29,6 +30,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
@@ -94,7 +96,7 @@ public class EmptyDocumentTest extends BaseTest {
     }
 
     protected void assertError(ClientResponse response) throws IOException {
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        assertEquals(SC_BAD_REQUEST, response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertNotNull(node);
         assertEquals("exception", node.get("entity-type").getTextValue());

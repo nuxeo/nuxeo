@@ -26,7 +26,6 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -43,16 +42,15 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.AutomationInfo;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
-import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 
@@ -90,7 +88,7 @@ public class AutomationResource extends ModuleRoot {
         try {
             CoreSession session = SessionFactory.getSession(request);
             DocumentModel doc = session.getDocument(new IdRef(uid));
-            Object obj = null;
+            Object obj;
             try {
                 obj = doc.getPropertyValue(path);
             } catch (PropertyException e) {
@@ -113,7 +111,7 @@ public class AutomationResource extends ModuleRoot {
             }
             return ResponseHelper.notFound();
         } catch (MessagingException | IOException e) {
-            throw WebException.newException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -129,7 +127,7 @@ public class AutomationResource extends ModuleRoot {
         if (p instanceof NuxeoPrincipal) {
             NuxeoPrincipal np = (NuxeoPrincipal) p;
             List<String> groups = np.getAllGroups();
-            HashSet<String> set = new HashSet<String>(groups);
+            HashSet<String> set = new HashSet<>(groups);
             return new LoginInfo(np.getName(), set, np.isAdministrator());
         } else {
             return Response.status(401).build();
@@ -144,22 +142,8 @@ public class AutomationResource extends ModuleRoot {
         try {
             OperationType op = service.getOperation(oid);
             return newObject("operation", op);
-        } catch (OperationException cause) {
-            if (cause instanceof OperationNotFoundException) {
-                return WebException.newException("Failed to invoke " + "operation: " + oid, cause,
-                        HttpServletResponse.SC_NOT_FOUND);
-            } else {
-                Throwable unWrapException = ExceptionHelper.unwrapException(cause);
-                if (unWrapException instanceof RestOperationException) {
-                    int customHttpStatus = ((RestOperationException) unWrapException).getStatus();
-                    throw WebException.newException("Failed to invoke operation: " + oid, cause, customHttpStatus);
-                }
-                if (unWrapException instanceof ConcurrentUpdateException) {
-                    throw WebException.newException("Failed to invoke operation: " + oid, unWrapException,
-                            HttpServletResponse.SC_CONFLICT);
-                }
-                throw WebException.newException("Failed to invoke operation: " + oid, cause);
-            }
+        } catch (OperationNotFoundException cause) {
+            return new WebResourceNotFoundException("Failed to invoke operation: " + oid, cause);
         }
     }
 

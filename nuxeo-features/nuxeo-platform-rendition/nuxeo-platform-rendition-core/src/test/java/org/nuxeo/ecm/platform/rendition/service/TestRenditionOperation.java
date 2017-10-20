@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -96,7 +97,7 @@ public class TestRenditionOperation {
         return session.createDocument(file);
     }
 
-    @Test(expected = OperationException.class)
+    @Test(expected = NuxeoException.class)
     public void shouldThroughTraceExceptionForNonExistingRendition() throws OperationException {
         DocumentModel file = createDummyFile();
 

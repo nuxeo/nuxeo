@@ -32,11 +32,7 @@ public class DocRefToDocModel implements TypeAdapter {
     @Override
     public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         DocumentRef ref = (DocumentRef) objectToAdapt;
-        try {
-            return ctx.getCoreSession().getDocument(ref);
-        } catch (DocumentNotFoundException e) {
-            throw new TypeAdaptException(e);
-        }
+        return ctx.getCoreSession().getDocument(ref);
     }
 
 }

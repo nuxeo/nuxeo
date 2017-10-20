@@ -42,7 +42,7 @@ import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.task.standalone.UninstallTask;
 import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
@@ -164,7 +164,7 @@ public class UninstallHandler extends DefaultObject {
         try {
             pus.restart();
         } catch (PackageException e) {
-            throw WebException.wrap(e);
+            throw new NuxeoException(e);
         }
         // TODO create a page that waits for the server to restart
         return Response.ok().build();

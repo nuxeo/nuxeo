@@ -21,7 +21,7 @@ package org.nuxeo.ecm.webengine.ui.wizard;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.forms.validation.Form;
 import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
@@ -47,7 +47,7 @@ public class WizardSession extends HashMap<String, Object> {
 
     public WizardSession(String wizardId, WizardPage[] pages) {
         if (pages == null || pages.length == 0) {
-            throw new WebException("Wizard has no pages!");
+            throw new NuxeoException("Wizard has no pages!");
         }
         this.id = wizardId;
         this.lastPage = pages[0];

@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.api.Framework;
@@ -41,14 +40,15 @@ public class DocumentHelper {
     }
 
     public static DocumentModel createDocument(WebContext context, DocumentModel parent, String name) {
+        FormData form = context.getForm();
+        String type = form.getDocumentType();
+        if (type == null) {
+            throw new NuxeoException("Invalid argument exception. No doc type specified");
+        }
+
         try {
             PathSegmentService pss = Framework.getService(PathSegmentService.class);
             CoreSession session = context.getCoreSession();
-            FormData form = context.getForm();
-            String type = form.getDocumentType();
-            if (type == null) {
-                throw new WebException("Invalid argument exception. No doc type specified");
-            }
             DocumentModel newDoc = session.createDocumentModel(type);
             form.fillDocument(newDoc);
             if (name != null) {
@@ -61,21 +61,18 @@ public class DocumentHelper {
             session.save();
             return newDoc;
         } catch (NuxeoException e) {
-            throw WebException.wrap("Failed to create document: " + name, e);
+            e.addInfo("Failed to create document: " + name);
+            throw e;
         }
     }
 
     public static DocumentModel updateDocument(WebContext ctx, DocumentModel doc) {
-        try {
-            FormData form = ctx.getForm();
-            form.fillDocument(doc);
-            doc.putContextData(VersioningService.VERSIONING_OPTION, form.getVersioningOption());
-            doc = ctx.getCoreSession().saveDocument(doc);
-            ctx.getCoreSession().save();
-            return doc;
-        } catch (NuxeoException e) {
-            throw WebException.wrap("Failed to update document", e);
-        }
+        FormData form = ctx.getForm();
+        form.fillDocument(doc);
+        doc.putContextData(VersioningService.VERSIONING_OPTION, form.getVersioningOption());
+        doc = ctx.getCoreSession().saveDocument(doc);
+        ctx.getCoreSession().save();
+        return doc;
     }
 
 }

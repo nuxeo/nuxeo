@@ -23,10 +23,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 
@@ -39,16 +37,12 @@ public class UserObject extends AbstractUMObject<NuxeoPrincipal> {
 
     @Path("group/{groupName}")
     public Object doGetUserToGroup(@PathParam("groupName") String groupName) {
-        try {
-            NuxeoGroup group = um.getGroup(groupName);
-            if (group == null) {
-                throw new WebResourceNotFoundException("Group not found");
-            }
-
-            return newObject("userToGroup", currentArtifact, group);
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
+        NuxeoGroup group = um.getGroup(groupName);
+        if (group == null) {
+            throw new WebResourceNotFoundException("Group not found");
         }
+
+        return newObject("userToGroup", currentArtifact, group);
     }
 
     @Override

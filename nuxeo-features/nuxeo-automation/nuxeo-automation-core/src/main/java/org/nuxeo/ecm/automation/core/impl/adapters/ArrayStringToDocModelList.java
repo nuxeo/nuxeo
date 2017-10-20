@@ -35,12 +35,8 @@ public class ArrayStringToDocModelList implements TypeAdapter {
     public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         String[] content = (String[]) objectToAdapt;
         DocumentModelList result = new DocumentModelListImpl();
-        try {
-            for (String value : content) {
-                result.add(TypeAdapterHelper.createDocumentModel(ctx, value));
-            }
-        } catch (DocumentNotFoundException e) {
-            throw new TypeAdaptException(e);
+        for (String value : content) {
+            result.add(TypeAdapterHelper.createDocumentModel(ctx, value));
         }
         return result;
     }

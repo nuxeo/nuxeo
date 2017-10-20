@@ -21,11 +21,14 @@
 
 package org.nuxeo.ecm.webengine.model;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 9.3. Use {@link NuxeoException} instead.
  */
+@Deprecated
 public class TypeException extends WebException {
 
     private static final long serialVersionUID = 1L;

@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.restapi.server.jaxrs.PaginableObject;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.runtime.api.Framework;
@@ -57,27 +56,18 @@ public abstract class AbstractUMRootObject<T> extends PaginableObject<T> {
     // - '/user/' or '/group/' when adding a user to a group
     @Path("{artName:((?:(?!(/@|(/user/|/group/))).)*)}")
     public Object getArtifactWebObject(@PathParam("artName") String artName) {
-        try {
-            T artifact = getArtifact(artName);
-            if (artifact == null) {
-                throw new WebResourceNotFoundException(getArtifactType() + " does not exist");
-            }
-            return newObject(getArtifactType(), artifact);
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
+        T artifact = getArtifact(artName);
+        if (artifact == null) {
+            throw new WebResourceNotFoundException(getArtifactType() + " does not exist");
         }
+        return newObject(getArtifactType(), artifact);
     }
 
     @POST
     public Response createNew(T artifact) {
-        try {
-            checkPrecondition(artifact);
-            artifact = createArtifact(artifact);
-            return Response.status(Status.CREATED).entity(artifact).build();
-
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
-        }
+        checkPrecondition(artifact);
+        artifact = createArtifact(artifact);
+        return Response.status(Status.CREATED).entity(artifact).build();
     }
 
     @GET

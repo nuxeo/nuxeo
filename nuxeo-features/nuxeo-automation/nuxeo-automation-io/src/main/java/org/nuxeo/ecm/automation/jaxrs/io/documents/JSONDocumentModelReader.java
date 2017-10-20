@@ -25,6 +25,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -48,15 +49,17 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.DocumentModelJsonReaderLegacy;
 import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
+
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 
 /**
  * JAX-RS reader for a DocumentModel. If an id is given, it tries to reattach the document to the session. If not, it
@@ -95,16 +98,14 @@ public class JSONDocumentModelReader implements MessageBodyReader<DocumentModel>
             throws IOException, WebApplicationException {
         String content = IOUtils.toString(entityStream);
         if (content.isEmpty()) {
-            if (content.isEmpty()) {
-                throw new WebException("No content in request body", Response.Status.BAD_REQUEST.getStatusCode());
-            }
+            throw new NuxeoException("No content in request body", SC_BAD_REQUEST);
 
         }
 
         try {
             return readRequest(content, httpHeaders);
         } catch (IOException e) {
-            throw WebException.wrap(e);
+            throw new NuxeoException(e);
         }
     }
 

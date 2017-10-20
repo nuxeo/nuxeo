@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.webengine.model.impl;
 
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+
 import java.io.IOException;
 import java.util.Date;
 
@@ -28,12 +30,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.app.DefaultContext;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.ModuleResource;
@@ -97,8 +99,10 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
             ScriptFile file = getModule().getSkinResource("/resources/" + path);
             if (file != null) {
                 long lastModified = file.lastModified();
-                ResponseBuilder resp = Response.ok(file.getFile()).lastModified(new Date(lastModified)).header(
-                        "Cache-Control", "public").header("Server", "Nuxeo/WebEngine-1.0");
+                ResponseBuilder resp = Response.ok(file.getFile())
+                                               .lastModified(new Date(lastModified))
+                                               .header("Cache-Control", "public")
+                                               .header("Server", "Nuxeo/WebEngine-1.0");
 
                 String mimeType = ctx.getEngine().getMimeType(file.getExtension());
                 if (mimeType == null) {
@@ -108,9 +112,9 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
                 return resp.build();
             }
         } catch (IOException e) {
-            throw WebException.wrap("Failed to get resource file: " + path, e);
+            throw new NuxeoException("Failed to get resource file: " + path, e);
         }
-        return Response.status(404).build();
+        return Response.status(SC_NOT_FOUND).build();
     }
 
     /**
@@ -126,8 +130,7 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
     }
 
     @Override
-    public Object handleError(WebApplicationException e) {
-        return e;
+    public Object handleError(Throwable t) {
+        return t;
     }
-
 }

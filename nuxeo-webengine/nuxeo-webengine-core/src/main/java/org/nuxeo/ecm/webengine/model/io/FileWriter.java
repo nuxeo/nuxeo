@@ -37,8 +37,8 @@ import javax.ws.rs.ext.Provider;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
-import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * text/plain is needed otherwise resteasy will use its default text plain (@see DefaultTextPlain) writer to write
@@ -57,11 +57,11 @@ public class FileWriter implements MessageBodyWriter<File> {
         try (FileInputStream in = new FileInputStream(t)) {
             IOUtils.copy(in, entityStream);
             entityStream.flush();
-        } catch (RuntimeException | IOException e) {
+        } catch (IOException e) {
             if (DownloadHelper.isClientAbortError(e)) {
                 DownloadHelper.logClientAbort(e);
             } else {
-                throw WebException.wrap("Failed to render resource", e);
+                throw new NuxeoException("Failed to render resource", e);
             }
         }
     }

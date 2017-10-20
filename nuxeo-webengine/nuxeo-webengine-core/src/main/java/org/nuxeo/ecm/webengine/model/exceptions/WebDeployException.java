@@ -21,12 +21,12 @@
 
 package org.nuxeo.ecm.webengine.model.exceptions;
 
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class WebDeployException extends WebException {
+public class WebDeployException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 

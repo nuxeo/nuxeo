@@ -32,7 +32,7 @@ import java.util.Set;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 
@@ -118,7 +118,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
             }
             return handler.getCode(this, resource);
         } catch (ReflectiveOperationException e) {
-            throw WebException.wrap("Failed to instantiate link handler", e);
+            throw new NuxeoException("Failed to instantiate link handler", e);
         }
     }
 

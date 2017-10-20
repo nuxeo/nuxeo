@@ -139,8 +139,6 @@ public abstract class AbstractAutomationClientTest {
             assertThat(remoteCause, is(notNullValue()));
             final StackTraceElement[] remoteStack = remoteCause.getStackTrace();
             assertThat(remoteStack, is(notNullValue()));
-            Boolean rollback = ((RemoteThrowable) remoteCause).getOtherNodes().get("rollback").getBooleanValue();
-            assertThat(rollback, is(Boolean.TRUE));
             while (remoteCause.getCause() != remoteCause && remoteCause.getCause() != null) {
                 remoteCause = remoteCause.getCause();
             }

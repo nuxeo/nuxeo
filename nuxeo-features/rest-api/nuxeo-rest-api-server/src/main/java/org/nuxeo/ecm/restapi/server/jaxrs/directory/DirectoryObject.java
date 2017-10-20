@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.directory;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.nuxeo.ecm.restapi.server.jaxrs.directory.DirectorySessionRunner.withDirectorySession;
 
 import java.util.ArrayList;
@@ -35,14 +36,13 @@ import javax.ws.rs.core.Response.Status;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.Directory;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
@@ -63,14 +63,10 @@ public class DirectoryObject extends DefaultObject {
         if (args.length < 1) {
             throw new IllegalArgumentException("Directory Object takes one parameter");
         }
-        try {
-            String dirName = (String) args[0];
-            directory = Framework.getLocalService(DirectoryService.class).getDirectory(dirName);
-            if (directory == null) {
-                throw new WebResourceNotFoundException("Directory " + dirName + " was not found");
-            }
-        } catch (DirectoryException e) {
-            throw WebException.wrap(e);
+        String dirName = (String) args[0];
+        directory = Framework.getLocalService(DirectoryService.class).getDirectory(dirName);
+        if (directory == null) {
+            throw new WebResourceNotFoundException("Directory " + dirName + " was not found");
         }
     }
 
@@ -115,8 +111,8 @@ public class DirectoryObject extends DefaultObject {
         UserManager um = Framework.getLocalService(UserManager.class);
         if (directory.getName().equals(um.getUserDirectoryName())
                 || directory.getName().equals(um.getGroupDirectoryName())) {
-            throw new WebSecurityException(
-                    "Not allowed to edit user/group directories, please use user/group endpoints");
+            throw new NuxeoException("Not allowed to edit user/group directories, please use user/group endpoints",
+                    SC_BAD_REQUEST);
         }
     }
 

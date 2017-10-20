@@ -45,6 +45,7 @@ import org.nuxeo.ecm.automation.core.operations.document.UnblockPermissionInheri
 import org.nuxeo.ecm.automation.core.operations.document.ReplacePermission;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -52,6 +53,7 @@ import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.mockito.RuntimeService;
@@ -176,8 +178,9 @@ public class PermissionAutomationTest {
         try {
             automationService.run(ctx, AddPermission.ID, params);
             fail();
-        } catch (OperationException e) {
-            String expectedMsg = "Failed to invoke operation Document.AddPermission with aliases [Document.AddACL]";
+        } catch (IllegalParameterException e) {
+            String expectedMsg = String.format("Failed to invoke operation Document.AddPermission with aliases [Document.AddACL], "
+                    + "User or group name '%s' does not exist. Please provide a valid name.", nonExistentGroupOrUser);
             assertEquals(e.getMessage(), expectedMsg, e.getMessage());
         }
         assertNull(src.getACP().getACL(ACL.LOCAL_ACL));

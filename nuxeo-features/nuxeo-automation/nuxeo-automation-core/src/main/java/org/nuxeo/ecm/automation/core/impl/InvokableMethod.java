@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -174,26 +175,28 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
     public Object invoke(OperationContext ctx, Map<String, Object> args) throws OperationException {
         try {
             return doInvoke(ctx, args);
-        } catch (OperationException e) {
-            throw e;
         } catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
             if (t instanceof OperationException) {
                 throw (OperationException) t;
+            } else if (t instanceof NuxeoException) {
+                NuxeoException nuxeoException = (NuxeoException) t;
+                nuxeoException.addInfo(getExceptionMessage());
+                throw nuxeoException;
             } else {
-                String exceptionMessage = "Failed to invoke operation " + op.getId();
-                if (op.getAliases() != null && op.getAliases().length > 0) {
-                    exceptionMessage += " with aliases " + Arrays.toString(op.getAliases());
-                }
-                throw new OperationException(exceptionMessage, t);
+                throw new OperationException(getExceptionMessage(), t);
             }
         } catch (ReflectiveOperationException e) {
-            String exceptionMessage = "Failed to invoke operation " + op.getId();
-            if (op.getAliases() != null && op.getAliases().length > 0) {
-                exceptionMessage += " with aliases " + Arrays.toString(op.getAliases());
-            }
-            throw new OperationException(exceptionMessage, e);
+            throw new OperationException(getExceptionMessage(), e);
         }
+    }
+
+    protected String getExceptionMessage() {
+        String exceptionMessage = "Failed to invoke operation " + op.getId();
+        if (op.getAliases() != null && op.getAliases().length > 0) {
+            exceptionMessage += " with aliases " + Arrays.toString(op.getAliases());
+        }
+        return exceptionMessage;
     }
 
     @Override

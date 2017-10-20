@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
@@ -110,7 +109,8 @@ public class FileService extends DefaultAdapter {
             return builder.build();
 
         } catch (NuxeoException e) {
-            throw WebException.wrap("Failed to get the attached file", e);
+            e.addInfo("Failed to get the attached file");
+            throw e;
         }
     }
 
@@ -156,7 +156,8 @@ public class FileService extends DefaultAdapter {
             session.save();
             return redirect(getTarget().getPath());
         } catch (NuxeoException e) {
-            throw WebException.wrap("Failed to attach file", e);
+            e.addInfo("Failed to attach file");
+            throw e;
         }
     }
 
@@ -185,7 +186,8 @@ public class FileService extends DefaultAdapter {
             session.saveDocument(doc);
             session.save();
         } catch (NuxeoException e) {
-            throw WebException.wrap("Failed to delete attached file", e);
+            e.addInfo("Failed to delete attached file");
+            throw e;
         }
         return redirect(getTarget().getPath());
     }

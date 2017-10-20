@@ -30,6 +30,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
@@ -99,7 +100,7 @@ public interface Module extends MessagesProvider {
      *
      * @param typeName the type name
      * @return the web type instance
-     * @throws TypeNotFoundException if no such web type was defined
+     * @throws WebResourceNotFoundException if no such web type was defined
      */
     ResourceType getType(String typeName);
 
@@ -124,7 +125,7 @@ public interface Module extends MessagesProvider {
      * @param name the adapter name
      * @return the adapter if any adapter with that name applies for that resource otherwise throws an exception
      * @throws WebSecurityException if the adapter exists but cannot be accessed in the context of that resource
-     * @throws AdapterNotFoundException if no such adapter exists for that resource
+     * @throws WebResourceNotFoundException if no such adapter exists for that resource
      */
     AdapterType getAdapter(Resource ctx, String name);
 

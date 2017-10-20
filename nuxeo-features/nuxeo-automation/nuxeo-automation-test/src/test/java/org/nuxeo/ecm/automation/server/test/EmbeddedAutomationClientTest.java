@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -439,7 +441,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                 fail("session should not have be created with bad password");
             } catch (RemoteException e) {
                 // Bad credentials should be mapped to HTTP 401
-                assertEquals(e.getStatus(), 401);
+                assertEquals(SC_UNAUTHORIZED, e.getStatus());
             }
 
             // test user does not have the permission to access the root
@@ -449,7 +451,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                 fail("test user should not have read access to the root document");
             } catch (RemoteException e) {
                 // Missing permissions should be mapped to HTTP 403
-                assertEquals(e.getStatus(), 403);
+                assertEquals(SC_FORBIDDEN, e.getStatus());
             }
         } finally {
             userManager.deleteUser(testUserName);
@@ -1037,7 +1039,9 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                    .set("end", end)
                    .execute();
         } catch (RemoteException e) {
-            String expectedMsg = "Failed to invoke operation: Document.AddPermission";
+            String expectedMsg = String.format("Failed to invoke operation: Document.AddPermission, "
+                    + "Failed to invoke operation Document.AddPermission with aliases [Document.AddACL], "
+                    + "User or group name '%s' does not exist. Please provide a valid name.", username);
             assertEquals(e.getMessage(), expectedMsg, e.getMessage());
         }
     }

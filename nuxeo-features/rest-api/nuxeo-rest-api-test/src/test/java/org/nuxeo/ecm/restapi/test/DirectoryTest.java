@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -30,6 +32,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
@@ -172,7 +175,7 @@ public class DirectoryTest extends BaseTest {
         // When I try to delete an entry which has contraints
         try (CloseableClientResponse response = getResponse(RequestType.DELETE, "/directory/continent/europe")) {
             // It should fail
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            assertEquals(SC_BAD_REQUEST, response.getStatus());
         }
 
         // When I remove all the contraints
@@ -322,21 +325,21 @@ public class DirectoryTest extends BaseTest {
         // When i do an update request on the entry endpoint
         try (CloseableClientResponse response = getResponse(RequestType.PUT,
                 "/directory/" + TESTDIRNAME + "/" + docEntry.getId(), jsonEntry)) {
-            // Then it is unauthorized
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            // Then it is forbidden
+            assertEquals(SC_FORBIDDEN, response.getStatus());
         }
 
         // When i do an create request on the entry endpoint
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/directory/" + TESTDIRNAME, jsonEntry)) {
-            // Then it is unauthorized
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            // Then it is forbidden
+            assertEquals(SC_FORBIDDEN, response.getStatus());
         }
 
         // When i do an delete request on the entry endpoint
         try (CloseableClientResponse response = getResponse(RequestType.DELETE,
                 "/directory/" + TESTDIRNAME + "/" + docEntry.getId())) {
-            // Then it is unauthorized
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            // Then it is forbidden
+            assertEquals(SC_FORBIDDEN, response.getStatus());
         }
     }
 
@@ -353,7 +356,7 @@ public class DirectoryTest extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/directory/" + userDirectoryName,
                 jsonEntry)) {
             // Then it is unauthorized
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            assertEquals(SC_BAD_REQUEST, response.getStatus());
         }
     }
 
@@ -382,7 +385,7 @@ public class DirectoryTest extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/directory/" + groupDirectoryName,
                 jsonEntry)) {
             // Then it is unauthorized
-            assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+            assertEquals(SC_BAD_REQUEST, response.getStatus());
         }
     }
 

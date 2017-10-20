@@ -24,13 +24,14 @@ package org.nuxeo.ecm.webengine.model;
 import javax.ws.rs.WebApplicationException;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface ModuleResource extends Resource {
 
-    Object handleError(WebApplicationException e);
+    Object handleError(Throwable t);
 
     String getLink(DocumentModel doc);
 }

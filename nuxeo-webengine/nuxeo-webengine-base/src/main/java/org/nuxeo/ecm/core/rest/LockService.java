@@ -30,7 +30,6 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
@@ -56,7 +55,8 @@ public class LockService extends DefaultAdapter {
             Lock lock = ctx.getCoreSession().getLockInfo(doc.getRef());
             return lock.getOwner() + '/' + ISODateTimeFormat.dateTime().print(new DateTime(lock.getCreated()));
         } catch (NuxeoException e) {
-            throw WebException.wrap("Failed to get lock on document", e);
+            e.addInfo("Failed to get lock on document");
+            throw e;
         }
     }
 
@@ -68,7 +68,8 @@ public class LockService extends DefaultAdapter {
             doc.refresh();
             return null; // TODO
         } catch (NuxeoException e) {
-            throw WebException.wrap("Failed to unlock document", e);
+            e.addInfo("Failed to unlock document");
+            throw e;
         }
     }
 
@@ -80,7 +81,8 @@ public class LockService extends DefaultAdapter {
             doc.refresh();
             return null; // TODO
         } catch (NuxeoException e) {
-            throw WebException.wrap("Failed to lock document", e);
+            e.addInfo("Failed to lock document");
+            throw e;
         }
     }
 

@@ -27,7 +27,6 @@ import javax.ws.rs.PathParam;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 
@@ -50,7 +49,8 @@ public class DocumentResolverService extends DefaultAdapter {
             DocumentModel doc = ctx.getCoreSession().getDocument(new IdRef(id));
             return DocumentFactory.newDocument(ctx, doc);
         } catch (NuxeoException e) {
-            throw WebException.wrap("Failed to get lock on document", e);
+            e.addInfo("Failed to get lock on document");
+            throw e;
         }
     }
 

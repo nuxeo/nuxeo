@@ -39,8 +39,8 @@ import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
 import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
@@ -74,7 +74,7 @@ public class OperationAdapter extends DefaultAdapter {
                 if (!chain.getOperations().isEmpty()) {
                     operationType = service.getOperation(chain.getOperations().get(0).id());
                 } else {
-                    throw new WebException("Chain '" + oid + "' doesn't contain any operation");
+                    throw new NuxeoException("Chain '" + oid + "' doesn't contain any operation");
                 }
             }
 
@@ -93,9 +93,9 @@ public class OperationAdapter extends DefaultAdapter {
         } catch (OperationException cause) {
             if (ExceptionHelper.unwrapException(cause) instanceof RestOperationException) {
                 int customHttpStatus = ((RestOperationException) ExceptionHelper.unwrapException(cause)).getStatus();
-                throw WebException.newException("Failed to invoke operation: " + oid, cause, customHttpStatus);
+                throw new NuxeoException("Failed to invoke operation: " + oid, cause, customHttpStatus);
             }
-            throw WebException.newException("Failed to invoke operation: " + oid, cause);
+            throw new NuxeoException("Failed to invoke operation: " + oid, cause);
         }
 
     }

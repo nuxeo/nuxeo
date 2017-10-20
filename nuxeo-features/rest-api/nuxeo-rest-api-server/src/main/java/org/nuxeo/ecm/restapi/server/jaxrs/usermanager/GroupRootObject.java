@@ -18,16 +18,17 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.usermanager;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+
 import java.io.Serializable;
 
-import javax.ws.rs.core.Response;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -77,13 +78,13 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
 
     private void checkGroupDoesNotAlreadyExists(NuxeoGroup group, UserManager um) {
         if (um.getGroup(group.getName()) != null) {
-            throw new WebException("Group already exists", Response.Status.PRECONDITION_FAILED.getStatusCode());
+            throw new NuxeoException("Group already exists", SC_CONFLICT);
         }
     }
 
     private void checkGroupHasAName(NuxeoGroup group) {
         if (group.getName() == null) {
-            throw new WebException("Group MUST have a name", Response.Status.PRECONDITION_FAILED.getStatusCode());
+            throw new NuxeoException("Group MUST have a name", SC_BAD_REQUEST);
         }
     }
 

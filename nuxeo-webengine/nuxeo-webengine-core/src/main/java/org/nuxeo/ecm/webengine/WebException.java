@@ -37,6 +37,10 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 
+/**
+ * @deprecated since 9.3. Use {@code NuxeoException} instead.
+ */
+@Deprecated
 public class WebException extends WebApplicationException {
 
     protected static final Log log = LogFactory.getLog(WebException.class);
@@ -150,11 +154,11 @@ public class WebException extends WebApplicationException {
             ExceptionUtils.checkInterrupt((Exception) exception);
         }
         if (exception instanceof DocumentSecurityException) {
-            return new WebSecurityException(message, exception);
+            return new WebException(message, exception, Response.Status.FORBIDDEN.getStatusCode());
         } else if (exception instanceof WebException) {
             return (WebException) exception;
         } else if (exception instanceof DocumentNotFoundException) {
-            return new WebResourceNotFoundException(message, exception);
+            return new WebException(message, exception, Response.Status.NOT_FOUND.getStatusCode());
         } else {
             return new WebException(message, exception);
         }

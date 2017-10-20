@@ -27,10 +27,10 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.runtime.api.Framework;
@@ -75,7 +75,7 @@ public class TemplateView {
 
     public TemplateView(WebContext ctx, Object owner, URL url) {
         if (ctx == null) {
-            throw new WebException("Not in WebEngine context");
+            throw new NuxeoException("Not in WebEngine context");
         }
         this.ctx = ctx;
         this.target = owner;
@@ -106,7 +106,7 @@ public class TemplateView {
         try {
             ctx.getEngine().getRendering().render(url.toExternalForm(), bindings, writer);
         } catch (RenderingException e) {
-            throw WebException.wrap(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -118,7 +118,7 @@ public class TemplateView {
             try {
                 writer.flush();
             } catch (IOException e) {
-                throw WebException.wrap(e);
+                throw new NuxeoException(e);
             }
         }
     }

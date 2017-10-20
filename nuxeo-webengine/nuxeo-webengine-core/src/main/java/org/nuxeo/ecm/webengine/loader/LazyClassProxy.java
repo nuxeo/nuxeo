@@ -21,7 +21,7 @@
 
 package org.nuxeo.ecm.webengine.loader;
 
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -52,7 +52,7 @@ public class LazyClassProxy implements ClassProxy {
             try {
                 clazz = loader.loadClass(className);
             } catch (ReflectiveOperationException e) {
-                throw WebException.wrap("Failed to load class " + className, e);
+                throw new NuxeoException("Failed to load class " + className, e);
             }
         }
         return clazz;

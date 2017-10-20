@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+
 /**
  * An exception thrown if a concurrent update was detected.
  * <p>
@@ -30,18 +32,19 @@ public class ConcurrentUpdateException extends NuxeoException {
     private static final long serialVersionUID = 1L;
 
     public ConcurrentUpdateException() {
+        super(SC_CONFLICT);
     }
 
     public ConcurrentUpdateException(String message) {
-        super(message);
+        super(message, SC_CONFLICT);
     }
 
     public ConcurrentUpdateException(String message, Throwable cause) {
-        super(message, cause);
+        super(message, cause, SC_CONFLICT);
     }
 
     public ConcurrentUpdateException(Throwable cause) {
-        super(cause);
+        super(cause, SC_CONFLICT);
     }
 
 }

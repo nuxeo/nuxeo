@@ -32,7 +32,7 @@ import javax.ws.rs.core.Response;
 
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.model.AdapterResource;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Module;
@@ -83,7 +83,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         path = buf.append(path).toString();
         if (!this.type.getGuard().check(this)) {
             throw new WebSecurityException("Failed to initialize object: " + path
-                    + ". Object is not accessible in the current context", path);
+                    + ". Object is not accessible in the current context");
         }
         initialize(args);
         return this;
@@ -133,7 +133,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
             }
             return Response.seeOther(new URI(uri)).build();
         } catch (URISyntaxException e) {
-            throw WebException.wrap(e);
+            throw new NuxeoException(e);
         }
     }
 

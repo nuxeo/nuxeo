@@ -21,9 +21,13 @@
 
 package org.nuxeo.ecm.webengine.model;
 
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 9.3. Use {@link WebResourceNotFoundException} instead.
  */
+@Deprecated
 public class AdapterNotFoundException extends TypeException {
 
     private static final long serialVersionUID = 1L;

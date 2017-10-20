@@ -19,6 +19,10 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import javax.servlet.http.HttpServletResponse;
+
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+
 /**
  * Exception thrown when a method tries to create a document that already exists through copy or move, or when trying to
  * delete the target of a proxy.
@@ -36,18 +40,22 @@ public class DocumentExistsException extends org.nuxeo.ecm.core.model.DocumentEx
     private static final long serialVersionUID = 1L;
 
     public DocumentExistsException() {
+        statusCode = SC_CONFLICT;
     }
 
     public DocumentExistsException(String message) {
         super(message);
+        statusCode = SC_CONFLICT;
     }
 
     public DocumentExistsException(String message, Throwable cause) {
         super(message, cause);
+        statusCode = SC_CONFLICT;
     }
 
     public DocumentExistsException(Throwable cause) {
         super(cause);
+        statusCode = SC_CONFLICT;
     }
 
 }

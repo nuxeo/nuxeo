@@ -21,39 +21,31 @@
 
 package org.nuxeo.ecm.webengine.model.exceptions;
 
-import javax.ws.rs.core.Response;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class WebSecurityException extends WebException {
+public class WebSecurityException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 
-    protected final String action;
+    public WebSecurityException() {
+        super(SC_FORBIDDEN);
+    }
 
     public WebSecurityException(String message) {
-        this(message, "");
-    }
-
-    public WebSecurityException(String message, String action) {
-        super(message, Response.Status.FORBIDDEN.getStatusCode());
-        this.action = action;
-    }
-
-    public WebSecurityException(String message, String action, Throwable cause) {
-        super(message, cause, Response.Status.FORBIDDEN.getStatusCode());
-        this.action = action;
+        super(message, SC_FORBIDDEN);
     }
 
     public WebSecurityException(String message, Throwable cause) {
-        this(message, "", cause);
+        super(message, cause, SC_FORBIDDEN);
     }
 
-    public String getAction() {
-        return action;
+    public WebSecurityException(Throwable cause) {
+        super(cause, SC_FORBIDDEN);
     }
 
 }

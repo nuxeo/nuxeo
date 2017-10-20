@@ -115,15 +115,23 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
         Object input = ctx.getInput();
         Class<?> inputType = input == null ? Void.TYPE : input.getClass();
         CompiledChain compiled = compileChain(inputType, chain);
+        boolean completedAbruptly = true;
         try {
-            return compiled.invoke(ctx);
+            Object result  = compiled.invoke(ctx);
+            completedAbruptly = false;
+            return result ;
         } catch (OperationException cause) {
+            completedAbruptly = false;
             if (hasChainException(chain.getId())) {
                 return run(ctx, getChainExceptionToRun(ctx, chain.getId(), cause));
             } else if (cause.isRollback()) {
                 ctx.setRollback();
             }
             throw cause;
+        } finally {
+            if (completedAbruptly) {
+                ctx.setRollback();
+            }
         }
     }
 

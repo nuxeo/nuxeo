@@ -21,6 +21,10 @@ package org.nuxeo.ecm.core.api.model;
 
 import org.nuxeo.ecm.core.api.PropertyException;
 
+import javax.servlet.http.HttpServletResponse;
+
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+
 /**
  * Exception indicating a property not found.
  */

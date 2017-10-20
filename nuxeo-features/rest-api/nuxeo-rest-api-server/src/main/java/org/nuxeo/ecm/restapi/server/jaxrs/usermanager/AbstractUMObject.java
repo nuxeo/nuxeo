@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
@@ -61,30 +60,21 @@ public abstract class AbstractUMObject<T> extends DefaultObject {
 
     @PUT
     public T doUpdateArtifact(T principal) {
-        try {
-            checkUpdateGuardPreconditions();
-            return updateArtifact(principal);
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
-        }
+        checkUpdateGuardPreconditions();
+        return updateArtifact(principal);
     }
 
     @DELETE
     public Response doDeleteArtifact() {
-        try {
-            checkUpdateGuardPreconditions();
-            deleteArtifact();
-            return Response.status(Status.NO_CONTENT).build();
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
-        }
+        checkUpdateGuardPreconditions();
+        deleteArtifact();
+        return Response.status(Status.NO_CONTENT).build();
     }
 
     protected void checkUpdateGuardPreconditions() {
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
         if (!principal.isAdministrator()) {
             if ((!principal.isMemberOf("powerusers")) || !isAPowerUserEditableArtifact()) {
-
                 throw new WebSecurityException("User is not allowed to edit users");
             }
         }
