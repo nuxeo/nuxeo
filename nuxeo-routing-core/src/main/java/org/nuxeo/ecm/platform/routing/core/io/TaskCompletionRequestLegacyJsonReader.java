@@ -20,6 +20,7 @@
 
 package org.nuxeo.ecm.platform.routing.core.io;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.DERIVATIVE;
 
@@ -27,18 +28,15 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
-import javax.ws.rs.core.Response;
-
 import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
-import org.nuxeo.ecm.webengine.WebException;
 
 /**
- *
  * @since 8.2
  * @deprecated use @{link TaskCompletionRequestJsonReader TaskCompletionRequestJsonReader}
  */
@@ -58,15 +56,14 @@ public class TaskCompletionRequestLegacyJsonReader extends EntityJsonReader<Task
         Map<String, Serializable> variables = null;
 
         if (id == null) {
-            throw new WebException("No id found in request body", Response.Status.BAD_REQUEST.getStatusCode());
+            throw new NuxeoException("No id found in request body", SC_BAD_REQUEST);
         }
 
         try (SessionWrapper closeable = ctx.getSession(null)) {
             CoreSession session = closeable.getSession();
             if (variableNode != null) {
                 try {
-                    variables = JsonEncodeDecodeUtils.decodeVariables(variableNode,
-                            null, session);
+                    variables = JsonEncodeDecodeUtils.decodeVariables(variableNode, null, session);
                 } catch (ClassNotFoundException e) {
                     throw new MarshallingException(e);
                 }

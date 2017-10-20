@@ -44,7 +44,6 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.impl.jsongraph.JsonGraphRoute;
 import org.nuxeo.ecm.platform.routing.core.io.WorkflowRequest;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -122,14 +121,10 @@ public class WorkflowObject extends DefaultObject {
         if (currentUser.isAdministrator() || currentUser.isMemberOf("powerusers")) {
             return;
         }
-        try {
-            if (currentUser.getName().equals(route.getInitiator())) {
-                return;
-            }
-            throw new WebSecurityException("You don't have the permission to cancel this workflow");
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
+        if (currentUser.getName().equals(route.getInitiator())) {
+            return;
         }
+        throw new WebSecurityException("You don't have the permission to cancel this workflow");
     }
 
     @GET
