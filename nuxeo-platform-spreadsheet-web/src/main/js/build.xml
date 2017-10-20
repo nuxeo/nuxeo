@@ -20,6 +20,7 @@
     <exec executable="${cmd.npm}" failonerror="true">
       <arg value="cache" />
       <arg value="clean" />
+      <arg value="--force" />
     </exec>
     <exec executable="${cmd.bower}" failonerror="true">
       <arg value="cache" />
