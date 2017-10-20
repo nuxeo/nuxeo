@@ -19,12 +19,28 @@
 package org.nuxeo.elasticsearch.client;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 
+import javax.net.ssl.SSLContext;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.SSLContexts;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
@@ -36,6 +52,22 @@ import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
  */
 public class ESRestClientFactory implements ESClientFactory {
     private static final Log log = LogFactory.getLog(ESRestClientFactory.class);
+
+    public static final String DEFAULT_CONNECT_TIMEOUT_MS = "5000";
+
+    public static final String DEFAULT_SOCKET_TIMEOUT_MS = "20000";
+
+    public static final String CONNECTION_TIMEOUT_MS_OPT = "connection.timeout.ms";
+
+    public static final String SOCKET_TIMEOUT_MS_OPT = "socket.timeout.ms";
+
+    public static final String AUTH_USER_OPT = "username";
+
+    public static final String AUTH_PASSWORD_OPT = "password";
+
+    public static final String KEYSTORE_PATH_OPT = "keystore.path";
+
+    public static final String KEYSTORE_PASSWORD_OPT = "keystore.password";
 
     @Override
     public ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchClientConfig config) {
@@ -68,10 +100,72 @@ public class ESRestClientFactory implements ESClientFactory {
             String[] address = host.split(":");
             httpHosts[i++] = new HttpHost(address[0], Integer.parseInt(address[1]));
         }
-        RestClient lowLevelRestClient = RestClient.builder(httpHosts).build();
+        RestClientBuilder builder = RestClient.builder(httpHosts)
+                                              .setRequestConfigCallback(
+                                                      requestConfigBuilder -> requestConfigBuilder.setConnectTimeout(
+                                                              getConnectTimeoutMs(config)).setSocketTimeout(
+                                                                      getSocketTimeoutMs(config)))
+                                              .setMaxRetryTimeoutMillis(getConnectTimeoutMs(config));
+        if (StringUtils.isNotBlank(config.getOption(AUTH_USER_OPT))
+                || StringUtils.isNotBlank(config.getOption(KEYSTORE_PATH_OPT))) {
+            addClientCallback(config, builder);
+        }
+        RestClient lowLevelRestClient = builder.build();
         RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClient);
         // checkConnection(client);
         return new ESRestClient(lowLevelRestClient, client);
+    }
+
+    private void addClientCallback(ElasticSearchClientConfig config, RestClientBuilder builder) {
+        BasicCredentialsProvider credentialProvider = getCredentialProvider(config);
+        SSLContext sslContext = getSslContext(config);
+        builder.setHttpClientConfigCallback(httpClientBuilder -> {
+            if (sslContext != null) {
+                httpClientBuilder.setSSLContext(sslContext);
+            }
+            if (credentialProvider != null) {
+                httpClientBuilder.setDefaultCredentialsProvider(credentialProvider);
+            }
+            return httpClientBuilder;
+        });
+    }
+
+    protected BasicCredentialsProvider getCredentialProvider(ElasticSearchClientConfig config) {
+        if (StringUtils.isBlank(config.getOption(AUTH_USER_OPT))) {
+            return null;
+        }
+        String user = config.getOption(AUTH_USER_OPT);
+        String password = config.getOption(AUTH_PASSWORD_OPT);
+        BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(user, password));
+        return credentialsProvider;
+    }
+
+    protected SSLContext getSslContext(ElasticSearchClientConfig config) {
+        if (StringUtils.isBlank(config.getOption(KEYSTORE_PATH_OPT))) {
+            return null;
+        }
+        try {
+            Path keyStorePath = Paths.get(config.getOption(KEYSTORE_PATH_OPT));
+            String keyStorePass = config.getOption(KEYSTORE_PASSWORD_OPT);
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            try (InputStream is = Files.newInputStream(keyStorePath)) {
+                keyStore.load(is, keyStorePass.toCharArray());
+            }
+            SSLContextBuilder sslBuilder = SSLContexts.custom().loadTrustMaterial(keyStore, null);
+            return sslBuilder.build();
+        } catch (GeneralSecurityException | IOException e) {
+            throw new NuxeoException("Cannot setup SSL for RestClient: " + config, e);
+        }
+
+    }
+
+    protected int getConnectTimeoutMs(ElasticSearchClientConfig config) {
+        return Integer.parseInt(config.getOption(CONNECTION_TIMEOUT_MS_OPT, DEFAULT_CONNECT_TIMEOUT_MS));
+    }
+
+    protected int getSocketTimeoutMs(ElasticSearchClientConfig config) {
+        return Integer.parseInt(config.getOption(SOCKET_TIMEOUT_MS_OPT, DEFAULT_SOCKET_TIMEOUT_MS));
     }
 
     protected void checkConnection(RestHighLevelClient client) {
