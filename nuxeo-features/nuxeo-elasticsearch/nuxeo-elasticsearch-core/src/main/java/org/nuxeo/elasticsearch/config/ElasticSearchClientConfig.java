@@ -50,6 +50,10 @@ public class ElasticSearchClientConfig {
         return externalVersion;
     }
 
+    public String getOption(String key) {
+        return options.get(key);
+    }
+
     public String getOption(String key, String defaultValue) {
         return options.getOrDefault(key, defaultValue);
     }
