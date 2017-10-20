@@ -33,7 +33,7 @@ import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonWriter;
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
@@ -119,7 +119,7 @@ public class OperationWO extends NuxeoArtifactWebObject {
             JsonWriter.writeOperation(baos, opeDoc, true);
             t.arg("json", baos.toString());
         } catch (OperationException | IOException e) {
-            throw WebException.wrap(e);
+            throw new NuxeoException(e);
         }
         return t;
     }

@@ -31,7 +31,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 @Provider
 @Produces({ "*/*", "text/plain" })
@@ -44,7 +44,7 @@ public class ArchiveFileWriter implements MessageBodyWriter<ArchiveFile> {
             IOUtils.copy(in, entityStream);
             entityStream.flush();
         } catch (IOException e) {
-            throw WebException.wrap("Failed to render resource", e);
+            throw new NuxeoException("Failed to render resource", e);
         } finally {
             if (t != null) {
                 t.delete();
