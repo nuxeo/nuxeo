@@ -24,11 +24,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.runtime.api.Framework;
@@ -41,18 +39,12 @@ public class GroupObject extends AbstractUMObject<NuxeoGroup> {
 
     @Path("user/{username}")
     public Object doGetUserToGroup(@PathParam("username") String username) {
-        try {
-            UserManager um = Framework.getLocalService(UserManager.class);
-            NuxeoPrincipal principal = um.getPrincipal(username);
-            if (principal == null) {
-                throw new WebResourceNotFoundException("User not found");
-            }
-            return newObject("userToGroup", principal, currentArtifact);
-
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
+        UserManager um = Framework.getLocalService(UserManager.class);
+        NuxeoPrincipal principal = um.getPrincipal(username);
+        if (principal == null) {
+            throw new WebResourceNotFoundException("User not found");
         }
-
+        return newObject("userToGroup", principal, currentArtifact);
     }
 
     @Override

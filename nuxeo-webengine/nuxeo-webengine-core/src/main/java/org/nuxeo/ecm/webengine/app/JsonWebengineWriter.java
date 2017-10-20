@@ -21,12 +21,15 @@ package org.nuxeo.ecm.webengine.app;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.runtime.api.Framework;
@@ -47,27 +50,63 @@ public class JsonWebengineWriter {
         return getFactory().createJsonGenerator(out, JsonEncoding.UTF8);
     }
 
+    /**
+     * @deprecated since 9.3
+     */
+    @Deprecated
     public static void writeException(OutputStream out, WebException webException, MediaType mediaType)
             throws IOException {
         writeException(createGenerator(out), webException, mediaType);
     }
 
+    /**
+     * @deprecated since 9.3
+     */
+    @Deprecated
     public static void writeException(JsonGenerator jg, WebException webException, MediaType mediaType)
+            throws IOException {
+        writeException(jg, webException, mediaType, webException.getStatus());
+    }
+
+    /**
+     * @since 9.3
+     */
+    public static void writeException(OutputStream out, NuxeoException nuxeoException, MediaType mediaType)
+            throws IOException {
+        writeException(createGenerator(out), nuxeoException, mediaType);
+    }
+
+    /**
+     * @since 9.3
+     */
+    public static void writeException(JsonGenerator jg, NuxeoException nuxeoException, MediaType mediaType)
+            throws IOException {
+        writeException(jg, nuxeoException, mediaType, nuxeoException.getStatusCode());
+    }
+
+    /**
+     * @since 9.3
+     */
+    protected static void writeException(JsonGenerator jg, Throwable t, MediaType mediaType, int statusCode)
             throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "exception");
-        jg.writeStringField("code", webException.getType());
-        jg.writeNumberField("status", webException.getStatus());
-        // jg.writeStringField("help_url", eh.getHelpUrl());
-        // jg.writeStringField("request_id", eh.getRequestId());
-        jg.writeStringField("message", webException.getMessage());
+        jg.writeNumberField("status", statusCode);
+        jg.writeStringField("message", t.getMessage());
         if (jsonFactoryManager.isStackDisplay()
                 || MediaType.valueOf(MediaType.APPLICATION_JSON + "+nxentity").equals(mediaType)) {
-            jg.writeStringField("stacktrace", webException.getStackTraceString());
-            jg.writeObjectField("exception", webException.getCause());
+            jg.writeStringField("stacktrace", getStackTraceString(t));
+            jg.writeObjectField("exception", t);
         }
         jg.writeEndObject();
         jg.flush();
+    }
+
+    protected static String getStackTraceString(Throwable t) throws IOException {
+        try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
+            t.printStackTrace(pw);
+            return sw.toString();
+        }
     }
 
 }

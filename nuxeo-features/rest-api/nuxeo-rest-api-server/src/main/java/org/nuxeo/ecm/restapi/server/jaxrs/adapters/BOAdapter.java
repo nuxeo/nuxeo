@@ -21,6 +21,7 @@ package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -41,11 +42,14 @@ import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableWithDelegate;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.rest.DocumentObject;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
+
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 
 /**
  * Basic CRUD with a BusinessAdapter
@@ -72,8 +76,7 @@ public class BOAdapter extends DefaultAdapter {
             return doGetAdapterOnList(list, adapterName);
         }
 
-        return Response.status(Status.BAD_REQUEST).entity("Adapter can only be executed on Document or DocumentList").build();
-
+        throw new NuxeoException("Adapter can only be executed on Document or DocumentList", SC_BAD_REQUEST);
     }
 
     /**
@@ -134,9 +137,8 @@ public class BOAdapter extends DefaultAdapter {
         if (codec != null) {
             return (BusinessAdapter) doc.getAdapter(codec.getJavaType());
         } else {
-            throw new WebException(String.format("Unable to find [%s] adapter", adapterName));
+            throw new WebResourceNotFoundException(String.format("Unable to find [%s] adapter", adapterName));
         }
-
     }
 
 }

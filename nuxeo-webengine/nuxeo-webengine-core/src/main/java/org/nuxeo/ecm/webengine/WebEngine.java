@@ -34,6 +34,7 @@ import javax.ws.rs.core.Application;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
@@ -316,7 +317,7 @@ public class WebEngine implements ResourceLocator {
             binding.resolve(this);
             registry.addBinding(binding);
         } catch (ClassNotFoundException e) {
-            throw WebException.wrap("Failed o register binding: " + binding, e);
+            throw new NuxeoException("Failed o register binding: " + binding, e);
         }
     }
 

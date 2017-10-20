@@ -49,12 +49,12 @@ import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.login.WebEngineFormAuthenticator;
@@ -557,7 +557,7 @@ public abstract class AbstractWebContext implements WebContext {
                         return new ScriptFile(file);
                     }
                 } catch (IOException e) {
-                    throw WebException.wrap(e);
+                    throw new NuxeoException(e);
                 }
                 // try using stacked roots
                 String rootPath = engine.getRootDirectory().getAbsolutePath();
@@ -643,7 +643,7 @@ public abstract class AbstractWebContext implements WebContext {
                 log.debug("Output socket closed: failed to write response", e);
                 return;
             }
-            throw WebException.wrap("Failed to render template: "
+            throw new NuxeoException("Failed to render template: "
                     + (script == null ? script : script.getAbsolutePath()), e);
         } finally {
             if (!scriptExecutionStack.isEmpty()) {
@@ -672,10 +672,8 @@ public abstract class AbstractWebContext implements WebContext {
         try {
             pushScriptFile(script.getFile());
             return engine.getScripting().runScript(script, createBindings(args));
-        } catch (WebException e) {
-            throw e;
         } catch (ScriptException e) {
-            throw WebException.wrap("Failed to run script " + script, e);
+            throw new NuxeoException("Failed to run script " + script, e);
         } finally {
             if (!scriptExecutionStack.isEmpty()) {
                 popScriptFile();

@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.search;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
@@ -38,10 +39,10 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
-import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
+import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -273,10 +275,9 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         return props;
     }
 
-    protected DocumentModelList queryByLang(String queryLanguage, MultivaluedMap<String, String> queryParams)
-            throws RestOperationException {
+    protected DocumentModelList queryByLang(String queryLanguage, MultivaluedMap<String, String> queryParams) {
         if (queryLanguage == null || !EnumUtils.isValidEnum(LangParams.class, queryLanguage)) {
-            throw new RestOperationException("invalid query language", HttpServletResponse.SC_BAD_REQUEST);
+            throw new IllegalParameterException("invalid query language");
         }
 
         String query = getQuery(queryParams);
@@ -296,10 +297,9 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
                 props, searchDocumentModel);
     }
 
-    protected DocumentModelList queryByPageProvider(String pageProviderName, MultivaluedMap<String, String> queryParams)
-            throws RestOperationException {
+    protected DocumentModelList queryByPageProvider(String pageProviderName, MultivaluedMap<String, String> queryParams) {
         if (pageProviderName == null) {
-            throw new RestOperationException("invalid page provider name", HttpServletResponse.SC_BAD_REQUEST);
+            throw new IllegalParameterException("invalid page provider name");
         }
 
         Long pageSize = getPageSize(queryParams);
@@ -319,9 +319,10 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
                 highlights, quickFilters, parameters, props, searchDocumentModel);
     }
 
+    @SuppressWarnings("unchecked")
     protected DocumentModelList queryByLang(String query, Long pageSize, Long currentPageIndex, Long currentPageOffset,
             Long maxResults, List<SortInfo> sortInfo, Object[] parameters, Map<String, Serializable> props,
-            DocumentModel searchDocumentModel) throws RestOperationException {
+            DocumentModel searchDocumentModel) {
         PageProviderDefinition ppdefinition = pageProviderService.getPageProviderDefinition(
                 SearchAdapter.pageProviderName);
         ppdefinition.setPattern(query);
@@ -335,9 +336,7 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
                         props, null, null, parameters),
                 null);
         if (res.hasError()) {
-            RestOperationException err = new RestOperationException(res.getErrorMessage());
-            err.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            throw err;
+            throw new NuxeoException(res.getErrorMessage(), SC_BAD_REQUEST);
         }
         return res;
     }
@@ -347,29 +346,27 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
      */
     protected DocumentModelList queryByPageProvider(String pageProviderName, Long pageSize, Long currentPageIndex,
             Long currentPageOffset, List<SortInfo> sortInfo, List<QuickFilter> quickFilters, Object[] parameters,
-            Map<String, Serializable> props, DocumentModel searchDocumentModel) throws RestOperationException {
+            Map<String, Serializable> props, DocumentModel searchDocumentModel) {
         return queryByPageProvider(pageProviderName, pageSize, currentPageIndex, currentPageOffset, sortInfo, null,
                 quickFilters, parameters, props, searchDocumentModel);
     }
 
+    @SuppressWarnings("unchecked")
     protected DocumentModelList queryByPageProvider(String pageProviderName, Long pageSize, Long currentPageIndex,
             Long currentPageOffset, List<SortInfo> sortInfo, List<String> highlights, List<QuickFilter> quickFilters,
-            Object[] parameters, Map<String, Serializable> props, DocumentModel searchDocumentModel)
-            throws RestOperationException {
+            Object[] parameters, Map<String, Serializable> props, DocumentModel searchDocumentModel) {
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
                 (PageProvider<DocumentModel>) pageProviderService.getPageProvider(pageProviderName, searchDocumentModel,
                         sortInfo, pageSize, currentPageIndex, currentPageOffset, props, highlights, quickFilters,
                         parameters),
                 null);
         if (res.hasError()) {
-            RestOperationException err = new RestOperationException(res.getErrorMessage());
-            err.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            throw err;
+            throw new NuxeoException(res.getErrorMessage(), SC_BAD_REQUEST);
         }
         return res;
     }
 
-    protected PageProviderDefinition getPageProviderDefinition(String pageProviderName) throws IOException {
+    protected PageProviderDefinition getPageProviderDefinition(String pageProviderName) {
         return pageProviderService.getPageProviderDefinition(pageProviderName);
     }
 

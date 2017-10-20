@@ -43,13 +43,13 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.validation.Form;
 import org.nuxeo.ecm.webengine.forms.validation.FormManager;
 import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
@@ -168,7 +168,7 @@ public class FormData implements FormInstance {
                     list.add(item);
                 }
             } catch (FileUploadException e) {
-                throw WebException.wrap("Failed to get uploaded files", e);
+                throw new NuxeoException("Failed to get uploaded files", e);
             }
         }
         return items;
@@ -233,7 +233,7 @@ public class FormData implements FormInstance {
             in.close();
             return blob;
         } catch (IOException e) {
-            throw WebException.wrap("Failed to get blob data", e);
+            throw new NuxeoException("Failed to get blob data", e);
         }
     }
 
@@ -353,7 +353,8 @@ public class FormData implements FormInstance {
                 fillDocumentFromForm(doc);
             }
         } catch (PropertyException e) {
-            throw WebException.wrap("Failed to fill document properties from request properties", e);
+            e.addInfo("Failed to fill document properties from request properties");
+            throw e;
         }
     }
 

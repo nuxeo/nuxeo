@@ -41,7 +41,6 @@ import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.operations.services.directory.CreateDirectoryEntries;
 import org.nuxeo.ecm.automation.core.operations.services.directory.DeleteDirectoryEntries;
@@ -51,6 +50,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -193,13 +193,10 @@ public class DirectoryOperationsTest {
         try {
             service.run(ctx, chain);
             fail();
-        } catch (OperationException e) {
-            if (!(e.getCause() instanceof DirectoryException)) {
-                fail();
-            }
-            assertEquals(e.getCause().getMessage(), "Entry with id europe already exists");
+        } catch (DirectoryException e) {
+            assertEquals("Failed to invoke operation Directory.CreateEntries, Entry with id europe already exists",
+                    e.getMessage());
         }
-
     }
 
     @Test

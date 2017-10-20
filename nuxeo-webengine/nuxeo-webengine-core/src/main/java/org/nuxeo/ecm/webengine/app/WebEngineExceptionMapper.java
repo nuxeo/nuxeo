@@ -18,8 +18,11 @@
  */
 package org.nuxeo.ecm.webengine.app;
 
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -29,15 +32,13 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.TypeException;
-import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+import org.nuxeo.ecm.webengine.model.ModuleResource;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import com.sun.jersey.api.NotFoundException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -59,19 +60,56 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
                 return Response.status(Status.BAD_REQUEST).entity(dve.getReport()).build();
             }
         }
-        if (cause instanceof NotFoundException || cause instanceof WebResourceNotFoundException
-                || cause instanceof TypeException || cause instanceof DocumentNotFoundException) {
-            log.debug(cause, cause);
-        } else {
-            Throwable previousCause = cause.getCause();
-            if (previousCause instanceof ConcurrentUpdateException) {
-                ConcurrentUpdateException cue = (ConcurrentUpdateException) previousCause;
-                log.debug("JAX-RS 409 Conflict: " + cue.getMessage());
-            } else {
-                log.warn("Exception in JAX-RS processing", cause);
-            }
+
+        // backward compatibility
+        if (cause instanceof WebException) {
+            return ((WebException) cause).toResponse();
         }
-        return WebException.newException(cause.getMessage(), WebException.wrap(cause)).toResponse();
+
+        // webengine custom error handling, if any
+        Object result = handleErrorOnWebModule(cause);
+        if (result instanceof Throwable) {
+            cause = (Throwable) result;
+        } else if (result instanceof Response) {
+            return (Response) result;
+        } else if (result != null) {
+            return Response.status(SC_INTERNAL_SERVER_ERROR).entity(result).build();
+        }
+
+        // make sure we have a NuxeoException
+        return Response.status(getStatusCode(cause))
+                       .entity(cause instanceof NuxeoException ? cause : new NuxeoException(cause))
+                       .build();
+    }
+
+    protected static int getStatusCode(Throwable t) {
+        if (t instanceof WebException) {
+            WebException webException = (WebException) t;
+            return webException.getStatusCode();
+        } else if (t instanceof WebApplicationException) {
+            WebApplicationException e = (WebApplicationException) t;
+            return e.getResponse().getStatus();
+        } else if (t instanceof NuxeoException) {
+            NuxeoException e = (NuxeoException) t;
+            return e.getStatusCode();
+        } else if (t instanceof SecurityException) {
+            return SC_FORBIDDEN;
+        }
+
+        Throwable cause = t.getCause();
+        if (cause == null || t == cause) {
+            return SC_INTERNAL_SERVER_ERROR;
+        }
+        return getStatusCode(cause);
+    }
+
+    protected static Object handleErrorOnWebModule(Throwable t) {
+        WebContext ctx = WebEngine.getActiveContext();
+        if (ctx != null && ctx.head() instanceof ModuleResource) {
+            ModuleResource mr = (ModuleResource) ctx.head();
+            return mr.handleError(t);
+        }
+        return null;
     }
 
 }

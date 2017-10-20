@@ -34,7 +34,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
@@ -112,12 +112,12 @@ public class Template {
         return script;
     }
 
-    public void render(OutputStream out) throws WebException {
+    public void render(OutputStream out) {
         Writer w;
         try {
             w = new OutputStreamWriter(out, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw WebException.wrap("Failed to create output stream: unsupported encoding", e);
+            throw new NuxeoException("Failed to create output stream: unsupported encoding", e);
         }
         ctx.render(script(), args, w);
         try {
@@ -126,7 +126,7 @@ public class Template {
             if (ExceptionUtils.getRootCause(e) instanceof SocketException) {
                 log.debug("Output socket closed: failed to flush response");
             } else {
-                throw WebException.wrap("Failed to flush response", e);
+                throw new NuxeoException("Failed to flush response", e);
             }
         }
     }

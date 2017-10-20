@@ -18,19 +18,32 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
-import com.google.api.client.auth.oauth2.Credential;
-import org.codehaus.jackson.map.ObjectMapper;
+import static org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token.SCHEMA;
 
-import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
-import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -42,29 +55,17 @@ import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 import org.nuxeo.runtime.api.Framework;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token.SCHEMA;
+import com.google.api.client.auth.oauth2.Credential;
 
 /**
  * Endpoint to retrieve OAuth2 authentication data
+ *
  * @since 8.4
  */
 @WebObject(type = "oauth2")
@@ -81,7 +82,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
      */
     @GET
     @Path("provider")
-    public List<NuxeoOAuth2ServiceProvider> getProviders(@Context HttpServletRequest request) throws IOException, RestOperationException {
+    public List<NuxeoOAuth2ServiceProvider> getProviders(@Context HttpServletRequest request) {
         return getProviders();
     }
 
@@ -90,8 +91,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
      */
     @GET
     @Path("provider/{providerId}")
-    public Response getProvider(@PathParam("providerId") String providerId,
-                                @Context HttpServletRequest request) throws IOException, RestOperationException {
+    public Response getProvider(@PathParam("providerId") String providerId, @Context HttpServletRequest request) {
         return Response.ok(getProvider(providerId)).build();
     }
 
@@ -103,20 +103,13 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @POST
     @Path("provider")
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
-    public Response addProvider(@Context HttpServletRequest request, NuxeoOAuth2ServiceProvider provider)
-        throws IOException, RestOperationException {
+    public Response addProvider(@Context HttpServletRequest request, NuxeoOAuth2ServiceProvider provider) {
         checkPermission();
         Framework.doPrivileged(() -> {
             OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
-            registry.addProvider(provider.getServiceName(),
-                provider.getDescription(),
-                provider.getTokenServerURL(),
-                provider.getAuthorizationServerURL(),
-                provider.getUserAuthorizationURL(),
-                provider.getClientId(),
-                provider.getClientSecret(),
-                provider.getScopes(),
-                provider.isEnabled());
+            registry.addProvider(provider.getServiceName(), provider.getDescription(), provider.getTokenServerURL(),
+                    provider.getAuthorizationServerURL(), provider.getUserAuthorizationURL(), provider.getClientId(),
+                    provider.getClientSecret(), provider.getScopes(), provider.isEnabled());
         });
         return Response.ok(getProvider(provider.getServiceName())).build();
     }
@@ -129,9 +122,8 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @PUT
     @Path("provider/{providerId}")
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
-    public Response updateProvider(@PathParam("providerId") String providerId,
-                                   @Context HttpServletRequest request, NuxeoOAuth2ServiceProvider provider)
-        throws IOException, RestOperationException {
+    public Response updateProvider(@PathParam("providerId") String providerId, @Context HttpServletRequest request,
+            NuxeoOAuth2ServiceProvider provider) {
         checkPermission();
         getProvider(providerId);
         Framework.doPrivileged(() -> {
@@ -148,8 +140,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
      */
     @DELETE
     @Path("provider/{providerId}")
-    public Response deleteProvider(@PathParam("providerId") String providerId, @Context HttpServletRequest request)
-        throws IOException, RestOperationException {
+    public Response deleteProvider(@PathParam("providerId") String providerId, @Context HttpServletRequest request) {
         checkPermission();
         getProvider(providerId);
         Framework.doPrivileged(() -> {
@@ -160,13 +151,13 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     }
 
     /**
-     * Retrieves a valid access token for a given provider and the current user.
-     * If expired, the token will be refreshed.
+     * Retrieves a valid access token for a given provider and the current user. If expired, the token will be
+     * refreshed.
      */
     @GET
     @Path("provider/{providerId}/token")
-    public Response getToken(@PathParam("providerId") String providerId,
-                             @Context HttpServletRequest request) throws IOException, RestOperationException {
+    public Response getToken(@PathParam("providerId") String providerId, @Context HttpServletRequest request)
+            throws IOException {
 
         NuxeoOAuth2ServiceProvider provider = getProvider(providerId);
 
@@ -184,7 +175,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         if (expiresInSeconds != null && expiresInSeconds <= 0) {
             credential.refreshToken();
         }
-        Map<String,Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
         result.put("token", credential.getAccessToken());
         return buildResponse(Status.OK, result);
     }
@@ -196,8 +187,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
      */
     @GET
     @Path("token")
-    public List<NuxeoOAuth2Token> getTokens(@Context HttpServletRequest request)
-        throws IOException, RestOperationException {
+    public List<NuxeoOAuth2Token> getTokens(@Context HttpServletRequest request) {
         checkPermission();
         return getTokens();
     }
@@ -209,10 +199,8 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
      */
     @GET
     @Path("token/{providerId}/{nxuser}")
-    public Response getToken(@PathParam("providerId") String providerId,
-                             @PathParam("nxuser") String nxuser,
-                             @Context HttpServletRequest request)
-        throws IOException, RestOperationException {
+    public Response getToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
+            @Context HttpServletRequest request) {
         checkPermission();
         NuxeoOAuth2ServiceProvider provider = getProvider(providerId);
         return Response.ok(getToken(provider, nxuser)).build();
@@ -226,10 +214,8 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @PUT
     @Path("token/{providerId}/{nxuser}")
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
-    public Response updateToken(@PathParam("providerId") String providerId,
-                                @PathParam("nxuser") String nxuser,
-                                @Context HttpServletRequest request, NuxeoOAuth2Token token)
-        throws IOException, RestOperationException {
+    public Response updateToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
+            @Context HttpServletRequest request, NuxeoOAuth2Token token) {
         checkPermission();
         NuxeoOAuth2ServiceProvider provider = getProvider(providerId);
         return Response.ok(updateToken(provider, nxuser, token)).build();
@@ -244,7 +230,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @Path("token/{providerId}/{nxuser}")
     public Response deleteToken(@PathParam("providerId") String providerId,
                                 @PathParam("nxuser") String nxuser,
-                                @Context HttpServletRequest request) throws IOException, RestOperationException {
+                                @Context HttpServletRequest request) {
         checkPermission();
         NuxeoOAuth2ServiceProvider provider = getProvider(providerId);
         deleteToken(getTokenDoc(provider, nxuser));
@@ -253,25 +239,24 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
 
     protected List<NuxeoOAuth2ServiceProvider> getProviders() {
         OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
-        return registry.getProviders().stream()
-            .filter(NuxeoOAuth2ServiceProvider.class::isInstance)
-            .map(provider -> (NuxeoOAuth2ServiceProvider) provider)
-            .collect(Collectors.toList());
+        return registry.getProviders()
+                       .stream()
+                       .filter(NuxeoOAuth2ServiceProvider.class::isInstance)
+                       .map(provider -> (NuxeoOAuth2ServiceProvider) provider)
+                       .collect(Collectors.toList());
     }
 
-    protected NuxeoOAuth2ServiceProvider getProvider(String providerId) throws RestOperationException {
+    protected NuxeoOAuth2ServiceProvider getProvider(String providerId) {
         OAuth2ServiceProvider provider = Framework.getService(OAuth2ServiceProviderRegistry.class)
-            .getProvider(providerId);
+                                                  .getProvider(providerId);
         if (provider == null || !(provider instanceof NuxeoOAuth2ServiceProvider)) {
-            RestOperationException err = new RestOperationException("Invalid provider: " + providerId);
-            err.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            throw err;
+            throw new WebResourceNotFoundException("Invalid provider: " + providerId);
         }
         return (NuxeoOAuth2ServiceProvider) provider;
     }
 
     protected List<NuxeoOAuth2Token> getTokens() {
-        return getTokens((String)null);
+        return getTokens((String) null);
     }
 
     protected List<NuxeoOAuth2Token> getTokens(String nxuser) {
@@ -282,15 +267,14 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
                 if (nxuser != null) {
                     filter.put(NuxeoOAuth2Token.KEY_NUXEO_LOGIN, nxuser);
                 }
-                List<DocumentModel> docs = session.query(filter, Collections.emptySet(), Collections.emptyMap(),
-                    true, 0, 0);
+                List<DocumentModel> docs = session.query(filter, Collections.emptySet(), Collections.emptyMap(), true,
+                        0, 0);
                 return docs.stream().map(NuxeoOAuth2Token::new).collect(Collectors.toList());
             }
         });
     }
 
-    protected DocumentModel getTokenDoc(NuxeoOAuth2ServiceProvider provider, String nxuser)
-        throws RestOperationException {
+    protected DocumentModel getTokenDoc(NuxeoOAuth2ServiceProvider provider, String nxuser) {
         Map<String, Serializable> filter = new HashMap<>();
         filter.put("serviceName", provider.getServiceName());
         filter.put(NuxeoOAuth2Token.KEY_NUXEO_LOGIN, nxuser);
@@ -301,19 +285,17 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         if (tokens.size() > 1) {
             throw new NuxeoException("Found multiple " + provider.getId() + " accounts for " + nxuser);
         } else if (tokens.size() == 0) {
-            throw new RestOperationException("No token found for provider: " + provider.getId(), HttpServletResponse.SC_NOT_FOUND);
+            throw new WebResourceNotFoundException("No token found for provider: " + provider.getId());
         } else {
             return tokens.get(0);
         }
     }
 
-    protected NuxeoOAuth2Token getToken(NuxeoOAuth2ServiceProvider provider, String nxuser)
-        throws RestOperationException {
+    protected NuxeoOAuth2Token getToken(NuxeoOAuth2ServiceProvider provider, String nxuser) {
         return new NuxeoOAuth2Token(getTokenDoc(provider, nxuser));
     }
 
-    protected NuxeoOAuth2Token updateToken(NuxeoOAuth2ServiceProvider provider, String nxuser, NuxeoOAuth2Token token)
-        throws RestOperationException {
+    protected NuxeoOAuth2Token updateToken(NuxeoOAuth2ServiceProvider provider, String nxuser, NuxeoOAuth2Token token) {
         DocumentModel entry = getTokenDoc(provider, nxuser);
         entry.setProperty(SCHEMA, "serviceName", token.getServiceName());
         entry.setProperty(SCHEMA, "nuxeoLogin", token.getNuxeoLogin());
@@ -331,7 +313,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         return getToken(provider, nxuser);
     }
 
-    protected void deleteToken(DocumentModel token) throws RestOperationException {
+    protected void deleteToken(DocumentModel token) {
         Framework.doPrivileged(() -> {
             DirectoryService ds = Framework.getService(DirectoryService.class);
             try (Session session = ds.open(TOKEN_DIR)) {
@@ -341,8 +323,8 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected Credential getCredential(NuxeoOAuth2ServiceProvider provider, NuxeoOAuth2Token token) {
-        return provider.loadCredential(
-            (provider instanceof AbstractOAuth2UserEmailProvider) ? token.getServiceLogin() : token.getNuxeoLogin());
+        return provider.loadCredential((provider instanceof AbstractOAuth2UserEmailProvider) ? token.getServiceLogin()
+                : token.getNuxeoLogin());
     }
 
     protected Response buildResponse(StatusType status, Object obj) throws IOException {
@@ -350,16 +332,15 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         String message = mapper.writeValueAsString(obj);
 
         return Response.status(status)
-            .header("Content-Length", message.getBytes("UTF-8").length)
-            .type(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-            .entity(message)
-            .build();
+                       .header("Content-Length", message.getBytes("UTF-8").length)
+                       .type(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+                       .entity(message)
+                       .build();
     }
 
-    protected void checkPermission() throws RestOperationException {
+    protected void checkPermission() {
         if (!hasPermission()) {
-            throw new RestOperationException("You do not have permissions to perform this operation.",
-                HttpServletResponse.SC_FORBIDDEN);
+            throw new WebSecurityException("You do not have permissions to perform this operation.");
         }
     }
 

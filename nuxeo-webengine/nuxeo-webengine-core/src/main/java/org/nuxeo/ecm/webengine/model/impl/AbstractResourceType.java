@@ -30,15 +30,15 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.TemplateNotFoundException;
 import org.nuxeo.ecm.webengine.model.TypeVisibility;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.PermissionService;
@@ -132,7 +132,7 @@ public abstract class AbstractResourceType implements ResourceType {
         try {
             return typeof.cast(constructor.construct(context.getServerHttpContext()));
         } catch (ReflectiveOperationException e) {
-            throw WebException.wrap("Failed to instantiate web object: " + clazz, e);
+            throw new NuxeoException("Failed to instantiate web object: " + clazz, e);
         }
     }
 
@@ -165,7 +165,7 @@ public abstract class AbstractResourceType implements ResourceType {
                 try {
                     guard = PermissionService.parse(g);
                 } catch (ParseException e) {
-                    throw WebException.wrap("Failed to parse guard: " + g + " on WebObject " + c.getName(), e);
+                    throw new NuxeoException("Failed to parse guard: " + g + " on WebObject " + c.getName(), e);
                 }
             } else {
                 Class<?> gc = ag.type();
@@ -173,7 +173,7 @@ public abstract class AbstractResourceType implements ResourceType {
                     try {
                         guard = (Guard) gc.newInstance();
                     } catch (ReflectiveOperationException e) {
-                        throw WebException.wrap("Failed to instantiate guard handler: " + gc.getName()
+                        throw new NuxeoException("Failed to instantiate guard handler: " + gc.getName()
                                 + " on WebObject " + c.getName(), e);
                     }
                 }
@@ -190,7 +190,7 @@ public abstract class AbstractResourceType implements ResourceType {
     public ScriptFile getView(Module module, String name) {
         ScriptFile file = findView(module, name);
         if (file == null) {
-            throw new TemplateNotFoundException(this, name);
+            throw new WebResourceNotFoundException("Template " + name + " not found for object of type " + getName());
         }
         return file;
     }
@@ -232,7 +232,7 @@ public abstract class AbstractResourceType implements ResourceType {
             try {
                 return new ScriptFile(new File(url.toURI()));
             } catch (IOException | URISyntaxException e) {
-                throw WebException.wrap("Failed to convert URL to URI: " + url, e);
+                throw new NuxeoException("Failed to convert URL to URI: " + url, e);
             }
         }
         return null;

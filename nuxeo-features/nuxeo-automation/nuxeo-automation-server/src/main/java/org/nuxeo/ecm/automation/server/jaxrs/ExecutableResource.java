@@ -32,11 +32,10 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.AutomationServer;
-import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -71,21 +70,21 @@ public abstract class ExecutableResource extends DefaultObject {
             Object result = execute(xreq);
             int customHttpStatus = xreq.getRestOperationContext().getHttpStatus();
             return ResponseHelper.getResponse(result, request, customHttpStatus);
-        } catch (OperationException | NuxeoException | SecurityException | MessagingException | IOException cause) {
+        } catch (OperationException | NuxeoException | MessagingException | IOException cause) {
+            String exceptionMessage = "Failed to invoke operation: " + getId();
             if (cause instanceof OperationNotFoundException) {
-                throw WebException.newException("Failed to invoke operation: " + getId(), cause,
-                        HttpServletResponse.SC_NOT_FOUND);
+                throw new WebResourceNotFoundException(exceptionMessage, cause);
+            } else if (cause instanceof NuxeoException) {
+                NuxeoException nuxeoException = (NuxeoException) cause;
+                nuxeoException.addInfo(exceptionMessage);
+                throw nuxeoException;
             } else {
                 Throwable unWrapException = ExceptionHelper.unwrapException(cause);
                 if (unWrapException instanceof RestOperationException) {
                     int customHttpStatus = ((RestOperationException) unWrapException).getStatus();
-                    throw WebException.newException("Failed to invoke operation: " + getId(), cause, customHttpStatus);
+                    throw new NuxeoException(exceptionMessage, cause, customHttpStatus);
                 }
-                if (unWrapException instanceof ConcurrentUpdateException) {
-                    throw WebException.newException("Failed to invoke operation: " + getId(), unWrapException,
-                            HttpServletResponse.SC_CONFLICT);
-                }
-                throw WebException.newException("Failed to invoke operation: " + getId(), cause);
+                throw new NuxeoException(exceptionMessage, cause);
             }
         }
     }

@@ -36,16 +36,11 @@ public class StringToDocModelList implements TypeAdapter {
 
     @Override
     public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
-
         String value = (String) objectToAdapt;
         String[] array = StringUtils.split(value, ',', true);
         DocumentModelList result = new DocumentModelListImpl(array.length);
-        try {
-            for (String val : array) {
-                result.add(TypeAdapterHelper.createDocumentModel(ctx, val));
-            }
-        } catch (DocumentNotFoundException e) {
-            throw new TypeAdaptException(e);
+        for (String val : array) {
+            result.add(TypeAdapterHelper.createDocumentModel(ctx, val));
         }
         return result;
 

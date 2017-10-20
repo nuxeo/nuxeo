@@ -27,8 +27,8 @@ import java.io.Writer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
@@ -92,7 +92,7 @@ public class GroovyTypeLoader {
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
-            throw WebException.wrap(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -116,7 +116,7 @@ public class GroovyTypeLoader {
                         typeReg.registerTypeDescriptor(td);
                     }
                 } catch (IOException | ClassNotFoundException e) {
-                    throw WebException.wrap(e);
+                    throw new NuxeoException(e);
                 }
             }
         }

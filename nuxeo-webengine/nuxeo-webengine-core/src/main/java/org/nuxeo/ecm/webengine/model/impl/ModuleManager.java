@@ -32,9 +32,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XMap;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -204,7 +204,7 @@ public class ModuleManager {
             }
             return mc;
         } catch (IOException e) {
-            throw WebException.wrap("Faile to load module configuration: " + file, e);
+            throw new NuxeoException("Failed to load module configuration: " + file, e);
         }
     }
 
@@ -223,7 +223,7 @@ public class ModuleManager {
                     rb.resolve(engine);
                     engine.addResourceBinding(rb);
                 } catch (ClassNotFoundException e) {
-                    throw WebException.wrap("Faile to load module root resource: " + rb, e);
+                    throw new NuxeoException("Failed to load module root resource: " + rb, e);
                 }
             }
         }

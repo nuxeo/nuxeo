@@ -21,19 +21,21 @@
 
 package org.nuxeo.ecm.webengine.model.exceptions;
 
-import org.nuxeo.ecm.webengine.WebException;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * A query / form parameter was expected but not found or has invalid value.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class IllegalParameterException extends WebException {
+public class IllegalParameterException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 
     public IllegalParameterException(String message) {
-        super(message);
+        super(message, SC_BAD_REQUEST);
     }
 
 }

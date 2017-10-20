@@ -161,7 +161,7 @@ public class AddPermission {
         UserManager userManager = Framework.getService(UserManager.class);
         if (userManager.getUserModel(username) == null && userManager.getGroupModel(username) == null) {
             String errorMsg = "User or group name '" + username + "' does not exist. Please provide a valid name.";
-            throw new NuxeoException(errorMsg);
+            throw new IllegalParameterException(errorMsg);
         }
     }
 

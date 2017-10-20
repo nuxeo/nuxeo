@@ -19,10 +19,12 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+
 /**
  * Exception thrown when a document is not found.
  */
-//inherits from a deprecated base NoSuchDocumentException so that old code catching the old one still works
+// inherits from a deprecated base NoSuchDocumentException so that old code catching the old one still works
 @SuppressWarnings("deprecation")
 public class DocumentNotFoundException extends org.nuxeo.ecm.core.model.NoSuchDocumentException {
 
@@ -30,18 +32,22 @@ public class DocumentNotFoundException extends org.nuxeo.ecm.core.model.NoSuchDo
 
     public DocumentNotFoundException() {
         super();
+        this.statusCode = SC_NOT_FOUND;
     }
 
     public DocumentNotFoundException(String message) {
         super(message);
+        this.statusCode = SC_NOT_FOUND;
     }
 
     public DocumentNotFoundException(String message, Throwable cause) {
         super(message, cause);
+        this.statusCode = SC_NOT_FOUND;
     }
 
     public DocumentNotFoundException(Throwable cause) {
         super(cause);
+        this.statusCode = SC_NOT_FOUND;
     }
 
 }

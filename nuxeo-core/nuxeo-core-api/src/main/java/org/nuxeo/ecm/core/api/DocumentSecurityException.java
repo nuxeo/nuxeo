@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import javax.servlet.http.HttpServletResponse;
+
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+
 /**
  * Exception thrown when access to a document is denied.
  *
@@ -28,19 +32,19 @@ public class DocumentSecurityException extends NuxeoException {
     private static final long serialVersionUID = 1L;
 
     public DocumentSecurityException() {
-        super();
+        super(SC_FORBIDDEN);
     }
 
     public DocumentSecurityException(String message) {
-        super(message);
+        super(message, SC_FORBIDDEN);
     }
 
     public DocumentSecurityException(String message, Throwable cause) {
-        super(message, cause);
+        super(message, cause, SC_FORBIDDEN);
     }
 
     public DocumentSecurityException(Throwable cause) {
-        super(cause);
+        super(cause, SC_FORBIDDEN);
     }
 
 }

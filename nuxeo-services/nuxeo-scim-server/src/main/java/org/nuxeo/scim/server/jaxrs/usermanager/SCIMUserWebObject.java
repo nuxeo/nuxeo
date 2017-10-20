@@ -46,7 +46,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.scim.server.jaxrs.marshalling.UserResponse;
@@ -185,12 +184,8 @@ public class SCIMUserWebObject extends BaseUMObject {
     }
 
     protected Response doCreateUserResponse(UserResource user, MediaType mt) {
-        try {
-            checkUpdateGuardPreconditions();
-            return UserResponse.created(doCreateUser(user), mt);
-        } catch (ClientException e) {
-            throw WebException.wrap(e);
-        }
+        checkUpdateGuardPreconditions();
+        return UserResponse.created(doCreateUser(user), mt);
 
     }
 
@@ -211,12 +206,8 @@ public class SCIMUserWebObject extends BaseUMObject {
     @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public Response updateUser(@Context UriInfo uriInfo, @PathParam("uid") String uid, UserResource user) {
-        try {
-            checkUpdateGuardPreconditions();
-            return doUpdateUser(uid, user, fixeMediaType);
-        } catch (ClientException e) {
-            throw WebException.wrap(e);
-        }
+        checkUpdateGuardPreconditions();
+        return doUpdateUser(uid, user, fixeMediaType);
     }
 
     protected Response doUpdateUser(String uid, UserResource user, MediaType mt) {

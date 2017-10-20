@@ -18,10 +18,12 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.directory;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.nuxeo.ecm.restapi.server.jaxrs.directory.DirectorySessionRunner.withDirectorySession;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -29,6 +31,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -56,7 +59,7 @@ public class DirectoryEntryObject extends DefaultObject {
     @Override
     protected void initialize(Object... args) {
         if (args.length < 1) {
-            throw new IllegalArgumentException("Directory Entry object  takes one parameter");
+            throw new IllegalArgumentException("Directory Entry object takes one parameter");
         }
 
         entry = (DirectoryEntry) args[0];
@@ -97,7 +100,7 @@ public class DirectoryEntryObject extends DefaultObject {
         if (deleteConstraints != null && !deleteConstraints.isEmpty()) {
             for (DirectoryDeleteConstraint deleteConstraint : deleteConstraints) {
                 if (!deleteConstraint.canDelete(directoryService, entryId)) {
-                    throw new WebSecurityException("This entry is referenced in another vocabulary.");
+                    throw new NuxeoException("This entry is referenced in another vocabulary.", SC_BAD_REQUEST);
                 }
             }
         }

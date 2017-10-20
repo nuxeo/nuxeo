@@ -18,17 +18,19 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.usermanager;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+
 import java.util.List;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -67,13 +69,13 @@ public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
     private void checkPrincipalDoesNotAlreadyExists(NuxeoPrincipal principal, UserManager um) {
         NuxeoPrincipal user = um.getPrincipal(principal.getName());
         if (user != null) {
-            throw new WebException("User already exists", Response.Status.PRECONDITION_FAILED.getStatusCode());
+            throw new NuxeoException("User already exists", SC_CONFLICT);
         }
     }
 
     private void checkPrincipalHasAName(NuxeoPrincipal principal) {
         if (principal.getName() == null) {
-            throw new WebException("User MUST have a name", Response.Status.PRECONDITION_FAILED.getStatusCode());
+            throw new NuxeoException("User MUST have a name", SC_BAD_REQUEST);
         }
     }
 

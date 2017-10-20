@@ -25,11 +25,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -56,18 +54,14 @@ public class UserToGroupObject extends DefaultObject {
 
     @POST
     public Response doAddUserToGroup() {
-        try {
-            UserManager um = Framework.getLocalService(UserManager.class);
-            checkPrincipalCanAdministerGroupAndUser(um);
+        UserManager um = Framework.getLocalService(UserManager.class);
+        checkPrincipalCanAdministerGroupAndUser(um);
 
-            List<String> groups = principal.getGroups();
-            groups.add(group.getName());
-            principal.setGroups(groups);
-            um.updateUser(principal.getModel());
-            return Response.status(Status.CREATED).entity(um.getPrincipal(principal.getName())).build();
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
-        }
+        List<String> groups = principal.getGroups();
+        groups.add(group.getName());
+        principal.setGroups(groups);
+        um.updateUser(principal.getModel());
+        return Response.status(Status.CREATED).entity(um.getPrincipal(principal.getName())).build();
     }
 
     private void checkPrincipalCanAdministerGroupAndUser(UserManager um) {
@@ -83,16 +77,12 @@ public class UserToGroupObject extends DefaultObject {
 
     @DELETE
     public Response doRemoveUserFromGroup() {
-        try {
-            UserManager um = Framework.getLocalService(UserManager.class);
-            checkPrincipalCanAdministerGroupAndUser(um);
-            List<String> groups = principal.getGroups();
-            groups.remove(group.getName());
-            principal.setGroups(groups);
-            um.updateUser(principal.getModel());
-            return Response.ok(principal.getName()).build();
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
-        }
+        UserManager um = Framework.getLocalService(UserManager.class);
+        checkPrincipalCanAdministerGroupAndUser(um);
+        List<String> groups = principal.getGroups();
+        groups.remove(group.getName());
+        principal.setGroups(groups);
+        um.updateUser(principal.getModel());
+        return Response.ok(principal.getName()).build();
     }
 }

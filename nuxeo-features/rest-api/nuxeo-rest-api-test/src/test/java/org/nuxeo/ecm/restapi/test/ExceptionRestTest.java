@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
-import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -56,8 +55,7 @@ public class ExceptionRestTest extends BaseTest {
 
             // Then i get an exception and parse it to check json payload
             assertEquals("exception", node.get("entity-type").getTextValue());
-            assertEquals(TypeNotFoundException.class.getCanonicalName(), node.get("code").getTextValue());
-            assertEquals(500, node.get("status").getIntValue());
+            assertEquals(404, node.get("status").getIntValue());
             assertEquals("Type not found: wrongpath", node.get("message").getTextValue());
         }
     }
@@ -76,7 +74,6 @@ public class ExceptionRestTest extends BaseTest {
 
             // Then i get an exception and parse it to check json payload
             assertEquals("exception", node.get("entity-type").getTextValue());
-            assertEquals(DocumentNotFoundException.class.getCanonicalName(), node.get("code").getTextValue());
             assertEquals(404, node.get("status").getIntValue());
             assertEquals("/wrongID", node.get("message").getTextValue());
             assertNotNull(node.get("stacktrace").getTextValue());

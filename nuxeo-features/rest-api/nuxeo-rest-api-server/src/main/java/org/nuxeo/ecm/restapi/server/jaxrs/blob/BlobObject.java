@@ -19,11 +19,13 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.blob;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.nuxeo.ecm.core.io.download.DownloadService.BLOBHOLDER_PREFIX;
 
 import java.io.Serializable;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -35,6 +37,7 @@ import javax.ws.rs.core.Response;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -42,7 +45,6 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
@@ -207,7 +209,7 @@ public class BlobObject extends DefaultObject {
         try {
             doc.getProperty(xpath).remove();
         } catch (PropertyNotFoundException e) {
-            throw WebException.wrap("Failed to delete attached file into property: " + xpath, e);
+            throw new NuxeoException("Failed to delete attached file into property: " + xpath, e, SC_BAD_REQUEST);
         }
         CoreSession session = ctx.getCoreSession();
         session.saveDocument(doc);
@@ -225,7 +227,7 @@ public class BlobObject extends DefaultObject {
         try {
             doc.setPropertyValue(xpath, (Serializable) blob);
         } catch (PropertyNotFoundException e) {
-            throw WebException.wrap("Failed to attach file", e);
+            throw new NuxeoException("Failed to attach file into property: " + xpath, e, SC_BAD_REQUEST);
         }
         // make snapshot
         doc.putContextData(VersioningService.VERSIONING_OPTION, form.getVersioningOption());

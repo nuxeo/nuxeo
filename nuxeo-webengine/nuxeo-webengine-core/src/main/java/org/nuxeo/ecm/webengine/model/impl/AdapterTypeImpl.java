@@ -25,8 +25,8 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
 import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.Resource;
@@ -104,7 +104,7 @@ public class AdapterTypeImpl extends AbstractResourceType implements AdapterType
             try {
                 guard = PermissionService.parse(g);
             } catch (ParseException e) {
-                throw WebException.wrap("Failed to parse guard: " + g + " on WebObject " + c.getName(), e);
+                throw new NuxeoException("Failed to parse guard: " + g + " on WebObject " + c.getName(), e);
             }
         } else {
             loadGuardFromAnnoation(c);

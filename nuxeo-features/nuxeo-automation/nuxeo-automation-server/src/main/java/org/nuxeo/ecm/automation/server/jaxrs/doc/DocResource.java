@@ -48,10 +48,10 @@ import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.automation.io.yaml.YamlWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.Template;
@@ -80,7 +80,7 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
             ops = service.getDocumentation();
         } catch (OperationException e) {
             log.error("Failed to get automation service", e);
-            throw WebException.wrap(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -135,7 +135,7 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
                     YamlWriter.toYaml(out, opDoc);
                     tpl.arg("yaml", out.toString());
                 } catch (IOException e) {
-                    throw WebException.wrap(e);
+                    throw new NuxeoException(e);
                 }
             }
             return tpl;

@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 
 import freemarker.template.AdapterTemplateModel;
@@ -87,7 +87,7 @@ public class ScriptMethod implements TemplateMethodModelEx {
         if (ctx != null) {
             try {
                 return ctx.runScript(src, args);
-            } catch (WebException e) {
+            } catch (NuxeoException e) {
                 throw new TemplateModelException("Failed to run script: " + src, e);
             }
         } else {

@@ -25,6 +25,7 @@ import javax.ws.rs.Path;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Defines a JAX-RS root resource binding. This is an extension to JAX-RS to be able to declare root resource binding
@@ -72,7 +73,7 @@ public class ResourceBinding {
                 hasUserPath = false;
                 Path p = clazz.getAnnotation(Path.class);
                 if (p == null) {
-                    throw new WebException("Invalid resource binding. Path not defined");
+                    throw new NuxeoException("Invalid resource binding. Path not defined");
                 }
                 path = p.value();
             } else {

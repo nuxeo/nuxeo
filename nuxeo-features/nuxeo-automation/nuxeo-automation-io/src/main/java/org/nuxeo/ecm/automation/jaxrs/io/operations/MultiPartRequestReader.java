@@ -48,7 +48,7 @@ import org.nuxeo.ecm.automation.jaxrs.io.SharedFileInputStream;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
@@ -116,14 +116,14 @@ public class MultiPartRequestReader implements MessageBodyReader<ExecutionReques
                         log.error("Received parts: " + mp.getBodyPart(i).getHeader("Content-ID")[0] + " -> "
                                 + mp.getBodyPart(i).getContentType());
                     }
-                    throw WebException.newException(new IllegalStateException("Received only " + cnt
+                    throw new NuxeoException(new IllegalStateException("Received only " + cnt
                             + " part in a multipart request"));
                 }
             } finally {
                 tmp.delete();
             }
         } catch (MessagingException | IOException e) {
-            throw WebException.newException("Failed to parse multipart request", e);
+            throw new NuxeoException("Failed to parse multipart request", e);
         }
         return req;
     }

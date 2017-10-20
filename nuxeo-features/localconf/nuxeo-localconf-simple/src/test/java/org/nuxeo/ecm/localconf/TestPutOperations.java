@@ -38,6 +38,7 @@ import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.localconf.PutSimpleConfParam;
@@ -148,7 +149,7 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
         assertEquals("value1", simpleConfiguration.get("key1"));
     }
 
-    @Test(expected = OperationException.class)
+    @Test(expected = DocumentSecurityException.class)
     public void nonAuthorizedUserShouldNotBeAbleToPutNewParameter() throws Exception {
         addReadForEveryone(CHILD_WORKSPACE_REF);
 

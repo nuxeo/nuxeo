@@ -29,9 +29,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersionModel;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
@@ -58,34 +56,28 @@ public class VersionService extends DefaultAdapter {
 
     @Path("last")
     public DocumentObject getLastVersion() {
-        try {
-            DocumentObject dobj = (DocumentObject) getTarget();
-            DocumentModel doc = dobj.getDocument();
-            DocumentModel v = dobj.getCoreSession().getLastDocumentVersion(doc.getRef());
-            if (v != null) {
-                return dobj.newDocument(v);
-            }
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
+        DocumentObject dobj = (DocumentObject) getTarget();
+        DocumentModel doc = dobj.getDocument();
+        DocumentModel v = dobj.getCoreSession().getLastDocumentVersion(doc.getRef());
+        if (v != null) {
+            return dobj.newDocument(v);
         }
-        throw new WebResourceNotFoundException("No version found for "
-                + ((DocumentObject) getTarget()).getDocument().getPath());
+
+        throw new WebResourceNotFoundException(
+                "No version found for " + ((DocumentObject) getTarget()).getDocument().getPath());
     }
 
     @Path("{label}")
     public DocumentObject getVersion(@PathParam("label") String label) {
-        try {
-            DocumentObject dobj = (DocumentObject) getTarget();
-            DocumentModel doc = dobj.getDocument();
-            List<VersionModel> versions = dobj.getCoreSession().getVersionsForDocument(doc.getRef());
-            for (VersionModel v : versions) {
-                if (label.equals(v.getLabel())) {
-                    return dobj.newDocument(dobj.getCoreSession().getDocumentWithVersion(doc.getRef(), v));
-                }
+        DocumentObject dobj = (DocumentObject) getTarget();
+        DocumentModel doc = dobj.getDocument();
+        List<VersionModel> versions = dobj.getCoreSession().getVersionsForDocument(doc.getRef());
+        for (VersionModel v : versions) {
+            if (label.equals(v.getLabel())) {
+                return dobj.newDocument(dobj.getCoreSession().getDocumentWithVersion(doc.getRef(), v));
             }
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
         }
+
         throw new WebResourceNotFoundException("No such version " + label + " for document" + getTarget().getPath());
     }
 

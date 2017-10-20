@@ -38,18 +38,17 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.AdapterNotFoundException;
 import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Messages;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
-import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 import com.sun.jersey.server.impl.inject.ServerInjectableProviderContext;
@@ -94,12 +93,16 @@ public class ModuleImpl implements Module {
     // cache used for resolved files
     protected ConcurrentMap<String, ScriptFile> fileCache;
 
-    public ModuleImpl(WebEngine engine, ModuleImpl superModule, ModuleConfiguration config, ServerInjectableProviderContext sic) {
+    public ModuleImpl(WebEngine engine, ModuleImpl superModule, ModuleConfiguration config,
+            ServerInjectableProviderContext sic) {
         this.engine = engine;
         this.superModule = superModule;
         this.sic = sic;
         configuration = config;
-        skinPathPrefix = new StringBuilder().append(engine.getSkinPathPrefix()).append('/').append(config.name).toString();
+        skinPathPrefix = new StringBuilder().append(engine.getSkinPathPrefix())
+                                            .append('/')
+                                            .append(config.name)
+                                            .toString();
         fileCache = new ConcurrentHashMap<String, ScriptFile>();
         loadConfiguration();
         reloadMessages();
@@ -202,7 +205,7 @@ public class ModuleImpl implements Module {
     public ResourceType getType(String typeName) {
         ResourceType type = getTypeRegistry().getType(typeName);
         if (type == null) {
-            throw new TypeNotFoundException(typeName);
+            throw new WebResourceNotFoundException("Type not found: " + typeName);
         }
         return type;
     }
@@ -221,7 +224,8 @@ public class ModuleImpl implements Module {
     public AdapterType getAdapter(Resource ctx, String name) {
         AdapterType type = getTypeRegistry().getAdapter(ctx, name);
         if (type == null) {
-            throw new AdapterNotFoundException(ctx, name);
+            throw new WebResourceNotFoundException("Service " + name + " not found for object: " + ctx.getPath()
+                    + " of type " + ctx.getType().getName());
         }
         return type;
     }
@@ -376,7 +380,7 @@ public class ModuleImpl implements Module {
                 }
             }
         } catch (IOException e) {
-            throw WebException.wrap("Failed to load directories stack", e);
+            throw new NuxeoException("Failed to load directories stack", e);
         }
     }
 
@@ -396,7 +400,7 @@ public class ModuleImpl implements Module {
         try {
             return findFile(new Path(path).makeAbsolute().toString());
         } catch (IOException e) {
-            throw WebException.wrap(e);
+            throw new NuxeoException(e);
         }
     }
 

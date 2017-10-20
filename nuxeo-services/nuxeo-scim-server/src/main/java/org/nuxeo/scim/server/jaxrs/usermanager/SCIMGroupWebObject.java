@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.scim.server.jaxrs.marshalling.GroupResponse;
@@ -183,12 +182,8 @@ public class SCIMGroupWebObject extends BaseUMObject {
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public Response createGroup(@Context UriInfo uriInfo, GroupResource group,
             @Context final HttpServletResponse response) {
-        try {
-            checkUpdateGuardPreconditions();
-            return doCreateGroup(group, fixeMediaType);
-        } catch (ClientException e) {
-            throw WebException.wrap(e);
-        }
+        checkUpdateGuardPreconditions();
+        return doCreateGroup(group, fixeMediaType);
     }
 
     @PUT
@@ -196,12 +191,8 @@ public class SCIMGroupWebObject extends BaseUMObject {
     @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public Response updateGroup(@Context UriInfo uriInfo, @PathParam("uid") String uid, GroupResource user) {
-        try {
-            checkUpdateGuardPreconditions();
-            return doUpdateGroup(uid, user, fixeMediaType);
-        } catch (ClientException e) {
-            throw WebException.wrap(e);
-        }
+        checkUpdateGuardPreconditions();
+        return doUpdateGroup(uid, user, fixeMediaType);
     }
 
     protected Response doUpdateGroup(String uid, GroupResource group, MediaType mt) {

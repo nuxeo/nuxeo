@@ -24,9 +24,9 @@ package org.nuxeo.ecm.webengine.loader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.classgen.Verifier;
-import org.nuxeo.ecm.webengine.WebException;
 
 import groovy.lang.GroovyClassLoader;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -62,7 +62,7 @@ public class GroovyClassProxy implements ClassProxy {
             timestamp = tm;
             return clazz;
         } catch (ReflectiveOperationException e) {
-            throw WebException.wrap(e);
+            throw new NuxeoException(e);
         }
     }
 

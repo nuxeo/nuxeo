@@ -21,6 +21,7 @@ package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.blob.BlobManager;
@@ -28,7 +29,6 @@ import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.restapi.server.jaxrs.blob.BlobObject;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
@@ -77,7 +77,7 @@ public class PreviewAdapter extends DefaultAdapter {
                 return Response.seeOther(uri).build();
             }
         } catch (IOException e) {
-            throw WebException.wrap(e);
+            throw new NuxeoException(e);
         }
 
         List<Blob> previewBlobs = getPreviewBlobs(bh, postProcessing);
@@ -91,7 +91,7 @@ public class PreviewAdapter extends DefaultAdapter {
             downloadService.downloadBlob(request, response, bh.getDocument(), bh.getXpath(), blob, blob.getFilename(),
                 "preview", null, true);
         } catch (IOException e) {
-            throw WebException.wrap(e);
+            throw new NuxeoException(e);
         }
 
         return Response.ok().build();
@@ -125,7 +125,7 @@ public class PreviewAdapter extends DefaultAdapter {
             downloadService.downloadBlob(request, response, bh.getDocument(), bh.getXpath(), blob, blob.getFilename(),
                 "preview", extendedInfos, true);
         } catch (IOException e) {
-            throw WebException.wrap(e);
+            throw new NuxeoException(e);
         }
 
         return Response.ok().build();

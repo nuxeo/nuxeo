@@ -24,7 +24,6 @@ package org.nuxeo.ecm.webengine.model.impl;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.AdapterResource;
 import org.nuxeo.ecm.webengine.model.Resource;
 
@@ -47,10 +46,6 @@ public class DefaultAdapter extends AbstractResource<ResourceTypeImpl> implement
 
     /**
      * TODO: is this wanted? Adapter of adapters?
-     *
-     * @param adapterName
-     * @return
-     * @throws WebException
      */
     @Path(value = "@{segment}")
     public AdapterResource disptachAdapter(@PathParam("segment") String adapterName) {

@@ -40,14 +40,12 @@ import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
@@ -123,23 +121,15 @@ public class JSONDocumentObject extends DocumentObject {
 
     @Override
     public DocumentObject newDocument(String path) {
-        try {
-            PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
-            DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
-            return (DocumentObject) ctx.newObject("Document", doc);
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
-        }
+        PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
+        DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
+        return (DocumentObject) ctx.newObject("Document", doc);
     }
 
     @Override
     public DocumentObject newDocument(DocumentRef ref) {
-        try {
-            DocumentModel doc = ctx.getCoreSession().getDocument(ref);
-            return (DocumentObject) ctx.newObject("Document", doc);
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
-        }
+        DocumentModel doc = ctx.getCoreSession().getDocument(ref);
+        return (DocumentObject) ctx.newObject("Document", doc);
     }
 
     @Override

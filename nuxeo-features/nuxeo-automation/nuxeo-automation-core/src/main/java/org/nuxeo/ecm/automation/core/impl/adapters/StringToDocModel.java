@@ -32,13 +32,7 @@ public class StringToDocModel implements TypeAdapter {
 
     @Override
     public DocumentModel getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
-        try {
-            String value = (String) objectToAdapt;
-            return TypeAdapterHelper.createDocumentModel(ctx, value);
-        } catch (TypeAdaptException e) {
-            throw e;
-        } catch (NuxeoException e) {
-            throw new TypeAdaptException(e);
-        }
+        String value = (String) objectToAdapt;
+        return TypeAdapterHelper.createDocumentModel(ctx, value);
     }
 }

@@ -58,10 +58,11 @@ import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManagerConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -158,8 +159,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
                 uploadChunkIndex = Integer.parseInt(uploadChunkIndexHeader);
                 fileSize = Long.parseLong(fileSizeHeader);
             } catch (NumberFormatException e) {
-                return buildTextResponse(Status.BAD_REQUEST,
-                        "X-Upload-Chunk-Index, X-Upload-Chunk-Count and X-File-Size headers must be numbers");
+                throw new IllegalParameterException("X-Upload-Chunk-Index, X-Upload-Chunk-Count and X-File-Size headers must be numbers");
             }
         }
 
@@ -284,7 +284,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
     @DELETE
     @Path("{batchId}")
-    public Response cancel(@PathParam(REQUEST_BATCH_ID) String batchId) throws IOException {
+    public Response cancel(@PathParam(REQUEST_BATCH_ID) String batchId) {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         if (!bm.hasBatch(batchId)) {
             return buildEmptyResponse(Status.NOT_FOUND);
@@ -298,8 +298,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
      */
     @DELETE
     @Path("{batchId}/{fileIdx}")
-    public Response removeFile(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx)
-            throws IOException {
+    public Response removeFile(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx) {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         if (!bm.removeFileEntry(batchId, fileIdx)) {
             return buildEmptyResponse(Status.NOT_FOUND);
@@ -317,7 +316,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     @Produces("application/json")
     @Path("{batchId}/execute/{operationId}")
     public Object execute(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(OPERATION_ID) String operationId,
-            ExecutionRequest xreq) throws UnsupportedEncodingException {
+            ExecutionRequest xreq) {
         return executeBatch(batchId, null, operationId, request, xreq);
     }
 
@@ -325,12 +324,12 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     @Produces("application/json")
     @Path("{batchId}/{fileIdx}/execute/{operationId}")
     public Object execute(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx,
-            @PathParam(OPERATION_ID) String operationId, ExecutionRequest xreq) throws UnsupportedEncodingException {
+            @PathParam(OPERATION_ID) String operationId, ExecutionRequest xreq) {
         return executeBatch(batchId, fileIdx, operationId, request, xreq);
     }
 
     protected Object executeBatch(String batchId, String fileIdx, String operationId, HttpServletRequest request,
-            ExecutionRequest xreq) throws UnsupportedEncodingException {
+            ExecutionRequest xreq) {
 
         if (!Framework.getService(BatchManager.class).hasBatch(batchId)) {
             return buildEmptyResponse(Status.NOT_FOUND);
@@ -356,13 +355,9 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
                 result = bm.execute(batchId, fileIdx, operationId, session, ctx, params);
             }
             return ResponseHelper.getResponse(result, request);
-        } catch (NuxeoException | MessagingException | IOException e) {
+        } catch (MessagingException | IOException e) {
             log.error("Error while executing automation batch ", e);
-            if (WebException.isSecurityError(e)) {
-                return buildJSONResponse(Status.FORBIDDEN, "{\"error\" : \"" + e.getMessage() + "\"}");
-            } else {
-                return buildJSONResponse(Status.INTERNAL_SERVER_ERROR, "{\"error\" : \"" + e.getMessage() + "\"}");
-            }
+            throw new NuxeoException(e);
         }
     }
 
@@ -407,7 +402,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
                        .build();
     }
 
-    protected Map<String, Object> getFileInfo(BatchFileEntry fileEntry) throws UnsupportedEncodingException {
+    protected Map<String, Object> getFileInfo(BatchFileEntry fileEntry) {
         Map<String, Object> info = new HashMap<>();
         boolean chunked = fileEntry.isChunked();
         String uploadType;

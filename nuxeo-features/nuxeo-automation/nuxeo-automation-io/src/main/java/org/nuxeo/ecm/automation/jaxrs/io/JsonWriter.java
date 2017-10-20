@@ -283,32 +283,4 @@ public class JsonWriter {
         jg.flush();
     }
 
-    /**
-     * @deprecated since 6.0 - use
-     *             {@link org.nuxeo.ecm.webengine.app .JsonWebengineWriter#writeException(java.io.OutputStream, org.nuxeo.ecm.webengine.WebException)}
-     *             instead
-     */
-    @Deprecated
-    public static void writeException(OutputStream out, WebException eh) throws IOException {
-        writeException(createGenerator(out), eh);
-    }
-
-    /**
-     * @deprecated since 6.0 - use
-     *             {@link org.nuxeo.ecm.webengine.app .JsonWebengineWriter#writeException(org.codehaus.jackson.JsonGenerator, org.nuxeo.ecm.webengine.WebException)}
-     *             instead
-     */
-    @Deprecated
-    public static void writeException(JsonGenerator jg, WebException eh) throws IOException {
-        jg.writeStartObject();
-        jg.writeStringField("entity-type", "exception");
-        jg.writeStringField("type", eh.getType());
-        jg.writeNumberField("status", eh.getStatus());
-        jg.writeStringField("message", eh.getMessage());
-        jg.writeStringField("stack", eh.getStackTraceString());
-        jg.writeObjectField("cause", eh.getCause());
-        jg.writeEndObject();
-        jg.flush();
-    }
-
 }

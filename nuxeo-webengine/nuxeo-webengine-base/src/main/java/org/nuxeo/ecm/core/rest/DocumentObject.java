@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
@@ -103,12 +102,8 @@ public class DocumentObject extends DefaultObject {
             query = "SELECT * FROM Document WHERE (ecm:fulltext = \"" + fullText
                     + "\") AND (ecm:isCheckedInVersion = 0) AND (ecm:path STARTSWITH \"" + path + "\")" + orderClause;
         }
-        try {
-            DocumentModelList docs = ctx.getCoreSession().query(query);
-            return getView("search").arg("query", query).arg("result", docs);
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
-        }
+        DocumentModelList docs = ctx.getCoreSession().query(query);
+        return getView("search").arg("query", query).arg("result", docs);
     }
 
     @DELETE
@@ -118,7 +113,8 @@ public class DocumentObject extends DefaultObject {
             session.removeDocument(doc.getRef());
             session.save();
         } catch (NuxeoException e) {
-            throw WebException.wrap("Failed to delete document " + doc.getPathAsString(), e);
+            e.addInfo("Failed to delete document " + doc.getPathAsString());
+            throw e;
         }
         if (prev != null) { // show parent ? TODO: add getView(method) to be able to change the view method
             return redirect(prev.getPath());
@@ -157,22 +153,14 @@ public class DocumentObject extends DefaultObject {
     }
 
     public DocumentObject newDocument(String path) {
-        try {
-            PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
-            DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
-            return (DocumentObject) ctx.newObject(doc.getType(), doc);
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
-        }
+        PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
+        DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
+        return (DocumentObject) ctx.newObject(doc.getType(), doc);
     }
 
     public DocumentObject newDocument(DocumentRef ref) {
-        try {
-            DocumentModel doc = ctx.getCoreSession().getDocument(ref);
-            return (DocumentObject) ctx.newObject(doc.getType(), doc);
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
-        }
+        DocumentModel doc = ctx.getCoreSession().getDocument(ref);
+        return (DocumentObject) ctx.newObject(doc.getType(), doc);
     }
 
     public DocumentObject newDocument(DocumentModel doc) {
@@ -188,11 +176,7 @@ public class DocumentObject extends DefaultObject {
     }
 
     public String getTitle() {
-        try {
-            return doc.getTitle();
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
-        }
+        return doc.getTitle();
     }
 
 }

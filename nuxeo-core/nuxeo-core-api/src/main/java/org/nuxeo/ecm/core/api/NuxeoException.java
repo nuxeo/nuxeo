@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+
 /**
  * The most generic exception thrown by the Nuxeo.
  * <p>
@@ -43,19 +45,52 @@ public class NuxeoException extends RuntimeException {
 
     private LinkedList<String> infos;
 
+    protected int statusCode = SC_INTERNAL_SERVER_ERROR;
+
     public NuxeoException() {
+    }
+
+    /**
+     * @since 9.3
+     */
+    public NuxeoException(int statusCode) {
+        this.statusCode = statusCode;
     }
 
     public NuxeoException(String message) {
         super(message);
     }
 
+    /**
+     * @since 9.3
+     */
+    public NuxeoException(String message, int statusCode) {
+        super(message);
+        this.statusCode = statusCode;
+    }
+
     public NuxeoException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * @since 9.3
+     */
+    public NuxeoException(String message, Throwable cause, int statusCode) {
+        super(message, cause);
+        this.statusCode = statusCode;
+    }
+
     public NuxeoException(Throwable cause) {
         super(cause);
+    }
+
+    /**
+     * @since 9.3
+     */
+    public NuxeoException(Throwable cause, int statusCode) {
+        super(cause);
+        this.statusCode = statusCode;
     }
 
     /**
@@ -108,5 +143,15 @@ public class NuxeoException extends RuntimeException {
             return sb.toString();
         }
     }
+
+    /**
+     * Gets the HTTP status code mapped to this exception.
+     *
+     * @since 9.3
+     */
+    public int getStatusCode() {
+        return statusCode;
+    }
+
 
 }

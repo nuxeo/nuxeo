@@ -36,12 +36,8 @@ public class DocRefListToDocModelList implements TypeAdapter {
     public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         DocumentRefList list = (DocumentRefList) objectToAdapt;
         DocumentModelList result = new DocumentModelListImpl(list.size());
-        try {
-            for (DocumentRef ref : list) {
-                result.add(ctx.getCoreSession().getDocument(ref));
-            }
-        } catch (DocumentNotFoundException e) {
-            throw new TypeAdaptException(e);
+        for (DocumentRef ref : list) {
+            result.add(ctx.getCoreSession().getDocument(ref));
         }
         return result;
     }

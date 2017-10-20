@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
- *     vpasquier
+ *     Thomas Roger
+ *
  */
 package org.nuxeo.ecm.webengine.app;
 
@@ -31,31 +31,29 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
- * @since 6.0
- * @deprecated since 9.3
+ * @since 9.3
  */
-@Deprecated
 @Provider
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
-public class JsonExceptionWriter implements MessageBodyWriter<WebException> {
+public class JsonNuxeoExceptionWriter implements MessageBodyWriter<NuxeoException> {
 
     @Override
-    public long getSize(WebException arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
+    public long getSize(NuxeoException arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
     @Override
     public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
-        return WebException.class.isAssignableFrom(arg0);
+        return NuxeoException.class.isAssignableFrom(arg0);
     }
 
     @Override
-    public void writeTo(WebException webException, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType mediaType,
+    public void writeTo(NuxeoException nuxeoException, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType mediaType,
             MultivaluedMap<String, Object> arg5, OutputStream outputStream) throws IOException, WebApplicationException {
-        JsonWebengineWriter.writeException(outputStream, webException, mediaType);
+        JsonWebengineWriter.writeException(outputStream, nuxeoException, mediaType);
     }
 
 }

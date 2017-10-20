@@ -28,7 +28,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -169,13 +168,13 @@ public class SCIMRoot extends ModuleRoot {
     }
 
     @Override
-    public Object handleError(WebApplicationException e) {
-        if (e instanceof WebSecurityException) {
+    public Object handleError(Throwable t) {
+        if (t instanceof WebSecurityException) {
             return Response.status(401).entity("not authorized").type("text/plain").build();
-        } else if (e instanceof WebResourceNotFoundException) {
-            return Response.status(404).entity(e.getMessage()).type("text/plain").build();
+        } else if (t instanceof WebResourceNotFoundException) {
+            return Response.status(404).entity(t.getMessage()).type("text/plain").build();
         } else {
-            return super.handleError(e);
+            return super.handleError(t);
         }
     }
 }

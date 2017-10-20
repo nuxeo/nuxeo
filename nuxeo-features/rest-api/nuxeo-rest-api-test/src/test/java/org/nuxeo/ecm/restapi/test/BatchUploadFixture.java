@@ -20,6 +20,7 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -33,6 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
@@ -406,7 +408,7 @@ public class BatchUploadFixture extends BaseTest {
             json += "}}";
             try (CloseableClientResponse response = getResponse(RequestType.POSTREQUEST,
                     "upload/" + batchId + "/execute/Blob.CreateFromURL", json)) {
-                assertEquals(Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+                assertEquals(SC_FORBIDDEN, response.getStatus());
             }
 
             service = getServiceFor("Administrator", "Administrator");

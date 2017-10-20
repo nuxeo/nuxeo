@@ -629,7 +629,7 @@ public class SearchTest extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.GET, getSavedSearchPath("-1"))) {
             assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals("unknown id: -1", getErrorMessage(node));
+            assertEquals("-1", getErrorMessage(node));
         }
     }
 
@@ -683,7 +683,7 @@ public class SearchTest extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.PUT, getSavedSearchPath("-1"), data)) {
             assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals("unknown id: -1", getErrorMessage(node));
+            assertEquals("-1", getErrorMessage(node));
         }
     }
 

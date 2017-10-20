@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -40,10 +41,10 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
-import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -118,7 +119,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     @SuppressWarnings("unchecked")
-    protected DocumentModelList getQuery(UriInfo uriInfo, String langOrProviderName) throws RestOperationException {
+    protected DocumentModelList getQuery(UriInfo uriInfo, String langOrProviderName) {
         // Fetching all parameters
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         // Look if provider name is given
@@ -247,9 +248,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
                     null);
         }
         if (res.hasError()) {
-            RestOperationException err = new RestOperationException(res.getErrorMessage());
-            err.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            throw err;
+            throw new NuxeoException(res.getErrorMessage(), SC_BAD_REQUEST);
         }
         return res;
     }
@@ -301,7 +300,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
      * @return Document Listing
      */
     @GET
-    public Object doQuery(@Context UriInfo uriInfo) throws RestOperationException {
+    public Object doQuery(@Context UriInfo uriInfo) {
         return getQuery(uriInfo, NXQL);
     }
 
@@ -314,8 +313,8 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
      */
     @GET
     @Path("{langOrProviderName}")
-    public Object doSpecificQuery(@Context UriInfo uriInfo, @PathParam("langOrProviderName") String langOrProviderName)
-            throws RestOperationException {
+    public Object doSpecificQuery(@Context UriInfo uriInfo,
+            @PathParam("langOrProviderName") String langOrProviderName) {
         return getQuery(uriInfo, langOrProviderName);
     }
 

@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.View;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
@@ -72,34 +71,30 @@ public class PermissionService extends DefaultAdapter {
     @POST
     @Path("add")
     public Response postPermission() {
-        try {
-            HttpServletRequest req = ctx.getRequest();
-            String action = req.getParameter("action");
-            String permission = req.getParameter("permission");
-            String username = req.getParameter("user");
+        HttpServletRequest req = ctx.getRequest();
+        String action = req.getParameter("action");
+        String permission = req.getParameter("permission");
+        String username = req.getParameter("user");
 
-            UserManager userManager = Framework.getService(UserManager.class);
-            NuxeoPrincipal user = userManager.getPrincipal(username);
-            if (user == null) {
-                NuxeoGroup group = userManager.getGroup(username);
-                if (group == null) {
-                    return Response.status(500).build();
-                }
+        UserManager userManager = Framework.getService(UserManager.class);
+        NuxeoPrincipal user = userManager.getPrincipal(username);
+        if (user == null) {
+            NuxeoGroup group = userManager.getGroup(username);
+            if (group == null) {
+                return Response.status(500).build();
             }
-            ACPImpl acp = new ACPImpl();
-            ACLImpl acl = new ACLImpl(ACL.LOCAL_ACL);
-            acp.addACL(acl);
-            boolean granted = "grant".equals(action);
-            ACE ace = new ACE(username, permission, granted);
-            acl.add(ace);
-            CoreSession session = ctx.getCoreSession();
-            Resource target = getTarget();
-            session.setACP(target.getAdapter(DocumentModel.class).getRef(), acp, false);
-            session.save();
-            return redirect(target.getPath());
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
         }
+        ACPImpl acp = new ACPImpl();
+        ACLImpl acl = new ACLImpl(ACL.LOCAL_ACL);
+        acp.addACL(acl);
+        boolean granted = "grant".equals(action);
+        ACE ace = new ACE(username, permission, granted);
+        acl.add(ace);
+        CoreSession session = ctx.getCoreSession();
+        Resource target = getTarget();
+        session.setACP(target.getAdapter(DocumentModel.class).getRef(), acp, false);
+        session.save();
+        return redirect(target.getPath());
     }
 
     @POST
@@ -111,18 +106,14 @@ public class PermissionService extends DefaultAdapter {
     @GET
     @Path("delete")
     public Response deletePermission() {
-        try {
-            HttpServletRequest req = ctx.getRequest();
-            String permission = req.getParameter("permission");
-            String username = req.getParameter("user");
-            CoreSession session = ctx.getCoreSession();
-            Resource target = getTarget();
-            ACLUtils.removePermission(session, target.getAdapter(DocumentModel.class).getRef(), username, permission);
-            session.save();
-            return redirect(target.getPath());
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
-        }
+        HttpServletRequest req = ctx.getRequest();
+        String permission = req.getParameter("permission");
+        String username = req.getParameter("user");
+        CoreSession session = ctx.getCoreSession();
+        Resource target = getTarget();
+        ACLUtils.removePermission(session, target.getAdapter(DocumentModel.class).getRef(), username, permission);
+        session.save();
+        return redirect(target.getPath());
     }
 
     public List<Permission> getPermissions() {
@@ -136,7 +127,8 @@ public class PermissionService extends DefaultAdapter {
             }
             return permissions;
         } catch (NuxeoException e) {
-            throw WebException.wrap("Failed to get ACLs", e);
+            e.addInfo("Failed to get ACLs");
+            throw e;
         }
     }
 

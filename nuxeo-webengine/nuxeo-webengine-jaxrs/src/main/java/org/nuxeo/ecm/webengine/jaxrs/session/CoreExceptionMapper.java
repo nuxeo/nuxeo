@@ -32,7 +32,9 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 9.3.
  */
+@Deprecated
 public class CoreExceptionMapper implements ExceptionMapper<Throwable> {
 
     protected static final Log log = LogFactory.getLog(CoreExceptionMapper.class);

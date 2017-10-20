@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.workflow.services.CommentsModerationService;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
@@ -68,64 +67,47 @@ public class CommentService extends DefaultAdapter {
         DocumentObject dobj = (DocumentObject) getTarget();
         CoreSession session = dobj.getCoreSession();
         DocumentModel pageDoc = dobj.getDocument();
-        try {
+        DocumentModel comment = session.createDocumentModel("Comment");
+        comment.setPropertyValue("comment:author", session.getPrincipal().getName());
+        comment.setPropertyValue("comment:text", cText);
+        comment.setPropertyValue("comment:creationDate", new Date());
+        comment = createCommentDocument(session, pageDoc, comment);
+        session.save();
+        publishComment(session, pageDoc, comment);
 
-            DocumentModel comment = session.createDocumentModel("Comment");
-            comment.setPropertyValue("comment:author", session.getPrincipal().getName());
-            comment.setPropertyValue("comment:text", cText);
-            comment.setPropertyValue("comment:creationDate", new Date());
-            comment = createCommentDocument(session, pageDoc, comment);
-            session.save();
-            publishComment(session, pageDoc, comment);
-
-            return redirect(getTarget().getPath());
-        } catch (NuxeoException e) {
-            throw WebException.wrap(e);
-        }
+        return redirect(getTarget().getPath());
     }
 
     @GET
     @Path("reject")
     public Response reject() {
-        try {
-            DocumentObject dobj = (DocumentObject) getTarget();
-            CoreSession session = dobj.getCoreSession();
-            DocumentModel pageDoc = dobj.getDocument();
-            FormData form = ctx.getForm();
-            String commentId = form.getString(FormData.PROPERTY);
-            DocumentModel comment = session.getDocument(new IdRef(commentId));
-            rejectComment(session, pageDoc, comment);
-            return redirect(dobj.getPath());
-        } catch (NuxeoException e) {
-            throw WebException.wrap("Failed to reject comment", e);
-        }
+        DocumentObject dobj = (DocumentObject) getTarget();
+        CoreSession session = dobj.getCoreSession();
+        DocumentModel pageDoc = dobj.getDocument();
+        FormData form = ctx.getForm();
+        String commentId = form.getString(FormData.PROPERTY);
+        DocumentModel comment = session.getDocument(new IdRef(commentId));
+        rejectComment(session, pageDoc, comment);
+        return redirect(dobj.getPath());
     }
 
     @GET
     @Path("approve")
     public Response approve() {
-        try {
-            DocumentObject dobj = (DocumentObject) getTarget();
-            CoreSession session = dobj.getCoreSession();
-            DocumentModel pageDoc = dobj.getDocument();
-            FormData form = ctx.getForm();
-            String commentId = form.getString(FormData.PROPERTY);
-            DocumentModel comment = session.getDocument(new IdRef(commentId));
-            approveComent(session, pageDoc, comment);
-            return redirect(dobj.getPath());
-        } catch (NuxeoException e) {
-            throw WebException.wrap("Failed to approve comment", e);
-        }
+        DocumentObject dobj = (DocumentObject) getTarget();
+        CoreSession session = dobj.getCoreSession();
+        DocumentModel pageDoc = dobj.getDocument();
+        FormData form = ctx.getForm();
+        String commentId = form.getString(FormData.PROPERTY);
+        DocumentModel comment = session.getDocument(new IdRef(commentId));
+        approveComent(session, pageDoc, comment);
+        return redirect(dobj.getPath());
     }
 
     @GET
     @Path("delete")
     public Response remove() {
-        try {
-            return deleteComment();
-        } catch (NuxeoException e) {
-            throw WebException.wrap("Failed to delete comment", e);
-        }
+        return deleteComment();
     }
 
     @DELETE

@@ -21,23 +21,23 @@
 
 package org.nuxeo.ecm.webengine.model.exceptions;
 
-import javax.ws.rs.core.Response;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class WebResourceNotFoundException extends WebException {
+public class WebResourceNotFoundException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 
     public WebResourceNotFoundException(String message) {
-        super(message, Response.Status.NOT_FOUND.getStatusCode());
+        super(message, SC_NOT_FOUND);
     }
 
     public WebResourceNotFoundException(String message, Throwable cause) {
-        super(message, cause, Response.Status.NOT_FOUND.getStatusCode());
+        super(message, cause, SC_NOT_FOUND);
     }
 
 }
