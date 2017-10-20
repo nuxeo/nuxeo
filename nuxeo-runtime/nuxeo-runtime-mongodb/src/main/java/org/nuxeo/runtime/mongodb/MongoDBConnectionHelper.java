@@ -25,13 +25,11 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bson.Document;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
 import com.mongodb.ServerAddress;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 
@@ -95,24 +93,15 @@ public class MongoDBConnectionHelper {
     }
 
     /**
-     * Retrieve a collection from the MongoDB server
-     */
-    public static MongoCollection<Document> getCollection(MongoClient mongoClient, String dbname, String collection) {
-        MongoDatabase db = getDatabase(mongoClient, dbname);
-        return db.getCollection(collection);
-    }
-
-    /**
      * Check if the collection exists and if it is not empty
      *
-     * @param mongoClient the Mongo client
-     * @param dbname the database name
+     * @param mongoDatabase the Mongo database
      * @param collection the collection name
      * @return true if the collection exists and not empty, false otherwise
      */
-    public static boolean hasCollection(MongoClient mongoClient, String dbname, String collection) {
-        MongoIterable<String> collections = getDatabase(mongoClient, dbname).listCollectionNames();
+    public static boolean hasCollection(MongoDatabase mongoDatabase, String collection) {
+        MongoIterable<String> collections = mongoDatabase.listCollectionNames();
         boolean found = StreamSupport.stream(collections.spliterator(), false).anyMatch(collection::equals);
-        return found && getCollection(mongoClient, dbname, collection).count() > 0;
+        return found && mongoDatabase.getCollection(collection).count() > 0;
     }
 }

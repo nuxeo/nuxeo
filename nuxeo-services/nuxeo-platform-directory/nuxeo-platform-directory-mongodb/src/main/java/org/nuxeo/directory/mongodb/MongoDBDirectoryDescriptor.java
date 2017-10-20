@@ -20,7 +20,6 @@
 
 package org.nuxeo.directory.mongodb;
 
-import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
@@ -31,22 +30,8 @@ import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 @XObject("directory")
 public class MongoDBDirectoryDescriptor extends BaseDirectoryDescriptor {
 
-    @XNode("serverUrl")
-    public String serverUrl;
-
-    @XNode("databaseName")
-    public String databaseName;
-
     @XNodeList(value = "references/reference", type = MongoDBReferenceDescriptor[].class, componentType = MongoDBReferenceDescriptor.class)
     public MongoDBReferenceDescriptor[] mongodbReferences;
-
-    public String getServerUrl() {
-        return serverUrl;
-    }
-
-    public String getDatabaseName() {
-        return databaseName;
-    }
 
     public MongoDBReferenceDescriptor[] getMongoDBReferences() {
         return mongodbReferences;
@@ -61,12 +46,6 @@ public class MongoDBDirectoryDescriptor extends BaseDirectoryDescriptor {
     }
 
     protected void merge(MongoDBDirectoryDescriptor other) {
-        if (other.serverUrl != null) {
-            serverUrl = other.serverUrl;
-        }
-        if (other.databaseName != null) {
-            databaseName = other.databaseName;
-        }
         if (other.mongodbReferences != null && mongodbReferences.length != 0) {
             mongodbReferences = other.mongodbReferences;
         }

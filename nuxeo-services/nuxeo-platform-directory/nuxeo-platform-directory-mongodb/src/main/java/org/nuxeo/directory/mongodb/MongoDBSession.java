@@ -54,12 +54,14 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.PasswordHelper;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
-import com.mongodb.MongoClient;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.Updates;
@@ -73,14 +75,21 @@ import com.mongodb.client.result.UpdateResult;
  */
 public class MongoDBSession extends BaseSession {
 
-    protected String dbName;
+    /**
+     * Prefix used to retrieve a MongoDB connection from {@link MongoDBConnectionService}.
+     * <p />
+     * The connection id will be {@code directory/[DIRECTORY_NAME]}.
+     */
+    public static final String DIRECTORY_CONNECTION_PREFIX = "directory/";
+
+    protected final MongoDatabase database;
 
     protected String countersCollectionName;
 
     public MongoDBSession(MongoDBDirectory directory) {
         super(directory, MongoDBReference.class);
-        MongoDBDirectoryDescriptor desc = directory.getDescriptor();
-        dbName = desc.getDatabaseName();
+        MongoDBConnectionService mongoService = Framework.getService(MongoDBConnectionService.class);
+        database = mongoService.getDatabase(DIRECTORY_CONNECTION_PREFIX + directory.getDescriptor().name);
         countersCollectionName = directory.getCountersCollectionName();
     }
 
@@ -376,7 +385,7 @@ public class MongoDBSession extends BaseSession {
      * @return the MongoDB collection
      */
     public MongoCollection<Document> getCollection(String collection) {
-        return MongoDBConnectionHelper.getCollection(getClient(), dbName, collection);
+        return database.getCollection(collection);
     }
 
     /**
@@ -395,7 +404,7 @@ public class MongoDBSession extends BaseSession {
      * @return true if the server has the collection, false otherwise
      */
     public boolean hasCollection(String collection) {
-        return MongoDBConnectionHelper.hasCollection(getClient(), dbName, collection);
+        return MongoDBConnectionHelper.hasCollection(database, collection);
     }
 
     protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
@@ -405,10 +414,6 @@ public class MongoDBSession extends BaseSession {
         }
         String id = String.valueOf(fieldMap.get(idFieldName));
         return createEntryModel(null, schemaName, id, fieldMap, isReadOnly());
-    }
-
-    protected MongoClient getClient() {
-        return getDirectory().getClient();
     }
 
 }
