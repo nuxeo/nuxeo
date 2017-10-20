@@ -137,7 +137,7 @@ nuxeo.stream.work.log.config=work
 nuxeo.stream.work.over.provisioning.factor=3
 
 # Stream AuditWriter
-nuxeo.stream.audit.enabled=false
+nuxeo.stream.audit.enabled=true
 nuxeo.stream.audit.log.config=audit
-nuxeo.stream.audit.batch.size=20
-nuxeo.stream.audit.batch.threshold.ms=300
+nuxeo.stream.audit.batch.size=25
+nuxeo.stream.audit.batch.threshold.ms=500
