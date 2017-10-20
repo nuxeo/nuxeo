@@ -20,17 +20,16 @@
 
 package org.nuxeo.directory.mongodb;
 
-import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.CREATE_TABLE_POLICY_ALWAYS;
-import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.CREATE_TABLE_POLICY_ON_MISSING_COLUMNS;
 import static org.nuxeo.directory.mongodb.MongoDBSerializationHelper.MONGODB_ID;
 import static org.nuxeo.directory.mongodb.MongoDBSerializationHelper.MONGODB_SEQ;
+import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.CREATE_TABLE_POLICY_ALWAYS;
+import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.CREATE_TABLE_POLICY_ON_MISSING_COLUMNS;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.mongodb.MongoClient;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.AbstractDirectory;
@@ -39,7 +38,6 @@ import org.nuxeo.ecm.directory.DirectoryCSVLoader;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
 
 import com.mongodb.client.MongoCollection;
 
@@ -54,8 +52,6 @@ public class MongoDBDirectory extends AbstractDirectory {
 
     protected boolean initialized;
 
-    protected MongoClient client;
-
     public MongoDBDirectory(MongoDBDirectoryDescriptor descriptor) {
         super(descriptor, MongoDBReference.class);
 
@@ -66,8 +62,6 @@ public class MongoDBDirectory extends AbstractDirectory {
         fallbackOnDefaultCache();
 
         countersCollectionName = getName() + ".counters";
-
-        client = MongoDBConnectionHelper.newMongoClient(descriptor.getServerUrl());
     }
 
     @Override
@@ -147,11 +141,6 @@ public class MongoDBDirectory extends AbstractDirectory {
     @Override
     public void shutdown() {
         super.shutdown();
-        client.close();
-    }
-
-    protected MongoClient getClient() {
-        return client;
     }
 
 }

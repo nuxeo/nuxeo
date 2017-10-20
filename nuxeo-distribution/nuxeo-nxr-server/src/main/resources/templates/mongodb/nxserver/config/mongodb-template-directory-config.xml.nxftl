@@ -8,8 +8,6 @@
   <extension target="org.nuxeo.directory.mongodb.MongoDBDirectoryFactory" point="directories">
 
     <directory name="template-directory" template="true">
-      <serverUrl>${nuxeo.mongodb.server}</serverUrl>
-      <databaseName>${nuxeo.mongodb.dbname}</databaseName>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 

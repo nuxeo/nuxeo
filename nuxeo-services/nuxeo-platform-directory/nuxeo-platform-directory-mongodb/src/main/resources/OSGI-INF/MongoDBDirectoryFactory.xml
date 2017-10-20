@@ -3,6 +3,7 @@
 
   <implementation class="org.nuxeo.directory.mongodb.MongoDBDirectoryFactory"/>
 
+  <require>org.nuxeo.runtime.mongodb.MongoDBComponent</require>
   <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
   <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
 
@@ -12,18 +13,14 @@
 
   <extension-point name="directories">
     <documentation>
-      This extension point can be used to register new MongoDB-based
-      directories. The
-      extension can contain any number of directories
-      declarations of the form:
+      This extension point can be used to register new MongoDB-based directories. The extension can contain any number
+      of directories declarations of the form:
       <code>
         <directory name="userDirectory">
           <schema>vocabulary</schema>
           <types>
             <type>system</type>
           </types>
-          <serverUrl>mongodb://localhost:27017</serverUrl>
-          <databaseName>nuxeo</databaseName>
           <idField>username</idField>
           <passwordField>password</passwordField>
           <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
@@ -48,6 +45,9 @@
           </permissions>
         </directory>
       </code>
+      If you want to customize the MongoDB connection used in the directory, you can contribute a new connection
+      configuration to MongoDBComponent with id 'directory/[directory@name]'. In the example above the id will be
+      'directory/userDirectory'
     </documentation>
 
     <object class="org.nuxeo.directory.mongodb.MongoDBDirectoryDescriptor"/>
