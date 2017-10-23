@@ -452,8 +452,8 @@ public interface PageProvider<T> extends Serializable {
     void setHighlights(List<String> highlights);
 
     /**
-     * Limit of number of results beyond which the page provider may not able to compute {@link #getResultsCount())} or
-     * navigate.
+     * Limit of number of results beyond which the page provider may not be able to compute {@link #getResultsCount())}
+     * or navigate.
      * <p>
      * Requesting results beyond this limit may result in error. When {@link #getResultsCount())} is negative, it means
      * there may be more results than this limit.
