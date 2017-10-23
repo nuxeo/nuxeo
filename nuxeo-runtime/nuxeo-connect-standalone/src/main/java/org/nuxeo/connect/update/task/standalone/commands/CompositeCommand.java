@@ -90,4 +90,12 @@ public class CompositeCommand extends AbstractCommand {
         return commands.isEmpty();
     }
 
+    /**
+     * @since 9.3
+     */
+    public CompositeCommand combine(CompositeCommand cc) {
+        commands.addAll(cc.commands);
+        return this;
+    }
+
 }

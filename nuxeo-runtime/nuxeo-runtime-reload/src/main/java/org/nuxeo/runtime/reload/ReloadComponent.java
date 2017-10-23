@@ -289,6 +289,10 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                                                               .filter(DevMutableClassLoader.class::isInstance)
                                                               .map(DevMutableClassLoader.class::cast);
 
+        watch.start("flush");
+        flush();
+        watch.stop("flush");
+
         // Suspend current transaction
         Transaction tx = TransactionHelper.suspendTransaction();
 

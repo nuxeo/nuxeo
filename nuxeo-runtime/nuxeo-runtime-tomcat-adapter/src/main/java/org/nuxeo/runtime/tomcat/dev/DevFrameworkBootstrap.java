@@ -61,7 +61,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
 
     public static final String WEB_RESOURCES_NAME = "org.nuxeo:type=sdk,name=web-resources";
 
-    public static final String USE_FORMER_HOT_RELOAD = "nuxeo.hotreload.former.mechanism";
+    public static final String USE_COMPAT_HOT_RELOAD = "nuxeo.hotreload.compat.mechanism";
 
     protected static final String DEV_BUNDLES_CP = "dev-bundles/*";
 
@@ -81,7 +81,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
 
     protected final File webclasses;
 
-    protected boolean formerHotReload;
+    protected boolean compatHotReload;
 
     public DevFrameworkBootstrap(MutableClassLoader cl, File home) throws IOException {
         super(cl, home);
@@ -100,7 +100,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
         super.start(cl);
         ClassLoader loader = (ClassLoader) this.loader;
         reloadServiceInvoker = new ReloadServiceInvoker(loader);
-        formerHotReload = new FrameworkInvoker(loader).isBooleanPropertyTrue(USE_FORMER_HOT_RELOAD);
+        compatHotReload = new FrameworkInvoker(loader).isBooleanPropertyTrue(USE_COMPAT_HOT_RELOAD);
         writeComponentIndex();
         postloadDevBundles(); // start dev bundles if any
         String installReloadTimerOption = (String) env.get(INSTALL_RELOAD_TIMER);
@@ -170,7 +170,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
      */
     @Deprecated
     protected void preloadDevBundles() throws IOException {
-        if (!formerHotReload) {
+        if (!compatHotReload) {
             return;
         }
         if (!devBundlesFile.isFile()) {
@@ -190,7 +190,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
      */
     @Deprecated
     protected void postloadDevBundles() throws ReflectiveOperationException {
-        if (!formerHotReload) {
+        if (!compatHotReload) {
             return;
         }
         if (devBundles.length > 0) {
@@ -227,7 +227,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     protected synchronized void reloadDevBundles(DevBundle[] bundles) throws ReflectiveOperationException, IOException {
         long begin = System.currentTimeMillis();
 
-        if (formerHotReload) {
+        if (compatHotReload) {
             if (devBundles.length > 0) { // clear last context
                 try {
                     reloadServiceInvoker.hotUndeployBundles(devBundles);
@@ -332,7 +332,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     }
 
     /**
-     * @deprecated since 9.3 not needed anymore, here for backward compatibility, see {@link #formerHotReload}
+     * @deprecated since 9.3 not needed anymore, here for backward compatibility, see {@link #compatHotReload}
      */
     @Deprecated
     protected void clearClassLoader() {
@@ -342,7 +342,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     }
 
     /**
-     * @deprecated since 9.3 not needed anymore, here for backward compatibility, see {@link #formerHotReload}
+     * @deprecated since 9.3 not needed anymore, here for backward compatibility, see {@link #compatHotReload}
      */
     @Deprecated
     protected void installNewClassLoader(DevBundle[] bundles) {
@@ -397,7 +397,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     }
 
     /**
-     * @deprecated since 9.3 not needed anymore, here for backward compatibility, see {@link #formerHotReload}
+     * @deprecated since 9.3 not needed anymore, here for backward compatibility, see {@link #compatHotReload}
      */
     @Deprecated
     public void installSeamClasses(File[] dirs) throws IOException {
@@ -411,7 +411,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     }
 
     /**
-     * @deprecated since 9.3 not needed anymore, here for backward compatibility, see {@link #formerHotReload}
+     * @deprecated since 9.3 not needed anymore, here for backward compatibility, see {@link #compatHotReload}
      */
     @Deprecated
     public void installResourceBundleFragments(List<File> files) throws IOException {
@@ -430,7 +430,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     }
 
     /**
-     * @deprecated since 9.3 not needed anymore, here for backward compatibility, see {@link #formerHotReload}
+     * @deprecated since 9.3 not needed anymore, here for backward compatibility, see {@link #compatHotReload}
      */
     @Deprecated
     protected static String resourceBundleName(File file) {

@@ -22,6 +22,9 @@ package org.nuxeo.ecm.admin.operation;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,6 +44,7 @@ import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
+import org.nuxeo.ecm.admin.runtime.ReloadHelper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -52,9 +56,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import org.nuxeo.runtime.reload.ReloadService;
 
 /**
  * Operation to trigger a Hot reload of the Studio Snapshot package. You must be an administrator to trigger it.
@@ -171,6 +173,12 @@ public class HotReloadStudioSnapshot {
             }
         }
 
+        boolean useCompatReload = Framework.isBooleanPropertyTrue(ReloadService.USE_COMPAT_HOT_RELOAD);
+        if (!useCompatReload) {
+            log.info("Use hot reload update mechanism");
+            ReloadHelper.hotReloadPackage(remotePkg.getId());
+            return jsonHelper(success, "Studio package installed.", null);
+        }
         // Install
         try {
             PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
