@@ -187,6 +187,13 @@ public class DBSDocument extends BaseDocument<State> {
 
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 
+    public static final String PROP_UID_MAJOR_VERSION = "uid:major_version";
+
+    public static final String PROP_UID_MINOR_VERSION = "uid:minor_version";
+
+    public static final String PROP_MAJOR_VERSION = "major_version";
+
+    public static final String PROP_MINOR_VERSION = "minor_version";
     protected final String id;
 
     protected final DBSDocumentState docState;
@@ -840,9 +847,9 @@ public class DBSDocument extends BaseDocument<State> {
     @Override
     protected String internalName(String name) {
         switch (name) {
-        case "major_version":
+        case PROP_MAJOR_VERSION:
             return KEY_MAJOR_VERSION;
-        case "minor_version":
+        case PROP_MINOR_VERSION:
             return KEY_MINOR_VERSION;
         }
         return name;
