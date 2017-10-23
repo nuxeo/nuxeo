@@ -870,12 +870,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 cursor.sort(orderBy);
             }
             projections = new ArrayList<>();
+            DBSStateFlattener flattener = new DBSStateFlattener(builder.propertyKeys);
             for (DBObject ob : cursor) {
                 State state = bsonToState(ob);
                 if (manualProjection) {
                     projections.addAll(evaluator.matches(state));
                 } else {
-                    projections.add(DBSStateFlattener.flatten(state));
+                    projections.add(flattener.flatten(state));
                 }
             }
             if (countUpTo == -1) {

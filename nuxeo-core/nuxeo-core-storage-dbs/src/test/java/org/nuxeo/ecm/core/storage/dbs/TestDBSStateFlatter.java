@@ -27,6 +27,8 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
@@ -38,7 +40,7 @@ public class TestDBSStateFlatter {
     @Test
     public void testFlatterWithEmptyState() {
         State state = new State();
-        Map<String, Serializable> flattened = DBSStateFlattener.flatten(state);
+        Map<String, Serializable> flattened = new DBSStateFlattener().flatten(state);
         assertNotNull(flattened);
         assertTrue(flattened.isEmpty());
     }
@@ -47,7 +49,7 @@ public class TestDBSStateFlatter {
     public void testFlatterWithPropertyNotReturnedToCaller() {
         State state = new State();
         state.put(KEY_ACP, "whatever");
-        Map<String, Serializable> flattened = DBSStateFlattener.flatten(state);
+        Map<String, Serializable> flattened = new DBSStateFlattener().flatten(state);
         assertNotNull(flattened);
         assertTrue(flattened.isEmpty());
     }
@@ -56,7 +58,7 @@ public class TestDBSStateFlatter {
     public void testFlatterWithECMId() {
         State state = new State();
         state.put(KEY_ID, "ID");
-        Map<String, Serializable> flattened = DBSStateFlattener.flatten(state);
+        Map<String, Serializable> flattened = new DBSStateFlattener().flatten(state);
         assertNotNull(flattened);
         assertEquals("ID", flattened.get(NXQL.ECM_UUID));
     }
@@ -65,7 +67,7 @@ public class TestDBSStateFlatter {
     public void testFlatterWithRegularProperty() {
         State state = new State();
         state.put("color", "black");
-        Map<String, Serializable> flattened = DBSStateFlattener.flatten(state);
+        Map<String, Serializable> flattened = new DBSStateFlattener().flatten(state);
         assertNotNull(flattened);
         assertEquals(1, flattened.size());
         assertEquals("black", flattened.get("color"));
@@ -77,7 +79,7 @@ public class TestDBSStateFlatter {
         State subState = new State();
         subState.put("color", "black");
         state.put("sub", subState);
-        Map<String, Serializable> flattened = DBSStateFlattener.flatten(state);
+        Map<String, Serializable> flattened = new DBSStateFlattener().flatten(state);
         assertNotNull(flattened);
         assertEquals("black", flattened.get("sub/color"));
     }
@@ -86,7 +88,7 @@ public class TestDBSStateFlatter {
     public void testFlatterWithArray() {
         State state = new State();
         state.put("colors", new String[] { "black", "white" });
-        Map<String, Serializable> flattened = DBSStateFlattener.flatten(state);
+        Map<String, Serializable> flattened = new DBSStateFlattener().flatten(state);
         assertNotNull(flattened);
         assertEquals(2, flattened.size());
         assertEquals("black", flattened.get("colors/0"));
@@ -94,10 +96,24 @@ public class TestDBSStateFlatter {
     }
 
     @Test
+    public void testFlatterWithMappings() {
+        State state = new State();
+        Map<String, String> mappings = new HashMap<>();
+        mappings.put("king", "queen");
+        state.put("king", "kong");
+        state.put("ping", "pong");
+        Map<String, Serializable> flattened = new DBSStateFlattener(mappings).flatten(state);
+        assertNotNull(flattened);
+        assertEquals(2, flattened.size());
+        assertEquals("kong", flattened.get("queen"));
+        assertEquals("pong", flattened.get("ping"));
+    }
+
+    @Test
     public void testFlatterWithListOfPrimitive() {
         State state = new State();
         state.put("colors", new ArrayList<>(Arrays.asList("black", "white")));
-        Map<String, Serializable> flattened = DBSStateFlattener.flatten(state);
+        Map<String, Serializable> flattened = new DBSStateFlattener().flatten(state);
         assertNotNull(flattened);
         assertEquals(2, flattened.size());
         assertEquals("black", flattened.get("colors/0"));
@@ -112,7 +128,7 @@ public class TestDBSStateFlatter {
         State subState2 = new State();
         subState2.put("main", "white");
         state.put("colors", new ArrayList<>(Arrays.asList(subState1, subState2)));
-        Map<String, Serializable> flattened = DBSStateFlattener.flatten(state);
+        Map<String, Serializable> flattened = new DBSStateFlattener().flatten(state);
         assertNotNull(flattened);
         assertEquals(2, flattened.size());
         assertEquals("black", flattened.get("colors/0/main"));

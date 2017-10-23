@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.storage.dbs;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PREFIX;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,18 +37,37 @@ import org.nuxeo.ecm.core.storage.State;
  */
 public class DBSStateFlattener {
 
-    public static Map<String, Serializable> flatten(State state) {
+    protected final Map<String, String> keyMappings;
+
+    public DBSStateFlattener() {
+        this.keyMappings = Collections.emptyMap();
+    }
+
+    public DBSStateFlattener(Map<String, String> keyMappings) {
+        this.keyMappings = keyMappings != null ? keyMappings : Collections.emptyMap();
+    }
+
+    /**
+     * Flattens with optional property key mappings.
+     * @param state state
+     * @return flattened result
+     * @since 9.3
+     */
+    public Map<String, Serializable> flatten(State state) {
         Map<String, Serializable> map = new HashMap<>();
         flatten(map, state, null);
         return map;
     }
 
-    private static void flatten(Map<String, Serializable> map, State state, String prefix) {
+    protected void flatten(Map<String, Serializable> map, State state, String prefix) {
         for (Entry<String, Serializable> en : state.entrySet()) {
             String key = en.getKey();
             Serializable value = en.getValue();
             String name;
-            if (key.startsWith(KEY_PREFIX)) {
+            String realName = keyMappings.get(key);
+            if (realName != null) {
+                name = realName;
+            } else if (key.startsWith(KEY_PREFIX)) {
                 name = DBSSession.convToNXQL(key);
                 if (name == null) {
                     // present in state but not returned to caller

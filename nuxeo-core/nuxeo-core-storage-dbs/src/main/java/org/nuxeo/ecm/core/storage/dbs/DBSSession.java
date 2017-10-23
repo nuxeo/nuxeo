@@ -1875,6 +1875,12 @@ public class DBSSession implements Session {
             return KEY_FULLTEXT_BINARY;
         case NXQL.ECM_ACL:
             return KEY_ACP;
+        case DBSDocument.PROP_UID_MAJOR_VERSION:
+        case DBSDocument.PROP_MAJOR_VERSION:
+            return DBSDocument.KEY_MAJOR_VERSION;
+        case DBSDocument.PROP_UID_MINOR_VERSION:
+        case DBSDocument.PROP_MINOR_VERSION:
+            return DBSDocument.KEY_MINOR_VERSION;
         case NXQL.ECM_FULLTEXT:
         case NXQL.ECM_TAG:
             throw new UnsupportedOperationException(name);
