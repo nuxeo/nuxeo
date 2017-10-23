@@ -376,12 +376,13 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             ResultSequence rs = session.submitRequest(request);
 
             List<Map<String, Serializable>> projections = new ArrayList<>(limit);
+            DBSStateFlattener flattener = new DBSStateFlattener();
             for (String rsItem : rs.asStrings()) {
                 State state = MarkLogicStateDeserializer.deserialize(rsItem);
                 if (manualProjection) {
                     projections.addAll(evaluator.matches(state));
                 } else {
-                    projections.add(DBSStateFlattener.flatten(state));
+                    projections.add(flattener.flatten(state));
                 }
             }
             long totalSize;
