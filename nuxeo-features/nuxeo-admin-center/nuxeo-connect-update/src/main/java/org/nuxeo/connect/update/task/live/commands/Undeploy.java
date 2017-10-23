@@ -19,7 +19,9 @@
 package org.nuxeo.connect.update.task.live.commands;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,6 +30,7 @@ import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.task.standalone.commands.UndeployPlaceholder;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.reload.ReloadContext;
 import org.nuxeo.runtime.reload.ReloadService;
 import org.osgi.framework.BundleException;
 
@@ -50,6 +53,10 @@ public class Undeploy extends UndeployPlaceholder {
         super(file);
     }
 
+    /**
+     * @deprecated since 9.3, reload mechanism has changed, keep it for backward compatibility
+     */
+    @Deprecated
     protected void undeployFile(File file, ReloadService service) throws PackageException {
         String name = service.getOSGIBundleName(file);
         if (name == null) {
@@ -63,6 +70,10 @@ public class Undeploy extends UndeployPlaceholder {
         }
     }
 
+    /**
+     * @deprecated since 9.3, reload mechanism has changed, keep it for backward compatibility
+     */
+    @Deprecated
     protected void undeployDirectory(File dir, ReloadService service) throws PackageException {
         File[] files = dir.listFiles();
         if (files != null) {
@@ -78,6 +89,33 @@ public class Undeploy extends UndeployPlaceholder {
             log.warn("Can't undeploy file " + file + ". File is missing.");
             return null;
         }
+        boolean useCompatReload = Framework.isBooleanPropertyTrue(ReloadService.USE_COMPAT_HOT_RELOAD);
+        if (useCompatReload) {
+            doCompatRun(task);
+            return new Deploy(file);
+        }
+        try {
+            ReloadService srv = Framework.getLocalService(ReloadService.class);
+            if (file.isDirectory()) {
+                _undeployDirectory(file, srv);
+            } else {
+                _undeployFile(file, srv);
+            }
+        } catch (BundleException e) {
+            // ignore uninstall -> this may break the entire chain. Usually
+            // uninstall is done only when rollbacking or uninstalling => force
+            // restart required
+            task.setRestartRequired(true);
+            throw new PackageException("Failed to undeploy bundle " + file, e);
+        }
+        return new Deploy(file);
+    }
+
+    /**
+     * @deprecated since 9.3, reload mechanism has changed, keep it for backward compatibility
+     */
+    @Deprecated
+    protected void doCompatRun(Task task) throws PackageException {
         try {
             ReloadService srv = Framework.getLocalService(ReloadService.class);
             if (file.isDirectory()) {
@@ -92,7 +130,27 @@ public class Undeploy extends UndeployPlaceholder {
             task.setRestartRequired(true);
             throw new PackageException("Failed to undeploy bundle " + file, e);
         }
-        return new Deploy(file);
+    }
+
+    protected void _undeployFile(File file, ReloadService service) throws BundleException {
+        String name = service.getOSGIBundleName(file);
+        if (name == null) {
+            // not an OSGI bundle => ignore
+            return;
+        }
+        service.reloadBundles(new ReloadContext().undeploy(name));
+    }
+
+    protected void _undeployDirectory(File dir, ReloadService service) throws BundleException {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            ReloadContext reloadContext = new ReloadContext();
+            Arrays.stream(files)
+                  .map(service::getOSGIBundleName)
+                  .filter(Objects::nonNull)
+                  .forEach(reloadContext::undeploy);
+            service.reloadBundles(reloadContext);
+        }
     }
 
 }

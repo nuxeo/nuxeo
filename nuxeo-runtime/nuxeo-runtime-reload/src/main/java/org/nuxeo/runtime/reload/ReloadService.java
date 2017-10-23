@@ -52,6 +52,15 @@ public interface ReloadService extends TimestampedService {
     String RELOAD_SEAM_EVENT_ID = "reloadSeamComponents";
 
     /**
+     * This property allows to use the former way to hot reload Nuxeo server.
+     * <p/>
+     * The property and the former mechanism will be removed in the next LTS version.
+     *
+     * @since 9.3
+     */
+    String USE_COMPAT_HOT_RELOAD = "nuxeo.hotreload.compat.mechanism";
+
+    /**
      * Sends a runtime event with id {@link #RELOAD_EVENT_ID} so that listeners can be notified that a reload has been
      * done.
      * <p>

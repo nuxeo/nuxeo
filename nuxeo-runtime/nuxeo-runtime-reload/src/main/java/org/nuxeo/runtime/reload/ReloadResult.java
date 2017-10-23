@@ -19,8 +19,10 @@
  */
 package org.nuxeo.runtime.reload;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.osgi.framework.Bundle;
 
@@ -47,6 +49,14 @@ public class ReloadResult {
 
     public List<Bundle> deployedBundles() {
         return deployedBundles;
+    }
+
+    public Stream<Bundle> deployedBundlesAsStream() {
+        return deployedBundles().stream();
+    }
+
+    public Stream<File> deployedFilesAsStream() {
+        return deployedBundlesAsStream().map(Bundle::getLocation).map(File::new);
     }
 
     public ReloadResult merge(ReloadResult result) {

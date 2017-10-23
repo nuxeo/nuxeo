@@ -218,4 +218,11 @@ public class Update extends AbstractCommand {
         return new DeployPlaceholder(file);
     }
 
+    /**
+     * @since 9.3
+     */
+    public File getFile() {
+        return file;
+    }
+
 }

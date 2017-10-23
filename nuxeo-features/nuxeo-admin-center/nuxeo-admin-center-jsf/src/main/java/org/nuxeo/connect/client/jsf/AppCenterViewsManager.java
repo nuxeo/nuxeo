@@ -69,12 +69,15 @@ import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.ecm.admin.AdminViewManager;
 import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
+import org.nuxeo.ecm.admin.runtime.ReloadHelper;
 import org.nuxeo.ecm.admin.setup.SetupWizardActionBean;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.seam.NuxeoSeamHotReloadContextKeeper;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.util.Watch;
 import org.nuxeo.runtime.util.Watch.TimeInterval;
@@ -467,9 +470,44 @@ public class AppCenterViewsManager implements Serializable {
 
             // Effective install
             if (Framework.isDevModeSet()) {
-                Watch watch = new Watch().start();
+                hotReloadPackage();
+            } else {
+                InstallAfterRestart.addPackageForInstallation(packageId);
+                setStatus(SnapshotStatus.restartNeeded, null);
+                setupWizardAction.setNeedsRestart(true);
+            }
+        }
+
+        private void hotReloadPackage() {
+            Watch watch = new Watch().start();
+            boolean useCompatReload = Framework.isBooleanPropertyTrue(ReloadService.USE_COMPAT_HOT_RELOAD);
+
+            PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+            try {
+                if (!useCompatReload) {
+                    try {
+                        setStatus(SnapshotStatus.installing, null);
+                        log.info("Use hot reload update mechanism");
+                        ReloadHelper.hotReloadPackage(packageId);
+                        // Refresh state
+                        lastUpdate = pus.getInstallDate(packageId);
+                        setStatus(SnapshotStatus.completed, null);
+                        return;
+                    } catch (NuxeoException e) {
+                        log.error("Error while updating studio snapshot", e);
+                        Throwable cause = e.getCause();
+                        if (cause instanceof ConnectServerError) {
+                            setStatus(SnapshotStatus.error, e.getMessage());
+                        } else if (cause instanceof PackageException) {
+                            setStatus(SnapshotStatus.error, translate("label.studio.update.installation.error", e.getMessage()));
+                        } else if (cause instanceof InterruptedException) {
+                            setStatus(SnapshotStatus.error, translate("label.studio.update.downloading.error", e.getMessage()));
+                            Thread.currentThread().interrupt();
+                            throw e;
+                        }
+                    }
+                }
                 try {
-                    PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
                     LocalPackage pkg = pus.getPackage(packageId);
 
                     // Uninstall and/or remove if needed
@@ -535,26 +573,22 @@ public class AppCenterViewsManager implements Serializable {
                 } catch (PackageException e) {
                     log.error("Error while installing studio snapshot", e);
                     setStatus(SnapshotStatus.error, translate("label.studio.update.installation.error", e.getMessage()));
-                } finally {
-                    watch.stop();
-                    if (log.isInfoEnabled()) {
-                        StringBuilder message = new StringBuilder();
-                        message.append("Hot reload has been done in ")
-                               .append(watch.getTotal().elapsed(TimeUnit.MILLISECONDS))
-                               .append(" ms, detailed steps:");
-                        Stream.of(watch.getIntervals()).filter(TimeInterval::isStopped).forEach(
-                                i -> message.append("\n- ")
-                                            .append(i.getName())
-                                            .append(": ")
-                                            .append(i.elapsed(TimeUnit.MILLISECONDS))
-                                            .append(" ms"));
-                        log.info(message.toString());
-                    }
                 }
-            } else {
-                InstallAfterRestart.addPackageForInstallation(packageId);
-                setStatus(SnapshotStatus.restartNeeded, null);
-                setupWizardAction.setNeedsRestart(true);
+            } finally {
+                watch.stop();
+                if (log.isInfoEnabled()) {
+                    StringBuilder message = new StringBuilder();
+                    message.append("Hot reload has been done in ")
+                           .append(watch.getTotal().elapsed(TimeUnit.MILLISECONDS))
+                           .append(" ms, detailed steps:");
+                    Stream.of(watch.getIntervals()).filter(TimeInterval::isStopped).forEach(
+                            i -> message.append("\n- ")
+                                        .append(i.getName())
+                                        .append(": ")
+                                        .append(i.elapsed(TimeUnit.MILLISECONDS))
+                                        .append(" ms"));
+                    log.info(message.toString());
+                }
             }
         }
 
