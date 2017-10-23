@@ -820,7 +820,11 @@ public class TestFileSystemItemOperations {
                          .execute();
             fail("Move to a non folder item should fail.");
         } catch (Exception e) {
-            assertEquals("Failed to invoke operation: NuxeoDrive.Move", e.getMessage());
+            String expectedMessage = String.format(
+                    "Failed to invoke operation: NuxeoDrive.Move, Failed to invoke operation NuxeoDrive.Move, "
+                            + "Cannot move a file system item to file system item with id %s because it is not a folder.",
+                    DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file2.getId());
+            assertEquals(expectedMessage, e.getMessage());
         }
 
         // ------------------------------------------------------
