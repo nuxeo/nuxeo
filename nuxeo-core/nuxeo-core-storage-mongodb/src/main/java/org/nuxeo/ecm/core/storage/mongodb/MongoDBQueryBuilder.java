@@ -27,6 +27,10 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SCORE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.PROP_MAJOR_VERSION;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.PROP_MINOR_VERSION;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.PROP_UID_MAJOR_VERSION;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.PROP_UID_MINOR_VERSION;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_ID;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_META;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_TEXT_SCORE;
@@ -136,6 +140,8 @@ public class MongoDBQueryBuilder {
 
     protected DBObject projection;
 
+    protected Map<String, String> propertyKeys;
+
     boolean projectionHasWildcard;
 
     private boolean fulltextSearchDisabled;
@@ -150,6 +156,7 @@ public class MongoDBQueryBuilder {
         this.orderByClause = orderByClause;
         this.pathResolver = pathResolver;
         this.fulltextSearchDisabled = fulltextSearchDisabled;
+        this.propertyKeys = new HashMap<>();
     }
 
     public void walk() {
@@ -216,6 +223,12 @@ public class MongoDBQueryBuilder {
                 throw new QueryParseException("Projection not supported: " + op);
             }
             FieldInfo fieldInfo = walkReference((Reference) op);
+            String propertyField = fieldInfo.prop;
+            if (!propertyField.equals(NXQL.ECM_UUID) &&
+                !propertyField.equals(fieldInfo.projectionField) &&
+                !propertyField.contains("/")) {
+                propertyKeys.put(fieldInfo.projectionField, propertyField);
+            }
             projection.put(fieldInfo.projectionField, ONE);
             if (fieldInfo.hasWildcard) {
                 projectionHasWildcard = true;
@@ -1009,6 +1022,12 @@ public class MongoDBQueryBuilder {
                 }
             }
             Type type = field.getType();
+            if (PROP_UID_MAJOR_VERSION.equals(prop) || PROP_UID_MINOR_VERSION.equals(prop)
+                 || PROP_MAJOR_VERSION.equals(prop) || PROP_MINOR_VERSION.equals(prop)) {
+                String fieldName = DBSSession.convToInternal(prop);
+                return new FieldInfo(prop, fieldName, fieldName, fieldName, type, true);
+            }
+
             // canonical name
             parts[0] = field.getName().getPrefixedName();
             // are there wildcards or list indexes?
