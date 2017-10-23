@@ -33,10 +33,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -85,6 +86,7 @@ import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.AbstractAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.BaseLogEntryProvider;
@@ -95,8 +97,6 @@ import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
-import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -318,9 +318,10 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     protected List<LogEntry> buildLogEntries(SearchResponse searchResponse) {
         List<LogEntry> entries = new ArrayList<>(searchResponse.getHits().getHits().length);
+        ObjectMapper mapper = new ObjectMapper();
         for (SearchHit hit : searchResponse.getHits()) {
             try {
-                entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
+                entries.add(mapper.readValue(hit.getSourceAsString(), LogEntryImpl.class));
             } catch (IOException e) {
                 log.error("Error while reading Audit Entry from ES", e);
             }
@@ -341,7 +342,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             return null;
         }
         try {
-            return AuditEntryJSONReader.read(ret.getSourceAsString());
+            return new ObjectMapper().readValue(ret.getSourceAsString(), LogEntryImpl.class);
         } catch (IOException e) {
             throw new NuxeoException("Unable to read Entry for id " + id, e);
         }
@@ -475,10 +476,12 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Indexing log entry: %s", entry));
                 }
+                entry.setLogDate(new Date());
                 OutputStream out = new BytesStreamOutput();
-                JsonGenerator jsonGen = factory.createJsonGenerator(out);
+                JsonGenerator jsonGen = factory.createGenerator(out);
                 XContentBuilder builder = jsonBuilder(out);
-                AuditEntryJSONWriter.asJSON(jsonGen, entry);
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.writeValue(jsonGen, entry);
                 bulkRequest.add(new IndexRequest(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE,
                         String.valueOf(entry.getId())).source(builder));
             }
@@ -723,7 +726,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         if (hits.length > 0) {
             String hit = hits[0].getSourceAsString();
             try {
-                id = AuditEntryJSONReader.read(hit).getId();
+                id = new ObjectMapper().readValue(hit, LogEntryImpl.class).getId();
             } catch (IOException e) {
                 throw new IllegalStateException("Failed to parse audit entry: " + hit, e);
             }
@@ -743,9 +746,10 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         SearchResponse response = esClient.search(request);
         SearchHit[] hits = response.getHits().getHits();
         List<LogEntry> ret = new ArrayList<>(hits.length);
+        ObjectMapper mapper = new ObjectMapper();
         for (SearchHit hit : response.getHits()) {
             try {
-                ret.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
+                ret.add(mapper.readValue(hit.getSourceAsString(), LogEntryImpl.class));
             } catch (IOException e) {
                 throw new IllegalStateException("Failed to parse audit entry: " + hit, e);
             }

@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -36,6 +37,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.comment.CommentProcessorHelper;
+import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
@@ -45,7 +47,6 @@ import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.elasticsearch.audit.ESAuditBackend;
-import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -111,10 +112,10 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
 
         // set total number of hits ?
         setResultsCount(hits.getTotalHits());
-
+        ObjectMapper mapper = new ObjectMapper();
         for (SearchHit hit : hits) {
             try {
-                entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
+                entries.add(mapper.readValue(hit.getSourceAsString(), LogEntryImpl.class));
             } catch (IOException e) {
                 log.error("Error while reading Audit Entry from ES", e);
             }

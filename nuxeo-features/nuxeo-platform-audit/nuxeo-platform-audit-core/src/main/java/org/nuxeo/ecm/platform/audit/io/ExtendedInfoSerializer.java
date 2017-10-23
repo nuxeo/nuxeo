@@ -22,17 +22,19 @@ package org.nuxeo.ecm.platform.audit.io;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.SerializationUtils;
+import org.json.JSONObject;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 
 /**
  * Serializer class for extended info to a JSON object
@@ -45,22 +47,27 @@ public class ExtendedInfoSerializer extends JsonSerializer<ExtendedInfo> {
     public void serialize(ExtendedInfo info, JsonGenerator jg,
             SerializerProvider provider) throws IOException {
 
+        jg.setCodec(new ObjectMapper());
         if (info instanceof ExtendedInfoImpl.DateInfo) {
             ExtendedInfoImpl.DateInfo dateInfo = (ExtendedInfoImpl.DateInfo) info;
-            Date date = dateInfo.getDateValue();
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-            dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-            jg.writeObject(dateFormatter.format(date));
+            DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendInstant(3).toFormatter();
+            Instant instant = dateInfo.getDateValue().toInstant();
+            jg.writeObject(formatter.format(instant));
         } else if (info instanceof ExtendedInfoImpl.BlobInfo) {
             Serializable value = ((ExtendedInfoImpl.BlobInfo) info).getBlobValue();
-            jg.writeObject(serializeToByteArray(value));
-        } else {
+            jg.writeObject(Base64.encodeBase64(SerializationUtils.serialize(value)));
+        } else if (info instanceof ExtendedInfoImpl.StringInfo) {
+            String stringValue = ((ExtendedInfoImpl.StringInfo) info).getStringValue().trim();
+            if ((stringValue.startsWith("{") && stringValue.endsWith("}"))
+                    || (stringValue.startsWith("[") && stringValue.endsWith("]"))) {
+                jg.writeRawValue(JSONObject.quote(stringValue));
+            } else {
+                jg.writeString(stringValue);
+            }
+        }
+        else {
             jg.writeObject(info.getSerializableValue());
         }
-
     }
 
-    protected static byte[] serializeToByteArray(Serializable value) {
-        return Base64.encodeBase64(SerializationUtils.serialize(value));
-    }
 }
