@@ -24,15 +24,15 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.core.util.Base64;
 import org.apache.commons.lang3.SerializationUtils;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 
 /**
@@ -46,16 +46,15 @@ public class ExtendedInfoDeserializer extends JsonDeserializer<ExtendedInfo> {
     public ExtendedInfo deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
 
         ExtendedInfo info;
-        JsonNode node = jp.getCodec().readTree(jp);
+        ObjectMapper mapper = (ObjectMapper) jp.getCodec();
+        JsonNode node = mapper.readTree(jp);
         switch (node.getNodeType()) {
         case STRING:
             String value = node.textValue();
             try {
-                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-                dateFormatter.setLenient(false);
-                Date date = dateFormatter.parse(value);
+                Date date = Date.from(Instant.parse(value));
                 info = new ExtendedInfoImpl.DateInfo(date);
-            } catch (ParseException e) {
+            } catch (DateTimeParseException e) {
                 info = new ExtendedInfoImpl.StringInfo(value);
             }
             break;
@@ -71,16 +70,15 @@ public class ExtendedInfoDeserializer extends JsonDeserializer<ExtendedInfo> {
             }
             break;
         case BINARY:
-            info = new ExtendedInfoImpl.BlobInfo(deserializeFromByteArray(node.binaryValue()));
+            info = new ExtendedInfoImpl.BlobInfo(SerializationUtils.deserialize(Base64.decode(node.binaryValue())));
+            break;
+        case ARRAY:
+            info = new ExtendedInfoImpl.StringInfo(mapper.writeValueAsString(node));
             break;
         default:
             throw new UnsupportedOperationException("Error when deserializing type: " + node.getNodeType());
         }
         return info;
-    }
-
-    protected static Serializable deserializeFromByteArray(byte[] byteArray) {
-        return SerializationUtils.deserialize(Base64.decode(byteArray));
     }
 
 }

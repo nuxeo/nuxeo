@@ -24,7 +24,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -33,10 +37,15 @@ import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -70,12 +79,23 @@ public class LogEntrySerializationTest {
         extendedInfo.put(DOUBLE_INFO, new ExtendedInfoImpl.DoubleInfo(2.0));
         extendedInfo.put(BOOL_INFO, new ExtendedInfoImpl.BooleanInfo(true));
 
-        String inputString = "21-12-2012";
-        Date date = new SimpleDateFormat("dd-MM-yyyy").parse(inputString);
-        extendedInfo.put(DATE_INFO, new ExtendedInfoImpl.DateInfo(date));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        Date date1 = Date.from(
+                LocalDate.parse("21-12-2012", formatter).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        extendedInfo.put(DATE_INFO, new ExtendedInfoImpl.DateInfo(date1));
 
-        StringBlob blob = new StringBlob("I'm a blob!");
-        extendedInfo.put(BLOB_INFO, new ExtendedInfoImpl.BlobInfo(blob));
+        Date date2 = Date.from(Instant.parse("2012-01-01T00:00:00.000Z"));
+        extendedInfo.put(DATE_INFO + "2", new ExtendedInfoImpl.DateInfo(date2));
+
+        StringBlob stringBlob = new StringBlob("I'm a blob!");
+        extendedInfo.put(BLOB_INFO, new ExtendedInfoImpl.BlobInfo(stringBlob));
+
+        byte[] bytes = new byte[256];
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = (byte) i;
+        }
+        Blob blob = Blobs.createBlob(bytes);
+        extendedInfo.put(BLOB_INFO + "2", new ExtendedInfoImpl.BlobInfo((Serializable) blob));
 
         entry.setExtendedInfos(extendedInfo);
 
@@ -96,10 +116,18 @@ public class LogEntrySerializationTest {
         assertEquals(2.0, jsonExtendedInfo.get(DOUBLE_INFO).asDouble(), 0);
         assertEquals("this is an info", jsonExtendedInfo.get(STRING_INFO).asText());
         assertEquals(true, jsonExtendedInfo.get(BOOL_INFO).asBoolean());
-        assertEquals("2012-12-21T00:00:00Z", jsonExtendedInfo.get(DATE_INFO).asText());
+        assertEquals(date1.toInstant().toEpochMilli(),
+                Instant.parse(jsonExtendedInfo.get(DATE_INFO).asText()).toEpochMilli());
+        assertEquals(date2.toInstant().toEpochMilli(),
+                Instant.parse(jsonExtendedInfo.get(DATE_INFO + "2").asText()).toEpochMilli());
 
-        Serializable obj = ExtendedInfoDeserializer.deserializeFromByteArray(jsonExtendedInfo.get(BLOB_INFO).binaryValue());
+        Serializable obj = SerializationUtils.deserialize(
+                Base64.decodeBase64(jsonExtendedInfo.get(BLOB_INFO).binaryValue()));
         assertEquals("I'm a blob!", ((StringBlob) obj).getString());
+
+        Serializable obj2 = SerializationUtils.deserialize(
+                Base64.decodeBase64(jsonExtendedInfo.get(BLOB_INFO + "2").binaryValue()));
+        assertArrayEquals(bytes, ((Blob) obj2).getByteArray());
 
     }
 
@@ -120,7 +148,7 @@ public class LogEntrySerializationTest {
         logEntryJson.with("extended").put(STRING_INFO, "myInfo");
         logEntryJson.with("extended").put(DATE_INFO, "2012-01-01T00:00:00Z");
         logEntryJson.with("extended").put("blobInfo",
-                ExtendedInfoSerializer.serializeToByteArray(new StringBlob("I'm a blob!")));
+                Base64.encodeBase64(SerializationUtils.serialize(new StringBlob("I'm a blob!"))));
 
         LogEntryImpl logEntry = mapper.convertValue(logEntryJson, LogEntryImpl.class);
 
@@ -138,6 +166,8 @@ public class LogEntrySerializationTest {
         assertEquals("myInfo", infos.get(STRING_INFO).getSerializableValue());
 
         assertTrue(infos.get(DATE_INFO) instanceof ExtendedInfoImpl.DateInfo);
+        assertEquals(1325376000000L,
+                ((ExtendedInfoImpl.DateInfo) infos.get(DATE_INFO)).getDateValue().toInstant().toEpochMilli());
 
         assertTrue(infos.get(BLOB_INFO) instanceof ExtendedInfoImpl.BlobInfo);
         assertEquals("I'm a blob!", ((StringBlob) infos.get(BLOB_INFO).getSerializableValue()).getString());
