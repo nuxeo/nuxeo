@@ -26,12 +26,11 @@ import java.io.StringWriter;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
@@ -48,14 +47,14 @@ public class WebengineError extends ModuleRoot {
         return getView("index");
     }
 
-    @Path("webException")
-    public Object getWebException() {
-        throw new WebException("Web exception");
+    @Path("nuxeoException")
+    public Object getNuxeoException() {
+        throw new NuxeoException("Nuxeo exception");
     }
 
     @Path("checkedError")
-    public Object getCheckedError() {
-        throw new NuxeoException("CheckedError in webengine");
+    public Object getCheckedError() throws Exception {
+        throw new Exception("CheckedError in webengine");
     }
 
     @Path("uncheckedError")
@@ -68,18 +67,18 @@ public class WebengineError extends ModuleRoot {
         throw new DocumentSecurityException("Security error in webengine");
     }
 
-    public Object handleError(WebApplicationException e) {
+    public Object handleError(Throwable t) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         pw.println("<html>");
         pw.println("<head><title>WebEbgine Error Test</title></head>");
         pw.println("<body>");
         pw.println("WEBENGINE HANDLED ERROR: ");
-        e.printStackTrace(pw);
+        t.printStackTrace(pw);
         pw.println("</body>");
         pw.println("</html>");
         pw.close();
-        return Response.status(500).entity(sw.toString()).build();
+        return Response.status(500).type(MediaType.TEXT_HTML_TYPE).entity(sw.toString()).build();
     }
 
 }

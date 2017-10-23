@@ -18,11 +18,11 @@
  */
 package org.nuxeo.functionaltests;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * Webengine errors tests.
@@ -32,12 +32,12 @@ public class ITWebengineErrorTest extends AbstractTest {
     private static final CharSequence WEBENGINE_ERROR_MESSAGE = "WEBENGINE HANDLED ERROR:";
 
     @Test
-    public void testWebException() throws Exception {
+    public void testNuxeoException() throws Exception {
         driver.get(NUXEO_URL + "/site/error");
-        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("Web Exception"));
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("Nuxeo Exception"));
         String bodyText = AbstractPage.findElementAndWaitUntilEnabled(By.tagName("body")).getText();
         assertTrue(bodyText.contains(WEBENGINE_ERROR_MESSAGE));
-        assertTrue(bodyText.contains("org.nuxeo.ecm.webengine.WebException: Web exception"));
+        assertTrue(bodyText.contains("org.nuxeo.ecm.core.api.NuxeoException: Nuxeo exception"));
     }
 
     @Test
@@ -46,7 +46,7 @@ public class ITWebengineErrorTest extends AbstractTest {
         AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("Checked Error"));
         String bodyText = AbstractPage.findElementAndWaitUntilEnabled(By.tagName("body")).getText();
         assertTrue(bodyText.contains(WEBENGINE_ERROR_MESSAGE));
-        assertTrue(bodyText.contains("org.nuxeo.ecm.webengine.WebException: CheckedError in webengine"));
+        assertTrue(bodyText.contains("java.lang.Exception: CheckedError in webengine"));
     }
 
     @Test
@@ -55,7 +55,7 @@ public class ITWebengineErrorTest extends AbstractTest {
         AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("Unchecked Error"));
         String bodyText = AbstractPage.findElementAndWaitUntilEnabled(By.tagName("body")).getText();
         assertTrue(bodyText.contains(WEBENGINE_ERROR_MESSAGE));
-        assertTrue(bodyText.contains("org.nuxeo.ecm.webengine.WebException: UncheckedError in webengine"));
+        assertTrue(bodyText.contains("java.lang.NullPointerException: UncheckedError in webengine"));
     }
 
     @Test
@@ -64,7 +64,6 @@ public class ITWebengineErrorTest extends AbstractTest {
         AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("Security Error"));
         String bodyText = AbstractPage.findElementAndWaitUntilEnabled(By.tagName("body")).getText();
         assertTrue(bodyText.contains(WEBENGINE_ERROR_MESSAGE));
-        assertTrue(bodyText.contains(
-                "org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException: Security error in webengine"));
+        assertTrue(bodyText.contains("org.nuxeo.ecm.core.api.DocumentSecurityException: Security error in webengine"));
     }
 }

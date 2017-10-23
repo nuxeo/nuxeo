@@ -5,7 +5,7 @@
     <h3>Test errors in webengine</h3>
     <ul>
       <li>
-        <a href="${This.path}/webException/">Web Exception</a>
+        <a href="${This.path}/nuxeoException/">Nuxeo Exception</a>
       </li>
       <li>
         <a href="${This.path}/checkedError/">Checked Error</a>
