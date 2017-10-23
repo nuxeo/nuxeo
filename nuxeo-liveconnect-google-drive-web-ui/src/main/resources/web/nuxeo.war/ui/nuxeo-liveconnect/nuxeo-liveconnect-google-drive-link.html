@@ -37,14 +37,14 @@ Contributors:
         --iron-icon-height: 16px;
         --iron-icon-width: 16px;
         margin-right: 4px;
-        @apply(--nuxeo-liveconnect-icon-layout);
+        @apply --nuxeo-liveconnect-icon-layout;
       }
 
       a {
-        @apply(--layout-horizontal);
-        @apply(--layout-center);
-        @apply(--layout-center-justified);
-        @apply(--nuxeo-liveconnect-anchor-layout);
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        @apply --layout-center-justified;
+        @apply --nuxeo-liveconnect-anchor-layout;
       }
     </style>
 
@@ -58,24 +58,18 @@ Contributors:
   </template>
 
   <script>
-    (function() {
-      'use strict';
+    Polymer({
+      is: 'nuxeo-liveconnect-google-drive-link',
+      behaviors: [Nuxeo.I18nBehavior],
 
-      Polymer({
-        is: 'nuxeo-liveconnect-google-drive-link',
+      ready: function() {
+        this.$.provider.updateProviderInfo();
+      },
 
-        behaviors: [Nuxeo.I18nBehavior],
+      _openPicker: function() {
+        this.$.provider.openPicker();
+      }
 
-        ready: function() {
-          this.$.provider.updateProviderInfo();
-        },
-
-        _openPicker: function() {
-          this.$.provider.openPicker();
-        }
-
-      });
-    })();
+    });
   </script>
-
 </dom-module>
