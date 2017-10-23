@@ -58,6 +58,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -242,6 +243,7 @@ public class NuxeoFrame extends JFrame {
     public NuxeoFrame(NuxeoLauncherGUI controller) throws HeadlessException {
         super("NuxeoCtl");
         setController(controller);
+        UIManager.getDefaults().put("Button.disabledText", Color.BLACK);
 
         // Main frame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -255,7 +257,7 @@ public class NuxeoFrame extends JFrame {
         constraints.gridx = 0;
         constraints.anchor = GridBagConstraints.PAGE_START;
         JComponent header = buildHeader();
-        header.setPreferredSize(new Dimension(480, 110));
+        header.setPreferredSize(new Dimension(480, 170));
         getContentPane().add(header, constraints);
 
         // Tabs
