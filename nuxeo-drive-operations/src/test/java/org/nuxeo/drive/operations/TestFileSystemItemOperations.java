@@ -404,12 +404,12 @@ public class TestFileSystemItemOperations {
         ScrollFileSystemItemList descendantsBatch;
         int batchSize = 2;
         String scrollId = null;
-        while (!(descendantsBatch = mapper.readValue(((Blob) clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
-                                                                          .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX
-                                                                                  + syncRoot1.getId())
-                                                                          .set("batchSize", batchSize)
-                                                                          .set("scrollId", scrollId)
-                                                                          .execute()).getStream(),
+        while (!(descendantsBatch = mapper.readValue(
+                ((Blob) clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
+                                     .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
+                                     .set("batchSize", batchSize)
+                                     .set("scrollId", scrollId)
+                                     .execute()).getStream(),
                 ScrollFileSystemItemListImpl.class)).isEmpty()) {
             assertTrue(descendantsBatch.size() > 0);
             scrollId = descendantsBatch.getScrollId();
@@ -420,15 +420,16 @@ public class TestFileSystemItemOperations {
         assertTrue(CollectionUtils.isEqualCollection(expectedIds, descendantIds));
 
         // Check descendants of sub-folder of sync root 1
-        assertTrue(CollectionUtils.isEqualCollection(Arrays.asList(file3, file4)
-                                                           .stream()
-                                                           .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
-                                                           .collect(Collectors.toList()),
-                mapper.readValue(((Blob) clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
-                                                      .set("id",
-                                                              DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId())
-                                                      .set("batchSize", 10)
-                                                      .execute()).getStream(),
+        assertTrue(CollectionUtils.isEqualCollection(
+                Arrays.asList(file3, file4)
+                      .stream()
+                      .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
+                      .collect(Collectors.toList()),
+                mapper.readValue(
+                        ((Blob) clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
+                                             .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId())
+                                             .set("batchSize", 10)
+                                             .execute()).getStream(),
                         JsonNode.class)
                       .findValuesAsText("id")));
     }
@@ -580,9 +581,10 @@ public class TestFileSystemItemOperations {
         // ------------------------------------------------------
         try {
             clientSession.newRequest(NuxeoDriveDelete.ID)
-                         .set("id", fileSystemItemAdapterService.getTopLevelFolderItemFactory()
-                                                                .getTopLevelFolderItem(session.getPrincipal())
-                                                                .getId())
+                         .set("id",
+                                 fileSystemItemAdapterService.getTopLevelFolderItemFactory()
+                                                             .getTopLevelFolderItem(session.getPrincipal())
+                                                             .getId())
                          .execute();
             fail("Top level folder item deletion should be unsupported.");
         } catch (Exception e) {
@@ -668,9 +670,10 @@ public class TestFileSystemItemOperations {
         // ------------------------------------------------------
         try {
             clientSession.newRequest(NuxeoDriveRename.ID)
-                         .set("id", fileSystemItemAdapterService.getTopLevelFolderItemFactory()
-                                                                .getTopLevelFolderItem(session.getPrincipal())
-                                                                .getId())
+                         .set("id",
+                                 fileSystemItemAdapterService.getTopLevelFolderItemFactory()
+                                                             .getTopLevelFolderItem(session.getPrincipal())
+                                                             .getId())
                          .set("name", "New name for top level folder")
                          .execute();
             fail("Top level folder renaming shoud be unsupported.");
