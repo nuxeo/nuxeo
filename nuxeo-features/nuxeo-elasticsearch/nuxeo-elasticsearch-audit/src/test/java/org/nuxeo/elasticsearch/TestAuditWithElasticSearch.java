@@ -19,6 +19,7 @@
  */
 package org.nuxeo.elasticsearch;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,8 +36,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.api.Predicates;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -244,5 +250,44 @@ public class TestAuditWithElasticSearch {
         Assert.assertEquals(id3, entries.get(1).getId());
     }
 
+    @Test
+    public void testSaveAndScroll() throws Exception {
 
+        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
+                                                                     .getComponent(NXAuditEventsService.NAME);
+        Assert.assertNotNull(audit);
+
+        ESAuditBackend esBackend = (ESAuditBackend) audit.getBackend();
+
+        List<String> jsonEntries = new ArrayList<>();
+
+        ObjectMapper mapper = new ObjectMapper();
+        for (int i = 0; i < 42; i++) {
+            ObjectNode logEntryJson = mapper.createObjectNode();
+            logEntryJson.put("eventId", "idForAuditStorage");
+            jsonEntries.add(mapper.writeValueAsString(logEntryJson));
+        }
+
+        // Save JSON entries into backend
+        esBackend.append(jsonEntries);
+
+        LogEntryGen.flushAndSync();
+
+        // Query all logs
+        AuditQueryBuilder builder = new AuditQueryBuilder().predicates(Predicates.eq("eventId", "idForAuditStorage"));
+        // builder.predicates()
+        List<LogEntry> logs = esBackend.queryLogs(builder);
+        Assert.assertEquals(42, logs.size());
+
+        ScrollResult scrollResult = esBackend.scroll(builder, 5, 10);
+        int total = 0;
+        while (scrollResult.hasResults()) {
+            Assert.assertTrue(scrollResult.getResultIds().size() <= 5);
+            List<String> ids = scrollResult.getResultIds();
+            ids.forEach(id -> Assert.assertFalse(id.isEmpty()));
+            total += ids.size();
+            scrollResult = esBackend.scroll(scrollResult.getScrollId());
+        }
+        Assert.assertEquals(42, total);
+    }
 }
