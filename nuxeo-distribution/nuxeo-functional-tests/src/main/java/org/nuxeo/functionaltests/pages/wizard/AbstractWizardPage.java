@@ -53,6 +53,8 @@ public abstract class AbstractWizardPage extends AbstractPage {
         WebElement buttonNext = findElementWithTimeout(getNextButtonLocator());
         String URLbefore = driver.getCurrentUrl();
         new Actions(driver).moveToElement(buttonNext).perform();
+        Locator.waitUntilDisplayed(buttonNext, 1000);
+
         buttonNext.click();
         if (function == null) {
             waitUntilURLDifferentFrom(URLbefore);

@@ -205,7 +205,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
     }
 
     public void registerConnectInstance() throws InterruptedException {
-        // Intercom Workaround.
+        // XXX Intercom Workaround; timeout might be adjusted, Intercom is really slow to load.
         if (Locator.hasElementWithTimeout(By.id("intercom-container"), 3000)) {
             Locator.findElement(By.className("intercom-post-close")).click();
         }
@@ -213,14 +213,12 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         // **********************
         // Connect Form
         WizardPage connectWizardPage = asPage(WizardPage.class);
-        // Use a timeout to pass through quickly
-        if (Locator.hasElementWithTimeout(By.id("connectRegistered"), 1000)) {
+        // No need to timeout a lot, page is already loaded due to previous timeout.
+        if (!Locator.hasElementWithTimeout(By.linkText("Register Your Instance"), 200)) {
             // Instance already registered
             connectWizardPage.next();
             return;
         }
-
-        assertNotNull(Locator.findElementWithTimeout(By.linkText("Register Your Instance")));
 
         // Save main window handle to ease the switch back
         String mainWindowsHandle = driver.getWindowHandle();

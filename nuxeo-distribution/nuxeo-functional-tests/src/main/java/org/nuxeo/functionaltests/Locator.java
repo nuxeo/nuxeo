@@ -487,6 +487,23 @@ public class Locator {
     }
 
     /**
+     * Waits until an element is displayed, with a timeout
+     *
+     * @param element the element to wait for
+     * @param timeout the timeout in milliseconds
+     */
+    public static void waitUntilDisplayed(final WebElement element, int timeout) {
+        FluentWait<WebDriver> wait = getFluentWait();
+        wait.withTimeout(timeout, TimeUnit.MILLISECONDS);
+        Function<WebDriver, Boolean> function = driver -> element.isDisplayed();
+        try {
+            wait.until(function);
+        } catch (TimeoutException e) {
+            throw new NotFoundException("Element not visible after timeout: " + element);
+        }
+    }
+
+    /**
      * Fluent wait on a the given function, checking every 100 ms.
      *
      * @param function
