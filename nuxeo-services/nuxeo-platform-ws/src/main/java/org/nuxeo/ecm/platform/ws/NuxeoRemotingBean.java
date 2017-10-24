@@ -80,9 +80,20 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
 
     private static final Log log = LogFactory.getLog(NuxeoRemotingBean.class);
 
+    protected static boolean DEPRECATION_DONE;
+
+    protected static void logDeprecation() {
+        if (!DEPRECATION_DONE) {
+            DEPRECATION_DONE = true;
+            log.warn("The SOAP endpoint /webservices/nuxeoremoting"
+                    + " is DEPRECATED since Nuxeo 9.3 and will be removed in a future version");
+        }
+    }
+
     @Override
     @WebMethod
     public String getRepositoryName(@WebParam(name = "sessionId") String sid) {
+        logDeprecation();
         WSRemotingSession rs = initSession(sid);
         return rs.getRepository();
     }
@@ -91,6 +102,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     @WebMethod
     public WsACE[] getDocumentACL(@WebParam(name = "sessionId") String sid, @WebParam(name = "uuid") String uuid)
             {
+        logDeprecation();
         WSRemotingSession rs = initSession(sid);
         ACP acp = rs.getDocumentManager().getACP(new IdRef(uuid));
         if (acp != null) {
@@ -105,6 +117,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     @WebMethod
     public DocumentSnapshot getDocumentSnapshot(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uuid) {
+        logDeprecation();
         return getDocumentSnapshotExt(sid, uuid, false);
     }
 
@@ -133,6 +146,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     @WebMethod
     public WsACE[] getDocumentLocalACL(@WebParam(name = "sessionId") String sid, @WebParam(name = "uuid") String uuid)
             {
+        logDeprecation();
         WSRemotingSession rs = initSession(sid);
         ACP acp = rs.getDocumentManager().getACP(new IdRef(uuid));
         if (acp != null) {
@@ -164,6 +178,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     @WebMethod
     public DocumentBlob[] getDocumentBlobs(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uuid) {
+        logDeprecation();
         return getDocumentBlobsExt(sid, uuid, false);
     }
 
@@ -198,6 +213,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     @WebMethod
     public String[] listUsers(@WebParam(name = "sessionId") String sid, @WebParam(name = "startIndex") int from,
             @WebParam(name = "endIndex") int to) {
+        logDeprecation();
         WSRemotingSession rs = initSession(sid);
         List<String> userIds = rs.getUserManager().getUserIds();
         return userIds.toArray(new String[userIds.size()]);
@@ -207,6 +223,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     @WebMethod
     public String[] listGroups(@WebParam(name = "sessionId") String sid, @WebParam(name = "startIndex") int from,
             @WebParam(name = "endIndex") int to) {
+        logDeprecation();
         WSRemotingSession rs = initSession(sid);
         List<String> groupIds = rs.getUserManager().getGroupIds();
         return groupIds.toArray(new String[groupIds.size()]);
@@ -216,6 +233,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     @WebMethod
     public DocumentProperty[] getDocumentProperties(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uuid) {
+        logDeprecation();
         WSRemotingSession rs = initSession(sid);
 
         DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uuid));
@@ -237,6 +255,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     @WebMethod
     public DocumentProperty[] getDocumentNoBlobProperties(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uuid) {
+        logDeprecation();
         WSRemotingSession rs = initSession(sid);
 
         DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uuid));
@@ -299,6 +318,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     @Override
     @WebMethod
     public DocumentDescriptor getRootDocument(@WebParam(name = "sessionId") String sessionId) {
+        logDeprecation();
         WSRemotingSession rs = initSession(sessionId);
         DocumentModel doc = rs.getDocumentManager().getRootDocument();
         return doc != null ? new DocumentDescriptor(doc) : null;
@@ -308,6 +328,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     @WebMethod
     public DocumentDescriptor getDocument(@WebParam(name = "sessionId") String sessionId,
             @WebParam(name = "uuid") String uuid) {
+        logDeprecation();
         WSRemotingSession rs = initSession(sessionId);
         DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uuid));
         return doc != null ? new DocumentDescriptor(doc) : null;
@@ -317,6 +338,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     @WebMethod
     public DocumentDescriptor[] getChildren(@WebParam(name = "sessionId") String sessionId,
             @WebParam(name = "uuid") String uuid) {
+        logDeprecation();
         WSRemotingSession rs = initSession(sessionId);
         DocumentModelList docList = rs.getDocumentManager().getChildren(new IdRef(uuid));
         DocumentDescriptor[] docs = new DocumentDescriptor[docList.size()];
@@ -444,6 +466,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     @WebMethod
     public String[] getUsers(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "parentGroup") String parentGroup) {
+        logDeprecation();
         if (parentGroup == null) {
             return listUsers(sid, 0, Integer.MAX_VALUE);
         }
@@ -460,6 +483,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     @WebMethod
     public String[] getGroups(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "parentGroup") String parentGroup) {
+        logDeprecation();
         WSRemotingSession rs = initSession(sid);
 
         List<String> groups;
@@ -475,6 +499,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     @WebMethod
     public String getRelativePathAsString(@WebParam(name = "sessionId") String sessionId,
             @WebParam(name = "uuid") String uuid) {
+        logDeprecation();
         WSRemotingSession rs = initSession(sessionId);
         DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uuid));
         if (doc == null) {
@@ -521,6 +546,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     public String uploadDocument(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "parentUuid") String parentUUID, @WebParam(name = "type") String type,
             @WebParam(name = "properties") String[] properties) {
+        logDeprecation();
         // TODO Note: This method is intented to be a general method, but now it
         // can only be used by NuxeoCompanionForOffice
         // In the future, a new method (which will set the properties of a

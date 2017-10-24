@@ -36,6 +36,8 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.jws.soap.SOAPBinding.Style;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
@@ -53,7 +55,19 @@ import org.nuxeo.runtime.api.Framework;
 @SOAPBinding(style = Style.DOCUMENT)
 public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
 
+    private static final Log log = LogFactory.getLog(WSAuditBean.class);
+
     private static final long serialVersionUID = 1L;
+
+    protected static boolean DEPRECATION_DONE;
+
+    protected static void logDeprecation() {
+        if (!DEPRECATION_DONE) {
+            DEPRECATION_DONE = true;
+            log.warn("The SOAP endpoint /webservices/nuxeoaudit"
+                    + " is DEPRECATED since Nuxeo 9.3 and will be removed in a future version");
+        }
+    }
 
     protected final Logs getLogsBean() {
         return Framework.getService(Logs.class);
@@ -62,6 +76,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
     @WebMethod
     public ModifiedDocumentDescriptor[] listModifiedDocuments(@WebParam(name = "sessionId") String sessionId,
             @WebParam(name = "dataRangeQuery") String dateRangeQuery) {
+        logDeprecation();
         initSession(sessionId);
 
         BatchInfo batchInfo = BatchHelper.getBatchInfo(sessionId, dateRangeQuery);
@@ -97,6 +112,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
     public ModifiedDocumentDescriptorPage listModifiedDocumentsByPage(@WebParam(name = "sessionId") String sessionId,
             @WebParam(name = "dataRangeQuery") String dateRangeQuery, @WebParam(name = "docPath") String path,
             @WebParam(name = "pageIndex") int page, @WebParam(name = "pageSize") int pageSize) {
+        logDeprecation();
         initSession(sessionId);
 
         List<LogEntry> logEntries = getLogsBean().queryLogsByPage(null, dateRangeQuery, EVENT_DOCUMENT_CATEGORY, path,
@@ -124,6 +140,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
     public ModifiedDocumentDescriptorPage listDeletedDocumentsByPage(@WebParam(name = "sessionId") String sessionId,
             @WebParam(name = "dataRangeQuery") String dateRangeQuery, @WebParam(name = "docPath") String path,
             @WebParam(name = "pageIndex") int page, @WebParam(name = "pageSize") int pageSize) {
+        logDeprecation();
         initSession(sessionId);
 
         String[] eventIds = { "documentRemoved" };
@@ -153,6 +170,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
     public EventDescriptorPage listEventsByPage(@WebParam(name = "sessionId") String sessionId,
             @WebParam(name = "dataRangeQuery") String dateRangeQuery, @WebParam(name = "pageIndex") int page,
             @WebParam(name = "pageSize") int pageSize) {
+        logDeprecation();
         initSession(sessionId);
 
         String[] categories = new String[0];
@@ -177,6 +195,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
             @WebParam(name = "dataRangeQuery") String dateRangeQuery, @WebParam(name = "startDate") String startDate,
             @WebParam(name = "path") String path, @WebParam(name = "pageIndex") int page,
             @WebParam(name = "pageSize") int pageSize) {
+        logDeprecation();
         initSession(sessionId);
 
         String[] docCategories = { EVENT_DOCUMENT_CATEGORY, EVENT_LIFE_CYCLE_CATEGORY };
@@ -206,6 +225,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
     public EventDescriptorPage queryEventsByPage(@WebParam(name = "sessionId") String sessionId,
             @WebParam(name = "whereClause") String whereClause, @WebParam(name = "pageIndex") int page,
             @WebParam(name = "pageSize") int pageSize) {
+        logDeprecation();
         initSession(sessionId);
 
         List<LogEntry> logEntries = getLogsBean().nativeQueryLogs(whereClause, page, pageSize);
