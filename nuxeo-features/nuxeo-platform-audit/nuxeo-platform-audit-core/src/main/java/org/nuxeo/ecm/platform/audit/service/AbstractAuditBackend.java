@@ -25,26 +25,32 @@ import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.el.ELException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.CursorService;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -54,6 +60,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
@@ -64,6 +71,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
+import org.nuxeo.ecm.platform.audit.api.AuditStorage;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -80,7 +88,7 @@ import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
  *
  * @author tiry
  */
-public abstract class AbstractAuditBackend implements AuditBackend {
+public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage {
 
     protected static final Log log = LogFactory.getLog(AbstractAuditBackend.class);
 
@@ -89,6 +97,8 @@ public abstract class AbstractAuditBackend implements AuditBackend {
     protected final NXAuditEventsService component;
 
     protected final AuditBackendDescriptor config;
+
+    protected final CursorService<Iterator<LogEntry>, LogEntry> cursorService = new CursorService<>();
 
     protected AbstractAuditBackend(NXAuditEventsService component, AuditBackendDescriptor config) {
         this.component = component;
@@ -458,6 +468,33 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         }
         builder.offset(pageNb * pageSize).limit(pageSize);
         return queryLogs(builder);
+    }
+
+    @Override
+    public void append(List<String> jsonEntries) {
+        ObjectMapper mapper = new ObjectMapper();
+        List<LogEntry> logEntries = jsonEntries.stream().map(json -> {
+            try {
+                return mapper.readValue(json, LogEntryImpl.class);
+            } catch (IOException e) {
+                throw new NuxeoException("Invalid json logEntry: " + json, e);
+            }
+        }).collect(Collectors.toList());
+        addLogEntries(logEntries);
+    }
+
+    @Override
+    public ScrollResult scroll(AuditQueryBuilder queryBuilder, int batchSize, int keepAlive) {
+
+        cursorService.checkForTimedOutScroll();
+        List<LogEntry> logEntries = queryLogs(queryBuilder);
+        String scrollId = cursorService.registerCursor(logEntries.iterator(), batchSize, keepAlive);
+        return scroll(scrollId);
+    }
+
+    @Override
+    public ScrollResult scroll(String scrollId) {
+        return cursorService.scroll(scrollId, logEntry -> String.valueOf(logEntry.getId()));
     }
 
 }
