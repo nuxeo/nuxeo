@@ -314,9 +314,7 @@ public abstract class AbstractAutomationClientTest {
         }
 
         // re-fetch
-        doc = (Document) session.newRequest(FetchDocument.ID)
-                                .set("value", docPath)
-                                .execute();
+        doc = (Document) session.newRequest(FetchDocument.ID).set("value", docPath).execute();
 
         // check that the doc was not updated due to invalid change token
         assertEquals("Update 2", doc.getString("dc:title"));
@@ -801,9 +799,7 @@ public abstract class AbstractAutomationClientTest {
                                           .execute();
 
         // Get blobs
-        Blobs blobs = (Blobs) session.newRequest(GetDocumentBlobs.ID)
-                                     .setInput(file)
-                                     .execute();
+        Blobs blobs = (Blobs) session.newRequest(GetDocumentBlobs.ID).setInput(file).execute();
         assertNotNull(blobs);
         assertTrue(blobs.isEmpty());
     }

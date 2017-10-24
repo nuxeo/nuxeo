@@ -202,8 +202,7 @@ public class WebException extends WebApplicationException {
         if (parent != null) {
             return getStatus(parent, depth - 1);
         }
-        if (cause.getMessage() != null
-                && cause.getMessage().contains(DocumentNotFoundException.class.getName())) {
+        if (cause.getMessage() != null && cause.getMessage().contains(DocumentNotFoundException.class.getName())) {
             log.warn("Badly wrapped exception: found a DocumentNotFoundException"
                     + " message but no DocumentNotFoundException", cause);
             return HttpServletResponse.SC_NOT_FOUND;

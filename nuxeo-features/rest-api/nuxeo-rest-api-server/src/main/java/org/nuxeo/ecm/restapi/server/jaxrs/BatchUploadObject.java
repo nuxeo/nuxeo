@@ -58,7 +58,6 @@ import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManagerConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -159,7 +158,8 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
                 uploadChunkIndex = Integer.parseInt(uploadChunkIndexHeader);
                 fileSize = Long.parseLong(fileSizeHeader);
             } catch (NumberFormatException e) {
-                throw new IllegalParameterException("X-Upload-Chunk-Index, X-Upload-Chunk-Count and X-File-Size headers must be numbers");
+                throw new IllegalParameterException(
+                        "X-Upload-Chunk-Index, X-Upload-Chunk-Count and X-File-Size headers must be numbers");
             }
         }
 
@@ -298,7 +298,8 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
      */
     @DELETE
     @Path("{batchId}/{fileIdx}")
-    public Response removeFile(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx) {
+    public Response removeFile(@PathParam(REQUEST_BATCH_ID) String batchId,
+            @PathParam(REQUEST_FILE_IDX) String fileIdx) {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         if (!bm.removeFileEntry(batchId, fileIdx)) {
             return buildEmptyResponse(Status.NOT_FOUND);

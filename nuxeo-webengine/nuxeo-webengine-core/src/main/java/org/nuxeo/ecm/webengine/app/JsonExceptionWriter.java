@@ -54,7 +54,8 @@ public class JsonExceptionWriter implements MessageBodyWriter<WebException> {
 
     @Override
     public void writeTo(WebException webException, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType mediaType,
-            MultivaluedMap<String, Object> arg5, OutputStream outputStream) throws IOException, WebApplicationException {
+            MultivaluedMap<String, Object> arg5, OutputStream outputStream)
+            throws IOException, WebApplicationException {
         JsonWebengineWriter.writeException(outputStream, webException, mediaType);
     }
 

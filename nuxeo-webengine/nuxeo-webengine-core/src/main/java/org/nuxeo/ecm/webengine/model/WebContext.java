@@ -66,7 +66,6 @@ public interface WebContext extends Adaptable {
     Module getModule();
 
     /**
-     *
      * Gets the jersey server injection context
      *
      * @since 9.1

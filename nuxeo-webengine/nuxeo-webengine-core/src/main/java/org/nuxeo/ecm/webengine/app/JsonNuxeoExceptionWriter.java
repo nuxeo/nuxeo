@@ -52,7 +52,8 @@ public class JsonNuxeoExceptionWriter implements MessageBodyWriter<NuxeoExceptio
 
     @Override
     public void writeTo(NuxeoException nuxeoException, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType mediaType,
-            MultivaluedMap<String, Object> arg5, OutputStream outputStream) throws IOException, WebApplicationException {
+            MultivaluedMap<String, Object> arg5, OutputStream outputStream)
+            throws IOException, WebApplicationException {
         JsonWebengineWriter.writeException(outputStream, nuxeoException, mediaType);
     }
 

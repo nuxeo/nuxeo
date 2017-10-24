@@ -77,8 +77,10 @@ public class UninstallHandler extends DefaultObject {
                 return getView("displayDependencies").arg("pkg", pkg).arg("pkgToRemove", pkgToRemove).arg("source",
                         source);
             }
-            return getView("startUninstall").arg("status", status).arg("uninstallTask", uninstallTask).arg("pkg", pkg).arg(
-                    "source", source);
+            return getView("startUninstall").arg("status", status)
+                                            .arg("uninstallTask", uninstallTask)
+                                            .arg("pkg", pkg)
+                                            .arg("source", source);
         } catch (PackageException e) {
             log.error("Error during first step of installation", e);
             return getView("uninstallError").arg("e", e);

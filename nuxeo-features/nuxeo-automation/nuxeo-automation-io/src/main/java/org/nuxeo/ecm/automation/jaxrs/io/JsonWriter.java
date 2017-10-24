@@ -39,7 +39,6 @@ import org.nuxeo.ecm.automation.jaxrs.io.operations.AutomationInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.runtime.api.Framework;
 
 /**

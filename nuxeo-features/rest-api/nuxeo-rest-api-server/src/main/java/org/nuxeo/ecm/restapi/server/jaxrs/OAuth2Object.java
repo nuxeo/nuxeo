@@ -228,9 +228,8 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
      */
     @DELETE
     @Path("token/{providerId}/{nxuser}")
-    public Response deleteToken(@PathParam("providerId") String providerId,
-                                @PathParam("nxuser") String nxuser,
-                                @Context HttpServletRequest request) {
+    public Response deleteToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
+            @Context HttpServletRequest request) {
         checkPermission();
         NuxeoOAuth2ServiceProvider provider = getProvider(providerId);
         deleteToken(getTokenDoc(provider, nxuser));

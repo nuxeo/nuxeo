@@ -125,8 +125,8 @@ public class GroovyTypeLoader {
     /**
      * Loads a type and cache it.
      */
-    protected TypeDescriptor loadTypeAndRecord(Writer cache, String className) throws ClassNotFoundException,
-            IOException {
+    protected TypeDescriptor loadTypeAndRecord(Writer cache, String className)
+            throws ClassNotFoundException, IOException {
         TypeDescriptor td = loadType(className);
         if (td != null) {
             cache.write(className);

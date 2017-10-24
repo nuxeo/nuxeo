@@ -115,7 +115,8 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
             }
         } else {
             consume = p.length == 0 ? Void.TYPE : p[0];
-        }    }
+        }
+    }
 
     public boolean isIterable() {
         return false;
@@ -156,8 +157,8 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         return 0;
     }
 
-    protected Object doInvoke(OperationContext ctx, Map<String, Object> args) throws OperationException,
-            ReflectiveOperationException {
+    protected Object doInvoke(OperationContext ctx, Map<String, Object> args)
+            throws OperationException, ReflectiveOperationException {
         Object target = op.newInstance(ctx, args);
         Object input = ctx.getInput();
         if (consume == Void.TYPE) {

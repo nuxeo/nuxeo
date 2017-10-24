@@ -19,8 +19,6 @@
  */
 package org.nuxeo.ecm.core.api;
 
-import javax.servlet.http.HttpServletResponse;
-
 import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 
 /**
