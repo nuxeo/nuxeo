@@ -1,4 +1,6 @@
-<div xmlns:h="http://java.sun.com/jsf/html"
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core"
@@ -6,7 +8,8 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:rich="http://richfaces.org/rich" class="menu">
+  xmlns:rich="http://richfaces.org/rich">
+<div class="menu">
 
   <a4j:outputPanel ajaxRendered="false" layout="block">
     <h:form ajaxSubmit="true" id="publishTreeForm">
@@ -173,4 +176,6 @@
       </a4j:outputPanel>
     </h:form>
   </a4j:outputPanel>
+
 </div>
+</ui:composition>
