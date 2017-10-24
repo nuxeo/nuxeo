@@ -24,7 +24,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -98,7 +97,6 @@ public abstract class AbstractUMObject<T> extends DefaultObject {
 
     /**
      * Deletes the current artifact in the underlying persistence system.
-     *
      */
     protected abstract void deleteArtifact();
 

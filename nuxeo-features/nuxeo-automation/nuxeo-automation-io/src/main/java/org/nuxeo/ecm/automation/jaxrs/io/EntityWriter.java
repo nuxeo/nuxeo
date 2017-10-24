@@ -33,7 +33,6 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Base class to write json entities
@@ -66,8 +65,8 @@ public abstract class EntityWriter<T> implements MessageBodyWriter<T> {
 
     @Override
     public void writeTo(T entity, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
-            WebApplicationException {
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException, WebApplicationException {
 
         writeEntity(factory.createJsonGenerator(entityStream, JsonEncoding.UTF8), entity);
     }

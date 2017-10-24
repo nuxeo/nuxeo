@@ -34,7 +34,6 @@ import javax.ws.rs.core.Response;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.workflow.services.CommentsModerationService;
 import org.nuxeo.ecm.webengine.forms.FormData;
@@ -137,8 +136,7 @@ public class CommentService extends DefaultAdapter {
      * @param comment comment itself
      * @return the comment created
      */
-    protected DocumentModel createCommentDocument(CoreSession session, DocumentModel target, DocumentModel comment)
-            {
+    protected DocumentModel createCommentDocument(CoreSession session, DocumentModel target, DocumentModel comment) {
         return getCommentManager().createComment(target, comment);
     }
 
@@ -149,8 +147,7 @@ public class CommentService extends DefaultAdapter {
      * @param target commented document
      * @param comment comment itself
      */
-    protected void publishComment(CoreSession session, DocumentModel target, DocumentModel comment)
-            {
+    protected void publishComment(CoreSession session, DocumentModel target, DocumentModel comment) {
         getCommentsModerationService().publishComment(session, comment);
     }
 
@@ -170,8 +167,7 @@ public class CommentService extends DefaultAdapter {
      * @param target commented document
      * @param comment comment itself
      */
-    protected void rejectComment(CoreSession session, DocumentModel target, DocumentModel comment)
-            {
+    protected void rejectComment(CoreSession session, DocumentModel target, DocumentModel comment) {
         getCommentsModerationService().rejectComment(session, target, comment.getId());
         getCommentManager().deleteComment(target, comment);
     }
@@ -182,8 +178,7 @@ public class CommentService extends DefaultAdapter {
      * @param target commented document
      * @param comment comment itself
      */
-    protected void approveComent(CoreSession session, DocumentModel target, DocumentModel comment)
-            {
+    protected void approveComent(CoreSession session, DocumentModel target, DocumentModel comment) {
         getCommentsModerationService().approveComent(session, target, comment.getId());
     }
 

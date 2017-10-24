@@ -71,7 +71,6 @@ public abstract class AbstractResourceType implements ResourceType {
 
     protected volatile ConcurrentMap<String, ScriptFile> templateCache;
 
-
     protected AbstractResourceType(WebEngine engine, Module module, AbstractResourceType superType, String name,
             ClassProxy clazz, ResourceComponentConstructor constructor, int visibility) {
         this.engine = engine;
@@ -173,8 +172,9 @@ public abstract class AbstractResourceType implements ResourceType {
                     try {
                         guard = (Guard) gc.newInstance();
                     } catch (ReflectiveOperationException e) {
-                        throw new NuxeoException("Failed to instantiate guard handler: " + gc.getName()
-                                + " on WebObject " + c.getName(), e);
+                        throw new NuxeoException(
+                                "Failed to instantiate guard handler: " + gc.getName() + " on WebObject " + c.getName(),
+                                e);
                     }
                 }
             }
@@ -217,8 +217,12 @@ public abstract class AbstractResourceType implements ResourceType {
     }
 
     protected ScriptFile findSkinTemplate(Module module, String name) {
-        return module.getFile(new StringBuilder().append("views").append(File.separatorChar).append(this.name).append(
-                File.separatorChar).append(name).toString());
+        return module.getFile(new StringBuilder().append("views")
+                                                 .append(File.separatorChar)
+                                                 .append(this.name)
+                                                 .append(File.separatorChar)
+                                                 .append(name)
+                                                 .toString());
     }
 
     protected ScriptFile findTypeTemplate(Module module, String name) {

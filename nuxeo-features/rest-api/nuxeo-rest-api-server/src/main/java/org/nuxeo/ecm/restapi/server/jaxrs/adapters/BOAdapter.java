@@ -18,10 +18,11 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -30,8 +31,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.automation.core.util.Paginable;
@@ -48,8 +47,6 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
-
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 
 /**
  * Basic CRUD with a BusinessAdapter

@@ -25,7 +25,6 @@ import static org.nuxeo.ecm.core.io.download.DownloadService.BLOBHOLDER_PREFIX;
 import java.io.Serializable;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;

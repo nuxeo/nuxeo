@@ -82,8 +82,8 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         }
         path = buf.append(path).toString();
         if (!this.type.getGuard().check(this)) {
-            throw new WebSecurityException("Failed to initialize object: " + path
-                    + ". Object is not accessible in the current context");
+            throw new WebSecurityException(
+                    "Failed to initialize object: " + path + ". Object is not accessible in the current context");
         }
         initialize(args);
         return this;

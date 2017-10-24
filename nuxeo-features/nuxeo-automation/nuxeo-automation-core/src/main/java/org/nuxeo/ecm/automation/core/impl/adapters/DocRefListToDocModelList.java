@@ -22,7 +22,6 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentRefList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;

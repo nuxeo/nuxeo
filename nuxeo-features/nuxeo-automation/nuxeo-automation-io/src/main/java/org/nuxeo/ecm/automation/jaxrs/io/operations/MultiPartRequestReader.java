@@ -55,7 +55,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  * @deprecated since 9.1. Only {@link MultiPartFormRequestReader} is used.
  */
 @Provider
@@ -116,8 +115,8 @@ public class MultiPartRequestReader implements MessageBodyReader<ExecutionReques
                         log.error("Received parts: " + mp.getBodyPart(i).getHeader("Content-ID")[0] + " -> "
                                 + mp.getBodyPart(i).getContentType());
                     }
-                    throw new NuxeoException(new IllegalStateException("Received only " + cnt
-                            + " part in a multipart request"));
+                    throw new NuxeoException(
+                            new IllegalStateException("Received only " + cnt + " part in a multipart request"));
                 }
             } finally {
                 tmp.delete();

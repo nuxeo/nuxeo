@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;

@@ -297,7 +297,8 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
                 props, searchDocumentModel);
     }
 
-    protected DocumentModelList queryByPageProvider(String pageProviderName, MultivaluedMap<String, String> queryParams) {
+    protected DocumentModelList queryByPageProvider(String pageProviderName,
+            MultivaluedMap<String, String> queryParams) {
         if (pageProviderName == null) {
             throw new IllegalParameterException("invalid page provider name");
         }

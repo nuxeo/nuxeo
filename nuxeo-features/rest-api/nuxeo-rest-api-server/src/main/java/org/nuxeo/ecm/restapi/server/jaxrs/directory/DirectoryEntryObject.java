@@ -23,7 +23,6 @@ import static org.nuxeo.ecm.restapi.server.jaxrs.directory.DirectorySessionRunne
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -40,7 +39,6 @@ import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
-import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 

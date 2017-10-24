@@ -19,11 +19,11 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 /**
  * The most generic exception thrown by the Nuxeo.
@@ -152,6 +152,5 @@ public class NuxeoException extends RuntimeException {
     public int getStatusCode() {
         return statusCode;
     }
-
 
 }

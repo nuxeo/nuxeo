@@ -19,6 +19,25 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.URI;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -34,25 +53,6 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.UncheckedIOException;
-import java.net.URI;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * @since 8.2
@@ -65,7 +65,7 @@ public class PreviewAdapter extends DefaultAdapter {
 
     @GET
     public Object preview(@QueryParam("blobPostProcessing") boolean postProcessing, @Context HttpServletRequest request,
-        @Context HttpServletResponse response) {
+            @Context HttpServletResponse response) {
 
         DocumentBlobHolder bh = getBlobHolderToPreview();
 
@@ -89,7 +89,7 @@ public class PreviewAdapter extends DefaultAdapter {
             Blob blob = previewBlobs.get(0);
             DownloadService downloadService = Framework.getService(DownloadService.class);
             downloadService.downloadBlob(request, response, bh.getDocument(), bh.getXpath(), blob, blob.getFilename(),
-                "preview", null, true);
+                    "preview", null, true);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
@@ -99,8 +99,9 @@ public class PreviewAdapter extends DefaultAdapter {
 
     @GET
     @Path("{subPath}")
-    public Object subPath(@PathParam("subPath") String subPath, @QueryParam("blobPostProcessing") boolean postProcessing,
-        @Context HttpServletRequest request, @Context HttpServletResponse response) {
+    public Object subPath(@PathParam("subPath") String subPath,
+            @QueryParam("blobPostProcessing") boolean postProcessing, @Context HttpServletRequest request,
+            @Context HttpServletResponse response) {
 
         DocumentBlobHolder bh = getBlobHolderToPreview();
 
@@ -110,9 +111,7 @@ public class PreviewAdapter extends DefaultAdapter {
         }
 
         // find blob
-        Optional<Blob> subBlob = previewBlobs.stream()
-            .filter(b -> subPath.equals(b.getFilename()))
-            .findFirst();
+        Optional<Blob> subBlob = previewBlobs.stream().filter(b -> subPath.equals(b.getFilename())).findFirst();
 
         if (!subBlob.isPresent()) {
             throw new WebResourceNotFoundException(String.format("Preview blob %s not found", subPath));
@@ -123,7 +122,7 @@ public class PreviewAdapter extends DefaultAdapter {
             DownloadService downloadService = Framework.getService(DownloadService.class);
             Map<String, Serializable> extendedInfos = Collections.singletonMap("subPath", subPath);
             downloadService.downloadBlob(request, response, bh.getDocument(), bh.getXpath(), blob, blob.getFilename(),
-                "preview", extendedInfos, true);
+                    "preview", extendedInfos, true);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }

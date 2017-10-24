@@ -330,7 +330,7 @@ public abstract class AbstractWebContext implements WebContext {
         Resource obj = type.newInstance(type.getResourceClass(), this);
         try {
             obj.initialize(this, type, args);
-        }  finally {
+        } finally {
             // we must be sure the object is pushed even if an error occurred
             // otherwise we may end up with an empty object stack and we will
             // not be able to
@@ -342,7 +342,7 @@ public abstract class AbstractWebContext implements WebContext {
 
     @Override
     public AdapterResource newAdapter(Resource ctx, String serviceName, Object... args) {
-        return (AdapterResource)newObject(module.getAdapter(ctx, serviceName), args);
+        return (AdapterResource) newObject(module.getAdapter(ctx, serviceName), args);
     }
 
     @Override
@@ -643,8 +643,8 @@ public abstract class AbstractWebContext implements WebContext {
                 log.debug("Output socket closed: failed to write response", e);
                 return;
             }
-            throw new NuxeoException("Failed to render template: "
-                    + (script == null ? script : script.getAbsolutePath()), e);
+            throw new NuxeoException(
+                    "Failed to render template: " + (script == null ? script : script.getAbsolutePath()), e);
         } finally {
             if (!scriptExecutionStack.isEmpty()) {
                 popScriptFile();
