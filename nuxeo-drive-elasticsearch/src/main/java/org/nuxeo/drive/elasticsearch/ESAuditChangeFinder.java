@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.search.SearchRequest;
@@ -43,6 +44,7 @@ import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -101,9 +103,10 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         logSearchRequest(request);
         SearchResponse searchResponse = getClient().search(request);
         logSearchResponse(searchResponse);
+        ObjectMapper mapper = new ObjectMapper();
         for (SearchHit hit : searchResponse.getHits()) {
             try {
-                entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
+                entries.add(mapper.readValue(hit.getSourceAsString(), LogEntryImpl.class));
             } catch (IOException e) {
                 log.error("Error while reading Audit Entry from ES", e);
             }
@@ -233,9 +236,10 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         logSearchResponse(searchResponse);
         List<LogEntry> entries = new ArrayList<>();
         SearchHits hits = searchResponse.getHits();
+        ObjectMapper mapper = new ObjectMapper();
         for (SearchHit hit : hits) {
             try {
-                entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
+                entries.add(mapper.readValue(hit.getSourceAsString(), LogEntryImpl.class));
             } catch (IOException e) {
                 log.error("Error while reading Audit Entry from ES", e);
             }
@@ -270,9 +274,10 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         logSearchResponse(searchResponse);
         List<LogEntry> entries = new ArrayList<>();
         SearchHits hits = searchResponse.getHits();
+        ObjectMapper mapper = new ObjectMapper();
         for (SearchHit hit : hits) {
             try {
-                entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
+                entries.add(mapper.readValue(hit.getSourceAsString(), LogEntryImpl.class));
             } catch (IOException e) {
                 log.error("Error while reading Audit Entry from ES", e);
             }
