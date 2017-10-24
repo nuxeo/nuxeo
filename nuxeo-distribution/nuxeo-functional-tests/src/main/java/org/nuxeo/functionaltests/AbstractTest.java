@@ -65,6 +65,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
+import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -333,19 +334,14 @@ public abstract class AbstractTest {
                 continue;
             }
 
-            WebDriver popupDriver = driver.switchTo().window(popup);
-            if (url == null || popupDriver.getCurrentUrl().contains(url)) {
-                System.out.println(popupDriver.getCurrentUrl());
-                return popupDriver;
+            driver.switchTo().window(popup);
+            if (url == null || driver.getCurrentUrl().contains(url)) {
+                System.out.println(driver.getCurrentUrl());
+                return driver;
             }
         }
 
-        if (currentWindow != null) {
-            // Switch back to main window
-            driver.switchTo().window(currentWindow);
-        }
-
-        return null;
+        throw new NotFoundException("Not found popup: " + url);
     }
 
     public static <T> T asPage(Class<T> pageClassToProxy) {

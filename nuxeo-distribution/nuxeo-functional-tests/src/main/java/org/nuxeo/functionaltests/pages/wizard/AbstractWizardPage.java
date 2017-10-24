@@ -18,17 +18,20 @@
  */
 package org.nuxeo.functionaltests.pages.wizard;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
 import com.google.common.base.Function;
 
 public abstract class AbstractWizardPage extends AbstractPage {
+
+    private static final Log log = LogFactory.getLog(AbstractWizardPage.class);
 
     protected static final String BUTTON_LOCATOR = "//input[@value=\"LABEL\"]";
 
@@ -50,18 +53,7 @@ public abstract class AbstractWizardPage extends AbstractPage {
     }
 
     public <T extends AbstractWizardPage> T next(Class<T> wizardPageClass, Function<WebDriver, Boolean> function) {
-        WebElement buttonNext = findElementWithTimeout(getNextButtonLocator());
-        String URLbefore = driver.getCurrentUrl();
-        new Actions(driver).moveToElement(buttonNext).perform();
-        Locator.waitUntilDisplayed(buttonNext, 1000);
-
-        buttonNext.click();
-        if (function == null) {
-            waitUntilURLDifferentFrom(URLbefore);
-        } else {
-            Locator.waitUntilGivenFunction(function);
-        }
-        return asPage(wizardPageClass);
+        return nav(wizardPageClass, getNextButtonLocator(), function);
     }
 
     public <T extends AbstractWizardPage> T previous(Class<T> wizardPageClass) {
@@ -69,15 +61,7 @@ public abstract class AbstractWizardPage extends AbstractPage {
     }
 
     public <T extends AbstractWizardPage> T previous(Class<T> wizardPageClass, Function<WebDriver, Boolean> function) {
-        WebElement buttonPrev = findElementWithTimeout(getPreviousButtonLocator());
-        String URLbefore = driver.getCurrentUrl();
-        buttonPrev.click();
-        if (function == null) {
-            waitUntilURLDifferentFrom(URLbefore);
-        } else {
-            Locator.waitUntilGivenFunction(function);
-        }
-        return asPage(wizardPageClass);
+        return nav(wizardPageClass, getPreviousButtonLocator(), function);
     }
 
     public <T extends AbstractPage> T nav(Class<T> wizardPageClass, String buttonLabel) {
@@ -85,14 +69,23 @@ public abstract class AbstractWizardPage extends AbstractPage {
     }
 
     public <T extends AbstractPage> T nav(Class<T> wizardPageClass, String buttonLabel, Boolean waitForURLChange) {
-        WebElement button = findNavButton(buttonLabel);
-        if (button == null) {
-            return null;
-        }
+        return nav(wizardPageClass, getNavButtonLocator(buttonLabel), waitForURLChange);
+    }
+
+    protected <T extends AbstractPage> T nav(Class<T> wizardPageClass, By selector, Boolean waitForURLChange) {
+        return nav(wizardPageClass, selector, waitForURLChange ? null : (Function<WebDriver, Boolean>) input -> true);
+    }
+
+    protected <T extends AbstractPage> T nav(Class<T> wizardPageClass, By selector,
+            Function<WebDriver, Boolean> function) {
+        WebElement action = findElementWithTimeout(selector);
         String URLbefore = driver.getCurrentUrl();
-        button.click();
-        if (waitForURLChange == true) {
+        Locator.waitUntilEnabledAndClick(action);
+
+        if (function == null) {
             waitUntilURLDifferentFrom(URLbefore);
+        } else {
+            Locator.waitUntilGivenFunction(function);
         }
         return asPage(wizardPageClass);
     }
@@ -102,14 +95,7 @@ public abstract class AbstractWizardPage extends AbstractPage {
     }
 
     public <T extends AbstractPage> T navByLink(Class<T> wizardPageClass, String linkLabel, Boolean waitForURLChange) {
-        WebElement link = findElementWithTimeout(By.linkText(linkLabel));
-        if (link == null) {
-            return null;
-        }
-        String URLbefore = driver.getCurrentUrl();
-        link.click();
-        waitUntilURLDifferentFrom(URLbefore);
-        return asPage(wizardPageClass);
+        return nav(wizardPageClass, By.linkText(linkLabel), waitForURLChange);
     }
 
     public <T extends AbstractPage> T navById(Class<T> wizardPageClass, String buttonId) {
@@ -117,26 +103,11 @@ public abstract class AbstractWizardPage extends AbstractPage {
     }
 
     public <T extends AbstractPage> T navById(Class<T> wizardPageClass, String buttonId, Boolean waitForURLChange) {
-        WebElement button = findElementWithTimeout(By.id(buttonId));
-        if (button == null) {
-            return null;
-        }
-        String URLbefore = driver.getCurrentUrl();
-        button.click();
-        if (waitForURLChange == true) {
-            waitUntilURLDifferentFrom(URLbefore);
-        } else {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // do nothing
-            }
-        }
-        return asPage(wizardPageClass);
+        return nav(wizardPageClass, By.id(buttonId), waitForURLChange);
     }
 
-    protected WebElement findNavButton(String label) {
-        return findElementWithTimeout(By.xpath(BUTTON_LOCATOR.replace("LABEL", label)));
+    protected By getNavButtonLocator(String label) {
+        return By.xpath(BUTTON_LOCATOR.replace("LABEL", label));
     }
 
     public boolean fillInput(String name, String value) {

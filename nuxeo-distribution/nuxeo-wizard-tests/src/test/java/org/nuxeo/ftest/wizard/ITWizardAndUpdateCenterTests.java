@@ -26,6 +26,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
@@ -47,6 +49,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 public class ITWizardAndUpdateCenterTests extends AbstractTest {
+
+    private static final Log log = LogFactory.getLog(ITWizardAndUpdateCenterTests.class);
 
     protected static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.0.6";
 
@@ -189,7 +193,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
         // **************************
         // Package Download Screen
-        WizardPage packageDownloadPage = asPage(WizardPage.class).next();
+        WizardPage packageDownloadPage = packageSelectiondPage.next();
         assertNotNull(packageDownloadPage);
         assertEquals("Download Addon(s)", packageDownloadPage.getTitle());
 
@@ -243,6 +247,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         driver.findElement(By.id("password")).sendKeys(getTestPassword());
         String windowHandle = driver.getWindowHandle();
         driver.findElement(By.cssSelector(".btn-submit")).click();
+
         Locator.waitUntilWindowClosed(windowHandle);
 
         // select the associated project
