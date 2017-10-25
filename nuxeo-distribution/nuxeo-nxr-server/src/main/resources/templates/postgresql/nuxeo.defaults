@@ -12,3 +12,6 @@ nuxeo.db.jdbc.url=jdbc:postgresql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db
 nuxeo.db.driver=org.postgresql.Driver
 nuxeo.db.xadatasource=org.postgresql.xa.PGXADataSource
 
+## Startup checks configuration
+postgresql.check.classpath=nxserver/lib:${nuxeo.home}/nxserver/bundles/nuxeo-launcher-commons-*.jar
+postgresql.check.class=org.nuxeo.launcher.config.backingservices.DBCheck
