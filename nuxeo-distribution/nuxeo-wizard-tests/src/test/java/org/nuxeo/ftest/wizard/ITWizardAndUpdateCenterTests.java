@@ -44,6 +44,7 @@ import org.nuxeo.functionaltests.pages.wizard.ConnectWizardPage;
 import org.nuxeo.functionaltests.pages.wizard.SummaryWizardPage;
 import org.nuxeo.functionaltests.pages.wizard.WizardPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 
 public class ITWizardAndUpdateCenterTests extends AbstractTest {
@@ -248,7 +249,13 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         String windowHandle = driver.getWindowHandle();
 
         Locator.findElementWithTimeoutAndClick(By.cssSelector(".btn-submit"));
-        Locator.waitUntilWindowClosed(windowHandle);
+        try {
+            Locator.waitUntilWindowClosed(windowHandle);
+        } catch (TimeoutException e) {
+            log.info("Unable to close SSO form once; try again");
+            Locator.findElementWithTimeoutAndClick(By.cssSelector(".btn-submit"));
+            Locator.waitUntilWindowClosed(windowHandle);
+        }
 
         // select the associated project
         switchToPopup("site/connect/wizardInstanceRegistration");
