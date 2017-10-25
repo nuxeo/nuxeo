@@ -127,16 +127,16 @@ public class TagSelect2Support {
             String docId = currentDocument.getId();
 
             TagService tagService = getTagService();
-            tagService.tag(documentManager, docId, label, null);
+            tagService.tag(documentManager, docId, label);
             if (currentDocument.isVersion()) {
                 DocumentModel liveDocument = documentManager.getSourceDocument(currentDocument.getRef());
                 if (!liveDocument.isCheckedOut()) {
-                    tagService.tag(documentManager, liveDocument.getId(), label, null);
+                    tagService.tag(documentManager, liveDocument.getId(), label);
                 }
             } else if (!currentDocument.isCheckedOut()) {
                 DocumentRef ref = documentManager.getBaseVersion(currentDocument.getRef());
                 if (ref instanceof IdRef) {
-                    tagService.tag(documentManager, ref.toString(), label, null);
+                    tagService.tag(documentManager, ref.toString(), label);
                 }
             }
             messageKey = "message.add.new.tagging";
@@ -153,17 +153,17 @@ public class TagSelect2Support {
         String docId = currentDocument.getId();
 
         TagService tagService = getTagService();
-        tagService.untag(documentManager, docId, label, null);
+        tagService.untag(documentManager, docId, label);
 
         if (currentDocument.isVersion()) {
             DocumentModel liveDocument = documentManager.getSourceDocument(currentDocument.getRef());
             if (!liveDocument.isCheckedOut()) {
-                tagService.untag(documentManager, liveDocument.getId(), label, null);
+                tagService.untag(documentManager, liveDocument.getId(), label);
             }
         } else if (!currentDocument.isCheckedOut()) {
             DocumentRef ref = documentManager.getBaseVersion(currentDocument.getRef());
             if (ref instanceof IdRef) {
-                tagService.untag(documentManager, ref.toString(), label, null);
+                tagService.untag(documentManager, ref.toString(), label);
             }
         }
         // force invalidation

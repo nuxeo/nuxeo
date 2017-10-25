@@ -55,7 +55,7 @@ public class UntagDocument {
         if (tags != null) {
             for (String tag : tags) {
                 try {
-                    tagService.untag(session, document.getId(), tag, null);
+                    tagService.untag(session, document.getId(), tag);
                 } catch (DocumentSecurityException e) {
                     throw new OperationException(
                             "Unable to remove tag '" + tag + "' on document '" + document.getId() + "'.", e);

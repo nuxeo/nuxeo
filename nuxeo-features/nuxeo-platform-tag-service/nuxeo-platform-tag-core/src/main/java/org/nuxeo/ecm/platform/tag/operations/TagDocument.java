@@ -55,7 +55,7 @@ public class TagDocument {
         if (tags != null) {
             tags.removeAll(Collections.singleton(""));
             for (String tag : tags) {
-                tagService.tag(session, document.getId(), tag, session.getPrincipal().getName());
+                tagService.tag(session, document.getId(), tag);
             }
         }
         return document;

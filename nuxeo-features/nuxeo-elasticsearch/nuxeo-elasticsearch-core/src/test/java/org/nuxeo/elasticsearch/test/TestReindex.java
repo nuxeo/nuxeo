@@ -182,7 +182,7 @@ public class TestReindex {
             BlobHolder holder = doc.getAdapter(BlobHolder.class);
             holder.setBlob(new StringBlob("You know for search" + i));
             doc = session.createDocument(doc);
-            tagService.tag(session, doc.getId(), "mytag" + i, "Administrator");
+            tagService.tag(session, doc.getId(), "mytag" + i);
         }
         session.save();
 

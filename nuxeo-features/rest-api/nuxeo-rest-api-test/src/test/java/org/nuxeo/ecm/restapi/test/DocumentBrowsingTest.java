@@ -582,7 +582,7 @@ public class DocumentBrowsingTest extends BaseTest {
         }
 
         TagService tagService = Framework.getService(TagService.class);
-        tagService.tag(session, note.getId(), "pouet", null);
+        tagService.tag(session, note.getId(), "pouet");
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
