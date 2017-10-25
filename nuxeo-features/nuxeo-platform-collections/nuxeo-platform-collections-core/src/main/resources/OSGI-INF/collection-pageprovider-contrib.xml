@@ -18,7 +18,6 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="user_collections">
-      <property name="maxResults">PAGE_SIZE</property>
       <pattern quoteParameters="true" escapeParameters="true">
         SELECT * FROM Document WHERE dc:title ILIKE :searchTerm AND ecm:mixinType = 'Collection' AND
         ecm:primaryType != 'Favorites' AND
@@ -54,7 +53,6 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="ordered_content_collection">
-      <property name="maxResults">PAGE_SIZE</property>
       <pattern>
         SELECT collection:documentIds/* FROM Document where ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
