@@ -6,7 +6,7 @@
       Property that enables choosing between the former (based on SQL relations) or the new (based on facet) tag service
       implementation.
     </documentation>
-    <property name="nuxeo.faceted.tag.service.enabled">false</property>
+    <property name="nuxeo.faceted.tag.service.enabled">true</property>
   </extension>
 
 </component>

@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.tag;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -34,7 +33,6 @@ import java.util.Map;
  *
  * @since 9.3
  */
-@LocalDeploy("org.nuxeo.ecm.platform.tag:faceted-tag-service-override.xml")
 public class TestFacetedTagService extends AbstractTestTagService {
 
     @Override
