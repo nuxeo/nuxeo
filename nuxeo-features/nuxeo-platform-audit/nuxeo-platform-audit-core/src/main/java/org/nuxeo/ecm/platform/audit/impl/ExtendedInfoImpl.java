@@ -186,7 +186,7 @@ public class ExtendedInfoImpl implements ExtendedInfo {
             return stringValue;
         }
 
-        @Column(name = "LOG_EXTINFO_STRING")
+        @Column(name = "LOG_EXTINFO_STRING", length = 1024)
         public String getStringValue() {
             return stringValue;
         }
