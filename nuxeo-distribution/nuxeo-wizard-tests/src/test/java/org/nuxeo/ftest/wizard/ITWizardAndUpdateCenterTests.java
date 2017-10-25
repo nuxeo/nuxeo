@@ -24,8 +24,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.net.MalformedURLException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Ignore;
@@ -34,7 +32,6 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.ConnectHomePage;
 import org.nuxeo.functionaltests.pages.admincenter.PackageInstallationScreen;
@@ -74,16 +71,11 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
     protected static final String REGISTRATION_OK = "Nuxeo Online Services registration is OK.";
 
-    @Test
-    public void testAll() throws Exception {
-        runWizardAndRestart();
-        verifyWizardSetup();
-    }
-
     protected String getTestPassword() {
         return System.getProperty("connectPassword");
     }
 
+    @Test
     public void runWizardAndRestart() throws Exception {
         // **********************
         // welcome
@@ -286,27 +278,6 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         SystemHomePage systemHome = adminHome.getSystemHomePage();
         assertNotNull(systemHome);
         systemHome.restart();
-    }
-
-    public void verifyWizardSetup() throws UserNotConnectedException, MalformedURLException {
-        // login
-        DocumentBasePage home = login(NX_LOGIN, NX_PASSWORD);
-
-        // Open Admin Center
-        AdminCenterBasePage adminHome = home.getAdminCenter();
-        assertNotNull(adminHome);
-
-        // Check registration on Online Registration Home
-        ConnectHomePage connectHome = adminHome.getConnectHomePage();
-        assertNotNull(connectHome);
-        assertEquals(REGISTRATION_OK, connectHome.getConnectStatus());
-
-        // Check setup parameters
-        SystemHomePage systemPage = connectHome.getSystemHomePage();
-        String smtpHost = systemPage.getConfig("mail.transport.host");
-        assertEquals(SMTP_SERVER_HOST, smtpHost);
-
-        navToUrl("http://localhost:8080/nuxeo/logout");
     }
 
     public void installPackageAndRestart() throws Exception {
