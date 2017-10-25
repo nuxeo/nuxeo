@@ -48,7 +48,7 @@ class Spreadsheet {
 
     this.query = new Query(connection);
     // include the user's permission on each document
-    this.query.enrich('document', 'permissions');
+    this.query.enrich('document', 'permissions', 'thumbnail');
     // fetch every property and versioning information
     this.query.fetch('document', 'properties', 'versionLabel');
     // fetch parent for directory entries
@@ -119,6 +119,9 @@ class Spreadsheet {
                   case 'userManagerResolver':
                     column.widget.type = (field.type === 'string[]') ? 'multipleUsersSuggestion' : 'singleUserSuggestion';
                     break;
+                  case 'date':
+                    column.widget.type = 'date';
+                    break;
                 }
               }
             }
@@ -127,7 +130,20 @@ class Spreadsheet {
           return column;
         });
 
-        this.columns = cols.map((c) => new Column(connection, c.def, c.widget, this.dirtyRenderer.bind(this)));
+        this.columns = cols.map((c) => {
+          let renderer
+
+          if (c.widget.type === 'date') {
+            renderer = this.dateRenderer.bind(this)
+          } else if (c.widget.field === 'dc:title') {
+            renderer = this.titleRenderer.bind(this)
+          } else {
+            renderer = this.dirtyRenderer.bind(this)
+          }
+
+          return new Column(connection, c.def, c.widget, renderer);
+        });
+
       });
     }
 
@@ -209,15 +225,10 @@ class Spreadsheet {
   }
 
   save() {
-    return Promise.all(
-      Object.keys(this._dirty).map((uid) => {
-        return new Promise((resolve, reject) => {
-          try {
-            // TODO(nfgs) - Move request execution to the connection
-            this.connection.request('/id/' + uid)
-                .put(
-                {data: this._dirty[uid]},
-                (error) => {
+    let promises = Object.keys(this._dirty).map((uid) => {
+
+            return new Promise((resolve, reject) => {
+              let errorFn = (error) => {
                   if (error !== null) {
                     this._dirty[uid]._error = error;
                     reject(Error(error));
@@ -225,20 +236,24 @@ class Spreadsheet {
                   }
                   delete this._dirty[uid];
                   resolve(uid);
-                });
-          } catch (e) {
-            this._dirty[uid]._error = e;
-            reject(Error(e));
-          }
-        });
-      })
-    ).catch((err) => {
-      console.error(err);
-    }).then((result) => {
-      this.ht.clearUndo();
-      this.ht.render();
-      return result;
-    });
+              }
+
+              try {
+                // TODO(nfgs) - Move request execution to the connection
+                this.connection.request('/id/' + uid).put({data: this._dirty[uid]}, errorFn)
+              } catch (e) {
+                this._dirty[uid]._error = e;
+                reject(Error(e));
+              }
+            })
+        })
+
+    return Promise.all(promises).catch((err) => console.error(err))
+                                .then((result) => {
+                                    this.ht.clearUndo();
+                                    this.ht.render();
+                                    return result;
+                              })
   }
 
   onChange(change, source) {
@@ -267,6 +282,54 @@ class Spreadsheet {
         this.save();
       }
       this.ht.render();
+    }
+  }
+
+  dateRenderer(instance, td, row, col, prop, value, cellProperties) {
+    if (value) {
+      value = moment(value).format('MMMM D, YYYY')
+    }
+    Handsontable.renderers.TextRenderer(instance, td, row, col, prop, value, cellProperties);
+    var doc = this.getDataAtRow(row);
+    if (doc && this._dirty[doc.uid]) {
+      // color dirty rows
+      var color = '#e2f1ff';
+      // check for errors
+      if (this._dirty[doc.uid].hasOwnProperty('_error')) {
+        color = '#f33';
+      // check for dirty property
+      } else if (hasProp(this._dirty[doc.uid], prop)) {
+        color = '#afd8ff';
+      }
+      $(td).css({
+        background: color
+      });
+    }
+  }
+
+  titleRenderer(instance, td, row, col, prop, value, cellProperties) {
+    var doc = this.getDataAtRow(row);
+
+    let thumb = (
+      `<div style="display: flex; align-items: center; line-height: 0">
+
+        <div style="width: 30px; height: 30px; text-align:center;">
+          <img style="height: 30px; max-width: 30px" src="${this.getThumbnail(doc)}"/>
+        </div>
+
+        <div style="margin-left: 10px; ">
+          ${value}
+        </div>
+
+      </div>`
+    )
+
+    td.innerHTML = thumb
+  }
+
+  getThumbnail(doc) {
+    if (doc.contextParameters && doc.contextParameters.thumbnail) {
+      return doc.contextParameters.thumbnail.url
     }
   }
 
@@ -320,9 +383,12 @@ function assign(obj, prop, value) {
   if (prop.length > 1) {
     var e = prop.shift();
     assign(obj[e] = Object.prototype.toString.call(obj[e]) === '[object Object]' ? obj[e] : {}, prop, value);
+  } else if (typeof value === 'string' && value === ""){
+    obj[prop[0]] = null ;
   } else {
-    obj[prop[0]] = value;
+    obj[prop[0]] = value ;
   }
+
 }
 
 function hasProp(obj, prop) {
