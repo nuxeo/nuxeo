@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.runtime.api.Framework;
@@ -205,7 +206,7 @@ public class DirectoryCache {
 
     public Cache getEntryCache() {
         if (entryCache == null) {
-            entryCache = Framework.getService(CacheService.class).getCache(entryCacheName);
+            entryCache = getCacheService().getCache(entryCacheName);
         }
         return entryCache;
     }
@@ -213,10 +214,18 @@ public class DirectoryCache {
     public Cache getEntryCacheWithoutReferences() {
 
         if (entryCacheWithoutReferences == null) {
-            entryCacheWithoutReferences = Framework.getService(CacheService.class).getCache(
+            entryCacheWithoutReferences = getCacheService().getCache(
                     entryCacheWithoutReferencesName);
         }
         return entryCacheWithoutReferences;
+    }
+
+    protected CacheService getCacheService() {
+        CacheService cacheService = Framework.getService(CacheService.class);
+        if (cacheService == null) {
+            throw new NuxeoException("Missing CacheService");
+        }
+        return cacheService;
     }
 
 }
