@@ -40,29 +40,9 @@ public class SystemHomePage extends AdminCenterBasePage {
         if (!HOST_SUBTAB.equals(getSelectedSubTab())) {
             selectSubTab(HOST_SUBTAB);
         }
-        WebElement restartButton = findElementWithTimeout(
-                By.xpath("//input[@type='submit' and @value='Restart server']"));
-        if (restartButton != null) {
-            restartButton.click();
-            // Trying wait until on failing alert.accept on some machine:
-            // org.openqa.selenium.WebDriverException:
-            // a.document.getElementsByTagName("dialog")[0] is undefined
+        By restartLocator = By.xpath("//input[@type='submit' and @value='Restart server']");
+        findElementWaitUntilEnabledAndClick(restartLocator);
 
-            // Confirmation alert is disabled during integration tests
-            // (hostInfo.xhtml),
-            // because sometimes webdriver fails to focus on it.
-
-            // new WaitUntil(4000) {
-            // @Override
-            // public boolean condition() {
-            // Alert alert = driver.switchTo().alert();
-            // alert.accept();
-            // return true;
-            // }
-            // }.waitUntil();
-        } else {
-            return null;
-        }
         findElementWithTimeout(By.id("username"), RESTART_TIMEOUT_MINUTES * 60 * 1000);
         return asPage(LoginPage.class);
     }
