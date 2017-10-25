@@ -13,3 +13,6 @@ nuxeo.db.jdbc.url=jdbc:mysql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name
 nuxeo.db.driver=com.mysql.jdbc.Driver
 nuxeo.db.xadatasource=com.mysql.jdbc.jdbc2.optional.MysqlXADataSource
 
+## Startup checks configuration
+mysql.check.classpath=lib:${nuxeo.home}/nxserver/bundles/nuxeo-launcher-commons-*.jar
+mysql.check.class=org.nuxeo.launcher.config.backingservices.DBCheck

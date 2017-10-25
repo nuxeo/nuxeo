@@ -43,7 +43,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.launcher.config.backingservices.BackingChecker;
-import org.nuxeo.launcher.config.backingservices.DBCheck;
 
 import net.jodah.failsafe.Failsafe;
 import net.jodah.failsafe.FailsafeException;
@@ -153,7 +152,6 @@ public class BackingServiceConfigurator {
                             e);
                 }
             }
-            checkers.add(new DBCheck());
         }
         return checkers;
     }

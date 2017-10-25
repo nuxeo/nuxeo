@@ -14,3 +14,6 @@ nuxeo.db.jdbc.url=jdbc:mariadb://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.na
 nuxeo.db.driver=org.mariadb.jdbc.Driver
 nuxeo.db.xadatasource=org.mariadb.jdbc.MariaDbDataSource
 
+## Startup checks configuration
+mariadb.check.classpath=lib:${nuxeo.home}/nxserver/bundles/nuxeo-launcher-commons-*.jar
+mariadb.check.class=org.nuxeo.launcher.config.backingservices.DBCheck

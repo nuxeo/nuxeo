@@ -12,3 +12,6 @@ nuxeo.db.jdbc.url=jdbc:sqlserver://${nuxeo.db.host}:${nuxeo.db.port};database=${
 nuxeo.db.driver=com.microsoft.sqlserver.jdbc.SQLServerDriver
 nuxeo.db.xadatasource=com.microsoft.sqlserver.jdbc.SQLServerXADataSource
 
+## Startup checks configuration
+mssql.check.classpath=lib:${nuxeo.home}/nxserver/bundles/nuxeo-launcher-commons-*.jar
+mssql.check.class=org.nuxeo.launcher.config.backingservices.DBCheck
