@@ -501,10 +501,15 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
                 newUserAdapter.getEmail());
         newUserRegistration.setPropertyValue(userRegistrationService.getConfiguration().getUserInfoGroupsField(),
                 newUserAdapter.getGroups().toArray());
-        newUserRegistration.setPropertyValue(userRegistrationService.getConfiguration().getUserInfoTenantIdField(),
-                newUserAdapter.getTenantId());
         newUserRegistration.setPropertyValue(userRegistrationService.getConfiguration().getUserInfoCompanyField(),
                 newUserAdapter.getCompany());
+
+        String tenantId = newUserAdapter.getTenantId();
+        if (StringUtils.isBlank(tenantId)) {
+            tenantId = ((NuxeoPrincipal) currentUser).getTenantId();
+        }
+        newUserRegistration.setPropertyValue(userRegistrationService.getConfiguration().getUserInfoTenantIdField(),
+                tenantId);
 
         return newUserRegistration;
     }
