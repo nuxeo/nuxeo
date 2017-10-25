@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
-import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.platform.tag.TagServiceImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -156,9 +155,8 @@ public class TestBulkEditService {
 
         bulkEditService.updateDocuments(session, sourceDoc, docs);
 
-        String username = session.getPrincipal().getName();
         for (DocumentModel doc : docs) {
-            tagService.tag(session, doc.getId(), "tag", username);
+            tagService.tag(session, doc.getId(), "tag");
         }
 
         TransactionHelper.commitOrRollbackTransaction();
@@ -170,9 +168,9 @@ public class TestBulkEditService {
         assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
         assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
 
-        List<Tag> tags = tagService.getDocumentTags(session, doc.getId(), username);
+        List<String> tags = new ArrayList<>(tagService.getTags(session, doc.getId()));
         assertEquals(1, tags.size());
-        assertEquals("tag", tags.get(0).getLabel());
+        assertEquals("tag", tags.get(0));
 
         assertEquals("0.1+", doc.getVersionLabel());
 
@@ -180,7 +178,7 @@ public class TestBulkEditService {
         assertEquals("doc1", version.getPropertyValue("dc:title"));
         assertEquals("0.1", version.getVersionLabel());
 
-        tags = tagService.getDocumentTags(session, version.getId(), username);
+        tags = new ArrayList<>(tagService.getTags(session, version.getId()));
         assertEquals(0, tags.size());
     }
 

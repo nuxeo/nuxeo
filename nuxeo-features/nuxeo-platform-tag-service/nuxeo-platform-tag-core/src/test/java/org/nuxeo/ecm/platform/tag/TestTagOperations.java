@@ -39,7 +39,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -105,13 +104,9 @@ public class TestTagOperations {
         Map<String, Object> params = new HashMap<>();
         params.put("tags", inputTags);
         automationService.run(ctx, TagDocument.ID, params);
-        List<Tag> tags = tagService.getDocumentTags(session, docId, "Administrator");
+        Set<String> tags = tagService.getTags(session, docId);
         assertEquals(3, tags.size());
-        Set<String> actual = new HashSet<>();
-        for (Tag tag : tags) {
-            actual.add(tag.getLabel());
-        }
-        assertEquals(new HashSet<>(Arrays.asList(TAG_1, TAG_2, TAG_3)), actual);
+        assertEquals(new HashSet<>(Arrays.asList(TAG_1, TAG_2, TAG_3)), tags);
     }
 
     public void testUntagDocument() throws Exception {
@@ -120,20 +115,16 @@ public class TestTagOperations {
         Map<String, Object> params = new HashMap<>();
         params.put("tags", TAG_1);
         automationService.run(ctx, UntagDocument.ID, params);
-        List<Tag> tags = tagService.getDocumentTags(session, docId, "Administrator");
+        Set<String> tags = tagService.getTags(session, docId);
         assertEquals(2, tags.size());
-        Set<String> actual = new HashSet<>();
-        for (Tag tag : tags) {
-            actual.add(tag.getLabel());
-        }
-        assertEquals(new HashSet<>(Arrays.asList(TAG_2, TAG_3)), actual);
+        assertEquals(new HashSet<>(Arrays.asList(TAG_2, TAG_3)), tags);
     }
 
     public void testRemoveTags() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(document);
         automationService.run(ctx, RemoveDocumentTags.ID);
-        List<Tag> tags = tagService.getDocumentTags(session, docId, "Administrator");
+        Set<String> tags = tagService.getTags(session, docId);
         assertEquals(0, tags.size());
     }
 

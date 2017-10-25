@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.tag.automation;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,7 +34,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TagService;
 
 import net.sf.json.JSONArray;
@@ -77,24 +77,24 @@ public class SuggestTagEntry {
                     return null;
                 } else {
                     String docId = doc.getId();
-                    List<Tag> tags = tagService.getDocumentTags(documentManager, docId, null);
-                    Collections.sort(tags, Tag.LABEL_COMPARATOR);
-                    for (Tag tag : tags) {
+                    List<String> tags = new ArrayList<>(tagService.getTags(documentManager, docId));
+                    Collections.sort(tags);
+                    for (String tag : tags) {
                         JSONObject obj = new JSONObject();
-                        obj.element(SuggestConstants.ID, tag.getLabel());
-                        obj.element(SuggestConstants.LABEL, tag.getLabel());
+                        obj.element(SuggestConstants.ID, tag);
+                        obj.element(SuggestConstants.LABEL, tag);
                         result.add(obj);
                     }
                 }
             } else {
                 if (!StringUtils.isBlank(searchTerm)) {
-                    List<Tag> tags = tagService.getSuggestions(documentManager, searchTerm, null);
-                    Collections.sort(tags, Tag.LABEL_COMPARATOR);
+                    List<String> tags = new ArrayList<>(tagService.getSuggestions(documentManager, searchTerm));
+                    Collections.sort(tags);
                     for (int i = 0; i < 10 && i < tags.size(); i++) {
                         JSONObject obj = new JSONObject();
-                        Tag tag = tags.get(i);
-                        obj.element(SuggestConstants.ID, tag.getLabel());
-                        obj.element(SuggestConstants.LABEL, tag.getLabel());
+                        String tag = tags.get(i);
+                        obj.element(SuggestConstants.ID, tag);
+                        obj.element(SuggestConstants.LABEL, tag);
                         result.add(obj);
                     }
                 }

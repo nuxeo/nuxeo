@@ -146,16 +146,16 @@ public class TagActionsBean implements Serializable {
             String docId = currentDocument.getId();
 
             TagService tagService = getTagService();
-            tagService.tag(documentManager, docId, tagLabel, null);
+            tagService.tag(documentManager, docId, tagLabel);
             if (currentDocument.isVersion()) {
                 DocumentModel liveDocument = documentManager.getSourceDocument(currentDocument.getRef());
                 if (!liveDocument.isCheckedOut()) {
-                    tagService.tag(documentManager, liveDocument.getId(), tagLabel, null);
+                    tagService.tag(documentManager, liveDocument.getId(), tagLabel);
                 }
             } else if (!currentDocument.isCheckedOut()) {
                 DocumentRef ref = documentManager.getBaseVersion(currentDocument.getRef());
                 if (ref instanceof IdRef) {
-                    tagService.tag(documentManager, ref.toString(), tagLabel, null);
+                    tagService.tag(documentManager, ref.toString(), tagLabel);
                 }
             }
             messageKey = "message.add.new.tagging";
@@ -175,17 +175,17 @@ public class TagActionsBean implements Serializable {
         String docId = currentDocument.getId();
 
         TagService tagService = getTagService();
-        tagService.untag(documentManager, docId, label, null);
+        tagService.untag(documentManager, docId, label);
 
         if (currentDocument.isVersion()) {
             DocumentModel liveDocument = documentManager.getSourceDocument(currentDocument.getRef());
             if (!liveDocument.isCheckedOut()) {
-                tagService.untag(documentManager, liveDocument.getId(), label, null);
+                tagService.untag(documentManager, liveDocument.getId(), label);
             }
         } else if (!currentDocument.isCheckedOut()) {
             DocumentRef ref = documentManager.getBaseVersion(currentDocument.getRef());
             if (ref instanceof IdRef) {
-                tagService.untag(documentManager, ref.toString(), label, null);
+                tagService.untag(documentManager, ref.toString(), label);
             }
         }
 
@@ -226,7 +226,7 @@ public class TagActionsBean implements Serializable {
         if (StringUtils.isBlank(listLabel)) {
             return new DocumentModelListImpl(0);
         } else {
-            List<String> ids = getTagService().getTagDocumentIds(documentManager, listLabel, null);
+            List<String> ids = getTagService().getTagDocumentIds(documentManager, listLabel);
             DocumentModelList docs = new DocumentModelListImpl(ids.size());
             DocumentModel doc = null;
             for (String id : ids) {
@@ -328,10 +328,9 @@ public class TagActionsBean implements Serializable {
         List<String> tags = (List<String>) docModel.getContextData("bulk_tags");
         if (tags != null && !tags.isEmpty()) {
             TagService tagService = Framework.getLocalService(TagService.class);
-            String username = documentManager.getPrincipal().getName();
             for (DocumentModel doc : documents) {
                 for (String tag : tags) {
-                    tagService.tag(documentManager, doc.getId(), tag, username);
+                    tagService.tag(documentManager, doc.getId(), tag);
                 }
             }
         }
