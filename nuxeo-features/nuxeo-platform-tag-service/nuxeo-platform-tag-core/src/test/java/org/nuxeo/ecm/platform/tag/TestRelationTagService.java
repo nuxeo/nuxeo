@@ -33,6 +33,7 @@ import static org.junit.Assume.assumeTrue;
  *
  * @since 9.3
  */
+@LocalDeploy("org.nuxeo.ecm.platform.tag:relation-tag-service-override.xml")
 public class TestRelationTagService extends AbstractTestTagService {
 
     protected static final String TAG_DOCUMENT_TYPE = "Tag";
