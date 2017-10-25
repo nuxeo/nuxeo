@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.JavaScriptErrorCollector.JavaScriptErrorIgnoreRule;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -77,6 +78,9 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
     @Test
     public void runWizardAndRestart() throws Exception {
+        addAfterTestIgnores(JavaScriptErrorIgnoreRule.startsWith("unreachable code after return statement")
+                                                     .withSource("https://fast.wistia.com"));
+
         // **********************
         // welcome
         WizardPage welcomePage = get(NUXEO_URL, WizardPage.class);
@@ -238,8 +242,8 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         driver.findElement(By.id("username")).sendKeys(CONNECT_LOGIN);
         driver.findElement(By.id("password")).sendKeys(getTestPassword());
         String windowHandle = driver.getWindowHandle();
-        driver.findElement(By.cssSelector(".btn-submit")).click();
 
+        Locator.findElementWithTimeoutAndClick(By.cssSelector(".btn-submit"));
         Locator.waitUntilWindowClosed(windowHandle);
 
         // select the associated project
