@@ -76,6 +76,9 @@ public abstract class AbstractWizardPage extends AbstractPage {
         return nav(wizardPageClass, selector, waitForURLChange ? null : (Function<WebDriver, Boolean>) input -> true);
     }
 
+    /**
+     * @since 9.3
+     */
     protected <T extends AbstractPage> T nav(Class<T> wizardPageClass, By selector,
             Function<WebDriver, Boolean> function) {
         WebElement action = findElementWithTimeout(selector);
