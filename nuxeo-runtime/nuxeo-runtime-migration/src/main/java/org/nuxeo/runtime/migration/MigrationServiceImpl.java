@@ -18,16 +18,24 @@
  */
 package org.nuxeo.runtime.migration;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
@@ -40,6 +48,8 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
+import org.nuxeo.runtime.pubsub.AbstractPubSubBroker;
+import org.nuxeo.runtime.pubsub.SerializableMessage;
 
 /**
  * Implementation for the Migration Service.
@@ -61,7 +71,8 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  */
 public class MigrationServiceImpl extends DefaultComponent implements MigrationService {
 
-    private static final Log log = LogFactory.getLog(MigrationServiceImpl.class);
+    // package-private to avoid synthetic accessor for access from nested class
+    static final Log log = LogFactory.getLog(MigrationServiceImpl.class);
 
     public static final String KEYVALUE_STORE_NAME = "migration";
 
@@ -83,9 +94,19 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
     public static final long WRITE_LOCK_TTL = 10; // 10 sec for a few k/v writes is plenty enough
 
+    public static final String MIGRATION_INVAL_PUBSUB_TOPIC = "migrationinval";
+
+    public static final String CLUSTERING_ENABLED_PROP = "repository.clustering.enabled";
+
+    public static final String NODE_ID_PROP = "repository.clustering.id";
+
+    protected static final Random RANDOM = new Random();
+
     protected final MigrationRegistry registry = new MigrationRegistry();
 
     protected MigrationThreadPoolExecutor executor;
+
+    protected MigrationInvalidator invalidator;
 
     public static class MigrationRegistry extends SimpleContributionRegistry<MigrationDescriptor> {
 
@@ -115,6 +136,51 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         @Override
         public void merge(MigrationDescriptor src, MigrationDescriptor dst) {
             dst.merge(src);
+        }
+    }
+
+    public static class MigrationInvalidation implements SerializableMessage {
+
+        private static final long serialVersionUID = 1L;
+
+        public final String id;
+
+        public MigrationInvalidation(String id) {
+            this.id = id;
+        }
+
+        @Override
+        public void serialize(OutputStream out) throws IOException {
+            IOUtils.write(id, out, UTF_8);
+        }
+
+        public static MigrationInvalidation deserialize(InputStream in) throws IOException {
+            String id = IOUtils.toString(in, UTF_8);
+            return new MigrationInvalidation(id);
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "(" + id + ")";
+        }
+    }
+
+    public class MigrationInvalidator extends AbstractPubSubBroker<MigrationInvalidation> {
+
+        @Override
+        public MigrationInvalidation deserialize(InputStream in) throws IOException {
+            return MigrationInvalidation.deserialize(in);
+        }
+
+        @Override
+        public void receivedMessage(MigrationInvalidation message) {
+            String id = message.id;
+            StatusChangeNotifier notifier = getStatusChangeNotifier(id);
+            if (notifier == null) {
+                log.error("Unknown migration id received in invalidation: " + id);
+                return;
+            }
+            notifier.notifyStatusChange();
         }
     }
 
@@ -278,6 +344,24 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
     @Override
     public void start(ComponentContext context) {
+        if (Framework.isBooleanPropertyTrue(CLUSTERING_ENABLED_PROP)) {
+            // register migration invalidator
+            String nodeId = Framework.getProperty(NODE_ID_PROP);
+            if (StringUtils.isBlank(nodeId)) {
+                nodeId = String.valueOf(RANDOM.nextLong());
+                log.warn("Missing cluster node id configuration, please define it explicitly "
+                        + "(usually through repository.clustering.id). Using random cluster node id instead: "
+                        + nodeId);
+            } else {
+                nodeId = nodeId.trim();
+            }
+            invalidator = new MigrationInvalidator();
+            invalidator.initialize(MIGRATION_INVAL_PUBSUB_TOPIC, nodeId);
+            log.info("Registered migration invalidator for node: " + nodeId);
+        } else {
+            log.info("Not registering a migration invalidator because clustering is not enabled");
+        }
+
         executor = new MigrationThreadPoolExecutor();
         Framework.getRuntime().getComponentManager().addListener(new ComponentManager.LifeCycleHandler() {
 
@@ -350,6 +434,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
+        StatusChangeNotifier notifier = getStatusChangeNotifier(descr);
 
         ProgressReporter progressReporter = new ProgressReporter(id);
 
@@ -380,7 +465,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         });
 
         // allow notification of running step
-        migrator.notifyStatusChange();
+        notifier.notifyStatusChange();
 
         executor.submit(new MigratorWithContext(migrationContext -> {
             Thread.currentThread().setName("Nuxeo-Migrator-" + id);
@@ -394,10 +479,32 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
                 progressReporter.reportProgress(null, -2, -2, false);
             });
             // allow notification of new state
-            migrator.notifyStatusChange();
+            notifier.notifyStatusChange();
         }, progressReporter));
     }
 
+    protected StatusChangeNotifier getStatusChangeNotifier(String id) {
+        MigrationDescriptor descr = registry.getMigrationDescriptor(id);
+        return descr == null ? null : getStatusChangeNotifier(descr);
+    }
+
+    protected StatusChangeNotifier getStatusChangeNotifier(MigrationDescriptor descr) {
+        Class<?> klass = descr.getStatusChangeNotifierClass();
+        if (klass == null) {
+            throw new RuntimeException("Missing statusChangeNotifier for migration: " + descr.getId());
+        }
+        if (!StatusChangeNotifier.class.isAssignableFrom(klass)) {
+            throw new RuntimeException("Invalid class not implementing StatusChangeNotifier: " + klass.getName()
+                    + " for migration: " + descr.getId());
+        }
+        StatusChangeNotifier notifier;
+        try {
+            notifier = (StatusChangeNotifier) klass.getConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+        return notifier;
+    }
 
     /**
      * Executes something while setting a lock, retrying a few times if the lock is already set.
