@@ -321,7 +321,18 @@ public abstract class AbstractTest {
         return asPage(pageClassToProxy);
     }
 
-    public static WebDriver switchToPopup(String url) {
+    public static WebDriver getPopup() {
+        return switchToPopup(null);
+    }
+
+    /**
+     * Focus popup that contains text parameter value in his current URL.
+     *
+     * @param text that must be contained in popup URL
+     * @return WebDriver instance to be chained
+     * @since 9.3
+     */
+    public static WebDriver switchToPopup(String text) {
         String currentWindow = null;
         try {
             currentWindow = driver.getWindowHandle();
@@ -335,13 +346,13 @@ public abstract class AbstractTest {
             }
 
             driver.switchTo().window(popup);
-            if (url == null || driver.getCurrentUrl().contains(url)) {
+            if (text == null || driver.getCurrentUrl().contains(text)) {
                 System.out.println(driver.getCurrentUrl());
                 return driver;
             }
         }
 
-        throw new NotFoundException("Not found popup: " + url);
+        throw new NotFoundException("Popup not found: " + text);
     }
 
     public static <T> T asPage(Class<T> pageClassToProxy) {

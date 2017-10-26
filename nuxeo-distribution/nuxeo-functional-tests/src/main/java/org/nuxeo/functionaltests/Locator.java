@@ -180,6 +180,7 @@ public class Locator {
      *
      * @param by the locating mechanism
      * @return true if element exists, false otherwise
+     * @since 9.3
      */
     public static boolean hasElementWithTimeout(By by) {
         try {
@@ -207,6 +208,7 @@ public class Locator {
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
      * @return true if element exists, false otherwise
+     * @since 9.3
      */
     public static boolean hasElementWithTimeout(By by, int timeout) {
         try {
@@ -483,23 +485,6 @@ public class Locator {
             wait.until(function);
         } catch (TimeoutException e) {
             throw new NotFoundException("Element not enabled after timeout: " + element);
-        }
-    }
-
-    /**
-     * Waits until an element is displayed, with a timeout
-     *
-     * @param element the element to wait for
-     * @param timeout the timeout in milliseconds
-     */
-    public static void waitUntilDisplayed(final WebElement element, int timeout) {
-        FluentWait<WebDriver> wait = getFluentWait();
-        wait.withTimeout(timeout, TimeUnit.MILLISECONDS);
-        Function<WebDriver, Boolean> function = driver -> element.isDisplayed();
-        try {
-            wait.until(function);
-        } catch (TimeoutException e) {
-            throw new NotFoundException("Element not visible after timeout: " + element);
         }
     }
 
