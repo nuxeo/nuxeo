@@ -26,7 +26,9 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.versioning.StandardVersioningService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 public class TestVersioningService extends AbstractTestVersioning {
 
@@ -291,6 +293,50 @@ public class TestVersioningService extends AbstractTestVersioning {
         doc.refresh();
         assertTrue(doc.isCheckedOut());
         assertEquals("0.2+", doc.getVersionLabel());
+    }
+
+    /**
+     * Tests that versioning a document having {@link StandardVersioningService#APPROVED_STATE} or
+     * {@link StandardVersioningService#OBSOLETE_STATE} don't crash when it doesn't have
+     * {@link StandardVersioningService#BACK_TO_PROJECT_TRANSITION}.
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-life-cycle-almost-default.xml")
+    public void testDontBackToProjectTransition() {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        // method calling followTransition is during preSave step - checkin our document after putting it to approved
+        doc.followTransition("to_approved");
+        doc.checkIn(VersioningOption.MINOR, "minor version");
+
+        // trigger versioning during a save
+        doc.setPropertyValue("dc:description", "New description");
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        assertEquals("approved", doc.getCurrentLifeCycleState());
+        assertEquals("1.0", doc.getVersionLabel());
+        assertFalse(doc.isCheckedOut());
+
+        // check service still follow transition with right context
+        doc = session.createDocumentModel("/", "note", "Note");
+        doc = session.createDocument(doc);
+        session.save();
+        // method calling followTransition is during preSave step - checkin our document after putting it to approved
+        doc.followTransition("approve");
+        doc.checkIn(VersioningOption.MINOR, "minor version");
+
+        // trigger versioning during a save
+        doc.setPropertyValue("dc:description", "New description");
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        assertEquals("project", doc.getCurrentLifeCycleState());
+        assertEquals("1.0", doc.getVersionLabel());
+        assertFalse(doc.isCheckedOut());
     }
 
 }

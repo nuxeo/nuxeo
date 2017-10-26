@@ -49,7 +49,6 @@ import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -333,7 +332,8 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     protected void followTransitionByOption(CoreSession session, Document doc, Map<String, Serializable> options) {
         String lifecycleState = doc.getLifeCycleState();
-        if (APPROVED_STATE.equals(lifecycleState) || OBSOLETE_STATE.equals(lifecycleState)) {
+        if ((APPROVED_STATE.equals(lifecycleState) || OBSOLETE_STATE.equals(lifecycleState))
+                && doc.getAllowedStateTransitions().contains(BACK_TO_PROJECT_TRANSITION)) {
             doc.followTransition(BACK_TO_PROJECT_TRANSITION);
             if (session != null) {
                 // Send an event to notify that the document state has changed
