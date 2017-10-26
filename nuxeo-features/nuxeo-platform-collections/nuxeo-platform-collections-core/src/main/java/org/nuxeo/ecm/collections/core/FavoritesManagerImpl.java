@@ -27,8 +27,6 @@ import org.nuxeo.ecm.collections.api.FavoritesConstants;
 import org.nuxeo.ecm.collections.api.FavoritesManager;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -39,7 +37,6 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 5.9.4
@@ -70,17 +67,18 @@ public class FavoritesManagerImpl extends DefaultComponent implements FavoritesM
         }
         doc.setPropertyValue("dc:title", title);
         doc.setPropertyValue("dc:description", "");
-        doc = session.createDocument(doc);
+        return doc;
+    }
 
+    protected DocumentModel initCreateFavorites(CoreSession session, DocumentModel favorites) {
         ACP acp = new ACPImpl();
         ACE denyEverything = new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
         ACE allowEverything = new ACE(session.getPrincipal().getName(), SecurityConstants.EVERYTHING, true);
         ACL acl = new ACLImpl();
         acl.setACEs(new ACE[] { allowEverything, denyEverything });
         acp.addACL(acl);
-        doc.setACP(acp, true);
-
-        return doc;
+        favorites.setACP(acp, true);
+        return favorites;
     }
 
     @Override
@@ -91,31 +89,8 @@ public class FavoritesManagerImpl extends DefaultComponent implements FavoritesM
             // no user workspace => no favorites (transient user for instance)
             return null;
         }
-
-        final DocumentRef lookupRef = new PathRef(userWorkspace.getPath().toString(),
-                FavoritesConstants.DEFAULT_FAVORITES_NAME);
-        if (session.exists(lookupRef)) {
-            return session.getChild(userWorkspace.getRef(), FavoritesConstants.DEFAULT_FAVORITES_NAME);
-        } else {
-            // does not exist yet, let's create it
-            synchronized (this) {
-                TransactionHelper.commitOrRollbackTransaction();
-                TransactionHelper.startTransaction();
-                if (!session.exists(lookupRef)) {
-                    boolean succeed = false;
-                    try {
-                        createFavorites(session, userWorkspace);
-                        succeed = true;
-                    } finally {
-                        if (succeed) {
-                            TransactionHelper.commitOrRollbackTransaction();
-                            TransactionHelper.startTransaction();
-                        }
-                    }
-                }
-                return session.getDocument(lookupRef);
-            }
-        }
+        DocumentModel favorites = createFavorites(session, userWorkspace);
+        return session.getOrCreateDocument(favorites, doc -> initCreateFavorites(session, doc));
     }
 
     protected Locale getLocale(final CoreSession session) {
