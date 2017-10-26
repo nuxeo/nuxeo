@@ -42,7 +42,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.rest.DocumentObject;
+import org.nuxeo.ecm.restapi.server.jaxrs.JSONDocumentObject;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
@@ -117,7 +117,7 @@ public class BOAdapter extends DefaultAdapter {
             BusinessAdapter input) {
         DocumentModel document = input.getDocument();
 
-        DocumentObject dobj = (DocumentObject) getTarget();
+        JSONDocumentObject dobj = (JSONDocumentObject) getTarget();
         DocumentModel parentDoc = dobj.getDocument();
 
         document.setPathInfo(parentDoc.getPathAsString(), docName);

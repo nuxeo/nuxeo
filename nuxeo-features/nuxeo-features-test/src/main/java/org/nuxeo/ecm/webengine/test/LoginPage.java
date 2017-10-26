@@ -28,7 +28,9 @@ import org.openqa.selenium.support.How;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 9.3
  */
+@Deprecated
 public class LoginPage extends WebPage {
 
     @FindBy(how = How.ID, using = "username")

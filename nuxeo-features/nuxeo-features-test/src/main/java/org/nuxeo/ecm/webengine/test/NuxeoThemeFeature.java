@@ -24,9 +24,11 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 9.3
  */
 @Deploy({ "org.nuxeo.theme.core", "org.nuxeo.theme.html", "org.nuxeo.theme.fragments", "org.nuxeo.theme.webengine" })
 @Features(WebEngineFeature.class)
+@Deprecated
 public class NuxeoThemeFeature extends SimpleFeature {
 
 }

@@ -24,7 +24,9 @@ import org.openqa.selenium.By;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 9.3
  */
+@Deprecated
 public class DocumentPage extends WebPage {
 
     public String getTitle() {
