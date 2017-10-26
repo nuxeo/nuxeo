@@ -51,6 +51,7 @@ public class TestMigrationDescriptor {
         assertEquals("my_migration", desc.id);
         assertEquals("my_migration", desc.descriptionLabel);
         assertEquals("My Migration", desc.description);
+        assertEquals(java.lang.Float.class, desc.statusChangeNotifierClass);
         assertEquals("v2", desc.defaultState);
 
         assertEquals(Arrays.asList("v1", "v2", "v3"), new ArrayList<>(desc.states.keySet()));
@@ -99,6 +100,7 @@ public class TestMigrationDescriptor {
         assertEquals("my_migration", desc.id);
         assertEquals("newLabel", desc.descriptionLabel);
         assertEquals("New Descr", desc.description);
+        assertEquals(java.lang.Float.class, desc.statusChangeNotifierClass);
         assertEquals("v4", desc.defaultState);
 
         assertEquals(Arrays.asList("v1", "v2", "v3", "v4"), new ArrayList<>(desc.states.keySet()));

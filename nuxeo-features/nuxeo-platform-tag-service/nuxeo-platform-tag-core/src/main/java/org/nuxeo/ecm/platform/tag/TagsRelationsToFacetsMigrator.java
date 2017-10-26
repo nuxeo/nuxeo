@@ -145,12 +145,6 @@ public class TagsRelationsToFacetsMigrator implements Migrator {
         }
     }
 
-    @Override
-    public void notifyStatusChange() {
-        TagServiceImpl tagService = (TagServiceImpl) Framework.getRuntime().getComponent(TagServiceImpl.NAME);
-        tagService.invalidateTagServiceImplementation();
-    }
-
     protected void checkShutdownRequested() {
         if (migrationContext.isShutdownRequested()) {
             throw new MigrationShutdownException();

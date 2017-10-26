@@ -26,6 +26,19 @@ package org.nuxeo.runtime.migration;
 public interface MigrationService {
 
     /**
+     * Interface for the implementation of status change notification.
+     *
+     * @since 9.3
+     */
+    interface StatusChangeNotifier {
+
+        /**
+         * Allows notification of running step or new state.
+         */
+        void notifyStatusChange();
+    }
+
+    /**
      * Interface for the implementation of a migration step.
      *
      * @since 9.3
@@ -41,11 +54,6 @@ public interface MigrationService {
          * @param migrationContext the migration context.
          */
         void run(MigrationContext migrationContext);
-
-        /**
-         * Allows notification of running step or new state.
-         */
-        void notifyStatusChange();
     }
 
     /**

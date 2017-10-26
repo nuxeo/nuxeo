@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
 <migration id="my_migration">
   <description label="my_migration">My Migration</description>
+  <statusChangeNotifier>java.lang.Float</statusChangeNotifier>
+
   <defaultState>v2</defaultState>
+
   <state id="v1">
     <description label="my_migration.state.v1">Initial state</description>
   </state>

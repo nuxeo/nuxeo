@@ -26,11 +26,10 @@ import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STATE_FACETS;
 import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STATE_RELATIONS;
 import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STEP_RELATIONS_TO_FACETS;
 
-import java.util.Objects;
-
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService;
 import org.nuxeo.runtime.migration.MigrationService.MigrationStatus;
+import org.nuxeo.runtime.migration.MigrationService.StatusChangeNotifier;
 import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -93,6 +92,19 @@ public class TagServiceImpl extends DefaultComponent {
             }
         }
         return (T) tagService;
+    }
+
+    /**
+     * Callback class to notify of migration status changes.
+     *
+     * @since 9.3
+     */
+    public static class TagServiceStatusChangeNotifier implements StatusChangeNotifier {
+        @Override
+        public void notifyStatusChange() {
+            TagServiceImpl tagService = (TagServiceImpl) Framework.getRuntime().getComponent(TagServiceImpl.NAME);
+            tagService.invalidateTagServiceImplementation();
+        }
     }
 
     /**
