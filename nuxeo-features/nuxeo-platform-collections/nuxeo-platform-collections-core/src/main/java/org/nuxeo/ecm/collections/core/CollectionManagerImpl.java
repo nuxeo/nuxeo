@@ -70,7 +70,6 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 5.9.3
@@ -191,7 +190,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
         return session.createDocument(newCollection);
     }
 
-    protected DocumentModel createDefaultCollections(final CoreSession session, DocumentModel userWorkspace) {
+    protected DocumentModel createDefaultCollectionsRoot(final CoreSession session, DocumentModel userWorkspace) {
         DocumentModel doc = session.createDocumentModel(userWorkspace.getPath().toString(),
                 CollectionConstants.DEFAULT_COLLECTIONS_NAME, CollectionConstants.COLLECTIONS_TYPE);
         String title = null;
@@ -203,47 +202,28 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
         }
         doc.setPropertyValue("dc:title", title);
         doc.setPropertyValue("dc:description", "");
-        doc = session.createDocument(doc);
+        return doc;
+    }
 
+    protected DocumentModel initDefaultCollectionsRoot(final CoreSession session, DocumentModel collectionsRoot) {
         ACP acp = new ACPImpl();
         ACE denyEverything = new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
         ACE allowEverything = new ACE(session.getPrincipal().getName(), SecurityConstants.EVERYTHING, true);
         ACL acl = new ACLImpl();
         acl.setACEs(new ACE[] { allowEverything, denyEverything });
         acp.addACL(acl);
-        doc.setACP(acp, true);
-
-        return doc;
+        collectionsRoot.setACP(acp, true);
+        return collectionsRoot;
     }
+
 
     @Override
     public DocumentModel getUserDefaultCollections(final DocumentModel context, final CoreSession session) {
         final UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
         final DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, context);
-        final DocumentRef lookupRef = new PathRef(userWorkspace.getPath().toString(),
-                CollectionConstants.DEFAULT_COLLECTIONS_NAME);
-        if (session.exists(lookupRef)) {
-            return session.getChild(userWorkspace.getRef(), CollectionConstants.DEFAULT_COLLECTIONS_NAME);
-        } else {
-            // does not exist yet, let's create it
-            synchronized (this) {
-                TransactionHelper.commitOrRollbackTransaction();
-                TransactionHelper.startTransaction();
-                if (!session.exists(lookupRef)) {
-                    boolean succeed = false;
-                    try {
-                        createDefaultCollections(session, userWorkspace);
-                        succeed = true;
-                    } finally {
-                        if (succeed) {
-                            TransactionHelper.commitOrRollbackTransaction();
-                            TransactionHelper.startTransaction();
-                        }
-                    }
-                }
-                return session.getDocument(lookupRef);
-            }
-        }
+
+        DocumentModel defaultCollectionsRoot = createDefaultCollectionsRoot(session, userWorkspace);
+        return session.getOrCreateDocument(defaultCollectionsRoot, doc -> initDefaultCollectionsRoot(session, doc));
     }
 
     @Override
