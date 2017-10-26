@@ -94,19 +94,18 @@ public class DirectoryCache {
         if (!isCacheEnabled()) {
             return source.getEntryFromSource(entryId, fetchReferences);
         } else if (isCacheEnabled() && (getEntryCache() == null || getEntryCacheWithoutReferences() == null)) {
-
-            log.warn("Your directory configuration for cache is wrong, directory cache will not be used.");
-            if (getEntryCache() == null) {
-                log.warn(String.format(
-                        "The cache for entry '%s' has not been found, please check the cache name or make sure you have deployed it",
-                        entryCacheName));
+            if (log.isDebugEnabled()) {
+                if (getEntryCache() == null) {
+                    log.debug(String.format(
+                            "The cache '%s' is undefined for directory '%s', it will be created with the default cache configuration",
+                            entryCacheName, name));
+                }
+                if (getEntryCacheWithoutReferences() == null) {
+                    log.debug(String.format(
+                            "The cache '%s' is undefined for directory '%s', it will be created with the default cache configuration",
+                            entryCacheWithoutReferencesName, name));
+                }
             }
-            if (getEntryCacheWithoutReferences() == null) {
-                log.warn(String.format(
-                        "The cache for entry without references '%s' has not been found, please check the cache name or make sure you have deployed it",
-                        entryCacheWithoutReferencesName));
-            }
-
             return source.getEntryFromSource(entryId, fetchReferences);
         }
 
