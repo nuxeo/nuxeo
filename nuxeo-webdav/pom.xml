@@ -54,11 +54,6 @@
       <artifactId>nuxeo-webengine-core</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.webengine</groupId>
-      <artifactId>nuxeo-webengine-base</artifactId>
-      <scope>provided</scope>
-    </dependency>
 
     <!-- needed for some reason (to check!) -->
     <dependency>
