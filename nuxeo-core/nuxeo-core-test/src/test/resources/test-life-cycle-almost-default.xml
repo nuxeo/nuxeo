@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.lifecycle.test.almost-default" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="lifecycle">
+    <lifecycle name="almostDefault" defaultInitial="project">
+      <transitions>
+        <transition name="to_approved" destinationState="approved" />
+        <transition name="to_obsolete" destinationState="obsolete" />
+        <transition name="to_project" destinationState="project" />
+      </transitions>
+      <states>
+        <state name="project" initial="true">
+          <transitions>
+            <transition>to_approved</transition>
+            <transition>to_obsolote</transition>
+          </transitions>
+        </state>
+        <state name="approved">
+          <transitions>
+            <transition>to_obsolete</transition>
+            <transition>to_project</transition>
+          </transitions>
+        </state>
+        <state name="obsolete">
+          <transitions>
+            <transition>to_project</transition>
+          </transitions>
+        </state>
+      </states>
+    </lifecycle>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="types">
+    <types>
+      <type name="File">almostDefault</type>
+    </types>
+  </extension>
+
+</component>
