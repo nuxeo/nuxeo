@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.platform.rendition.Rendition;
-import org.nuxeo.ecm.platform.rendition.extension.AutomationRenderer;
+import org.nuxeo.ecm.platform.rendition.extension.DefaultAutomationRenditionProvider;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 7.2
  */
-public abstract class AbstractLazyCachableRenditionProvider implements RenditionProvider {
+public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutomationRenditionProvider {
 
     public static final String SOURCE_DOCUMENT_MODIFICATION_DATE_KEY = "sourceDocumentModificationDate";
 
@@ -99,11 +99,6 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
             log.debug(String.format("Returning blobs: %s.", blobInfo));
         }
         return blobs;
-    }
-
-    @Override
-    public String getVariant(DocumentModel doc, RenditionDefinition definition) {
-        return AutomationRenderer.getVariant(doc, definition);
     }
 
     public String buildRenditionKey(DocumentModel doc, RenditionDefinition def) {
