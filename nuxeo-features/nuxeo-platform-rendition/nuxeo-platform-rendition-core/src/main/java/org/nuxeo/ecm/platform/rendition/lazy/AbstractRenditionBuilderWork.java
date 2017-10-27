@@ -83,8 +83,8 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
 
     @Override
     public String getTitle() {
-        return "Lazy Rendition for " + renditionName + " on " + docRef.toString()
-                + " on behalf of " + originatingUsername;
+        return "Lazy Rendition for " + renditionName + " on " + docRef.toString() + " on behalf of "
+                + originatingUsername;
     }
 
     @Override

@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -164,22 +165,14 @@ public class RedisWorkQueuing implements WorkQueuing {
         RedisAdmin admin = Framework.getService(RedisAdmin.class);
         redisNamespace = admin.namespace("work");
         try {
-            initWorkQueueSha = admin.load("org.nuxeo.ecm.core.redis", "init-work-queue")
-                    .getBytes();
-            metricsWorkQueueSha = admin.load("org.nuxeo.ecm.core.redis", "metrics-work-queue")
-                    .getBytes();
-            schedulingWorkSha = admin.load("org.nuxeo.ecm.core.redis", "scheduling-work")
-                    .getBytes();
-            popWorkSha = admin.load("org.nuxeo.ecm.core.redis", "pop-work")
-                    .getBytes();
-            runningWorkSha = admin.load("org.nuxeo.ecm.core.redis", "running-work")
-                    .getBytes();
-            cancelledScheduledWorkSha = admin.load("org.nuxeo.ecm.core.redis", "cancelled-scheduled-work")
-                    .getBytes();
-            completedWorkSha = admin.load("org.nuxeo.ecm.core.redis", "completed-work")
-                    .getBytes();
-            cancelledRunningWorkSha = admin.load("org.nuxeo.ecm.core.redis", "cancelled-running-work")
-                    .getBytes();
+            initWorkQueueSha = admin.load("org.nuxeo.ecm.core.redis", "init-work-queue").getBytes();
+            metricsWorkQueueSha = admin.load("org.nuxeo.ecm.core.redis", "metrics-work-queue").getBytes();
+            schedulingWorkSha = admin.load("org.nuxeo.ecm.core.redis", "scheduling-work").getBytes();
+            popWorkSha = admin.load("org.nuxeo.ecm.core.redis", "pop-work").getBytes();
+            runningWorkSha = admin.load("org.nuxeo.ecm.core.redis", "running-work").getBytes();
+            cancelledScheduledWorkSha = admin.load("org.nuxeo.ecm.core.redis", "cancelled-scheduled-work").getBytes();
+            completedWorkSha = admin.load("org.nuxeo.ecm.core.redis", "completed-work").getBytes();
+            cancelledRunningWorkSha = admin.load("org.nuxeo.ecm.core.redis", "cancelled-running-work").getBytes();
         } catch (IOException e) {
             throw new RuntimeException("Cannot load LUA scripts", e);
         }
@@ -197,7 +190,6 @@ public class RedisWorkQueuing implements WorkQueuing {
     public NuxeoBlockingQueue getQueue(String queueId) {
         return allQueued.get(queueId);
     }
-
 
     @Override
     public void workSchedule(String queueId, Work work) {
@@ -611,14 +603,8 @@ public class RedisWorkQueuing implements WorkQueuing {
     }
 
     protected List<byte[]> keys(String queueid) {
-        return Arrays.asList(dataKey(),
-                stateKey(),
-                countKey(queueid),
-                scheduledKey(queueid),
-                queuedKey(queueid),
-                runningKey(queueid),
-                completedKey(queueid),
-                canceledKey(queueid));
+        return Arrays.asList(dataKey(), stateKey(), countKey(queueid), scheduledKey(queueid), queuedKey(queueid),
+                runningKey(queueid), completedKey(queueid), canceledKey(queueid));
     }
 
     protected List<byte[]> args(String workId) throws IOException {
@@ -767,18 +753,18 @@ public class RedisWorkQueuing implements WorkQueuing {
         RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
         List<byte[]> keys = keys(queueId);
         List<byte[]> args = Collections.singletonList(STATE_RUNNING);
-        List<?> result = (List<?>)redisExecutor.evalsha(popWorkSha, keys, args);
+        List<?> result = (List<?>) redisExecutor.evalsha(popWorkSha, keys, args);
         if (result == null) {
             return null;
         }
 
-        List<Number> numbers = (List<Number>)result.get(0);
+        List<Number> numbers = (List<Number>) result.get(0);
         WorkQueueMetrics metrics = metrics(queueId, coerceNullToZero(numbers));
         Object bytes = result.get(1);
         if (bytes instanceof String) {
             bytes = bytes((String) bytes);
         }
-        Work work = deserializeWork((byte[])bytes);
+        Work work = deserializeWork((byte[]) bytes);
 
         listener.queueChanged(work, metrics);
 
@@ -860,6 +846,7 @@ public class RedisWorkQueuing implements WorkQueuing {
         }
         return counters;
     }
+
     @Override
     public void listen(Listener listener) {
         this.listener = listener;

@@ -86,11 +86,7 @@ public class MemoryWorkQueuing implements WorkQueuing {
     }
 
     Optional<Work> lookup(String workId) {
-        return allQueued.values()
-                .stream()
-                .map(queue -> queue.lookup(workId))
-                .filter(work -> work != null)
-                .findAny();
+        return allQueued.values().stream().map(queue -> queue.lookup(workId)).filter(work -> work != null).findAny();
     }
 
     @Override
@@ -116,8 +112,7 @@ public class MemoryWorkQueuing implements WorkQueuing {
 
     @Override
     public State getWorkState(String workId) {
-        return lookup(workId).map(Work::getWorkInstanceState)
-                .orElse(null);
+        return lookup(workId).map(Work::getWorkInstanceState).orElse(null);
     }
 
     @Override

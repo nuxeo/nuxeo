@@ -337,7 +337,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             renditionDefinitionProviderRegistry.removeContribution(
                     (RenditionDefinitionProviderDescriptor) contribution);
         } else if (STORED_RENDITION_MANAGERS_EP.equals(extensionPoint)) {
-            storedRenditionManagerDescriptors.remove(((StoredRenditionManagerDescriptor) contribution));
+            storedRenditionManagerDescriptors.remove((contribution));
         } else if (DEFAULT_RENDITION_EP.equals(extensionPoint)) {
             defaultRenditionDescriptors.remove(contribution);
             if (defaultRenditionDescriptors.size() == 0) {
