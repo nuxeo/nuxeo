@@ -77,10 +77,10 @@ public class StoryboardConverter implements Converter {
     public void init(ConverterDescriptor descriptor) {
         commonParams = descriptor.getParameters();
         if (!commonParams.containsKey(WIDTH_PARAM)) {
-            commonParams.put(WIDTH_PARAM, "100");
+            commonParams.put(WIDTH_PARAM, "130");
         }
         if (!commonParams.containsKey(HEIGHT_PARAM)) {
-            commonParams.put(HEIGHT_PARAM, "62");
+            commonParams.put(HEIGHT_PARAM, "80");
         }
     }
 
