@@ -23,8 +23,6 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -32,7 +30,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
@@ -46,54 +43,6 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.2
  */
 public class AutomationRenderer {
-
-    protected static final Log log = LogFactory.getLog(AutomationRenderer.class);
-
-    // TODO move this into a base abstract rendition provider
-    private static final String VARIANT_POLICY_USER = "user";
-
-    /**
-     * Test if the Rendition is available on the given DocumentModel
-     *
-     * @param doc the target {@link DocumentModel}
-     * @param def the {@link RenditionDefinition} to use
-     * @return The test result
-     */
-    public static boolean isRenditionAvailable(DocumentModel doc, RenditionDefinition def) {
-        String chain = def.getOperationChain();
-        if (chain == null) {
-            log.error("Can not run Automation rendition if chain is not defined");
-            return false;
-        }
-        AutomationService as = Framework.getLocalService(AutomationService.class);
-
-        try {
-            if (as.getOperation(chain) == null) {
-                log.error("Chain " + chain + " is not defined : rendition can not be used");
-                return false;
-            }
-        } catch (Exception e) {
-            log.error("Unable to test Rendition availability", e);
-            return false;
-        }
-
-        if (!def.isEmptyBlobAllowed()) {
-            BlobHolder bh = doc.getAdapter(BlobHolder.class);
-            if (bh == null) {
-                return false;
-            }
-            try {
-                Blob blob = bh.getBlob();
-                if (blob == null) {
-                    return false;
-                }
-            } catch (Exception e) {
-                log.error("Unable to get Blob to test Rendition availability", e);
-                return false;
-            }
-        }
-        return true;
-    }
 
     /**
      * Generate the rendition Blobs for a given {@link RenditionDefinition}. Return is a List of Blob for bigger
@@ -149,30 +98,6 @@ public class AutomationRenderer {
             throw new NuxeoException("Exception while running the operation chain: " + definition.getOperationChain(),
                     e);
         }
-    }
-
-    /**
-     * Generates the optional {@link org.nuxeo.ecm.platform.rendition.Constants#RENDITION_VARIANT_PROPERTY
-     * RENDITION_VARIANT_PROPERTY} value for a given {@link RenditionDefinition}.
-     *
-     * @param doc the target document
-     * @param definition the rendition definition to use
-     * @return the generated {@link org.nuxeo.ecm.platform.rendition.Constants#RENDITION_VARIANT_PROPERTY
-     *         RENDITION_VARIANT_PROPERTY} value, or {@code null}
-     * @since 8.1
-     */
-    // TODO move this into a base abstract rendition provider
-    public static String getVariant(DocumentModel doc, RenditionDefinition definition) {
-        if (VARIANT_POLICY_USER.equals(definition.getVariantPolicy())) {
-            NuxeoPrincipal principal = (NuxeoPrincipal) doc.getCoreSession().getPrincipal();
-            if (principal.isAdministrator()) {
-                return org.nuxeo.ecm.platform.rendition.Constants.RENDITION_VARIANT_PROPERTY_ADMINISTRATOR_USER;
-            } else {
-                return org.nuxeo.ecm.platform.rendition.Constants.RENDITION_VARIANT_PROPERTY_USER_PREFIX
-                        + principal.getName();
-            }
-        }
-        return null;
     }
 
     /**

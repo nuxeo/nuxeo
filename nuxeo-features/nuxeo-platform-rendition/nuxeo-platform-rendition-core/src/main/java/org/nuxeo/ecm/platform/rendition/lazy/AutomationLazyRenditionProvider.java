@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.rendition.lazy;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.work.api.Work;
-import org.nuxeo.ecm.platform.rendition.extension.AutomationRenderer;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 
 /**
@@ -28,11 +27,6 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
  * @since 7.2
  */
 public class AutomationLazyRenditionProvider extends AbstractLazyCachableRenditionProvider {
-
-    @Override
-    public boolean isAvailable(DocumentModel doc, RenditionDefinition def) {
-        return AutomationRenderer.isRenditionAvailable(doc, def);
-    }
 
     @Override
     protected Work getRenditionWork(String key, DocumentModel doc, RenditionDefinition def) {
