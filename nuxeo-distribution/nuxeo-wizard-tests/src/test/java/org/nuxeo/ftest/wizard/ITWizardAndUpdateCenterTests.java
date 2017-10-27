@@ -210,11 +210,6 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
     }
 
     public void registerConnectInstance() throws InterruptedException {
-        // XXX Intercom Workaround; timeout might be adjusted, Intercom is really slow to load.
-        if (Locator.hasElementWithTimeout(By.id("intercom-container"), 3000)) {
-            Locator.findElement(By.className("intercom-post-close")).click();
-        }
-
         // **********************
         // Connect Form
         WizardPage connectWizardPage = asPage(WizardPage.class);

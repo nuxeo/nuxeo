@@ -72,6 +72,9 @@ public abstract class AbstractWizardPage extends AbstractPage {
         return nav(wizardPageClass, getNavButtonLocator(buttonLabel), waitForURLChange);
     }
 
+    /**
+     * @since 9.3
+     */
     protected <T extends AbstractPage> T nav(Class<T> wizardPageClass, By selector, Boolean waitForURLChange) {
         return nav(wizardPageClass, selector, waitForURLChange ? null : (Function<WebDriver, Boolean>) input -> true);
     }
