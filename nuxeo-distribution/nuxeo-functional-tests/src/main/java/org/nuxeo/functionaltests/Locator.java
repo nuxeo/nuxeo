@@ -51,8 +51,6 @@ import com.google.common.base.Function;
  */
 public class Locator {
 
-    private static final Log log = LogFactory.getLog(Locator.class);
-
     // Timeout for waitUntilURLDifferentFrom in seconds
     public static int URLCHANGE_MAX_WAIT = 30;
 
@@ -574,21 +572,21 @@ public class Locator {
      */
     public static void waitUntilURLDifferentFrom(String url) {
         final String refurl = url;
-        log.info("Watch URL: " + refurl);
+        AbstractTest.log.info("Watch URL: " + refurl);
         ExpectedCondition<Boolean> urlchanged = d -> {
             if (d == null) {
                 return false;
             }
 
             String currentUrl = d.getCurrentUrl();
-            log.debug("Compared with: " + currentUrl);
+            AbstractTest.log.debug("Compared with: " + currentUrl);
             AbstractTest.log.debug("currentUrl is still: " + currentUrl);
             return !currentUrl.equals(refurl);
         };
         WebDriverWait wait = new WebDriverWait(AbstractTest.driver, URLCHANGE_MAX_WAIT);
         wait.until(urlchanged);
         if (AbstractTest.driver.getCurrentUrl().equals(refurl)) {
-            log.warn("Page change failed");
+            AbstractTest.log.warn("Page change failed");
         }
     }
 
@@ -653,7 +651,7 @@ public class Locator {
             return true;
         } catch (WebDriverException e) {
             if (e.getMessage().contains("Element is not clickable at point")) {
-                log.debug("Element is not clickable yet");
+                AbstractTest.log.debug("Element is not clickable yet");
                 return false;
             }
             throw e;
