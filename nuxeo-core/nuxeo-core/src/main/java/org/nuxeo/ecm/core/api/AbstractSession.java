@@ -678,14 +678,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         String childName = docModel.getName();
         Map<String, Serializable> options = getContextMapEventInfo(docModel);
 
-        // document validation
-        if (getValidationService().isActivated(DocumentValidationService.CTX_CREATEDOC, options)) {
-            DocumentValidationReport report = getValidationService().validate(docModel, true);
-            if (report.hasError()) {
-                throw new DocumentValidationException(report);
-            }
-        }
-
         Document folder = fillCreateOptions(parentRef, childName, options);
 
         // get initial life cycle state info
@@ -696,6 +688,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
         notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, options, null, null, false, true); // no lifecycle
                                                                                                      // yet
+
+        // document validation
+        if (getValidationService().isActivated(DocumentValidationService.CTX_CREATEDOC, options)) {
+            DocumentValidationReport report = getValidationService().validate(docModel, true);
+            if (report.hasError()) {
+                throw new DocumentValidationException(report);
+            }
+        }
         childName = (String) options.get(CoreEventConstants.DESTINATION_NAME);
         Document doc = folder.addChild(childName, typeName);
 
@@ -792,6 +792,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         DocumentRef parentRef = docModel.getParentRef();
         Map<String, Serializable> props = getContextMapEventInfo(docModel);
 
+        if (parentRef != null && EMPTY_PATH.equals(parentRef)) {
+            parentRef = null;
+        }
+        Document parent = fillCreateOptions(parentRef, name, props);
+        notifyEvent(DocumentEventTypes.ABOUT_TO_IMPORT, docModel, props, null, null, false, true);
+        name = (String) props.get(CoreEventConstants.DESTINATION_NAME);
+
         // document validation
         if (getValidationService().isActivated(DocumentValidationService.CTX_IMPORTDOC, props)) {
             DocumentValidationReport report = getValidationService().validate(docModel, true);
@@ -799,13 +806,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 throw new DocumentValidationException(report);
             }
         }
-
-        if (parentRef != null && EMPTY_PATH.equals(parentRef)) {
-            parentRef = null;
-        }
-        Document parent = fillCreateOptions(parentRef, name, props);
-        notifyEvent(DocumentEventTypes.ABOUT_TO_IMPORT, docModel, props, null, null, false, true);
-        name = (String) props.get(CoreEventConstants.DESTINATION_NAME);
 
         // create the document
         Document doc = getSession().importDocument(id, parentRef == null ? null : parent, name, typeName, props);
@@ -1507,13 +1507,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         boolean dirty = docModel.isDirty();
 
         if (dirty) {
-            // document validation
-            if (getValidationService().isActivated(DocumentValidationService.CTX_SAVEDOC, options)) {
-                DocumentValidationReport report = getValidationService().validate(docModel, true);
-                if (report.hasError()) {
-                    throw new DocumentValidationException(report);
-                }
-            }
             // remove disallowed characters
             CharacterFilteringService charFilteringService = Framework.getService(CharacterFilteringService.class);
             charFilteringService.filter(docModel);
@@ -1528,16 +1521,25 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         options.put(CoreEventConstants.DESTINATION_NAME, docModel.getName());
         options.put(CoreEventConstants.DOCUMENT_DIRTY, dirty);
         notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel, options, null, null, true, true);
+
+        // recompute the dirty state
+        dirty = docModel.isDirty();
+        options.put(CoreEventConstants.DOCUMENT_DIRTY, dirty);
+        if (dirty) {
+            // document validation
+            if (getValidationService().isActivated(DocumentValidationService.CTX_SAVEDOC, options)) {
+                DocumentValidationReport report = getValidationService().validate(docModel, true);
+                if (report.hasError()) {
+                    throw new DocumentValidationException(report);
+                }
+            }
+        }
         String name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
         // did the event change the name? not applicable to Root whose
         // name is null/empty
         if (name != null && !name.equals(docModel.getName())) {
             doc = getSession().move(doc, doc.getParent(), name);
         }
-
-        // recompute the dirty state
-        dirty = docModel.isDirty();
-        options.put(CoreEventConstants.DOCUMENT_DIRTY, dirty);
 
         // recompute versioning option as it can be set by listeners
         VersioningOption versioningOption = (VersioningOption) docModel.getContextData(
