@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
@@ -137,7 +136,23 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
         TransientStore ts = tss.getStore(getTransientStoreName());
 
         if (!ts.exists(key)) {
-            throw new NuxeoException("Rendition TransientStore entry can not be null");
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("No entry found for key %s in the %s transient store, rewriting it.", key,
+                        getTransientStoreName()));
+            }
+            RenditionService rs = Framework.getService(RenditionService.class);
+            RenditionDefinition definition = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
+            RenditionProvider provider = definition.getProvider();
+            if (provider instanceof AbstractLazyCachableRenditionProvider) {
+                DocumentModel doc = session.getDocument(docRef);
+                String sourceDocumentModificationDate = ((AbstractLazyCachableRenditionProvider) provider).getSourceDocumentModificationDate(
+                        doc, definition);
+                if (sourceDocumentModificationDate != null) {
+                    ts.putParameter(key, AbstractLazyCachableRenditionProvider.SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
+                            sourceDocumentModificationDate);
+                }
+            }
+
         }
         ts.putBlobs(key, blobs);
         ts.setCompleted(key, true);
