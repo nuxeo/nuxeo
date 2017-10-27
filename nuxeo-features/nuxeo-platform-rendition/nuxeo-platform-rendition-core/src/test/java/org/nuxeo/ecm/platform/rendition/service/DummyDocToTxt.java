@@ -20,6 +20,9 @@ package org.nuxeo.ecm.platform.rendition.service;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,22 +51,20 @@ public class DummyDocToTxt {
     @OperationMethod
     public Blob run(DocumentModel doc) throws Exception {
         DocumentRef docRef = doc.getRef();
-        String content = doc.getTitle();
-        String desc = "";
+        String description = "";
         Calendar issued = null;
         Boolean delayed = null;
         try {
-            desc = (String) doc.getPropertyValue("dc:description");
+            description = (String) doc.getPropertyValue("dc:description");
             issued = (Calendar) doc.getPropertyValue("dc:issued");
             delayed = (Boolean) doc.getContextData("delayed");
-        } catch (PropertyException ignored) {}
-        if (StringUtils.isNotBlank(desc)) {
-            content += String.format("%n" + desc);
+        } catch (PropertyException ignored) {
         }
-        if (desc != null && desc.startsWith(TestRenditionService.CYCLIC_BARRIER_DESCRIPTION)) {
+        String content = getContent(doc.getTitle(), description, issued);
+        if (description != null && description.startsWith(TestRenditionService.CYCLIC_BARRIER_DESCRIPTION)) {
             for (int i = 0; i < 3; i++) {
                 if (log.isDebugEnabled()) {
-                    log.debug(formatLogEntry(docRef, content, desc, issued) + " before barrier " + i);
+                    log.debug(formatLogEntry(docRef, content, description, issued) + " before barrier " + i);
                 }
                 TestRenditionService.CYCLIC_BARRIERS[i].await();
             }
@@ -84,20 +85,43 @@ public class DummyDocToTxt {
             } else {
 
                 doc = session.getDocument(docRef);
-                desc = (String) doc.getPropertyValue("dc:description");
-                if (StringUtils.isNotBlank(desc)) {
-                    content += String.format("%n" + desc);
+                description = (String) doc.getPropertyValue("dc:description");
+                if (StringUtils.isNotBlank(description)) {
+                    content += String.format("%n" + description);
                 }
             }
         }
 
-        return Blobs.createBlob(content);
+        Blob blob = Blobs.createBlob(content);
+        blob.setDigest(DigestUtils.md5Hex(content));
+        return blob;
     }
 
     public static String formatLogEntry(DocumentRef docRef, String content, String desc, Calendar issued) {
         return String.format("Doc with id '%s', content '%s', description '%s', issued '%s'", docRef,
                 StringUtils.defaultString(content), StringUtils.defaultString(desc),
                 issued == null ? "" : new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(issued.getTime()));
+    }
+
+    /**
+     * @since 9.3
+     */
+    public static String getDigest(DocumentModel doc) {
+        String description = (String) doc.getPropertyValue("dc:description");
+        Calendar issued = (Calendar) doc.getPropertyValue("dc:issued");
+        String content = getContent(doc.getTitle(), description, issued);
+        return DigestUtils.md5Hex(content);
+    }
+
+    protected static String getContent(String title, String description, Calendar issued) {
+        StringBuilder sb = new StringBuilder(title);
+        if (StringUtils.isNotBlank(description)) {
+            sb.append(String.format("%n" + description));
+        }
+        if (issued != null) {
+            sb.append(String.format("%n" + new Date(issued.getTimeInMillis())));
+        }
+        return sb.toString();
     }
 
     protected void nextTransaction() {

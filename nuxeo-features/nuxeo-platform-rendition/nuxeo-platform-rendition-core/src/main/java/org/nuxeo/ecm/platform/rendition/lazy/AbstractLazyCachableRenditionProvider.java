@@ -21,9 +21,11 @@ package org.nuxeo.ecm.platform.rendition.lazy;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,85 +53,62 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractLazyCachableRenditionProvider implements RenditionProvider {
 
-    public static final String WORKERID_KEY = "workerid";
+    public static final String SOURCE_DOCUMENT_MODIFICATION_DATE_KEY = "sourceDocumentModificationDate";
 
     public static final String CACHE_NAME = "LazyRenditionCache";
 
     protected static Log log = LogFactory.getLog(AbstractLazyCachableRenditionProvider.class);
 
     @Override
-    public List<Blob> render(DocumentModel doc, RenditionDefinition def) {
-
-        // build the key
-        String key = buildRenditionKey(doc, def);
-
-        // see if rendition is already in process
-
-        TransientStoreService tss = Framework.getService(TransientStoreService.class);
-
-        TransientStore ts = tss.getStore(CACHE_NAME);
-
-        if (ts == null) {
-            throw new NuxeoException("Unable to find Transient Store  " + CACHE_NAME);
+    public List<Blob> render(DocumentModel doc, RenditionDefinition definition) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Asking \"%s\" rendition lazy rendering for document %s (id=%s).",
+                    definition.getName(), doc.getPathAsString(), doc.getId()));
         }
 
+        // Build the rendition key and get the current source document modification date
+        String key = buildRenditionKey(doc, definition);
+        String sourceDocumentModificationDate = getSourceDocumentModificationDate(doc, definition);
+
+        // If rendition is not already in progress schedule it
         List<Blob> blobs = null;
+        TransientStore ts = getTransientStore();
         if (!ts.exists(key)) {
-            Work work = getRenditionWork(key, doc, def);
-            ts.putParameter(key, WORKERID_KEY, work.getId());
-            blobs = new ArrayList<>();
-            StringBlob emptyBlob = new StringBlob("");
-            emptyBlob.setFilename("inprogress");
-            emptyBlob.setMimeType("text/plain;" + LazyRendition.EMPTY_MARKER);
-            blobs.add(emptyBlob);
-            ts.putBlobs(key, blobs);
-            Framework.getService(WorkManager.class).schedule(work, Scheduling.IF_NOT_SCHEDULED);
-            blobs = ts.getBlobs(key);
+            blobs = handleNewRendition(key, doc, definition, sourceDocumentModificationDate);
         } else {
+            String storedSourceDocumentModificationDate = (String) ts.getParameter(key,
+                    SOURCE_DOCUMENT_MODIFICATION_DATE_KEY);
             blobs = ts.getBlobs(key);
             if (ts.isCompleted(key)) {
-                if (blobs != null && blobs.size() == 1) {
-                    Blob blob = blobs.get(0);
-                    String mimeType = blob.getMimeType();
-                    if (mimeType != null && mimeType.contains(LazyRendition.ERROR_MARKER)) {
-                        ts.remove(key);
-                    } else {
-                        ts.release(key);
-                    }
-                } else {
-                    ts.release(key);
-                }
+                handleCompletedRendition(key, doc, definition, sourceDocumentModificationDate,
+                        storedSourceDocumentModificationDate, blobs);
             } else {
-                Work work = getRenditionWork(key, doc, def);
-                String workId = work.getId();
-                WorkManager wm = Framework.getService(WorkManager.class);
-                if (wm.find(workId, null) == null) {
-                    wm.schedule(work, Scheduling.IF_NOT_SCHEDULED);
-                }
+                handleIncompleteRendition(key, doc, definition, sourceDocumentModificationDate,
+                        storedSourceDocumentModificationDate);
             }
         }
 
+        if (log.isDebugEnabled()) {
+            String blobInfo = null;
+            if (blobs != null) {
+                blobInfo = blobs.stream()
+                                .map(blob -> String.format("{filename=%s, MIME type=%s}", blob.getFilename(),
+                                        blob.getMimeType()))
+                                .collect(Collectors.joining(",", "[", "]"));
+            }
+            log.debug(String.format("Returning blobs: %s.", blobInfo));
+        }
         return blobs;
-     }
+    }
 
     @Override
     public String getVariant(DocumentModel doc, RenditionDefinition definition) {
         return AutomationRenderer.getVariant(doc, definition);
     }
 
-    protected String buildRenditionKey(DocumentModel doc, RenditionDefinition def) {
-
-        StringBuffer sb = new StringBuffer(doc.getId());
+    public String buildRenditionKey(DocumentModel doc, RenditionDefinition def) {
+        StringBuilder sb = new StringBuilder(doc.getId());
         sb.append("::");
-        String modificationDatePropertyName = def.getSourceDocumentModificationDatePropertyName();
-        Calendar modif = (Calendar) doc.getPropertyValue(modificationDatePropertyName);
-        if (modif != null) {
-            long millis = modif.getTimeInMillis();
-            // the date may have been rounded by the storage layer, normalize it to the second
-            millis -= millis % 1000;
-            sb.append(millis);
-            sb.append("::");
-        }
         String variant = getVariant(doc, def);
         if (variant != null) {
             sb.append(variant);
@@ -137,7 +116,24 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
         }
         sb.append(def.getName());
 
-        return getDigest(sb.toString());
+        String key = getDigest(sb.toString());
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Built rendition key for document %s (id=%s): %s.", doc.getPathAsString(),
+                    doc.getId(), key));
+        }
+        return key;
+    }
+
+    public String getSourceDocumentModificationDate(DocumentModel doc, RenditionDefinition definition) {
+        String modificationDatePropertyName = definition.getSourceDocumentModificationDatePropertyName();
+        Calendar modificationDate = (Calendar) doc.getPropertyValue(modificationDatePropertyName);
+        if (modificationDate == null) {
+            return null;
+        }
+        long millis = modificationDate.getTimeInMillis();
+        // the date may have been rounded by the storage layer, normalize it to the second
+        millis -= millis % 1000;
+        return String.valueOf(millis);
     }
 
     protected String getDigest(String key) {
@@ -160,6 +156,147 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
             buf.append(HEX_DIGITS[0x0F & b]);
         }
         return buf.toString();
+    }
+
+    protected TransientStore getTransientStore() {
+        TransientStoreService tss = Framework.getService(TransientStoreService.class);
+        TransientStore ts = tss.getStore(CACHE_NAME);
+        if (ts == null) {
+            throw new NuxeoException("Unable to find Transient Store  " + CACHE_NAME);
+        }
+        return ts;
+    }
+
+    protected List<Blob> handleNewRendition(String key, DocumentModel doc, RenditionDefinition definition,
+            String sourceDocumentModificationDate) {
+        Work work = getRenditionWork(key, doc, definition);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "No entry found for key %s in the %s transient store, scheduling rendition work with id %s and storing an empty blob for now.",
+                    key, CACHE_NAME, work.getId()));
+        }
+        if (sourceDocumentModificationDate != null) {
+            getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
+                    sourceDocumentModificationDate);
+        }
+        StringBlob emptyBlob = new StringBlob("");
+        emptyBlob.setFilename(LazyRendition.IN_PROGRESS_MARKER);
+        emptyBlob.setMimeType("text/plain;" + LazyRendition.EMPTY_MARKER);
+        getTransientStore().putBlobs(key, Collections.singletonList(emptyBlob));
+        Framework.getService(WorkManager.class).schedule(work, Scheduling.IF_NOT_SCHEDULED);
+        return Collections.singletonList(emptyBlob);
+    }
+
+    protected void handleCompletedRendition(String key, DocumentModel doc, RenditionDefinition definition,
+            String sourceDocumentModificationDate, String storedSourceDocumentModificationDate, List<Blob> blobs) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Completed entry found for key %s in the %s transient store.", key, CACHE_NAME));
+        }
+
+        // No or more than one blob
+        if (blobs == null || blobs.size() != 1) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "No (or more than one) rendition blob for key %s, releasing entry from the transient store.",
+                        key));
+            }
+            getTransientStore().release(key);
+            return;
+        }
+
+        // Blob in error
+        Blob blob = blobs.get(0);
+        String mimeType = blob.getMimeType();
+        if (mimeType != null && mimeType.contains(LazyRendition.ERROR_MARKER)) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Rendition blob is in error for key %s.", key));
+            }
+            // Check if rendition is up-to-date
+            if (Objects.equals(storedSourceDocumentModificationDate, sourceDocumentModificationDate)) {
+                log.debug("Removing entry from the transient store.");
+                getTransientStore().remove(key);
+                return;
+            }
+            Work work = getRenditionWork(key, doc, definition);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Source document modification date %s is different from the stored one %s, scheduling rendition work with id %s and returning an error/stale rendition.",
+                        sourceDocumentModificationDate, storedSourceDocumentModificationDate, work.getId()));
+            }
+            if (sourceDocumentModificationDate != null) {
+                getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
+                        sourceDocumentModificationDate);
+            }
+            Framework.getService(WorkManager.class).schedule(work, Scheduling.IF_NOT_SCHEDULED);
+            blob.setMimeType(blob.getMimeType() + ";" + LazyRendition.STALE_MARKER);
+            return;
+        }
+
+        // Check if rendition is up-to-date
+        if (Objects.equals(storedSourceDocumentModificationDate, sourceDocumentModificationDate)) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Rendition blob is up-to-date for key %s, returning it and releasing entry from the transient store.",
+                        key));
+            }
+            getTransientStore().release(key);
+            return;
+        }
+
+        // Stale rendition
+        Work work = getRenditionWork(key, doc, definition);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "Source document modification date %s is different from the stored one %s, scheduling rendition work with id %s and returning a stale rendition.",
+                    sourceDocumentModificationDate, storedSourceDocumentModificationDate, work.getId()));
+        }
+        if (sourceDocumentModificationDate != null) {
+            getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
+                    sourceDocumentModificationDate);
+        }
+        Framework.getService(WorkManager.class).schedule(work, Scheduling.IF_NOT_SCHEDULED);
+        blob.setMimeType(blob.getMimeType() + ";" + LazyRendition.STALE_MARKER);
+    }
+
+    protected void handleIncompleteRendition(String key, DocumentModel doc, RenditionDefinition definition,
+            String sourceDocumentModificationDate, String storedSourceDocumentModificationDate) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Incomplete entry found for key %s in the %s transient store.", key, CACHE_NAME));
+        }
+        WorkManager workManager = Framework.getService(WorkManager.class);
+        Work work = getRenditionWork(key, doc, definition);
+        String workId = work.getId();
+        boolean scheduleWork = false;
+        if (Objects.equals(storedSourceDocumentModificationDate, sourceDocumentModificationDate)) {
+            Work existingWork = workManager.find(workId, null);
+            if (existingWork == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Found no existing work with id %s.", workId));
+                }
+                scheduleWork = true;
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Found an existing work with id %s in sate %s.", workId,
+                            existingWork.getWorkInstanceState()));
+                }
+            }
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Source document modification date %s is different from the stored one %s.",
+                        sourceDocumentModificationDate, storedSourceDocumentModificationDate));
+            }
+            if (sourceDocumentModificationDate != null) {
+                getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
+                        sourceDocumentModificationDate);
+            }
+            scheduleWork = true;
+        }
+        if (scheduleWork) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Scheduling rendition work with id %s.", workId));
+            }
+            workManager.schedule(work, Scheduling.IF_NOT_SCHEDULED);
+        }
     }
 
     /**
