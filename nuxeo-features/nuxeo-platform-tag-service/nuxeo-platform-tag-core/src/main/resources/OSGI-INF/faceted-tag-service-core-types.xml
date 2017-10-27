@@ -16,6 +16,10 @@
       <schema name="facetedTag" />
     </facet>
 
+    <doctype name="Folder" append="true">
+      <facet name="NXTag" />
+    </doctype>
+
     <doctype name="File" append="true">
       <facet name="NXTag" />
     </doctype>
