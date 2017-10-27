@@ -32,6 +32,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.platform.usermanager.GroupConfig;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -125,15 +126,21 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
     }
 
     @Override
+    @Deprecated
     public NuxeoGroup getComputedGroup(String groupName) {
+        return getComputedGroup(groupName, GroupConfig.DEFAULT);
+    }
+
+    @Override
+    public NuxeoGroup getComputedGroup(String groupName, GroupConfig groupConfig) {
         for (String name : computerNames) {
             GroupComputer computer = computers.get(name).getComputer();
             if (computer.hasGroup(groupName)) {
                 if (computer instanceof GroupComputerLabelled) {
                     String groupLabel = ((GroupComputerLabelled) computer).getLabel(groupName);
-                    return new NuxeoComputedGroup(groupName, groupLabel);
+                    return new NuxeoComputedGroup(groupName, groupLabel, groupConfig);
                 }
-                return new NuxeoComputedGroup(groupName);
+                return new NuxeoComputedGroup(groupName, groupConfig);
             }
         }
         return null;

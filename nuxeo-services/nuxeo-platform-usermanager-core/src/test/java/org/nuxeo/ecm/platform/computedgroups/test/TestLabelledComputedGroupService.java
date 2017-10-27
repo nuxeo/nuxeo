@@ -30,6 +30,7 @@ import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.computedgroups.ComputedGroupsService;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -52,14 +53,17 @@ public class TestLabelledComputedGroupService {
     @Inject
     protected ComputedGroupsService cgs;
 
+    @Inject
+    protected UserManager um;
+
     @Test
     public void testContrib() throws Exception {
 
-        NuxeoGroup group = cgs.getComputedGroup("Grp1");
+        NuxeoGroup group = cgs.getComputedGroup("Grp1", um.getGroupConfig());
         assertNotNull(group);
         assertEquals("Groupe 1", group.getLabel());
 
-        group = cgs.getComputedGroup("Grp2");
+        group = cgs.getComputedGroup("Grp2", um.getGroupConfig());
         assertNotNull(group);
         assertEquals("Groupe 2", group.getLabel());
 

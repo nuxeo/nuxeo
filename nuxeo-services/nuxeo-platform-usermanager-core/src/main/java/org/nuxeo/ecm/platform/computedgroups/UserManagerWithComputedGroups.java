@@ -28,6 +28,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.BaseSession;
@@ -110,7 +111,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
     public NuxeoGroup getGroup(String groupName) {
         NuxeoGroup grp = super.getGroup(groupName);
         if (activateComputedGroup() && (grp == null || getService().allowGroupOverride())) {
-            NuxeoGroup computed = getService().getComputedGroup(groupName);
+            NuxeoGroup computed = getService().getComputedGroup(groupName, groupConfig);
             if (computed != null) {
                 grp = computed;
             }
@@ -122,7 +123,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
     public NuxeoGroup getGroup(String groupName, DocumentModel context) {
         NuxeoGroup grp = super.getGroup(groupName, context);
         if (activateComputedGroup() && (grp == null || getService().allowGroupOverride())) {
-            NuxeoGroup computed = getService().getComputedGroup(groupName);
+            NuxeoGroup computed = getService().getComputedGroup(groupName, groupConfig);
             if (computed != null) {
                 grp = computed;
             }
@@ -185,7 +186,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
     }
 
     protected DocumentModel getComputedGroupAsDocumentModel(String grpName) {
-        NuxeoGroup grp = getService().getComputedGroup(grpName);
+        NuxeoGroup grp = getService().getComputedGroup(grpName, groupConfig);
         if (grp == null) {
             return null;
         }
@@ -203,4 +204,38 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
         return groupDoc;
     }
 
+    @Override
+    public DocumentModel createGroup(DocumentModel groupModel, DocumentModel context) {
+        if (activateComputedGroup()) {
+            String groupName = (String) groupModel.getProperty(groupConfig.schemaName, groupConfig.idField);
+            NuxeoGroup computed = getService().getComputedGroup(groupName, groupConfig);
+            if (computed != null) {
+                throw new NuxeoException("Cannot create a computed group");
+            }
+        }
+        return super.createGroup(groupModel, context);
+    }
+
+    @Override
+    public void updateGroup(DocumentModel groupModel, DocumentModel context) {
+        if (activateComputedGroup()) {
+            String groupName = (String) groupModel.getProperty(groupConfig.schemaName, groupConfig.idField);
+            NuxeoGroup computed = getService().getComputedGroup(groupName, groupConfig);
+            if (computed != null) {
+                throw new NuxeoException("Cannot update a computed group");
+            }
+        }
+        super.updateGroup(groupModel, context);
+    }
+
+    @Override
+    public void deleteGroup(String groupId, DocumentModel context) {
+        if (activateComputedGroup()) {
+            NuxeoGroup computed = getService().getComputedGroup(groupId, groupConfig);
+            if (computed != null) {
+                throw new NuxeoException("Cannot delete a computed group");
+            }
+        }
+        super.deleteGroup(groupId, context);
+    }
 }

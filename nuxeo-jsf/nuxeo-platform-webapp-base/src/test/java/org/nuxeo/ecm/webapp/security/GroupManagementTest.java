@@ -18,18 +18,27 @@
  */
 package org.nuxeo.ecm.webapp.security;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.webapp.security.AbstractUserGroupManagement.USERS_GROUPS_MANAGEMENT_ACCESS_FILTER;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author dmetzler
  */
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@LocalDeploy("org.nuxeo.ecm.core:test-schema-contrib.xml")
 public class GroupManagementTest extends BaseUserGroupMock {
 
     private GroupManagementActions actions = new GroupManagementActions();

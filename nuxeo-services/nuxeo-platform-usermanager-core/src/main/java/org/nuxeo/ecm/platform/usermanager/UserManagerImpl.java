@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -148,6 +147,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
      * all fields inside are configurable for now - they will use default values
      */
     protected UserConfig userConfig;
+
+    /**
+     * @since 9.3
+     */
+    protected GroupConfig groupConfig;
 
     protected String userDirectoryName;
 
@@ -252,6 +256,14 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         userConfig.emailKey = userEmailField;
         userConfig.schemaName = userSchemaName;
         userConfig.nameKey = userIdField;
+
+        groupConfig = new GroupConfig();
+        groupConfig.schemaName = groupSchemaName;
+        groupConfig.idField = groupIdField;
+        groupConfig.labelField = groupLabelField;
+        groupConfig.membersField = groupMembersField;
+        groupConfig.subGroupsField = groupSubGroupsField;
+        groupConfig.parentGroupsField = groupParentGroupsField;
 
         if (cacheService != null && descriptor.userCacheName != null) {
             principalCache = cacheService.getCache(descriptor.userCacheName);
@@ -620,41 +632,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     @SuppressWarnings("unchecked")
     protected NuxeoGroup makeGroup(DocumentModel groupEntry) {
-        NuxeoGroup group = new NuxeoGroupImpl(groupEntry.getId());
-        List<String> list;
-        try {
-            list = (List<String>) groupEntry.getProperty(groupSchemaName, groupMembersField);
-        } catch (PropertyException e) {
-            list = null;
-        }
-        if (list != null) {
-            group.setMemberUsers(list);
-        }
-        try {
-            list = (List<String>) groupEntry.getProperty(groupSchemaName, groupSubGroupsField);
-        } catch (PropertyException e) {
-            list = null;
-        }
-        if (list != null) {
-            group.setMemberGroups(list);
-        }
-        try {
-            list = (List<String>) groupEntry.getProperty(groupSchemaName, groupParentGroupsField);
-        } catch (PropertyException e) {
-            list = null;
-        }
-        if (list != null) {
-            group.setParentGroups(list);
-        }
-        try {
-            String label = (String) groupEntry.getProperty(groupSchemaName, groupLabelField);
-            if (label != null) {
-                group.setLabel(label);
-            }
-        } catch (PropertyException e) {
-            // Nothing to do.
-        }
-        return group;
+        return new NuxeoGroupImpl(groupEntry, groupConfig);
     }
 
     @Override
