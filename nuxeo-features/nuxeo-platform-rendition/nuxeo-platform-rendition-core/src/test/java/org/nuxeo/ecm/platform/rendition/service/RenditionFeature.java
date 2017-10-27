@@ -37,6 +37,7 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 @Deploy({ "org.nuxeo.ecm.platform.convert", //
         "org.nuxeo.ecm.platform.login", //
         "org.nuxeo.ecm.platform.web.common", //
+        "org.nuxeo.ecm.platform.query.api", //
         "org.nuxeo.ecm.platform.usermanager.api", //
         "org.nuxeo.ecm.platform.usermanager:OSGI-INF/UserService.xml", //
         "org.nuxeo.ecm.actions", //

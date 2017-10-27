@@ -90,7 +90,7 @@ public class TestLazyAutomationRenditions {
         Blob blob = rendition.getBlob();
         assertEquals(0, blob.getLength());
         assertTrue(blob.getMimeType().contains("empty=true"));
-        assertTrue(blob.getFilename().equals("inprogress"));
+        assertTrue(blob.getFilename().equals(LazyRendition.IN_PROGRESS_MARKER));
         Thread.sleep(1000);
         Framework.getService(EventService.class).waitForAsyncCompletion(5000);
 

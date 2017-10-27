@@ -335,33 +335,32 @@ public class TestRenditionService {
         nextTransaction();
 
         String renditionName = "lazyDelayedErrorAutomationRendition";
-        for (int i = 0; i < 2; i++) {
-            boolean store = i == 1;
-            if (store) {
-                issued.add(Calendar.SECOND, 10);
-                file.setPropertyValue("dc:issued", (Serializable) issued.clone());
-                session.saveDocument(file);
-                session.save();
-                nextTransaction();
-            }
 
-            for (int j = 0; j < 3; j++) {
-                boolean empty = j != 1;
-                Rendition rendition = renditionService.getRendition(file, renditionName, store);
-                assertNotNull(rendition);
-                Blob blob = rendition.getBlob();
-                assertEquals(0, blob.getLength());
-                String mimeType = blob.getMimeType();
-                String marker = (empty ? LazyRendition.EMPTY_MARKER : LazyRendition.ERROR_MARKER);
-                String falseMarker = (!empty ? LazyRendition.EMPTY_MARKER : LazyRendition.ERROR_MARKER);
-                String markerMsg = String.format("mimeType: %s should contain %s (i=%s,j=%s)", mimeType, marker, i, j);
-                String falseMarkerMsg = String.format("mimeType: %s should not contain %s (i=$s,j=%s)", mimeType,
-                        falseMarker, i, j);
-                assertTrue(markerMsg, mimeType.contains(marker));
-                assertFalse(falseMarkerMsg, mimeType.contains(falseMarker));
-                nextTransaction();
-            }
-        }
+        // Check rendition in error
+        checkLazyRendition(file, renditionName, false, "text/plain;empty=true");
+        checkLazyRendition(file, renditionName, false, "text/plain;error=true");
+        checkLazyRendition(file, renditionName, false, "text/plain;empty=true");
+
+        issued.add(Calendar.SECOND, 10);
+        file.setPropertyValue("dc:issued", (Serializable) issued.clone());
+        session.saveDocument(file);
+        session.save();
+        nextTransaction();
+
+        // Check rendition in error and stale
+        checkLazyRendition(file, renditionName, true, "text/plain;error=true;stale=true");
+        checkLazyRendition(file, renditionName, true, "text/plain;error=true");
+        checkLazyRendition(file, renditionName, true, "text/plain;empty=true");
+    }
+
+    protected void checkLazyRendition(DocumentModel doc, String renditionName, boolean store, String expectedMimeType) {
+        Rendition rendition = renditionService.getRendition(doc, renditionName, store);
+        assertNotNull(rendition);
+        Blob blob = rendition.getBlob();
+        assertEquals(0, blob.getLength());
+        String mimeType = blob.getMimeType();
+        assertEquals(expectedMimeType, mimeType);
+        nextTransaction();
     }
 
     @Test
@@ -381,7 +380,7 @@ public class TestRenditionService {
         if (isLazy) {
             renditionName += "Lazily";
         }
-        Rendition rendition = getRendition(folder, renditionName, true, isLazy);
+        Rendition rendition = getRendition(folder, renditionName, true, isLazy, false);
         assertTrue(rendition.isStored());
         assertTrue(rendition.isCompleted());
         assertEquals(rendition.getHostDocument().getPropertyValue("dc:modified"), rendition.getModificationDate());
@@ -409,7 +408,7 @@ public class TestRenditionService {
         NuxeoPrincipal totoPrincipal = Framework.getService(UserManager.class).getPrincipal("toto");
         try (CoreSession userSession = coreFeature.openCoreSession(totoPrincipal)) {
             folder = userSession.getDocument(folder.getRef());
-            Rendition totoRendition = getRendition(folder, renditionName, true, isLazy);
+            Rendition totoRendition = getRendition(folder, renditionName, true, isLazy, false);
             assertTrue(totoRendition.isStored());
             assertNotEquals(renditionDocument.getRef(), totoRendition.getHostDocument().getRef());
 
@@ -432,8 +431,9 @@ public class TestRenditionService {
         session.save();
         nextTransaction();
 
+        // expect a stale rendition
         folder = session.getDocument(folder.getRef());
-        rendition = getRendition(folder, renditionName, false, isLazy);
+        rendition = getRendition(folder, renditionName, false, isLazy, true);
         assertFalse(rendition.isStored());
         assertTrue(rendition.isCompleted());
         Calendar cal = Calendar.getInstance();
@@ -445,17 +445,28 @@ public class TestRenditionService {
         }
     }
 
-    protected Rendition getRendition(DocumentModel doc, String renditionName, boolean store, boolean isLazy) {
+    protected Rendition getRendition(DocumentModel doc, String renditionName, boolean store, boolean isLazy,
+            boolean stale) {
         Rendition rendition = renditionService.getRendition(doc, renditionName, store);
         assertNotNull(rendition);
         if (isLazy) {
             assertFalse(rendition.isStored());
-            assertFalse(rendition.isCompleted());
-            assertNull(rendition.getModificationDate());
             Blob blob = rendition.getBlob();
-            assertEquals(0, blob.getLength());
-            assertTrue(blob.getMimeType().contains("empty=true"));
-            assertTrue(blob.getFilename().equals("inprogress"));
+            if (stale) {
+                assertTrue(rendition.isCompleted());
+                assertNotNull(rendition.getModificationDate());
+                assertFalse(blob.getMimeType().contains("empty=true"));
+                assertTrue(blob.getMimeType().contains("stale=true"));
+                assertFalse(blob.getFilename().equals(LazyRendition.IN_PROGRESS_MARKER));
+                assertTrue(blob.getLength() > 0);
+            } else {
+                assertFalse(rendition.isCompleted());
+                assertNull(rendition.getModificationDate());
+                assertTrue(blob.getMimeType().contains("empty=true"));
+                assertFalse(blob.getMimeType().contains("stale=true"));
+                assertTrue(blob.getFilename().equals(LazyRendition.IN_PROGRESS_MARKER));
+                assertEquals(0, blob.getLength());
+            }
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

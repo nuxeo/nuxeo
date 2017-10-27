@@ -47,7 +47,7 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
 
     private static final long serialVersionUID = 1L;
 
-    protected String key;
+    protected final String key;
 
     protected final DocumentRef docRef;
 
@@ -98,21 +98,17 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
 
     @Override
     public void work() {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Starting %s work with id %s for transient store key %s and document %s.",
+                    getClass().getSimpleName(), id, key, docRef));
+        }
         openUserSession();
         DocumentModel doc = session.getDocument(docRef);
 
         RenditionService rs = Framework.getService(RenditionService.class);
         RenditionDefinition def = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
 
-        RenditionProvider renditionProvider = def.getProvider();
-        if (renditionProvider instanceof AbstractLazyCachableRenditionProvider) {
-            String rendKey = ((AbstractLazyCachableRenditionProvider) renditionProvider).buildRenditionKey(doc, def);
-            if (!rendKey.equals(key)) {
-                refreshStoreEntry(rendKey);
-                this.key = rendKey;
-            }
-        }
-
+        log.debug("Starting rendition computation.");
         List<Blob> blobs = doComputeRendition(session, doc, def);
         updateAndCompleteStoreEntry(blobs);
     }
@@ -131,24 +127,12 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
         updateAndCompleteStoreEntry(blobs);
     }
 
-    void refreshStoreEntry(String renditionKey) {
-        TransientStoreService tss = Framework.getService(TransientStoreService.class);
-        TransientStore ts = tss.getStore(getTransientStoreName());
-
-        // Release old key
-        if (ts.exists(key)) {
-            ts.release(key);
-        }
-        ts.putParameter(renditionKey, AbstractLazyCachableRenditionProvider.WORKERID_KEY, getId());
-        List<Blob> blobs = new ArrayList<Blob>();
-        StringBlob emptyBlob = new StringBlob("");
-        emptyBlob.setFilename("inprogress");
-        emptyBlob.setMimeType("text/plain;" + LazyRendition.EMPTY_MARKER);
-        blobs.add(emptyBlob);
-        ts.putBlobs(renditionKey, blobs);
-    }
-
     void updateAndCompleteStoreEntry(List<Blob> blobs) {
+        if (log.isDebugEnabled()) {
+            log.debug(
+                    String.format("Updating and completing transient store entry with key %s (workId=%s, document=%s).",
+                            key, id, docRef));
+        }
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore(getTransientStoreName());
 

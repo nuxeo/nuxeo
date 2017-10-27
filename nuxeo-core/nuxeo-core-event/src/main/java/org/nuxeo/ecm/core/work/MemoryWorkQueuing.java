@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.work;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.nuxeo.ecm.core.work.api.Work;
@@ -86,28 +87,17 @@ public class MemoryWorkQueuing implements WorkQueuing {
     }
 
     Optional<Work> lookup(String workId) {
-        return allQueued.values().stream().map(queue -> queue.lookup(workId)).filter(work -> work != null).findAny();
+        return allQueued.values().stream().map(queue -> queue.lookup(workId)).filter(Objects::nonNull).findAny();
     }
 
     @Override
     public Work find(String workId, State state) {
-        return lookup(workId)
-                .filter(work -> work.getWorkInstanceState() == state)
-                .orElse(null);
+        return lookup(workId).filter(work -> workHasState(work, state)).orElse(null);
     }
 
     @Override
     public boolean isWorkInState(String workId, State state) {
-        Optional<Work> option = lookup(workId);
-        if (!option.isPresent()) {
-            return false;
-        }
-        if (state == null) {
-            return true;
-        }
-        return option.get()
-                .getWorkInstanceState()
-                .equals(state);
+        return lookup(workId).filter(work -> workHasState(work, state)).isPresent();
     }
 
     @Override
@@ -188,6 +178,18 @@ public class MemoryWorkQueuing implements WorkQueuing {
     @Override
     public WorkQueueMetrics metrics(String queueId) {
         return getQueue(queueId).metrics();
+    }
+
+    /**
+     * Returns {@code true} if the given state is not {@code null} and matches the state of the given work or if the
+     * state is {@code null} and the work's state is either {@link State#SCHEDULED} or {@link State#RUNNING},
+     * {@code false} otherwise.
+     *
+     * @since 9.3
+     */
+    protected static boolean workHasState(Work work, State state) {
+        State workState = work.getWorkInstanceState();
+        return state == null ? (workState == State.SCHEDULED || workState == State.RUNNING) : workState == state;
     }
 
 }

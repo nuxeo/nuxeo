@@ -19,16 +19,19 @@
 package org.nuxeo.ecm.platform.rendition.service;
 
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.script.Invocable;
@@ -381,6 +384,18 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             // or a versionable doc that is not checkedout
             rendition = getStoredRenditionManager().findStoredRendition(doc, renditionDefinition);
             if (rendition != null) {
+                // Mark stored rendition as stale if needed
+                Calendar renditionModificationDate = (Calendar) rendition.getHostDocument().getPropertyValue(
+                        RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY);
+                String sourceDocumentModificationDatePropertyName = renditionDefinition.getSourceDocumentModificationDatePropertyName();
+                Calendar currentModificationDate = (Calendar) doc.getPropertyValue(
+                        sourceDocumentModificationDatePropertyName);
+                if (!Objects.equals(renditionModificationDate, currentModificationDate)) {
+                    Blob blob = rendition.getBlob();
+                    if (blob != null) {
+                        blob.setMimeType(blob.getMimeType() + ";" + LazyRendition.STALE_MARKER);
+                    }
+                }
                 return rendition;
             }
         }
