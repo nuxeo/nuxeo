@@ -59,6 +59,7 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
     public static final String CATEGORY = "renditionBuilder";
 
     public AbstractRenditionBuilderWork(String key, DocumentModel doc, RenditionDefinition def) {
+        super();
         this.key = key;
         docRef = doc.getRef();
         repositoryName = doc.getRepositoryName();
