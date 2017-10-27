@@ -8,17 +8,12 @@
         "match_mapping_type": "string",
         "mapping": {
           "type": "keyword",
-          "copy_to": "all_field",
           "ignore_above": 256
         }
       }
     }
   ],
   "properties": {
-    "all_field": {
-      "type": "text",
-      "analyzer": "fulltext"
-    },
     "docPath": {
       "type": "keyword",
       "fields": {
@@ -36,7 +31,6 @@
     },
     "comment": {
       "type": "text",
-      "copy_to": "all_field",
       "fields": {
         "fulltext": {
           "analyzer": "fulltext",

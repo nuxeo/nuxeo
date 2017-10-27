@@ -40,6 +40,9 @@
       "ignore_above": 256,
       "copy_to": "all_field"
     },
+    "ecm:acl": {
+      "type": "keyword"
+    },
     "ecm:binarytext": {
       "type": "text",
       "analyzer": "fulltext",
@@ -77,10 +80,6 @@
       "index": false,
       "type": "keyword"
     },
-    "dc:modified": {
-      "type": "date",
-      "copy_to": "all_field"
-    },
     "dc:title": {
       "type": "text",
       "copy_to": "all_field",
@@ -106,12 +105,37 @@
       }
     },
     "dc:created": {
-      "type": "date",
-      "copy_to": "all_field"
+      "type": "date"
     },
     "dc:expired": {
-      "type": "date",
-      "copy_to": "all_field"
+      "type": "date"
+    },
+    "dc:modified": {
+      "type": "date"
+    },
+    "dc:creator": {
+      "type": "keyword",
+      "ignore_above": 256
+    },
+    "dc:lastContributor": {
+      "type": "keyword",
+      "ignore_above": 256
+    },
+    "ecm:uuid": {
+      "type": "keyword",
+      "ignore_above": 256
+    },
+    "ecm:mixinType": {
+      "type": "keyword",
+      "ignore_above": 256
+    },
+    "ecm:currentLifeCycleState": {
+      "type": "keyword",
+      "ignore_above": 256
+    },
+    "ecm:primaryType": {
+      "type": "keyword",
+      "ignore_above": 256
     },
     "note:note": {
       "type": "keyword",
