@@ -34,9 +34,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -179,9 +179,9 @@ public class AutomationRenderer {
      * Generate a revised filename whose extension is either based on the supplied mimeType if applicable or the
      * supplied default extension.
      *
-     * @param filename  the filename to use
-     * @param mimeType  the mimeType from which the assigned extension is derived
-     * @param defaultExtension  the default extension to be assigned if the mimeType has no corresponding extension
+     * @param filename the filename to use
+     * @param mimeType the mimeType from which the assigned extension is derived
+     * @param defaultExtension the default extension to be assigned if the mimeType has no corresponding extension
      * @return the filename with the revised extension
      * @since 7.4
      */

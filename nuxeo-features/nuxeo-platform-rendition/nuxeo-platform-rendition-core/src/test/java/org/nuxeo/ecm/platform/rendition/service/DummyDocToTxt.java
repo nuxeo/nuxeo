@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.rendition.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,9 +34,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 @Operation(id = DummyDocToTxt.ID, category = Constants.CAT_CONVERSION, label = "Convert Doc To Txt", description = "very dummy just for tests !")
 public class DummyDocToTxt {
@@ -96,8 +95,8 @@ public class DummyDocToTxt {
     }
 
     public static String formatLogEntry(DocumentRef docRef, String content, String desc, Calendar issued) {
-        return String.format("Doc with id '%s', content '%s', description '%s', issued '%s'",
-                docRef, StringUtils.defaultString(content), StringUtils.defaultString(desc),
+        return String.format("Doc with id '%s', content '%s', description '%s', issued '%s'", docRef,
+                StringUtils.defaultString(content), StringUtils.defaultString(desc),
                 issued == null ? "" : new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(issued.getTime()));
     }
 
