@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,10 +33,17 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.extension.AutomationRenderer;
+import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
+import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
+import org.nuxeo.ecm.platform.rendition.lazy.AbstractLazyCachableRenditionProvider;
+import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionFeature;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
+import org.nuxeo.ecm.platform.rendition.service.RenditionServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -71,6 +79,11 @@ public class TestLazyAutomationRenditions {
         //
     }
 
+    @After
+    public void tearDown() {
+        waitForAsyncCompletion();
+    }
+
     @Test
     public void testRenditions() throws Exception {
         doTestRenditions(false);
@@ -79,6 +92,35 @@ public class TestLazyAutomationRenditions {
     @Test
     public void testStoreRenditions() throws Exception {
         doTestRenditions(true);
+    }
+
+    @Test
+    public void testVeryLongLazyRendition() {
+        DocumentModel folder = createFolder();
+
+        // Compute transient store key for later manual removal
+        TransientStoreService tss = Framework.getService(TransientStoreService.class);
+        TransientStore ts = tss.getStore(AbstractLazyCachableRenditionProvider.CACHE_NAME);
+        RenditionService rs = Framework.getService(RenditionService.class);
+        RenditionDefinition definition = ((RenditionServiceImpl) rs).getRenditionDefinition("lazyAutomation");
+        RenditionProvider renditionProvider = definition.getProvider();
+        String key = ((AbstractLazyCachableRenditionProvider) renditionProvider).buildRenditionKey(folder, definition);
+
+        // Ask immediately for a lazy rendition, expecting an empty rendition
+        Rendition rendition = rs.getRendition(folder, "lazyAutomation");
+        assertNotNull(rendition);
+        Blob blob = rendition.getBlob();
+        assertTrue(blob.getMimeType().contains("empty=true"));
+
+        // Let's remove the rendition key from the transient store to simulate a very long rendition after which the
+        // key's TTL would have expired
+        ts.remove(key);
+
+        // Ask again for a lazy rendition, should be rendered, expecting an up-to-date rendition
+        waitForAsyncCompletion();
+        rendition = rs.getRendition(folder, "lazyAutomation");
+        blob = rendition.getBlob();
+        assertFalse(blob.getMimeType().contains("empty=true"));
     }
 
     protected void doTestRenditions(boolean store) throws Exception {
@@ -139,6 +181,10 @@ public class TestLazyAutomationRenditions {
         TransactionHelper.startTransaction();
         folder = session.getDocument(folder.getRef());
         return folder;
+    }
+
+    protected void waitForAsyncCompletion() {
+        Framework.getService(EventService.class).waitForAsyncCompletion(5000);
     }
 
 }
