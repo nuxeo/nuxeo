@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.core.validation.after.listeners.contrib">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Contribution which triggers validation before listeners for create/save/import document actions. Turn this
+      property to true to trigger validation after listeners.
+      <br />
+      Note: this is the default behavior for 8.10 - validation will be triggered after listeners for 9.10
+    </documentation>
+    <property name="org.nuxeo.core.validation.after.listeners">false</property>
+  </extension>
+
+</component>

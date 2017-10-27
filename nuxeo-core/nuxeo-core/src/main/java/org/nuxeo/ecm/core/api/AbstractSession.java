@@ -144,6 +144,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     public static final String BINARY_TEXT_SYS_PROP = "fulltextBinary";
 
+    public static final String VALIDATION_AFTER_LISTENERS_CONFIG_KEY = "org.nuxeo.core.validation.after.listeners";
+
     private Boolean limitedResults;
 
     private Long maxResults;
@@ -686,8 +688,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         String childName = docModel.getName();
         Map<String, Serializable> options = getContextMapEventInfo(docModel);
 
+        // retrieve configuration parameter to check if we validate document after listeners
+        boolean validationAfterListeners = Framework.getService(ConfigurationService.class)
+                                                    .isBooleanPropertyTrue(VALIDATION_AFTER_LISTENERS_CONFIG_KEY);
         // document validation
-        if (getValidationService().isActivated(DocumentValidationService.CTX_CREATEDOC, options)) {
+        if (!validationAfterListeners
+                && getValidationService().isActivated(DocumentValidationService.CTX_CREATEDOC, options)) {
             DocumentValidationReport report = getValidationService().validate(docModel, true);
             if (report.hasError()) {
                 throw new DocumentValidationException(report);
@@ -704,6 +710,15 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
         notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, options, null, null, false, true); // no lifecycle
                                                                                                      // yet
+
+        // document validation
+        if (validationAfterListeners
+                && getValidationService().isActivated(DocumentValidationService.CTX_CREATEDOC, options)) {
+            DocumentValidationReport report = getValidationService().validate(docModel, true);
+            if (report.hasError()) {
+                throw new DocumentValidationException(report);
+            }
+        }
         childName = (String) options.get(CoreEventConstants.DESTINATION_NAME);
         Document doc = folder.addChild(childName, typeName);
 
@@ -782,8 +797,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         DocumentRef parentRef = docModel.getParentRef();
         Map<String, Serializable> props = getContextMapEventInfo(docModel);
 
+        // retrieve configuration parameter to check if we validate document after listeners
+        boolean validationAfterListeners = Framework.getService(ConfigurationService.class)
+                                                    .isBooleanPropertyTrue(VALIDATION_AFTER_LISTENERS_CONFIG_KEY);
         // document validation
-        if (getValidationService().isActivated(DocumentValidationService.CTX_IMPORTDOC, props)) {
+        if (!validationAfterListeners
+                && getValidationService().isActivated(DocumentValidationService.CTX_IMPORTDOC, props)) {
             DocumentValidationReport report = getValidationService().validate(docModel, true);
             if (report.hasError()) {
                 throw new DocumentValidationException(report);
@@ -796,6 +815,15 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document parent = fillCreateOptions(parentRef, name, props);
         notifyEvent(DocumentEventTypes.ABOUT_TO_IMPORT, docModel, props, null, null, false, true);
         name = (String) props.get(CoreEventConstants.DESTINATION_NAME);
+
+        // document validation
+        if (validationAfterListeners
+                && getValidationService().isActivated(DocumentValidationService.CTX_IMPORTDOC, props)) {
+            DocumentValidationReport report = getValidationService().validate(docModel, true);
+            if (report.hasError()) {
+                throw new DocumentValidationException(report);
+            }
+        }
 
         // create the document
         Document doc = getSession().importDocument(id, parentRef == null ? null : parent, name, typeName, props);
@@ -1496,17 +1524,22 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         boolean dirty = docModel.isDirty();
 
+        // retrieve configuration parameter to check if we validate document after listeners
+        boolean validationAfterListeners = Framework.getService(ConfigurationService.class)
+                                                    .isBooleanPropertyTrue(VALIDATION_AFTER_LISTENERS_CONFIG_KEY);
         if (dirty) {
-            // document validation
-            if (getValidationService().isActivated(DocumentValidationService.CTX_SAVEDOC, options)) {
-                DocumentValidationReport report = getValidationService().validate(docModel, true);
-                if (report.hasError()) {
-                    throw new DocumentValidationException(report);
-                }
-            }
             // remove disallowed characters
             CharacterFilteringService charFilteringService = Framework.getService(CharacterFilteringService.class);
             charFilteringService.filter(docModel);
+            if (!validationAfterListeners) {
+                // document validation
+                if (getValidationService().isActivated(DocumentValidationService.CTX_SAVEDOC, options)) {
+                    DocumentValidationReport report = getValidationService().validate(docModel, true);
+                    if (report.hasError()) {
+                        throw new DocumentValidationException(report);
+                    }
+                }
+            }
         }
 
         options.put(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL, readModel(doc));
@@ -1514,6 +1547,19 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         options.put(CoreEventConstants.DESTINATION_NAME, docModel.getName());
         options.put(CoreEventConstants.DOCUMENT_DIRTY, dirty);
         notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel, options, null, null, true, true);
+
+        // recompute the dirty state
+        dirty = docModel.isDirty();
+        options.put(CoreEventConstants.DOCUMENT_DIRTY, dirty);
+        if (dirty && validationAfterListeners) {
+            // document validation
+            if (getValidationService().isActivated(DocumentValidationService.CTX_SAVEDOC, options)) {
+                DocumentValidationReport report = getValidationService().validate(docModel, true);
+                if (report.hasError()) {
+                    throw new DocumentValidationException(report);
+                }
+            }
+        }
         String name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
         // did the event change the name? not applicable to Root whose
         // name is null/empty
@@ -1521,10 +1567,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             doc = getSession().move(doc, doc.getParent(), name);
         }
 
-        // recompute the dirty state
-        dirty = docModel.isDirty();
-        options.put(CoreEventConstants.DOCUMENT_DIRTY, dirty);
-
+        // recompute versioning option as it can be set by listeners
         VersioningOption versioningOption = (VersioningOption) docModel.getContextData(VersioningService.VERSIONING_OPTION);
         docModel.putContextData(VersioningService.VERSIONING_OPTION, null);
         String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
