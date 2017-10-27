@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.computedgroups.ComputedGroupsService;
@@ -84,7 +85,7 @@ public class TestComputedGroupService {
         assertNotNull(computer);
         assertTrue(computer.getAllGroupIds().contains("Grp1"));
 
-        NuxeoGroup group = cgs.getComputedGroup("Grp1");
+        NuxeoGroup group = cgs.getComputedGroup("Grp1", um.getGroupConfig());
         assertNotNull(group);
         List<String> users = group.getMemberUsers();
         assertEquals(2, users.size());
@@ -216,6 +217,24 @@ public class TestComputedGroupService {
         nxGroup = um.getGroup("MyInc");
         assertNotNull(nxGroup);
         assertEquals(1, nxGroup.getMemberUsers().size());
+    }
+
+    @Test(expected = NuxeoException.class)
+    public void shouldNotCreateComputedGroup() {
+        NuxeoGroup group = um.getGroup("Grp1");
+        um.createGroup(group.getModel());
+    }
+
+    @Test(expected = NuxeoException.class)
+    public void shouldNotUpdateComputedGroup() {
+        NuxeoGroup group = um.getGroup("Grp1");
+        um.updateGroup(group.getModel());
+    }
+
+    @Test(expected = NuxeoException.class)
+    public void shouldNotDeleteComputedGroup() {
+        NuxeoGroup group = um.getGroup("Grp1");
+        um.deleteGroup(group.getName());
     }
 
 }

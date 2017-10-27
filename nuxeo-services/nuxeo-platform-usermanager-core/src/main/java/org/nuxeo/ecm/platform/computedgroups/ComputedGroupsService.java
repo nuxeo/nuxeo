@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.platform.usermanager.GroupConfig;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
 /**
@@ -49,8 +50,16 @@ public interface ComputedGroupsService {
 
     /**
      * Resolves a computed group by it's name.
+     * @deprecated since 9.3
      */
+    @Deprecated
     NuxeoGroup getComputedGroup(String groupName);
+
+    /**
+     * Resolves a computed group by it's name.
+     * @since 9.3
+     */
+    NuxeoGroup getComputedGroup(String groupName, GroupConfig groupConfig);
 
     /**
      * Defines if a computed group can override a physical group.

@@ -103,4 +103,9 @@ public interface NuxeoGroup extends Serializable {
      */
     void setLabel(String label);
 
+    /**
+     * @since 9.3
+     */
+    DocumentModel getModel();
+
 }
