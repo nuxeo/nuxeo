@@ -55,6 +55,13 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
         activatePersistenceProvider();
     }
 
+    /**
+     * @since 9.3
+     */
+    public DefaultAuditBackend() {
+        super();
+    }
+
     @Override
     public int getApplicationStartedOrder() {
         return ((DefaultComponent) Framework.getRuntime()

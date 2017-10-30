@@ -121,6 +121,13 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         super(component, config);
     }
 
+    /**
+     * @since 9.3
+     */
+    public ESAuditBackend() {
+        super();
+    }
+
     protected ESClient esClient;
 
     protected static final Log log = LogFactory.getLog(ESAuditBackend.class);
