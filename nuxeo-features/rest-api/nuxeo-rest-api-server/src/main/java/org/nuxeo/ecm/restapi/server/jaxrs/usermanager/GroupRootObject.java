@@ -21,9 +21,6 @@ package org.nuxeo.ecm.restapi.server.jaxrs.usermanager;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 
-import java.io.Serializable;
-
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -59,21 +56,8 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
 
     @Override
     protected NuxeoGroup createArtifact(NuxeoGroup group) {
-        DocumentModel groupModel = buildModelFromGroup(group, um);
-
-        um.createGroup(groupModel);
+        um.createGroup(group.getModel());
         return um.getGroup(group.getName());
-    }
-
-    private DocumentModel buildModelFromGroup(NuxeoGroup group, UserManager um) {
-        DocumentModel groupModel = um.getBareGroupModel();
-        String schemaName = um.getGroupSchemaName();
-        groupModel.setProperty(schemaName, um.getGroupIdField(), group.getName());
-        groupModel.setProperty(schemaName, um.getGroupLabelField(), group.getLabel());
-
-        groupModel.setPropertyValue(um.getGroupMembersField(), (Serializable) group.getMemberUsers());
-        groupModel.setPropertyValue(um.getGroupSubGroupsField(), (Serializable) group.getMemberGroups());
-        return groupModel;
     }
 
     private void checkGroupDoesNotAlreadyExists(NuxeoGroup group, UserManager um) {

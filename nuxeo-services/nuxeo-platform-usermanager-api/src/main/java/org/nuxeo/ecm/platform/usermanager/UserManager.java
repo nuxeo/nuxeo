@@ -396,6 +396,13 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
     List<String> getAncestorGroups(String groupId);
 
     /**
+     * Returns the contributed {@link GroupConfig}.
+     *
+     * @since 9.3
+     */
+    GroupConfig getGroupConfig();
+
+    /**
      * Notifies that the given user has changed with the given event:
      * <ul>
      * <li>At the runtime level so that the JaasCacheFlusher listener can make sure the principal cache is reset.</li>

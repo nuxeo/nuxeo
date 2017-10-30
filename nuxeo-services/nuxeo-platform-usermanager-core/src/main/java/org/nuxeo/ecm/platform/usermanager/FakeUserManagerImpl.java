@@ -461,6 +461,11 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     @Override
+    public GroupConfig getGroupConfig() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void notifyUserChanged(String userName, String eventId) {
         throw new UnsupportedOperationException();
     }
