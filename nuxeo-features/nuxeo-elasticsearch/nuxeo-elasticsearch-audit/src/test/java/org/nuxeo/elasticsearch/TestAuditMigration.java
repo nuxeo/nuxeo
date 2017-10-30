@@ -19,19 +19,28 @@
  */
 package org.nuxeo.elasticsearch;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.operations.services.AuditRestore;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.audit.api.AuditLogger;
+import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
@@ -47,10 +56,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
-@Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.runtime.datasource",
-        "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core",
-        "org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml",
-        "org.nuxeo.elasticsearch.seqgen",
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.runtime.metrics",
+        "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.persistence",
+        "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core",
+        "org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml", "org.nuxeo.elasticsearch.seqgen",
         "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit" })
 @RunWith(FeaturesRunner.class)
@@ -72,22 +81,37 @@ public class TestAuditMigration {
     @Inject
     TransactionalFeature txFeature;
 
+    @Inject
+    AutomationService automationService;
+
+    protected DefaultAuditBackend jpaBackend;
+
     @Before
     public void setupIndex() throws Exception {
         // make sure that the audit bulker don't drain pending log entries while we reset the index
         LogEntryGen.flushAndSync();
         esa.initIndexes(true);
-    }
-
-    @Test
-    public void shouldMigrate() throws Exception {
 
         NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
                                                                      .getComponent(NXAuditEventsService.NAME);
         Assert.assertNotNull(audit);
 
         // start with JPA based Audit
-        DefaultAuditBackend jpaBackend = (DefaultAuditBackend) new AuditBackendDescriptor().newInstance(audit);
+        jpaBackend = (DefaultAuditBackend) new AuditBackendDescriptor().newInstance(audit);
+
+    }
+
+    @After
+    public void tearDown() {
+        jpaBackend.getOrCreatePersistenceProvider().run(true, em -> {
+            em.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
+            em.createNativeQuery("delete from nxp_logs_extinfo").executeUpdate();
+            em.createNativeQuery("delete from nxp_logs").executeUpdate();
+        });
+    }
+
+    @Test
+    public void shouldMigrate() throws Exception {
 
         // generate some entries
         List<LogEntry> entries = new ArrayList<>();
@@ -103,7 +127,7 @@ public class TestAuditMigration {
         final long nbEntriesToMigrate = res.get(0).longValue();
         Assert.assertEquals(1000, nbEntriesToMigrate);
 
-        AuditBackend backend = audit.getBackend();
+        AuditBackend backend = (AuditBackend) Framework.getService(AuditLogger.class);
         Assert.assertNotNull(backend);
         Assert.assertTrue(backend instanceof ESAuditBackend);
 
@@ -122,6 +146,52 @@ public class TestAuditMigration {
                 + "                    }\n" + "                  }\n" + "                }\n"
                 + "              }}          \n" + "";
         List<LogEntry> migratedEntries = (List<LogEntry>) backend.nativeQuery(singleQuery, 0, 1001);
+        Assert.assertEquals(1000, migratedEntries.size());
+    }
+
+    @Test
+    public void testRestorationFromAuditStorage() throws Exception {
+
+        List<LogEntry> entries = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            entries.add(LogEntryGen.doCreateEntry("mydoc", "evt", "cat"));
+        }
+        jpaBackend.addLogEntries(entries);
+
+        List<LogEntry> originalEntries = jpaBackend.queryLogs(new AuditQueryBuilder());
+        Assert.assertEquals(1000, originalEntries.size());
+
+        txFeature.nextTransaction();
+
+        ESAuditBackend esBackend = (ESAuditBackend) Framework.getService(AuditLogger.class);
+
+        esBackend.restore(jpaBackend, 100, 10);
+        LogEntryGen.flushAndSync();
+
+        List<LogEntry> migratedEntries = esBackend.queryLogs(new AuditQueryBuilder());
+        Assert.assertEquals(1000, migratedEntries.size());
+    }
+
+    @Test
+    public void testRestorationFromAutomationOperation() throws Exception {
+
+        List<LogEntry> entries = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            entries.add(LogEntryGen.doCreateEntry("mydoc", "evt", "cat"));
+        }
+        jpaBackend.addLogEntries(entries);
+        txFeature.nextTransaction();
+
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Serializable> params = new HashMap<>();
+
+        params.put("auditStorageClass", DefaultAuditBackend.class.getName());
+
+        automationService.run(ctx, AuditRestore.ID, params);
+
+        LogEntryGen.flushAndSync();
+        ESAuditBackend esBackend = (ESAuditBackend) Framework.getService(AuditLogger.class);
+        List<LogEntry> migratedEntries = esBackend.queryLogs(new AuditQueryBuilder());
         Assert.assertEquals(1000, migratedEntries.size());
     }
 

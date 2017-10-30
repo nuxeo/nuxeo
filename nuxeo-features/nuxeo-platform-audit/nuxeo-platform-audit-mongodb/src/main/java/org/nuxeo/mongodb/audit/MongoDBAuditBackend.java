@@ -98,6 +98,13 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
         super(component, config);
     }
 
+    /**
+     * @since 9.3
+     */
+    public MongoDBAuditBackend() {
+        super();
+    }
+
     @Override
     public int getApplicationStartedOrder() {
         DefaultComponent component = (DefaultComponent) Framework.getRuntime().getComponent(MongoDBComponent.NAME);
