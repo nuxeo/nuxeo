@@ -54,6 +54,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -429,6 +430,14 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 closeStatement(ps);
             }
         } catch (SQLException e) {
+            try {
+                checkConcurrentUpdate(e);
+            } catch (ConcurrentUpdateException cue) {
+                cue.addInfo(
+                        "Duplicate cluster node with id: " + nodeId
+                                + " (a crashed node must be cleaned up, or the repository.clustering.id configuration fixed)");
+                throw cue;
+            }
             throw new NuxeoException(e);
         }
     }
