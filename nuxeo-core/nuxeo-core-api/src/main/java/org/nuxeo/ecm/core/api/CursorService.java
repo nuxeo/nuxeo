@@ -123,6 +123,7 @@ public class CursorService<C, O> {
         }
         cursorResult.touch();
         List<String> ids = new ArrayList<>(cursorResult.getBatchSize());
+        List<O> results = new ArrayList<>(cursorResult.getBatchSize());
         synchronized (cursorResult) {
             if (!cursorResult.hasNext()) {
                 unregisterCursor(scrollId);
@@ -136,6 +137,7 @@ public class CursorService<C, O> {
                     break;
                 } else {
                     O obj = cursorResult.next();
+                    results.add(obj);
                     String id = idExtractor.apply(obj);
                     if (id == null) {
                         log.error("Got a document without id: " + obj);
@@ -145,7 +147,7 @@ public class CursorService<C, O> {
                 }
             }
         }
-        return new ScrollResultImpl(scrollId, ids);
+        return new ScrollResultImpl<>(scrollId, ids, results);
     }
 
     /**
@@ -157,6 +159,18 @@ public class CursorService<C, O> {
             values.next().close();
             values.remove();
         }
+    }
+
+    /**
+     * Returns the list of results
+     *
+     * @since 9.3
+     */
+    public List<O> getResults(ScrollResult scrollResult) {
+        List<O> results = new ArrayList<>();
+        CursorResult<C, O> cursorResult = cursorResults.get(scrollResult.getScrollId());
+        cursorResult.forEachRemaining(results::add);
+        return results;
     }
 
 }

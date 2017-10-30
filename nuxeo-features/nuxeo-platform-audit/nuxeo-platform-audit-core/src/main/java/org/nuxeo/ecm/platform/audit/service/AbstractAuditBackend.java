@@ -38,11 +38,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.el.ELException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
@@ -103,6 +103,10 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
     protected AbstractAuditBackend(NXAuditEventsService component, AuditBackendDescriptor config) {
         this.component = component;
         this.config = config;
+    }
+
+    protected AbstractAuditBackend() {
+        this(null, null);
     }
 
     protected final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(new ExpressionFactoryImpl());
@@ -495,6 +499,42 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
     @Override
     public ScrollResult scroll(String scrollId) {
         return cursorService.scroll(scrollId, logEntry -> String.valueOf(logEntry.getId()));
+    }
+
+    @Override
+    public void restore(AuditStorage auditStorage, int batchSize, int keepAlive) {
+
+        AuditQueryBuilder builder = new AuditQueryBuilder();
+        ScrollResult scrollResult = auditStorage.scroll(builder, batchSize, keepAlive);
+        long t0 = System.currentTimeMillis();
+        int total = 0;
+        ObjectMapper mapper = new ObjectMapper();
+
+        log.info("Starting audit restoration");
+
+        while (scrollResult.hasResults()) {
+            List<String> logEntries = scrollResult.getResults().stream().map(logEntry -> {
+                try {
+                    return mapper.writeValueAsString(logEntry);
+                } catch (JsonProcessingException e) {
+                    throw new NuxeoException(e);
+                }
+            }).collect(Collectors.toList());
+            total += logEntries.size();
+            append(logEntries);
+
+            double dt = (System.currentTimeMillis() - t0) / 1000.0;
+            if (dt != 0) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Restoration speed: " + (total / dt) + " entries/s");
+                }
+            }
+
+            scrollResult = auditStorage.scroll(scrollResult.getScrollId());
+        }
+
+        log.info("Audit restoration done: " + total + " entries migrated from the audit storage");
+
     }
 
 }
