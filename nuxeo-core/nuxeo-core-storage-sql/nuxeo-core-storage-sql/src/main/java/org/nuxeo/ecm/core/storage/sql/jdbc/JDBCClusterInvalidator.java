@@ -24,6 +24,7 @@ import java.sql.Types;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
@@ -67,7 +68,12 @@ public class JDBCClusterInvalidator implements ClusterInvalidator {
             }
         }
         this.nodeId = nodeIdSer;
-        mapper.createClusterNode(nodeIdSer);
+        try {
+            mapper.createClusterNode(nodeIdSer);
+        } catch (ConcurrentUpdateException e) {
+            e.addInfo("Failed to initialize clustering for repository: " + repository.getName());
+            throw e;
+        }
         log.info("Clustering enabled for repository: " + repository.getName() + " with " + clusteringDelay
                 + " ms delay " + " and cluster node id: " + nodeId);
     }
