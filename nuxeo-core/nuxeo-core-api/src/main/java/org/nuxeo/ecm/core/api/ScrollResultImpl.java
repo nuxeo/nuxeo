@@ -24,19 +24,31 @@ import java.util.List;
 /**
  * @since 8.4
  */
-public class ScrollResultImpl implements ScrollResult {
+public class ScrollResultImpl<T> implements ScrollResult {
 
     protected static final ScrollResult EMPTY_RESULT = new ScrollResultImpl("empty", Collections.emptyList());
+
     protected final String scrollId;
+
     protected final List<String> ids;
+
+    protected final List<T> results;
 
     public static ScrollResult emptyResult() {
         return EMPTY_RESULT;
     }
 
     public ScrollResultImpl(String scrollId, List<String> ids) {
+        this(scrollId, ids, Collections.emptyList());
+    }
+
+    /**
+     * @since 9.3
+     */
+    public ScrollResultImpl(String scrollId, List<String> ids, List<T> results) {
         this.scrollId = scrollId;
         this.ids = Collections.unmodifiableList(ids);
+        this.results = Collections.unmodifiableList(results);
     }
 
     @Override
@@ -52,6 +64,12 @@ public class ScrollResultImpl implements ScrollResult {
     @Override
     public boolean hasResults() {
         return ids != null && !ids.isEmpty();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<T> getResults() {
+        return results;
     }
 
 }

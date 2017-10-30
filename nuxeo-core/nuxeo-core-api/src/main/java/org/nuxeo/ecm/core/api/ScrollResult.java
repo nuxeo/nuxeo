@@ -42,4 +42,11 @@ public interface ScrollResult {
      */
     boolean hasResults();
 
+    /**
+     * Returns the list of results
+     *
+     * @since 9.3
+     */
+    <T> List<T> getResults();
+
 }
