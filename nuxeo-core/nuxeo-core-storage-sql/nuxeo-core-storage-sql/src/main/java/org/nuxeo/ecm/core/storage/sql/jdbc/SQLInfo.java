@@ -693,6 +693,7 @@ public class SQLInfo {
         TableMaker maker = new TableMaker(model.CLUSTER_NODES_TABLE_NAME);
         maker.newColumn(model.CLUSTER_NODES_NODEID_KEY, ColumnType.CLUSTERNODE);
         maker.newColumn(model.CLUSTER_NODES_CREATED_KEY, ColumnType.TIMESTAMP);
+        maker.table.addIndex(null, IndexType.UNIQUE, model.CLUSTER_NODES_NODEID_KEY);
         maker.postProcessClusterNodes();
 
         maker = new TableMaker(model.CLUSTER_INVALS_TABLE_NAME);

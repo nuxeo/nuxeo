@@ -27,6 +27,8 @@ public interface Table extends Serializable {
     enum IndexType {
         /** Fulltext index, may be on several columns. */
         FULLTEXT,
+        /** Unique index. */
+        UNIQUE,
         /** Non primary index but the main one for this table. */
         MAIN_NON_PRIMARY
     }
