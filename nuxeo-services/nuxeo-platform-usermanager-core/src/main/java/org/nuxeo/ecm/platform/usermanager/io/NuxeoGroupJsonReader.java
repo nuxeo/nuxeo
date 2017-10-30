@@ -19,21 +19,31 @@
 
 package org.nuxeo.ecm.platform.usermanager.io;
 
+import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertiesJsonReader.DEFAULT_SCHEMA_NAME;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import static org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter.ENTITY_TYPE;
+import static org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter.MEMBER_GROUPS_FETCH_PROPERTY;
+import static org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter.MEMBER_USERS_FETCH_PROPERTY;
+import static org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter.PARENT_GROUPS_FETCH_PROPERTY;
 
+import java.io.Closeable;
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.codehaus.jackson.JsonNode;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+import org.nuxeo.ecm.platform.usermanager.GroupConfig;
 import org.nuxeo.ecm.platform.usermanager.NuxeoGroupImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
@@ -45,8 +55,9 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
  * <pre>
  * {
  *   "entity-type":"group",
- *   "groupname": "GROUP_NAME",
- *   "grouplabel": "GROUP_DISPLAY_NAME",
+ *   "groupname": "GROUP_NAME", <- deprecated, for backward compatibility
+ *   "grouplabel": "GROUP_DISPLAY_NAME", <- deprecated, for backward compatibility
+ *   "id": "GROUP_NAME",
  *   "memberUsers": [
  *     "USERNAME1",
  *     "USERNAME2",
@@ -59,7 +70,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
  *   ]
  * }
  * </pre>
- *
  * </p>
  *
  * @since 7.2
@@ -76,34 +86,73 @@ public class NuxeoGroupJsonReader extends EntityJsonReader<NuxeoGroup> {
 
     @Override
     protected NuxeoGroup readEntity(JsonNode jn) throws IOException {
-        NuxeoGroup group = null;
-        String id = getStringField(jn, "groupname");
+        GroupConfig groupConfig = userManager.getGroupConfig();
+        String id = getStringField(jn, "id");
+        DocumentModel groupModel = null;
+        if (id == null) {
+            // backward compatibility
+            id = getStringField(jn, "groupname");
+        }
         if (id != null) {
-            group = userManager.getGroup(id);
+            groupModel = userManager.getGroupModel(id);
         }
-        if (group == null) {
-            group = new NuxeoGroupImpl(id);
+        if (groupModel == null) {
+            groupModel = userManager.getBareGroupModel();
+            groupModel.setProperty(groupConfig.schemaName, groupConfig.idField, id);
         }
-        String label = getStringField(jn, "grouplabel");
-        group.setLabel(label);
-        List<String> users = getArrayStringValues(jn.get("memberUsers"));
-        group.setMemberUsers(users);
-        List<String> groups = getArrayStringValues(jn.get("memberGroups"));
-        group.setMemberGroups(groups);
-        return group;
+
+        readProperties(groupModel, groupConfig, jn);
+        readMemberUsers(groupModel, groupConfig, jn);
+        readMemberGroups(groupModel, groupConfig, jn);
+        readParentGroups(groupModel, groupConfig, jn);
+
+        String label = (String) groupModel.getProperty(groupConfig.schemaName, groupConfig.labelField);
+        if (label == null) {
+            // backward compatibility
+            label = getStringField(jn, "grouplabel");
+            groupModel.setProperty(groupConfig.schemaName, groupConfig.labelField, label);
+        }
+
+        return new NuxeoGroupImpl(groupModel, groupConfig);
+    }
+
+    protected void readProperties(DocumentModel groupModel, GroupConfig groupConfig, JsonNode jn) throws IOException {
+        List<String> excludedProperties = Arrays.asList(groupConfig.membersField, groupConfig.subGroupsField,
+                groupConfig.parentGroupsField);
+        JsonNode propsNode = jn.get("properties");
+        if (propsNode != null && !propsNode.isNull() && propsNode.isObject()) {
+            ParameterizedType genericType = TypeUtils.parameterize(List.class, Property.class);
+            try (Closeable resource = ctx.wrap().with(DEFAULT_SCHEMA_NAME, groupConfig.schemaName).open()) {
+                List<Property> properties = readEntity(List.class, genericType, propsNode);
+                properties.stream().filter(p -> !excludedProperties.contains(p)).forEach(
+                        p -> groupModel.setPropertyValue(p.getName(), p.getValue()));
+            }
+        }
+    }
+
+    protected void readMemberUsers(DocumentModel groupModel, GroupConfig groupConfig, JsonNode jn) {
+        List<String> users = getArrayStringValues(jn.get(MEMBER_USERS_FETCH_PROPERTY));
+        groupModel.setProperty(groupConfig.schemaName, groupConfig.membersField, users);
+    }
+
+    protected void readMemberGroups(DocumentModel groupModel, GroupConfig groupConfig, JsonNode jn) {
+        List<String> groups = getArrayStringValues(jn.get(MEMBER_GROUPS_FETCH_PROPERTY));
+        groupModel.setProperty(groupConfig.schemaName, groupConfig.subGroupsField, groups);
+    }
+
+    protected void readParentGroups(DocumentModel groupModel, GroupConfig groupConfig, JsonNode jn) {
+        List<String> parents = getArrayStringValues(jn.get(PARENT_GROUPS_FETCH_PROPERTY));
+        groupModel.setProperty(groupConfig.schemaName, groupConfig.parentGroupsField, parents);
     }
 
     private List<String> getArrayStringValues(JsonNode node) {
         List<String> values = new ArrayList<>();
         if (node != null && !node.isNull() && node.isArray()) {
-            JsonNode elNode = null;
-            Iterator<JsonNode> it = node.getElements();
-            while (it.hasNext()) {
-                elNode = it.next();
-                if (elNode != null && !elNode.isNull() && elNode.isTextual()) {
-                    values.add(elNode.getTextValue());
+            node.getElements().forEachRemaining(n -> {
+                if (n != null && !n.isNull() && n.isTextual()) {
+                    values.add(n.getTextValue());
                 }
-            }
+            });
         }
         return values;
     }

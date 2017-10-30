@@ -22,9 +22,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.FETCH_PROPERTIES;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
@@ -34,6 +36,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -41,6 +44,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.NuxeoGroupImpl;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -176,7 +180,42 @@ public class UserGroupTest extends BaseUserTest {
 
             // Then i GET the Group
             JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(5, node.size());
             assertEqualsGroup(group.getName(), group.getLabel(), node);
+        }
+    }
+
+    @Test
+    public void itCanGetAGroupWithFetchProperties() throws Exception {
+        NuxeoGroup group = new NuxeoGroupImpl("newGroup");
+        group.setLabel("a new group");
+        group.setMemberUsers(Arrays.asList("user1", "user2"));
+        group.setMemberGroups(Collections.singletonList("group2"));
+        group.setParentGroups(Collections.singletonList("supergroup"));
+        um.createGroup(group.getModel());
+        nextTransaction();
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle(FETCH_PROPERTIES + "." + NuxeoGroupJsonWriter.ENTITY_TYPE,
+                "memberUsers,memberGroups,parentGroups");
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/group/" + group.getName(),
+                queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(8, node.size());
+            JsonNode memberUsers = node.get("memberUsers");
+            assertTrue(memberUsers.isArray());
+            assertEquals(2, memberUsers.size());
+            assertEquals("user1", memberUsers.get(0).getValueAsText());
+            assertEquals("user2", memberUsers.get(1).getValueAsText());
+            JsonNode memberGroups = node.get("memberGroups");
+            assertEquals(1, memberGroups.size());
+            assertEquals("group2", memberGroups.get(0).getValueAsText());
+            JsonNode parentGroups = node.get("parentGroups");
+            assertEquals(1, parentGroups.size());
+            assertEquals("supergroup", parentGroups.get(0).getValueAsText());
+        } finally {
+            um.deleteGroup(group.getModel());
         }
     }
 
@@ -235,6 +274,33 @@ public class UserGroupTest extends BaseUserTest {
 
         um.deleteGroup("newGroup");
         assertNull(um.getGroup("newGroup"));
+    }
+
+    @Test
+    public void itCanCreateAGroupWithCompatibilityFields() throws Exception {
+        // Given a modified group
+        NuxeoGroup group = new NuxeoGroupImpl("newCompatGroup");
+        group.setMemberUsers(Arrays.asList("user1", "user2"));
+        group.setMemberGroups(Collections.singletonList("group2"));
+
+        // update the JSON to remove new fields and keep compatibility ones
+        String jsonGroup = getGroupAsJson(group);
+        jsonGroup = jsonGroup.replaceAll("\"grouplabel\":\"newCompatGroup\",", "");
+        jsonGroup = jsonGroup.replaceAll("\"id\":\"newCompatGroup\"", "\"grouplabel\":\"a new compatibility group\"");
+
+        // When i POST this group
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/group/", jsonGroup)) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+            // Then the group is modified server side
+            group = um.getGroup("newCompatGroup");
+            assertEquals("a new compatibility group", group.getLabel());
+            assertEquals(2, group.getMemberUsers().size());
+            assertEquals(1, group.getMemberGroups().size());
+        }
+
+        um.deleteGroup("newCompatGroup");
+        assertNull(um.getGroup("newCompatGroup"));
     }
 
     @Test
@@ -460,7 +526,7 @@ public class UserGroupTest extends BaseUserTest {
         ArrayNode entries = (ArrayNode) node.get("entries");
         assertEquals(groups.length, entries.size());
         for (int i = 0; i < groups.length; i++) {
-            assertEquals(groups[i], entries.get(i).get("groupname").getValueAsText());
+            assertEquals(groups[i], entries.get(i).get("id").getValueAsText());
         }
     }
 

@@ -22,9 +22,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
-
-import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -37,9 +34,6 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
  */
 public class BaseUserTest extends BaseTest {
 
-    @Inject
-    JsonFactory factory;
-
     /**
      * Returns the json representation of a group
      */
@@ -47,6 +41,7 @@ public class BaseUserTest extends BaseTest {
         RenderingContext ctx = CtxBuilder.get();
         ctx.addParameterValues("fetch.group", "memberUsers");
         ctx.addParameterValues("fetch.group", "memberGroups");
+        ctx.addParameterValues("fetch.group", "parentGroups");
         return MarshallerHelper.objectToJson(group, ctx);
     }
 
@@ -55,8 +50,13 @@ public class BaseUserTest extends BaseTest {
      */
     protected void assertEqualsGroup(String groupName, String groupLabel, JsonNode node) {
         assertEquals("group", node.get("entity-type").getValueAsText());
+        assertEquals(groupName, node.get("id").getValueAsText());
         assertEquals(groupName, node.get("groupname").getValueAsText());
         assertEquals(groupLabel, node.get("grouplabel").getValueAsText());
+        JsonNode properties = node.get("properties");
+        assertEquals(groupName, properties.get("groupname").getValueAsText());
+        assertEquals(groupLabel, properties.get("grouplabel").getValueAsText());
+        assertEquals("description of " + groupName, properties.get("description").getValueAsText());
     }
 
     /**

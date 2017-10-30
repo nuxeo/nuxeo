@@ -1435,6 +1435,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     @Override
+    public GroupConfig getGroupConfig() {
+        return groupConfig;
+    }
+
+    @Override
     public void handleEvent(Event event) {
         String id = event.getId();
         if (INVALIDATE_PRINCIPAL_EVENT_ID.equals(id)) {
