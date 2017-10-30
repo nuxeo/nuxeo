@@ -731,6 +731,7 @@ public class SQLInfo {
         TableMaker maker = new TableMaker(Model.CLUSTER_NODES_TABLE_NAME);
         maker.newColumn(Model.CLUSTER_NODES_NODEID_KEY, ColumnType.CLUSTERNODE);
         maker.newColumn(Model.CLUSTER_NODES_CREATED_KEY, ColumnType.TIMESTAMP);
+        maker.table.addIndex(null, IndexType.UNIQUE, Model.CLUSTER_NODES_NODEID_KEY);
         maker.postProcessClusterNodes();
 
         maker = new TableMaker(Model.CLUSTER_INVALS_TABLE_NAME);
