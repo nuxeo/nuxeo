@@ -93,19 +93,15 @@
 
       <table class="dataTable">
         <nxu:repeat var="entry" value="#{directoryUIActions.currentDirectoryEntries}"
+          renderTime="#{configurationService.isBooleanPropertyTrue('nuxeo.jsf.vocabularies.useRepeatRenderTime')}"
           varStatus="status">
-          <c:if test="#{status.index%2 == 0}">
-            <c:set var="directoryEntryClass" value="dataRowOdd" />
-          </c:if>
-          <c:if test="#{status.index%2 != 0}">
-            <c:set var="directoryEntryClass" value="dataRowEven" />
-          </c:if>
-          <c:if test="#{status.index == 0}">
+          <c:set var="directoryEntryClass" value="#{status.index%2 == 0 ? 'dataRowOdd' : 'dataRowEven'}" />
+          <ui:fragment rendered="#{status.index == 0}">
             <nxl:layout name="#{currentVoc.layout}" mode="view_list_and_header" value="#{entry}" />
-          </c:if>
-          <c:if test="#{status.index != 0}">
+          </ui:fragment>
+          <ui:fragment rendered="#{status.index != 0}">
             <nxl:layout name="#{currentVoc.layout}" mode="view_list" value="#{entry}" />
-          </c:if>
+          </ui:fragment>
         </nxu:repeat>
       </table>
 
