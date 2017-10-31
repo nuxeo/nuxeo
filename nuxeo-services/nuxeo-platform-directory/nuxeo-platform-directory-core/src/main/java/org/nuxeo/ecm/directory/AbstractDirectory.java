@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +33,9 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.cache.CacheService;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -277,6 +280,22 @@ public abstract class AbstractDirectory implements Directory {
     @Override
     public List<DirectoryDeleteConstraint> getDirectoryDeleteConstraints() {
         return descriptor.getDeleteConstraints();
+    }
+
+    /*
+     * Initializes schemaFieldMap. Note that this cannot be called from the Directory constructor because the
+     * SchemaManager initialization itself requires access to directories (and therefore their construction) for fields
+     * having entry resolvers. So an infinite recursion must be avoided.
+     */
+    protected void initSchemaFieldMap() {
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        Schema schema = schemaManager.getSchema(getSchema());
+        if (schema == null) {
+            throw new DirectoryException(
+                    "Invalid configuration for directory: " + getName() + ", no such schema: " + getSchema());
+        }
+        schemaFieldMap = new LinkedHashMap<>();
+        schema.getFields().forEach(f -> schemaFieldMap.put(f.getName().getLocalName(), f));
     }
 
     @Override

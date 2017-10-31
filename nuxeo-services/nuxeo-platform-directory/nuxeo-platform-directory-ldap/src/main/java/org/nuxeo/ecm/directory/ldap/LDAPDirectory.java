@@ -75,7 +75,8 @@ public class LDAPDirectory extends AbstractDirectory {
 
     protected Properties contextProperties;
 
-    protected SearchControls searchControls;
+    // used in double-checked locking for lazy init
+    protected volatile SearchControls searchControls;
 
     protected final LDAPDirectoryFactory factory;
 
@@ -99,29 +100,24 @@ public class LDAPDirectory extends AbstractDirectory {
 
     @Override
     public List<Reference> getReferences(String referenceFieldName) {
-        if (schemaFieldMap == null) {
-            initLDAPConfig();
-        }
+        initLDAPConfigIfNeeded();
         return references.get(referenceFieldName);
     }
 
-    /**
-     * Lazy init method for ldap config
-     *
-     * @since 6.0
-     */
+    protected void initLDAPConfigIfNeeded() {
+        // double checked locking with volatile pattern to ensure concurrent lazy init
+        if (searchControls == null) {
+            synchronized (this) {
+                if (searchControls == null) {
+                    initLDAPConfig();
+                }
+            }
+        }
+    }
+
     protected void initLDAPConfig() {
         LDAPDirectoryDescriptor ldapDirectoryDesc = getDescriptor();
-        // computing attributes that will be useful for all sessions
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-        Schema schema = schemaManager.getSchema(getSchema());
-        if (schema == null) {
-            throw new DirectoryException(getSchema() + " is not a registered schema");
-        }
-        schemaFieldMap = new LinkedHashMap<>();
-        for (Field f : schema.getFields()) {
-            schemaFieldMap.put(f.getName().getLocalName(), f);
-        }
+        initSchemaFieldMap();
 
         // init field mapper before search fields
         fieldMapper = new DirectoryFieldMapper(ldapDirectoryDesc.fieldMapping);
@@ -137,7 +133,7 @@ public class LDAPDirectory extends AbstractDirectory {
         searchControls = computeSearchControls();
 
         log.debug(String.format("initialized LDAP directory %s with fields [%s] and references [%s]", getName(),
-                StringUtils.join(schemaFieldMap.keySet().toArray(), ", "),
+                StringUtils.join(getSchemaFieldMap().keySet().toArray(), ", "),
                 StringUtils.join(references.keySet().toArray(), ", ")));
     }
 
@@ -229,7 +225,7 @@ public class LDAPDirectory extends AbstractDirectory {
         // only fetch attributes that are defined in the schema or needed to
         // compute LDAPReferences
         Set<String> attrs = new HashSet<>();
-        for (String fieldName : schemaFieldMap.keySet()) {
+        for (String fieldName : getSchemaFieldMap().keySet()) {
             if (!references.containsKey(fieldName)) {
                 attrs.add(fieldMapper.getBackendField(fieldName));
             }
@@ -311,9 +307,7 @@ public class LDAPDirectory extends AbstractDirectory {
 
     @Override
     public Session getSession() throws DirectoryException {
-        if (schemaFieldMap == null) {
-            initLDAPConfig();
-        }
+        initLDAPConfigIfNeeded();
         Session session = new LDAPSession(this);
         addSession(session);
         return session;

@@ -233,7 +233,7 @@ public class LDAPSession extends BaseSession {
     protected List<String> updateEntryWithoutReferences(DocumentModel docModel) throws DirectoryException {
         List<String> updateList = new ArrayList<>();
         List<String> referenceFieldList = new LinkedList<>();
-
+        Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
         try {
             for (String fieldName : schemaFieldMap.keySet()) {
                 if (!docModel.getPropertyObject(schemaName, fieldName).isDirty()) {
@@ -564,7 +564,7 @@ public class LDAPSession extends BaseSession {
     protected Object getFieldValue(Attribute attribute, String fieldName, String entryId, boolean fetchReferences)
             throws DirectoryException {
 
-        Field field = schemaFieldMap.get(fieldName);
+        Field field = directory.getSchemaFieldMap().get(fieldName);
         Type type = field.getType();
         if (type instanceof SimpleTypeImpl) {
             // type with constraint
@@ -649,7 +649,7 @@ public class LDAPSession extends BaseSession {
     @SuppressWarnings("unchecked")
     protected Attribute getAttributeValue(String fieldName, Object value) throws DirectoryException {
         Attribute attribute = new BasicAttribute(getDirectory().getFieldMapper().getBackendField(fieldName));
-        Field field = schemaFieldMap.get(fieldName);
+        Field field = directory.getSchemaFieldMap().get(fieldName);
         if (field == null) {
             String message = String.format("Invalid field name '%s' for directory '%s' with schema '%s'", fieldName,
                     directory.getName(), directory.getSchema());
@@ -749,7 +749,7 @@ public class LDAPSession extends BaseSession {
             // don't bother
             return null;
         }
-        for (String fieldName : schemaFieldMap.keySet()) {
+        for (String fieldName : directory.getSchemaFieldMap().keySet()) {
             List<Reference> references = directory.getReferences(fieldName);
             if (references != null && references.size() > 0) {
                 if (fetchReferences) {
@@ -881,8 +881,7 @@ public class LDAPSession extends BaseSession {
 
     @Override
     public boolean isAuthenticating() throws DirectoryException {
-        String password = getPasswordField();
-        return schemaFieldMap.containsKey(password);
+        return directory.getSchemaFieldMap().containsKey(getPasswordField());
     }
 
     public boolean rdnMatchesIdField() {

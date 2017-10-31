@@ -27,7 +27,6 @@ import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.CREATE_TABLE_POLIC
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -50,7 +49,8 @@ public class MongoDBDirectory extends AbstractDirectory {
 
     protected String countersCollectionName;
 
-    protected boolean initialized;
+    // used in double-checked locking for lazy init
+    protected volatile boolean initialized;
 
     public MongoDBDirectory(MongoDBDirectoryDescriptor descriptor) {
         super(descriptor, MongoDBReference.class);
@@ -71,17 +71,25 @@ public class MongoDBDirectory extends AbstractDirectory {
 
     @Override
     public Session getSession() throws DirectoryException {
-
-        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        Schema schema = schemaManager.getSchema(getSchema());
-        if (schema == null) {
-            throw new DirectoryException(getSchema() + " is not a registered schema");
-        }
-        schemaFieldMap = new LinkedHashMap<>();
-        schema.getFields().forEach(f -> schemaFieldMap.put(f.getName().getLocalName(), f));
-
         MongoDBSession session = new MongoDBSession(this);
         addSession(session);
+        initializeIfNeeded(session);
+        return session;
+    }
+
+    protected void initializeIfNeeded(MongoDBSession session) {
+        if (!initialized) {
+            synchronized (this) {
+                if (!initialized) {
+                    initialize(session);
+                    initialized = true;
+                }
+            }
+        }
+    }
+
+    protected void initialize(MongoDBSession session) {
+        initSchemaFieldMap();
 
         // Initialize counters collection if autoincrement enabled
         if (descriptor.isAutoincrementIdField() && !session.hasCollection(countersCollectionName)) {
@@ -91,34 +99,32 @@ public class MongoDBDirectory extends AbstractDirectory {
             session.getCollection(countersCollectionName).insertOne(MongoDBSerializationHelper.fieldMapToBson(seq));
         }
 
-        if (!initialized) {
-            String policy = descriptor.getCreateTablePolicy();
-            MongoCollection collection = session.getCollection(getName());
-            boolean dropCollection = false;
-            boolean loadData = false;
+        String policy = descriptor.getCreateTablePolicy();
+        MongoCollection collection = session.getCollection(getName());
+        boolean dropCollection = false;
+        boolean loadData = false;
 
-            switch (policy) {
-            case CREATE_TABLE_POLICY_ALWAYS:
-                dropCollection = true;
+        switch (policy) {
+        case CREATE_TABLE_POLICY_ALWAYS:
+            dropCollection = true;
+            loadData = true;
+            break;
+        case CREATE_TABLE_POLICY_ON_MISSING_COLUMNS:
+            // As MongoDB does not have the notion of columns, only load data if collection doesn't exist
+            if (!session.hasCollection(getName())) {
                 loadData = true;
-                break;
-            case CREATE_TABLE_POLICY_ON_MISSING_COLUMNS:
-                // As MongoDB does not have the notion of columns, only load data if collection doesn't exist
-                if (!session.hasCollection(getName())) {
-                    loadData = true;
-                }
-            default:
-                break;
             }
-            if (dropCollection) {
-                collection.drop();
-            }
-            if (loadData) {
-                loadData(schema, session);
-            }
-            initialized = true;
+        default:
+            break;
         }
-        return session;
+        if (dropCollection) {
+            collection.drop();
+        }
+        if (loadData) {
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+            Schema schema = schemaManager.getSchema(getSchema());
+            loadData(schema, session);
+        }
     }
 
     protected void loadData(Schema schema, Session session) {
