@@ -714,43 +714,43 @@ public abstract class AbstractTestTagService {
         nxql = nxql("SELECT ecm:tag FROM File");
         res = session.queryAndFetch(nxql, NXQL.NXQL);
         // file1: tag1, tag2; file2: tag1
-        assertIterableQueryResult(res, 3, "ecm:tag", "tag1", "tag2");
+        assertIterableQueryResult(res, "ecm:tag", "tag1", "tag2");
         res.close();
 
         nxql = nxql("SELECT ecm:tag FROM File WHERE ecm:tag LIKE '%1'");
         res = session.queryAndFetch(nxql, NXQL.NXQL);
-        assertIterableQueryResult(res, 2, "ecm:tag", "tag1");
+        assertIterableQueryResult(res, "ecm:tag", "tag1");
         res.close();
 
         // explicit DISTINCT
         if (!coreFeature.getStorageConfiguration().isDBS()) {
             nxql = nxql("SELECT DISTINCT ecm:tag FROM File");
             res = session.queryAndFetch(nxql, NXQL.NXQL);
-            assertIterableQueryResult(res, 2, "ecm:tag", "tag1", "tag2");
+            assertIterableQueryResult(res, "ecm:tag", "tag1", "tag2");
             res.close();
         }
 
         nxql = nxql("SELECT ecm:tag FROM File WHERE dc:title = 'file1'");
         res = session.queryAndFetch(nxql, NXQL.NXQL);
-        assertIterableQueryResult(res, 2, "ecm:tag", "tag1", "tag2");
+        assertIterableQueryResult(res, "ecm:tag", "tag1", "tag2");
         res.close();
 
         // unqualified name refers to the same tag
         nxql = nxql("SELECT ecm:tag FROM File WHERE ecm:tag = 'tag1'");
         res = session.queryAndFetch(nxql, NXQL.NXQL);
-        assertIterableQueryResult(res, 2, "ecm:tag", "tag1");
+        assertIterableQueryResult(res, "ecm:tag", "tag1");
         res.close();
 
         // unqualified name refers to the same tag
         nxql = nxql("SELECT ecm:tag FROM File WHERE ecm:tag = 'tag2'");
         res = session.queryAndFetch(nxql, NXQL.NXQL);
-        assertIterableQueryResult(res, 1, "ecm:tag", "tag2");
+        assertIterableQueryResult(res, "ecm:tag", "tag2");
         res.close();
 
         // numbered tag
         nxql = nxql("SELECT ecm:tag/*1 FROM File WHERE ecm:tag/*1 = 'tag1'");
         res = session.queryAndFetch(nxql, NXQL.NXQL);
-        assertIterableQueryResult(res, 2, "ecm:tag/*1", "tag1");
+        assertIterableQueryResult(res, "ecm:tag/*1", "tag1");
         res.close();
     }
 
@@ -764,9 +764,7 @@ public abstract class AbstractTestTagService {
         }
     }
 
-    protected static void assertIterableQueryResult(IterableQueryResult actual, int size, String prop,
-            String... expected) {
-        // size unused
+    protected static void assertIterableQueryResult(IterableQueryResult actual, String prop, String... expected) {
         Collection<String> set = new HashSet<>();
         for (Map<String, Serializable> map : actual) {
             String tag = (String) map.get(prop);
