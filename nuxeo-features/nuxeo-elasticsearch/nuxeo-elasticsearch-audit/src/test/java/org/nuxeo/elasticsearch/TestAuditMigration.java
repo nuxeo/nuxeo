@@ -39,7 +39,6 @@ import org.nuxeo.ecm.automation.core.operations.services.AuditRestore;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
@@ -127,7 +126,7 @@ public class TestAuditMigration {
         final long nbEntriesToMigrate = res.get(0).longValue();
         Assert.assertEquals(1000, nbEntriesToMigrate);
 
-        AuditBackend backend = (AuditBackend) Framework.getService(AuditLogger.class);
+        AuditBackend backend = Framework.getService(AuditBackend.class);
         Assert.assertNotNull(backend);
         Assert.assertTrue(backend instanceof ESAuditBackend);
 
@@ -163,7 +162,7 @@ public class TestAuditMigration {
 
         txFeature.nextTransaction();
 
-        ESAuditBackend esBackend = (ESAuditBackend) Framework.getService(AuditLogger.class);
+        ESAuditBackend esBackend = (ESAuditBackend) Framework.getService(AuditBackend.class);
 
         esBackend.restore(jpaBackend, 100, 10);
         LogEntryGen.flushAndSync();
@@ -185,12 +184,12 @@ public class TestAuditMigration {
         OperationContext ctx = new OperationContext(session);
         Map<String, Serializable> params = new HashMap<>();
 
-        params.put("auditStorageClass", DefaultAuditBackend.class.getName());
+        params.put("auditStorage", "defaultAuditStorage");
 
         automationService.run(ctx, AuditRestore.ID, params);
 
         LogEntryGen.flushAndSync();
-        ESAuditBackend esBackend = (ESAuditBackend) Framework.getService(AuditLogger.class);
+        ESAuditBackend esBackend = (ESAuditBackend) Framework.getService(AuditBackend.class);
         List<LogEntry> migratedEntries = esBackend.queryLogs(new AuditQueryBuilder());
         Assert.assertEquals(1000, migratedEntries.size());
     }

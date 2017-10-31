@@ -10,5 +10,9 @@
       <require>org.nuxeo.elasticsearch.ElasticSearchComponent</require>
     </backend>
   </extension>
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" point="storage">
+    <storage id="elasticsearchAuditStorage" class="org.nuxeo.elasticsearch.audit.ESAuditBackend"/>
+  </extension>
   
 </component>

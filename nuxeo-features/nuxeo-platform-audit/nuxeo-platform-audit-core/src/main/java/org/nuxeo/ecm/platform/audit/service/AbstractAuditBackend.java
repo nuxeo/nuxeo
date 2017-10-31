@@ -498,7 +498,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
 
     @Override
     public ScrollResult scroll(String scrollId) {
-        return cursorService.scroll(scrollId, logEntry -> String.valueOf(logEntry.getId()));
+        return cursorService.scroll(scrollId, true, logEntry -> String.valueOf(logEntry.getId()));
     }
 
     @Override

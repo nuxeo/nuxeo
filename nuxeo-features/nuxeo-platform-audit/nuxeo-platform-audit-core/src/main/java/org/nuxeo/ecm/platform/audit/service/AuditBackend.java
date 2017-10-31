@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.audit.service;
 
+import org.nuxeo.ecm.platform.audit.api.AuditStorage;
 import org.nuxeo.ecm.platform.audit.api.Logs;
 
 /**
@@ -46,5 +47,14 @@ public interface AuditBackend extends Logs {
         throw new UnsupportedOperationException("deprecated API, should not be invoked");
     }
 
+    /**
+     * Restore the backend from the given {@link AuditStorage}
+     *
+     * @param auditStorage the audit storage
+     * @param batchSize the batch size
+     * @param keepAlive the keep alive duration
+     * @since 9.3
+     */
+    void restore(AuditStorage auditStorage, int batchSize, int keepAlive);
 
 }
