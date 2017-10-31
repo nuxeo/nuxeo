@@ -117,7 +117,7 @@
       temp.query = params.query;
       temp.providerName = params.pageProviderName;
       temp.page = "0";
-      temp.pageSize = "20";
+      temp.pageSize = params.pageSize || "20";
       if (typeof temp.quotePatternParameters === "undefined") {
         temp.quotePatternParameters = false;
       }
