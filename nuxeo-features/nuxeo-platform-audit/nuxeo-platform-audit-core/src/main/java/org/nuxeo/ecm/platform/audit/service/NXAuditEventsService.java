@@ -27,11 +27,13 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.audit.api.AuditStorage;
 import org.nuxeo.ecm.platform.audit.api.DocumentHistoryReader;
 import org.nuxeo.ecm.platform.audit.api.document.DocumentHistoryReaderImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.AuditBulkerDescriptor;
+import org.nuxeo.ecm.platform.audit.service.extension.AuditStorageDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -83,6 +85,8 @@ public class NXAuditEventsService extends DefaultComponent {
     protected AuditBulker bulker;
 
     protected AuditBulkerDescriptor bulkerConfig = new AuditBulkerDescriptor();
+
+    protected Map<String, AuditStorageDescriptor> auditStorageDescriptors = new HashMap<>();
 
     @Override
     public int getApplicationStartedOrder() {
@@ -221,6 +225,9 @@ public class NXAuditEventsService extends DefaultComponent {
             backendConfig = (AuditBackendDescriptor)contribution;
         }  else if (contribution instanceof AuditBulkerDescriptor) {
             bulkerConfig = (AuditBulkerDescriptor)contribution;
+        } else if (contribution instanceof  AuditStorageDescriptor) {
+            AuditStorageDescriptor auditStorageDesc = (AuditStorageDescriptor) contribution;
+            auditStorageDescriptors.put(auditStorageDesc.getId(), auditStorageDesc);
         }
     }
 
@@ -233,6 +240,13 @@ public class NXAuditEventsService extends DefaultComponent {
         } else if (extensionPoint.equals(ADAPTER_POINT)) {
             doUnregisterAdapter((AdapterDescriptor) contribution);
         }
+    }
+
+    /**
+     * @since 9.3
+     */
+    public AuditStorage getAuditStorage(String id) {
+        return auditStorageDescriptors.get(id).newInstance();
     }
 
 }

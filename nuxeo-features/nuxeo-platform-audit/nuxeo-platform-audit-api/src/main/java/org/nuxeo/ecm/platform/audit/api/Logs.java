@@ -30,14 +30,4 @@ package org.nuxeo.ecm.platform.audit.api;
  */
 public interface Logs extends AuditReader, AuditLogger, AuditAdmin {
 
-    /**
-     * Restore the backend from the given {@link AuditStorage}
-     *
-     * @param auditStorage the audit storage
-     * @param batchSize the batch size
-     * @param keepAlive the keep alive duration
-     * @since 9.3
-     */
-    void restore(AuditStorage auditStorage, int batchSize, int keepAlive);
-
 }

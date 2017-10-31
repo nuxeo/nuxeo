@@ -115,6 +115,13 @@ public class CursorService<C, O> {
      * @return the next batch of cursor associated to the input <code>scrollId</code>
      */
     public ScrollResult scroll(String scrollId, Function<O, String> idExtractor) {
+        return scroll(scrollId, false, idExtractor);
+    }
+
+    /**
+     * @since 9.3
+     */
+    public ScrollResult scroll(String scrollId, boolean fetchResults, Function<O, String> idExtractor) {
         CursorResult<C, O> cursorResult = cursorResults.get(scrollId);
         if (cursorResult == null) {
             throw new NuxeoException("Unknown or timed out scrollId");
@@ -137,7 +144,9 @@ public class CursorService<C, O> {
                     break;
                 } else {
                     O obj = cursorResult.next();
-                    results.add(obj);
+                    if (fetchResults) {
+                        results.add(obj);
+                    }
                     String id = idExtractor.apply(obj);
                     if (id == null) {
                         log.error("Got a document without id: " + obj);
@@ -159,18 +168,6 @@ public class CursorService<C, O> {
             values.next().close();
             values.remove();
         }
-    }
-
-    /**
-     * Returns the list of results
-     *
-     * @since 9.3
-     */
-    public List<O> getResults(ScrollResult scrollResult) {
-        List<O> results = new ArrayList<>();
-        CursorResult<C, O> cursorResult = cursorResults.get(scrollResult.getScrollId());
-        cursorResult.forEachRemaining(results::add);
-        return results;
     }
 
 }
