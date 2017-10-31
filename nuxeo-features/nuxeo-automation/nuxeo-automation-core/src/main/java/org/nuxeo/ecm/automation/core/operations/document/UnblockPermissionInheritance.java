@@ -37,7 +37,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
  *
  * @since 7.4
  */
-@Operation(id = UnblockPermissionInheritance.ID, category = Constants.CAT_DOCUMENT, label = "Unlock Permission Inheritance", description = "Unlock the permission inheritance on the input document(s). Returns the document(s).")
+@Operation(id = UnblockPermissionInheritance.ID, category = Constants.CAT_DOCUMENT, label = "Unblock Permission Inheritance", description = "Unblock the permission inheritance on the input document(s). Returns the document(s).")
 public class UnblockPermissionInheritance {
 
     public static final String ID = "Document.UnblockPermissionInheritance";
