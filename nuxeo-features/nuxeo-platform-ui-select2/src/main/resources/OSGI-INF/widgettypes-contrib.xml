@@ -216,6 +216,10 @@
                   </widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderPageSize
+                  </widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">documentSuggestion_repository</widget>
                 </row>
                 <row>
@@ -379,6 +383,10 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">documentSuggestion_pageProviderName
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderPageSize
                   </widget>
                 </row>
                 <row>
