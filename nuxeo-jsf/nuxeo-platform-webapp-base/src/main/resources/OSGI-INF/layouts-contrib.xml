@@ -844,6 +844,23 @@
       </fields>
     </widget>
 
+    <widget name="documentSuggestion_pageProviderPageSize" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Document page provider page size</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Page provider result's page size. Default value is 20.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>pageSize</field>
+      </fields>
+    </widget>
+
     <widget name="documentSuggestion_queryDemoPreview" type="text">
       <categories>
         <category>widgetTypeConf</category>
@@ -1910,6 +1927,10 @@
                   </widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderPageSize
+                  </widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">documentSuggestion_repository</widget>
                 </row>
                 <row>
@@ -2029,6 +2050,10 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">documentSuggestion_pageProviderName
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderPageSize
                   </widget>
                 </row>
                 <row>
