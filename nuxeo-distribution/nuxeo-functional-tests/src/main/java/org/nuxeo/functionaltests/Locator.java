@@ -572,14 +572,13 @@ public class Locator {
      */
     public static void waitUntilURLDifferentFrom(String url) {
         final String refurl = url;
-        AbstractTest.log.info("Watch URL: " + refurl);
+        AbstractTest.log.debug("Watch URL: " + refurl);
         ExpectedCondition<Boolean> urlchanged = d -> {
             if (d == null) {
                 return false;
             }
 
             String currentUrl = d.getCurrentUrl();
-            AbstractTest.log.debug("Compared with: " + currentUrl);
             AbstractTest.log.debug("currentUrl is still: " + currentUrl);
             return !currentUrl.equals(refurl);
         };
