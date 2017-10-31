@@ -83,7 +83,7 @@
 
       @since 9.3
     </documentation>
-    <property name="nuxeo.jsf.vocabularies.useRepeatRenderTime">true</property>
+    <property name="nuxeo.jsf.vocabularies.useRepeatRenderTime">false</property>
   </extension>
 
 </component>
