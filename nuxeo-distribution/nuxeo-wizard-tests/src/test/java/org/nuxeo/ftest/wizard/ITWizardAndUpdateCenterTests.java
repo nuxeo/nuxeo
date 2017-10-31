@@ -149,7 +149,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         userPage = userPage.navById(WizardPage.class, "checkNetwork");
         assertTrue(userPage.hasError());
         userPage.clearInput("nuxeo.ldap.url");
-        userPage.fillInput("nuxeo.ldap.url", "ldap://ldap.forumsys.com:389");
+        userPage.fillInput("nuxeo.ldap.url", "ldaps://ldap-test.nuxeo.com:636");
         userPage = userPage.navById(WizardPage.class, "checkNetwork");
         assertFalse(userPage.hasError());
         userPage.selectOptionWithReload("nuxeo.directory.type", "default");

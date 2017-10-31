@@ -347,7 +347,6 @@ public abstract class AbstractTest {
 
             driver.switchTo().window(popup);
             if (text == null || driver.getCurrentUrl().contains(text)) {
-                System.out.println(driver.getCurrentUrl());
                 return driver;
             }
         }
