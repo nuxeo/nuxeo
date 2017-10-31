@@ -71,4 +71,19 @@
     <property name="nuxeo.jsf.listings.useRepeatRenderTime">false</property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Controls whether iterations in vocabulary entries listings are done
+      using build-time tag c:forEach or render-time tag ui:repeat (which is much
+      more efficient on large content).
+
+      Using render-time iterations may break
+      some behaviours, this property is mainly useful for backport of
+      optimizations on maintenance branches.
+
+      @since 9.3
+    </documentation>
+    <property name="nuxeo.jsf.vocabularies.useRepeatRenderTime">true</property>
+  </extension>
+
 </component>
