@@ -52,6 +52,11 @@ public class TestRelationTagService extends AbstractTestTagService {
     }
 
     @Override
+    protected boolean supportsIsNull() {
+        return false;
+    }
+
+    @Override
     protected void createTags() {
         DocumentModel file1 = session.getDocument(new PathRef("/file1"));
         DocumentModel file2 = session.getDocument(new PathRef("/file2"));

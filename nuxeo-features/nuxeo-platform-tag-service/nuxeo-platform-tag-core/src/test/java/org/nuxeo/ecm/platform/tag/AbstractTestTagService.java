@@ -625,6 +625,9 @@ public abstract class AbstractTestTagService {
         DocumentModel file2 = new DocumentModelImpl("/", "file2", "File");
         file2.setPropertyValue("dc:title", "file2");
         session.createDocument(file2);
+        DocumentModel file3 = new DocumentModelImpl("/", "file3", "File"); // without tags
+        file3.setPropertyValue("dc:title", "file3");
+        file3 = session.createDocument(file3);
         session.save();
 
         createTags();
@@ -670,6 +673,19 @@ public abstract class AbstractTestTagService {
         nxql = nxql("SELECT * FROM File WHERE ecm:tag/* = 'tag1' OR ecm:tag/* = 'tag2'");
         dml = session.query(nxql);
         assertEquals(2, dml.size());
+
+        if (supportsIsNull()) {
+            // no tags
+            nxql = nxql("SELECT * FROM File WHERE ecm:tag IS NULL'");
+            dml = session.query(nxql);
+            assertEquals(1, dml.size());
+            assertEquals(file3.getId(), dml.get(0).getId());
+
+            nxql = nxql("SELECT * FROM File WHERE ecm:tag/* IS NULL'");
+            dml = session.query(nxql);
+            assertEquals(1, dml.size());
+            assertEquals(file3.getId(), dml.get(0).getId());
+        }
 
         // numbered tag instance
         nxql = nxql("SELECT * FROM File WHERE ecm:tag/*1 = 'tag1'");
@@ -750,14 +766,21 @@ public abstract class AbstractTestTagService {
 
     protected static void assertIterableQueryResult(IterableQueryResult actual, int size, String prop,
             String... expected) {
-        assertEquals(size, actual.size());
+        // size unused
         Collection<String> set = new HashSet<>();
         for (Map<String, Serializable> map : actual) {
-            set.add((String) map.get(prop));
+            String tag = (String) map.get(prop);
+            if (tag != null) {
+                set.add(tag);
+            }
         }
         assertEquals(new HashSet<>(Arrays.asList(expected)), set);
     }
 
     protected abstract void createTags();
+
+    protected boolean supportsIsNull() {
+        return true;
+    }
 
 }
