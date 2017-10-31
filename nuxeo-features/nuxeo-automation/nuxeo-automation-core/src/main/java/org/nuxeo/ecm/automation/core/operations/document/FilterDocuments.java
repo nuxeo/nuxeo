@@ -23,6 +23,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.collectors.DocumentModelListCollector;
 import org.nuxeo.ecm.automation.core.events.DocumentAttributeFilterFactory;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
@@ -66,16 +67,15 @@ public class FilterDocuments {
             DocumentAttributeFilterFactory.IMMUTABLE_DOC, DocumentAttributeFilterFactory.MUTABLE_DOC })
     protected String attr;
 
-    @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) {
+    @OperationMethod(collector = DocumentModelListCollector.class)
+    public DocumentModelList run(DocumentModel doc) {
+        // Method rewritten to use Collector in order to execute condition on each document
         Condition cond = new Condition();
-        DocumentModelList result = new DocumentModelListImpl();
-        for (DocumentModel doc : docs) {
-            if (cond.accept(doc)) {
-                result.add(doc);
-            }
+        DocumentModelList ret = new DocumentModelListImpl();
+        if (cond.accept(doc)) {
+            ret.add(doc);
         }
-        return result;
+        return ret;
     }
 
     protected class Condition implements Filter {
