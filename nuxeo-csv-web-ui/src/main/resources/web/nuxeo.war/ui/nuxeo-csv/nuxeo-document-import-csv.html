@@ -23,7 +23,7 @@ limitations under the License.
 <dom-module id="nuxeo-document-import-csv">
   <template>
 
-    <style is="custom-style">
+    <style include="iron-flex iron-flex-alignment nuxeo-styles">
 
       .description {
         margin: 16px 32px;
@@ -32,12 +32,8 @@ limitations under the License.
 
       :host {
         display: block;
-        @apply(--layout-flex);
-        @apply(--layout-vertical);
-      }
-
-      paper-button[disabled] {
-        display: none;
+        @apply --layout-flex;
+        @apply --layout-vertical;
       }
 
       paper-dialog {
@@ -48,20 +44,20 @@ limitations under the License.
         --nuxeo-path-suggestion-results: {
            z-index: 200;
          };
-         --paper-input-container-underline: {
-           display: none;
-         };
-         --paper-input-container-underline-focus: {
-           display: none;
-         };
       }
 
       paper-spinner-lite {
         --paper-spinner-color: var(--default-primary-color);
       }
 
-      .suggester, .options, .summary {
-        margin: 16px 32px;
+      .suggester {
+        background-color: var(--nuxeo-dialog-buttons-bar);
+        padding: 8px 16px;
+        margin: 1rem 32px;
+      }
+
+      .options, .summary {
+        margin: 1rem 32px;
       }
 
       .file-to-import {
@@ -83,11 +79,11 @@ limitations under the License.
       }
 
       ::content label {
-        @apply(--nuxeo-label);
+        @apply --nuxeo-label;
         padding-top: 8px;
       }
 
-      ::content paper-dropdown-menu {
+      paper-dropdown-menu {
         width: 100%;
       }
 
@@ -110,10 +106,6 @@ limitations under the License.
 
       .drop-scrollable {
         overflow: auto;
-      }
-
-      #form {
-        padding: 0 32px;
       }
 
       #document-import {
@@ -167,11 +159,11 @@ limitations under the License.
       }
 
       .file-overview:hover {
-        @apply(--nuxeo-block-hover);
+        @apply --nuxeo-block-hover;
       }
 
       .file-overview.selected {
-        @apply(--nuxeo-block-selected);
+        @apply --nuxeo-block-selected;
       }
 
       .file-overview iron-icon {
@@ -275,22 +267,19 @@ limitations under the License.
       }
 
       .buttons {
-        @apply(--buttons-bar);
+        @apply --buttons-bar;
       }
 
       .add-more .importActions {
         margin-left: 8px;
       }
 
-      .importActions > *,
-      .importActions::content > * {
+      .importActions > * {
         margin-left: 8px;
       }
 
       .importActions > *:first-child,
-      .importActions > nuxeo-slot,
-      .importActions::content > *:first-child,
-      .importActions::content > nuxeo-slot {
+      .importActions > nuxeo-slot {
         margin-left: 0;
       }
 
@@ -328,7 +317,7 @@ limitations under the License.
       }
 
       .line {
-        @apply(--layout-horizontal);
+        @apply --layout-horizontal;
       }
 
       .line label {
@@ -352,6 +341,17 @@ limitations under the License.
         padding: 16px 22px;
         border-bottom: 1px solid #DDD;
       }
+
+      .vertical {
+        @apply --layout-flex;
+        @apply --layout-vertical;
+      }
+
+      iron-pages {
+        @apply --layout-flex;
+        @apply --layout-vertical;
+      }
+
     </style>
 
     <nuxeo-connection id="nx"></nuxeo-connection>
@@ -360,10 +360,10 @@ limitations under the License.
     <nuxeo-operation id="cvsImportResultOp" op="CSV.ImportResult"></nuxeo-operation>
     <nuxeo-operation id="cvsImportLogOp" op="CSV.ImportLog"></nuxeo-operation>
 
-    <iron-pages selected="[[stage]]" attr-for-selected="name" class="vertical layout flex">
+    <iron-pages selected="[[stage]]" attr-for-selected="name">
 
       <!--Stage: allow the user to upload files-->
-      <div name="upload" class="upload vertical layout flex">
+      <div name="upload" class="upload vertical">
         <div class="suggester">
           <nuxeo-path-suggestion id="pathSuggesterUpload"
                                  label="[[i18n('documentImportForm.location')]]"
@@ -445,7 +445,7 @@ limitations under the License.
                         disabled$="[[!_canImport(_creating,hasFile)]]">
                         [[i18n('command.create')]]
                       </paper-button>
-          <div class="horizontal layout" hidden$="[[!_creating]]">
+          <div class="layout" hidden$="[[!_creating]]">
             <span class="importing-label">[[i18n('documentImport.importing')]]</span>
             <paper-spinner-lite active></paper-spinner-lite>
           </div>
@@ -466,7 +466,7 @@ limitations under the License.
           <span class="error" hidden$="[[!_error]]">[[i18n('csv.import.error')]]</span>
           <div hidden$="[[!_hasResult]]">
             <div class="success"><iron-icon icon="icons:check"></iron-icon>[[i18n('csv.import.success')]]</div>
-            <div class="report layout vertical flex">
+            <div class="report">
               <div class="line successful layout flex">
                 <label>[[i18n('csv.import.report.successLine')]]</label>
                 <div class="count">[[_importResult.successLineCount]] / [[_importResult.totalLineCount]]</div>
@@ -489,7 +489,7 @@ limitations under the License.
             <iron-list id="list" items="[[_importLogs]]">
               <template>
                 <div class="item">
-                  <div class="list-item-info horizontal layout ">
+                  <div class="list-item-info horizontal layout">
                     <div class="flex-1" failed$="[[_isError(item)]]" skipped$="[[_isSkipped(item)]]">
                       [[i18n('csv.import.report.line')]] [[item.line]]
                     </div>
@@ -661,7 +661,7 @@ limitations under the License.
       },
 
       _removeBlob: function(e) {
-        this.$.csvImportRes.path = 'upload/' + this.batchId + '/' + e.model.file.index;
+        this.$.csvImportRes.path = 'upload/' + this.batchId + '/0';
         this.$.csvImportRes.remove().then(function() {
           this.file = {};
           this.hasFile = false;
@@ -687,7 +687,7 @@ limitations under the License.
               this.hasFile = true;
               this._creating = true;
             }
-          } else if (changeRecord.path.match(/files\.#\d+\.complete/gi)) {
+          } else if (changeRecord.path.match(/files\.\d+\.complete/gi)) {
             this.complete = true;
             this._creating = false;
           }
