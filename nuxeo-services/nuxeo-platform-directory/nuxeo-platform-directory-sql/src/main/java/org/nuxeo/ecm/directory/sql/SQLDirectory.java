@@ -22,7 +22,6 @@ package org.nuxeo.ecm.directory.sql;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -163,8 +162,8 @@ public class SQLDirectory extends AbstractDirectory {
      * @since 6.0
      */
     protected boolean initConnection() {
+        initSchemaFieldMap();
         SQLDirectoryDescriptor descriptor = getDescriptor();
-
         try (Connection sqlConnection = getConnection()) {
             dialect = Dialect.createDialect(sqlConnection, null);
             // setup table and fields maps
@@ -175,13 +174,11 @@ public class SQLDirectory extends AbstractDirectory {
             if (schema == null) {
                 throw new DirectoryException("schema not found: " + getSchema());
             }
-            schemaFieldMap = new LinkedHashMap<>();
             readColumnsAll = new LinkedList<>();
             readColumns = new LinkedList<>();
             boolean hasPrimary = false;
             for (Field f : schema.getFields()) {
                 String fieldName = f.getName().getLocalName();
-                schemaFieldMap.put(fieldName, f);
 
                 if (!isReference(fieldName)) {
                     boolean isId = fieldName.equals(getIdField());

@@ -214,7 +214,7 @@ public class SQLSession extends BaseSession {
     }
 
     protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
-        String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
+        String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
         // If the prefixed id is not here, try to get without prefix
         // It may happen when we gentry from sql
         if (!fieldMap.containsKey(idFieldName)) {
@@ -711,6 +711,7 @@ public class SQLSession extends BaseSession {
 
     @Override
     protected DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
+        Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
         Field schemaIdField = schemaFieldMap.get(getIdField());
 
         String idFieldName = schemaIdField.getName().getPrefixedName();
@@ -863,7 +864,7 @@ public class SQLSession extends BaseSession {
         }
 
         // collect fields to update
-        for (String fieldName : schemaFieldMap.keySet()) {
+        for (String fieldName : directory.getSchemaFieldMap().keySet()) {
             if (fieldName.equals(getIdField())) {
                 continue;
             }
@@ -1064,7 +1065,7 @@ public class SQLSession extends BaseSession {
 
     @Override
     public boolean isAuthenticating() {
-        return schemaFieldMap.containsKey(getPasswordField());
+        return directory.getSchemaFieldMap().containsKey(getPasswordField());
     }
 
     @Override

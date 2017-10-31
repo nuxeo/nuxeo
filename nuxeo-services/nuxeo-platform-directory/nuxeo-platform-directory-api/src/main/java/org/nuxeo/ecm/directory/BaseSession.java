@@ -73,8 +73,6 @@ public abstract class BaseSession implements Session, EntrySource {
 
     protected String schemaName;
 
-    protected Map<String, Field> schemaFieldMap;
-
     protected String directoryName;
 
     protected SubstringMatchType substringMatchType;
@@ -87,7 +85,6 @@ public abstract class BaseSession implements Session, EntrySource {
 
     protected BaseSession(Directory directory, Class<? extends Reference> referenceClass) {
         this.directory = directory;
-        schemaFieldMap = directory.getSchemaFieldMap();
         schemaName = directory.getSchema();
         directoryName = directory.getName();
 
@@ -344,8 +341,7 @@ public abstract class BaseSession implements Session, EntrySource {
 
     @Override
     public DocumentModel getEntryFromSource(String id, boolean fetchReferences) throws DirectoryException {
-        String idFieldName = schemaFieldMap != null ? schemaFieldMap.get(getIdField()).getName().getPrefixedName()
-                : getIdField();
+        String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
         DocumentModelList result = query(Collections.singletonMap(idFieldName, id), Collections.emptySet(),
                 Collections.emptyMap(), true);
         return result.isEmpty() ? null : result.get(0);
@@ -362,8 +358,8 @@ public abstract class BaseSession implements Session, EntrySource {
         DocumentModel docModel = createEntryWithoutReferences(fieldMap);
 
         // Add references fields
-        String idFieldName = schemaFieldMap != null ? schemaFieldMap.get(getIdField()).getName().getPrefixedName()
-                : getIdField();
+        Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
+        String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
         Object entry = fieldMap.get(idFieldName);
         String sourceId = docModel.getId();
         for (Reference reference : getDirectory().getReferences()) {

@@ -106,7 +106,7 @@ public class MongoDBSession extends BaseSession {
                                                 .filter(entry -> getDirectory().getReferences(entry.getKey()) == null)
                                                 .collect(HashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()),
                                                         HashMap::putAll);
-
+        Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
         String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
         String id;
         if (autoincrementId) {
@@ -172,7 +172,7 @@ public class MongoDBSession extends BaseSession {
     protected List<String> updateEntryWithoutReferences(DocumentModel docModel) throws DirectoryException {
         Map<String, Object> fieldMap = new HashMap<>();
         List<String> referenceFieldList = new LinkedList<>();
-
+        Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
         for (String fieldName : schemaFieldMap.keySet()) {
             if (fieldName.equals(getIdField())) {
                 continue;
@@ -225,7 +225,7 @@ public class MongoDBSession extends BaseSession {
     @Override
     public void deleteEntryWithoutReferences(String id) throws DirectoryException {
         try {
-            String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
+            String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
             DeleteResult result = getCollection().deleteOne(
                     MongoDBSerializationHelper.fieldMapToBson(idFieldName, autoincrementId ? Long.valueOf(id) : id));
             if (!result.wasAcknowledged()) {
@@ -307,7 +307,7 @@ public class MongoDBSession extends BaseSession {
     }
 
     protected Document buildQuery(Map<String, Serializable> fieldMap, Set<String> fulltext) {
-
+        Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
         Document bson = new Document();
         for (Map.Entry<String, Serializable> entry : fieldMap.entrySet()) {
             Field field = schemaFieldMap.entrySet()
@@ -346,7 +346,7 @@ public class MongoDBSession extends BaseSession {
 
     protected void addField(Document bson, String key, Object value) {
         String keyFieldName = key;
-        Field field = schemaFieldMap.get(key);
+        Field field = directory.getSchemaFieldMap().get(key);
         if (field != null) {
             keyFieldName = field.getName().getPrefixedName();
         }
@@ -370,7 +370,7 @@ public class MongoDBSession extends BaseSession {
 
     @Override
     public boolean isAuthenticating() {
-        return schemaFieldMap.containsKey(getPasswordField());
+        return directory.getSchemaFieldMap().containsKey(getPasswordField());
     }
 
     @Override
@@ -408,7 +408,7 @@ public class MongoDBSession extends BaseSession {
     }
 
     protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
-        String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
+        String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
         if (!fieldMap.containsKey(idFieldName)) {
             idFieldName = getIdField();
         }
