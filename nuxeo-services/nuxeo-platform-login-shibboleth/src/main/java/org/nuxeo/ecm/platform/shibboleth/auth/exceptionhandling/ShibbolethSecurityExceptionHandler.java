@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.web.Session;
 import org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService;
 import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
@@ -56,6 +57,7 @@ public class ShibbolethSecurityExceptionHandler extends NuxeoSecurityExceptionHa
         try {
             if (!response.isCommitted()) {
                 request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
+                Session.instance().invalidate();
                 response.sendRedirect(loginURL);
                 FacesContext fContext = FacesContext.getCurrentInstance();
                 if (fContext != null) {
