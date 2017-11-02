@@ -31,10 +31,12 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.io.marshallers.json.types.SchemaJsonWriter;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -47,9 +49,10 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 8.10
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class })
+@Features({ RestServerFeature.class, DirectoryFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(init = RestServerInit.class, cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-directory-contrib.xml")
 public class ConfigTest extends BaseTest {
 
     /**
@@ -82,20 +85,29 @@ public class ConfigTest extends BaseTest {
         assertEquals("schema", node.get("entity-type").getTextValue());
         JsonNode fields = node.get("fields");
         assertTrue(fields.size() > 0);
-        JsonNode creatorField = fields.get("creator");
-        assertEquals("string", creatorField.get("type").getTextValue());
-        ArrayNode constraints = (ArrayNode) creatorField.get("constraints");
+
+        // Test that nature has a constraint checking if value exists in directory
+        JsonNode natureField = fields.get("nature");
+        assertEquals("string", natureField.get("type").getTextValue());
+        ArrayNode constraints = (ArrayNode) natureField.get("constraints");
         assertEquals(2, constraints.size());
-        JsonNode userConstraint = null;
+        JsonNode natureConstraint = null;
         for (JsonNode constraint : constraints) {
-            if ("userManagerResolver".equals(constraint.get("name").getTextValue())) {
-                userConstraint = constraint;
+            if ("directoryResolver".equals(constraint.get("name").getTextValue())) {
+                natureConstraint = constraint;
                 break;
             }
         }
-        assertNotNull(userConstraint);
-        JsonNode userConstraintParams = userConstraint.get("parameters");
-        assertEquals(2, userConstraintParams.size());
+        assertNotNull(natureConstraint);
+        JsonNode natureConstraintParams = natureConstraint.get("parameters");
+        assertEquals(1, natureConstraintParams.size());
+        assertEquals("nature", natureConstraintParams.get("directory").getTextValue());
+
+        // Test that creator doesn't have a constraint checking if user exists - it still has a constraint for type
+        JsonNode creatorField = fields.get("creator");
+        assertEquals("string", creatorField.get("type").getTextValue());
+        constraints = (ArrayNode) creatorField.get("constraints");
+        assertEquals(1, constraints.size());
     }
 
     /**

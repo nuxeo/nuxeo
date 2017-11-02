@@ -30,7 +30,7 @@
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>always</createTablePolicy>
-      <dataFile>testdir.csv</dataFile>
+      <dataFile>directories/testdir.csv</dataFile>
     </directory>
 
     <directory name="country" extends="template-directory">
@@ -41,7 +41,7 @@
       <parentDirectory>continent</parentDirectory>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>country.csv</dataFile>
+      <dataFile>directories/country.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
@@ -53,12 +53,20 @@
       </types>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>continent.csv</dataFile>
+      <dataFile>directories/continent.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <deleteConstraint class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
         <property name="targetDirectory">country</property>
         <property name="targetDirectoryField">parent</property>
       </deleteConstraint>
+    </directory>
+
+    <directory name="nature" extends="template-directory">
+      <schema>vocabulary</schema>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/nature-rest-test.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
   </extension>

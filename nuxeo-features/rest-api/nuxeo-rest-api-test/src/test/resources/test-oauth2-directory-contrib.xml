@@ -10,7 +10,7 @@
     <directory name="oauth2Tokens" extends="template-directory">
       <schema>oauth2Token</schema>
       <createTablePolicy>always</createTablePolicy>
-      <dataFile>oauth2token.csv</dataFile>
+      <dataFile>directories/oauth2token.csv</dataFile>
       <idField>id</idField>
       <autoincrementIdField>true</autoincrementIdField>
       <permissions>
