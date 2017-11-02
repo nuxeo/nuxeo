@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.core.schema.ObjectResolverService" version="1.0.0">
   <documentation>
     This components allows to extend XSD field definition by providing a way to resolve simple type as
@@ -20,6 +19,17 @@
       implement org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver.
       Example :
       <resolver type="productReference" class="org.mycompany.product.ProductNuxeoResolver" />
+
+      By default, a constraint is added to documents about to be saved in order to validate if the property reference
+      an existing external entity. You can disable this validation by setting attribute validation to false, for instance:
+      <code xmlns:xs="http://www.w3.org/2001/XMLSchema"
+            xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/">
+        <xs:element name="lastContributor">
+          <xs:simpleType>
+            <xs:restriction base="xs:string" ref:resolver="userManagerResolver" ref:type="user" ref:validation="false" />
+          </xs:simpleType>
+        </xs:element>
+      </code>
     </documentation>
 
     <object class="org.nuxeo.ecm.core.schema.types.resolver.ObjectResolverDescriptor" />
