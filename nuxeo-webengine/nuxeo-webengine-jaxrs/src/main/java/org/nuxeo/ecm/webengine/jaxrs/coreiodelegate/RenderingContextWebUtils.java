@@ -109,8 +109,10 @@ public final class RenderingContextWebUtils {
             @SuppressWarnings("deprecation")
             String baseURL = VirtualHostHelper.getBaseURL(webRequest);
             // current session
-            CoreSession session = SessionFactory.getSession(webRequest);
-            builder.base(baseURL).session(session);
+            builder.base(baseURL).sessionWrapperSupplier(() -> {
+                CoreSession session = SessionFactory.getSession(webRequest);
+                return session == null ? null : new RenderingContext.SessionWrapper(session, false);
+            });
             // gets the locale from the request or takes the server's default
             Locale locale = request.getLocale();
             if (locale != null) {
