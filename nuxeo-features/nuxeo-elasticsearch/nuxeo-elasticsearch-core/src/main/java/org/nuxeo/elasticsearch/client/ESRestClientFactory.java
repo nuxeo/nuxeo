@@ -20,6 +20,10 @@ package org.nuxeo.elasticsearch.client;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -90,15 +94,15 @@ public class ESRestClientFactory implements ESClientFactory {
     }
 
     protected ESClient createRestClient(ElasticSearchClientConfig config) {
-        String[] hosts = config.getOption("addressList", "").split(",");
-        if (hosts.length == 0) {
+        String addressList = config.getOption("addressList", "");
+        if (addressList.isEmpty()) {
             throw new IllegalArgumentException("No addressList option provided cannot connect RestClient");
         }
+        String[] hosts = addressList.split(",");
         HttpHost[] httpHosts = new HttpHost[hosts.length];
         int i = 0;
         for (String host : hosts) {
-            String[] address = host.split(":");
-            httpHosts[i++] = new HttpHost(address[0], Integer.parseInt(address[1]));
+            httpHosts[i++] = HttpHost.create(host);
         }
         RestClientBuilder builder = RestClient.builder(httpHosts)
                                               .setRequestConfigCallback(

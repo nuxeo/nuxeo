@@ -138,7 +138,7 @@ public class ESRestClient implements ESClient {
     @Override
     public void optimize(String indexName) {
         try {
-            lowLevelClient.performRequest("GET", "/" + indexName + "/?max_num_segments=1&wait_for_merge=true");
+            lowLevelClient.performRequest("POST", "/" + indexName + "/_forcemerge?max_num_segments=1");
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
@@ -148,7 +148,7 @@ public class ESRestClient implements ESClient {
     public boolean indexExists(String indexName) {
         Response response;
         try {
-            response = lowLevelClient.performRequest("HEAD", indexName);
+            response = lowLevelClient.performRequest("HEAD", "/" + indexName);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
@@ -198,7 +198,7 @@ public class ESRestClient implements ESClient {
         HttpEntity entity = new NStringEntity(jsonSettings, ContentType.APPLICATION_JSON);
         Response response;
         try {
-            response = lowLevelClient.performRequest("PUT", indexName, emptyMap(), entity);
+            response = lowLevelClient.performRequest("PUT", "/" + indexName, emptyMap(), entity);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
@@ -226,7 +226,7 @@ public class ESRestClient implements ESClient {
     @Override
     public String getNodesInfo() {
         try {
-            Response response = lowLevelClient.performRequest("GET", "_nodes/_all");
+            Response response = lowLevelClient.performRequest("GET", "/_nodes/_all");
             return EntityUtils.toString(response.getEntity());
         } catch (IOException e) {
             throw new NuxeoException(e);
@@ -236,7 +236,7 @@ public class ESRestClient implements ESClient {
     @Override
     public String getNodesStats() {
         try {
-            Response response = lowLevelClient.performRequest("GET", "_nodes/stats");
+            Response response = lowLevelClient.performRequest("GET", "/_nodes/stats");
             return EntityUtils.toString(response.getEntity());
         } catch (IOException e) {
             throw new NuxeoException(e);
