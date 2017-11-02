@@ -93,7 +93,7 @@ the second is dedicated for cluster deployment.
   - Appender uses the Kafka [Producer API](http://kafka.apache.org/documentation.html#producerapi) and tailer the Kafka [Consumer API](http://kafka.apache.org/documentation.html#consumerapi).
   - Offsets are managed manually (auto commit is disable) and persisted in an internal Kafka topic.
 
-  You need to install and configure a Kafka cluster, the recommended version is 0.11.0.x. To create topics, LogManager need a Zookeeper access, the Kafka broker need to be tuned a bit:
+  You need to install and configure a Kafka cluster, the recommended version is 1.0.x. To check for consumer status, LogManager need a Zookeeper access, the Kafka broker need to be tuned a bit:
 
   | Kafka broker options | default | recommended |  Description |
   | --- | ---: | ---: | --- |
@@ -174,18 +174,25 @@ To build and run the tests, simply start the Maven build:
 
 ### Run Unit Tests with Kafka
 
- To run test with Kafka use the maven `kafka` profile (`-Pkafka`), test expect a Kafka server running on `localhost`.
+ The tests expect a Zookeeper and Kafka servers running on `localhost` with default ports (`2181` and `9092`).
 
- To setup a Kafka 0.11.0.0 server for testing:
+ This can be setup using docker compose:
+
  1. Install [docker-compose](https://docs.docker.com/compose/install/).
- 2. Clone the following [docker compose repository](https://github.com/bdelbosc/kafka-docker) and launch docker compose:
+ 2. Go to [`kafka-docker`](./kafka-docker) directory and run:
  ```
-	git clone git@github.com:bdelbosc/kafka-docker.git
-	cd ./kafka-docker/
-    docker-compose up -d
-    # to stop
-    docker-compose down
-  ```
+   docker-compose up -d
+ ```
+ 3. Run unit tests with the maven `kafka` profile:
+ ```
+   mvn -nsu -Pkafka test
+ ```
+ 4. Stop Kafka (and remove data) from the [`kafka-docker`](./kafka-docker) directory:
+ ```
+   docker-compose down
+ ```
+ Visit the docker compose documentation for more information.
+
 ### Following Project QA Status
 [![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=master/nuxeo)](https://qa.nuxeo.org/jenkins/job/master/job/nuxeo-master/)
 

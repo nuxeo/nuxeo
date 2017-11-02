@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
@@ -53,9 +54,11 @@ public class KafkaLogManager extends AbstractLogManager {
 
     protected final Properties consumerProperties;
 
+    protected final Properties adminProperties;
+
     protected final String prefix;
 
-    protected final int defaultReplicationFactor;
+    protected final short defaultReplicationFactor;
 
     protected final boolean disableSubscribe;
 
@@ -68,27 +71,11 @@ public class KafkaLogManager extends AbstractLogManager {
         this.prefix = (topicPrefix != null) ? topicPrefix : "";
         this.kUtils = new KafkaUtils(zkServers);
         disableSubscribe = Boolean.valueOf(consumerProperties.getProperty(DISABLE_SUBSCRIBE_PROP, "false"));
-        defaultReplicationFactor = Integer.parseInt(
+        defaultReplicationFactor = Short.parseShort(
                 producerProperties.getProperty(DEFAULT_REPLICATION_FACTOR_PROP, "1"));
         this.producerProperties = normalizeProducerProperties(producerProperties);
         this.consumerProperties = normalizeConsumerProperties(consumerProperties);
-    }
-
-    protected static Properties normalizeConsumerProperties(Properties consumerProperties) {
-        Properties ret;
-        if (consumerProperties != null) {
-            ret = (Properties) consumerProperties.clone();
-        } else {
-            ret = new Properties();
-        }
-        ret.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-                "org.apache.kafka.common.serialization.StringDeserializer");
-        ret.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-                "org.apache.kafka.common.serialization.BytesDeserializer");
-        ret.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
-        ret.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        ret.remove(DISABLE_SUBSCRIBE_PROP);
-        return ret;
+        this.adminProperties = createAdminProperties(producerProperties, consumerProperties);
     }
 
     protected String getTopicName(String name) {
@@ -104,7 +91,7 @@ public class KafkaLogManager extends AbstractLogManager {
 
     @Override
     public void create(String name, int size) {
-        kUtils.createTopic(getTopicName(name), size, defaultReplicationFactor);
+        kUtils.createTopic(getAdminProperties(), getTopicName(name), size, defaultReplicationFactor);
     }
 
     @Override
@@ -124,7 +111,7 @@ public class KafkaLogManager extends AbstractLogManager {
     }
 
     protected void checkValidPartition(LogPartition partition) {
-        int partitions = kUtils.getNumberOfPartitions(getTopicName(partition.name()));
+        int partitions = kUtils.getNumberOfPartitions(getAdminProperties(), getTopicName(partition.name()));
         if (partition.partition() >= partitions) {
             throw new IllegalArgumentException("Partition out of bound " + partition + " max: " + partitions);
         }
@@ -136,6 +123,10 @@ public class KafkaLogManager extends AbstractLogManager {
 
     public Properties getConsumerProperties() {
         return consumerProperties;
+    }
+
+    public Properties getAdminProperties() {
+        return adminProperties;
     }
 
     @Override
@@ -168,6 +159,31 @@ public class KafkaLogManager extends AbstractLogManager {
         ret.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         ret.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.BytesSerializer");
         ret.remove(DEFAULT_REPLICATION_FACTOR_PROP);
+        return ret;
+    }
+
+    protected Properties normalizeConsumerProperties(Properties consumerProperties) {
+        Properties ret;
+        if (consumerProperties != null) {
+            ret = (Properties) consumerProperties.clone();
+        } else {
+            ret = new Properties();
+        }
+        ret.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                "org.apache.kafka.common.serialization.StringDeserializer");
+        ret.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                "org.apache.kafka.common.serialization.BytesDeserializer");
+        ret.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+        ret.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        ret.remove(DISABLE_SUBSCRIBE_PROP);
+        return ret;
+    }
+
+    protected Properties createAdminProperties(Properties producerProperties, Properties consumerProperties) {
+        Properties ret = new Properties();
+        ret.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+                producerProperties.getOrDefault(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                            consumerProperties.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG)));
         return ret;
     }
 
