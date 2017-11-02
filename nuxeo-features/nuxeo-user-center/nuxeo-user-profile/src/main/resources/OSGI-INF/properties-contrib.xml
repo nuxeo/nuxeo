@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.center.profile.properties" version="1.0.0">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+
+    <documentation>
+      This contribution is the default contribution for user profile properties.
+
+      Here are more details about some of them:
+      <ul>
+        <li>
+          <strong>nuxeo.userprofile.enricher.compatibility</strong>: if true, make the UserProfileEnricher output compatible
+          with the Nuxeo 8.10 'userprofile' enricher output. Only output 'avatar', 'birthdate' and 'phonenumber' fields.
+        </li>
+      </ul>
+
+      @since 9.3
+    </documentation>
+
+    <property name="nuxeo.userprofile.enricher.compatibility">false</property>
+
+  </extension>
+
+</component>
