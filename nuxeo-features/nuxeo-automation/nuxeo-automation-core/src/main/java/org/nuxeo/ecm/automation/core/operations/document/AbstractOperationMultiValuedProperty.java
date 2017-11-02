@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.core.operations.document;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.TypeException;
 
 /**
  * Abstract Class that exposes some useful method to manage list of values
@@ -36,7 +37,7 @@ public class AbstractOperationMultiValuedProperty {
      */
     protected void checkFieldType(Type type, Object value) throws OperationException {
         if (!type.isListType()) {
-            throw new OperationException("Only multivalued String Types can be set using this operation");
+            throw new OperationException("Only multivalued types can be set using this operation");
         }
 
         ListType listType = (ListType) type;
@@ -45,9 +46,16 @@ public class AbstractOperationMultiValuedProperty {
             throw new UnsupportedOperationException("Manage only lists of scalar items");
         }
 
-        if (!itemType.newInstance().getClass().equals(value.getClass())) {
-            throw new UnsupportedOperationException(String.format("Given type \"%s\" value is not a %s type", value,
-                    itemType.getName()));
+        try {
+            if (itemType.convert(value) == null) {
+                String exceptionReason = String.format("Given type \"%s\" value is not a %s type", value,
+                        itemType.getName());
+                throw new UnsupportedOperationException(exceptionReason);
+            }
+        } catch (TypeException | ClassCastException e) {
+            String exceptionReason = String.format("Given type \"%s\" value is not a %s type", value,
+                    itemType.getName());
+            throw new OperationException(exceptionReason, e);
         }
     }
 }
