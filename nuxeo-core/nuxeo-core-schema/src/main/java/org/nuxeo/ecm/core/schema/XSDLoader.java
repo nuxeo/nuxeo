@@ -112,7 +112,7 @@ public class XSDLoader {
 
     protected final SchemaManagerImpl schemaManager;
 
-    protected List<String> referencedXSD = new ArrayList<String>();
+    protected List<String> referencedXSD = new ArrayList<>();
 
     protected boolean collectReferencedXSD = false;
 
@@ -226,7 +226,7 @@ public class XSDLoader {
      */
     public Schema loadSchema(String name, String prefix, File file, String xsdElement)
             throws SAXException, IOException, TypeException {
-        return loadSchema(name, prefix, file, null, false);
+        return loadSchema(name, prefix, file, xsdElement, false);
     }
 
     /**
@@ -261,7 +261,7 @@ public class XSDLoader {
     protected void collectReferencedXSD(XSSchemaSet xsSchemas) {
 
         Collection<XSSchema> schemas = xsSchemas.getSchemas();
-        String ns = null;
+        String ns;
         for (XSSchema s : schemas) {
             ns = s.getTargetNamespace();
             if (ns.length() <= 0 || ns.equals(NS_XSD)) {
@@ -288,9 +288,6 @@ public class XSDLoader {
      * @param prefix schema prefix
      * @param url url to load the XSD resource
      * @param xsdElement name of the complex element to use as root of the schema
-     * @return
-     * @throws SAXException
-     * @throws TypeException
      * @since 5.7
      */
     public Schema loadSchema(String name, String prefix, URL url, String xsdElement)
@@ -427,8 +424,6 @@ public class XSDLoader {
 
     /**
      * @param name the type name (note, the type may have a null name if an anonymous type)
-     * @param type
-     * @return
      */
     protected Type loadComplexType(Schema schema, String name, XSType type) throws TypeBindingException {
         XSType baseType = type.getBaseType();
@@ -487,7 +482,7 @@ public class XSDLoader {
         if (type instanceof RestrictionSimpleTypeImpl) {
             RestrictionSimpleTypeImpl restrictionType = (RestrictionSimpleTypeImpl) type;
 
-            List<Constraint> constraints = new ArrayList<Constraint>();
+            List<Constraint> constraints = new ArrayList<>();
 
             // pattern
             XSFacet patternFacet = restrictionType.getFacet(FACET_PATTERN);
@@ -589,7 +584,7 @@ public class XSDLoader {
             if (enumFacets != null && enumFacets.size() > 0) {
                 if (simpleType.getPrimitiveType().support(EnumConstraint.class)) {
                     // string enumeration
-                    List<String> enumValues = new ArrayList<String>();
+                    List<String> enumValues = new ArrayList<>();
                     for (XSFacet enumFacet : enumFacets) {
                         enumValues.add(enumFacet.getValue().toString());
                     }
@@ -602,7 +597,7 @@ public class XSDLoader {
 
             String refName = restrictionType.getForeignAttribute(NAMESPACE_CORE_EXTERNAL_REFERENCES,
                     ATTR_CORE_EXTERNAL_REFERENCES);
-            Map<String, String> refParameters = new HashMap<String, String>();
+            Map<String, String> refParameters = new HashMap<>();
             for (ForeignAttributes attr : restrictionType.getForeignAttributes()) {
                 for (int index = 0; index < attr.getLength(); index++) {
                     String attrNS = attr.getURI(index);
@@ -797,7 +792,7 @@ public class XSDLoader {
             flags |= Field.NILLABLE;
         }
 
-        Set<Constraint> constraints = new HashSet<Constraint>();
+        Set<Constraint> constraints = new HashSet<>();
         if (!computedNillable) {
             constraints.add(NotNullConstraint.get());
         }
@@ -848,7 +843,7 @@ public class XSDLoader {
             flags |= Field.NILLABLE;
         }
 
-        Set<Constraint> constraints = new HashSet<Constraint>();
+        Set<Constraint> constraints = new HashSet<>();
         if (!computedNillable) {
             constraints.add(NotNullConstraint.get());
         }
@@ -884,12 +879,12 @@ public class XSDLoader {
                 flags |= Field.CONSTANT;
             }
         }
-        Set<Constraint> constraints = new HashSet<Constraint>();
+        Set<Constraint> constraints = new HashSet<>();
         if (!isNillable) {
             constraints.add(NotNullConstraint.get());
         }
         if (fieldType.isSimpleType()) {
-            constraints.addAll(((SimpleType) fieldType).getConstraints());
+            constraints.addAll(fieldType.getConstraints());
         }
         return type.addField(elementName, fieldType, defValue, flags, constraints);
     }
@@ -918,7 +913,7 @@ public class XSDLoader {
     protected static boolean isNillable(XSElementDecl element) {
         boolean computedNillable;
         String value = element.getForeignAttribute(NAMESPACE_CORE_VALIDATION, "nillable");
-        if (!element.isNillable() && value != null && !Boolean.valueOf(value)) {
+        if (!element.isNillable() && value != null && !Boolean.parseBoolean(value)) {
             computedNillable = false;
         } else {
             computedNillable = true;

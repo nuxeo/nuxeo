@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.junit.After;
@@ -139,28 +138,28 @@ public class DirectoryTest extends BaseTest {
 
         // It should not retrieve directory with unknown type
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.put("types", Arrays.asList(new String[] { "notExistingType" }));
+        queryParams.put("types", Collections.singletonList("notExistingType"));
         node = getResponseAsJson(RequestType.GET, "/directory", queryParams);
         assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
         assertEquals(0, node.get("entries").size());
 
         // It should not retrieve system directories
         queryParams = new MultivaluedMapImpl();
-        queryParams.put("types", Arrays.asList(new String[] { DirectoryService.SYSTEM_DIRECTORY_TYPE }));
+        queryParams.put("types", Collections.singletonList(DirectoryService.SYSTEM_DIRECTORY_TYPE));
         node = getResponseAsJson(RequestType.GET, "/directory", queryParams);
         assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
         assertEquals(0, node.get("entries").size());
 
         // It should be able to retrieve a single type
         queryParams = new MultivaluedMapImpl();
-        queryParams.put("types", Arrays.asList(new String[] { "toto" }));
+        queryParams.put("types", Collections.singletonList("toto"));
         node = getResponseAsJson(RequestType.GET, "/directory", queryParams);
         assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
         assertEquals(1, node.get("entries").size());
 
         // It should be able to retrieve many types
         queryParams = new MultivaluedMapImpl();
-        queryParams.put("types", Arrays.asList(new String[] { "toto", "pouet" }));
+        queryParams.put("types", Arrays.asList("toto", "pouet"));
         node = getResponseAsJson(RequestType.GET, "/directory", queryParams);
         assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
         assertEquals(2, node.get("entries").size());
@@ -399,12 +398,11 @@ public class DirectoryTest extends BaseTest {
                 node.get("properties").get("label").getValueAsText());
     }
 
-    private String getDirectoryEntryAsJson(DocumentModel dirEntry) throws IOException, JsonGenerationException {
+    private String getDirectoryEntryAsJson(DocumentModel dirEntry) throws IOException {
         return getDirectoryEntryAsJson(TESTDIRNAME, dirEntry);
     }
 
-    private String getDirectoryEntryAsJson(String dirName, DocumentModel dirEntry)
-            throws IOException, JsonGenerationException {
+    private String getDirectoryEntryAsJson(String dirName, DocumentModel dirEntry) throws IOException {
         return MarshallerHelper.objectToJson(new DirectoryEntry(dirName, dirEntry), CtxBuilder.get());
     }
 
