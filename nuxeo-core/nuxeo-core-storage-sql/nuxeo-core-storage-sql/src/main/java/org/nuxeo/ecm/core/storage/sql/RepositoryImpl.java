@@ -114,14 +114,14 @@ public class RepositoryImpl implements Repository {
         }
         fulltextParserClass = (Class<? extends FulltextParser>) klass;
 
-        initRepository();
-
         repositoryUp = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
                 "instance-up"));
         repositoryUp.inc();
         sessionCount = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
                 "sessions"));
         createMetricsGauges();
+
+        initRepository();
     }
 
     protected void createMetricsGauges() {
@@ -287,6 +287,17 @@ public class RepositoryImpl implements Repository {
             log.warn("VCS Mapper cache is disabled.");
         } else {
             log.info("VCS Mapper cache using: " + cachingMapperClass.getName());
+        }
+
+        initRootNode();
+    }
+
+    protected void initRootNode() {
+        try {
+            // access a session once so that SessionImpl.computeRootNode can create the root node
+            getConnection().close();
+        } catch (ResourceException e) {
+            throw new RuntimeException(e);
         }
     }
 
