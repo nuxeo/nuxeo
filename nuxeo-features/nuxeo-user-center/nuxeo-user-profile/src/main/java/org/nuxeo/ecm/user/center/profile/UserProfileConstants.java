@@ -28,25 +28,32 @@ public class UserProfileConstants {
         // Constants class
     }
 
+    /**
+     * @since 9.3
+     */
+    public static final String USER_PROFILE_SCHEMA = "userprofile";
+
     public static final String USER_PROFILE_FACET = "UserProfile";
 
     public static final String USER_PROFILE_DOCTYPE = "UserProfile";
 
-    public static final String USER_PROFILE_BIRTHDATE_FIELD = "userprofile:birthdate";
+    public static final String USER_PROFILE_BIRTHDATE_FIELD = USER_PROFILE_SCHEMA + ":birthdate";
 
-    public static final String USER_PROFILE_AVATAR_FIELD = "userprofile:avatar";
+    public static final String USER_PROFILE_AVATAR_FIELD = USER_PROFILE_SCHEMA + ":avatar";
 
-    public static final String USER_PROFILE_PHONENUMBER_FIELD = "userprofile:phonenumber";
+    public static final String USER_PROFILE_PHONENUMBER_FIELD = USER_PROFILE_SCHEMA + ":phonenumber";
 
-    public static final String USER_PROFILE_GENDER_FIELD = "userprofile:gender";
+    public static final String USER_PROFILE_GENDER_FIELD = USER_PROFILE_SCHEMA + ":gender";
+
+    /**
+     * @since 5.6
+     * @deprecated since 9.3. No 'timezone' field on userprofile.xsd
+     */
+    @Deprecated
+    public static final String USER_PROFILE_TIMEZONE = USER_PROFILE_SCHEMA + ":timezone";
 
     /**
      * @since 5.6
      */
-    public static final String USER_PROFILE_TIMEZONE = "userprofile:timezone";
-
-    /**
-     * @since 5.6
-     */
-    public static final String USER_PROFILE_LOCALE = "userprofile:locale";
+    public static final String USER_PROFILE_LOCALE = USER_PROFILE_SCHEMA + ":locale";
 }
