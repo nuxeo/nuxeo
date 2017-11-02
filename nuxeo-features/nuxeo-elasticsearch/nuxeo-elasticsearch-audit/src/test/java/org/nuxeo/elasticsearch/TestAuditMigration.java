@@ -149,6 +149,12 @@ public class TestAuditMigration {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-override-contrib.xml")
+    public void shouldMigrateWithPreviousMapping() throws Exception {
+        shouldMigrate();
+    }
+
+    @Test
     public void testRestorationFromAuditStorage() throws Exception {
 
         List<LogEntry> entries = new ArrayList<>();

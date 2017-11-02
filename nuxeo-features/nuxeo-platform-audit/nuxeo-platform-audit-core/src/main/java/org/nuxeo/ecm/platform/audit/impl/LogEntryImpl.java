@@ -21,6 +21,7 @@
 
 package org.nuxeo.ecm.platform.audit.impl;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +44,9 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -159,6 +163,7 @@ public class LogEntryImpl implements LogEntry {
      */
     @Override
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonSerialize(using = DateSerializer.class)
     @Column(name = "LOG_EVENT_DATE")
     public Date getEventDate() {
         return eventDate;
@@ -178,6 +183,7 @@ public class LogEntryImpl implements LogEntry {
      */
     @Override
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonSerialize(using = DateSerializer.class)
     @Column(name = "LOG_DATE")
     public Date getLogDate() {
         return logDate;
@@ -365,6 +371,22 @@ public class LogEntryImpl implements LogEntry {
     @Override
     public void setPreprocessedComment(UIAuditComment uiComment) {
         this.uiComment = uiComment;
+    }
+
+    /**
+     * Specific date serializer to have compliant dates with both current and 8.10 Elasticsearch mapping
+     * 
+     * @since 9.3
+     */
+    static class DateSerializer extends JsonSerializer<Date> {
+
+        public DateSerializer() {
+        }
+
+        @Override
+        public void serialize(Date date, JsonGenerator jg, SerializerProvider serializers) throws IOException {
+            jg.writeObject(date.toInstant().toString());
+        }
     }
 
 }
