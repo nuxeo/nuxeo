@@ -85,7 +85,9 @@ public class ResizeAvatarPictureListener implements EventListener {
         try {
             BlobHolder result = conversionService.convert("resizeAvatar", bh, parameters);
             if (result != null) {
-                doc.setPropertyValue(USER_PROFILE_AVATAR_FIELD, (Serializable) result.getBlob());
+                Blob blob = result.getBlob();
+                blob.setFilename(avatarImage.getFilename());
+                doc.setPropertyValue(USER_PROFILE_AVATAR_FIELD, (Serializable) blob);
             }
         } catch (NuxeoException e) {
             log.warn("Unable to resize avatar image");

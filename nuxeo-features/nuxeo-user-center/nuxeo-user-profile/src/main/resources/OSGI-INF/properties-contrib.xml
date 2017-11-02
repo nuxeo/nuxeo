@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.center.profile.properties" version="1.0.0">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+
+    <documentation>
+      This contribution is the default contribution for user profile properties.
+
+      Here are more details about some of them:
+      <ul>
+        <li>
+          <strong>nuxeo.userprofile.enricher.compatibility</strong>: if false, make the UserProfileEnricher output all
+          fields of the 'userprofile' schema. 'avatar' will be a Blob JSON object, not a String URL anymore.
+        </li>
+      </ul>
+
+      @since 9.3
+    </documentation>
+
+    <property name="nuxeo.userprofile.enricher.compatibility">true</property>
+
+  </extension>
+
+</component>
