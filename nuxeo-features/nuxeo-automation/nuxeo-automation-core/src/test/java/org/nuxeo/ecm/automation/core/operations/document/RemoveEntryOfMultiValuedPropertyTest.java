@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.automation.core.operations.document;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
 
 import java.io.Serializable;
 import java.util.ArrayList;

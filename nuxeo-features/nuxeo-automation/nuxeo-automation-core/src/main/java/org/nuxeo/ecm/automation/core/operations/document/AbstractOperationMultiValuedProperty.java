@@ -46,12 +46,15 @@ public class AbstractOperationMultiValuedProperty {
             throw new UnsupportedOperationException("Manage only lists of scalar items");
         }
 
-        String exceptionReason = String.format("Given type \"%s\" value is not a %s type", value, itemType.getName());
         try {
             if (itemType.convert(value) == null) {
+                String exceptionReason = String.format("Given type \"%s\" value is not a %s type", value,
+                        itemType.getName());
                 throw new UnsupportedOperationException(exceptionReason);
             }
         } catch (TypeException | ClassCastException e) {
+            String exceptionReason = String.format("Given type \"%s\" value is not a %s type", value,
+                    itemType.getName());
             throw new OperationException(exceptionReason, e);
         }
     }

@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
-import static java.lang.Thread.sleep;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
@@ -29,7 +28,6 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -131,7 +129,7 @@ public class AddEntryToMultiValuedPropertyTest {
 
         operation.xpath = "lists:date";
         Calendar now1 = Calendar.getInstance();
-        sleep(1);
+        Thread.sleep(10);
         Calendar now2 = Calendar.getInstance();
         operation.value = now1;
         operation.run(doc);
@@ -165,17 +163,13 @@ public class AddEntryToMultiValuedPropertyTest {
     @Test
     public void shouldFailedIfToTypeNotMatch() throws Exception {
         operation.value = Boolean.FALSE;
-
         try {
             operation.xpath = "lists:integer";
             operation.run(doc);
             fail();
-        } catch (OperationException | UnsupportedOperationException e) {
-            assertEquals("Given type \"false\" value is not a long type", e.getMessage());
         } catch (Exception e) {
-            fail();
+            assertEquals("Given type \"false\" value is not a long type", e.getMessage());
         }
-
     }
 
 }
