@@ -57,4 +57,12 @@ public class ElasticSearchClientConfig {
     public String getOption(String key, String defaultValue) {
         return options.getOrDefault(key, defaultValue);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ElasticSearchClientConfig{");
+        sb.append("options=").append(options);
+        sb.append('}');
+        return sb.toString();
+    }
 }
