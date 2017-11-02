@@ -132,9 +132,10 @@ public class DirectoryTest extends BaseTest {
 
         // It should not return system directories
         assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
-        assertEquals(2, node.get("entries").size());
+        assertEquals(3, node.get("entries").size());
         assertEquals("continent", node.get("entries").get(0).get("name").getTextValue());
         assertEquals("country", node.get("entries").get(1).get("name").getTextValue());
+        assertEquals("nature", node.get("entries").get(2).get("name").getTextValue());
 
         // It should not retrieve directory with unknown type
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
