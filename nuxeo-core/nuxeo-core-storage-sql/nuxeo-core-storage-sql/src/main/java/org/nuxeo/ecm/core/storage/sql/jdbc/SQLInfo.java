@@ -751,6 +751,7 @@ public class SQLInfo {
         TableMaker maker = new TableMaker(Model.REPOINFO_TABLE_NAME);
         maker.newColumn(Model.MAIN_KEY, ColumnType.NODEIDFK);
         maker.newColumn(Model.REPOINFO_REPONAME_KEY, ColumnType.SYSNAME);
+        maker.table.addIndex(null, IndexType.UNIQUE, Model.REPOINFO_REPONAME_KEY);
         maker.postProcessRepository();
     }
 
