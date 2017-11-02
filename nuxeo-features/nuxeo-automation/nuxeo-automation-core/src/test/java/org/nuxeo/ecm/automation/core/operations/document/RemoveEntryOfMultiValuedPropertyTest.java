@@ -23,6 +23,7 @@ import static junit.framework.Assert.fail;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -54,6 +55,8 @@ public class RemoveEntryOfMultiValuedPropertyTest {
 
     private RemoveEntryOfMultiValuedProperty operation;
 
+    private Calendar now = Calendar.getInstance();
+
     @Before
     public void setup() throws Exception {
         doc = session.createDocumentModel("/", "test", "MyDocument");
@@ -62,6 +65,27 @@ public class RemoveEntryOfMultiValuedPropertyTest {
         values.add("Test2");
         values.add("Test2");
         doc.setPropertyValue("lists:string", (Serializable) values);
+
+        List<Integer> integerValues = new ArrayList<>();
+        integerValues.add(1);
+        integerValues.add(2);
+        doc.setPropertyValue("lists:integer", (Serializable) integerValues);
+
+        List<Calendar> calendarValues = new ArrayList<>();
+        calendarValues.add(now);
+        calendarValues.add(now);
+        doc.setPropertyValue("lists:date", (Serializable) calendarValues);
+
+        List<Double> doubleValues = new ArrayList<>();
+        doubleValues.add(1.0);
+        doubleValues.add(2.0);
+        doc.setPropertyValue("lists:double", (Serializable) doubleValues);
+
+        List<Boolean> booleanValues = new ArrayList<>();
+        booleanValues.add(Boolean.TRUE);
+        booleanValues.add(Boolean.FALSE);
+        doc.setPropertyValue("lists:boolean", (Serializable) booleanValues);
+
         session.createDocument(doc);
         session.save();
 
@@ -102,37 +126,30 @@ public class RemoveEntryOfMultiValuedPropertyTest {
     }
 
     @Test
-    public void shouldFailedForComplextType() throws Exception {
-        doc = session.createDocumentModel("/", "test", "File");
-        session.createDocument(doc);
-        session.save();
+    public void shouldRemoveDifferentEntryIntoList() throws Exception {
+        operation.xpath = "lists:double";
+        operation.value = 2.0;
+        operation.run(doc);
+        Double[] doubleValues = (Double[]) doc.getPropertyValue("lists:double");
+        assertEquals(1, doubleValues.length);
 
-        operation.xpath = "files:files";
+        operation.xpath = "lists:boolean";
+        operation.value = false;
+        operation.run(doc);
+        Boolean[] booleanValues = (Boolean[]) doc.getPropertyValue("lists:boolean");
+        assertEquals(1, booleanValues.length);
 
-        try {
-            operation.run(doc);
-            fail();
-        } catch (UnsupportedOperationException e) {
-            assertEquals("Manage only lists of scalar items", e.getMessage());
-        } catch (Exception e) {
-            fail();
-        }
+        operation.xpath = "lists:integer";
+        operation.value = 1L;
+        operation.run(doc);
+        Long[] longValues = (Long[]) doc.getPropertyValue("lists:integer");
+        assertEquals(1, longValues.length);
 
-    }
-
-    @Test
-    public void shouldFailedIfToTypeNotMatch() throws Exception {
-        operation.value = Boolean.FALSE;
-
-        try {
-            operation.run(doc);
-            fail();
-        } catch (UnsupportedOperationException e) {
-            assertEquals("Given type \"false\" value is not a string type", e.getMessage());
-        } catch (Exception e) {
-            fail();
-        }
-
+        operation.xpath = "lists:date";
+        operation.value = now;
+        operation.run(doc);
+        Calendar[] dateValues = (Calendar[]) doc.getPropertyValue("lists:date");
+        assertEquals(0, dateValues.length);
     }
 
 }

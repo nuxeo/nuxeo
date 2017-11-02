@@ -18,15 +18,18 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import static java.lang.Thread.sleep;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
 
+import java.util.Calendar;
 import javax.inject.Inject;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -95,6 +98,52 @@ public class AddEntryToMultiValuedPropertyTest {
     }
 
     @Test
+    public void shouldAddDifferentEntryIntoList() throws Exception {
+        operation.xpath = "lists:double";
+        operation.value = 1.0;
+        operation.run(doc);
+        operation.value = 2.0;
+        operation.run(doc);
+        Double[] doubleValues = (Double[]) doc.getPropertyValue("lists:double");
+        assertEquals(2, doubleValues.length);
+        assertEquals(1.0, doubleValues[0]);
+        assertEquals(2.0, doubleValues[1]);
+
+        operation.xpath = "lists:boolean";
+        operation.value = true;
+        operation.run(doc);
+        operation.value = false;
+        operation.run(doc);
+        Boolean[] booleanValues = (Boolean[]) doc.getPropertyValue("lists:boolean");
+        assertEquals(2, booleanValues.length);
+        assertEquals(Boolean.TRUE, booleanValues[0]);
+        assertEquals(Boolean.FALSE, booleanValues[1]);
+
+        operation.xpath = "lists:integer";
+        operation.value = 1;
+        operation.run(doc);
+        operation.value = 2;
+        operation.run(doc);
+        Long[] longValues = (Long[]) doc.getPropertyValue("lists:integer");
+        assertEquals(2, longValues.length);
+        assertEquals(Long.valueOf(1), longValues[0]);
+        assertEquals(Long.valueOf(2), longValues[1]);
+
+        operation.xpath = "lists:date";
+        Calendar now1 = Calendar.getInstance();
+        sleep(1);
+        Calendar now2 = Calendar.getInstance();
+        operation.value = now1;
+        operation.run(doc);
+        operation.value = now2;
+        operation.run(doc);
+        Calendar[] dateValues = (Calendar[]) doc.getPropertyValue("lists:date");
+        assertEquals(2, dateValues.length);
+        assertEquals(now1, dateValues[0]);
+        assertEquals(now2, dateValues[1]);
+    }
+
+    @Test
     public void shouldFailedForComplextType() throws Exception {
         doc = session.createDocumentModel("/", "test", "File");
         session.createDocument(doc);
@@ -118,10 +167,11 @@ public class AddEntryToMultiValuedPropertyTest {
         operation.value = Boolean.FALSE;
 
         try {
+            operation.xpath = "lists:integer";
             operation.run(doc);
             fail();
-        } catch (UnsupportedOperationException e) {
-            assertEquals("Given type \"false\" value is not a string type", e.getMessage());
+        } catch (OperationException | UnsupportedOperationException e) {
+            assertEquals("Given type \"false\" value is not a long type", e.getMessage());
         } catch (Exception e) {
             fail();
         }
