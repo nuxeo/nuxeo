@@ -27,13 +27,11 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -378,7 +376,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
         throw new NuxeoException("The DocumentModel is not associated to an open CoreSession: " + this);
     }
-
 
     @Override
     public void detach(boolean loadAll) {
@@ -1383,7 +1380,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         // dm.sourceId =sourceId;
         // dm.sid = sid;
         // dm.type = type;
-        dm.facets = new HashSet<String>(facets); // facets
+        dm.facets = new HashSet<>(facets); // facets
         // should be
         // clones too -
         // they are not
