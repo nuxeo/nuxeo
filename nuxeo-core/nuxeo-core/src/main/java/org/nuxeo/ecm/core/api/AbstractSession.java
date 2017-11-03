@@ -694,7 +694,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // document validation
         if (!validationAfterListeners
                 && getValidationService().isActivated(DocumentValidationService.CTX_CREATEDOC, options)) {
-            DocumentValidationReport report = getValidationService().validate(docModel, true);
+            DocumentValidationReport report = getValidationService().validate(docModel, false);
             if (report.hasError()) {
                 throw new DocumentValidationException(report);
             }
@@ -714,7 +714,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // document validation
         if (validationAfterListeners
                 && getValidationService().isActivated(DocumentValidationService.CTX_CREATEDOC, options)) {
-            DocumentValidationReport report = getValidationService().validate(docModel, true);
+            DocumentValidationReport report = getValidationService().validate(docModel, false);
             if (report.hasError()) {
                 throw new DocumentValidationException(report);
             }
