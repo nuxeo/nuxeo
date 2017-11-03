@@ -276,9 +276,11 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             String validationMethod = (String) doc.getPropertyValue("registration:validationMethod");
 
             NuxeoPrincipal targetPrincipal = userManager.getPrincipal((String) doc.getPropertyValue("userinfo:login"));
-            if (targetPrincipal == null) {
-                targetPrincipal = userManager.getPrincipal((String) doc.getPropertyValue("userinfo:email"));
+            if (targetPrincipal != null) {
+                throw new UserAlreadyExistsException();
             }
+
+            targetPrincipal = userManager.getPrincipal((String) doc.getPropertyValue("userinfo:email"));
             if (targetPrincipal != null) {
                 DocumentModel target = session.getDocument(
                         new IdRef((String) doc.getPropertyValue("docinfo:documentId")));
