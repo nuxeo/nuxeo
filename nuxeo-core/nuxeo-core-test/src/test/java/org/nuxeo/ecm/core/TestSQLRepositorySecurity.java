@@ -171,7 +171,7 @@ public class TestSQLRepositorySecurity {
         try (CoreSession anonSession = openSessionAs("anonymous")) {
             DocumentModel root = anonSession.getRootDocument();
 
-            DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "folder#1", "Folder");
+            DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "folder#1", "Folder");
             folder = anonSession.createDocument(folder);
 
             ACP acp = folder.getACP();
@@ -223,7 +223,7 @@ public class TestSQLRepositorySecurity {
             anonSession.save(); // process invalidations
 
             try {
-                DocumentModel folder2 = new DocumentModelImpl(folder.getPathAsString(), "folder#2", "Folder");
+                DocumentModel folder2 = session.createDocumentModel(folder.getPathAsString(), "folder#2", "Folder");
                 folder2 = anonSession.createDocument(folder2);
                 fail("privilege is granted but should not be");
             } catch (DocumentSecurityException e) {
@@ -236,7 +236,7 @@ public class TestSQLRepositorySecurity {
             root = anonSession.getRootDocument();
 
             // and try again - this time it should work
-            DocumentModel folder2 = new DocumentModelImpl(folder.getPathAsString(), "folder#2", "Folder");
+            DocumentModel folder2 = session.createDocumentModel(folder.getPathAsString(), "folder#2", "Folder");
             folder2 = anonSession.createDocument(folder2);
 
             ACP acp2 = new ACPImpl();
@@ -262,7 +262,7 @@ public class TestSQLRepositorySecurity {
             setPermissionToEveryone(WRITE, REMOVE, ADD_CHILDREN, REMOVE_CHILDREN, READ);
             root = anonSession.getRootDocument();
 
-            DocumentModel folder3 = new DocumentModelImpl(folder.getPathAsString(), "folder#3", "Folder");
+            DocumentModel folder3 = session.createDocumentModel(folder.getPathAsString(), "folder#3", "Folder");
             folder3 = anonSession.createDocument(folder3);
 
             anonSession.removeDocument(folder3.getRef());
@@ -272,7 +272,7 @@ public class TestSQLRepositorySecurity {
             anonSession.save(); // process invalidations
 
             try {
-                folder3 = new DocumentModelImpl(folder.getPathAsString(), "folder#3", "Folder");
+                folder3 = session.createDocumentModel(folder.getPathAsString(), "folder#3", "Folder");
                 folder3 = anonSession.createDocument(folder3);
                 fail();
             } catch (Exception e) {
@@ -289,7 +289,7 @@ public class TestSQLRepositorySecurity {
 
         DocumentModel root = session.getRootDocument();
 
-        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "folder1", "Folder");
+        DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "folder1", "Folder");
         folder = session.createDocument(folder);
 
         ACP acp = new ACPImpl();
@@ -321,17 +321,17 @@ public class TestSQLRepositorySecurity {
         DocumentModel root = session.getRootDocument();
 
         String name = "Workspaces#1";
-        DocumentModel workspaces = new DocumentModelImpl(root.getPathAsString(), name, "Workspace");
+        DocumentModel workspaces = session.createDocumentModel(root.getPathAsString(), name, "Workspace");
         session.createDocument(workspaces);
         String name2 = "repositoryWorkspace2#";
-        DocumentModel repositoryWorkspace = new DocumentModelImpl(workspaces.getPathAsString(), name2, "Workspace");
+        DocumentModel repositoryWorkspace = session.createDocumentModel(workspaces.getPathAsString(), name2, "Workspace");
         repositoryWorkspace = session.createDocument(repositoryWorkspace);
 
         String name3 = "ws#3";
-        DocumentModel ws1 = new DocumentModelImpl(repositoryWorkspace.getPathAsString(), name3, "Workspace");
+        DocumentModel ws1 = session.createDocumentModel(repositoryWorkspace.getPathAsString(), name3, "Workspace");
         ws1 = session.createDocument(ws1);
         String name4 = "ws#4";
-        DocumentModel ws2 = new DocumentModelImpl(ws1.getPathAsString(), name4, "Workspace");
+        DocumentModel ws2 = session.createDocumentModel(ws1.getPathAsString(), name4, "Workspace");
         session.createDocument(ws2);
 
         if (session.isNegativeAclAllowed()) {
@@ -360,9 +360,9 @@ public class TestSQLRepositorySecurity {
 
     @Test
     public void testACPInheritance() throws Exception {
-        DocumentModel root = new DocumentModelImpl("/", "testACPInheritance", "Folder");
+        DocumentModel root = session.createDocumentModel("/", "testACPInheritance", "Folder");
         root = session.createDocument(root);
-        DocumentModel doc = new DocumentModelImpl("/testACPInheritance", "folder", "Folder");
+        DocumentModel doc = session.createDocumentModel("/testACPInheritance", "folder", "Folder");
         doc = session.createDocument(doc);
 
         ACP rootAcp = root.getACP();
@@ -409,7 +409,7 @@ public class TestSQLRepositorySecurity {
             }
 
             try {
-                joeReaderSession.createDocument(new DocumentModelImpl(joeReaderDoc.getPathAsString(), "child", "File"));
+                joeReaderSession.createDocument(session.createDocumentModel(joeReaderDoc.getPathAsString(), "child", "File"));
                 fail("should have raised a security exception");
             } catch (DocumentSecurityException e) {
             }
@@ -430,7 +430,7 @@ public class TestSQLRepositorySecurity {
             joeContributorSession.saveDocument(joeContributorDoc);
 
             DocumentRef childRef = joeContributorSession.createDocument(
-                    new DocumentModelImpl(joeContributorDoc.getPathAsString(), "child", "File")).getRef();
+                    session.createDocumentModel(joeContributorDoc.getPathAsString(), "child", "File")).getRef();
             joeContributorSession.save();
 
             // joe contributor can copy the newly created doc
@@ -459,7 +459,7 @@ public class TestSQLRepositorySecurity {
             joeLocalManagerSession.saveDocument(joeLocalManagerDoc);
 
             DocumentRef childRef = joeLocalManagerSession.createDocument(
-                    new DocumentModelImpl(joeLocalManagerDoc.getPathAsString(), "child2", "File")).getRef();
+                    session.createDocumentModel(joeLocalManagerDoc.getPathAsString(), "child2", "File")).getRef();
             joeLocalManagerSession.save();
 
             // joe local manager can copy the newly created doc
@@ -476,7 +476,7 @@ public class TestSQLRepositorySecurity {
 
     protected DocumentRef createDocumentModelWithSamplePermissions(String name) {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         doc = session.createDocument(doc);
 
         ACP acp = doc.getACP();
@@ -530,7 +530,7 @@ public class TestSQLRepositorySecurity {
             // Create a folder with only the browse permission
             String name = "joe-has-" + permission + "-permission";
             docNames.add(name);
-            DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+            DocumentModel folder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
             folder = session.createDocument(folder);
             ACP acp = folder.getACP();
             assertNotNull(acp); // the acp inherited from root is returned
@@ -559,7 +559,7 @@ public class TestSQLRepositorySecurity {
             assertEquals("Expecting " + docNames + " got " + names, browsePermissions.length, list.size());
 
             // Add a new folder to update the read acls
-            DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "new-folder", "Folder");
+            DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "new-folder", "Folder");
             folder = session.createDocument(folder);
             ACP acp = folder.getACP();
             assertNotNull(acp); // the acp inherited from root is returned
@@ -582,7 +582,7 @@ public class TestSQLRepositorySecurity {
         // NXP-13109
         DocumentModel root = session.getRootDocument();
         // Create a doc and set a new ACLR on it
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "foo", "Folder");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "foo", "Folder");
         doc = session.createDocument(doc);
         ACP acp = doc.getACP();
         assertNotNull(acp);
@@ -610,7 +610,7 @@ public class TestSQLRepositorySecurity {
             list = bobSession.query("SELECT * FROM Folder");
             assertEquals(0, list.size());
             // Create a new doc with the same ACLR
-            doc = new DocumentModelImpl(root.getPathAsString(), "bar", "Folder");
+            doc = session.createDocumentModel(root.getPathAsString(), "bar", "Folder");
             doc = session.createDocument(doc);
             doc.setACP(acp, true);
             session.save();
@@ -622,9 +622,9 @@ public class TestSQLRepositorySecurity {
 
     @Test
     public void testReadAclAfterSetACP() {
-        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
-        DocumentModel doc = new DocumentModelImpl("/folder", "doc", "File");
+        DocumentModel doc = session.createDocumentModel("/folder", "doc", "File");
         doc = session.createDocument(doc);
         session.save();
 
@@ -657,7 +657,7 @@ public class TestSQLRepositorySecurity {
 
     @Test
     public void testReadAclAfterCreate() {
-        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         session.save();
 
@@ -691,7 +691,7 @@ public class TestSQLRepositorySecurity {
         }
 
         // create a doc under the folder
-        DocumentModel doc = new DocumentModelImpl("/folder", "doc", "File");
+        DocumentModel doc = session.createDocumentModel("/folder", "doc", "File");
         doc = session.createDocument(doc);
         session.save();
 
@@ -705,11 +705,11 @@ public class TestSQLRepositorySecurity {
 
     @Test
     public void testReadAclAfterMove() {
-        DocumentModel folder1 = new DocumentModelImpl("/", "folder1", "Folder");
+        DocumentModel folder1 = session.createDocumentModel("/", "folder1", "Folder");
         folder1 = session.createDocument(folder1);
-        DocumentModel folder2 = new DocumentModelImpl("/", "folder2", "Folder");
+        DocumentModel folder2 = session.createDocumentModel("/", "folder2", "Folder");
         folder2 = session.createDocument(folder2);
-        DocumentModel doc = new DocumentModelImpl("/folder1", "doc", "File");
+        DocumentModel doc = session.createDocumentModel("/folder1", "doc", "File");
         doc = session.createDocument(doc);
 
         // set ACL on folder2
@@ -739,11 +739,11 @@ public class TestSQLRepositorySecurity {
 
     @Test
     public void testReadAclAfterCopy() {
-        DocumentModel folder1 = new DocumentModelImpl("/", "folder1", "Folder");
+        DocumentModel folder1 = session.createDocumentModel("/", "folder1", "Folder");
         folder1 = session.createDocument(folder1);
-        DocumentModel folder2 = new DocumentModelImpl("/", "folder2", "Folder");
+        DocumentModel folder2 = session.createDocumentModel("/", "folder2", "Folder");
         folder2 = session.createDocument(folder2);
-        DocumentModel doc = new DocumentModelImpl("/folder1", "doc", "File");
+        DocumentModel doc = session.createDocumentModel("/folder1", "doc", "File");
         doc = session.createDocument(doc);
 
         // set ACL on folder2

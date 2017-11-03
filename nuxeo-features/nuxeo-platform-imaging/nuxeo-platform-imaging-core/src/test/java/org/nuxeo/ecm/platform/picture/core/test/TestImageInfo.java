@@ -71,9 +71,9 @@ public class TestImageInfo {
 
     @Test
     public void testGetImageInfo() {
-        DocumentModel picturebook = new DocumentModelImpl(root.getPathAsString(), "picturebook", "PictureBook");
+        DocumentModel picturebook = session.createDocumentModel(root.getPathAsString(), "picturebook", "PictureBook");
         session.createDocument(picturebook);
-        DocumentModel picture = new DocumentModelImpl(picturebook.getPathAsString(), "pic1", "Picture");
+        DocumentModel picture = session.createDocumentModel(picturebook.getPathAsString(), "pic1", "Picture");
         URL resource = getClass().getClassLoader().getResource("images/exif_sample.jpg");
         picture.setPropertyValue("file:content", new URLBlob(resource));
         session.createDocument(picture);

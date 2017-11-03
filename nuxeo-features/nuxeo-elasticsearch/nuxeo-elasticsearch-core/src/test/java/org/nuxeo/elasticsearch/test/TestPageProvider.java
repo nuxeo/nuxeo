@@ -276,7 +276,7 @@ public class TestPageProvider {
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("NXQL_PP_FIXED_PART");
         Assert.assertNotNull(ppdef);
         HashMap<String, Serializable> props = new HashMap<>();
-        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] sources = { "Source1", "Source2" };
         model.setProperty("advanced_search", "source_agg", sources);
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
@@ -333,7 +333,7 @@ public class TestPageProvider {
         QueryBuilder qb;
         PageProviderService pps = Framework.getService(PageProviderService.class);
         WhereClauseDefinition whereClause = pps.getPageProviderDefinition("TEST_IN").getWhereClause();
-        DocumentModel model = new DocumentModelImpl("/", "doc", "File");
+        DocumentModel model = session.createDocumentModel("/", "doc", "File");
         model.setPropertyValue("dc:subjects", new String[] { "foo", "bar" });
 
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, null, true);
@@ -360,7 +360,7 @@ public class TestPageProvider {
         QueryBuilder qb;
         PageProviderService pps = Framework.getService(PageProviderService.class);
         WhereClauseDefinition whereClause = pps.getPageProviderDefinition("TEST_IN_INTEGERS").getWhereClause();
-        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         @SuppressWarnings("boxing")
         Integer[] array1 = new Integer[] { 1, 2, 3 };
         model.setPropertyValue("search:integerlist", array1);
@@ -389,7 +389,7 @@ public class TestPageProvider {
         Assert.assertNotNull(pps);
         WhereClauseDefinition whereClause = pps.getPageProviderDefinition("ADVANCED_SEARCH").getWhereClause();
         String[] params = { "foo" };
-        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] arrayString = new String[] { "1", "2", "3" };
         model.setPropertyValue("search:subjects", arrayString);
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, params, true);
@@ -422,7 +422,7 @@ public class TestPageProvider {
 
         WhereClauseDefinition whereClause = pps.getPageProviderDefinition("ADVANCED_SEARCH").getWhereClause();
         String[] params = { "foo" };
-        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         model.setPropertyValue("search:title", "bar");
 
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, params, true);
@@ -469,7 +469,7 @@ public class TestPageProvider {
 
         WhereClauseDefinition whereClause = pps.getPageProviderDefinition("ADVANCED_SEARCH").getWhereClause();
         String[] params = { "foo" };
-        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         model.setPropertyValue("search:fulltext_all", "you know for search");
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, params, true);
         assertEqualsEvenUnderWindows("{\n" + "  \"bool\" : {\n" + "    \"must\" : [ {\n"
@@ -488,7 +488,7 @@ public class TestPageProvider {
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
-        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         model.setProperty("advanced_search", "fulltext_all", "you know");
         model.setProperty("advanced_search", "description", "for search");
         ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_WITH_HINT", ppdef,
@@ -533,7 +533,7 @@ public class TestPageProvider {
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
-        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         model.setProperty("advanced_search", "fulltext_all", "you know");
         model.setProperty("advanced_search", "description", "for search");
         ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_WITH_HINT", ppdef,

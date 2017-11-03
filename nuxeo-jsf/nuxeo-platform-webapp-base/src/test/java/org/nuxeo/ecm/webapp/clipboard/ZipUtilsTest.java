@@ -48,11 +48,11 @@ public class ZipUtilsTest {
     protected CoreSession session;
 
     protected DocumentModel createTestFolder() {
-        DocumentModel parent = new DocumentModelImpl("/", "parent", "Folder");
+        DocumentModel parent = session.createDocumentModel("/", "parent", "Folder");
         parent.setPropertyValue("dc:title", "Parent");
         parent = session.createDocument(parent);
 
-        DocumentModel file = new DocumentModelImpl("/parent", "éèà", "File");
+        DocumentModel file = session.createDocumentModel("/parent", "éèà", "File");
         file.setPropertyValue("dc:title", "éèà");
 
         Blob blob = Blobs.createBlob("ééà");

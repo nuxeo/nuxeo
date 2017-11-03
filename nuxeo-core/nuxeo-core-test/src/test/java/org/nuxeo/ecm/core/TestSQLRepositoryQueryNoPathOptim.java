@@ -136,11 +136,11 @@ public class TestSQLRepositoryQueryNoPathOptim {
      * </pre>
      */
     protected void createDocs() throws Exception {
-        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1", "Folder");
+        DocumentModel folder1 = session.createDocumentModel("/", "testfolder1", "Folder");
         folder1.setPropertyValue("dc:title", "testfolder1_Title");
         folder1 = session.createDocument(folder1);
 
-        DocumentModel file1 = new DocumentModelImpl("/testfolder1", "testfile1", "File");
+        DocumentModel file1 = session.createDocumentModel("/testfolder1", "testfile1", "File");
         file1.setPropertyValue("dc:title", "testfile1_Title");
         file1.setPropertyValue("dc:description", "testfile1_description");
         String content = "Some caf\u00e9 in a restaurant.\nDrink!.\n";
@@ -156,7 +156,7 @@ public class TestSQLRepositoryQueryNoPathOptim {
         file1.setPropertyValue("uid", "uid123");
         file1 = session.createDocument(file1);
 
-        DocumentModel file2 = new DocumentModelImpl("/testfolder1", "testfile2", "File");
+        DocumentModel file2 = session.createDocumentModel("/testfolder1", "testfile2", "File");
         file2.setPropertyValue("dc:title", "testfile2_Title");
         file2.setPropertyValue("dc:description", "testfile2_DESCRIPTION2");
         Calendar cal2 = getCalendar(2007, 4, 1, 12, 0, 0);
@@ -165,20 +165,20 @@ public class TestSQLRepositoryQueryNoPathOptim {
         file2.setPropertyValue("dc:coverage", "foo/bar");
         file2 = session.createDocument(file2);
 
-        DocumentModel file3 = new DocumentModelImpl("/testfolder1", "testfile3", "Note");
+        DocumentModel file3 = session.createDocumentModel("/testfolder1", "testfile3", "Note");
         file3.setPropertyValue("dc:title", "testfile3_Title");
         file3.setPropertyValue("dc:description", "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
         file3.setPropertyValue("dc:contributors", new String[] { "bob", "john" });
         file3 = session.createDocument(file3);
 
-        DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2", "Folder");
+        DocumentModel folder2 = session.createDocumentModel("/", "testfolder2", "Folder");
         folder2 = session.createDocument(folder2);
 
-        DocumentModel folder3 = new DocumentModelImpl("/testfolder2", "testfolder3", "Folder");
+        DocumentModel folder3 = session.createDocumentModel("/testfolder2", "testfolder3", "Folder");
         folder3 = session.createDocument(folder3);
 
         // create file 4
-        DocumentModel file4 = new DocumentModelImpl("/testfolder2/testfolder3", "testfile4", "File");
+        DocumentModel file4 = session.createDocumentModel("/testfolder2/testfolder3", "testfile4", "File");
         // title without space or _ for Oracle fulltext searchability
         // (testFulltextProxy)
         file4.setPropertyValue("dc:title", "testfile4Title");

@@ -18,6 +18,16 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import static org.junit.Assume.assumeTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -45,7 +55,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -66,16 +75,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
-import static org.junit.Assume.assumeTrue;
 
 /**
  * Test "on the fly" indexing via the listener system
@@ -637,15 +636,15 @@ public class TestAutomaticIndexing {
         startTransaction();
         DocumentModel ofolder = session.createDocumentModel("/", "ofolder", "OrderedFolder");
         ofolder = session.createDocument(ofolder);
-        DocumentModel file1 = new DocumentModelImpl("/ofolder", "testfile1", "File");
+        DocumentModel file1 = session.createDocumentModel("/ofolder", "testfile1", "File");
         file1 = session.createDocument(file1);
-        DocumentModel file2 = new DocumentModelImpl("/ofolder", "testfile2", "File");
+        DocumentModel file2 = session.createDocumentModel("/ofolder", "testfile2", "File");
         file2 = session.createDocument(file2);
-        DocumentModel file3 = new DocumentModelImpl("/ofolder", "testfile3", "File");
+        DocumentModel file3 = session.createDocumentModel("/ofolder", "testfile3", "File");
         file3 = session.createDocument(file3);
-        DocumentModel folder4 = new DocumentModelImpl("/ofolder", "folder4", "Folder");
+        DocumentModel folder4 = session.createDocumentModel("/ofolder", "folder4", "Folder");
         folder4 = session.createDocument(folder4);
-        DocumentModel file = new DocumentModelImpl("/ofolder/folder4", "testfile", "File");
+        DocumentModel file = session.createDocumentModel("/ofolder/folder4", "testfile", "File");
         file = session.createDocument(file);
 
         TransactionHelper.commitOrRollbackTransaction();
@@ -680,9 +679,9 @@ public class TestAutomaticIndexing {
         startTransaction();
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
-        DocumentModel file1 = new DocumentModelImpl("/folder", "testfile1", "File");
+        DocumentModel file1 = session.createDocumentModel("/folder", "testfile1", "File");
         file1 = session.createDocument(file1);
-        DocumentModel file2 = new DocumentModelImpl("/folder", "testfile2", "File");
+        DocumentModel file2 = session.createDocumentModel("/folder", "testfile2", "File");
         file2 = session.createDocument(file2);
 
         folder.setPropertyValue("dc:title", "v1");
@@ -750,7 +749,7 @@ public class TestAutomaticIndexing {
 
     protected void createADocumentWith3Versions() throws Exception {
         startTransaction();
-        DocumentModel file1 = new DocumentModelImpl("/", "testfile1", "File");
+        DocumentModel file1 = session.createDocumentModel("/", "testfile1", "File");
         file1 = session.createDocument(file1);
         file1.setPropertyValue("dc:title", "v1");
         file1 = session.saveDocument(file1);
@@ -777,11 +776,11 @@ public class TestAutomaticIndexing {
     @Test
     public void shouldIndexUpdatedProxy() throws Exception {
         startTransaction();
-        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1", "Folder");
+        DocumentModel folder1 = session.createDocumentModel("/", "testfolder1", "Folder");
         folder1 = session.createDocument(folder1);
         folder1 = session.saveDocument(folder1);
 
-        DocumentModel file1 = new DocumentModelImpl("/", "testfile1", "File");
+        DocumentModel file1 = session.createDocumentModel("/", "testfile1", "File");
         file1 = session.createDocument(file1);
         file1.setPropertyValue("dc:title", "Title before proxy update");
         file1 = session.saveDocument(file1);

@@ -109,11 +109,9 @@ public class DocumentValidationTest extends BaseTest {
     @Test
     public void testCreateDocumentWithViolationNotDirtyEndpointId() throws Exception {
         DocumentModel root = session.getDocument(new PathRef("/"));
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + root.getId(),
-                INVALID_DOC_NOT_DIRTY)) {
-            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            checkResponseHasNotDirtyError(response);
-        }
+        ClientResponse response = getResponse(RequestType.POST, "id/" + root.getId(), INVALID_DOC_NOT_DIRTY);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        checkResponseHasNotDirtyError(response);
     }
 
     /**
@@ -121,13 +119,12 @@ public class DocumentValidationTest extends BaseTest {
      */
     @Test
     public void testCreateDocumentWithViolationNotDirtyEndpointPath() throws Exception {
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "path/", INVALID_DOC_NOT_DIRTY)) {
-            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            checkResponseHasNotDirtyError(response);
-        }
+        ClientResponse response = getResponse(RequestType.POST, "path/", INVALID_DOC_NOT_DIRTY);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        checkResponseHasNotDirtyError(response);
     }
 
-    protected void checkResponseHasNotDirtyError(CloseableClientResponse response) throws IOException {
+    protected void checkResponseHasNotDirtyError(ClientResponse response) throws IOException {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertTrue(node.get("has_error").getValueAsBoolean());
         assertEquals(1, node.get("number").getValueAsInt());

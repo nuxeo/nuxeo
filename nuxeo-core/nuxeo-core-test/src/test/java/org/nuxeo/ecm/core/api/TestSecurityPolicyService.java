@@ -87,7 +87,7 @@ public class TestSecurityPolicyService {
         try (CoreSession session = coreFeature.openCoreSession(ADMINISTRATOR)) {
             setTestPermissions(ANONYMOUS, READ);
             DocumentModel root = session.getRootDocument();
-            DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "folder#1", "Folder");
+            DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "folder#1", "Folder");
             // set access security
             folder.setProperty("secupolicy", "securityLevel", Long.valueOf(4));
             folder = session.createDocument(folder);

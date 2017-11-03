@@ -95,7 +95,7 @@ public class TestSQLRepositoryJTAJCA {
 
         try (CoreSession session2 = CoreInstance.openCoreSession(repositoryName, ADMINISTRATOR)) {
             assertEquals(1, repo.getActiveSessionsCount());
-            DocumentModel doc = new DocumentModelImpl("/", "doc", "Document");
+            DocumentModel doc = session.createDocumentModel("/", "doc", "Document");
             doc = session.createDocument(doc);
             session.save();
             // check that this is immediately seen from other connection
@@ -111,7 +111,7 @@ public class TestSQLRepositoryJTAJCA {
     @Test
     public void testSaveOnCommit() throws Exception {
         // first transaction
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "Document");
+        DocumentModel doc = session.createDocumentModel("/", "doc", "Document");
         doc = session.createDocument(doc);
         // let commit do an implicit save
         nextTransaction();

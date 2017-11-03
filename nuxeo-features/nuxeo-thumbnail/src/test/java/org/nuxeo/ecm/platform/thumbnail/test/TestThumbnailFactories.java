@@ -64,7 +64,7 @@ public class TestThumbnailFactories {
     public void testThumbnailFactoryContribution() throws IOException {
         // Test folderish thumbnail factory
         DocumentModel root = session.getRootDocument();
-        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "Folder", "Folder");
+        DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "Folder", "Folder");
         folder.addFacet(FacetNames.FOLDERISH);
         session.createDocument(folder);
         session.save();
@@ -72,7 +72,7 @@ public class TestThumbnailFactories {
         Assert.assertEquals(folderThumbnail.getThumbnail(session).getString(), "folderish");
 
         // Test document thumbnail factory
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "File", "File");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "File", "File");
         session.createDocument(doc);
         session.save();
         ThumbnailAdapter docThumbnail = doc.getAdapter(ThumbnailAdapter.class);

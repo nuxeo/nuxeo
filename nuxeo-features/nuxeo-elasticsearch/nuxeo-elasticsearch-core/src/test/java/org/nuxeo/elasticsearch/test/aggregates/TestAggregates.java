@@ -518,7 +518,7 @@ public class TestAggregates {
         aggDef2.setSearchField(new FieldDescriptor("advanced_search", "nature_agg"));
         aggDef2.setProperty("size", "10");
 
-        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] sources = { "foo", "bar" };
         model.setProperty("advanced_search", "source_agg", sources);
         // String[] natures = { "foobar" };
@@ -632,7 +632,7 @@ public class TestAggregates {
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
         Assert.assertNotNull(ppdef);
 
-        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] sources = { "Source1", "Source2" };
         model.setProperty("advanced_search", "source_agg", sources);
 
@@ -677,7 +677,7 @@ public class TestAggregates {
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
         Assert.assertNotNull(ppdef);
 
-        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] sizes = { "big", "medium" };
         model.setProperty("advanced_search", "size_agg", sizes);
 
@@ -713,7 +713,7 @@ public class TestAggregates {
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
         Assert.assertNotNull(ppdef);
 
-        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] created = { "long_time_ago", "some_time_ago" };
         model.setProperty("advanced_search", "created_agg", created);
 
@@ -749,7 +749,7 @@ public class TestAggregates {
 
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
         Assert.assertNotNull(ppdef);
-        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] sizes = { "1024", "4096" };
         model.setProperty("advanced_search", "size_histo_agg", sizes);
 
@@ -777,7 +777,7 @@ public class TestAggregates {
 
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
         Assert.assertNotNull(ppdef);
-        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         DateTimeFormatter fmt = DateTimeFormat.forPattern("dd-MM-yyy");
         DateTime yesterdayNoon = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay().minusDays(1).plusHours(12);
         String[] created = { fmt.print(new DateTime(yesterdayNoon.minusWeeks(3).getMillis())),

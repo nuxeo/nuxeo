@@ -180,11 +180,11 @@ public class TestSQLRepositoryQuery {
      * </pre>
      */
     protected void createDocs() throws Exception {
-        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1", "Folder");
+        DocumentModel folder1 = session.createDocumentModel("/", "testfolder1", "Folder");
         folder1.setPropertyValue("dc:title", "testfolder1_Title");
         folder1 = session.createDocument(folder1);
 
-        DocumentModel file1 = new DocumentModelImpl("/testfolder1", "testfile1", "File");
+        DocumentModel file1 = session.createDocumentModel("/testfolder1", "testfile1", "File");
         file1.setPropertyValue("dc:title", "testfile1_Title");
         file1.setPropertyValue("dc:description", "testfile1_description");
         String content = "Some caf\u00e9 in a restaurant.\nDrink!.\n";
@@ -200,7 +200,7 @@ public class TestSQLRepositoryQuery {
         file1.setPropertyValue("uid", "uid123");
         file1 = session.createDocument(file1);
 
-        DocumentModel file2 = new DocumentModelImpl("/testfolder1", "testfile2", "File");
+        DocumentModel file2 = session.createDocumentModel("/testfolder1", "testfile2", "File");
         file2.setPropertyValue("dc:title", "testfile2_Title");
         file2.setPropertyValue("dc:description", "testfile2_DESCRIPTION2");
         Calendar cal2 = getCalendar(2007, 4, 1, 12, 0, 0);
@@ -209,20 +209,20 @@ public class TestSQLRepositoryQuery {
         file2.setPropertyValue("dc:coverage", "foo/bar");
         file2 = session.createDocument(file2);
 
-        DocumentModel file3 = new DocumentModelImpl("/testfolder1", "testfile3", "Note");
+        DocumentModel file3 = session.createDocumentModel("/testfolder1", "testfile3", "Note");
         file3.setPropertyValue("dc:title", "testfile3_Title");
         file3.setPropertyValue("dc:description", "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
         file3.setPropertyValue("dc:contributors", new String[] { "bob", "john" });
         file3 = session.createDocument(file3);
 
-        DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2", "Folder");
+        DocumentModel folder2 = session.createDocumentModel("/", "testfolder2", "Folder");
         folder2 = session.createDocument(folder2);
 
-        DocumentModel folder3 = new DocumentModelImpl("/testfolder2", "testfolder3", "Folder");
+        DocumentModel folder3 = session.createDocumentModel("/testfolder2", "testfolder3", "Folder");
         folder3 = session.createDocument(folder3);
 
         // create file 4
-        DocumentModel file4 = new DocumentModelImpl("/testfolder2/testfolder3", "testfile4", "File");
+        DocumentModel file4 = session.createDocumentModel("/testfolder2/testfolder3", "testfile4", "File");
         // title without space or _ for Oracle fulltext searchability
         // (testFulltextProxy)
         file4.setPropertyValue("dc:title", "testfile4Title");
@@ -504,7 +504,7 @@ public class TestSQLRepositoryQuery {
         DocumentModel root = session.getRootDocument();
 
         String fname1 = "file1";
-        DocumentModel childFile1 = new DocumentModelImpl(root.getPathAsString(), fname1, "File");
+        DocumentModel childFile1 = session.createDocumentModel(root.getPathAsString(), fname1, "File");
 
         DocumentModel[] childDocs = new DocumentModel[1];
         childDocs[0] = childFile1;
@@ -657,13 +657,13 @@ public class TestSQLRepositoryQuery {
     public void testOrderByPos() throws Exception {
         DocumentModelList dml;
 
-        DocumentModel ofolder = new DocumentModelImpl("/", "ofolder", "OrderedFolder");
+        DocumentModel ofolder = session.createDocumentModel("/", "ofolder", "OrderedFolder");
         ofolder = session.createDocument(ofolder);
-        DocumentModel file1 = new DocumentModelImpl("/ofolder", "testfile1", "File");
+        DocumentModel file1 = session.createDocumentModel("/ofolder", "testfile1", "File");
         file1 = session.createDocument(file1);
-        DocumentModel file2 = new DocumentModelImpl("/ofolder", "testfile2", "File");
+        DocumentModel file2 = session.createDocumentModel("/ofolder", "testfile2", "File");
         file2 = session.createDocument(file2);
-        DocumentModel file3 = new DocumentModelImpl("/ofolder", "testfile3", "File");
+        DocumentModel file3 = session.createDocumentModel("/ofolder", "testfile3", "File");
         file3 = session.createDocument(file3);
         session.save();
 
@@ -1168,7 +1168,7 @@ public class TestSQLRepositoryQuery {
         createDocs();
 
         // create file 5 (type File2)
-        DocumentModel file5 = new DocumentModelImpl("/", "testfile5", "File2");
+        DocumentModel file5 = session.createDocumentModel("/", "testfile5", "File2");
         file5.setPropertyValue("dc:title", "testfile5Title");
         Calendar cal = getCalendar(2012, 3, 1, 1, 2, 3);
         file5.setPropertyValue("tst2:dates", new Serializable[] { cal });
@@ -1267,7 +1267,7 @@ public class TestSQLRepositoryQuery {
         dml = session.query(sql);
         assertEquals(0, dml.size());
 
-        DocumentModel doc = new DocumentModelImpl("/testfolder1", "mydoc", "MyDocType");
+        DocumentModel doc = session.createDocumentModel("/testfolder1", "mydoc", "MyDocType");
         doc.setPropertyValue("my:boolean", Boolean.TRUE);
         doc = session.createDocument(doc);
         session.save();
@@ -2037,7 +2037,7 @@ public class TestSQLRepositoryQuery {
         assertEquals(7, dml.size());
 
         // create a doc with no lifecycle associated
-        DocumentModel doc = new DocumentModelImpl("/testfolder1", "mydoc", "MyDocType");
+        DocumentModel doc = session.createDocumentModel("/testfolder1", "mydoc", "MyDocType");
         doc = session.createDocument(doc);
         session.save();
         assertEquals("undefined", doc.getCurrentLifeCycleState());
@@ -2142,7 +2142,7 @@ public class TestSQLRepositoryQuery {
 
     @Test
     public void testQueryComplexTypeFiles() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
+        DocumentModel doc = session.createDocumentModel("/", "myfile", "File");
         List<Object> files = new LinkedList<Object>();
         Map<String, Object> f = new HashMap<String, Object>();
         f.put("filename", "f1");
@@ -2217,7 +2217,7 @@ public class TestSQLRepositoryQuery {
         Map<String, Serializable> map;
 
         // two fields with same key
-        DocumentModel file = new DocumentModelImpl("/", "testfile", "File2");
+        DocumentModel file = session.createDocumentModel("/", "testfile", "File2");
         file.setPropertyValue("dc:title", "title1");
         file.setPropertyValue("tst2:title", "title2");
         file = session.createDocument(file);
@@ -2309,7 +2309,7 @@ public class TestSQLRepositoryQuery {
 
     protected Date setupDocTest() throws Exception {
         Date currentDate = new Date();
-        DocumentModel testDocument = new DocumentModelImpl("/", "testfolder1", "Folder");
+        DocumentModel testDocument = session.createDocumentModel("/", "testfolder1", "Folder");
         testDocument.setPropertyValue("dc:title", "test");
         testDocument.setPropertyValue("dc:modified", currentDate);
         testDocument = session.createDocument(testDocument);

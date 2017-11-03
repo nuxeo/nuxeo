@@ -55,7 +55,7 @@ public class TestSQLRepositoryFulltextWork {
     }
 
     private void createFolder() throws PropertyException {
-        DocumentModel folder = new DocumentModelImpl("/", "testfolder", "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "testfolder", "Folder");
         folder.setPropertyValue("dc:title", "folder Title");
         folder = session.createDocument(folder);
     }
@@ -67,7 +67,7 @@ public class TestSQLRepositoryFulltextWork {
     }
 
     private void createAndDeleteFile(String name) throws PropertyException {
-        DocumentModel file = new DocumentModelImpl("/testfolder", name, "File");
+        DocumentModel file = session.createDocumentModel("/testfolder", name, "File");
         file.setPropertyValue("dc:title", "testfile Title");
         file = session.createDocument(file);
         session.save();

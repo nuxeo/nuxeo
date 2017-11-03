@@ -88,7 +88,7 @@ public class TestLockSecurityPolicy {
         DocumentRef folderRef;
         try (CoreSession session = coreFeature.openCoreSession(ADMINISTRATOR)) {
             DocumentModel root = session.getRootDocument();
-            DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "folder#1", "Folder");
+            DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "folder#1", "Folder");
             folder = session.createDocument(folder);
             folderRef = folder.getRef();
 

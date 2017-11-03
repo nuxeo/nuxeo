@@ -84,7 +84,7 @@ public class TestBlobHolderSet {
 
     @Test
     public void testBlobHolderSet() throws Exception {
-        DocumentModel picture = new DocumentModelImpl(root.getPathAsString(), "pic", "Picture");
+        DocumentModel picture = session.createDocumentModel(root.getPathAsString(), "pic", "Picture");
         picture.setPropertyValue("picture:views", (Serializable) createViews());
         picture = session.createDocument(picture);
         session.save();
