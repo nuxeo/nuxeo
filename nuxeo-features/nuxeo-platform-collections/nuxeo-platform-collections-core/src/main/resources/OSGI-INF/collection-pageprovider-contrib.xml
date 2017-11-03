@@ -42,7 +42,6 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="default_content_collection">
-      <property name="maxResults">PAGE_SIZE</property>
       <pattern>
         SELECT * FROM Document where ecm:mixinType != 'HiddenInNavigation' AND
         ecm:currentLifeCycleState !=
