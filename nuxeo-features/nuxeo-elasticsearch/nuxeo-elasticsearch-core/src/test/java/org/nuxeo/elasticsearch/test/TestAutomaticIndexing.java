@@ -253,8 +253,8 @@ public class TestAutomaticIndexing {
     public void shouldIndexImportedDocument() throws Exception {
         startTransaction();
         // import one doc
-        DocumentModelImpl doc = new DocumentModelImpl("/", "testDoc", "File");
-        doc.setId(UUID.randomUUID().toString());
+        DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
+        ((DocumentModelImpl) doc).setId(UUID.randomUUID().toString());
         doc.setPropertyValue("dc:title", "TestMe");
         session.importDocuments(Collections.singletonList(doc));
 
@@ -705,15 +705,15 @@ public class TestAutomaticIndexing {
         startTransaction();
         DocumentModel ofolder = session.createDocumentModel("/", "ofolder", "OrderedFolder");
         ofolder = session.createDocument(ofolder);
-        DocumentModel file1 = new DocumentModelImpl("/ofolder", "testfile1", "File");
+        DocumentModel file1 = session.createDocumentModel("/ofolder", "testfile1", "File");
         file1 = session.createDocument(file1);
-        DocumentModel file2 = new DocumentModelImpl("/ofolder", "testfile2", "File");
+        DocumentModel file2 = session.createDocumentModel("/ofolder", "testfile2", "File");
         file2 = session.createDocument(file2);
-        DocumentModel file3 = new DocumentModelImpl("/ofolder", "testfile3", "File");
+        DocumentModel file3 = session.createDocumentModel("/ofolder", "testfile3", "File");
         file3 = session.createDocument(file3);
-        DocumentModel folder4 = new DocumentModelImpl("/ofolder", "folder4", "Folder");
+        DocumentModel folder4 = session.createDocumentModel("/ofolder", "folder4", "Folder");
         folder4 = session.createDocument(folder4);
-        DocumentModel file = new DocumentModelImpl("/ofolder/folder4", "testfile", "File");
+        DocumentModel file = session.createDocumentModel("/ofolder/folder4", "testfile", "File");
         file = session.createDocument(file);
 
         TransactionHelper.commitOrRollbackTransaction();
@@ -748,9 +748,9 @@ public class TestAutomaticIndexing {
         startTransaction();
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
-        DocumentModel file1 = new DocumentModelImpl("/folder", "testfile1", "File");
+        DocumentModel file1 = session.createDocumentModel("/folder", "testfile1", "File");
         file1 = session.createDocument(file1);
-        DocumentModel file2 = new DocumentModelImpl("/folder", "testfile2", "File");
+        DocumentModel file2 = session.createDocumentModel("/folder", "testfile2", "File");
         file2 = session.createDocument(file2);
 
         folder.setPropertyValue("dc:title", "v1");
@@ -909,7 +909,7 @@ public class TestAutomaticIndexing {
 
     protected void createADocumentWith3Versions() throws Exception {
         startTransaction();
-        DocumentModel file1 = new DocumentModelImpl("/", "testfile1", "File");
+        DocumentModel file1 = session.createDocumentModel("/", "testfile1", "File");
         file1 = session.createDocument(file1);
         file1.setPropertyValue("dc:title", "v1");
         file1 = session.saveDocument(file1);
@@ -936,11 +936,11 @@ public class TestAutomaticIndexing {
     @Test
     public void shouldIndexUpdatedProxy() throws Exception {
         startTransaction();
-        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1", "Folder");
+        DocumentModel folder1 = session.createDocumentModel("/", "testfolder1", "Folder");
         folder1 = session.createDocument(folder1);
         folder1 = session.saveDocument(folder1);
 
-        DocumentModel file1 = new DocumentModelImpl("/", "testfile1", "File");
+        DocumentModel file1 = session.createDocumentModel("/", "testfile1", "File");
         file1 = session.createDocument(file1);
         file1.setPropertyValue("dc:title", "Title before proxy update");
         file1 = session.saveDocument(file1);

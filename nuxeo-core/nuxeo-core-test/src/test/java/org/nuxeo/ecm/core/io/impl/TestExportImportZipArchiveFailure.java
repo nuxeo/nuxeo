@@ -156,8 +156,8 @@ public class TestExportImportZipArchiveFailure {
             try {
                 pipe.run();
                 fail("Import should have failed due to missing document type");
-            } catch (DocumentNotFoundException e) {
-                assertEquals("Unknown document type: " + DOC_TYPE, e.getMessage());
+            } catch (IllegalArgumentException e) {
+                assertEquals(DOC_TYPE + " is not a registered core type", e.getMessage());
             }
         } finally {
             // cleanup by re-registering doc type and facet
