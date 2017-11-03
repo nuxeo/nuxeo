@@ -32,7 +32,7 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.action.WebActionsBean;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeDescriptor;
@@ -89,7 +89,8 @@ public class MultiNavTreeManager implements Serializable {
     public void onCurrentTreeChange(String category, String tabId) {
         // raise this event in order to reset the documents lists from
         // 'conversationDocumentsListsManager'
-        Events.instance().raiseEvent(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED, new DocumentModelImpl("Folder"));
+        Events.instance().raiseEvent(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
+                DocumentModelFactory.createDocumentModel("Folder"));
         if (tabId != null) {
             if (tabId.startsWith(DirectoryTreeDescriptor.ACTION_ID_PREFIX)) {
                 directoryTreeManager.setSelectedTreeName(tabId.substring(DirectoryTreeDescriptor.ACTION_ID_PREFIX.length()));

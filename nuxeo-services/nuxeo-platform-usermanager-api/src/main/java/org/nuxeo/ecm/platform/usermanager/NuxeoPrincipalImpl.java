@@ -32,7 +32,6 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,8 +45,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
-import org.nuxeo.ecm.core.api.impl.DataModelImpl;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.api.Framework;
@@ -101,13 +99,11 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         this(name, isAnonymous, isAdministrator, true);
     }
 
-    public NuxeoPrincipalImpl(String name, boolean isAnonymous, boolean isAdministrator, boolean updateAllGroups)
-            {
-        DocumentModelImpl documentModelImpl = new DocumentModelImpl(config.schemaName);
+    public NuxeoPrincipalImpl(String name, boolean isAnonymous, boolean isAdministrator, boolean updateAllGroups) {
+        DocumentModel documentModelImpl = new SimpleDocumentModel(config.schemaName);
         // schema name hardcoded default when setModel is never called
         // which happens when a principal is created just to encapsulate
         // a username
-        documentModelImpl.addDataModel(new DataModelImpl(config.schemaName, new HashMap<String, Object>()));
         setModel(documentModelImpl, updateAllGroups);
         dataModel.setData(config.nameKey, name);
         this.isAnonymous = isAnonymous;
