@@ -170,4 +170,36 @@ public class ITVocabularyTest extends AbstractTest {
         assertTrue(vocabulariesPage.hasHeaderLabel("English Label"));
     }
 
+    /**
+     * Non regression test for NXP-18046
+     *
+     * @since 9.3
+     */
+    @Test
+    public void testNewlyCreatedParentSuggestion() throws UserNotConnectedException, IOException {
+        try {
+            DocumentBasePage documentBasePage = login();
+            VocabulariesPage vpage = documentBasePage.getAdminCenter().getVocabulariesPage();
+            vpage = vpage.select(L10N_SUBJECTS);
+            // add an entry without any parent, set it as obsolete to check it still can be selected as a parent
+            vpage = vpage.addEntry("foo", "", "Foo", "Fou", true, 10000000);
+            assertTrue(vpage.hasEntry("foo"));
+            // check that it can be selected to create another entry with this parent
+            vpage = vpage.addEntry("bar", "foo", "Bar", "Barre", false, 10000000);
+            assertTrue(vpage.hasEntry("bar"));
+        } finally {
+            // remove created entries to leave directory in same state
+            logout();
+            VocabulariesPage vpage = login().getAdminCenter().getVocabulariesPage();
+            vpage = vpage.select(L10N_SUBJECTS);
+            if (vpage.hasEntry("bar")) {
+                vpage = vpage.deleteEntry("bar");
+            }
+            if (vpage.hasEntry("foo")) {
+                vpage = vpage.deleteEntry("foo");
+            }
+            logout();
+        }
+    }
+
 }
