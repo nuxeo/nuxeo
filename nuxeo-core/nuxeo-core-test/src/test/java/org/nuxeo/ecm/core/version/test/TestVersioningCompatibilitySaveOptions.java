@@ -27,7 +27,6 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
@@ -38,36 +37,36 @@ public class TestVersioningCompatibilitySaveOptions extends AbstractTestVersioni
 
     @Test
     public void testTypeSaveOptions() throws Exception {
-        DocumentModel fileDoc = new DocumentModelImpl("File");
-        fileDoc = session.createDocument(fileDoc);
-        String versionLabel = fileDoc.getVersionLabel();
+        DocumentModel fileDocA = session.createDocumentModel("/", "docA", "File");
+        fileDocA = session.createDocument(fileDocA);
+        String versionLabel = fileDocA.getVersionLabel();
         assertEquals("0.0", versionLabel);
-        List<VersioningOption> opts = service.getSaveOptions(fileDoc);
+        List<VersioningOption> opts = service.getSaveOptions(fileDocA);
         assertEquals(3, opts.size());
         assertEquals(VersioningOption.NONE, opts.get(0));
 
         deployer.deploy("org.nuxeo.ecm.core.test.tests:test-versioning-contrib.xml");
 
-        fileDoc = new DocumentModelImpl("File");
-        fileDoc = session.createDocument(fileDoc);
-        versionLabel = fileDoc.getVersionLabel();
+        DocumentModel fileDocB = session.createDocumentModel("/", "docB", "File");
+        fileDocB = session.createDocument(fileDocB);
+        versionLabel = fileDocB.getVersionLabel();
         assertEquals("1.1+", versionLabel);
-        opts = service.getSaveOptions(fileDoc);
+        opts = service.getSaveOptions(fileDocB);
         assertEquals(2, opts.size());
         assertEquals(VersioningOption.MINOR, opts.get(0));
-        session.followTransition(fileDoc.getRef(), "approve");
-        opts = service.getSaveOptions(fileDoc);
+        session.followTransition(fileDocB.getRef(), "approve");
+        opts = service.getSaveOptions(fileDocB);
         assertEquals(0, opts.size());
-        session.followTransition(fileDoc.getRef(), "backToProject");
-        session.followTransition(fileDoc.getRef(), "obsolete");
-        opts = service.getSaveOptions(fileDoc);
+        session.followTransition(fileDocB.getRef(), "backToProject");
+        session.followTransition(fileDocB.getRef(), "obsolete");
+        opts = service.getSaveOptions(fileDocB);
         assertEquals(3, opts.size());
 
         deployer.deploy("org.nuxeo.ecm.core.test.tests:test-versioning-override-contrib.xml");
 
-        fileDoc = new DocumentModelImpl("File");
-        fileDoc = session.createDocument(fileDoc);
-        versionLabel = fileDoc.getVersionLabel();
+        DocumentModel fileDocC = session.createDocumentModel("/", "docC", "File");
+        fileDocC = session.createDocument(fileDocC);
+        versionLabel = fileDocC.getVersionLabel();
         assertEquals("2.2+", versionLabel);
     }
 

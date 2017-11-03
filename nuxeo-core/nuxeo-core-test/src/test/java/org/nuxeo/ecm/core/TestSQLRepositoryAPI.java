@@ -20,8 +20,8 @@ package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -221,7 +221,7 @@ public class TestSQLRepositoryAPI {
      */
     @Test
     public void testIsVersionWritable() {
-        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc = session.createDocument(doc);
         session.save();
 
@@ -240,7 +240,7 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testBasics() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel child = new DocumentModelImpl("/", "domain", "MyDocType");
+        DocumentModel child = session.createDocumentModel("/", "domain", "MyDocType");
         child = session.createDocument(child);
         session.save();
 
@@ -267,7 +267,7 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testLists() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel child = new DocumentModelImpl("/", "domain", "MyDocType");
+        DocumentModel child = session.createDocumentModel("/", "domain", "MyDocType");
         child = session.createDocument(child);
         session.save();
 
@@ -313,7 +313,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testPathWithExtraSlash() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "MyDocType");
+        DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");
         doc = session.createDocument(doc);
         session.save();
         DocumentModelList children = session.getChildren(new PathRef("/"));
@@ -329,7 +329,7 @@ public class TestSQLRepositoryAPI {
         // boiler plate to handle the asynchronous full-text indexing of blob
         // content in a deterministic way
 
-        DocumentModel doc = new DocumentModelImpl("/", "complex-doc", "ComplexDoc");
+        DocumentModel doc = session.createDocumentModel("/", "complex-doc", "ComplexDoc");
         doc = session.createDocument(doc);
         DocumentRef docRef = doc.getRef();
         session.save();
@@ -453,7 +453,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testMarkDirty() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "MyDocType");
+        DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");
         doc = session.createDocument(doc);
         session.save();
 
@@ -479,7 +479,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testMarkDirtyForList() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
+        DocumentModel doc = session.createDocumentModel("/", "doc", "ComplexDoc");
         Map<String, Object> attachedFile = new HashMap<>();
         List<Map<String, Object>> vignettes = new ArrayList<>();
         attachedFile.put("vignettes", vignettes);
@@ -567,7 +567,7 @@ public class TestSQLRepositoryAPI {
     public void testCancel() {
         DocumentModel root = session.getRootDocument();
 
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), "folder#" + generateUnique(),
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), "folder#" + generateUnique(),
                 "Folder");
         childFolder = createChildDocument(childFolder);
 
@@ -581,7 +581,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "domain#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Domain");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Domain");
         childFolder = createChildDocument(childFolder);
 
         assertEquals("Domain", childFolder.getType());
@@ -593,7 +593,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         childFolder = createChildDocument(childFolder);
 
         assertEquals("Folder", childFolder.getType());
@@ -605,7 +605,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name, "File");
 
         childFile = createChildDocument(childFile);
 
@@ -618,9 +618,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "folder#" + generateUnique();
-        DocumentModel childFolder2 = new DocumentModelImpl(root.getPathAsString(), name2, "Folder");
+        DocumentModel childFolder2 = session.createDocumentModel(root.getPathAsString(), name2, "Folder");
 
         List<DocumentModel> childFolders = new ArrayList<>();
         childFolders.add(childFolder);
@@ -637,9 +637,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name, "File");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile2 = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile2 = session.createDocumentModel(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childFiles = new ArrayList<>();
         childFiles.add(childFile);
@@ -663,9 +663,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
 
         assertFalse(session.hasChild(root.getRef(), name));
         assertFalse(session.hasChild(root.getRef(), name2));
@@ -733,9 +733,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -767,9 +767,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -865,9 +865,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -899,9 +899,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -982,9 +982,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "folder#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "Folder");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "Folder");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -1013,7 +1013,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), name, "FolderWithSearch");
+        DocumentModel folder = session.createDocumentModel(root.getPathAsString(), name, "FolderWithSearch");
 
         folder = createChildDocument(folder);
 
@@ -1021,7 +1021,7 @@ public class TestSQLRepositoryAPI {
         List<DocumentModel> childDocs = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             name = "File_" + i;
-            DocumentModel childFile = new DocumentModelImpl(folder.getPathAsString(), name, "File");
+            DocumentModel childFile = session.createDocumentModel(folder.getPathAsString(), name, "File");
             childDocs.add(childFile);
         }
 
@@ -1040,9 +1040,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -1072,7 +1072,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
 
         session.save();
@@ -1128,9 +1128,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -1168,9 +1168,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -1201,11 +1201,11 @@ public class TestSQLRepositoryAPI {
     public void testGetFoldersDocumentRefFilterSorter() {
         DocumentModel root = session.getRootDocument();
         // init children
-        DocumentModel childFolder1 = new DocumentModelImpl(root.getPathAsString(), "folder1#" + generateUnique(),
+        DocumentModel childFolder1 = session.createDocumentModel(root.getPathAsString(), "folder1#" + generateUnique(),
                 "Folder");
-        DocumentModel childFolder2 = new DocumentModelImpl(root.getPathAsString(), "folder2#" + generateUnique(),
+        DocumentModel childFolder2 = session.createDocumentModel(root.getPathAsString(), "folder2#" + generateUnique(),
                 "Folder");
-        DocumentModel childFolder3 = new DocumentModelImpl(root.getPathAsString(), "folder3#" + generateUnique(),
+        DocumentModel childFolder3 = session.createDocumentModel(root.getPathAsString(), "folder3#" + generateUnique(),
                 "OrderedFolder");
 
         // persist
@@ -1233,9 +1233,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -1255,11 +1255,11 @@ public class TestSQLRepositoryAPI {
     public void testGetParentDocuments() {
         List<DocumentModel> docs;
 
-        DocumentModel folder1 = new DocumentModelImpl("/", "folder1", "Folder");
+        DocumentModel folder1 = session.createDocumentModel("/", "folder1", "Folder");
         folder1 = session.createDocument(folder1);
-        DocumentModel folder2 = new DocumentModelImpl("/folder1", "folder2", "Folder");
+        DocumentModel folder2 = session.createDocumentModel("/folder1", "folder2", "Folder");
         folder2 = session.createDocument(folder2);
-        DocumentModel file1 = new DocumentModelImpl("/folder1/folder2", "file1", "File");
+        DocumentModel file1 = session.createDocumentModel("/folder1/folder2", "file1", "File");
         file1 = session.createDocument(file1);
         session.save();
         docs = session.getParentDocuments(file1.getRef());
@@ -1298,9 +1298,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -1378,9 +1378,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -1493,14 +1493,14 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
 
         String fname1 = "file1#" + generateUnique();
-        DocumentModel childFile1 = new DocumentModelImpl(root.getPathAsString(), fname1, "File");
+        DocumentModel childFile1 = session.createDocumentModel(root.getPathAsString(), fname1, "File");
         childFile1.setProperty("dublincore", "title", "abc");
 
         String fname2 = "file2#" + generateUnique();
-        DocumentModel childFile2 = new DocumentModelImpl(root.getPathAsString(), fname2, "HiddenFile");
+        DocumentModel childFile2 = session.createDocumentModel(root.getPathAsString(), fname2, "HiddenFile");
         childFile2.setProperty("dublincore", "title", "def");
 
         List<DocumentModel> childDocs = new ArrayList<>();
@@ -1581,7 +1581,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String fname1 = "file1#" + generateUnique();
-        DocumentModel childFile1 = new DocumentModelImpl(root.getPathAsString(), fname1, "File");
+        DocumentModel childFile1 = session.createDocumentModel(root.getPathAsString(), fname1, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFile1);
@@ -1626,9 +1626,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -1655,21 +1655,21 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         // careless removing this one after the folder would fail
         String name2 = "file#" + generateUnique();
-        DocumentModel folderChildFile = new DocumentModelImpl(childFolder.getPathAsString(), name2, "File");
+        DocumentModel folderChildFile = session.createDocumentModel(childFolder.getPathAsString(), name2, "File");
         // one more File object, whose path is greater than the folder's
         String name3 = "file#" + generateUnique();
-        DocumentModel folderChildFile2 = new DocumentModelImpl(childFolder.getPathAsString(), name3, "File");
+        DocumentModel folderChildFile2 = session.createDocumentModel(childFolder.getPathAsString(), name3, "File");
         // one more File object at the root,
         // whose path is greater than the folder's
         String name4 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name4, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name4, "File");
         // one more File object at the root, whose path is greater than the
         // folder's and with name conflict resolved by core directly, see
         // NXP-3240
-        DocumentModel childFile2 = new DocumentModelImpl(root.getPathAsString(), name4, "File");
+        DocumentModel childFile2 = session.createDocumentModel(root.getPathAsString(), name4, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -1708,21 +1708,21 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         // careless removing this one after the folder would fail
         String name2 = "file#" + generateUnique();
-        DocumentModel folderChildFile = new DocumentModelImpl(childFolder.getPathAsString(), name2, "File");
+        DocumentModel folderChildFile = session.createDocumentModel(childFolder.getPathAsString(), name2, "File");
         // one more File object, whose path is greater than the folder's
         String name3 = "file#" + generateUnique();
-        DocumentModel folderChildFile2 = new DocumentModelImpl(childFolder.getPathAsString(), name3, "File");
+        DocumentModel folderChildFile2 = session.createDocumentModel(childFolder.getPathAsString(), name3, "File");
         // one more File object at the root,
         // whose path is greater than the folder's
         String name4 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name4, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name4, "File");
         // one more File object at the root, whose path is greater than the
         // folder's and with name conflict resolved by core directly, see
         // NXP-3240
-        DocumentModel childFile2 = new DocumentModelImpl(root.getPathAsString(), name4, "File");
+        DocumentModel childFile2 = session.createDocumentModel(root.getPathAsString(), name4, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -1810,11 +1810,11 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         childFolder = createChildDocument(childFolder);
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
 
         session.save();
@@ -1830,7 +1830,7 @@ public class TestSQLRepositoryAPI {
 
         String name = "folder#" + generateUnique();
 
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         childFolder = createChildDocument(childFolder);
 
         childFolder.setProperty("dublincore", "title", "f1");
@@ -1851,7 +1851,7 @@ public class TestSQLRepositoryAPI {
 
         String name = "file#" + generateUnique();
 
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name, "File");
         childFile.setProperty("dublincore", "title", "f1");
         childFile.setProperty("dublincore", "description", "desc 1");
 
@@ -1874,11 +1874,11 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         childFolder = createChildDocument(childFolder);
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
 
         DocumentModel[] docs = { childFolder, childFile };
@@ -1895,7 +1895,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
 
         session.save();
@@ -1931,9 +1931,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -1972,9 +1972,9 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
+        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
 
         List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
@@ -2000,9 +2000,9 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testFolderFacet() throws Exception {
-        DocumentModel child1 = new DocumentModelImpl("/", "file1", "File");
-        DocumentModel child2 = new DocumentModelImpl("/", "fold1", "Folder");
-        DocumentModel child3 = new DocumentModelImpl("/", "ws1", "Workspace");
+        DocumentModel child1 = session.createDocumentModel("/", "file1", "File");
+        DocumentModel child2 = session.createDocumentModel("/", "fold1", "Folder");
+        DocumentModel child3 = session.createDocumentModel("/", "ws1", "Workspace");
         List<DocumentModel> returnedChildFiles = createChildDocuments(Arrays.asList(child1, child2, child3));
         assertFalse(returnedChildFiles.get(0).isFolder());
         assertTrue(returnedChildFiles.get(1).isFolder());
@@ -2011,7 +2011,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testFacetAPI() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc = session.createDocument(doc);
         session.save();
         DocumentModelList dml;
@@ -2127,7 +2127,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testFacetIncludedInPrimaryType() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "foo", "DocWithAge");
+        DocumentModel doc = session.createDocumentModel("/", "foo", "DocWithAge");
         doc.setPropertyValue("age:age", "123");
         doc = session.createDocument(doc);
         session.save();
@@ -2146,7 +2146,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testFacetAddRemove() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc = session.createDocument(doc);
         session.save();
 
@@ -2179,7 +2179,7 @@ public class TestSQLRepositoryAPI {
     // mixin on doc with same schema in primary type does no harm
     @Test
     public void testFacetAddRemove2() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "foo", "DocWithAge");
+        DocumentModel doc = session.createDocumentModel("/", "foo", "DocWithAge");
         doc.setPropertyValue("age:age", "123");
         doc = session.createDocument(doc);
         session.save();
@@ -2193,7 +2193,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testFacetAddRemoveWhenSchemaAlreadyPresent() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("hello"));
         doc = session.createDocument(doc);
         session.save();
@@ -2230,7 +2230,7 @@ public class TestSQLRepositoryAPI {
          * two facets with the same schema
          */
 
-        doc = new DocumentModelImpl("/", "bar", "Folder");
+        doc = session.createDocumentModel("/", "bar", "Folder");
         doc.addFacet("WithFile2");
         doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("hello"));
         doc = session.createDocument(doc);
@@ -2267,7 +2267,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testFacetWithSamePropertyName() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc.setPropertyValue("dc:title", "bar");
         doc = session.createDocument(doc);
         session.save();
@@ -2288,7 +2288,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testFacetCopy() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc.addFacet("Aged");
         doc.setPropertyValue("age:age", "123");
         doc = session.createDocument(doc);
@@ -2302,7 +2302,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testFacetQueryContent() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc.addFacet("Aged");
         doc.setPropertyValue("age:age", "barbar");
         doc = session.createDocument(doc);
@@ -2314,7 +2314,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testFacetRefresh() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc = session.createDocument(doc);
         assertFalse(doc.hasFacet("Aged"));
 
@@ -2387,7 +2387,7 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testLifeCycleAPI() {
         DocumentModel root = session.getRootDocument();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file#" + generateUnique(), "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), "file#" + generateUnique(), "File");
         childFile = createChildDocument(childFile);
 
         assertEquals("default", session.getLifeCyclePolicy(childFile.getRef()));
@@ -2414,7 +2414,7 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testLifeCycleVersioning() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file#" + generateUnique(), "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), "file#" + generateUnique(), "File");
         childFile = createChildDocument(childFile);
 
         assertEquals("default", session.getLifeCyclePolicy(childFile.getRef()));
@@ -2436,7 +2436,7 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testDataModelLifeCycleAPI() {
         DocumentModel root = session.getRootDocument();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file#" + generateUnique(), "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), "file#" + generateUnique(), "File");
         childFile = createChildDocument(childFile);
 
         assertEquals("default", childFile.getLifeCyclePolicy());
@@ -2459,11 +2459,11 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testCopy() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(), "folder1", "Folder");
+        DocumentModel folder1 = session.createDocumentModel(root.getPathAsString(), "folder1", "Folder");
 
-        DocumentModel folder2 = new DocumentModelImpl(root.getPathAsString(), "folder2", "Folder");
+        DocumentModel folder2 = session.createDocumentModel(root.getPathAsString(), "folder2", "Folder");
 
-        DocumentModel file = new DocumentModelImpl(folder1.getPathAsString(), "file", "File");
+        DocumentModel file = session.createDocumentModel(folder1.getPathAsString(), "file", "File");
 
         folder1 = createChildDocument(folder1);
         folder2 = createChildDocument(folder2);
@@ -2526,10 +2526,10 @@ public class TestSQLRepositoryAPI {
     public void testCopyProxyAsDocument() throws Exception {
         // create a folder tree
         DocumentModel root = session.getRootDocument();
-        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(), "folder1", "Folder");
-        DocumentModel folder2 = new DocumentModelImpl(root.getPathAsString(), "folder2", "Folder");
-        DocumentModel folder3 = new DocumentModelImpl(root.getPathAsString(), "folder3", "Folder");
-        DocumentModel file = new DocumentModelImpl(folder1.getPathAsString(), "copyProxyAsDocument_test", "File");
+        DocumentModel folder1 = session.createDocumentModel(root.getPathAsString(), "folder1", "Folder");
+        DocumentModel folder2 = session.createDocumentModel(root.getPathAsString(), "folder2", "Folder");
+        DocumentModel folder3 = session.createDocumentModel(root.getPathAsString(), "folder3", "Folder");
+        DocumentModel file = session.createDocumentModel(folder1.getPathAsString(), "copyProxyAsDocument_test", "File");
         folder1 = createChildDocument(folder1);
         folder2 = createChildDocument(folder2);
         folder3 = createChildDocument(folder3);
@@ -2561,8 +2561,8 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testCopyVersionable() throws Exception {
-        DocumentModel note = new DocumentModelImpl("/", "note", "Note");
-        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        DocumentModel note = session.createDocumentModel("/", "note", "Note");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         note = session.createDocument(note);
         folder = session.createDocument(folder);
         session.save();
@@ -2597,8 +2597,8 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testCopyFolderOfVersionable() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
-        DocumentModel note = new DocumentModelImpl("/folder", "note", "Note");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        DocumentModel note = session.createDocumentModel("/folder", "note", "Note");
         folder = session.createDocument(folder);
         note = session.createDocument(note);
         session.save();
@@ -2634,11 +2634,11 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testMove() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(), "folder1", "Folder");
+        DocumentModel folder1 = session.createDocumentModel(root.getPathAsString(), "folder1", "Folder");
 
-        DocumentModel folder2 = new DocumentModelImpl(root.getPathAsString(), "folder2", "Folder");
+        DocumentModel folder2 = session.createDocumentModel(root.getPathAsString(), "folder2", "Folder");
 
-        DocumentModel file = new DocumentModelImpl(folder1.getPathAsString(), "file", "File");
+        DocumentModel file = session.createDocumentModel(folder1.getPathAsString(), "file", "File");
 
         folder1 = createChildDocument(folder1);
         folder2 = createChildDocument(folder2);
@@ -2659,7 +2659,7 @@ public class TestSQLRepositoryAPI {
 
         assertTrue(session.exists(new PathRef("/folder1/fileMove")));
 
-        DocumentModel file2 = new DocumentModelImpl(folder2.getPathAsString(), "file2", "File");
+        DocumentModel file2 = session.createDocumentModel(folder2.getPathAsString(), "file2", "File");
         file2 = createChildDocument(file2);
         assertTrue(session.exists(new PathRef("/folder2/file2")));
         DocumentModel newFile2 = session.move(file.getRef(), folder2.getRef(), "file2"); // collision
@@ -2741,7 +2741,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
 
         String[] str = { "a", "b", "c" };
@@ -2780,7 +2780,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
 
         session.save();
@@ -2829,17 +2829,17 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testRetrieveSamePropertyInAncestors() {
         DocumentModel root = session.getRootDocument();
-        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(), "folder1", "Folder");
+        DocumentModel folder1 = session.createDocumentModel(root.getPathAsString(), "folder1", "Folder");
         folder1 = createChildDocument(folder1);
         folder1.setProperty("dublincore", "title", "folder #1");
         assertEquals("folder #1", folder1.getProperty("dublincore", "title"));
 
-        DocumentModel folder2 = new DocumentModelImpl(folder1.getPathAsString(), "folder2", "Folder");
+        DocumentModel folder2 = session.createDocumentModel(folder1.getPathAsString(), "folder2", "Folder");
         folder2 = createChildDocument(folder2);
         folder2.setProperty("dublincore", "title", "folder #2");
         assertEquals("folder #2", folder2.getProperty("dublincore", "title"));
 
-        DocumentModel file = new DocumentModelImpl(folder2.getPathAsString(), "file", "File");
+        DocumentModel file = session.createDocumentModel(folder2.getPathAsString(), "file", "File");
         file = createChildDocument(file);
         file.setProperty("dublincore", "title", "file ##");
         assertEquals("file ##", file.getProperty("dublincore", "title"));
@@ -2880,7 +2880,7 @@ public class TestSQLRepositoryAPI {
     @Ignore
     public void testDocumentAdapter() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel file = new DocumentModelImpl(root.getPathAsString(), "file", "File");
+        DocumentModel file = session.createDocumentModel(root.getPathAsString(), "file", "File");
 
         file = createChildDocument(file);
 
@@ -2898,7 +2898,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
 
         // Same identifier here since no version yet.
@@ -2921,7 +2921,7 @@ public class TestSQLRepositoryAPI {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "File");
         childFile = createChildDocument(childFile);
         assertNotNull(childFile.getRepositoryName());
         assertEquals("test", childFile.getRepositoryName());
@@ -2935,7 +2935,7 @@ public class TestSQLRepositoryAPI {
 
         // Section A
         String name = "section" + generateUnique();
-        DocumentModel sectionA = new DocumentModelImpl(root.getPathAsString(), name, "Section");
+        DocumentModel sectionA = session.createDocumentModel(root.getPathAsString(), name, "Section");
         sectionA = createChildDocument(sectionA);
 
         assertEquals("Section", sectionA.getType());
@@ -2943,7 +2943,7 @@ public class TestSQLRepositoryAPI {
 
         // Section B
         name = "section" + generateUnique();
-        DocumentModel sectionB = new DocumentModelImpl(root.getPathAsString(), name, "Section");
+        DocumentModel sectionB = session.createDocumentModel(root.getPathAsString(), name, "Section");
         sectionB = createChildDocument(sectionB);
 
         assertEquals("Section", sectionB.getType());
@@ -2951,7 +2951,7 @@ public class TestSQLRepositoryAPI {
 
         // File
         name = "file" + generateUnique();
-        DocumentModel file = new DocumentModelImpl(root.getPathAsString(), name, "File");
+        DocumentModel file = session.createDocumentModel(root.getPathAsString(), name, "File");
         file = createChildDocument(file);
 
         assertEquals("File", file.getType());
@@ -3002,7 +3002,7 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testCopyContent() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "original", "File");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "original", "File");
         doc.setProperty("dublincore", "title", "t");
         doc.setProperty("dublincore", "description", "d");
         doc.setProperty("dublincore", "subjects", new String[] { "a", "b" });
@@ -3017,7 +3017,7 @@ public class TestSQLRepositoryAPI {
         doc = session.createDocument(doc);
         session.save();
 
-        DocumentModel copy = new DocumentModelImpl(root.getPathAsString(), "copy", "File");
+        DocumentModel copy = session.createDocumentModel(root.getPathAsString(), "copy", "File");
         copy.copyContent(doc);
         copy = session.createDocument(copy);
         session.save();
@@ -3071,7 +3071,7 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testPropertyModel() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "theDoc", "MyDocType");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "theDoc", "MyDocType");
 
         doc = session.createDocument(doc);
 
@@ -3114,13 +3114,13 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testOrdering() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel parent = new DocumentModelImpl(root.getPathAsString(), "theParent", "OrderedFolder");
+        DocumentModel parent = session.createDocumentModel(root.getPathAsString(), "theParent", "OrderedFolder");
 
         parent = session.createDocument(parent);
 
-        DocumentModel doc1 = new DocumentModelImpl(parent.getPathAsString(), "the1", "File");
+        DocumentModel doc1 = session.createDocumentModel(parent.getPathAsString(), "the1", "File");
         doc1 = session.createDocument(doc1);
-        DocumentModel doc2 = new DocumentModelImpl(parent.getPathAsString(), "the2", "File");
+        DocumentModel doc2 = session.createDocumentModel(parent.getPathAsString(), "the2", "File");
         doc2 = session.createDocument(doc2);
         session.save(); // XXX
 
@@ -3184,11 +3184,11 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testPropertyXPath() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel parent = new DocumentModelImpl(root.getPathAsString(), "theParent", "OrderedFolder");
+        DocumentModel parent = session.createDocumentModel(root.getPathAsString(), "theParent", "OrderedFolder");
 
         parent = session.createDocument(parent);
 
-        DocumentModel doc = new DocumentModelImpl(parent.getPathAsString(), "theDoc", "File");
+        DocumentModel doc = session.createDocumentModel(parent.getPathAsString(), "theDoc", "File");
 
         doc.setProperty("dublincore", "title", "my title");
         assertEquals("my title", doc.getPropertyValue("title"));
@@ -3199,7 +3199,7 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testComplexList() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "mydoc", "MyDocType");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "mydoc", "MyDocType");
 
         doc = session.createDocument(doc);
 
@@ -3231,7 +3231,7 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testDataModel() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "mydoc", "Book");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "mydoc", "Book");
 
         doc = session.createDocument(doc);
 
@@ -3258,7 +3258,7 @@ public class TestSQLRepositoryAPI {
 
         // list test
 
-        doc = new DocumentModelImpl(root.getPathAsString(), "mydoc2", "MyDocType");
+        doc = session.createDocumentModel(root.getPathAsString(), "mydoc2", "MyDocType");
 
         doc = session.createDocument(doc);
 
@@ -3282,9 +3282,9 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testGetChildrenRefs() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "mydoc", "Book");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "mydoc", "Book");
         doc = session.createDocument(doc);
-        DocumentModel doc2 = new DocumentModelImpl(root.getPathAsString(), "mydoc2", "MyDocType");
+        DocumentModel doc2 = session.createDocumentModel(root.getPathAsString(), "mydoc2", "MyDocType");
         doc2 = session.createDocument(doc2);
         List<DocumentRef> childrenRefs = session.getChildrenRefs(root.getRef(), null);
         assertEquals(2, childrenRefs.size());
@@ -3300,9 +3300,9 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testProxyChildren() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc1 = new DocumentModelImpl(root.getPathAsString(), "doc1", "Book");
+        DocumentModel doc1 = session.createDocumentModel(root.getPathAsString(), "doc1", "Book");
         doc1 = session.createDocument(doc1);
-        DocumentModel doc2 = new DocumentModelImpl(root.getPathAsString(), "doc2", "Book");
+        DocumentModel doc2 = session.createDocumentModel(root.getPathAsString(), "doc2", "Book");
         doc2 = session.createDocument(doc2);
 
         // create proxy pointing to doc1
@@ -3337,7 +3337,7 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testBlob2() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "mydoc", "File");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "mydoc", "File");
 
         doc = session.createDocument(doc);
         byte[] bytes = createBytes(1024 * 1024, (byte) 24);
@@ -3359,7 +3359,7 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testProxy() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "proxy_test", "File");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "proxy_test", "File");
 
         doc = session.createDocument(doc);
         doc.setProperty("dublincore", "title", "the title");
@@ -3394,7 +3394,7 @@ public class TestSQLRepositoryAPI {
         assertEquals(1, list.size());
 
         // create folder to hold proxies
-        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "folder", "Folder");
+        DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "folder", "Folder");
         folder = session.createDocument(folder);
         session.save();
         folder = session.getDocument(folder.getRef());
@@ -3451,7 +3451,7 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testProxyLive() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "proxy_test", "File");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "proxy_test", "File");
 
         doc = session.createDocument(doc);
         doc.setProperty("dublincore", "title", "the title");
@@ -3491,9 +3491,9 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testProxySchemas() throws Exception {
-        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
-        DocumentModel doc = new DocumentModelImpl("/", "file", "File");
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         DocumentModel proxy = session.publishDocument(doc, folder);
         session.save();
@@ -3551,14 +3551,14 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testUpdatePublishedDocument() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "proxy_test", "File");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "proxy_test", "File");
 
         doc = session.createDocument(doc);
         doc.setProperty("dublincore", "title", "the title");
         doc = session.saveDocument(doc);
 
         // create folder to hold proxies
-        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "folder", "Folder");
+        DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "folder", "Folder");
         folder = session.createDocument(folder);
         session.save();
         folder = session.getDocument(folder.getRef());
@@ -3583,7 +3583,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testImport() throws Exception {
-        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder.setProperty("dublincore", "title", "the title");
         folder = session.createDocument(folder);
         session.save();
@@ -3712,7 +3712,7 @@ public class TestSQLRepositoryAPI {
         Calendar cal3 = new GregorianCalendar(2010, Calendar.APRIL, 11, 11, 11, 11);
 
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "doc", "File");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "doc", "File");
 
         doc = session.createDocument(doc);
         doc.setProperty("dublincore", "title", "t1");
@@ -3755,7 +3755,7 @@ public class TestSQLRepositoryAPI {
     @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-contrib.xml")
     public void testDoNotFireIncrementBeforeUpdateEventsOnVersion() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "doc", "File");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "doc", "File");
 
         doc = session.createDocument(doc);
         doc.setProperty("dublincore", "title", "t1");
@@ -3817,9 +3817,9 @@ public class TestSQLRepositoryAPI {
     @Test
     @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-all-contrib.xml")
     public void testVersioningEvents() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
-        DocumentModel folder = new DocumentModelImpl("/", "fold", "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "fold", "Folder");
         folder = session.createDocument(folder);
 
         DummyTestListener.clear();
@@ -3891,7 +3891,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testPlacelessDocument() throws Exception {
-        DocumentModel doc = new DocumentModelImpl((String) null, "mydoc", "MyDocType");
+        DocumentModel doc = session.createDocumentModel((String) null, "mydoc", "MyDocType");
         doc.setProperty("dublincore", "title", "The title");
         doc = session.createDocument(doc);
         assertNull(doc.getParentRef()); // placeless

@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -619,13 +618,13 @@ public abstract class AbstractTestTagService {
         DocumentModelList dml;
         IterableQueryResult res;
 
-        DocumentModel file1 = new DocumentModelImpl("/", "file1", "File");
+        DocumentModel file1 = session.createDocumentModel("/", "file1", "File");
         file1.setPropertyValue("dc:title", "file1");
         session.createDocument(file1);
-        DocumentModel file2 = new DocumentModelImpl("/", "file2", "File");
+        DocumentModel file2 = session.createDocumentModel("/", "file2", "File");
         file2.setPropertyValue("dc:title", "file2");
         session.createDocument(file2);
-        DocumentModel file3 = new DocumentModelImpl("/", "file3", "File"); // without tags
+        DocumentModel file3 = session.createDocumentModel("/", "file3", "File"); // without tags
         file3.setPropertyValue("dc:title", "file3");
         file3 = session.createDocument(file3);
         session.save();

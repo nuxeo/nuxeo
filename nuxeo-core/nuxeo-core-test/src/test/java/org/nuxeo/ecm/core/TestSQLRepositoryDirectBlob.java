@@ -97,7 +97,7 @@ public class TestSQLRepositoryDirectBlob {
     @Test
     public void testDirectBlob() throws Exception {
         DocumentModel folder = session.getRootDocument();
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(), "filea", "File");
+        DocumentModel file = session.createDocumentModel(folder.getPathAsString(), "filea", "File");
         file = session.createDocument(file);
         session.save();
 
@@ -149,7 +149,7 @@ public class TestSQLRepositoryDirectBlob {
     @Test
     public void testBinarySerialization() throws Exception {
         DocumentModel folder = session.getRootDocument();
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(), "filea", "File");
+        DocumentModel file = session.createDocumentModel(folder.getPathAsString(), "filea", "File");
         file = session.createDocument(file);
         session.save();
 
@@ -193,7 +193,7 @@ public class TestSQLRepositoryDirectBlob {
         Blob blob = Blobs.createBlob(new ByteArrayInputStream("abcd\b".getBytes("UTF-8")));
         File originaFile = blob.getFile();
         // set in doc
-        DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
+        DocumentModel doc = session.createDocumentModel("/", "myfile", "File");
         doc.setPropertyValue("file:content", (Serializable) blob);
         doc = session.createDocument(doc);
         session.save();

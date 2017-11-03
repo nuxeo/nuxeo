@@ -63,7 +63,7 @@ public class ExtensibleDocumentWriter extends DocumentModelWriter {
         Path parentPath = toPath.removeLastSegments(1);
         String name = toPath.lastSegment();
 
-        DocumentModel doc = new DocumentModelImpl(parentPath.toString(), name, xdoc.getType());
+        DocumentModel doc = session.createDocumentModel(parentPath.toString(), name, xdoc.getType());
 
         // set lifecycle state at creation
         Element system = xdoc.getDocument().getRootElement().element(ExportConstants.SYSTEM_TAG);

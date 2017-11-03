@@ -96,7 +96,7 @@ public class TestDublinCoreStorage {
 
     @Test
     public void testCreationDateAndCreator() {
-        DocumentModel childFile = new DocumentModelImpl("/", "file-007", "File");
+        DocumentModel childFile = session.createDocumentModel("/", "file-007", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
         assertNotNull(childFile2.getPropertyValue("dc:created"));
         assertEquals("Administrator", childFile2.getPropertyValue("dc:creator"));
@@ -104,7 +104,7 @@ public class TestDublinCoreStorage {
 
     @Test
     public void testModificationDate() {
-        DocumentModel childFile = new DocumentModelImpl("/", "file-008", "File");
+        DocumentModel childFile = session.createDocumentModel("/", "file-008", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
 
         try {
@@ -129,7 +129,7 @@ public class TestDublinCoreStorage {
     // Wait until we can have a real list management
     @Test
     public void testContributors() {
-        DocumentModel childFile = new DocumentModelImpl("/", "file-008", "File");
+        DocumentModel childFile = session.createDocumentModel("/", "file-008", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
         DataModel dm = childFile2.getDataModel("dublincore");
 
@@ -167,7 +167,7 @@ public class TestDublinCoreStorage {
 
     @Test
     public void testLastContributor() {
-        DocumentModel childFile = new DocumentModelImpl("/", "file-008", "File");
+        DocumentModel childFile = session.createDocumentModel("/", "file-008", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
         DataModel dm = childFile2.getDataModel("dublincore");
 
@@ -232,7 +232,7 @@ public class TestDublinCoreStorage {
 
     @Test
     public void testContributorsAndModifiedDoesntChangeIfTheresNoChanges() {
-        DocumentModel childFile = new DocumentModelImpl("/", "file-008", "File");
+        DocumentModel childFile = session.createDocumentModel("/", "file-008", "File");
         childFile = session.createDocument(childFile);
         DataModel dm = childFile.getDataModel("dublincore");
         // backup the data to check
@@ -252,9 +252,9 @@ public class TestDublinCoreStorage {
 
     @Test
     public void testIssuedDate() {
-        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1", "Folder");
+        DocumentModel folder1 = session.createDocumentModel("/", "testfolder1", "Folder");
         folder1 = session.createDocument(folder1);
-        DocumentModel file1 = new DocumentModelImpl("/testfolder1", "testfile1", "File");
+        DocumentModel file1 = session.createDocumentModel("/testfolder1", "testfile1", "File");
         file1 = session.createDocument(file1);
         DocumentModel proxyDoc = session.publishDocument(file1, folder1);
 
@@ -268,9 +268,9 @@ public class TestDublinCoreStorage {
 
     @Test
     public void testProxySchemas() {
-        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
-        DocumentModel doc = new DocumentModelImpl("/", "file", "File");
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         DocumentModel proxy = session.publishDocument(doc, folder);
         session.save();
@@ -282,9 +282,9 @@ public class TestDublinCoreStorage {
 
     @Test
     public void testProxySchemasWithComplex() {
-        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
-        DocumentModel doc = new DocumentModelImpl("/", "file", "File");
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         DocumentModel proxy = session.publishDocument(doc, folder);
         session.save();
@@ -320,7 +320,7 @@ public class TestDublinCoreStorage {
 
     @Test
     public void testDisableListener() {
-        DocumentModel childFile = new DocumentModelImpl("/", "file-007", "File");
+        DocumentModel childFile = session.createDocumentModel("/", "file-007", "File");
         childFile.setPropertyValue("dc:creator", "Bender");
         Date now = new Date();
         childFile.setPropertyValue("dc:created", now);
@@ -355,7 +355,7 @@ public class TestDublinCoreStorage {
 
         @Override
         public void run() {
-            folder = new DocumentModelImpl("/", "testfolder1", "Folder");
+            folder = session.createDocumentModel("/", "testfolder1", "Folder");
             folder = session.createDocument(folder);
             session.saveDocument(folder);
         }
