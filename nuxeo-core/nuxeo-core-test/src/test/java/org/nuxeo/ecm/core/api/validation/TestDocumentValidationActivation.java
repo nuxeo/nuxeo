@@ -69,7 +69,7 @@ public class TestDocumentValidationActivation {
         doc = session.createDocument(doc);
     }
 
-    @Test
+    @Test(expected = DocumentValidationException.class)
     public void testOnCreateDocumentActivationWithViolationNotDirty() {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
@@ -125,6 +125,8 @@ public class TestDocumentValidationActivation {
     public void testOnSaveDocumentActivationWithoutViolation() {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
+        // disable validation on create document because we also valid not dirty fields
+        doc.putContextData(DocumentValidationService.CTX_MAP_KEY, Forcing.TURN_OFF);
         doc = session.createDocument(doc);
         doc.setPropertyValue(SIMPLE_FIELD, VALID);
         doc = session.saveDocument(doc);
@@ -134,6 +136,8 @@ public class TestDocumentValidationActivation {
     public void testOnSaveDocumentActivationWithViolationNotDirty() {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
+        // disable validation on create document because we also valid not dirty fields
+        doc.putContextData(DocumentValidationService.CTX_MAP_KEY, Forcing.TURN_OFF);
         doc = session.createDocument(doc);
         doc = session.saveDocument(doc);
     }
@@ -151,6 +155,8 @@ public class TestDocumentValidationActivation {
     public void testOnSaveDocumentActivationWithViolationIgnored() {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
+        // disable validation on create document because we also valid not dirty fields
+        doc.putContextData(DocumentValidationService.CTX_MAP_KEY, Forcing.TURN_OFF);
         doc = session.createDocument(doc);
         doc.setPropertyValue(SIMPLE_FIELD, INVALID);
         doc.putContextData(DocumentValidationService.CTX_MAP_KEY, Forcing.TURN_OFF);

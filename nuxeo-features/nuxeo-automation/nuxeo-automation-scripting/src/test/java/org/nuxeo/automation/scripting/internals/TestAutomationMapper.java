@@ -23,7 +23,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +31,6 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.nuxeo.automation.scripting.AutomationScriptingFeature;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.util.BlobList;
@@ -40,8 +38,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -104,12 +102,10 @@ public class TestAutomationMapper {
 
     @Test
     public void testUnwrapDocumentScriptingWrapper() {
-        DocumentModel doc = new DocumentModelImpl("dummy");
-        doc = Mockito.spy(doc);
-        Mockito.when(doc.getSchemas()).thenReturn(new String[] { "foo" });
-        Map<String,Object> properties = new HashMap<>();
-        properties.put("key", "value");
-        Mockito.when(doc.getProperties("foo")).thenReturn(properties);
+        DocumentModel doc = new SimpleDocumentModel("note");
+        doc.setPropertyValue("note:note", "A note in a doc");
+        doc.setPropertyValue("note:mime_type", "text/plain");
+        Map<String, Object> properties = doc.getProperties("note");
 
         // Run test
         Map<String,Object> result = DocumentScriptingWrapper.unwrap(new DocumentScriptingWrapper(mapper, doc));
