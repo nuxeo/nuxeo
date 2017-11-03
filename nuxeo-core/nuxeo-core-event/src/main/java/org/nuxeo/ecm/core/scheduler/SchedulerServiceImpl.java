@@ -19,10 +19,11 @@
  */
 package org.nuxeo.ecm.core.scheduler;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
@@ -81,13 +83,10 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
 
     protected void setupScheduler() throws IOException, SchedulerException {
         StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
-        URL cfg = context.getResource("config/quartz.properties");
-        if (cfg != null) {
-            InputStream stream = cfg.openStream();
-            try {
+        File file = new File(Environment.getDefault().getConfig(), "quartz.properties");
+        if (file.exists()) {
+            try (InputStream stream = new FileInputStream(file)) {
                 schedulerFactory.initialize(stream);
-            } finally {
-                stream.close();
             }
         } else {
             // use default config (unit tests)
