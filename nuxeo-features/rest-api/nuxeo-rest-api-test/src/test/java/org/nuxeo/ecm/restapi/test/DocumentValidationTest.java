@@ -27,9 +27,7 @@ import java.io.IOException;
 
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonProcessingException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -59,12 +57,21 @@ public class DocumentValidationTest extends BaseTest {
 
     private static final String INVALID_DOC = createDocumentJSON("\"   \"", "\"   \"");
 
+    private static final String INVALID_DOC_NOT_DIRTY = createDocumentJSON(null, "\"Missing\"", "\"Mydescription\"");
+
     private static String createDocumentJSON(String firstname, String lastname) {
+        return createDocumentJSON("\"The mandatory description\"", firstname, lastname);
+    }
+
+    private static String createDocumentJSON(String description, String firstname, String lastname) {
         String doc = "{";
         doc += "\"entity-type\":\"document\" ,";
         doc += "\"name\":\"doc1\" ,";
         doc += "\"type\":\"ValidatedDocument\" ,";
         doc += "\"properties\" : {";
+        if (description != null) {
+            doc += "\"vs:description\": " + description + ", ";
+        }
         doc += "\"vs:users\" : [ { \"firstname\" : " + firstname + " , \"lastname\" : " + lastname + "} ]";
         doc += "}}";
         return doc;
@@ -98,9 +105,43 @@ public class DocumentValidationTest extends BaseTest {
         checkResponseHasErrors(response);
     }
 
+    /**
+     * NXP-23267
+     */
+    @Test
+    public void testCreateDocumentWithViolationNotDirtyEndpointId() throws Exception {
+        DocumentModel root = session.getDocument(new PathRef("/"));
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + root.getId(),
+                INVALID_DOC_NOT_DIRTY)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            checkResponseHasNotDirtyError(response);
+        }
+    }
+
+    /**
+     * NXP-23267
+     */
+    @Test
+    public void testCreateDocumentWithViolationNotDirtyEndpointPath() throws Exception {
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "path/", INVALID_DOC_NOT_DIRTY)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            checkResponseHasNotDirtyError(response);
+        }
+    }
+
+    protected void checkResponseHasNotDirtyError(CloseableClientResponse response) throws IOException {
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertTrue(node.get("has_error").getValueAsBoolean());
+        assertEquals(1, node.get("number").getValueAsInt());
+        JsonNode violations = node.get("violations");
+        JsonNode violation1 = violations.getElements().next();
+        assertEquals("NotNullConstraint", violation1.get("constraint").get("name").getTextValue());
+    }
+
     @Test
     public void testSaveValidDocumentEndpointId() {
         DocumentModel doc = session.createDocumentModel("/", "doc1", "ValidatedDocument");
+        doc.setPropertyValue("vs:description", "Mandatory description");
         doc = session.createDocument(doc);
         fetchInvalidations();
         ClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(), VALID_DOC);
@@ -110,6 +151,7 @@ public class DocumentValidationTest extends BaseTest {
     @Test
     public void testSaveValidDocumentEndpointPath() {
         DocumentModel doc = session.createDocumentModel("/", "doc1", "ValidatedDocument");
+        doc.setPropertyValue("vs:description", "Mandatory description");
         doc = session.createDocument(doc);
         fetchInvalidations();
         ClientResponse response = getResponse(RequestType.PUT, "path/doc1", VALID_DOC);
@@ -119,6 +161,7 @@ public class DocumentValidationTest extends BaseTest {
     @Test
     public void testSaveDocumentWithViolationEndpointId() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "doc1", "ValidatedDocument");
+        doc.setPropertyValue("vs:description", "Mandatory description");
         doc = session.createDocument(doc);
         fetchInvalidations();
         ClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(), INVALID_DOC);
@@ -129,6 +172,7 @@ public class DocumentValidationTest extends BaseTest {
     @Test
     public void testSaveDocumentWithViolationEndpointPath() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "doc1", "ValidatedDocument");
+        doc.setPropertyValue("vs:description", "Mandatory description");
         doc = session.createDocument(doc);
         fetchInvalidations();
         ClientResponse response = getResponse(RequestType.PUT, "path/doc1", INVALID_DOC);
@@ -139,19 +183,17 @@ public class DocumentValidationTest extends BaseTest {
     @Test
     public void testPropertyLoading() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "doc1", "ValidatedDocument");
+        doc.setPropertyValue("vs:description", "Mandatory description");
         doc.getProperty("userRefs").addValue("user:Administrator");
         doc = session.createDocument(doc);
         fetchInvalidations();
         ClientResponse response = service.path("path/doc1").queryParam("embed", "*").header(EMBED_PROPERTIES,
                 WILDCARD_VALUE).get(ClientResponse.class);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        IOUtils.copy(response.getEntityInputStream(), System.out);
     }
 
-    private void checkResponseHasErrors(ClientResponse response) throws IOException, JsonProcessingException {
-        String responseText = IOUtils.toString(response.getEntityInputStream());
-        // System.out.println(responseText);
-        JsonNode node = mapper.readTree(responseText);
+    private void checkResponseHasErrors(ClientResponse response) throws IOException {
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertTrue(node.get("has_error").getValueAsBoolean());
         assertEquals(2, node.get("number").getValueAsInt());
         JsonNode violations = node.get("violations");
