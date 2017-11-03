@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
-
 package org.nuxeo.ecm.core.api.validation;
 
 import java.util.Arrays;
@@ -237,7 +236,7 @@ public class TestDocumentValidationActivation {
     @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-after-listener-contrib.xml")
     public void testOnImportDocumentActivationAfterListeners() {
         DocumentModel doc = new DocumentModelImpl(null, "ValidatedUserGroup", "12345", new Path("doc1"), null, null,
-                                                  null, null, null, null, null);
+                null, null, null, null, null);
         doc.setPropertyValue(SIMPLE_FIELD, INVALID);
         session.importDocuments(Collections.singletonList(doc));
     }
