@@ -128,7 +128,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         assertNotNull(root);
-        assertEquals("", root.getName());
+        if (DatabaseHelper.DATABASE instanceof DatabaseOracle) {
+            assertNull(root.getName()); // For Oracle empty strings are equivalent to NULL
+        } else {
+            assertEquals("", root.getName());
+        }
         assertEquals("/", session.getPath(root));
         assertEquals("Root", root.getSimpleProperty("ecm:primaryType").getString());
         try {
