@@ -112,19 +112,19 @@ public class TestSQLRepositoryVersioning {
     }
 
     protected void createVersions(int i) throws Exception {
-        DocumentModel folder = new DocumentModelImpl("/", "fold" + i, "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "fold" + i, "Folder");
         session.createDocument(folder);
-        DocumentModel file = new DocumentModelImpl("/fold" + i, "file", "File");
+        DocumentModel file = session.createDocumentModel("/fold" + i, "file", "File");
         file = session.createDocument(file);
         createTrioVersions(file);
     }
 
     @Test
     public void testRemoveSingleDocVersion() throws Exception {
-        DocumentModel folder = new DocumentModelImpl("/", "folder#1", "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
 
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(), "file#1", "File");
+        DocumentModel file = session.createDocumentModel(folder.getPathAsString(), "file#1", "File");
         file = session.createDocument(file);
 
         checkVersions(file);
@@ -148,10 +148,10 @@ public class TestSQLRepositoryVersioning {
     // Creates 3 versions and removes the first.
     @Test
     public void testRemoveFirstDocVersion() throws Exception {
-        DocumentModel folder = new DocumentModelImpl("/", "folder#1", "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
 
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(), "file#1", "File");
+        DocumentModel file = session.createDocumentModel(folder.getPathAsString(), "file#1", "File");
         file = session.createDocument(file);
 
         createTrioVersions(file);
@@ -169,10 +169,10 @@ public class TestSQLRepositoryVersioning {
     // Creates 3 versions and removes the second.
     @Test
     public void testRemoveMiddleDocVersion() throws Exception {
-        DocumentModel folder = new DocumentModelImpl("/", "folder#1", "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
 
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(), "file#1", "File");
+        DocumentModel file = session.createDocumentModel(folder.getPathAsString(), "file#1", "File");
         file = session.createDocument(file);
 
         createTrioVersions(file);
@@ -190,10 +190,10 @@ public class TestSQLRepositoryVersioning {
     // Creates 3 versions and removes the last.
     @Test
     public void testRemoveLastDocVersion() throws Exception {
-        DocumentModel folder = new DocumentModelImpl("/", "folder#1", "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
 
-        DocumentModel file = new DocumentModelImpl(folder.getPathAsString(), "file#1", "File");
+        DocumentModel file = session.createDocumentModel(folder.getPathAsString(), "file#1", "File");
         file = session.createDocument(file);
 
         createTrioVersions(file);
@@ -258,7 +258,7 @@ public class TestSQLRepositoryVersioning {
 
     @Test
     public void testCheckInCheckOut() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "file#789", "File");
+        DocumentModel doc = session.createDocumentModel("/", "file#789", "File");
         assertTrue(doc.isCheckedOut());
         doc = session.createDocument(doc);
         assertTrue(session.isCheckedOut(doc.getRef()));
@@ -288,7 +288,7 @@ public class TestSQLRepositoryVersioning {
 
     @Test
     public void testAutoCheckOut() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "file", "File");
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc.setPropertyValue("dc:title", "t0");
         doc = session.createDocument(doc);
         assertTrue(doc.isCheckedOut());
@@ -321,7 +321,7 @@ public class TestSQLRepositoryVersioning {
     @Test
     public void testRestoreToVersion() throws Exception {
         String name2 = "file#456";
-        DocumentModel doc = new DocumentModelImpl("/", name2, "File");
+        DocumentModel doc = session.createDocumentModel("/", name2, "File");
         doc = session.createDocument(doc);
         DocumentRef docRef = doc.getRef();
 
@@ -366,7 +366,7 @@ public class TestSQLRepositoryVersioning {
 
     @Test
     public void testRestoreInvalidations() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
+        DocumentModel doc = session.createDocumentModel("/", "myfile", "File");
         doc.setPropertyValue("dc:title", "t1");
         doc = session.createDocument(doc);
         final DocumentRef docRef = doc.getRef();
@@ -451,7 +451,7 @@ public class TestSQLRepositoryVersioning {
     @Test
     public void testGetDocumentWithVersion() throws Exception {
         String name2 = "file#248";
-        DocumentModel childFile = new DocumentModelImpl("/", name2, "File");
+        DocumentModel childFile = session.createDocumentModel("/", name2, "File");
         childFile = session.createDocument(childFile);
         session.save();
         DocumentRef v1Ref = session.checkIn(childFile.getRef(), null, null);
@@ -489,7 +489,7 @@ public class TestSQLRepositoryVersioning {
     // security on versions, see TestLocalAPIWithCustomVersioning
     @Test
     public void testVersionSecurity() throws Exception {
-        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         ACP acp = new ACPImpl();
         ACE ace = new ACE("princ1", "perm1", true);
@@ -497,7 +497,7 @@ public class TestSQLRepositoryVersioning {
         acl.add(ace);
         acp.addACL(acl);
         session.setACP(folder.getRef(), acp, true);
-        DocumentModel file = new DocumentModelImpl("/folder", "file", "File");
+        DocumentModel file = session.createDocumentModel("/folder", "file", "File");
         file = session.createDocument(file);
         // set security
         acp = new ACPImpl();
@@ -566,7 +566,7 @@ public class TestSQLRepositoryVersioning {
     @Test
     public void testVersionLifecycle() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
 
         doc = session.createDocument(doc);
         doc.setProperty("dublincore", "title", "t1");
@@ -591,7 +591,7 @@ public class TestSQLRepositoryVersioning {
     @Test
     public void testTransitionProxy() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
 
         doc = session.createDocument(doc);
         doc.setProperty("dublincore", "title", "t1");
@@ -794,7 +794,7 @@ public class TestSQLRepositoryVersioning {
          * checked out doc (live; private working copy)
          */
 
-        DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
+        DocumentModel doc = session.createDocumentModel("/", "myfile", "File");
         doc = session.createDocument(doc);
 
         assertTrue(doc.isCheckedOut()); // nuxeo prop, false only on live
@@ -951,7 +951,7 @@ public class TestSQLRepositoryVersioning {
     @Test
     public void testSaveRestoredVersionWithVersionAutoIncrement() {
         // check-in version 1.0, 2.0 and restore version 1.0
-        DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
+        DocumentModel doc = session.createDocumentModel("/", "myfile", "File");
         doc = session.createDocument(doc);
         doc = session.saveDocument(doc);
         DocumentRef co = doc.getRef();

@@ -899,7 +899,7 @@ public class TestSQLRepositoryProperties {
     // toplevel complex list
     @Test
     public void testXPath1() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         List<Object> files = new ArrayList<>(2);
         Map<String, Object> f = new HashMap<>();
         f.put("filename", "f1");
@@ -912,7 +912,7 @@ public class TestSQLRepositoryProperties {
     // other complex list
     @Test
     public void testXPath2() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
+        DocumentModel doc = session.createDocumentModel("/", "doc", "ComplexDoc");
         HashMap<String, Object> attachedFile = new HashMap<>();
         List<Map<String, Object>> vignettes = new ArrayList<>();
         attachedFile.put("vignettes", vignettes);
