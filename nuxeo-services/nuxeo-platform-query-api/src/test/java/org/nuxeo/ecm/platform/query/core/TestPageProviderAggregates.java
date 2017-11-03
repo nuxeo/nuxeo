@@ -120,7 +120,7 @@ public class TestPageProviderAggregates {
         PageProviderDefinition ppd = pps.getPageProviderDefinition("TEST_AGGREGATES");
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (AbstractSession) session);
-        DocumentModel searchDoc = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        DocumentModel searchDoc = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] query = { "for search", "you know" };
         searchDoc.setPropertyValue("search:source_agg", query);
         PageProvider<?> pp = pps.getPageProvider("TEST_AGGREGATES", ppd, searchDoc, null, Long.valueOf(1),

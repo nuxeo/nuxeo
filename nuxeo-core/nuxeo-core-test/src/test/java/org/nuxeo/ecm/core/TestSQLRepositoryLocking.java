@@ -65,7 +65,7 @@ public class TestSQLRepositoryLocking {
     public void testLocking() throws Exception {
         DocumentModel root = session.getRootDocument();
 
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         assertNull(doc.getLock()); // old
         assertNull(doc.getLockInfo());
@@ -109,7 +109,7 @@ public class TestSQLRepositoryLocking {
     @Test
     public void testLockingBeforeSave() throws Exception {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         doc.setLock();
         session.save();
@@ -125,13 +125,13 @@ public class TestSQLRepositoryLocking {
     // main connection
     @Test
     public void testGetLockAfterCreate() throws Exception {
-        DocumentModel doc1 = new DocumentModelImpl("/", "doc1", "File");
+        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
         doc1 = session.createDocument(doc1);
         session.save();
         // read lock after save (SQL INSERT)
         assertNull(doc1.getLockInfo());
 
-        DocumentModel doc2 = new DocumentModelImpl("/", "doc2", "File");
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
         doc2 = session.createDocument(doc2);
         session.save();
         // set lock after save (SQL INSERT)
@@ -148,7 +148,7 @@ public class TestSQLRepositoryLocking {
     public void testLockingWithMultipleThreads() throws Exception {
         final String repositoryName = session.getRepositoryName();
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         session.save();
 

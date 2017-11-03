@@ -72,7 +72,7 @@ public class TestThumbnailStorage {
     @Test
     public void testCreation() throws IOException {
         DocumentModel root = session.getRootDocument();
-        DocumentModel file = new DocumentModelImpl(root.getPathAsString(), "File", "File");
+        DocumentModel file = session.createDocumentModel(root.getPathAsString(), "File", "File");
         // Attach a blob
         Blob blob = Blobs.createBlob(
                 TestThumbnailStorage.class.getResource("/test-data/big_nuxeo_logo.jpg").openStream(), "image/jpeg");
@@ -94,7 +94,7 @@ public class TestThumbnailStorage {
     @Test
     public void testUpdate() throws IOException {
         DocumentModel root = session.getRootDocument();
-        DocumentModel file = new DocumentModelImpl(root.getPathAsString(), "File", "File");
+        DocumentModel file = session.createDocumentModel(root.getPathAsString(), "File", "File");
         file = session.createDocument(file);
 
         TransactionHelper.commitOrRollbackTransaction();

@@ -65,7 +65,7 @@ public class TestPictureThumbnail {
     public void testPictureThumbnail() throws Exception {
         // Init test
         DocumentModel root = session.getRootDocument();
-        DocumentModel picture = new DocumentModelImpl(root.getPathAsString(), "pic", "Picture");
+        DocumentModel picture = session.createDocumentModel(root.getPathAsString(), "pic", "Picture");
         picture = session.createDocument(picture);
         session.save();
         // Create 4 views

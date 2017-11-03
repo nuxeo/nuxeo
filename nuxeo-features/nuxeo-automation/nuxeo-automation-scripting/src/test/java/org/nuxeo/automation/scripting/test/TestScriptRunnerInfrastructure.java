@@ -392,7 +392,7 @@ public class TestScriptRunnerInfrastructure {
 
     @Test
     public void canHandleJavaListMap() throws IOException, OperationException {
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "List");
+        DocumentModel doc = session.createDocumentModel("/", "doc", "List");
         List<String> attachments = new ArrayList<>();
         attachments.add("att1");
         attachments.add("att2");

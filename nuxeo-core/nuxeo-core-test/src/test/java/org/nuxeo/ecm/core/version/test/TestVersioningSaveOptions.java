@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -54,36 +53,36 @@ public class TestVersioningSaveOptions {
 
     @Test
     public void testTypeSaveOptions() throws Exception {
-        DocumentModel fileDoc = new DocumentModelImpl("File");
-        fileDoc = session.createDocument(fileDoc);
-        String versionLabel = fileDoc.getVersionLabel();
+        DocumentModel fileDocA = session.createDocumentModel("/", "docA", "File");
+        fileDocA = session.createDocument(fileDocA);
+        String versionLabel = fileDocA.getVersionLabel();
         assertEquals("0.0", versionLabel);
-        List<VersioningOption> opts = vService.getSaveOptions(fileDoc);
+        List<VersioningOption> opts = vService.getSaveOptions(fileDocA);
         assertEquals(3, opts.size());
         assertEquals(VersioningOption.NONE, opts.get(0));
 
         runtimeHarness.deployContrib("org.nuxeo.ecm.core.test.tests", "test-versioning-contrib.xml");
         try {
-            fileDoc = new DocumentModelImpl("File");
-            fileDoc = session.createDocument(fileDoc);
-            versionLabel = fileDoc.getVersionLabel();
+            DocumentModel fileDocB = session.createDocumentModel("/", "docB", "File");
+            fileDocB = session.createDocument(fileDocB);
+            versionLabel = fileDocB.getVersionLabel();
             assertEquals("1.1+", versionLabel);
-            opts = vService.getSaveOptions(fileDoc);
+            opts = vService.getSaveOptions(fileDocB);
             assertEquals(2, opts.size());
             assertEquals(VersioningOption.MINOR, opts.get(0));
-            session.followTransition(fileDoc.getRef(), "approve");
-            opts = vService.getSaveOptions(fileDoc);
+            session.followTransition(fileDocB.getRef(), "approve");
+            opts = vService.getSaveOptions(fileDocB);
             assertEquals(0, opts.size());
-            session.followTransition(fileDoc.getRef(), "backToProject");
-            session.followTransition(fileDoc.getRef(), "obsolete");
-            opts = vService.getSaveOptions(fileDoc);
+            session.followTransition(fileDocB.getRef(), "backToProject");
+            session.followTransition(fileDocB.getRef(), "obsolete");
+            opts = vService.getSaveOptions(fileDocB);
             assertEquals(3, opts.size());
 
             runtimeHarness.deployContrib("org.nuxeo.ecm.core.test.tests", "test-versioning-override-contrib.xml");
             try {
-                fileDoc = new DocumentModelImpl("File");
-                fileDoc = session.createDocument(fileDoc);
-                versionLabel = fileDoc.getVersionLabel();
+                DocumentModel fileDocC = session.createDocumentModel("/", "docC", "File");
+                fileDocC = session.createDocument(fileDocC);
+                versionLabel = fileDocC.getVersionLabel();
                 assertEquals("2.2+", versionLabel);
             } finally {
                 runtimeHarness.undeployContrib("org.nuxeo.ecm.core.test.tests", "test-versioning-override-contrib.xml");
