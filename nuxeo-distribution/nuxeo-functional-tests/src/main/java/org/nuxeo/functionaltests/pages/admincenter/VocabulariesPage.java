@@ -23,6 +23,7 @@ package org.nuxeo.functionaltests.pages.admincenter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
@@ -63,7 +64,10 @@ public class VocabulariesPage extends AdminCenterBasePage {
      */
     public VocabulariesPage addEntry(final String entryId, final String parentId, final String entryEnglishLabel,
             final String entryFrenchLabel, final boolean obsolete, final int order) {
-        addNewEntryLink.click();
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
+        Locator.waitUntilEnabledAndClick(addNewEntryLink);
+        arm.end();
         NewVocabularyEntryForm newVocabularyEntryForm = getWebFragment(By.id("addEntryView:addEntryForm"),
                 NewVocabularyEntryForm.class);
         newVocabularyEntryForm.setNewVocabularyId(entryId);
@@ -71,9 +75,13 @@ public class VocabulariesPage extends AdminCenterBasePage {
         newVocabularyEntryForm.setNewVocabularyFrenchLabel(entryFrenchLabel);
         newVocabularyEntryForm.setNewVocabularyObsolete(obsolete);
         newVocabularyEntryForm.setNewVocabularyOrder(order);
-        newVocabularyEntryForm.setNewVocabularyParentId(parentId);
+        if (!StringUtils.isBlank(parentId)) {
+            newVocabularyEntryForm.setNewVocabularyParentId(parentId);
+        }
+        arm.begin();
         newVocabularyEntryForm.save();
         Locator.waitForTextPresent(By.id("ambiance-notification"), "Vocabulary entry added");
+        arm.end();
         return asPage(VocabulariesPage.class);
     }
 
@@ -83,10 +91,13 @@ public class VocabulariesPage extends AdminCenterBasePage {
     public VocabulariesPage deleteEntry(final String entryId) {
         WebElement entryToBeDeleted = getDirectoryEntryRow(entryId);
         WebElement entryDeleteButton = entryToBeDeleted.findElement(By.xpath("td/input[@value='Delete']"));
-        waitUntilEnabledAndClick(entryDeleteButton);
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
+        Locator.waitUntilEnabledAndClick(entryDeleteButton);
         Alert confirmRemove = driver.switchTo().alert();
         confirmRemove.accept();
         Locator.waitForTextPresent(By.id("ambiance-notification"), "Vocabulary entry deleted");
+        arm.end();
         return asPage(VocabulariesPage.class);
     }
 

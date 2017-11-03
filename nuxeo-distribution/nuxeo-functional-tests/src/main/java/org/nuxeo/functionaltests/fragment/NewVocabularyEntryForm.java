@@ -19,11 +19,9 @@
  */
 package org.nuxeo.functionaltests.fragment;
 
-import java.util.Arrays;
-
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.AbstractPage;
+import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -46,8 +44,8 @@ public class NewVocabularyEntryForm extends WebFragmentImpl {
     @Required
     private WebElement idInput;
 
-    @FindBy(id = "nxw_parent_openPopup")
-    private WebElement newParentPopup;
+    @FindBy(id = "s2id_addEntryView:addEntryForm:nxl_l10nsubjects_vocabulary:nxw_parent_select2")
+    private WebElement newParentSuggestion;
 
     @FindBy(id = "addEntryView:addEntryForm:nxl_l10nsubjects_vocabulary:nxw_l10nxvocabulary_obsolete_checkbox:0")
     @Required
@@ -63,16 +61,6 @@ public class NewVocabularyEntryForm extends WebFragmentImpl {
 
     public NewVocabularyEntryForm(WebDriver driver, WebElement element) {
         super(driver, element);
-    }
-
-    private void findParentNodeAndSelect(final WebElement selectParentFancyBox, final String[] path) {
-        if (path.length == 1) {
-            selectParentFancyBox.findElement(By.linkText(path[0])).click();
-        } else {
-            WebElement node = selectParentFancyBox.findElement(By.xpath("//table[contains(text(),'" + path[0] + "')]"));
-            node.findElement(By.xpath("tbody/tr[1]/td[1]/div/a")).click();
-            findParentNodeAndSelect(selectParentFancyBox, Arrays.copyOfRange(path, 1, path.length));
-        }
     }
 
     public void save() {
@@ -105,10 +93,8 @@ public class NewVocabularyEntryForm extends WebFragmentImpl {
     }
 
     public void setNewVocabularyParentId(final String parentLabelPath) {
-        Locator.waitUntilEnabledAndClick(newParentPopup);
-        WebElement selectParentFancyBox = AbstractPage.getFancyBoxContent();
-        String[] split = parentLabelPath.split("/");
-        findParentNodeAndSelect(selectParentFancyBox, split);
+        Select2WidgetElement select2 = new Select2WidgetElement(driver, newParentSuggestion, false);
+        select2.selectValue(parentLabelPath);
     }
 
 }
