@@ -4,7 +4,6 @@
 // while building the transport, to avoid using a frame transport.
 if (window.jsf) {
   var jsfAjaxRequest = jsf.ajax.request;
-  var jsfAjaxResponse = jsf.ajax.response;
   var getForm = function getForm(element) {
     if (element) {
       var form = jQuery(element).parents("form");
@@ -27,5 +26,19 @@ if (window.jsf) {
       form.attr("enctype", "multipart/form-data");
     }
     return res;
-  }
+  };
+
+  var jsfAjaxResponse = jsf.ajax.response;
+  jsf.ajax.response = function response(request, context) {
+    // `form` might be undefined in the case of a file upload through RichFacesFileUpload
+    // As the `jsf.ajax.response` overridden by RichFaces tries to iterate on `context.form.childNodes`,
+    // set it as an empty array to avoid JS Errors
+    // see NXP-23220
+    if (!context.form) {
+      context.form = {
+        childNodes: []
+      }
+    }
+    return jsfAjaxResponse(request, context);
+  };
 }
