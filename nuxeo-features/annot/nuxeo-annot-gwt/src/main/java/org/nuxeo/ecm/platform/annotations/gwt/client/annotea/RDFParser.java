@@ -48,7 +48,11 @@ public class RDFParser {
     public List<Annotation> getAnnotationList(String response) {
         List<Annotation> result = new ArrayList<Annotation>();
         Document document = XMLParser.parse(response);
-        Node root = document.getElementsByTagName("RDF").item(0);
+        NodeList rdfNodes = document.getElementsByTagName("RDF");
+        if (rdfNodes.getLength() == 0) {
+            rdfNodes = document.getElementsByTagName("rdf:RDF");
+        }
+        Node root = rdfNodes.item(0);
         NodeList nodeList = root.getChildNodes();
         for (int x = 0; x < nodeList.getLength(); x++) {
             Annotation annotation = processAnnotation(nodeList.item(x));
