@@ -19,6 +19,10 @@
     <doctype name="Folder" append="true">
       <facet name="NXTag" />
     </doctype>
+    
+    <doctype name="Collection" append="true">
+      <facet name="NXTag" />
+    </doctype>
 
     <doctype name="File" append="true">
       <facet name="NXTag" />
