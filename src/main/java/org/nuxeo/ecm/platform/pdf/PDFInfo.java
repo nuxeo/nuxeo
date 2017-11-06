@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -298,7 +299,8 @@ public class PDFInfo {
             cachedMap.put("File size", String.valueOf(fileSize));
             cachedMap.put("PDF version", pdfVersion);
             cachedMap.put("Page count", String.valueOf(numberOfPages));
-            cachedMap.put("Page size", String.format("%.1f x %.1f points", mediaBoxWidthInPoints, mediaBoxHeightInPoints));
+            cachedMap.put("Page size",
+                    String.format(Locale.ENGLISH, "%.1f x %.1f points", mediaBoxWidthInPoints, mediaBoxHeightInPoints));
             cachedMap.put("Page width", String.valueOf(mediaBoxWidthInPoints));
             cachedMap.put("Page height", String.valueOf(mediaBoxHeightInPoints));
             cachedMap.put("Page layout", pageLayout);
