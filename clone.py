@@ -56,7 +56,13 @@ virtual drive on Windows""")
                           type="string", dest='marketplace_conf', default=None,
                           help="""the Marketplace configuration URL
 (default: None)\n
-If set to '' (empty string), it defaults to '%s'""" % (DEFAULT_MP_CONF_URL))
+If set to '' (empty string), it defaults to '%s'""" % DEFAULT_MP_CONF_URL)
+        parser.add_option('--depth', action="store", type="int", dest='depth', default=None,
+                          help="""Create a shallow clone with a history truncated to the specified number of commits. 
+Default: '%default'""")
+        parser.add_option('--unshallow', action="store_true", dest='unshallow', default=False,
+                          help="""If the source repository is shallow, fetch as much as possible so that the current 
+repository has the same history as the source repository. Default: '%default'""")
         parser.add_option('--mp-only', action="store_true",
                           dest='mp_only', default=False,
                           help="""clone only package repositories (default: %default)""")
@@ -72,9 +78,11 @@ If set to '' (empty string), it defaults to '%s'""" % (DEFAULT_MP_CONF_URL))
             raise ExitException(1, "'version' must be a single argument. "
                                 "See usage with '-h'.")
         if options.mp_only:
-            repo.clone_mp(options.marketplace_conf if options.marketplace_conf else '', options.fallback_branch)
+            repo.clone_mp(options.marketplace_conf if options.marketplace_conf else '', options.fallback_branch,
+                          options.depth, options.unshallow)
         else:
-            repo.clone(version, options.fallback_branch, options.with_optionals, options.marketplace_conf)
+            repo.clone(version, options.fallback_branch, options.with_optionals, options.marketplace_conf,
+                       options.depth, options.unshallow)
     #pylint: disable=C0103
     except ExitException, e:
         if e.message is not None:
@@ -83,6 +91,7 @@ If set to '' (empty string), it defaults to '%s'""" % (DEFAULT_MP_CONF_URL))
     finally:
         if "repo" in locals():
             repo.cleanup()
+
 
 if __name__ == '__main__':
     main()

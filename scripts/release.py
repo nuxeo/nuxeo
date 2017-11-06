@@ -101,6 +101,7 @@ def etree_parse(xmlfile):
                             (xmlfile, e.message))
     return tree
 
+
 # pylint: disable-msg=too-many-instance-attributes, too-few-public-methods
 class ReleaseInfo(object):
     """Release information. This object is used to construct a Release as well as to (de)serialize it."""
@@ -109,8 +110,8 @@ class ReleaseInfo(object):
     def __init__(self, module=None, remote_alias=None, branch=None, tag="auto",
                  next_snapshot=None, maintenance_version="discard", is_final=False, skip_tests=False,
                  skip_its=False, profiles='', other_versions=None, files_pattern=None, props_pattern=None,
-                 msg_commit='', msg_tag='', auto_increment_policy='auto_patch', deploy = False, dryrun = False,
-                 interactive = False):
+                 msg_commit='', msg_tag='', auto_increment_policy='auto_patch', deploy=False, dryrun=False,
+                 interactive=False, depth=None, unshallow=False):
         self.module = module
         self.remote_alias = remote_alias
         self.branch = branch
@@ -130,6 +131,8 @@ class ReleaseInfo(object):
         self.auto_increment_policy = auto_increment_policy
         self.deploy = deploy
         self.dryrun = dryrun
+        self.depth = depth
+        self.unshallow = unshallow
 
     def compute_other_versions(self):
         self.other_versions = ':'.join((self.files_pattern, self.props_pattern, self.other_versions))
@@ -204,6 +207,11 @@ class Release(object):
 
     # pylint: disable=R0913
     def __init__(self, repo, release_info):
+        """
+        :type repo: Repository
+        :type release_info: ReleaseInfo
+        """
+
         if release_info.dryrun:
             print "DEBUG -- init Release with:"
             for key, value in vars(release_info).iteritems():
@@ -644,7 +652,7 @@ class Release(object):
         self.check_branch_to_release()
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
-        self.repo.clone(self.branch, with_optionals=True)
+        self.repo.clone(self.branch, with_optionals=True, depth=self.params.depth, unshallow=self.params.unshallow)
         log("[INFO] Check release-ability...")
         self.check()
 
@@ -729,7 +737,7 @@ class Release(object):
             log("[INFO] #### DRY RUN MODE ####")
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
-        self.repo.clone(self.branch, with_optionals=True)
+        self.repo.clone(self.branch, with_optionals=True, depth=self.params.depth, unshallow=self.params.unshallow)
 
         log("[INFO] Check release-ability...")
         self.check()
@@ -822,7 +830,7 @@ class Release(object):
         self.check_branch_to_release()
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
-        self.repo.clone(self.branch, with_optionals=True)
+        self.repo.clone(self.branch, with_optionals=True, depth=self.params.depth, unshallow=self.params.unshallow)
         if dryrun:
             dry_option = "-n"
         else:
@@ -908,6 +916,12 @@ then a maintenance branch is kept, else it is deleted after release."""
                           default='origin',
                           help="""The Git alias of remote URL.
 Default: '%default'""")
+        parser.add_option('--depth', action="store", type="int", dest='depth', default=None,
+                          help="""Create a shallow clone with a history truncated to the specified number of commits. 
+Default: '%default'""")
+        parser.add_option('--unshallow', action="store_true", dest='unshallow', default=False,
+                          help="""If the source repository is shallow, fetch as much as possible so that the current 
+repository has the same history as the source repository. Default: '%default'""")
         parser.add_option('-i', '--interactive', action="store_true",
                           dest='interactive', default=False,
                           help="""Not implemented (TODO NXP-8573). Interactive
@@ -1072,7 +1086,7 @@ Available options:\n
             release.prepare(doperform=True, dryrun=options.dryrun)
         elif command == "package":
             log("Packaging %s from %s" % (release.snapshot, release.branch))
-            repo.clone(release.branch)
+            repo.clone(release.branch, depth=options.depth, unshallow=options.unshallow)
             if release_info.profiles:
                 profiles = "qa," + release_info.profiles
             else:
@@ -1094,6 +1108,7 @@ Available options:\n
     finally:
         if "repo" in locals():
             repo.cleanup()
+
 
 if __name__ == '__main__':
     main()
