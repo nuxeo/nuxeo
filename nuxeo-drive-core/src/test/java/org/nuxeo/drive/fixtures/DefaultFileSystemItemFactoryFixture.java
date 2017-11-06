@@ -1019,6 +1019,36 @@ public class DefaultFileSystemItemFactoryFixture {
     }
 
     @Test
+    public void testScrollDescendantsIncludingCollections() {
+        log.trace(
+                "Add a document to a new collection \"testCollection\" created in \"/default-domain/UserWorkspaces/Administrator/Collections\"");
+        collectionManager.addToNewCollection("testCollection", null, file, session);
+        DocumentModel userCollections = collectionManager.getUserDefaultCollections(null, session);
+        DocumentModel userWorkspace = session.getParentDocument(userCollections.getRef());
+
+        log.trace("Create \"testFolder\" in \"/default-domain/UserWorkspaces/Administrator\"");
+        DocumentModel testFolder = session.createDocumentModel(userWorkspace.getPathAsString(), "testFolder", "Folder");
+        testFolder = session.createDocument(testFolder);
+
+        log.trace(
+                "Register \"/default-domain/UserWorkspaces/Administrator\" as a synchronization root for Administrator");
+        nuxeoDriveManager.registerSynchronizationRoot(principal, userWorkspace, session);
+
+        log.trace(
+                "Scroll through the descendants of \"/default-domain/UserWorkspaces/Administrator\", expecting one: \"testFolder\", "
+                        + "the \"Collections\" folder and its descendants being ignored");
+        FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                "defaultSyncRootFolderItemFactory");
+        FolderItem userWorkspaceFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(
+                userWorkspace);
+        ScrollFileSystemItemList descendants = userWorkspaceFolderItem.scrollDescendants(null, 10, 1000);
+        assertEquals(1, descendants.size());
+        FileSystemItem descendant = descendants.get(0);
+        assertTrue(descendant.isFolder());
+        assertEquals("testFolder", descendant.getName());
+    }
+
+    @Test
     @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-blobholder-factory-contrib.xml")
     public void testBlobException() throws Exception {
         assertFalse(defaultFileSystemItemFactory.isFileSystemItem(file));

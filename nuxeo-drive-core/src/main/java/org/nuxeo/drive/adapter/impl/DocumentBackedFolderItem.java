@@ -380,6 +380,14 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
         List<FileSystemItem> descendants = new ArrayList<>(docs.size());
         for (DocumentModel doc : docs) {
             FolderItem parent = populateAncestorCache(ancestorCache, doc, session, false);
+            if (parent == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "Cannot adapt parent document of %s as a FileSystemItem, skipping descendant document",
+                            doc.getPathAsString()));
+                    continue;
+                }
+            }
             // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
             FileSystemItem descendant = getFileSystemItemAdapterService().getFileSystemItem(doc, parent, false, false,
                     false);
@@ -426,6 +434,9 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
                     principal.getName(), doc.getPathAsString(), doc.getId()), e);
         }
         parentItem = populateAncestorCache(cache, parentDoc, session, true);
+        if (parentItem == null) {
+            return null;
+        }
         return getFolderItem(cache, doc, parentItem, cacheItem);
     }
 
@@ -436,9 +447,12 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             FileSystemItem fsItem = getFileSystemItemAdapterService().getFileSystemItem(doc, parentItem, true, false,
                     false);
             if (fsItem == null) {
-                throw new RootlessItemException(String.format(
-                        "Reached a document %s that cannot be  adapted as a (possibly virtual) descendant of the top level folder item.",
-                        doc.getPathAsString()));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "Reached document %s that cannot be  adapted as a (possibly virtual) descendant of the top level folder item.",
+                            doc.getPathAsString()));
+                }
+                return null;
             }
             FolderItem folderItem = (FolderItem) fsItem;
             if (log.isTraceEnabled()) {
