@@ -126,4 +126,29 @@ public class TestUserRegistration extends AbstractUserRegistration {
         userRegistrationService.submitRegistrationRequest(userInfo, new HashMap<String, Serializable>(0),
                 UserInvitationService.ValidationMethod.NONE, true);
     }
+
+    @Test(expected = UserAlreadyExistsException.class)
+    public void testMultipleRegistrationWithSameLogin() {
+        UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(
+                DEFAULT_CONFIGURATION_NAME);
+        // User info
+        DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
+
+        userInfo.setPropertyValue("userinfo:login", "jdoe");
+        userInfo.setPropertyValue("userinfo:firstName", "John");
+        userInfo.setPropertyValue("userinfo:lastName", "Doe");
+        userInfo.setPropertyValue("userinfo:email", "johndoe@dummy.com");
+
+        String requestId = userRegistrationService.submitRegistrationRequest(userInfo, new HashMap<>(),
+                UserInvitationService.ValidationMethod.NONE, true);
+        Map<String, Serializable> additionnalInfos = new HashMap<>();
+        additionnalInfos.put("userinfo:login", "jdoe");
+        userRegistrationService.validateRegistration(requestId, additionnalInfos);
+
+        userInfo.setPropertyValue("userinfo:firstName", "Jane");
+        userInfo.setPropertyValue("userinfo:email", "janedoe@dummy.com");
+        // Must throw a UserAlreadyExistsException
+        userRegistrationService.submitRegistrationRequest(userInfo, new HashMap<>(),
+                UserInvitationService.ValidationMethod.NONE, true);
+    }
 }
