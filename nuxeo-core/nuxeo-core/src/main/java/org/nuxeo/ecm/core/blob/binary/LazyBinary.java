@@ -86,7 +86,7 @@ public class LazyBinary extends Binary {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            length = len == null ? 0 : len.longValue();
+            length = len == null ? -1 : len.longValue();
             hasLength = true;
         }
         return length;
