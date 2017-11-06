@@ -80,6 +80,7 @@ import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerStreamSupport;
+import org.nuxeo.ecm.core.storage.binary.LazyBinary;
 import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
@@ -892,16 +893,21 @@ public class DBSDocument implements Document {
         Long lengthProp = (Long) state.get(KEY_BLOB_LENGTH);
         long length;
         if (lengthProp == null) {
-            log.error("Missing blob length for: " + digest);
-            // to avoid crashing, get the length from the binary's stream (may be costly)
-            InputStream stream = null;
-            try {
-                stream = binary.getStream();
-                length = IOUtils.copyLarge(stream, new NullOutputStream());
-            } catch (IOException e) {
-                throw new NuxeoException(e);
-            } finally {
-                IOUtils.closeQuietly(stream);
+            log.debug("Missing blob length for: " + digest);
+            if (binary instanceof LazyBinary) {
+                // we can't use LazyBinary.getLength because it may be incorrect for encrypted blobs
+                // to avoid crashing, get the length from the binary's stream (may be costly)
+                InputStream stream = null;
+                try {
+                    stream = binary.getStream();
+                    length = IOUtils.copyLarge(stream, new NullOutputStream());
+                } catch (IOException e) {
+                    throw new NuxeoException(e);
+                } finally {
+                    IOUtils.closeQuietly(stream);
+                }
+            } else {
+                length = binary.getLength();
             }
         } else {
             length = lengthProp.longValue();
@@ -945,7 +951,13 @@ public class DBSDocument implements Document {
             }
             encoding = blob.getEncoding();
             digest = blob.getDigest();
-            length = blob.getLength() == -1 ? null : Long.valueOf(blob.getLength());
+            long len = blob.getLength();
+            if (len == -1) {
+                // use binary length as a fallback
+                // the blob may not have known it (streaming blobs)
+                len = binary.getLength();
+            }
+            length = len == -1 ? null : Long.valueOf(len);
         }
 
         state.put(KEY_BLOB_DATA, data);

@@ -86,6 +86,7 @@ import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.binary.Binary;
+import org.nuxeo.ecm.core.storage.binary.LazyBinary;
 import org.nuxeo.ecm.core.storage.lock.LockException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -1135,16 +1136,21 @@ public class SQLSession implements Session {
         Long lengthProp = node.getSimpleProperty(BLOB_LENGTH).getLong();
         long length;
         if (lengthProp == null) {
-            log.error("Missing blob length for: " + digest);
-            // to avoid crashing, get the length from the binary's stream (may be costly)
-            InputStream stream = null;
-            try {
-                stream = binary.getStream();
-                length = IOUtils.copyLarge(stream, new NullOutputStream());
-            } catch (IOException e) {
-                throw new StorageException(e);
-            } finally {
-                IOUtils.closeQuietly(stream);
+            log.debug("Missing blob length for: " + digest);
+            if (binary instanceof LazyBinary) {
+                // we can't use LazyBinary.getLength because it may be incorrect for encrypted blobs
+                // to avoid crashing, get the length from the binary's stream (may be costly)
+                InputStream stream = null;
+                try {
+                    stream = binary.getStream();
+                    length = IOUtils.copyLarge(stream, new NullOutputStream());
+                } catch (IOException e) {
+                    throw new StorageException(e);
+                } finally {
+                    IOUtils.closeQuietly(stream);
+                }
+            } else {
+                length = binary.getLength();
             }
         } else {
             length = lengthProp.longValue();
@@ -1185,7 +1191,13 @@ public class SQLSession implements Session {
             }
             encoding = blob.getEncoding();
             digest = blob.getDigest();
-            length = blob.getLength() == -1 ? null : Long.valueOf(blob.getLength());
+            long len = blob.getLength();
+            if (len == -1) {
+                // use binary length as a fallback
+                // the blob may not have known it (streaming blobs)
+                len = binary.getLength();
+            }
+            length = len == -1 ? null : Long.valueOf(len);
         }
 
         node.getSimpleProperty(BLOB_DATA).setValue(binary);
