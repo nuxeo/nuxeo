@@ -153,7 +153,7 @@ class Repository(object):
             modules = sorted(set(modules))
         return modules
 
-    def git_pull(self, module, version, fallback_branch=None):
+    def git_pull(self, module, version, fallback_branch=None, depth=None, unshallow=False):
         """Git clone or fetch, then update.
 
         'module': the Git module to run on.
@@ -165,9 +165,9 @@ class Repository(object):
         log("[%s]" % module)
         if os.path.isdir(module):
             os.chdir(module)
-            system_with_retries("git fetch %s" % (self.alias))
+            system_with_retries("git fetch %s" % (self.alias + ("--unshallow" if unshallow else "")))
         else:
-            system_with_retries("git clone %s --origin %s" % (repo_url, self.alias))
+            system_with_retries("git clone %s --origin %s" % (repo_url, self.alias + (" --depth %d" % depth if depth else "")))
             os.chdir(module)
         self.git_update(version, fallback_branch)
         os.chdir(cwd)
@@ -316,7 +316,7 @@ class Repository(object):
         log("Configuration saved: " + configfile_path)
         return mp_config
 
-    def clone_mp(self, marketplace_conf, fallback_branch=None):
+    def clone_mp(self, marketplace_conf, fallback_branch=None, depth=None, unshallow=False):
         """Clone or update Nuxeo Package repositories.
 
         Returns the Nuxeo Packages configuration."""
@@ -330,11 +330,11 @@ class Repository(object):
             user_defaults["nuxeo-branch"] = self.get_current_version()
         mp_config = self.get_mp_config(marketplace_conf, user_defaults)
         for marketplace in mp_config.sections():
-            self.git_pull(marketplace, mp_config.get(marketplace, "branch"), fallback_branch=fallback_branch)
+            self.git_pull(marketplace, mp_config.get(marketplace, "branch"), fallback_branch, depth, unshallow)
         return mp_config
 
     def clone(self, version=None, fallback_branch=None, with_optionals=False,
-              marketplace_conf=None):
+              marketplace_conf=None, depth=None, unshallow=False):
         """Clone or update whole Nuxeo repository.
 
         'version': the version to checkout; defaults to current version.
@@ -346,19 +346,19 @@ class Repository(object):
         cwd = os.getcwd()
         os.chdir(self.basedir)
         log("[.]")
-        system_with_retries("git fetch %s" % (self.alias))
+        system_with_retries("git fetch %s" % (self.alias + ("--unshallow" if unshallow else "")))
         if version is None:
             version = self.get_current_version()
         self.git_update(version, fallback_branch)
         if self.is_nuxeoecm:
-            self.execute_on_modules(lambda module: self.clone_module(module, version, fallback_branch), with_optionals)
-            self.clone_mp(marketplace_conf, fallback_branch)
+            self.execute_on_modules(lambda module: self.clone_module(module, version, fallback_branch, depth, unshallow), with_optionals)
+            self.clone_mp(marketplace_conf, fallback_branch, depth, unshallow)
         os.chdir(cwd)
 
-    def clone_module(self, module, version, fallback_branch):
+    def clone_module(self, module, version, fallback_branch, depth=None, unshallow=False):
         # Ignore modules which are not Git sub-repositories
         if not os.path.isdir(module) or os.path.isdir(os.path.join(module, ".git")):
-            self.git_pull(module, version, fallback_branch)
+            self.git_pull(module, version, fallback_branch, depth, unshallow)
 
     @staticmethod
     def get_current_version():
