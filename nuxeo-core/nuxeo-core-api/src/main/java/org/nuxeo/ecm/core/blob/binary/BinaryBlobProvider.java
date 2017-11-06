@@ -92,7 +92,7 @@ public class BinaryBlobProvider implements BlobProvider {
         }
         long length;
         if (blobInfo.length == null) {
-            log.error("Missing blob length for: " + blobInfo.key);
+            log.debug("Missing blob length for: " + blobInfo.key);
             // to avoid crashing, get the length from the binary's file (may be costly)
             File file = binary.getFile();
             length = file == null ? -1 : file.length();
