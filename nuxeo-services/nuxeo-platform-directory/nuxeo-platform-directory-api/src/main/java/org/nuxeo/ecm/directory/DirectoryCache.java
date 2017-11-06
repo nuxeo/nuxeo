@@ -120,6 +120,15 @@ public class DirectoryCache {
             // fetch the entry from the backend and cache it for later reuse
             dm = source.getEntryFromSource(entryId, fetchReferences);
             if (dm != null) {
+                // DocumentModelImpl is not thread-safe and when we fetch and clone it when returning
+                // a value from the cache there may be concurrency.
+                // So we avoid thread-safety issues by exercising once the code paths that may do
+                // concurrent accesses to ComplexProperty (NXP-23458).
+                try {
+                    dm.clone();
+                } catch (CloneNotSupportedException e) {
+                    // ignore, no concurrency issues if not a DocumentModelImpl
+                }
                 cache.put(entryId, dm);
                 if (fetchReferences) {
                     sizeCounter.inc();
@@ -135,6 +144,7 @@ public class DirectoryCache {
             if (dm == null) {
                 return null;
             }
+            // this is the clone() that needs to be careful (see above) when there's concurrency
             DocumentModel clone = dm.clone();
             // DocumentModelImpl#clone does not copy context data, hence
             // propagate the read-only flag manually
