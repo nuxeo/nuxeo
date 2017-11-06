@@ -817,9 +817,18 @@
     <mimetype normalized="application/visio" binary="true"
       iconPath="visio.gif">
       <mimetypes>
+        <mimetype>application/vnd.visio</mimetype>
+        <mimetype>application/vnd.visio2013</mimetype>
         <mimetype>application/visio</mimetype>
+        <mimetype>application/x-visio</mimetype>
+        <mimetype>application/visio.drawing</mimetype>
+        <mimetype>application/vsd</mimetype>
+        <mimetype>application/x-vsd</mimetype>
+        <mimetype>image/x-vsd</mimetype>
+        <mimetype>zz-application/zz-winassoc-vsd</mimetype>
       </mimetypes>
       <extensions>
+        <extension>vsdx</extension>
         <extension>vsd</extension>
         <extension>vst</extension>
       </extensions>
