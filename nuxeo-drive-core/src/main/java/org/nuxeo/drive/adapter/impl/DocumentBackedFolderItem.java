@@ -408,7 +408,6 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
     protected FolderItem populateAncestorCache(Map<DocumentRef, FolderItem> cache, DocumentModel doc,
             CoreSession session, boolean cacheItem) {
-        // TODO: handle collections
         DocumentRef parentDocRef = session.getParentDocumentRef(doc.getRef());
         if (parentDocRef == null) {
             throw new RootlessItemException("Reached repository root");
