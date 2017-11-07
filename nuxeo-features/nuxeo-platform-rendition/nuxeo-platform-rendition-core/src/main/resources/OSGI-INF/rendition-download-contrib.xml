@@ -6,7 +6,17 @@
 
     <renditionDefinition name="mainBlob" visible="false">
       <operationChain>mainBlob</operationChain>
+      <allowEmptyBlob>true</allowEmptyBlob>
       <contentType></contentType>
+    </renditionDefinition>
+
+    <renditionDefinition name="containerDefaultRendition" visible="false">
+      <contentType>application/zip</contentType>
+      <operationChain>containerContentBlob</operationChain>
+      <allowEmptyBlob>true</allowEmptyBlob>
+      <filters>
+        <filter-id>container</filter-id>
+      </filters>
     </renditionDefinition>
 
   </extension>
@@ -27,11 +37,15 @@
               return 'mainBlob';
             } else if (Document.getType() == 'Note') {
               return 'pdf';
+            } else if (Document.getType() == 'Collection') {
+              return 'containerDefaultRendition';
+            } else if (Document.getType() == 'Folder') {
+              return 'containerDefaultRendition';
             } else {
               return 'xmlExport';
             }
           } else {
-            return '';
+            return 'xmlExport';
           }
         }
       </script>
@@ -44,6 +58,15 @@
     <chain id="mainBlob">
       <operation id="Context.PopDocument" />
       <operation id="Document.GetBlob" />
+    </chain>
+
+    <chain id="containerContentBlob">
+      <operation id="Context.PopDocument" />
+      <operation id="Document.GetContainerRendition">
+        <param type="string" name="reason">download</param>
+        <param type="int" name="limit">200</param>
+        <param type="int" name="maxDepth">2</param>
+      </operation>
     </chain>
 
   </extension>
