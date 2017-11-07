@@ -1117,7 +1117,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public void copyContent(DocumentModel sourceDoc) {
-        computeFacetsAndSchemas(((DocumentModelImpl) sourceDoc).instanceFacets);
+        if (sourceDoc instanceof DocumentModelImpl) {
+            computeFacetsAndSchemas(((DocumentModelImpl) sourceDoc).instanceFacets);
+        }
         Map<String, DataModel> newDataModels = new HashMap<>();
         for (String key : schemas) {
             DataModel oldDM = sourceDoc.getDataModel(key);
