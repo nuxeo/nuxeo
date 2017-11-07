@@ -23,13 +23,9 @@ limitations under the License.
 -->
 <dom-module id="nuxeo-delete-template-button">
   <template>
-    <style>
+    <style include="nuxeo-styles">
       :host {
         display: inline-block;
-      }
-
-      #dialog {
-        width: 512px;
       }
 
       .container {
@@ -37,7 +33,7 @@ limitations under the License.
       }
 
       .buttons {
-        @apply(--buttons-bar);
+        @apply --buttons-bar;
       }
     </style>
 
@@ -46,7 +42,7 @@ limitations under the License.
     <paper-icon-button id="delete" icon="icons:delete-sweep" on-tap="_toggleDialog" noink ></paper-icon-button>
     <paper-tooltip for="delete">[[i18n('deleteTemplateButton.tooltip')]]</paper-tooltip>
 
-    <paper-dialog id="dialog" modal no-auto-focus>
+    <nuxeo-dialog id="dialog" modal no-auto-focus>
       <h2>[[i18n('deleteTemplateButton.dialog.heading')]]</h2>
       <paper-dialog-scrollable>
         <div class="container horizontal layout">
@@ -61,7 +57,7 @@ limitations under the License.
           [[i18n('deleteTemplateButton.dialog.confirm')]]
         </paper-button>
       </div>
-    </paper-dialog>
+    </nuxeo-dialog>
 
   </template>
 
