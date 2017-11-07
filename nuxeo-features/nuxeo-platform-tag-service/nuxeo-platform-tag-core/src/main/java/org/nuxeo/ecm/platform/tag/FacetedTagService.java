@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -48,6 +50,8 @@ import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_LIST;
  * @since 9.3
  */
 public class FacetedTagService extends AbstractTagService {
+
+    private static final Log log = LogFactory.getLog(FacetedTagService.class);
 
     public static final String LABEL_PROPERTY = "label";
 
@@ -191,14 +195,27 @@ public class FacetedTagService extends AbstractTagService {
         try {
             return (List<Map<String, Serializable>>) docModel.getPropertyValue(TAG_LIST);
         } catch (PropertyNotFoundException e) {
-            return Collections.emptyList();
+            if (log.isWarnEnabled()) {
+                log.warn(String.format(
+                        "Getting tags on %s failed since %s is missing on %s document type. This operation will be ignored.",
+                        docModel.getPathAsString(), TAG_FACET, docModel.getType()));
+            }
+            return new ArrayList<>();
         }
     }
 
     protected void setTags(DocumentModel docModel, List<Map<String, Serializable>> tags) {
-        if (docModel.isVersion()) {
-            docModel.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+        try {
+            if (docModel.isVersion()) {
+                docModel.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+            }
+            docModel.setPropertyValue(TAG_LIST, (Serializable) tags);
+        } catch (PropertyNotFoundException e) {
+            if (log.isWarnEnabled()) {
+                log.warn(String.format(
+                        "Setting tags on %s failed since %s is missing on %s document type. This operation will be ignored.",
+                        docModel.getPathAsString(), TAG_FACET, docModel.getType()));
+            }
         }
-        docModel.setPropertyValue(TAG_LIST, (Serializable) tags);
     }
 }
