@@ -18,30 +18,35 @@
  */
 package org.nuxeo.ecm.automation.core.work;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.core.operations.blob.CreateZip;
-import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.AsyncBlob;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.transientstore.work.TransientStoreWork;
+import org.nuxeo.ecm.core.utils.BlobUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Work to zip a list of blob and store the produced zip into the TransientStore.
+ * Work to zip a list of document default blob and store the produced zip into the TransientStore.
  *
  * @since 9.3
  */
 public class BlobListZipWork extends TransientStoreWork {
+
+    private static final Log log = LogFactory.getLog(BlobListZipWork.class);
 
     public static final String CATEGORY = "blobListZip";
 
@@ -49,7 +54,7 @@ public class BlobListZipWork extends TransientStoreWork {
 
     private static final long serialVersionUID = 1L;
 
-    protected List<Blob> blobList;
+    protected List<String> docIds;
 
     protected String filename;
 
@@ -57,14 +62,14 @@ public class BlobListZipWork extends TransientStoreWork {
 
     protected final String storeName;
 
-    public BlobListZipWork(String transientStoreKey, String originatingUsername, String filename, List<Blob> blobList) {
-        this(transientStoreKey, originatingUsername, filename, blobList, filename);
+    public BlobListZipWork(String transientStoreKey, String originatingUsername, String filename, List<String> docIds) {
+        this(transientStoreKey, originatingUsername, filename, docIds, filename);
     }
 
-    public BlobListZipWork(String transientStoreKey, String originatingUsername, String filename, List<Blob> blobList,
+    public BlobListZipWork(String transientStoreKey, String originatingUsername, String filename, List<String> docIds,
             String storeName) {
         this.key = transientStoreKey;
-        this.blobList = blobList;
+        this.docIds = docIds;
         this.originatingUsername = originatingUsername;
         this.id = "BlobListZipWork-" + this.key + "-" + this.originatingUsername;
         this.storeName = storeName;
@@ -114,23 +119,50 @@ public class BlobListZipWork extends TransientStoreWork {
     @Override
     public void work() {
         openUserSession();
-        AutomationService as = Framework.getLocalService(AutomationService.class);
-        try (OperationContext oc = new OperationContext(session)) {
-            Blob blob;
-            if (blobList.size() == 1) {
-                blob = blobList.get(0);
-            } else {
-                oc.push("filename", StringUtils.isNotBlank(this.filename) ? this.filename : this.id);
-                oc.setInput(new BlobList(blobList));
-                blob = (Blob) as.run(oc, CreateZip.ID);
+        List<Blob> blobList = new ArrayList<>();
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        for (String docId : docIds) {
+            DocumentRef docRef = new IdRef(docId);
+            if (!session.exists(docRef)) {
+                if (log.isInfoEnabled()) {
+                    log.debug(String.format("Cannot retrieve document '%s', probably deleted in the meanwhile", docId));
+                }
+                continue;
             }
-            updateAndCompleteStoreEntry(Collections.singletonList(blob));
-        } catch (OperationException e) {
-            TransientStore ts = getTransientStore();
-            ts.putParameter(key, DownloadService.TRANSIENT_STORE_PARAM_ERROR, e.getMessage());
-            throw new NuxeoException("Exception while zipping blob list", e);
+            DocumentModel doc = session.getDocument(docRef);
+            Blob blob = downloadService.resolveBlob(doc);
+            if (blob == null) {
+                log.trace("Not able to resolve blob");
+                continue;
+            } else if (!downloadService.checkPermission(doc, null, blob, "download", Collections.emptyMap())) {
+                if (log.isDebugEnabled()) {
+                    log.debug(
+                            String.format("Not allowed to bulk download blob for document %s", doc.getPathAsString()));
+                }
+                continue;
+            }
+            blobList.add(blob);
         }
-
+        if (blobList.isEmpty()) {
+            log.debug("No blob to be zipped");
+            updateAndCompleteStoreEntry(Collections.emptyList());
+            return;
+        }
+        Blob blob;
+        String finalFilename = StringUtils.isNotBlank(this.filename) ? this.filename : this.id;
+        if (blobList.size() == 1) {
+            blob = blobList.get(0);
+            blob.setFilename(finalFilename);
+        } else {
+            try {
+                blob = BlobUtils.zip(blobList, finalFilename);
+            } catch (IOException e) {
+                TransientStore ts = getTransientStore();
+                ts.putParameter(key, DownloadService.TRANSIENT_STORE_PARAM_ERROR, e.getMessage());
+                throw new NuxeoException("Exception while zipping blob list", e);
+            }
+        }
+        updateAndCompleteStoreEntry(Collections.singletonList(blob));
     }
 
 }

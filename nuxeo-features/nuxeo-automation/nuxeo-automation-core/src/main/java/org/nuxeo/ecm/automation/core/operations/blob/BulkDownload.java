@@ -19,10 +19,10 @@
 package org.nuxeo.ecm.automation.core.operations.blob;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.logging.Log;
@@ -66,9 +66,6 @@ public class BulkDownload {
     protected CoreSession session;
 
     @Context
-    protected DownloadService downloadService;
-
-    @Context
     BlobHolderAdapterService blobHolderAdapterService;
 
     @Param(name = "filename", required = false)
@@ -95,23 +92,6 @@ public class BulkDownload {
 
     @OperationMethod
     public Blob run(DocumentModelList docs) throws IOException {
-        List<Blob> blobList = new ArrayList<Blob>();
-        for (DocumentModel doc : docs) {
-            Blob blob = downloadService.resolveBlob(doc);
-            if (blob == null) {
-                log.trace("Not able to resolve blob");
-                continue;
-            } else if (!downloadService.checkPermission(doc, null, blob, "download", Collections.emptyMap())) {
-                log.debug(String.format("Not allowed to bulk download blob for document %s", doc.getId()));
-                continue;
-            }
-            blobList.add(blob);
-        }
-        if (blobList.isEmpty()) {
-            log.debug("No blob to be downloaded");
-            return null;
-        }
-
         // build the key
         String key = buildTransientStoreKey(docs);
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
@@ -122,7 +102,9 @@ public class BulkDownload {
         }
         List<Blob> blobs = null;
         if (!ts.exists(key)) {
-            Work work = new BlobListZipWork(key, session.getPrincipal().getName(), this.fileName, blobList,
+            log.trace("No async download already initialized");
+            Work work = new BlobListZipWork(key, session.getPrincipal().getName(), this.fileName,
+                    docs.stream().map(DocumentModel::getId).collect(Collectors.toList()),
                     DownloadService.TRANSIENT_STORE_STORE_NAME);
             ts.setCompleted(key, false);
             ts.putParameter(key, WORKERID_KEY, work.getId());
@@ -131,6 +113,7 @@ public class BulkDownload {
             Framework.getService(WorkManager.class).schedule(work, Scheduling.IF_NOT_SCHEDULED);
             return blobs.get(0);
         } else {
+            log.trace("Async download already initialized");
             blobs = ts.getBlobs(key);
             if (ts.isCompleted(key)) {
                 if (blobs != null && blobs.size() == 1) {
@@ -143,7 +126,8 @@ public class BulkDownload {
                 }
 
             } else {
-                Work work = new BlobListZipWork(key, session.getPrincipal().getName(), this.fileName, blobList,
+                Work work = new BlobListZipWork(key, session.getPrincipal().getName(), this.fileName,
+                        docs.stream().map(DocumentModel::getId).collect(Collectors.toList()),
                         DownloadService.TRANSIENT_STORE_STORE_NAME);
                 WorkManager wm = Framework.getService(WorkManager.class);
                 wm.schedule(work, Scheduling.IF_NOT_SCHEDULED);
