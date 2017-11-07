@@ -426,7 +426,8 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             }
         }
         if (!renditionDefinition.getProvider().isAvailable(doc, renditionDefinition)) {
-            throw new NuxeoException("Rendition " + renditionName + " not available for this doc " + doc.getId());
+            throw new NuxeoException(
+                    String.format("Rendition %s not available for this doc %s", renditionName, doc.getPathAsString()));
         }
         return renditionDefinition;
     }

@@ -5,6 +5,7 @@
     point="operations">
 
     <operation class="org.nuxeo.ecm.platform.rendition.operation.GetRendition" />
+    <operation class="org.nuxeo.ecm.platform.rendition.operation.GetContainerRendition" />
 
   </extension>
 
