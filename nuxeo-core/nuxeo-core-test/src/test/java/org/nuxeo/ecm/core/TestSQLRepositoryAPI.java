@@ -84,6 +84,7 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
@@ -3032,6 +3033,23 @@ public class TestSQLRepositoryAPI {
         // check dynamic facet
         assertTrue(copy.hasFacet("Aged"));
         assertEquals("123", copy.getPropertyValue("age:age"));
+    }
+
+    @Test
+    public void testCopyContentFromSimpleDocumentModel() {
+        DocumentModel root = session.getRootDocument();
+        DocumentModel doc = new SimpleDocumentModel("dublincore");
+        doc.setPropertyValue("dc:title", "t");
+        doc.setPropertyValue("dc:description", "d");
+        doc.setPropertyValue("dc:subjects", new String[] { "a", "b" });
+        DocumentModel copy = new DocumentModelImpl(root.getPathAsString(), "copy", "File");
+        copy.copyContent(doc);
+        copy = session.createDocument(copy);
+        session.save();
+
+        assertEquals("t", copy.getProperty("dublincore", "title"));
+        assertEquals("d", copy.getProperty("dublincore", "description"));
+        assertEquals(Arrays.asList("a", "b"), Arrays.asList((String[]) copy.getProperty("dublincore", "subjects")));
     }
 
     @Test
