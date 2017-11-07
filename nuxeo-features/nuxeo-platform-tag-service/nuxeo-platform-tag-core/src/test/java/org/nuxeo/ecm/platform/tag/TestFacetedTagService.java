@@ -20,6 +20,9 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 
@@ -54,5 +57,17 @@ public class TestFacetedTagService extends AbstractTestTagService {
         session.saveDocument(file1);
         session.saveDocument(file2);
         session.save();
+    }
+
+    @Test
+    public void testTagOnDocumentWithMissingFacet() {
+
+        DocumentModel relation = session.createDocumentModel("/", "foo", "Relation");
+        relation = session.createDocument(relation);
+        session.save();
+
+        tagService.tag(session, relation.getId(), "tag");
+
+        assertEquals(0, tagService.getTags(session, relation.getId()).size());
     }
 }
