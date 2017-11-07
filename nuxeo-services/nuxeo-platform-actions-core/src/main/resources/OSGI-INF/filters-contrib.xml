@@ -16,6 +16,32 @@
       </rule>
     </filter>
 
+    <filter id="not_collection">
+      <rule grant="false">
+        <facet>Collection</facet>
+      </rule>
+    </filter>
+
+    <filter id="collection">
+      <rule grant="true">
+        <facet>Collection</facet>
+      </rule>
+    </filter>
+
+    <filter id="not_container">
+      <rule grant="false">
+        <facet>Collection</facet>
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+
+    <filter id="container">
+      <rule grant="true">
+        <facet>Collection</facet>
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+
   </extension>
 
 </component>
