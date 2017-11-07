@@ -5,7 +5,6 @@ Bundle-ClassPath: .
 Bundle-Version: 5.9
 Bundle-Name: org.nuxeo.drive.jsf
 Nuxeo-Component: OSGI-INF/nuxeodrive-actions.xml,
- OSGI-INF/nuxeodrive-authentication-contrib.xml,
  OSGI-INF/nuxeodrive-layouts-contrib.xml,
  OSGI-INF/nuxeodrive-token-authentication-contrib.xml,
  OSGI-INF/nuxeodrive-ui-types-contrib.xml
