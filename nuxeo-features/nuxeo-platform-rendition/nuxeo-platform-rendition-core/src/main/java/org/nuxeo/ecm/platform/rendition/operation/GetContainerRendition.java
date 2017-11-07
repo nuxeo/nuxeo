@@ -90,8 +90,10 @@ public class GetContainerRendition {
                 if (blob != null) {
                     blobs.add(blob);
                     if (limit > -1 && ++added >= limit) {
-                        log.info(String.format("Limit of %s reached, increase the limit parameter to get more results.",
-                                limit));
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format(
+                                    "Limit of %s reached, increase the limit parameter to get more results.", limit));
+                        }
                         break;
                     }
                 }
@@ -133,8 +135,10 @@ public class GetContainerRendition {
                 if (blob != null) {
                     blobs.add(blob);
                     if (limit > -1 && ++added >= limit) {
-                        log.info(String.format("Limit of %s reached, increase the limit parameter to get more results.",
-                                limit));
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format(
+                                    "Limit of %s reached, increase the limit parameter to get more results.", limit));
+                        }
                         break;
                     }
                 }

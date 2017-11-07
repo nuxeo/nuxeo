@@ -124,7 +124,7 @@ public class BlobListZipWork extends TransientStoreWork {
         for (String docId : docIds) {
             DocumentRef docRef = new IdRef(docId);
             if (!session.exists(docRef)) {
-                if (log.isInfoEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug(String.format("Cannot retrieve document '%s', probably deleted in the meanwhile", docId));
                 }
                 continue;

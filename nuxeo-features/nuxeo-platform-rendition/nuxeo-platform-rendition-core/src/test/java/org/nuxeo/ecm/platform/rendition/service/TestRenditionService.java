@@ -141,8 +141,8 @@ public class TestRenditionService {
     public void testDeclaredRenditionDefinitions() {
         List<RenditionDefinition> renditionDefinitions = renditionService.getDeclaredRenditionDefinitions();
         assertRenditionDefinitions(renditionDefinitions, PDF_RENDITION_DEFINITION,
-                "renditionDefinitionWithUnknownOperationChain", "mainBlob", "zipExport", "zipTreeExport",
-                "zipTreeExportLazily");
+                "renditionDefinitionWithUnknownOperationChain", "zipExport", "zipTreeExport",
+                "zipTreeExportLazily", "containerDefaultRendition");
 
         RenditionDefinition rd = renditionDefinitions.stream()
                                                      .filter(renditionDefinition -> PDF_RENDITION_DEFINITION.equals(
@@ -182,7 +182,7 @@ public class TestRenditionService {
 
         // rendition should be available now
         renditionDefinitions = renditionService.getAvailableRenditionDefinitions(file);
-        assertEquals(availableRenditionDefinitionCount + 2, renditionDefinitions.size());
+        assertEquals(availableRenditionDefinitionCount + 1, renditionDefinitions.size());
 
     }
 
@@ -1013,8 +1013,8 @@ public class TestRenditionService {
         doc = session.createDocumentModel("/", "folder", "Folder");
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertRenditionDefinitions(availableRenditionDefinitions, "renditionOnlyForFolder", "zipTreeExport",
-                "zipTreeExportLazily");
+        assertRenditionDefinitions(availableRenditionDefinitions, "containerDefaultRendition", "renditionOnlyForFolder",
+                "zipTreeExport", "zipTreeExportLazily");
     }
 
     @Test
@@ -1040,7 +1040,8 @@ public class TestRenditionService {
         doc = session.createDocumentModel("/", "folder", "Folder");
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertRenditionDefinitions(availableRenditionDefinitions, "dummyRendition1", "dummyRendition2", "zipTreeExport",
+        assertRenditionDefinitions(availableRenditionDefinitions, "containerDefaultRendition", "dummyRendition1",
+                "dummyRendition2", "zipTreeExport",
                 "zipTreeExportLazily");
     }
 
@@ -1048,6 +1049,7 @@ public class TestRenditionService {
         List<String> expected = new ArrayList<>(Arrays.asList( //
                 "delayedErrorAutomationRendition", //
                 "iamlazy", //
+                "mainBlob", //
                 "lazyAutomation", //
                 "lazyDelayedErrorAutomationRendition", //
                 "renditionDefinitionWithCustomOperationChain", //
