@@ -23,39 +23,15 @@ limitations under the License.
 -->
 <dom-module id="nuxeo-template-rendering-page">
   <template>
-    <style>
+    <style include="iron-flex iron-flex-alignment nuxeo-styles">
       :host {
-        @apply(--layout-flex);
+        @apply --layout-flex;
         display: block;
       }
 
-      paper-card {
-        padding: 0;
-      }
-
-      ::content iron-icon:hover {
-        fill: var(--nuxeo-link-hover-color);
-      }
-
-      paper-button:hover {
-        @apply(--nx-button-hover);
-      }
-
-      paper-button.primary {
-        @apply(--nx-button-primary);
-      }
-
-      paper-button.primary:hover,
-      paper-button.primary:focus {
-        @apply(--nx-button-primary-hover);
-      }
-
-      paper-button[disabled] {
-        @apply(--nx-button-disabled);
-      }
-
       .buttons {
-        @apply(--buttons-bar);
+        @apply --buttons-bar;
+        margin: 16px -16px -16px -16px;
       }
     </style>
 
@@ -63,35 +39,31 @@ limitations under the License.
                     data="{{editedDocument}}" response="{{document}}">
     </nuxeo-document>
 
-    <paper-card>
+    <nuxeo-card heading="[[i18n('templateRenderingPage.config.heading')]]">
       <iron-pages selected="[[configMode]]" attr-for-selected="name" class="vertical layout flex">
         <div name="view">
-          <div class="card-content">
 
-            <h2>[[i18n('templateRenderingPage.config.heading')]]</h2>
+          <div hidden$="[[!document.properties.tmpl:applicableTypes]]">
+            <label>[[i18n('templateRenderingPage.validDocTypes')]]</label>
+            <nuxeo-selectivity data="[[docTypes]]"
+                               placeholder="[[i18n('templateRenderingPage.validDocTypes.placeholder')]]"
+                               value="{{document.properties.tmpl:applicableTypes}}"
+                               min-chars=0 multiple readonly></nuxeo-selectivity>
+          </div>
 
-            <div hidden$="[[!document.properties.tmpl:applicableTypes]]">
-              <label>[[i18n('templateRenderingPage.validDocTypes')]]</label>
-              <nuxeo-select2 data="[[docTypes]]"
-                            placeholder="[[i18n('templateRenderingPage.validDocTypes.placeholder')]]"
-                            value="{{document.properties.tmpl:applicableTypes}}"
-                            min-chars=0 multiple readonly></nuxeo-select2>
-            </div>
+          <div>
+            <label>[[i18n('templateRenderingPage.parametersOverride')]]</label>
+            <template is="dom-if" if="[[document.properties.tmpl:allowOverride]]">
+              <span>[[i18n('label.yes')]]</span>
+            </template>
+            <template is="dom-if" if="[[!document.properties.tmpl:allowOverride]]">
+              <span>[[i18n('label.no')]]</span>
+            </template>
+          </div>
 
-            <div>
-              <label>[[i18n('templateRenderingPage.parametersOverride')]]</label>
-              <template is="dom-if" if="[[document.properties.tmpl:allowOverride]]">
-                <span>[[i18n('label.yes')]]</span>
-              </template>
-              <template is="dom-if" if="[[!document.properties.tmpl:allowOverride]]">
-                <span>[[i18n('label.no')]]</span>
-              </template>
-            </div>
-
-            <div hidden$="[[!document.properties.tmpl:templateType]]">
-              <label>[[i18n('templateRenderingPage.processor.label')]]</label>
-              <div>[[_getProcessorLabel(document.properties.tmpl:templateType)]]</div>
-            </div>
+          <div hidden$="[[!document.properties.tmpl:templateType]]">
+            <label>[[i18n('templateRenderingPage.processor.label')]]</label>
+            <div>[[_getProcessorLabel(document.properties.tmpl:templateType)]]</div>
           </div>
 
           <div class="buttons">
@@ -101,28 +73,26 @@ limitations under the License.
           </div>
         </div>
         <div name="edit">
-          <div class="card-content">
-            <h2>[[i18n('templateRenderingPage.config.heading')]]</h2>
-            <div class="vertical layout">
-              <nuxeo-resource path="config/types/" on-response="_handleDocTypes" auto></nuxeo-resource>
+          <div class="vertical layout">
+            <nuxeo-resource path="config/types/" on-response="_handleDocTypes" auto></nuxeo-resource>
 
-              <label>[[i18n('templateRenderingPage.validDocTypes')]]</label>
-              <nuxeo-select2 data="[[docTypes]]"
-                            placeholder="[[i18n('templateRenderingPage.validDocTypes.placeholder')]]"
-                            value="{{editedDocument.properties.tmpl:applicableTypes}}"
-                            min-chars=0 multiple></nuxeo-select2>
-              <label>[[i18n('templateRenderingPage.parametersOverride')]]</label>
-              <paper-checkbox checked="{{editedDocument.properties.tmpl:allowOverride}}"></paper-checkbox>
-              <paper-dropdown-menu label="[[i18n('templateRenderingPage.processor.label')]]"
-                                   horizontal-align="left"
-                                   always-float-label>
-                <paper-menu class="dropdown-content" selected="{{editedDocument.properties.tmpl:templateType}}" attr-for-selected="name">
-                  <template is="dom-repeat" items="[[processors]]">
-                    <paper-item name="[[item]]">[[_getProcessorLabel(item)]]</paper-item>
-                  </template>
-                </paper-menu>
-              </paper-dropdown-menu>
-            </div>
+            <label>[[i18n('templateRenderingPage.validDocTypes')]]</label>
+            <nuxeo-selectivity data="[[docTypes]]"
+                               placeholder="[[i18n('templateRenderingPage.validDocTypes.placeholder')]]"
+                               value="{{editedDocument.properties.tmpl:applicableTypes}}"
+                               min-chars=0 multiple></nuxeo-selectivity>
+            <label>[[i18n('templateRenderingPage.parametersOverride')]]</label>
+            <paper-checkbox checked="{{editedDocument.properties.tmpl:allowOverride}}"></paper-checkbox>
+
+            <paper-dropdown-menu label="[[i18n('templateRenderingPage.processor.label')]]"
+                                 horizontal-align="left"
+                                 always-float-label>
+              <paper-listbox slot="dropdown-content" selected="{{editedDocument.properties.tmpl:templateType}}" attr-for-selected="name">
+                <template is="dom-repeat" items="[[processors]]">
+                  <paper-item name="[[item]]">[[_getProcessorLabel(item)]]</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
           </div>
           <div class="buttons">
             <div class="horizontal layout start-justified">
@@ -132,16 +102,13 @@ limitations under the License.
           </div>
         </div>
       </iron-pages>
-    </paper-card>
+    </nuxeo-card>
 
-    <paper-card>
-      <div class="card-content">
-        <h2>[[i18n('templateRenderingPage.parameters.heading')]]</h2>
-        <div class="vertical layout">
-          <nuxeo-template-param-editor id="paramEditor"
-                                       template-data="[[_getTemplateData(editedDocument)]]"
-                                       mode="[[paramsMode]]" allow-create allow-delete></nuxeo-template-param-editor>
-        </div>
+    <nuxeo-card heading="[[i18n('templateRenderingPage.parameters.heading')]]">
+      <div class="vertical layout">
+        <nuxeo-template-param-editor id="paramEditor"
+                                     template-data="[[_getTemplateData(editedDocument)]]"
+                                     mode="[[paramsMode]]" allow-create allow-delete></nuxeo-template-param-editor>
       </div>
       <div class="buttons">
         <div class="horizontal layout start-justified">
@@ -153,9 +120,10 @@ limitations under the License.
               <paper-button noink dialog-dismiss on-tap='_cancelEditParams'>[[i18n('command.cancel')]]</paper-button>
               <paper-button noink class="primary" on-tap='_saveEditParams'>[[i18n('command.save')]]</paper-button>
             </div>
+          </iron-pages>
         </div>
       </div>
-    </paper-card>
+    </nuxeo-card>
 
   </template>
   <script>

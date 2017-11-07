@@ -24,46 +24,7 @@ limitations under the License.
   <template>
 
     <style>
-      nuxeo-data-table ::content #items {
-        background-color: #fff;
-      }
-
-      nuxeo-data-table ::content nuxeo-data-table-row:not([header]):hover {
-        @apply(--nuxeo-block-hover);
-      }
-
-      nuxeo-data-table ::content #container iron-list#list::after {
-        background-color: transparent;
-        content:'';
-        display: block;
-        height: 4em;
-      }
-
-      nuxeo-data-table {
-        min-height: calc(25vh);
-      }
-
-      #templateBasedDatatable {
-        border: 2px solid transparent;
-      }
-
-      .ellipsis {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-        display: block;
-        width: calc(100% - 38px);
-      }
-
       .queue-thumbnail {
-        height: 32px;
-        width: 32px;
-        border-radius: 20px;
-        box-sizing: border-box;
-        margin-right: 8px;
-      }
-
-      .queue-thumbnail ::content img {
         height: 32px;
         width: 32px;
         border-radius: 20px;
@@ -82,9 +43,8 @@ limitations under the License.
 
     <nuxeo-note-editor role="widget" document="[[document]]"></nuxeo-note-editor>
 
-    <div class="card-content">
+    <nuxeo-card heading="[[i18n('templateSourceViewLayout.templateBasedDocuments.heading')]]">
       <div class="vertical layout">
-        <h2>[[i18n('templateSourceViewLayout.templateBasedDocuments.heading')]]</h2>
         <nuxeo-data-table id="templateBasedDatatable"
                           nx-provider="templateBasedDocs"
                           empty-label="[[i18n('templateSourceViewLayout.templateBasedDocuments.noDocument')]]"
@@ -93,7 +53,7 @@ limitations under the License.
           <nuxeo-data-table-column name="[[i18n('documentContentView.datatable.header.title')]]" flex="100">
             <template>
               <img class="queue-thumbnail" src="[[_thumbnail(item)]]">
-              <a class="ellipsis" href$="[[urlFor('browse', item.path)]]">[[item.title]]</a>
+              <a href$="[[urlFor('browse', item.path)]]">[[item.title]]</a>
             </template>
           </nuxeo-data-table-column>
           <nuxeo-data-table-column name="[[i18n('recentDocumentsTable.type')]]" flex="50">
@@ -103,13 +63,12 @@ limitations under the License.
           </nuxeo-data-table-column>
           <nuxeo-data-table-column name="[[i18n('recentDocumentsTable.lastViewed')]]" flex="50">
             <template>
-              [[formatDate(item.lastViewed)]]
+              <nuxeo-date datetime="[[item.lastViewed]]"></nuxeo-date>
             </template>
           </nuxeo-data-table-column>
         </nuxeo-data-table>
       </div>
-    </div>
-    </paper-card>
+    </nuxeo-card>
   </template>
 
   <script>
@@ -128,7 +87,7 @@ limitations under the License.
 
       _documentChanged: function() {
         if (this.document) {
-          this.$.templateBasedDocs.fetch();
+          this.$.templateBasedDatatable.fetch();
         }
       },
 

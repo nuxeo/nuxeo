@@ -28,21 +28,12 @@ limitations under the License.
         display: inline-block;
       }
 
-      paper-dropdown-menu {
-        width: 250px;
-      }
-
-      #dialog,
-      #editParamsDialog {
-        width: 512px;
-      }
-
       .container {
         padding: 1em 0 2em;
       }
 
       .buttons {
-        @apply(--buttons-bar);
+        @apply --buttons-bar;
       }
 
       .description {
@@ -56,16 +47,16 @@ limitations under the License.
     <paper-tooltip for="render">[[i18n(tooltip)]]</paper-tooltip>
     <paper-toast id="toast"></paper-toast>
 
-    <paper-dialog id="dialog" modal no-auto-focus>
+    <nuxeo-dialog id="dialog" modal no-auto-focus>
       <h2>[[i18n('renderTemplateButton.dialog.heading')]]</h2>
       <paper-dialog-scrollable>
         <div class="container layout vertical">
           <paper-dropdown-menu label="[[i18n('renderTemplateButton.dialog.instruction')]]" class="typeDropdown" noink always-float-label horizontal-align="left">
-            <paper-menu class="dropdown-content" selected="{{selectedTemplate}}" attr-for-selected="key">
+            <paper-listbox slot="dropdown-content" selected="{{selectedTemplate}}" attr-for-selected="key">
               <template is="dom-repeat" items="[[_templates]]">
                 <paper-item key="[[item]]">[[item.properties.dc:title]]</paper-item>
               </template>
-            </paper-menu>
+            </paper-listbox>
           </paper-dropdown-menu>
           <span class="description" hidden="[[!selectedTemplate.properties.dc:description]]">
             [[i18n('renderTemplateButton.dialog.template.description')]]: [[selectedTemplate.properties.dc:description]]
@@ -73,16 +64,16 @@ limitations under the License.
         </div>
       </paper-dialog-scrollable>
       <div class="buttons horizontal end-justified layout">
-         <div class="flex start-justified">
-           <paper-button noink dialog-dismiss>[[i18n('command.cancel')]]</paper-button>
-         </div>
-         <paper-button noink class="primary" on-tap="_render">
-           [[i18n('renderTemplateButton.dialog.render')]]
-         </paper-button>
+        <div class="flex start-justified">
+          <paper-button noink dialog-dismiss>[[i18n('command.cancel')]]</paper-button>
+        </div>
+        <paper-button noink class="primary" on-tap="_render">
+          [[i18n('renderTemplateButton.dialog.render')]]
+        </paper-button>
       </div>
-    </paper-dialog>
+    </nuxeo-dialog>
 
-    <paper-dialog id="editParamsDialog" modal no-auto-focus>
+    <nuxeo-dialog id="editParamsDialog" modal no-auto-focus>
       <h2>[[i18n('renderTemplateButton.editParamsDialog.heading', selectedTemplate.properties.dc:title)]]</h2>
       <paper-dialog-scrollable>
         <div class="container layout vertical">
@@ -100,7 +91,7 @@ limitations under the License.
           [[i18n('renderTemplateButton.editParamsDialog.render')]]
         </paper-button>
       </div>
-    </paper-dialog>
+    </nuxeo-dialog>
 
   </template>
 
@@ -153,7 +144,12 @@ limitations under the License.
           type: Boolean,
           value: false
         },
-        _templates: Array,
+
+        _templates: {
+          type: Array,
+          value: []
+        },
+
         _templateData: String
       },
 
