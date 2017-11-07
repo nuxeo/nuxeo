@@ -61,7 +61,7 @@ public class TestRenditionProvider {
     protected RenditionService renditionService;
 
     /** Sort by name. */
-    private static final Comparator<RenditionDefinition> RENDITION_DEFINITION_CMP = new Comparator<RenditionDefinition>() {
+    public static final Comparator<RenditionDefinition> RENDITION_DEFINITION_CMP = new Comparator<RenditionDefinition>() {
         @Override
         public int compare(RenditionDefinition a, RenditionDefinition b) {
             return a.getName().compareTo(b.getName());
@@ -70,7 +70,7 @@ public class TestRenditionProvider {
 
     @Test
     public void testDummyRendition() throws Exception {
-        DocumentModel file = createBlobDoc("File");
+        DocumentModel file = createBlobDoc("File", session);
         Renderable renderable = file.getAdapter(Renderable.class);
         assertNotNull(renderable);
 
@@ -94,7 +94,7 @@ public class TestRenditionProvider {
 
     @Test
     public void testPdfRendition() throws Exception {
-        DocumentModel file = createBlobDoc("File");
+        DocumentModel file = createBlobDoc("File", session);
         Renderable renderable = file.getAdapter(Renderable.class);
         assertNotNull(renderable);
 
@@ -117,24 +117,9 @@ public class TestRenditionProvider {
         assertEquals("application/pdf", blob.getMimeType());
     }
 
-    /**
-     * @since 9.3
-     */
-    @Test
-    public void testDefaultRendition() throws Exception {
-        DocumentModel file = createBlobDoc("File");
-        Renderable renderable = file.getAdapter(Renderable.class);
-        assertNotNull(renderable);
-
-        Rendition ren = renditionService.getDefaultRendition(file, "download", null);
-        assertNotNull(ren);
-        Blob blob = ren.getBlob();
-        assertEquals("text/plain", blob.getMimeType());
-    }
-
     @Test
     public void testPdfRenditionStoredFromNote() throws Exception {
-        DocumentModel note = createBlobDoc("Note");
+        DocumentModel note = createBlobDoc("Note", session);
         Renderable renderable = note.getAdapter(Renderable.class);
         assertNotNull(renderable);
 
@@ -155,11 +140,16 @@ public class TestRenditionProvider {
         assertEquals("application/pdf", blob.getMimeType());
     }
 
-    protected DocumentModel createBlobDoc(String typeName) {
-        DocumentModel file = session.createDocumentModel("/", "dummy-file", typeName);
+    public static DocumentModel createBlobDoc(String typeName, CoreSession session) {
+        return createBlobDoc("/", "dummy-file", "dummy.txt", typeName, session);
+    }
+
+    public static DocumentModel createBlobDoc(String parentPath, String name, String filename, String typeName,
+            CoreSession session) {
+        DocumentModel file = session.createDocumentModel(parentPath, name, typeName);
         BlobHolder bh = file.getAdapter(BlobHolder.class);
         Blob blob = Blobs.createBlob("Dummy text");
-        blob.setFilename("dummy.txt");
+        blob.setFilename(filename);
         bh.setBlob(blob);
         return session.createDocument(file);
     }
