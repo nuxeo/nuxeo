@@ -21,10 +21,12 @@
 package org.nuxeo.ecm.platform.tag;
 
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_LIST;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -51,8 +53,8 @@ public class TestFacetedTagService extends AbstractTestTagService {
         tag2.put("label", "tag2");
         tag2.put("username", "Administrator");
 
-        file1.setPropertyValue("nxtag:tags", (Serializable) Arrays.asList(tag1, tag2));
-        file2.setPropertyValue("nxtag:tags", (Serializable) Arrays.asList(tag1));
+        file1.setPropertyValue(TAG_LIST, (Serializable) Arrays.asList(tag1, tag2));
+        file2.setPropertyValue(TAG_LIST, (Serializable) Arrays.asList(tag1));
 
         session.saveDocument(file1);
         session.saveDocument(file2);
@@ -69,5 +71,38 @@ public class TestFacetedTagService extends AbstractTestTagService {
         tagService.tag(session, relation.getId(), "tag");
 
         assertEquals(0, tagService.getTags(session, relation.getId()).size());
+    }
+
+    @Test
+    public void testNoVersioningFacetedTagFilter() {
+
+        DocumentModel note = session.createDocumentModel("/", "note", "Note");
+        note = session.createDocument(note);
+        session.save();
+
+        assertEquals("0.1", note.getVersionLabel());
+
+        Map<String, Serializable> tag = new HashMap<>();
+        tag.put("label", "tag");
+        tag.put("username", "Administrator");
+
+        note.setPropertyValue(TAG_LIST, (Serializable) Arrays.asList(tag));
+        // Disable auto checkout as we are only editing tags
+        note.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
+        note = session.saveDocument(note);
+
+        assertEquals("0.1", note.getVersionLabel());
+        assertEquals(1, tagService.getTags(session, note.getId()).size());
+
+        Map<String, Serializable> otherTag = new HashMap<>();
+        otherTag.put("label", "otherTag");
+        otherTag.put("username", "Administrator");
+        note.setPropertyValue(TAG_LIST, (Serializable) Arrays.asList(tag, otherTag));
+        // Edit an other property of the document to trigger auto versioning
+        note.setPropertyValue("dc:title", "myNote");
+        note = session.saveDocument(note);
+
+        assertEquals("0.2", note.getVersionLabel());
+        assertEquals(2, tagService.getTags(session, note.getId()).size());
     }
 }
