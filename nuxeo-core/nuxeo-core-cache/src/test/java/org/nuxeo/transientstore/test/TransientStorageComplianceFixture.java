@@ -359,7 +359,8 @@ public class TransientStorageComplianceFixture {
 
         // Verify default behavior (store cache dir is in ${nuxeo.data.dir}/transientstores/{name}
         AbstractTransientStore ts = (AbstractTransientStore) tss.getStore("microStore");
-        assertEquals(Framework.expandVars("${nuxeo.data.dir}/transientstores/microStore"),
+        String sep = File.separator;
+        assertEquals(Framework.expandVars("${nuxeo.data.dir}" + sep + "transientstores" + sep + "microStore"),
                 ts.getCacheDir().getAbsolutePath());
 
         // Verify when a path is given
@@ -367,7 +368,7 @@ public class TransientStorageComplianceFixture {
         // need to re-fecth service instance after hot deploy
         tss = Framework.getService(TransientStoreService.class);
         ts = (SimpleTransientStore) tss.getStore("testPath");
-        assertEquals(Framework.expandVars("${nuxeo.data.dir}/test"), ts.getCacheDir().getAbsolutePath());
+        assertEquals(Framework.expandVars("${nuxeo.data.dir}" + sep + "test"), ts.getCacheDir().getAbsolutePath());
 
     }
 
