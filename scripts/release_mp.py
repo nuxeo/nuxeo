@@ -40,9 +40,9 @@ CONNECT_PROD_URL = "https://connect.nuxeo.com/nuxeo"
 class ReleaseMP(object):
     """Nuxeo MP release manager.
 
-    See 'self.prepare()', 'self.perform()'."""
+    See 'self.perpare()', 'self.perform()'."""
     # pylint: disable=R0913
-    def __init__(self, alias, restart_from, default_conf=None, marketplace_conf=None, depth=None, unshallow=None):
+    def __init__(self, alias, restart_from, default_conf=None, marketplace_conf=None):
         self.alias = alias
         self.restart_from = restart_from
         if marketplace_conf == '':
@@ -68,12 +68,10 @@ class ReleaseMP(object):
             for key, value in vars(default_info).iteritems():
                 self.defaults[prefix + "-" + key] = str(value)
         self.mp_config = self.repo.get_mp_config(self.marketplace_conf, self.defaults)
-        self.depth = depth
-        self.unshallow = unshallow
 
     def clone(self):
         cwd = os.getcwd()
-        self.repo.clone_mp(self.marketplace_conf, depth=self.depth, unshallow=self.unshallow)
+        self.repo.clone_mp(self.marketplace_conf)
         os.chdir(cwd)
 
     # pylint: disable=E1103
@@ -313,7 +311,7 @@ def main():
 
     try:
         usage = ("""usage: %prog <command> [options]
-       %prog clone [-r alias] [-m URL] [-d PATH] [--depth N] [--unshallow]
+       %prog clone [-r alias] [-m URL] [-d PATH]
        %prog branch [-r alias] [-m URL] [-d PATH] [--rf package] [--dryrun]
        %prog prepare [-r alias] [-m URL] [-d PATH] [--rf package] [--dryrun]
        %prog perform [-r alias] [-m URL] [-d PATH] [--rf package] [--dryrun]
@@ -349,12 +347,6 @@ Default: '%default'""")
                           default=None, help="""The Nuxeo Packages configuration URL (usually named 'marketplace.ini').
 You can use a local file URL ('file://').\n
 If set to '' (empty string), then it will default to '""" + DEFAULT_MP_CONF_URL + """'. Default: '%default'""")
-        parser.add_option('--depth', action="store", type="int", dest='depth', default=None,
-                          help="""Create a shallow clone with a history truncated to the specified number of commits. 
-Default: '%default'""")
-        parser.add_option('--unshallow', action="store_true", dest='unshallow', default=False,
-                          help="""If the source repository is shallow, fetch as much as possible so that the current 
-repository has the same history as the source repository. Default: '%default'""")
         parser.add_option('-i', '--interactive', action="store_true", dest='interactive', default=False,
                           help="""Not implemented (TODO NXP-8573). Interactive mode. Default: '%default'""")
         parser.add_option('--rf', '--restart-from', action="store", dest='restart_from', default=None,
@@ -367,7 +359,7 @@ repository has the same history as the source repository. Default: '%default'"""
         elif len(args) > 1:
             raise ExitException(1, "'command' must be a single argument. See usage with '-h'.")
         full_release = ReleaseMP(options.remote_alias, options.restart_from, options.default_conf,
-                                 options.marketplace_conf, options.depth, options.unshallow)
+                                 options.marketplace_conf)
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
         elif command == "clone":
@@ -386,7 +378,6 @@ repository has the same history as the source repository. Default: '%default'"""
         if e.message is not None:
             log("[ERROR] %s" % e.message, sys.stderr)
         sys.exit(e.return_code)
-
 
 if __name__ == '__main__':
     main()
