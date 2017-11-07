@@ -80,6 +80,7 @@ public class FacetedTagService extends AbstractTagService {
             tag.put(USERNAME_PROPERTY, username);
             tags.add(tag);
             setTags(docModel, tags);
+            docModel.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
             session.saveDocument(docModel);
         }
     }
@@ -95,6 +96,7 @@ public class FacetedTagService extends AbstractTagService {
             if (label == null) {
                 if (!getTags(docModel).isEmpty()) {
                     setTags(docModel, new ArrayList<>());
+                    docModel.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
                     session.saveDocument(docModel);
                 }
             } else {
@@ -106,6 +108,7 @@ public class FacetedTagService extends AbstractTagService {
                 if (tag != null) {
                     tags.remove(tag);
                     setTags(docModel, tags);
+                    docModel.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
                     session.saveDocument(docModel);
                 }
             }
@@ -157,10 +160,7 @@ public class FacetedTagService extends AbstractTagService {
             }
             setTags(dstDocModel, dstTags);
             // Disable auto checkout of destination document model
-            // to disable deletion of a version which could be the base of the live document
-            if (srcDocModel.isVersion()) {
-                dstDocModel.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
-            }
+            dstDocModel.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
             session.saveDocument(dstDocModel);
         }
     }
