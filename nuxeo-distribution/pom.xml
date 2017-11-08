@@ -20,7 +20,7 @@
 
   <properties>
     <nuxeo.distribution.version>9.3-SNAPSHOT</nuxeo.distribution.version>
-    <nuxeo.webui.mp.version>1.1.3-SNAPSHOT</nuxeo.webui.mp.version>
+    <nuxeo.webui.mp.version>2.1.3-SNAPSHOT</nuxeo.webui.mp.version>
   </properties>
 
   <modules>
