@@ -28,7 +28,7 @@ Example:
 -->
 <dom-module id="nuxeo-authentication-tokens-management">
   <template>
-    <style>
+    <style include="iron-flex iron-flex-alignment iron-flex-factors">
       :host {
         display: block;
       }
@@ -40,7 +40,7 @@ Example:
 
       .row {
         border-bottom: 1px solid var(--nuxeo-border);
-        @apply(--layout-horizontal);
+        @apply --layout-horizontal;
       }
 
       .row:hover {
@@ -62,7 +62,7 @@ Example:
         overflow: hidden;
       }
 
-      paper-icon-button:hover ::content iron-icon {
+      paper-icon-button:hover ::slotted(iron-icon) {
         color: var(--nuxeo-action-hover, #00adff);
       }
 
@@ -108,7 +108,7 @@ Example:
             <div class="flex">[[token.deviceId]]</div>
             <div class="flex">[[token.deviceDescription]]</div>
             <div class="flex">[[token.permission]]</div>
-            <div class="flex">[[_formatDate(token.creationDate)]]</div>
+            <div class="flex"><nuxeo-date datetime="[[token.creationDate]]"></nuxeo-date></div>
             <div class="actions">
               <paper-icon-button icon="icons:clear"
                                  title="[[i18n('authenticationTokensManagement.revoke', 'Revoke)]]"
@@ -123,7 +123,6 @@ Example:
     <paper-toast id="toast">[[i18n('authenticationTokensManagement.revoked', 'Token revoked')]]</paper-toast>
   </template>
   <script>
-    (function() {
       Polymer({
         is: 'nuxeo-authentication-tokens-management',
         properties: {
@@ -165,6 +164,5 @@ Example:
         }
 
       });
-    })();
   </script>
 </dom-module>

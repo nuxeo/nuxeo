@@ -24,7 +24,7 @@ Contributors:
 -->
 <dom-module id="nuxeo-drive-edit-button">
   <template>
-    <style>
+    <style include="iron-flex iron-flex-alignment">
       :host {
         display: inline-block;
       }
@@ -37,12 +37,12 @@ Contributors:
       <paper-tooltip for="driveBtn">[[i18n('driveEditButton.tooltip')]]</paper-tooltip>
     </template>
 
-    <paper-dialog id="dialog" with-backdrop>
+    <nuxeo-dialog id="dialog" with-backdrop>
       <div class="vertical layout">
         <h1>[[i18n('driveEditButton.dialog.heading')]]</h1>
         <nuxeo-drive-desktop-packages></nuxeo-drive-desktop-packages>
       </div>
-    </paper-dialog>
+    </nuxeo-dialog>
   </template>
 
   <script>

@@ -31,22 +31,19 @@ Example:
 -->
 <dom-module id="nuxeo-drive-page">
   <template>
-
+    <style include="nuxeo-styles"></style>
     <nuxeo-page>
       <div class="header">[[i18n('drivePage.heading','Nuxeo Drive')]]</div>
       <div class="content">
-        <paper-card class="card" elevation="0">
-          <h3>[[i18n('drivePage.packages','Packages')]]</h3>
+        <nuxeo-card heading="[[i18n('drivePage.packages','Packages')]]">
           <nuxeo-drive-desktop-packages></nuxeo-drive-desktop-packages>
-        </paper-card>
-        <paper-card class="card" elevation="0">
-          <h3>[[i18n('drivePage.roots','Synchronization Roots')]]</h3>
+        </nuxeo-card>
+        <nuxeo-card heading="[[i18n('drivePage.roots','Synchronization Roots')]]">
           <nuxeo-drive-sync-roots-management></nuxeo-drive-sync-roots-management>
-        </paper-card>
-        <paper-card class="card" elevation="0">
-          <h3>[[i18n('drivePage.tokens','Tokens')]]</h3>
+        </nuxeo-card>
+        <nuxeo-card heading="[[i18n('drivePage.tokens','Tokens')]]">
           <nuxeo-authentication-tokens-management application="Nuxeo Drive"></nuxeo-authentication-tokens-management>
-        </paper-card>
+        </nuxeo-card>
       </div>
     </nuxeo-page>
   </template>
