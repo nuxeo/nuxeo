@@ -93,7 +93,7 @@ public class TestVideoRenditions {
         doc = session.createDocument(doc);
 
         List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(2, availableRenditionDefinitions.size());
+        assertEquals(3, availableRenditionDefinitions.size());
 
         TranscodedVideo transcodedVideo = videoService.convert(video, "WebM 480p");
         assertNotNull(transcodedVideo);
@@ -102,7 +102,7 @@ public class TestVideoRenditions {
         doc.setPropertyValue(VideoConstants.TRANSCODED_VIDEOS_PROPERTY, (Serializable) transcodedVideos);
         doc = session.saveDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(3, availableRenditionDefinitions.size());
+        assertEquals(4, availableRenditionDefinitions.size());
         for (RenditionDefinition definition : availableRenditionDefinitions) {
             if (definition.getName().equals(transcodedVideo.getName())) {
                 assertTrue(definition.isEnabled());
@@ -115,7 +115,7 @@ public class TestVideoRenditions {
         List<Rendition> availableRenditions = renditionService.getAvailableRenditions(doc, true);
         assertEquals(3, availableRenditions.size());
         availableRenditions = renditionService.getAvailableRenditions(doc, false);
-        assertEquals(3, availableRenditions.size());
+        assertEquals(4, availableRenditions.size());
         for (Rendition rendition : availableRenditions) {
             if (rendition.getName().equals("WebM 480p")) {
                 List<Blob> blobs = rendition.getBlobs();
