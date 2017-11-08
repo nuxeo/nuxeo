@@ -186,6 +186,11 @@
       <artifactId>xercesImpl</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>
