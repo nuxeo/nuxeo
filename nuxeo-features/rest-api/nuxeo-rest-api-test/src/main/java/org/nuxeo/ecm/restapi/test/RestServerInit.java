@@ -170,6 +170,7 @@ public class RestServerInit implements RepositoryInit {
         String schemaName = um.getGroupSchemaName();
         groupModel.setProperty(schemaName, "groupname", groupId);
         groupModel.setProperty(schemaName, "grouplabel", groupLabel);
+        groupModel.setProperty(schemaName, "description", "description of " + groupId);
         groupModel = um.createGroup(groupModel);
     }
 

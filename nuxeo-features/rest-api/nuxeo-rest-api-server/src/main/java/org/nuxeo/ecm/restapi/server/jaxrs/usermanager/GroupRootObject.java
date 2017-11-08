@@ -67,11 +67,18 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
     private DocumentModel buildModelFromGroup(NuxeoGroup group, UserManager um) {
         DocumentModel groupModel = um.getBareGroupModel();
         String schemaName = um.getGroupSchemaName();
+
+        DocumentModel model = group.getModel();
+        if (model != null) {
+            groupModel.copyContent(model);
+        }
+
+        // make sure to override group properties for compat
         groupModel.setProperty(schemaName, um.getGroupIdField(), group.getName());
         groupModel.setProperty(schemaName, um.getGroupLabelField(), group.getLabel());
-
         groupModel.setPropertyValue(um.getGroupMembersField(), (Serializable) group.getMemberUsers());
         groupModel.setPropertyValue(um.getGroupSubGroupsField(), (Serializable) group.getMemberGroups());
+        groupModel.setPropertyValue(um.getGroupParentGroupsField(), (Serializable) group.getParentGroups());
         return groupModel;
     }
 

@@ -58,9 +58,17 @@ public class GroupObject extends AbstractUMObject<NuxeoGroup> {
     @Override
     protected NuxeoGroup updateArtifact(NuxeoGroup updateGroup) {
         DocumentModel groupModel = um.getGroupModel(currentArtifact.getName());
+
+        DocumentModel model = updateGroup.getModel();
+        if (model != null) {
+            groupModel.copyContent(model);
+        }
+
+        // make sure to override group properties for compat
         groupModel.setPropertyValue(um.getGroupLabelField(), updateGroup.getLabel());
         groupModel.setPropertyValue(um.getGroupMembersField(), (Serializable) updateGroup.getMemberUsers());
         groupModel.setPropertyValue(um.getGroupSubGroupsField(), (Serializable) updateGroup.getMemberGroups());
+        groupModel.setPropertyValue(um.getGroupParentGroupsField(), (Serializable) updateGroup.getParentGroups());
 
         um.updateGroup(groupModel);
         return um.getGroup(currentArtifact.getName());

@@ -24,6 +24,7 @@ package org.nuxeo.ecm.core.api.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 
 /**
@@ -42,6 +43,8 @@ public class NuxeoGroupImpl implements NuxeoGroup {
     private String name;
 
     private String label;
+
+    private DocumentModel model;
 
     public NuxeoGroupImpl(String name) {
         if (name == null) {
@@ -119,6 +122,16 @@ public class NuxeoGroupImpl implements NuxeoGroup {
     @Override
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    @Override
+    public DocumentModel getModel() {
+        return model;
+    }
+
+    @Override
+    public void setModel(DocumentModel model) {
+        this.model = model;
     }
 
     @Override
