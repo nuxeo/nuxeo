@@ -35,17 +35,18 @@ limitations under the License.
       }
 
       .item {
-        @apply(--layout-horizontal);
-        @apply(--layout-flex);
+        @apply --layout-horizontal;
+        @apply --layout-flex;
+        @apply --layout-justified;
         line-height: 1.5em;
       }
 
       iron-icon {
-        @apply(--nuxeo-action);
+        @apply --nuxeo-action;
       }
 
       iron-icon:hover {
-        @apply(--nuxeo-action-hover);
+        @apply --nuxeo-action-hover;
       }
 
     </style>
@@ -53,7 +54,7 @@ limitations under the License.
     <h3>[[label]]</h3>
     <div>
       <template is="dom-repeat" items="[[_getAdditionalFormats(document)]]" as="item">
-        <div class="item horizontal layout justified">
+        <div class="item">
           <label>[[item.name]]</label>
           <span>[[item.dimensions]]</span>
           <span>[[item.size]]</span>
