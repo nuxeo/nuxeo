@@ -1,0 +1,25 @@
+# common stuff
+.classpath
+.project
+.settings
+.idea
+.yo-rc.json
+bin
+target
+*~
+*~bak
+*-bak
+*.bak
+*-new
+*.rej
+*.orig
+.DS_Store
+.pydevproject
+*.pyc
+*.iml
+*.ipr
+*.iws
+*.gpd.*
+*cpJar*
+dependency-tree.log
+build.properties
