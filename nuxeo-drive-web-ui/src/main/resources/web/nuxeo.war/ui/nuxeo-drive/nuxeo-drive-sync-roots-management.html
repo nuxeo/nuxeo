@@ -28,7 +28,7 @@ Example:
 -->
 <dom-module id="nuxeo-drive-sync-roots-management">
   <template>
-    <style>
+    <style include="iron-flex iron-flex-alignment iron-flex-factors">
       :host {
         display: block;
       }
@@ -40,7 +40,7 @@ Example:
 
       .row {
         border-bottom: 1px solid var(--nuxeo-border);
-        @apply(--layout-horizontal);
+        @apply --layout-horizontal;
       }
 
       .row:hover {
@@ -110,7 +110,6 @@ Example:
 
   </template>
   <script>
-    (function() {
       Polymer({
         is: 'nuxeo-drive-sync-roots-management',
         properties: {
@@ -142,6 +141,5 @@ Example:
           return this.$.roots.execute(this);
         }
       });
-    })();
   </script>
 </dom-module>
