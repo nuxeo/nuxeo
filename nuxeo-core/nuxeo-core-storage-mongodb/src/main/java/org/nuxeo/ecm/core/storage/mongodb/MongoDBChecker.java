@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
@@ -33,7 +35,20 @@ import com.mongodb.ServerAddress;
 
 public class MongoDBChecker implements BackingChecker {
 
+    private static final Log log = LogFactory.getLog(MongoDBChecker.class);
+
     public static final String TEMPLATE_NAME = "mongodb";
+
+    /**
+     * @since 9.3
+     */
+    public static final String PARAM_MONGODB_CHECK_TIMEOUT = "nuxeo.mongodb.check.timeout";
+
+    /**
+     * @since 9.3
+     */
+    public static final int DEFAULT_CHECK_TIMEOUT_IN_SECONDS = 5;
+
 
     @Override
     public boolean accepts(ConfigurationGenerator cg) {
@@ -48,7 +63,7 @@ public class MongoDBChecker implements BackingChecker {
 
         MongoClientOptions.Builder optionsBuilder = MongoClientOptions.builder()
                                                                       .serverSelectionTimeout(
-                                                                              (int) TimeUnit.SECONDS.toMillis(1))
+                                                                              (int) TimeUnit.SECONDS.toMillis(getCheckTimeoutInSeconds(cg)))
                                                                       .description("Nuxeo DB Check");
         if (serverName.startsWith("mongodb://")) {
             // allow mongodb:// URI syntax for the server, to pass everything in one string
@@ -65,5 +80,21 @@ public class MongoDBChecker implements BackingChecker {
         } finally {
             ret.close();
         }
+    }
+
+    /**
+     * Returns the value of the check timeout parameter in seconds.
+     * If value is not parseable or not set, then use the default value.
+     * @return the timeout check in seconds.
+     * @since 9.3
+     */
+    private int getCheckTimeoutInSeconds(ConfigurationGenerator cg) {
+        int checkTimeout = DEFAULT_CHECK_TIMEOUT_IN_SECONDS;
+        try {
+            checkTimeout = Integer.parseInt(cg.getUserConfig().getProperty(PARAM_MONGODB_CHECK_TIMEOUT, String.valueOf(DEFAULT_CHECK_TIMEOUT_IN_SECONDS)));
+        } catch (NumberFormatException e) {
+            log.warn(String.format("Invalid format for %s parameter, using default value instead", PARAM_MONGODB_CHECK_TIMEOUT), e);
+        }
+        return checkTimeout;
     }
 }
