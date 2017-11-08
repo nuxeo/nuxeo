@@ -9,6 +9,10 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
+    <directory name="template-user" template="true" extends="template-directory" />
+
+    <directory name="template-group" template="true" extends="template-directory" />
+
   </extension>
 
 </component>
