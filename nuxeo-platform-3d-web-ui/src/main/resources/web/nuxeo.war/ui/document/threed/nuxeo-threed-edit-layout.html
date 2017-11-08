@@ -35,23 +35,19 @@ Contributors:
 
   </template>
   <script>
-    (function () {
-      'use strict';
+    Polymer({
+      is: 'nuxeo-threed-edit-layout',
 
-      Polymer({
-        is: 'nuxeo-threed-edit-layout',
+      properties: {
+        document: {
+          type: Object
+        },
 
-        properties: {
-          document: {
-            type: Object
-          },
-
-          uploadEnabled: {
-            type: Boolean,
-            value: false
-          }
+        uploadEnabled: {
+          type: Boolean,
+          value: false
         }
-      });
-    })();
+      }
+    });
   </script>
 </dom-module>
