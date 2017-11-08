@@ -14,6 +14,15 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
+    <directory name="template-user" template="true" extends="template-directory">
+      <table>users</table>
+      <computeMultiTenantId>false</computeMultiTenantId>
+    </directory>
+
+    <directory name="template-group" template="true" extends="template-directory">
+      <table>groups</table>
+    </directory>
+
   </extension>
 
 </component>
