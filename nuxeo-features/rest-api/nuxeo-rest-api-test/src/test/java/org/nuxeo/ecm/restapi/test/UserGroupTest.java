@@ -36,11 +36,11 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.usermanager.GroupConfig;
 import org.nuxeo.ecm.platform.usermanager.NuxeoGroupImpl;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -226,6 +226,8 @@ public class UserGroupTest extends BaseUserTest {
         group.setLabel("modifiedGroup");
         group.setMemberUsers(Arrays.asList(new String[] { "user1", "user2" }));
         group.setMemberGroups(Arrays.asList(new String[] { "group2" }));
+        GroupConfig groupConfig = um.getGroupConfig();
+        group.getModel().setProperty(groupConfig.schemaName, "description", "updated description");
 
         // When i PUT this group
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "/group/" + group.getName(),
@@ -236,6 +238,7 @@ public class UserGroupTest extends BaseUserTest {
             nextTransaction(); // see committed changes
             group = um.getGroup("group1");
             assertEquals("modifiedGroup", group.getLabel());
+            assertEquals("updated description", group.getModel().getProperty(groupConfig.schemaName, "description"));
             assertEquals(2, group.getMemberUsers().size());
             assertEquals(1, group.getMemberGroups().size());
         }
@@ -260,6 +263,8 @@ public class UserGroupTest extends BaseUserTest {
         group.setLabel("a new group");
         group.setMemberUsers(Arrays.asList(new String[] { "user1", "user2" }));
         group.setMemberGroups(Arrays.asList(new String[] { "group2" }));
+        GroupConfig groupConfig = um.getGroupConfig();
+        group.getModel().setProperty(groupConfig.schemaName, "description", "new description");
 
         // When i POST this group
         try (CloseableClientResponse response = getResponse(RequestType.POST, "/group/", getGroupAsJson(group))) {
@@ -268,6 +273,7 @@ public class UserGroupTest extends BaseUserTest {
             // Then the group is modified server side
             group = um.getGroup("newGroup");
             assertEquals("a new group", group.getLabel());
+            assertEquals("new description", group.getModel().getProperty(groupConfig.schemaName, "description"));
             assertEquals(2, group.getMemberUsers().size());
             assertEquals(1, group.getMemberGroups().size());
         }
