@@ -19,8 +19,16 @@
 package org.nuxeo.ecm.platform.template.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
+
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
 import java.io.File;
+import java.io.FileInputStream;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -85,6 +93,58 @@ public class TestOOoConvert extends BaseConverterTest {
 
         }
 
+    }
+
+    @Test
+    public void testOfficeConverter4() throws Exception {
+        ConversionService cs = Framework.getLocalService(ConversionService.class);
+
+        BlobHolder bh = getBlobFromPath("data/testMe.html", "text/html");
+        String converterName = cs.getConverterName(bh.getBlob().getMimeType(),
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        assertEquals("any2docx", converterName);
+
+        boolean isAvailable = cs.isConverterAvailable(converterName).isAvailable();
+        assumeTrue(isAvailable);
+
+        BlobHolder result = cs.convert(converterName, bh, null);
+        File docxFile = Framework.createTempFile("docxfile", "docx");
+        result.getBlob().transferTo(docxFile);
+
+        XWPFDocument doc = new XWPFDocument(new FileInputStream(docxFile));
+        XWPFWordExtractor extractor = new XWPFWordExtractor(doc);
+
+        String text = extractor.getText();
+        assertTrue(text.length() > 0);
+        assertTrue(text.contains("Titre 1"));
+
+        docxFile.delete();
+    }
+
+    @Test
+    public void testOfficeConverter5() throws Exception {
+        ConversionService cs = Framework.getLocalService(ConversionService.class);
+
+        BlobHolder bh = getBlobFromPath("data/testMe.html", "text/html");
+        String converterName = cs.getConverterName(bh.getBlob().getMimeType(),
+                "application/msword");
+        assertEquals("any2doc", converterName);
+
+        boolean isAvailable = cs.isConverterAvailable(converterName).isAvailable();
+        assumeTrue(isAvailable);
+
+        BlobHolder result = cs.convert(converterName, bh, null);
+        File docFile = Framework.createTempFile("docfile", "doc");
+        result.getBlob().transferTo(docFile);
+
+        HWPFDocument doc = new HWPFDocument(new FileInputStream(docFile));
+        WordExtractor extractor = new WordExtractor(doc);
+
+        String text = extractor.getText();
+        assertTrue(text.length() > 0);
+        assertTrue(text.contains("Titre 1"));
+
+        docFile.delete();
     }
 
 }

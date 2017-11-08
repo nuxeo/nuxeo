@@ -42,7 +42,7 @@
       </parameters>
    </converter>
 
-   <converter name="any2docx" class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
+   <converter name="any2docx" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
 
       <destinationMimeType>application/vnd.openxmlformats-officedocument.wordprocessingml.document</destinationMimeType>
 
@@ -71,9 +71,14 @@
 
       <!-- WordPerfect -->
       <sourceMimeType>application/wordperfect</sourceMimeType>
+
+      <parameters>
+        <parameter name="CommandLineName">soffice</parameter>
+        <parameter name="format">docx</parameter>
+      </parameters>
    </converter>
 
-   <converter name="any2doc" class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
+   <converter name="any2doc" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
 
       <destinationMimeType>application/msword</destinationMimeType>
 
@@ -102,6 +107,11 @@
 
       <!-- WordPerfect -->
       <sourceMimeType>application/wordperfect</sourceMimeType>
+
+      <parameters>
+        <parameter name="CommandLineName">soffice</parameter>
+        <parameter name="format">doc</parameter>
+      </parameters>
    </converter>
 
   </extension>
