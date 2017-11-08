@@ -62,10 +62,10 @@ import com.google.inject.Inject;
 public class TestPictureRenditions {
 
     public static final List<String> EXPECTED_ALL_RENDITION_DEFINITION_NAMES = Arrays.asList("xmlExport", "zipExport",
-            "zipTreeExport", "Thumbnail", "Small", "Medium", "FullHD", "OriginalJpeg");
+            "zipTreeExport", "Thumbnail", "Small", "Medium", "FullHD", "OriginalJpeg", "mainBlob");
 
     public static final List<String> EXPECTED_FILTERED_RENDITION_DEFINITION_NAMES = Arrays.asList("xmlExport",
-            "zipExport", "zipTreeExport", "Small", "FullHD", "OriginalJpeg");
+            "zipExport", "zipTreeExport", "Small", "FullHD", "OriginalJpeg", "mainBlob");
 
     @Inject
     protected CoreSession session;
@@ -89,13 +89,13 @@ public class TestPictureRenditions {
 
         List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(
                 doc);
-        assertEquals(7, availableRenditionDefinitions.size());
+        assertEquals(8, availableRenditionDefinitions.size());
         for (RenditionDefinition definition : availableRenditionDefinitions) {
             assertTrue(EXPECTED_ALL_RENDITION_DEFINITION_NAMES.contains(definition.getName()));
         }
 
         List<Rendition> availableRenditions = renditionService.getAvailableRenditions(doc);
-        assertEquals(7, availableRenditions.size());
+        assertEquals(8, availableRenditions.size());
         // they are all visible
         availableRenditions = renditionService.getAvailableRenditions(doc, true);
         assertEquals(7, availableRenditions.size());
@@ -108,18 +108,18 @@ public class TestPictureRenditions {
 
         List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(
                 doc);
-        assertEquals(7, availableRenditionDefinitions.size());
+        assertEquals(8, availableRenditionDefinitions.size());
 
         deployer.deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-picture-renditions-override.xml");
 
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(5, availableRenditionDefinitions.size());
+        assertEquals(6, availableRenditionDefinitions.size());
         for (RenditionDefinition definition : availableRenditionDefinitions) {
             assertTrue(EXPECTED_FILTERED_RENDITION_DEFINITION_NAMES.contains(definition.getName()));
         }
 
         List<Rendition> availableRenditions = renditionService.getAvailableRenditions(doc);
-        assertEquals(5, availableRenditions.size());
+        assertEquals(6, availableRenditions.size());
         availableRenditions = renditionService.getAvailableRenditions(doc, true);
         assertEquals(4, availableRenditions.size());
 
