@@ -118,6 +118,8 @@ audit.elasticsearch.migration=false
 audit.elasticsearch.migration.batchSize=1000
 # Refresh interval for the health check
 nuxeo.healthcheck.refresh.interval.seconds=20
+# Default request durability means that Elasticsearch is doing one fsync per request. With async durability it is one fsync every 5s.
+elasticsearch.index.translog.durability=request
 
 # Kafka
 kafka.enabled=false

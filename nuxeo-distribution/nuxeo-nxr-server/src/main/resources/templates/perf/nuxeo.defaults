@@ -31,3 +31,4 @@ elasticsearch.reindex.bucketReadSize=1000
 elasticsearch.reindex.bucketWriteSize=200
 #elasticsearch.indexing.clearCompletedAfterSeconds=30
 elasticsearch.adminCenter.displayClusterInfo=true
+elasticsearch.index.translog.durability=async
