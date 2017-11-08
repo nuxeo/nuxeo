@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.computedgroups;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -134,4 +135,13 @@ public class NuxeoComputedGroup implements ComputedGroup {
         throw new UnsupportedOperationException("Computed groups are read only");
     }
 
+    @Override
+    public DocumentModel getModel() {
+        return null;
+    }
+
+    @Override
+    public void setModel(DocumentModel model) {
+        throw new UnsupportedOperationException("Computed groups are read only");
+    }
 }

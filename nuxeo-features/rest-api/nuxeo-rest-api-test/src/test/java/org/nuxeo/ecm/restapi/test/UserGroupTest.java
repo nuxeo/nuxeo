@@ -22,9 +22,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.FETCH_PROPERTIES;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
@@ -34,6 +36,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
@@ -41,6 +44,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -175,8 +179,47 @@ public class UserGroupTest extends BaseUserTest {
 
         // Then i GET the Group
         JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(4, node.size());
         assertEqualsGroup(group.getName(), group.getLabel(), node);
+    }
 
+    @Test
+    public void itCanGetAGroupWithFetchProperties() throws Exception {
+        DocumentModel groupModel = um.getBareGroupModel();
+        String schemaName = um.getGroupSchemaName();
+        String groupId = "newGroup";
+        groupModel.setProperty(schemaName, "groupname", groupId);
+        groupModel.setProperty(schemaName, "grouplabel", "a new group");
+        groupModel.setProperty(schemaName, "description", "description of " + groupId);
+        groupModel.setProperty(schemaName, um.getGroupMembersField(), Arrays.asList("user1", "user2"));
+        groupModel.setProperty(schemaName, um.getGroupSubGroupsField(), Collections.singletonList("group2"));
+        groupModel.setProperty(schemaName, um.getGroupParentGroupsField(), Collections.singletonList("supergroup"));
+        um.createGroup(groupModel);
+        nextTransaction();
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle(FETCH_PROPERTIES + "." + NuxeoGroupJsonWriter.ENTITY_TYPE,
+                "memberUsers,memberGroups,parentGroups");
+        try {
+            ClientResponse response = getResponse(RequestType.GET, "/group/" + groupId,
+                    queryParams);
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(7, node.size());
+            JsonNode memberUsers = node.get("memberUsers");
+            assertTrue(memberUsers.isArray());
+            assertEquals(2, memberUsers.size());
+            assertEquals("user1", memberUsers.get(0).getValueAsText());
+            assertEquals("user2", memberUsers.get(1).getValueAsText());
+            JsonNode memberGroups = node.get("memberGroups");
+            assertEquals(1, memberGroups.size());
+            assertEquals("group2", memberGroups.get(0).getValueAsText());
+            JsonNode parentGroups = node.get("parentGroups");
+            assertEquals(1, parentGroups.size());
+            assertEquals("supergroup", parentGroups.get(0).getValueAsText());
+        } finally {
+            um.deleteGroup(groupId);
+        }
     }
 
     @Test

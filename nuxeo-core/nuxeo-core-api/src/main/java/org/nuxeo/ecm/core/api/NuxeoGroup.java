@@ -103,4 +103,16 @@ public interface NuxeoGroup extends Serializable {
      */
     void setLabel(String label);
 
+    /**
+     * @since 8.10-HF19
+     */
+    DocumentModel getModel();
+
+    /**
+     * For INTERNAL use only.
+     *
+     * @since 8.10-HF19
+     */
+    void setModel(DocumentModel model);
+
 }
