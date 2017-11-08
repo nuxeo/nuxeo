@@ -23,6 +23,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -44,6 +45,12 @@ public class FooObject extends DefaultObject {
     public Object doGetRollback() {
         TransactionHelper.setTransactionRollbackOnly();
         return Blobs.createJSONBlob("{ \"foo\": \"bar\" }");
+    }
+
+    @GET
+    @Path("exception")
+    public Object doException() {
+        throw new NuxeoException("foo");
     }
 
 }

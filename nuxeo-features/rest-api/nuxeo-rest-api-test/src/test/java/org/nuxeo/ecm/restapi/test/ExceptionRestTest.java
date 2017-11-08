@@ -22,7 +22,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.util.List;
 
+import javax.inject.Inject;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.spi.LoggingEvent;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,17 +36,24 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
+import org.nuxeo.ecm.webengine.app.WebEngineExceptionMapper;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class })
+@Features({ LogCaptureFeature.class, RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
+@Deploy("org.nuxeo.ecm.platform.restapi.test.test")
 public class ExceptionRestTest extends BaseTest {
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     @Test
     public void testSimpleException() throws IOException {
@@ -79,6 +91,46 @@ public class ExceptionRestTest extends BaseTest {
             assertNotNull(node.get("stacktrace").getTextValue());
             assertEquals(DocumentNotFoundException.class.getCanonicalName(),
                     node.get("exception").get("className").getTextValue());
+        }
+    }
+
+    @Test
+    @LogCaptureFeature.FilterWith(ExceptionLogFilter.class)
+    public void testNotFoundEndpoint() throws IOException {
+        try (CloseableClientResponse r = getResponse(RequestType.GET, "/foo/notfound")) {
+            assertEquals(404, r.getStatus());
+            JsonNode node = mapper.readTree(r.getEntityInputStream());
+            assertEquals(404, node.get("status").getNumberValue());
+            assertEquals(
+                    "com.sun.jersey.api.NotFoundException: null for uri: http://localhost:18090/api/v1/foo/notfound",
+                    node.get("message").getTextValue());
+
+            List<LoggingEvent> caughtEvents = logCaptureResult.getCaughtEvents();
+            assertEquals(0, caughtEvents.size());
+        }
+    }
+
+    @Test
+    @LogCaptureFeature.FilterWith(ExceptionLogFilter.class)
+    public void testEndpointWithException() throws IOException {
+        try (CloseableClientResponse r = getResponse(RequestType.GET, "/foo/exception")) {
+            assertEquals(500, r.getStatus());
+            JsonNode node = mapper.readTree(r.getEntityInputStream());
+            assertEquals(500, node.get("status").getNumberValue());
+            assertEquals("foo", node.get("message").getTextValue());
+
+            List<LoggingEvent> caughtEvents = logCaptureResult.getCaughtEvents();
+            assertEquals(1, caughtEvents.size());
+            LoggingEvent loggingEvent = caughtEvents.get(0);
+            assertEquals("org.nuxeo.ecm.core.api.NuxeoException: foo", loggingEvent.getRenderedMessage());
+        }
+    }
+
+    public static class ExceptionLogFilter implements LogCaptureFeature.Filter {
+        @Override
+        public boolean accept(LoggingEvent event) {
+            return event.getLevel().isGreaterOrEqual(Level.ERROR)
+                    && (event.getLoggerName().contains(WebEngineExceptionMapper.class.getSimpleName()));
         }
     }
 }

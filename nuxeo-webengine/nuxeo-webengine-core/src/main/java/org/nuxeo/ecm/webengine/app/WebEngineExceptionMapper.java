@@ -76,9 +76,15 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
             return Response.status(SC_INTERNAL_SERVER_ERROR).entity(result).build();
         }
 
+        int statusCode = getStatusCode(cause);
+        if (statusCode >= SC_INTERNAL_SERVER_ERROR) {
+            log.error(cause, cause);
+        } else {
+            log.debug(cause, cause);
+        }
         // make sure we have a NuxeoException
-        return Response.status(getStatusCode(cause))
-                       .entity(cause instanceof NuxeoException ? cause : new NuxeoException(cause))
+        return Response.status(statusCode)
+                       .entity(cause instanceof NuxeoException ? cause : new NuxeoException(cause, statusCode))
                        .build();
     }
 
