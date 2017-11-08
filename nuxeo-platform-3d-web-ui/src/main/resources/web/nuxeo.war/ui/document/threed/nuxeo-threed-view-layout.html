@@ -36,7 +36,7 @@ Contributors:
       }
 
       .card-section {
-        @apply(--paper-card);
+        @apply --paper-card;
         padding: 1em;
         margin: 0 22px 22px 0;
       }
@@ -50,34 +50,30 @@ Contributors:
   </template>
 
   <script>
-    (function () {
-      'use strict';
-
-      Polymer({
-        is: 'nuxeo-threed-view-layout',
-        properties: {
-          document: {
-            type: Object,
-            notify: true
-          }
-        },
-
-        behaviors: [Nuxeo.I18nBehavior],
-
-        listeners: {
-          '3d-viewer-coords-change': '_onViewerCoordsChange',
-          '3d-viewer-content-change': '_onViewerContentChange'
-        },
-
-        _onViewerCoordsChange: function(e) {
-          this.querySelector("#threedViewer").set('sphericalCoords', [e.detail.azimuth, e.detail.zenith]);
-        },
-
-        _onViewerContentChange: function(e) {
-          this.querySelector("#threedViewer").set('src', e.detail.content);
+    Polymer({
+      is: 'nuxeo-threed-view-layout',
+      properties: {
+        document: {
+          type: Object,
+          notify: true
         }
-      });
-    })();
+      },
+
+      behaviors: [Nuxeo.I18nBehavior],
+
+      listeners: {
+        '3d-viewer-coords-change': '_onViewerCoordsChange',
+        '3d-viewer-content-change': '_onViewerContentChange'
+      },
+
+      _onViewerCoordsChange: function(e) {
+        (this.shadowRoot || this).querySelector("#threedViewer").set('sphericalCoords', [e.detail.azimuth, e.detail.zenith]);
+      },
+
+      _onViewerContentChange: function(e) {
+        (this.shadowRoot || this).querySelector("#threedViewer").set('src', e.detail.content);
+      }
+    });
   </script>
 
 </dom-module>
