@@ -29,22 +29,22 @@ Contributors:
     <style>
       :host {
         display: inline-block;
-        @apply(--layout-horizontal);
-        @apply(--nuxeo-liveconnect-link-layout);
+        @apply --layout-horizontal;
+        @apply --nuxeo-liveconnect-link-layout;
       }
 
       iron-icon {
         --iron-icon-height: 24px;
         --iron-icon-width: 24px;
         margin-right: 4px;
-        @apply(--nuxeo-liveconnect-icon-layout);
+        @apply --nuxeo-liveconnect-icon-layout;
       }
 
       a {
-        @apply(--layout-horizontal);
-        @apply(--layout-center);
-        @apply(--layout-center-justified);
-        @apply(--nuxeo-liveconnect-anchor-layout);
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        @apply --layout-center-justified;
+        @apply --nuxeo-liveconnect-anchor-layout;
       }
     </style>
 
@@ -56,26 +56,18 @@ Contributors:
       </a>
     </template>
   </template>
-
   <script>
-    (function() {
-      'use strict';
+    Polymer({
+      is: 'nuxeo-liveconnect-dropbox-link',
+      behaviors: [Nuxeo.I18nBehavior],
 
-      Polymer({
-        is: 'nuxeo-liveconnect-dropbox-link',
+      ready: function() {
+        this.$.provider.updateProviderInfo();
+      },
 
-        behaviors: [Nuxeo.I18nBehavior],
-
-        ready: function() {
-          this.$.provider.updateProviderInfo();
-        },
-
-        _openPicker: function() {
-          this.$.provider.openPicker();
-        }
-
-      });
-    })();
+      _openPicker: function() {
+        this.$.provider.openPicker();
+      }
+    });
   </script>
-
 </dom-module>

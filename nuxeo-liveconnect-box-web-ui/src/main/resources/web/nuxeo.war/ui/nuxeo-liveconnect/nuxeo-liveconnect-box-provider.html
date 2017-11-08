@@ -36,85 +36,80 @@ Contributors:
   </template>
 
   <script>
-    (function() {
-      'use strict';
+    Polymer({
+      is: 'nuxeo-liveconnect-box-provider',
 
-      Polymer({
-        is: 'nuxeo-liveconnect-box-provider',
+      behaviors: [Nuxeo.LiveConnectBehavior],
 
-        behaviors: [Nuxeo.LiveConnectBehavior],
+      properties: {
+        providerId: {
+          value: 'box'
+        }
+      },
 
-        properties: {
-          providerId: {
-            value: 'box'
-          }
-        },
+      openPicker: function() {
+        this.updateProviderInfo().then(this._init.bind(this));
+      },
 
-        openPicker: function() {
-          this.updateProviderInfo().then(this._init.bind(this));
-        },
+      _init: function() {
+        if (!this.isUserAuthorized) {
+          this.openPopup(this.authorizationURL, {
+            onMessageReceive: this._parseMessage.bind(this),
+            onClose: this._onOAuthPopupClose.bind(this)
+          });
+        } else {
+          this._showPicker();
+        }
+      },
 
-        _init: function() {
-          if (!this.isUserAuthorized) {
-            this.openPopup(this.authorizationURL, {
-              onMessageReceive: this._parseMessage.bind(this),
-              onClose: this._onOAuthPopupClose.bind(this)
-            });
+      _parseMessage: function(event) {
+        var data = JSON.parse(event.data);
+        this.accessToken = data.token;
+      },
+
+      _onOAuthPopupClose: function() {
+        if (this.accessToken) {
+          if (!this.userId) {
+            this.updateProviderInfo().then(function() {
+              if (!this.userId) {
+                throw 'No username available.';
+              }
+              this._showPicker();
+            }.bind(this));
           } else {
             this._showPicker();
           }
-        },
-
-        _parseMessage: function(event) {
-          var data = JSON.parse(event.data);
-          this.accessToken = data.token;
-        },
-
-        _onOAuthPopupClose: function() {
-          if (this.accessToken) {
-            if (!this.userId) {
-              this.updateProviderInfo().then(function() {
-                if (!this.userId) {
-                  throw 'No username available.';
-                }
-                this._showPicker();
-              }.bind(this));
-            } else {
-              this._showPicker();
-            }
-          }
-        },
-
-        _showPicker: function() {
-          var options = {
-                clientId: this.clientId,
-                linkType: 'direct',
-                multiselect: true
-              };
-          var boxSelect = new BoxSelect(options);
-
-          boxSelect.success(function(response) {
-            var blobs = [];
-            response.forEach(function(file) {
-              blobs.push({
-                providerId: this.providerId,
-                providerName: 'Box',
-                user: this.userId,
-                fileId: file.id.toString(),
-                name: file.name,
-                size: file.size,
-                key: this.generateBlobKey(file.id)
-              });
-            }.bind(this));
-            this.notifyBlobPick(blobs);
-          }.bind(this));
-
-          // open picker
-          boxSelect.launchPopup();
         }
+      },
 
-      });
-    })();
+      _showPicker: function() {
+        var options = {
+              clientId: this.clientId,
+              linkType: 'direct',
+              multiselect: true
+            };
+        var boxSelect = new BoxSelect(options);
+
+        boxSelect.success(function(response) {
+          var blobs = [];
+          response.forEach(function(file) {
+            blobs.push({
+              providerId: this.providerId,
+              providerName: 'Box',
+              user: this.userId,
+              fileId: file.id.toString(),
+              name: file.name,
+              size: file.size,
+              key: this.generateBlobKey(file.id)
+            });
+          }.bind(this));
+          this.notifyBlobPick(blobs);
+        }.bind(this));
+
+        // open picker
+        boxSelect.launchPopup();
+      }
+
+    });
   </script>
-
 </dom-module>
