@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
@@ -229,6 +230,8 @@ public class UserGroupTest extends BaseUserTest {
         group.setLabel("modifiedGroup");
         group.setMemberUsers(Arrays.asList(new String[] { "user1", "user2" }));
         group.setMemberGroups(Arrays.asList(new String[] { "group2" }));
+        String groupSchema = um.getGroupSchemaName();
+        group.getModel().setProperty(groupSchema, "description", "updated description");
 
         // When i PUT this group
         ClientResponse response = getResponse(RequestType.PUT, "/group/" + group.getName(), getGroupAsJson(group));
@@ -238,6 +241,7 @@ public class UserGroupTest extends BaseUserTest {
         nextTransaction(); // see committed changes
         group = um.getGroup("group1");
         assertEquals("modifiedGroup", group.getLabel());
+        assertEquals("updated description", group.getModel().getProperty(groupSchema, "description"));
         assertEquals(2, group.getMemberUsers().size());
         assertEquals(1, group.getMemberGroups().size());
     }
@@ -260,6 +264,10 @@ public class UserGroupTest extends BaseUserTest {
         group.setLabel("a new group");
         group.setMemberUsers(Arrays.asList(new String[] { "user1", "user2" }));
         group.setMemberGroups(Arrays.asList(new String[] { "group2" }));
+        String groupSchema = um.getGroupSchemaName();
+        DocumentModel doc = new SimpleDocumentModel(groupSchema);
+        doc.setProperty(groupSchema, "description", "new description");
+        group.setModel(doc);
 
         // When i POST this group
         ClientResponse response = getResponse(RequestType.POST, "/group/", getGroupAsJson(group));
@@ -267,7 +275,9 @@ public class UserGroupTest extends BaseUserTest {
 
         // Then the group is modified server side
         group = um.getGroup("newGroup");
+        DocumentModel groupModel = um.getGroupModel("newGroup");
         assertEquals("a new group", group.getLabel());
+        assertEquals("new description", groupModel.getProperty(groupSchema, "description"));
         assertEquals(2, group.getMemberUsers().size());
         assertEquals(1, group.getMemberGroups().size());
 
