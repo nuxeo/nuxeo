@@ -655,6 +655,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         } catch (PropertyException e) {
             // Nothing to do.
         }
+        group.setModel(groupEntry);
         return group;
     }
 

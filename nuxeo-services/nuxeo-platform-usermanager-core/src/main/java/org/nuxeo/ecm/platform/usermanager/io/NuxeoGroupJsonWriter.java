@@ -129,7 +129,10 @@ public class NuxeoGroupJsonWriter extends ExtensibleEntityJsonWriter<NuxeoGroup>
     }
 
     protected void writeProperties(NuxeoGroup group, JsonGenerator jg) throws IOException {
-        DocumentModel doc = userManager.getGroupModel(group.getName());
+        DocumentModel doc = group.getModel();
+        if (doc == null) {
+            doc = userManager.getGroupModel(group.getName());
+        }
         if (doc == null) {
             return;
         }
