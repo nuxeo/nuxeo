@@ -23,6 +23,7 @@ import static java.lang.Math.min;
 
 import java.io.Externalizable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -57,15 +58,17 @@ public interface LogManager extends AutoCloseable {
     <M extends Externalizable> LogAppender<M> getAppender(String name);
 
     /**
-     * Create a tailer for a consumer {@code group} and assign a single {@code partition}. A tailer is NOT thread safe.
-     */
-    <M extends Externalizable> LogTailer<M> createTailer(String group, LogPartition partition);
-
-    /**
      * Create a tailer for a consumer {@code group} and assign multiple {@code partitions}. Note that {@code partitions}
      * can be from different Logs. A tailer is NOT thread safe.
      */
     <M extends Externalizable> LogTailer<M> createTailer(String group, Collection<LogPartition> partitions);
+
+    /**
+     * Create a tailer for a consumer {@code group} and assign a single {@code partition}. A tailer is NOT thread safe.
+     */
+    default <M extends Externalizable> LogTailer<M> createTailer(String group, LogPartition partition) {
+        return createTailer(group, Collections.singletonList(partition));
+    }
 
     /**
      * Create a tailer for a consumer {@code group} and assign all {@code partitions} of the Log. A tailer is NOT thread

@@ -32,31 +32,25 @@ import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.RebalanceListener;
 import org.nuxeo.lib.stream.log.internals.AbstractLogManager;
+import org.nuxeo.lib.stream.log.internals.CloseableLogAppender;
 
 /**
  * @since 9.3
  */
 public class ChronicleLogManager extends AbstractLogManager {
-    /**
-     * Default retention duration for log
-     */
-    public static final String DEFAULT_RETENTION_DURATION = "4d";
-
     private static final Log log = LogFactory.getLog(ChronicleLogManager.class);
 
     protected final Path basePath;
 
-    protected final String retentionDuration;
+    protected final ChronicleRetentionDuration retention;
 
     public ChronicleLogManager(Path basePath) {
-        this.basePath = basePath;
-        this.retentionDuration = DEFAULT_RETENTION_DURATION;
+        this(basePath, null);
     }
 
     /**
@@ -70,7 +64,7 @@ public class ChronicleLogManager extends AbstractLogManager {
      */
     public ChronicleLogManager(Path basePath, String retentionDuration) {
         this.basePath = basePath;
-        this.retentionDuration = retentionDuration == null ? DEFAULT_RETENTION_DURATION : retentionDuration;
+        this.retention = new ChronicleRetentionDuration(retentionDuration);
     }
 
     protected static void deleteQueueBasePath(Path basePath) {
@@ -110,7 +104,7 @@ public class ChronicleLogManager extends AbstractLogManager {
 
     @Override
     public void create(String name, int size) {
-        ChronicleLogAppender.create(basePath.resolve(name).toFile(), size, retentionDuration).close();
+        ChronicleLogAppender.create(basePath.resolve(name).toFile(), size, retention).close();
     }
 
     @Override
@@ -126,15 +120,20 @@ public class ChronicleLogManager extends AbstractLogManager {
     protected LogLag getLagForPartition(String name, int partition, String group) {
         long pos;
         Path path = basePath.resolve(name);
-        try (ChronicleLogOffsetTracker offsetTracker = new ChronicleLogOffsetTracker(path.toString(), partition,
-                group)) {
-            pos = offsetTracker.readLastCommittedOffset();
-        }
         ChronicleLogAppender appender = (ChronicleLogAppender) getAppender(name);
+        if (!ChronicleLogOffsetTracker.exists(path, group)) {
+            pos = 0;
+        } else {
+            try (ChronicleLogOffsetTracker offsetTracker = new ChronicleLogOffsetTracker(path.toString(), partition,
+                    group)) {
+                pos = offsetTracker.readLastCommittedOffset();
+            }
+        }
+        // this trigger an acquire/release on cycle
+        long end = appender.endOffset(partition);
         if (pos == 0) {
             pos = appender.firstOffset(partition);
         }
-        long end = appender.endOffset(partition);
         long lag = appender.countMessages(partition, pos, end);
         long firstOffset = appender.firstOffset(partition);
         long endMessages = appender.countMessages(partition, firstOffset, end);
@@ -153,8 +152,7 @@ public class ChronicleLogManager extends AbstractLogManager {
 
     @Override
     public String toString() {
-        return "ChronicleLogManager{" + "basePath=" + basePath + ", retentionDuration='" + retentionDuration + '\''
-                + '}';
+        return "ChronicleLogManager{" + "basePath=" + basePath + ", retention='" + retention + '\'' + '}';
     }
 
     @Override
@@ -187,13 +185,14 @@ public class ChronicleLogManager extends AbstractLogManager {
     }
 
     @Override
-    public <M extends Externalizable> LogAppender<M> createAppender(String name) {
-        return ChronicleLogAppender.open(basePath.resolve(name).toFile(), retentionDuration);
+    public <M extends Externalizable> CloseableLogAppender<M> createAppender(String name) {
+        return ChronicleLogAppender.open(basePath.resolve(name).toFile(), retention);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    protected <M extends Externalizable> LogTailer<M> acquireTailer(Collection<LogPartition> partitions, String group) {
+    protected <M extends Externalizable> LogTailer<M> doCreateTailer(Collection<LogPartition> partitions,
+            String group) {
         Collection<ChronicleLogTailer<M>> pTailers = new ArrayList<>(partitions.size());
         partitions.forEach(partition -> pTailers.add(
                 (ChronicleLogTailer<M>) ((ChronicleLogAppender<M>) getAppender(partition.name())).createTailer(

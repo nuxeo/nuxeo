@@ -63,14 +63,15 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
 
     protected volatile boolean closed = false;
 
-    public ChronicleLogTailer(String basePath, ExcerptTailer cqTailer, LogPartition partition, String group) {
+    public ChronicleLogTailer(String basePath, ExcerptTailer cqTailer, LogPartition partition, String group,
+            ChronicleRetentionDuration retention) {
         Objects.requireNonNull(group);
         this.basePath = basePath;
         this.cqTailer = cqTailer;
         this.partition = partition;
         this.id = new LogPartitionGroup(group, partition.name(), partition.partition());
         registerTailer();
-        this.offsetTracker = new ChronicleLogOffsetTracker(basePath, partition.partition(), group);
+        this.offsetTracker = new ChronicleLogOffsetTracker(basePath, partition.partition(), group, retention);
         toLastCommitted();
     }
 
@@ -150,7 +151,7 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
             log.debug(String.format("toLastCommitted: %s, found: %d", id, offset));
             cqTailer.moveToIndex(offset);
         } else {
-            log.debug(String.format("toLastCommitted: %s not found, run from beginning", id));
+            log.debug(String.format("toLastCommitted: %s, not found, move toStart", id));
             cqTailer.toStart();
         }
     }
@@ -192,9 +193,12 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
 
     @Override
     public void close() {
-        offsetTracker.close();
-        unregisterTailer();
-        closed = true;
+        if (!closed) {
+            log.debug("Closing: " + toString());
+            offsetTracker.close();
+            unregisterTailer();
+            closed = true;
+        }
     }
 
     @Override
