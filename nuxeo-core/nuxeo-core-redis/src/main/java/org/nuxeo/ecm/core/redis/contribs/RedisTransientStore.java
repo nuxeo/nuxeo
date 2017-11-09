@@ -324,46 +324,6 @@ public class RedisTransientStore extends AbstractTransientStore {
     }
 
     @Override
-    public void remove(String key) {
-        // TODO NXP-18236: use a transaction?
-
-        Map<String, String> summary = getSummary(key);
-        if (summary != null) {
-            // Remove blobs
-            String blobCount = summary.get("blobCount");
-            deleteBlobInfos(key, blobCount);
-
-            // Remove summary
-            redisExecutor.execute((RedisCallable<Long>) jedis -> {
-                Long deleted = jedis.del(namespace + key);
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Deleted %d Redis hash stored at key %s", deleted, namespace + key));
-                }
-                return deleted;
-            });
-
-            // Decrement storage size
-            String size = summary.get(SIZE_KEY);
-            if (size != null) {
-                long entrySize = Integer.parseInt(size);
-                if (entrySize > 0) {
-                    decrementStorageSize(entrySize);
-                }
-            }
-        }
-
-        // Remove parameters
-        redisExecutor.execute((RedisCallable<Long>) jedis -> {
-            String paramsKey = namespace + join(key, "params");
-            Long deleted = jedis.del(getBytes(paramsKey));
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Deleted %d Redis hash stored at key %s", deleted, paramsKey));
-            }
-            return deleted;
-        });
-    }
-
-    @Override
     public void release(String key) {
         if (getStorageSize() <= config.getTargetMaxSizeMB() * (1024 * 1024) || config.getTargetMaxSizeMB() < 0) {
             setTTL(key, secondLevelTTL);
@@ -489,6 +449,46 @@ public class RedisTransientStore extends AbstractTransientStore {
                 log.debug(String.format("Decremented Redis key %s to %d", sizeKey, decremented));
             }
             return decremented;
+        });
+    }
+
+    @Override
+    protected void removeEntry(String key) {
+        // TODO NXP-18236: use a transaction?
+
+        Map<String, String> summary = getSummary(key);
+        if (summary != null) {
+            // Remove blobs
+            String blobCount = summary.get("blobCount");
+            deleteBlobInfos(key, blobCount);
+
+            // Remove summary
+            redisExecutor.execute((RedisCallable<Long>) jedis -> {
+                Long deleted = jedis.del(namespace + key);
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Deleted %d Redis hash stored at key %s", deleted, namespace + key));
+                }
+                return deleted;
+            });
+
+            // Decrement storage size
+            String size = summary.get(SIZE_KEY);
+            if (size != null) {
+                long entrySize = Integer.parseInt(size);
+                if (entrySize > 0) {
+                    decrementStorageSize(entrySize);
+                }
+            }
+        }
+
+        // Remove parameters
+        redisExecutor.execute((RedisCallable<Long>) jedis -> {
+            String paramsKey = namespace + join(key, "params");
+            Long deleted = jedis.del(getBytes(paramsKey));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Deleted %d Redis hash stored at key %s", deleted, paramsKey));
+            }
+            return deleted;
         });
     }
 
