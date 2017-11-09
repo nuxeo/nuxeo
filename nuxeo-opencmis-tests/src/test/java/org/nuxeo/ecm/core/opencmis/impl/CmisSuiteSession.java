@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
+import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
 import static org.apache.chemistry.opencmis.commons.BasicPermissions.ALL;
 import static org.apache.chemistry.opencmis.commons.BasicPermissions.READ;
 import static org.apache.chemistry.opencmis.commons.BasicPermissions.WRITE;
@@ -36,7 +37,6 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -87,7 +87,6 @@ import org.apache.chemistry.opencmis.commons.impl.Base64;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlEntryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlPrincipalDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
-import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -507,7 +506,7 @@ public class CmisSuiteSession {
             uri += file.getId();
             String eTag = file.getPropertyValue("nuxeo:contentStreamDigest");
             GregorianCalendar lastModifiedCalendar = file.getPropertyValue("dc:modified");
-            String lastModified = DateUtil.formatDate(lastModifiedCalendar.getTime());
+            String lastModified = RFC_1123_DATE_TIME.format(lastModifiedCalendar.toZonedDateTime());
             String encoding = Base64.encodeBytes(new String(USERNAME + ":" + PASSWORD).getBytes());
             DefaultHttpClient client = new DefaultHttpClient();
             HttpGet request = new HttpGet(uri);
@@ -1033,14 +1032,14 @@ public class CmisSuiteSession {
         //session = cmisFeatureSession.setUpCmisSession(coreSession.getRepositoryName());
 
         Document doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
-        Calendar lastModifiedCalendar = doc.getPropertyValue("dc:modified");
+        GregorianCalendar lastModifiedCalendar = doc.getPropertyValue("dc:modified");
 
         // check Last-Modified Cache Response Header
         RepositoryInfo ri = session.getRepositoryInfo();
         String uri = ri.getThinClientUri() + ri.getId() + "/";
         uri += isAtomPub ? "content?id=" : "root?objectId=";
         uri += doc.getId();
-        String lastModified = DateUtil.formatDate(lastModifiedCalendar.getTime());
+        String lastModified = RFC_1123_DATE_TIME.format(lastModifiedCalendar.toZonedDateTime());
         String encoding = Base64.encodeBytes(new String(USERNAME + ":" + PASSWORD).getBytes());
         DefaultHttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(uri);

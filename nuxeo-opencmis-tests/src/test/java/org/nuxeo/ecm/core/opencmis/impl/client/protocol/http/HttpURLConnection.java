@@ -1,4 +1,4 @@
-/* 
+/*
  * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,22 +32,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.URI;
-import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.InputStreamEntity;
 
 public class HttpURLConnection extends java.net.HttpURLConnection {
 
     protected final HttpURLClientProvider clientProvider;
 
-    protected HttpMethod method;
+    protected HttpUriRequest request;
+
+    protected HttpResponse response;
 
     public HttpURLConnection(HttpURLClientProvider provider, URL url) {
         super(url);
@@ -53,35 +57,33 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
         setRequestMethod("GET");
     }
 
-    protected HttpMethod newMethod(String name) {
+    protected HttpUriRequest newMethod(String name, URI uri) {
         if ("GET".equals(name)) {
-            return new GetMethod();
+            return new HttpGet(uri);
         }
         if ("POST".equals(name)) {
-            return new PostMethod();
+            return new HttpPost(uri);
         }
         if ("DELETE".equals(name)) {
-            return new DeleteMethod();
+            return new HttpDelete(uri);
         }
         if ("PUT".equals(name)) {
-            return new PutMethod();
+            return new HttpPut(uri);
         }
         throw new UnsupportedOperationException("Unsupported method " + name);
     }
 
     @Override
     public void setRequestMethod(String name) {
-        method = newMethod(name);
         try {
-            method.setURI(new URI(url.toExternalForm(), false));
-        } catch (Exception e) {
+            request = newMethod(name, url.toURI());
+        } catch (URISyntaxException e) {
             throw new Error("unsupported URL " + url, e);
         }
     }
 
     @Override
     public void disconnect() {
-        method.releaseConnection();
     }
 
     @Override
@@ -91,12 +93,12 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
 
     @Override
     public void connect() throws IOException {
-        clientProvider.getClient().executeMethod(method);
+        response = clientProvider.getClient().execute(request);
     }
 
     @Override
     public void setRequestProperty(String key, String value) {
-        method.setRequestHeader(key, value);
+        request.setHeader(key, value);
     }
 
     @Override
@@ -111,7 +113,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
 
     @Override
     public void setConnectTimeout(int timeout) {
-        clientProvider.getClient().getHttpConnectionManager().getParams().setConnectionTimeout(timeout);
+        // ignore
     }
 
     @Override
@@ -121,39 +123,34 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
 
     @Override
     public InputStream getInputStream() throws IOException {
-        return method.getResponseBodyAsStream();
+        return response.getEntity().getContent();
     }
 
+    @SuppressWarnings("resource")
     @Override
     public OutputStream getOutputStream() throws IOException {
         PipedOutputStream source = new PipedOutputStream();
         PipedInputStream sink = new PipedInputStream();
         source.connect(sink);
-        RequestEntity entity = new InputStreamRequestEntity(sink);
-        ((EntityEnclosingMethod) method).setRequestEntity(entity);
+        HttpEntity entity = new InputStreamEntity(sink);
+        ((HttpEntityEnclosingRequest) request).setEntity(entity);
         return source;
     }
 
     @Override
     public int getResponseCode() throws IOException {
-        return method.getStatusCode();
+        return response.getStatusLine().getStatusCode();
     }
 
     @Override
     public String getResponseMessage() throws IOException {
-        return this.method.getStatusText();
+        return response.getStatusLine().getReasonPhrase();
     }
 
     @Override
     public String getHeaderField(String name) {
-        Header[] headers = this.method.getResponseHeaders();
-        for (int i = headers.length - 1; i >= 0; i--) {
-            if (headers[i].getName().equalsIgnoreCase(name)) {
-                return headers[i].getValue();
-            }
-        }
-
-        return null;
+        Header header = response.getFirstHeader(name);
+        return header == null ? null : header.getValue();
     }
 
     @Override
@@ -161,7 +158,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
         if (keyPosition == 0) {
             return null;
         }
-        Header[] headers = this.method.getResponseHeaders();
+        Header[] headers = response.getAllHeaders();
         if (keyPosition < 0 || keyPosition > headers.length) {
             return null;
         }
@@ -171,7 +168,7 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
     @Override
     public Map<String, List<String>> getHeaderFields() {
         Map<String, List<String>> fields = new HashMap<String, List<String>>();
-        for (Header header : this.method.getResponseHeaders()) {
+        for (Header header : response.getAllHeaders()) {
             String name = header.getName();
             String value = header.getValue();
             if (!fields.containsKey(name)) {
@@ -184,9 +181,9 @@ public class HttpURLConnection extends java.net.HttpURLConnection {
 
     @Override
     public InputStream getErrorStream() {
-        if (method.getStatusCode() != 200) {
+        if (response.getStatusLine().getStatusCode() != 200) {
             try {
-                return method.getResponseBodyAsStream();
+                return response.getEntity().getContent();
             } catch (IOException e) {
                 throw new Error("Cannot get response content", e);
             }
