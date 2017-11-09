@@ -1,4 +1,4 @@
-/* 
+/*
  * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,9 +40,9 @@ import javax.servlet.http.HttpSession;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Session;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
@@ -159,9 +159,9 @@ public class CasPortal {
             String proxyGrantingTicket = validateServiceTicket(serviceTicket);
             String serviceTargetTicket = requestProxyTicket(proxyGrantingTicket, CMIS_LOCATION);
             CasClient cmis = new CasClient(CMIS_LOCATION);
-            cmis.newGreeter().proxyLogon(serviceTargetTicket, TICKET_ACCEPT_LOCATION, CMIS_LOCATION);
-            cmis.saveClientContext();
             try {
+                cmis.newGreeter().proxyLogon(serviceTargetTicket, TICKET_ACCEPT_LOCATION, CMIS_LOCATION);
+                cmis.saveClientContext();
                 req.getSession().setAttribute("CMIS", cmis);
             } catch (Exception e) {
                 throw new ServletException("cannot connect to cmis server", e);

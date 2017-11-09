@@ -18,10 +18,8 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.client.protocol.http;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.http.client.CookieStore;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller;
 
 public class HttpURLInstaller {
@@ -33,22 +31,19 @@ public class HttpURLInstaller {
 
     protected final HttpURLClientProvider clientProvider = new HttpURLMultiThreadedClientProvider();
 
-    public HttpClient getClient() {
+    public CloseableHttpClient getClient() {
         return clientProvider.getClient();
     }
 
-    public void setClient(HttpClient client) {
+    public void setClient(CloseableHttpClient client) {
         clientProvider.setClient(client);
     }
 
-    protected HttpURLStreamHandlerFactory shf;
-
-    public void setCredentials(String host, int port, String username, String password) {
-        Credentials defaultcreds = new UsernamePasswordCredentials(username, password);
-        HttpClient client = clientProvider.getClient();
-        client.getState().setCredentials(new AuthScope(host, port, AuthScope.ANY_REALM), defaultcreds);
-        client.getParams().setAuthenticationPreemptive(true);
+    public CookieStore getCookieStore() {
+        return clientProvider.getCookieStore();
     }
+
+    protected HttpURLStreamHandlerFactory shf;
 
     public void installSelf() {
         shf = new HttpURLStreamHandlerFactory(clientProvider);
