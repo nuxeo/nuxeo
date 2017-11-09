@@ -18,8 +18,6 @@
  */
 package org.nuxeo.lib.stream.log.chronicle;
 
-import static net.openhft.chronicle.queue.impl.single.SingleChronicleQueue.SUFFIX;
-
 import java.io.Externalizable;
 import java.io.File;
 import java.io.IOException;
@@ -27,28 +25,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.internals.CloseableLogAppender;
 import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 
 import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptAppender;
-import net.openhft.chronicle.queue.RollCycle;
-import net.openhft.chronicle.queue.RollCycles;
-import net.openhft.chronicle.queue.impl.RollingResourcesCache;
-import net.openhft.chronicle.queue.impl.StoreFileListener;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 
@@ -57,24 +48,18 @@ import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
  *
  * @since 9.3
  */
-public class ChronicleLogAppender<M extends Externalizable> implements LogAppender<M>, StoreFileListener {
-    protected static final String QUEUE_PREFIX = "Q-";
+public class ChronicleLogAppender<M extends Externalizable> implements CloseableLogAppender<M> {
+    private static final Log log = LogFactory.getLog(ChronicleLogAppender.class);
+
+    protected static final String PARTITION_PREFIX = "P-";
 
     protected static final int POLL_INTERVAL_MS = 100;
 
-    protected static final String SECOND_ROLLING_PERIOD = "s";
+    protected static final int MAX_PARTITIONS = 100;
 
-    protected static final String MINUTE_ROLLING_PERIOD = "m";
+    protected final List<ChronicleQueue> partitions;
 
-    protected static final String HOUR_ROLLING_PERIOD = "h";
-
-    protected static final String DAY_ROLLING_PERIOD = "d";
-
-    private static final Log log = LogFactory.getLog(ChronicleLogAppender.class);
-
-    protected final List<ChronicleQueue> queues;
-
-    protected final int nbQueues;
+    protected final int nbPartitions;
 
     protected final File basePath;
 
@@ -83,60 +68,61 @@ public class ChronicleLogAppender<M extends Externalizable> implements LogAppend
     // keep track of created tailers to make sure they are closed before the log
     protected final ConcurrentLinkedQueue<ChronicleLogTailer<M>> tailers = new ConcurrentLinkedQueue<>();
 
-    protected int retentionNbCycles;
+    protected final ChronicleRetentionDuration retention;
 
-    protected boolean closed = false;
+    protected volatile boolean closed;
 
-    protected ChronicleLogAppender(File basePath, int size, String retentionDuration) {
+    protected ChronicleLogAppender(File basePath, int size, ChronicleRetentionDuration retention) {
         if (size == 0) {
             // open
             if (!exists(basePath)) {
-                // TODO: do we need to log.error (same below)
-                String msg = "Cannot open Chronicle Queues, invalid path: " + basePath;
-                log.error(msg);
-                throw new IllegalArgumentException(msg);
+                throw new IllegalArgumentException("Cannot open Chronicle Queues, invalid path: " + basePath);
             }
-            this.nbQueues = findNbQueues(basePath);
+            this.nbPartitions = findNbQueues(basePath);
         } else {
-            // creation
+            // create
+            if (size > MAX_PARTITIONS) {
+                throw new IllegalArgumentException(
+                        String.format("Cannot create more than: %d partitions for log: %s, requested: %d",
+                                MAX_PARTITIONS, basePath, size));
+            }
             if (exists(basePath)) {
-                String msg = "Cannot create Chronicle Queues, already exists: " + basePath;
-                log.error(msg);
-                throw new IllegalArgumentException(msg);
+                throw new IllegalArgumentException("Cannot create Chronicle Queues, already exists: " + basePath);
             }
             if (!basePath.exists() && !basePath.mkdirs()) {
-                String msg = "Cannot create Chronicle Queues in: " + basePath;
-                log.error(msg);
-                throw new IllegalArgumentException(msg);
+                throw new IllegalArgumentException("Invalid path to create Chronicle Queues: " + basePath);
             }
-            this.nbQueues = size;
+            this.nbPartitions = size;
         }
         this.name = basePath.getName();
         this.basePath = basePath;
-
-        if (retentionDuration != null) {
-            retentionNbCycles = Integer.parseInt(retentionDuration.substring(0, retentionDuration.length() - 1));
-        }
-
-        RollCycle rollCycle = getRollCycle(retentionDuration);
-
-        queues = new ArrayList<>(this.nbQueues);
+        this.retention = retention;
+        partitions = new ArrayList<>(this.nbPartitions);
         if (log.isDebugEnabled()) {
-            log.debug(String.format("%s chronicle queue: %s, path: %s, size: %d", (size == 0) ? "Opening" : "Creating",
-                    name, basePath, nbQueues));
+            log.debug(((size == 0) ? "Opening: " : "Creating: ") + toString());
         }
-        for (int i = 0; i < nbQueues; i++) {
-            File path = new File(basePath, String.format("%s%02d", QUEUE_PREFIX, i));
-            ChronicleQueue queue = SingleChronicleQueueBuilder.binary(path)
-                                                              .rollCycle(rollCycle)
-                                                              .storeFileListener(this)
-                                                              .build();
-            queues.add(queue);
-            // touch the queue so we can count them even if they stay empty.
+        initPartitions();
+    }
+
+    protected void initPartitions() {
+        for (int i = 0; i < nbPartitions; i++) {
+            File path = new File(basePath, String.format("%s%02d", PARTITION_PREFIX, i));
+            if (retention.disable()) {
+                partitions.add(SingleChronicleQueueBuilder.binary(path).build());
+            } else {
+                ChronicleRetentionListener listener = new ChronicleRetentionListener(retention);
+                SingleChronicleQueue queue = SingleChronicleQueueBuilder.binary(path)
+                                                                        .rollCycle(retention.getRollCycle())
+                                                                        .storeFileListener(listener)
+                                                                        .build();
+                listener.setQueue(queue);
+                partitions.add(queue);
+            }
             try {
-                Files.createDirectories(queue.file().toPath());
+                // make sure the directory is created so we can count the partitions
+                Files.createDirectories(path.toPath());
             } catch (IOException e) {
-                throw new IllegalArgumentException("Cannot create directory: " + queue.file().getAbsolutePath(), e);
+                throw new IllegalArgumentException("Cannot create directory: " + path.getAbsolutePath(), e);
             }
         }
     }
@@ -150,29 +136,30 @@ public class ChronicleLogAppender<M extends Externalizable> implements LogAppend
      * Create a new log
      */
     public static <M extends Externalizable> ChronicleLogAppender<M> create(File basePath, int size,
-            String retentionPolicy) {
-        return new ChronicleLogAppender<>(basePath, size, retentionPolicy);
+            ChronicleRetentionDuration retention) {
+        return new ChronicleLogAppender<>(basePath, size, retention);
     }
 
     /**
      * Create a new log.
      */
     public static <M extends Externalizable> ChronicleLogAppender<M> create(File basePath, int size) {
-        return new ChronicleLogAppender<>(basePath, size, ChronicleLogManager.DEFAULT_RETENTION_DURATION);
+        return new ChronicleLogAppender<>(basePath, size, ChronicleRetentionDuration.DISABLE);
     }
 
     /**
      * Open an existing log.
      */
     public static <M extends Externalizable> ChronicleLogAppender<M> open(File basePath) {
-        return new ChronicleLogAppender<>(basePath, 0, ChronicleLogManager.DEFAULT_RETENTION_DURATION);
+        return new ChronicleLogAppender<>(basePath, 0, ChronicleRetentionDuration.DISABLE);
     }
 
     /**
      * Open an existing log.
      */
-    public static <M extends Externalizable> ChronicleLogAppender<M> open(File basePath, String retentionDuration) {
-        return new ChronicleLogAppender<>(basePath, 0, retentionDuration);
+    public static <M extends Externalizable> ChronicleLogAppender<M> open(File basePath,
+            ChronicleRetentionDuration retention) {
+        return new ChronicleLogAppender<>(basePath, 0, retention);
     }
 
     public String getBasePath() {
@@ -186,12 +173,12 @@ public class ChronicleLogAppender<M extends Externalizable> implements LogAppend
 
     @Override
     public int size() {
-        return nbQueues;
+        return nbPartitions;
     }
 
     @Override
     public LogOffset append(int partition, M message) {
-        ExcerptAppender appender = queues.get(partition).acquireAppender();
+        ExcerptAppender appender = partitions.get(partition).acquireAppender();
         appender.writeDocument(w -> w.write("msg").object(message));
         long offset = appender.lastIndexAppended();
         LogOffset ret = new LogOffsetImpl(name, partition, offset);
@@ -202,16 +189,16 @@ public class ChronicleLogAppender<M extends Externalizable> implements LogAppend
     }
 
     public LogTailer<M> createTailer(LogPartition partition, String group) {
-        return addTailer(new ChronicleLogTailer<>(basePath.toString(), queues.get(partition.partition()).createTailer(),
-                partition, group));
+        return addTailer(new ChronicleLogTailer<>(basePath.toString(),
+                partitions.get(partition.partition()).createTailer(), partition, group, retention));
     }
 
     public long endOffset(int partition) {
-        return queues.get(partition).createTailer().toEnd().index();
+        return partitions.get(partition).createTailer().toEnd().index();
     }
 
     public long firstOffset(int partition) {
-        long ret = queues.get(partition).firstIndex();
+        long ret = partitions.get(partition).firstIndex();
         if (ret == Long.MAX_VALUE) {
             return 0;
         }
@@ -220,15 +207,16 @@ public class ChronicleLogAppender<M extends Externalizable> implements LogAppend
 
     public long countMessages(int partition, long lowerOffset, long upperOffset) {
         long ret;
-        SingleChronicleQueue queue = (SingleChronicleQueue) queues.get(partition);
+        SingleChronicleQueue queue = (SingleChronicleQueue) partitions.get(partition);
         try {
             ret = queue.countExcerpts(lowerOffset, upperOffset);
         } catch (IllegalStateException e) {
-            // 'file not found' for the lowerCycle
+            if (log.isDebugEnabled()) {
+                log.debug("Missing low cycle file: " + lowerOffset + " for queue: " + queue + " " + e.getMessage());
+            }
             return 0;
         }
-        // System.out.println("partition: " + partition + ", count from " + lowerOffset + " to " + upperOffset + " = " +
-        // ret);
+        // System.out.println("partition: " + partition + ", count from " + lowerOffset + " to " + upperOffset + " = " + ret);
         return ret;
     }
 
@@ -271,11 +259,11 @@ public class ChronicleLogAppender<M extends Externalizable> implements LogAppend
 
     @Override
     public void close() {
-        log.debug("Closing queue");
+        log.debug("Closing: " + toString());
         tailers.stream().filter(Objects::nonNull).forEach(ChronicleLogTailer::close);
         tailers.clear();
-        queues.stream().filter(Objects::nonNull).forEach(ChronicleQueue::close);
-        queues.clear();
+        partitions.stream().filter(Objects::nonNull).forEach(ChronicleQueue::close);
+        partitions.clear();
         closed = true;
     }
 
@@ -283,7 +271,7 @@ public class ChronicleLogAppender<M extends Externalizable> implements LogAppend
         int ret;
         try (Stream<Path> paths = Files.list(basePath.toPath())) {
             ret = (int) paths.filter(
-                    path -> (Files.isDirectory(path) && path.getFileName().toString().startsWith(QUEUE_PREFIX)))
+                    path -> (Files.isDirectory(path) && path.getFileName().toString().startsWith(PARTITION_PREFIX)))
                              .count();
             if (ret == 0) {
                 throw new IOException("No chronicles queues file found");
@@ -294,83 +282,13 @@ public class ChronicleLogAppender<M extends Externalizable> implements LogAppend
         return ret;
     }
 
-    protected RollCycle getRollCycle(String retentionDuration) {
-        String rollingPeriod = retentionDuration.substring(retentionDuration.length() - 1);
-        switch (rollingPeriod) {
-        case SECOND_ROLLING_PERIOD:
-            return RollCycles.TEST_SECONDLY;
-        case MINUTE_ROLLING_PERIOD:
-            return RollCycles.MINUTELY;
-        case HOUR_ROLLING_PERIOD:
-            return RollCycles.HOURLY;
-        case DAY_ROLLING_PERIOD:
-            return RollCycles.DAILY;
-        default:
-            String msg = "Unknown rolling period: " + rollingPeriod + " for Log: " + name();
-            log.error(msg);
-            throw new IllegalArgumentException(msg);
-        }
-    }
-
-    protected int findQueueIndex(File queueFile) {
-        String queueDirName = queueFile.getParentFile().getName();
-        return Integer.parseInt(queueDirName.substring(queueDirName.length() - 2));
-    }
-
-    @Override
-    public void onAcquired(int cycle, File file) {
-        if (log.isDebugEnabled()) {
-            log.debug("New file created: " + file + " on cycle: " + cycle);
-        }
-
-        SingleChronicleQueue queue = (SingleChronicleQueue) queues.get(findQueueIndex(file));
-
-        int lowerCycle = queue.firstCycle();
-        int upperCycle = cycle - retentionNbCycles;
-
-        purgeQueue(lowerCycle, upperCycle, queue);
-
-    }
-
-    /**
-     * Files in queue older than the current date minus the retention duration are candidates for purging, knowing that
-     * the more recent files should be kept to ensure no data loss (for example after an interruption longer than the
-     * retention duration).
-     */
-    protected void purgeQueue(int lowerCycle, int upperCycle, SingleChronicleQueue queue) {
-        // TODO: refactor this using new chronicle-queue lib methods
-        File[] files = queue.file().listFiles();
-
-        if (files != null && lowerCycle < upperCycle) {
-            RollingResourcesCache cache = new RollingResourcesCache(queue.rollCycle(), queue.epoch(),
-                    name -> new File(queue.file().getAbsolutePath(), name + SUFFIX),
-                    f -> FilenameUtils.removeExtension(f.getName()));
-
-            Arrays.stream(files)
-                  .sorted(Comparator.comparingLong(cache::toLong)) // Order files by cycles
-                  .limit(files.length - retentionNbCycles) // Keep the 'retentionNbCycles' more recent files
-                  .filter(f -> cache.parseCount(FilenameUtils.removeExtension(f.getName())) < upperCycle)
-                  .forEach(f -> {
-                      if (f.delete()) {
-                          log.info("Queue file deleted: " + f.getAbsolutePath());
-                      }
-                  });
-        }
-    }
-
-    @Override
-    public void onReleased(int cycle, File file) {
-
-    }
-
     @Override
     public String toString() {
-        return "ChronicleLogAppender{" +
-                "nbQueues=" + nbQueues +
-                ", basePath=" + basePath +
-                ", name='" + name + '\'' +
-                ", retentionNbCycles=" + retentionNbCycles +
-                ", closed=" + closed +
-                '}';
+        return "ChronicleLogAppender{" + "nbPartitions=" + nbPartitions + ", basePath=" + basePath + ", name='" + name
+                + '\'' + ", retention=" + retention + ", closed=" + closed + '}';
+    }
+
+    public ChronicleRetentionDuration getRetention() {
+        return retention;
     }
 }

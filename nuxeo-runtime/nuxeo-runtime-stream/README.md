@@ -93,9 +93,9 @@ The Nuxeo Stream service enables to get and share access to LogManager:
   StreamService service = Framework.getService(StreamService.class);
   LogManager manager = service.getLogManager("custom");
   // write a record to myStream, the log exists because it has been initialized by the service 
-  try (LogAppender<Record> appender = manager.getAppender("myStream")) {
-      appender.append(key, Record.of(key, value.getBytes()));
-  }
+  LogAppender<Record> appender = manager.getAppender("myStream");
+  appender.append(key, Record.of(key, value.getBytes()));
+
   // read
   try (LogTailer<Record> tailer = manager.createTailer("myGroup", "myStream")) {
       LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));

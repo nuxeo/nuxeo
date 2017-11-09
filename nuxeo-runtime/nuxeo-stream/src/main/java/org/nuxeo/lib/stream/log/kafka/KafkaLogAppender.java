@@ -42,6 +42,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.utils.Bytes;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogOffset;
+import org.nuxeo.lib.stream.log.internals.CloseableLogAppender;
 import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 
 /**
@@ -49,7 +50,7 @@ import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
  *
  * @since 9.3
  */
-public class KafkaLogAppender<M extends Externalizable> implements LogAppender<M> {
+public class KafkaLogAppender<M extends Externalizable> implements CloseableLogAppender<M> {
     private static final Log log = LogFactory.getLog(KafkaLogAppender.class);
 
     protected final String topic;

@@ -27,6 +27,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -142,7 +147,8 @@ public abstract class TestLog {
         manager.createIfNotExists(logName, LOG_SIZE);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
         assertFalse(appender.closed());
-        appender.close();
+
+        manager.close();
         assertTrue(appender.closed());
         try {
             appender.append(0, KeyValueMessage.of("foo"));
@@ -698,6 +704,27 @@ public abstract class TestLog {
             tailer2.close();
         }
         // listConsumerLags();
+    }
+
+    @Test
+    public void testConcurrentAppenders() throws Exception {
+        final int NB_APPENDERS = 4;
+        final int NB_MSG = 100;
+        final int LOG_SIZE = 1;
+        manager.createIfNotExists(logName, LOG_SIZE);
+        LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
+        ExecutorService executor = Executors.newFixedThreadPool(NB_APPENDERS);
+        Runnable writer = () -> {
+            for(int i=0; i<NB_MSG; i++) {
+                appender.append(0, KeyValueMessage.of("msg" + i));
+            }
+        };
+        for (int i=0; i<NB_APPENDERS; i++) {
+            executor.submit(writer);
+        }
+        executor.shutdown();
+        assertTrue(executor.awaitTermination(60, TimeUnit.SECONDS));
+        assertEquals(LogLag.of(NB_APPENDERS * NB_MSG), manager.getLag(logName, "counter"));
     }
 
     protected String readKey(LogTailer<KeyValueMessage> tailer) throws InterruptedException {

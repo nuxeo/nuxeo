@@ -39,6 +39,7 @@ import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.RebalanceListener;
 import org.nuxeo.lib.stream.log.internals.AbstractLogManager;
+import org.nuxeo.lib.stream.log.internals.CloseableLogAppender;
 
 /**
  * @since 9.3
@@ -100,12 +101,12 @@ public class KafkaLogManager extends AbstractLogManager {
     }
 
     @Override
-    public <M extends Externalizable> LogAppender<M> createAppender(String name) {
+    public <M extends Externalizable> CloseableLogAppender<M> createAppender(String name) {
         return KafkaLogAppender.open(getTopicName(name), name, producerProperties, consumerProperties);
     }
 
     @Override
-    protected <M extends Externalizable> LogTailer<M> acquireTailer(Collection<LogPartition> partitions, String group) {
+    protected <M extends Externalizable> LogTailer<M> doCreateTailer(Collection<LogPartition> partitions, String group) {
         partitions.forEach(this::checkValidPartition);
         return KafkaLogTailer.createAndAssign(prefix, partitions, group, (Properties) consumerProperties.clone());
     }

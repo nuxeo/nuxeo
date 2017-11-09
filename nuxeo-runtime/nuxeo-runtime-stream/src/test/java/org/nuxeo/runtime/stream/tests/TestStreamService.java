@@ -81,9 +81,9 @@ public class TestStreamService {
         String key = "a key";
         String value = "a value";
 
-        try (LogAppender<Record> appender = manager.getAppender(logName)) {
-            appender.append(key, Record.of(key, value.getBytes()));
-        }
+        LogAppender<Record> appender = manager.getAppender(logName);
+        appender.append(key, Record.of(key, value.getBytes()));
+
         try (LogTailer<Record> tailer = manager.createTailer("myGroup", logName)) {
             LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));
             assertNotNull(logRecord);

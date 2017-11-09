@@ -27,7 +27,7 @@ import java.util.Objects;
  *
  * @since 9.3
  */
-public interface LogAppender<M extends Externalizable> extends AutoCloseable {
+public interface LogAppender<M extends Externalizable> {
 
     /**
      * Returns the Log's name.
@@ -68,10 +68,7 @@ public interface LogAppender<M extends Externalizable> extends AutoCloseable {
     boolean waitFor(LogOffset offset, String group, Duration timeout) throws InterruptedException;
 
     /**
-     * Returns {@code true} if the appender has been closed.
+     * Returns {@code true} if the appender has been closed by the manager.
      */
     boolean closed();
-
-    @Override
-    void close();
 }

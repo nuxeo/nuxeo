@@ -21,6 +21,9 @@ package org.nuxeo.lib.stream.log.chronicle;
 import static net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder.binary;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,16 +32,17 @@ import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.ExcerptTailer;
 import net.openhft.chronicle.queue.TailerDirection;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
+import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 
 /**
- * Track committed offset for a queue.
+ * Track committed offset for a Log.
  *
  * @since 9.3
  */
 public class ChronicleLogOffsetTracker implements AutoCloseable {
-    protected static final String OFFSET_QUEUE_PREFIX = "offset-";
-
     private static final Log log = LogFactory.getLog(ChronicleLogOffsetTracker.class);
+
+    protected static final String OFFSET_QUEUE_PREFIX = "offset-";
 
     protected final SingleChronicleQueue offsetQueue;
 
@@ -46,11 +50,40 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
 
     protected long lastCommittedOffset;
 
-    public ChronicleLogOffsetTracker(String basePath, int partition, String group) {
+    protected final ChronicleRetentionDuration retention;
+
+    public ChronicleLogOffsetTracker(String basePath, int partition, String group,
+            ChronicleRetentionDuration retention) {
         this.partition = partition;
+        this.retention = retention;
         File offsetFile = new File(basePath, OFFSET_QUEUE_PREFIX + group);
-        offsetQueue = binary(offsetFile).build();
-        offsetQueue.acquireAppender().pretouch();
+        SingleChronicleQueueBuilder builder = binary(offsetFile);
+        ChronicleRetentionListener listener = null;
+        if (!retention.disable()) {
+            builder.rollCycle(retention.getRollCycle());
+            if (partition == 0) {
+                // offset queue is shared among partitions
+                // only the first partition handle the retention
+                listener = new ChronicleRetentionListener(retention);
+                builder.storeFileListener(listener);
+            }
+        }
+        offsetQueue = builder.build();
+        if (listener != null) {
+            listener.setQueue(offsetQueue);
+        }
+    }
+
+    public ChronicleLogOffsetTracker(String basePath, int partition, String group) {
+        this(basePath, partition, group, ChronicleRetentionDuration.DISABLE);
+    }
+
+    public static boolean exists(Path basePath, String group) {
+        try {
+            return Files.list(basePath.resolve(OFFSET_QUEUE_PREFIX + group)).count() > 0;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     public static boolean isOffsetTracker(String dirName) {
@@ -94,22 +127,22 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
             hasNext = offsetTailer.readBytes(b -> {
                 int queue = b.readInt();
                 long off = b.readLong();
-                long stamp = b.readLong();
+                b.readLong(); // stamp not used
                 if (partition == queue) {
                     offset[0] = off;
                 }
             });
         } while (offset[0] == 0 && hasNext);
-        // System.out.println("last committed returned from: " + offsetQueue.file() + " " + offset[0] + " after reading
-        // " + count[0]);
+        // System.out.println("last committed returned from: " + offsetQueue.file() + " " + offset[0] + " hasNext: " +
+        // hasNext);
         return offset[0];
     }
 
     public void commit(long offset) {
         ExcerptAppender appender = offsetQueue.acquireAppender();
         appender.writeBytes(b -> b.writeInt(partition).writeLong(offset).writeLong(System.currentTimeMillis()));
-        //        System.out.println(String.format("COMMIT %s, partition: %s, offset: %s, pos: %s",
-        //                offsetQueue.file(), partition, offset, appender.lastIndexAppended()));
+        // System.out.println(String.format("COMMIT %s, partition: %s, offset: %s, pos: %s",
+        // offsetQueue.file(), partition, offset, appender.lastIndexAppended()));
         lastCommittedOffset = offset;
     }
 
