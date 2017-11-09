@@ -25,7 +25,6 @@ import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -810,9 +809,13 @@ public class DocumentRoutingActionsBean implements Serializable {
         relatedRoutes = relatedRouteAction.findRelatedRoute();
     }
 
-    @Observer(value = { TaskEventNames.WORKFLOW_ENDED, TaskEventNames.WORKFLOW_CANCELED }, create = false)
+    @Observer(value = { TaskEventNames.WORKFLOW_ENDED, TaskEventNames.WORKFLOW_CANCELED,
+            TaskEventNames.WORKFLOW_TASK_COMPLETED }, create = false)
     public void resetCache() {
-        webActions.resetTabList();
+        relatedRoutes = null;
+        if (!hasRelatedRoute()) {
+            webActions.resetTabList();
+        }
     }
 
     /**
