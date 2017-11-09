@@ -24,7 +24,7 @@ import static org.junit.Assert.fail;
 
 import javax.inject.Inject;
 
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.client.RemoteException;

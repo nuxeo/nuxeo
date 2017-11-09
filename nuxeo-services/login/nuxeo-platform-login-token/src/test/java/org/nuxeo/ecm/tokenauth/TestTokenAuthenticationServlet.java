@@ -22,18 +22,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet.APPLICATION_NAME_PARAM;
+import static org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet.DEVICE_ID_PARAM;
+import static org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet.PERMISSION_PARAM;
+import static org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet.REVOKE_PARAM;
 
 import java.io.IOException;
 import java.net.URI;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet;
 import org.nuxeo.runtime.api.Framework;
@@ -58,87 +65,110 @@ public class TestTokenAuthenticationServlet {
 
     @Test
     public void testServlet() throws Exception {
-
-        HttpClient httpClient = new HttpClient();
-
-        HttpMethod getMethod = null;
-        try {
+        String baseURL = "http://localhost:18080/authentication/token";
+        String applicationName = "Nuxeo Drive Café"; // name with space and non-ascii char
+        String deviceId = "dead-beaf-cafe-babe";
+        String userName = "Administrator";
+        String password = "Administrator";
+        URI uri;
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             // ------------ Test bad authentication ----------------
-            getMethod = new GetMethod(
-                    "http://localhost:18080/authentication/token?applicationName=myFavoriteApp&deviceId=dead-beaf-cafe-babe&permission=rw");
-            int status = executeGetMethod(httpClient, getMethod, "Administrator", "badPassword");
-            // Receives 401 because of because of unauthorized user
-            assertEquals(401, status);
+            uri = new URIBuilder(baseURL).addParameter(APPLICATION_NAME_PARAM, applicationName) //
+                                         .addParameter(DEVICE_ID_PARAM, deviceId)
+                                         .addParameter(PERMISSION_PARAM, "rw")
+                                         .build();
+            try (CloseableHttpResponse response = executeGetMethod(httpClient, uri, userName, "badPassword")) {
+                // Receives 401 because of because of unauthorized user
+                assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
+            }
 
             // ------------ Test omitting required parameters ----------------
             // Token acquisition
-            getMethod = new GetMethod("http://localhost:18080/authentication/token?applicationName=myFavoriteApp");
-            status = executeGetMethod(httpClient, getMethod, "Administrator", "Administrator");
-            assertEquals(400, status);
+            uri = new URIBuilder(baseURL).addParameter(APPLICATION_NAME_PARAM, applicationName) //
+                                         .build();
+            try (CloseableHttpResponse response = executeGetMethod(httpClient, uri, userName, password)) {
+                assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+            }
 
             // Token revocation
-            getMethod = new GetMethod(
-                    "http://localhost:18080/authentication/token?applicationName=myFavoriteApp&revoke=true");
-            status = executeGetMethod(httpClient, getMethod, "Administrator", "Administrator");
-            assertEquals(400, status);
+            uri = new URIBuilder(baseURL).addParameter(APPLICATION_NAME_PARAM, applicationName) //
+                                         .addParameter(REVOKE_PARAM, "true")
+                                         .build();
+            try (CloseableHttpResponse response = executeGetMethod(httpClient, uri, userName, password)) {
+                assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+            }
 
             // ------------ Test acquiring token ----------------
-            String queryParams = URIUtil.encodeQuery("applicationName=Nuxeo Drive&deviceId=dead-beaf-cafe-babe&permission=rw");
-            URI uri = new URI("http", null, "localhost", 18080, "/authentication/token", queryParams, null);
-            getMethod = new GetMethod(uri.toString());
+            uri = new URIBuilder(baseURL).addParameter(APPLICATION_NAME_PARAM, applicationName) //
+                                         .addParameter(DEVICE_ID_PARAM, deviceId)
+                                         .addParameter(PERMISSION_PARAM, "rw")
+                                         .build();
             // Acquire new token
-            status = executeGetMethod(httpClient, getMethod, "Administrator", "Administrator");
-            assertEquals(201, status);
-            String token = getMethod.getResponseBodyAsString();
+            String token;
+            try (CloseableHttpResponse response = executeGetMethod(httpClient, uri, userName, password)) {
+                assertEquals(HttpStatus.SC_CREATED, response.getStatusLine().getStatusCode());
+                token = EntityUtils.toString(response.getEntity());
+            }
             assertNotNull(token);
             assertNotNull(getTokenAuthenticationService().getUserName(token));
-            assertEquals(1, getTokenAuthenticationService().getTokenBindings("Administrator").size());
+            assertEquals(1, getTokenAuthenticationService().getTokenBindings(userName).size());
+            DocumentModel tokenDoc = getTokenAuthenticationService().getTokenBindings(userName).get(0);
+            assertEquals(applicationName, tokenDoc.getPropertyValue("authtoken:applicationName"));
 
             // Acquire existing token
-            status = httpClient.executeMethod(getMethod);
-            assertEquals(201, status);
-            String existingToken = getMethod.getResponseBodyAsString();
+            String existingToken;
+            try (CloseableHttpResponse response = httpClient.execute(new HttpGet(uri))) {
+                assertEquals(HttpStatus.SC_CREATED, response.getStatusLine().getStatusCode());
+                existingToken = EntityUtils.toString(response.getEntity());
+            }
             assertEquals(token, existingToken);
 
             // ------------ Test revoking token ----------------
             // Non existing token, should do nothing
-            getMethod = new GetMethod(
-                    "http://localhost:18080/authentication/token?applicationName=nonExistingApp&deviceId=dead-beaf-cafe-babe&revoke=true");
-            status = executeGetMethod(httpClient, getMethod, "Administrator", "Administrator");
-            assertEquals(400, status);
-            String response = getMethod.getResponseBodyAsString();
-            assertEquals(String.format(
-                    "No token found for userName %s, applicationName %s and deviceId %s; nothing to do.",
-                    "Administrator", "nonExistingApp", "dead-beaf-cafe-babe"), response);
+            String nonExistingApp = "nonExistingApp";
+            uri = new URIBuilder(baseURL).addParameter(APPLICATION_NAME_PARAM, nonExistingApp) //
+                                         .addParameter(DEVICE_ID_PARAM, deviceId)
+                                         .addParameter(REVOKE_PARAM, "true")
+                                         .build();
+            String content;
+            try (CloseableHttpResponse response = executeGetMethod(httpClient, uri, userName, password)) {
+                assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+                content = EntityUtils.toString(response.getEntity());
+            }
+            assertEquals(
+                    String.format("No token found for userName %s, applicationName %s and deviceId %s; nothing to do.",
+                            userName, nonExistingApp, deviceId),
+                    content);
 
             // Existing token
-            queryParams = URIUtil.encodeQuery("applicationName=Nuxeo Drive&deviceId=dead-beaf-cafe-babe&revoke=true");
-            uri = new URI("http", null, "localhost", 18080, "/authentication/token", queryParams, null);
-            getMethod = new GetMethod(uri.toString());
-            status = executeGetMethod(httpClient, getMethod, "Administrator", "Administrator");
-            assertEquals(202, status);
-            response = getMethod.getResponseBodyAsString();
-            assertEquals(String.format("Token revoked for userName %s, applicationName %s and deviceId %s.",
-                    "Administrator", "Nuxeo Drive", "dead-beaf-cafe-babe"), response);
+            uri = new URIBuilder(baseURL).addParameter(APPLICATION_NAME_PARAM, applicationName) //
+                                         .addParameter(DEVICE_ID_PARAM, deviceId)
+                                         .addParameter(REVOKE_PARAM, "true")
+                                         .build();
+            try (CloseableHttpResponse response = executeGetMethod(httpClient, uri, userName, password)) {
+                assertEquals(HttpStatus.SC_ACCEPTED, response.getStatusLine().getStatusCode());
+                content = EntityUtils.toString(response.getEntity());
+            }
+            assertEquals(String.format("Token revoked for userName %s, applicationName %s and deviceId %s.", userName,
+                    applicationName, deviceId), content);
+
             nextTransaction(); // see committed changes
             assertNull(getTokenAuthenticationService().getUserName(token));
-            assertTrue(getTokenAuthenticationService().getTokenBindings("Administrator").isEmpty());
-        } finally {
-            getMethod.releaseConnection();
+            assertTrue(getTokenAuthenticationService().getTokenBindings(userName).isEmpty());
         }
     }
 
     /**
-     * Executes the specified HTTP method on the specified HTTP client with a basic authentication header given the
+     * Executes a GET on the specified URI with the specified HTTP client with a basic authentication header given the
      * specified credentials.
      */
-    protected final int executeGetMethod(HttpClient httpClient, HttpMethod httpMethod, String userName, String password)
-            throws HttpException, IOException {
-
+    protected final CloseableHttpResponse executeGetMethod(CloseableHttpClient httpClient, URI uri, String userName,
+            String password) throws IOException {
+        HttpGet get = new HttpGet(uri);
         String authString = userName + ":" + password;
         String basicAuthHeader = "Basic " + new String(Base64.encodeBase64(authString.getBytes()));
-        httpMethod.setRequestHeader("Authorization", basicAuthHeader);
-        return httpClient.executeMethod(httpMethod);
+        get.setHeader("Authorization", basicAuthHeader);
+        return httpClient.execute(get);
     }
 
     protected TokenAuthenticationService getTokenAuthenticationService() {

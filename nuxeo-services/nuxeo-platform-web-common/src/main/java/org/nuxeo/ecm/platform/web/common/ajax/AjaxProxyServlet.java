@@ -31,14 +31,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.nuxeo.ecm.platform.ui.web.cache.SimpleCacheFilter;
 import org.nuxeo.ecm.platform.web.common.ajax.service.AjaxProxyComponent;
 import org.nuxeo.ecm.platform.web.common.ajax.service.AjaxProxyService;
@@ -60,8 +65,6 @@ public class AjaxProxyServlet extends HttpServlet {
 
     public static final String X_METHOD_HEADER = "X-Requested-Method";
 
-    protected static AjaxProxyService service;
-
     protected static Map<String, String> requestsCache = new LRUCachingMap<String, String>(250);
 
     protected static final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
@@ -69,13 +72,6 @@ public class AjaxProxyServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(AjaxProxyServlet.class);
-
-    protected static AjaxProxyService getService() {
-        if (service == null) {
-            service = Framework.getLocalService(AjaxProxyService.class);
-        }
-        return service;
-    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -105,7 +101,7 @@ public class AjaxProxyServlet extends HttpServlet {
         }
         String cache = req.getParameter("cache");
 
-        ProxyURLConfigEntry entry = getService().getConfigForURL(targetURL);
+        ProxyURLConfigEntry entry = Framework.getService(AjaxProxyService.class).getConfigForURL(targetURL);
         if (entry == null || !entry.isGranted()) {
             resp.sendError(HttpServletResponse.SC_FORBIDDEN);
             log.warn("client requested proxying for unauthorized url " + targetURL);
@@ -168,30 +164,31 @@ public class AjaxProxyServlet extends HttpServlet {
     }
 
     protected static String doRequest(String method, String targetURL, HttpServletRequest req) throws IOException {
-        HttpClient client = new HttpClient();
-        HttpMethod httpMethod;
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpUriRequest request;
+            if ("GET".equals(method)) {
+                request = new HttpGet(targetURL);
+            } else if ("POST".equals(method)) {
+                request = new HttpPost(targetURL);
+            } else if ("PUT".equals(method)) {
+                request = new HttpPut(targetURL);
+            } else {
+                throw new IllegalStateException("Unknown HTTP method: " + method);
+            }
+            if (request instanceof HttpEntityEnclosingRequest) {
+                HttpEntity entity = new InputStreamEntity(req.getInputStream());
+                ((HttpEntityEnclosingRequest) request).setEntity(entity);
+            }
 
-        if ("GET".equals(method)) {
-            httpMethod = new GetMethod(targetURL);
-        } else if ("POST".equals(method)) {
-            httpMethod = new PostMethod(targetURL);
-            ((PostMethod) httpMethod).setRequestEntity(new InputStreamRequestEntity(req.getInputStream()));
-        } else if ("PUT".equals(method)) {
-            httpMethod = new PutMethod(targetURL);
-            ((PutMethod) httpMethod).setRequestEntity(new InputStreamRequestEntity(req.getInputStream()));
-        } else {
-            throw new IllegalStateException("Unknown HTTP method: " + method);
+            Map<String, String[]> params = req.getParameterMap();
+            for (String paramName : params.keySet()) {
+                request.getParams().setParameter(paramName, params.get(paramName));
+            }
+
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
+                return EntityUtils.toString(response.getEntity());
+            }
         }
-
-        Map<String, String[]> params = req.getParameterMap();
-        for (String paramName : params.keySet()) {
-            httpMethod.getParams().setParameter(paramName, params.get(paramName));
-        }
-
-        client.executeMethod(httpMethod);
-        String body = httpMethod.getResponseBodyAsString();
-        httpMethod.releaseConnection();
-        return body;
     }
 
 }
