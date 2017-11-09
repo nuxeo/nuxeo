@@ -51,6 +51,7 @@ import org.nuxeo.ecm.directory.api.ui.DirectoryUIManager;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
+import org.nuxeo.ecm.platform.ui.web.directory.ChainSelectBase;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -216,6 +217,7 @@ public class DirectoryUIActionsBean implements Serializable {
                         messages.get("vocabulary.entry.identifier.already.exists"));
                 return;
             }
+            setParentColumnIfNull(creationDirectoryEntry);
             dirSession.createEntry(creationDirectoryEntry);
 
             resetCreateDirectoryEntry();
@@ -250,6 +252,7 @@ public class DirectoryUIActionsBean implements Serializable {
     public void editSelectedDirectoryEntry() {
         String dirName = currentDirectoryInfo.getName();
         try (Session dirSession = dirService.open(dirName)) {
+            setParentColumnIfNull(selectedDirectoryEntry);
             dirSession.updateEntry(selectedDirectoryEntry);
             selectedDirectoryEntry = null;
             // invalidate directory entries list
@@ -257,6 +260,26 @@ public class DirectoryUIActionsBean implements Serializable {
             Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
 
             facesMessages.add(StatusMessage.Severity.INFO, messages.get("vocabulary.entry.edited"));
+        }
+    }
+
+    /**
+     * Forces the "parent" column of an "xvocabulary" directory entry to the empty string if null. This is required when
+     * filtering on the parent column, expecting the submitted value {@code ""}, not {@code null}.
+     * <p>
+     * Note that the empty string submitted value is converted to {@code null} because:
+     * <ul>
+     * <li>The {@code javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL} context parameter, used by UIInput,
+     * is set to {@code true}.</li>
+     * <li>In any case, for a "selectOneDirectory" widget relying on UISelectOne, the MenuRenderer converts
+     * RIConstants#NO_VALUE to {@code null}.</li>
+     * </ul>
+     */
+    protected void setParentColumnIfNull(DocumentModel directoryEntry) {
+        if (directoryEntry != null && directoryEntry.hasSchema(ChainSelectBase.XVOCABULARY_SCHEMA)
+                && directoryEntry.getProperty(ChainSelectBase.XVOCABULARY_SCHEMA,
+                        ChainSelectBase.PARENT_COLUMN) == null) {
+            directoryEntry.setProperty(ChainSelectBase.XVOCABULARY_SCHEMA, ChainSelectBase.PARENT_COLUMN, "");
         }
     }
 
