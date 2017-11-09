@@ -1,4 +1,4 @@
-/* 
+/*
  * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,13 +18,15 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.client.sso;
 
+import java.util.List;
+
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
-import org.apache.commons.httpclient.Cookie;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpState;
+import org.apache.http.client.CookieStore;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.nuxeo.ecm.core.opencmis.impl.client.protocol.http.HttpURLInstaller;
 import org.nuxeo.ecm.core.opencmis.impl.client.protocol.http.NullAuthenticationProvider;
 
@@ -36,29 +38,30 @@ import org.nuxeo.ecm.core.opencmis.impl.client.protocol.http.NullAuthenticationP
  */
 public class CasClient extends AbstractClientSupport {
 
-    public Cookie[] cookies;
+    public List<Cookie> cookies;
 
     public CasClient(String location) {
         super(location);
     }
 
     public void saveClientContext() {
-        HttpClient client = HttpURLInstaller.INSTANCE.getClient();
-        cookies = client.getState().getCookies();
+        CookieStore cookieStore = HttpURLInstaller.INSTANCE.getCookieStore();
+        cookies = cookieStore.getCookies();
     }
 
     public void restoreClientContext() {
-        HttpClient client = HttpURLInstaller.INSTANCE.getClient();
-        HttpState state = client.getState();
-        state.clearCookies();
+        CookieStore cookieStore = HttpURLInstaller.INSTANCE.getCookieStore();
+        cookieStore.clear();
         for (Cookie cookie : cookies) {
-            state.addCookie(cookie);
+            cookieStore.addCookie(cookie);
         }
     }
 
+    @SuppressWarnings("resource")
     public CasGreeter newGreeter() {
-        HttpClient client = HttpURLInstaller.INSTANCE.getClient();
-        return new CasGreeter(client, location);
+        CloseableHttpClient client = HttpURLInstaller.INSTANCE.getClient();
+        CookieStore cookieStore = HttpURLInstaller.INSTANCE.getCookieStore();
+        return new CasGreeter(client, cookieStore, location);
     }
 
     @Override

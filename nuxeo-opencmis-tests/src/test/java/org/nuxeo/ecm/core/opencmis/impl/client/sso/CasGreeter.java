@@ -1,4 +1,4 @@
-/* 
+/*
  * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,18 +22,27 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.httpclient.Cookie;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
 /**
@@ -43,14 +52,17 @@ import org.junit.Test;
  */
 public class CasGreeter {
 
-    protected final HttpClient client;
+    protected final CloseableHttpClient client;
+
+    protected final CookieStore cookieStore;
 
     protected final String location;
 
     protected String ticket;
 
-    public CasGreeter(HttpClient client, String location) {
+    public CasGreeter(CloseableHttpClient client, CookieStore cookieStore, String location) {
         this.client = client;
+        this.cookieStore = cookieStore;
         this.location = location;
     }
 
@@ -124,42 +136,37 @@ public class CasGreeter {
         return value;
     }
 
-    public String fetchServiceTicket(HttpMethod page) throws HttpException, IOException {
-        client.executeMethod(page);
-        try {
-            if (page.getStatusCode() != HttpStatus.SC_OK) {
+    public String fetchServiceTicket(HttpUriRequest request) throws HttpException, IOException {
+        try (CloseableHttpResponse response = client.execute(request)) {
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 throw new Error("Cannot get login form");
             }
-            return extractLoginTicket(page.getResponseBodyAsString());
-        } finally {
-            page.releaseConnection();
+            String body = EntityUtils.toString(response.getEntity());
+            return extractLoginTicket(body);
         }
     }
-
-    public String fetchServiceLocation(HttpMethod page) throws HttpException, IOException {
-        client.executeMethod(page);
-        try {
-            if (page.getStatusCode() != HttpStatus.SC_OK) {
+    public String fetchServiceLocation(HttpUriRequest request) throws HttpException, IOException {
+        try (CloseableHttpResponse response = client.execute(request)) {
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 throw new Error("Cannot authenticate");
             }
-            return extractRedirectLink(page.getResponseBodyAsString());
-        } finally {
-            page.releaseConnection();
+            String body = EntityUtils.toString(response.getEntity());
+            return extractRedirectLink(body);
         }
     }
 
     abstract class Page {
 
-        HttpMethod method;
+        URI location;
+
+        boolean post;
+
+        HttpEntity entity;
 
         String bodyContent;
 
-        String location() {
-            try {
-                return method.getURI().getURI();
-            } catch (URIException e) {
-                throw new Error("Cannot access to method location");
-            }
+        Page(URI location) {
+            this.location = location;
         }
 
         abstract Page handleNewContent(String... args);
@@ -170,32 +177,26 @@ public class CasGreeter {
 
         Page next(String... args) {
             handleNewParams(args);
-            try {
-                client.executeMethod(method);
-            } catch (Exception e) {
-                throw new Error("execution error", e);
+            HttpUriRequest request;
+            if (!post) {
+                request = new HttpGet(location);
+            } else {
+                request = new HttpPost(location);
+                ((HttpPost) request).setEntity(entity);
             }
-            try {
-                if (method.getStatusCode() == HttpStatus.SC_MOVED_TEMPORARILY) {
-                    method.releaseConnection();
-                    String location = method.getResponseHeader("Location").getValue();
-                    method = new GetMethod(location);
-                    client.executeMethod(method);
+            try (CloseableHttpResponse response = client.execute(request)) {
+                if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                    throw new Error("server error " + response.getStatusLine());
                 }
-                if (method.getStatusCode() != HttpStatus.SC_OK) {
-                    throw new Error("server error " + method.getStatusLine());
-                }
-                bodyContent = method.getResponseBodyAsString();
+                bodyContent = EntityUtils.toString(response.getEntity());
             } catch (Exception e) {
                 throw new Error("no content", e);
-            } finally {
-                method.releaseConnection();
             }
             return handleNewContent(args);
         }
 
         String getTicketGranting() {
-            for (Cookie cookie : client.getState().getCookies()) {
+            for (Cookie cookie : cookieStore.getCookies()) {
                 if ("CASTGC".equals(cookie.getName())) {
                     return cookie.getValue();
                 }
@@ -210,13 +211,19 @@ public class CasGreeter {
 
     class InitialPage extends Page {
 
-        InitialPage(String location) {
-            method = new GetMethod(location);
+        InitialPage(URI location) {
+            super(location);
         }
 
-        public void setProxyTicket(String ticket, String proxy, String service) throws HttpException, IOException {
-            method.setQueryString(new NameValuePair[] { new NameValuePair("ticket", ticket),
-                    new NameValuePair("proxy", proxy), new NameValuePair("service", service) });
+        public void setProxyTicket(String ticket, String proxy, String service) {
+            try {
+                location = new URIBuilder(location).setParameter("ticket", ticket) //
+                                                   .setParameter("proxy", proxy)
+                                                   .setParameter("service", service)
+                                                   .build();
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         String extractLoginTicket() {
@@ -226,32 +233,36 @@ public class CasGreeter {
         @Override
         void handleNewParams(String... args) {
             if (args.length == 1) {
-                try {
-                    setProxyTicket(args[0], args[1], args[2]);
-                } catch (Exception e) {
-                    throw new Error("Cannot set ticket granting");
-                }
+                setProxyTicket(args[0], args[1], args[2]);
             }
         }
 
         @Override
         Page handleNewContent(String... args) {
             if (hasTicketGranting()) {
-                return new ServicePage(location());
+                return new ServicePage(location);
             }
-            return new CredentialsPage(location());
+            return new CredentialsPage(location);
         }
     }
 
     class CredentialsPage extends Page {
-        CredentialsPage(String location) {
-            method = new PostMethod(location);
+        CredentialsPage(URI location) {
+            super(location);
+            post = true;
         }
 
         void setParams(String ticket, String username, String password) {
-            ((PostMethod) method).setRequestBody(new NameValuePair[] { new NameValuePair("lt", ticket),
-                    new NameValuePair("username", username), new NameValuePair("password", password),
-                    new NameValuePair("_eventId", "submit"), new NameValuePair("submit", "LOGIN") });
+            try {
+                entity = new UrlEncodedFormEntity(Arrays.asList( //
+                        new BasicNameValuePair("lt", ticket), //
+                        new BasicNameValuePair("username", username), //
+                        new BasicNameValuePair("password", password), //
+                        new BasicNameValuePair("_eventId", "submit"), //
+                        new BasicNameValuePair("submit", "LOGIN")));
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         @Override
@@ -262,17 +273,17 @@ public class CasGreeter {
         @Override
         Page handleNewContent(String... args) {
             if (hasTicketGranting()) {
-                return new ServicePage(location());
+                return new ServicePage(location);
             }
-            return new CredentialsPage(location());
+            return new CredentialsPage(location);
         }
 
     }
 
     class ServicePage extends Page {
 
-        ServicePage(String location) {
-            method = new GetMethod(location);
+        ServicePage(URI location) {
+            super(location);
         }
 
         @Override
@@ -283,7 +294,7 @@ public class CasGreeter {
     }
 
     public String credsLogon(String username, String password) throws HttpException, IOException {
-        InitialPage initialPage = new InitialPage(location);
+        InitialPage initialPage = new InitialPage(URI.create(location));
         Page credentialsPage = initialPage.next();
         Page servicePage = credentialsPage.next(initialPage.extractLoginTicket(), username, password);
         return servicePage.getTicketGranting();
@@ -291,7 +302,7 @@ public class CasGreeter {
 
     public String proxyLogon(String ticket, String proxy, String service) throws IllegalArgumentException,
             HttpException, IOException {
-        InitialPage initialPage = new InitialPage(location);
+        InitialPage initialPage = new InitialPage(URI.create(location));
         initialPage.setProxyTicket(ticket, proxy, service);
         Page servicePage = initialPage.next();
         return servicePage.getTicketGranting();

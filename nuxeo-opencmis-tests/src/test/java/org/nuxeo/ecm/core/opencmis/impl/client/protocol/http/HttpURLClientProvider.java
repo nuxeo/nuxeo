@@ -18,12 +18,15 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.client.protocol.http;
 
-import org.apache.commons.httpclient.HttpClient;
+import org.apache.http.client.CookieStore;
+import org.apache.http.impl.client.CloseableHttpClient;
 
 public interface HttpURLClientProvider {
 
-    HttpClient getClient();
+    CloseableHttpClient getClient();
 
-    void setClient(HttpClient client);
+    void setClient(CloseableHttpClient client);
+
+    CookieStore getCookieStore();
 
 }
