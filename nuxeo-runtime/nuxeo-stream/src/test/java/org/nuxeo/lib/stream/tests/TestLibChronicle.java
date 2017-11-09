@@ -168,7 +168,6 @@ public class TestLibChronicle implements StoreFileListener {
         KeyValueMessage srcNode2 = KeyValueMessage.of("node2");
         ExcerptAppender app;
         ExcerptTailer tailer;
-        long index = 0;
         try (ChronicleQueue queue = createQueue()) {
             path = queue.file();
             app = queue.acquireAppender();
@@ -217,9 +216,9 @@ public class TestLibChronicle implements StoreFileListener {
         // the state does not help
         assertEquals(TailerState.FOUND_CYCLE, tailer.state());
         try {
-            KeyValueMessage receiveNode = poll(tailer);
-            fail("Expecting a NPE on closed tailer");
-        } catch (NullPointerException exception) {
+            poll(tailer);
+            fail("Expecting a exception on closed tailer");
+        } catch (IllegalStateException exception) {
             // here the queue has been closed the tailer is closed
         }
 

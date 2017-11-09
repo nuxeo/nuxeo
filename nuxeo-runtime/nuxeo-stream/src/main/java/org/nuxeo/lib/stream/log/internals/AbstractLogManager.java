@@ -33,17 +33,18 @@ import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.RebalanceListener;
 
 public abstract class AbstractLogManager implements LogManager {
-    protected final Map<String, LogAppender> appenders = new ConcurrentHashMap<>();
+    protected final Map<String, CloseableLogAppender> appenders = new ConcurrentHashMap<>();
 
     protected final Map<LogPartitionGroup, LogTailer> tailersAssignments = new ConcurrentHashMap<>();
 
+    // this define a concurrent set of tailers
     protected final Set<LogTailer> tailers = Collections.newSetFromMap(new ConcurrentHashMap<LogTailer, Boolean>());
 
     protected abstract void create(String name, int size);
 
-    protected abstract <M extends Externalizable> LogAppender<M> createAppender(String name);
+    protected abstract <M extends Externalizable> CloseableLogAppender<M> createAppender(String name);
 
-    protected abstract <M extends Externalizable> LogTailer<M> acquireTailer(Collection<LogPartition> partitions,
+    protected abstract <M extends Externalizable> LogTailer<M> doCreateTailer(Collection<LogPartition> partitions,
             String group);
 
     protected abstract <M extends Externalizable> LogTailer<M> doSubscribe(String group, Collection<String> names,
@@ -65,8 +66,8 @@ public abstract class AbstractLogManager implements LogManager {
 
     @Override
     public <M extends Externalizable> LogTailer<M> createTailer(String group, Collection<LogPartition> partitions) {
-        partitions.forEach(partition -> checkTailerForPartition(group, partition));
-        LogTailer<M> ret = acquireTailer(partitions, group);
+        partitions.forEach(partition -> checkInvalidAssignment(group, partition));
+        LogTailer<M> ret = doCreateTailer(partitions, group);
         partitions.forEach(partition -> tailersAssignments.put(new LogPartitionGroup(group, partition), ret));
         tailers.add(ret);
         return ret;
@@ -85,7 +86,7 @@ public abstract class AbstractLogManager implements LogManager {
         return ret;
     }
 
-    protected void checkTailerForPartition(String group, LogPartition partition) {
+    protected void checkInvalidAssignment(String group, LogPartition partition) {
         LogPartitionGroup key = new LogPartitionGroup(group, partition);
         LogTailer ret = tailersAssignments.get(key);
         if (ret != null && !ret.closed()) {
@@ -97,28 +98,20 @@ public abstract class AbstractLogManager implements LogManager {
         }
     }
 
-    @Override
-    public <M extends Externalizable> LogTailer<M> createTailer(String group, LogPartition partition) {
-        return createTailer(group, Collections.singletonList(partition));
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public synchronized <M extends Externalizable> LogAppender<M> getAppender(String name) {
-        if (!appenders.containsKey(name) || appenders.get(name).closed()) {
-            if (exists(name)) {
-                LogAppender<M> appender = createAppender(name);
-                appenders.put(name, appender);
-            } else {
-                throw new IllegalArgumentException("unknown Log name: " + name);
+        return (LogAppender<M>) appenders.computeIfAbsent(name, n -> {
+            if (exists(n)) {
+                return createAppender(n);
             }
-        }
-        return (LogAppender<M>) appenders.get(name);
+            throw new IllegalArgumentException("unknown Log name: " + n);
+        });
     }
 
     @Override
     public void close() {
-        appenders.values().stream().filter(Objects::nonNull).forEach(LogAppender::close);
+        appenders.values().stream().filter(Objects::nonNull).forEach(CloseableLogAppender::close);
         appenders.clear();
         tailers.stream().filter(Objects::nonNull).forEach(LogTailer::close);
         tailers.clear();
