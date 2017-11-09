@@ -110,24 +110,31 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
 
         log.debug("Starting rendition computation.");
         List<Blob> blobs = doComputeRendition(session, doc, def);
-        updateAndCompleteStoreEntry(blobs);
+        updateAndCompleteStoreEntry(getSourceDocumentModificationDate(doc), blobs);
     }
 
     @Override
     public void cleanUp(boolean ok, Exception e) {
-        super.cleanUp(ok, e);
         if (ok) {
+            super.cleanUp(ok, e);
             return;
         }
+
+        // Fetch document and compute its modification date before cleaning up which closes the session
+        DocumentModel doc = session.getDocument(docRef);
+        String sourceDocumentModificationDate = getSourceDocumentModificationDate(doc);
+
+        super.cleanUp(ok, e);
+
         List<Blob> blobs = new ArrayList<Blob>();
         StringBlob emptyBlob = new StringBlob("");
         emptyBlob.setFilename("error");
         emptyBlob.setMimeType("text/plain;" + LazyRendition.ERROR_MARKER);
         blobs.add(emptyBlob);
-        updateAndCompleteStoreEntry(blobs);
+        updateAndCompleteStoreEntry(sourceDocumentModificationDate, blobs);
     }
 
-    void updateAndCompleteStoreEntry(List<Blob> blobs) {
+    void updateAndCompleteStoreEntry(String sourceDocumentModificationDate, List<Blob> blobs) {
         if (log.isDebugEnabled()) {
             log.debug(
                     String.format("Updating and completing transient store entry with key %s (workId=%s, document=%s).",
@@ -136,27 +143,23 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore(getTransientStoreName());
 
-        if (!ts.exists(key)) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("No entry found for key %s in the %s transient store, rewriting it.", key,
-                        getTransientStoreName()));
-            }
-            RenditionService rs = Framework.getService(RenditionService.class);
-            RenditionDefinition definition = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
-            RenditionProvider provider = definition.getProvider();
-            if (provider instanceof AbstractLazyCachableRenditionProvider) {
-                DocumentModel doc = session.getDocument(docRef);
-                String sourceDocumentModificationDate = ((AbstractLazyCachableRenditionProvider) provider).getSourceDocumentModificationDate(
-                        doc, definition);
-                if (sourceDocumentModificationDate != null) {
-                    ts.putParameter(key, AbstractLazyCachableRenditionProvider.SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
-                            sourceDocumentModificationDate);
-                }
-            }
-
+        if (sourceDocumentModificationDate != null) {
+            ts.putParameter(key, AbstractLazyCachableRenditionProvider.SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
+                    sourceDocumentModificationDate);
         }
         ts.putBlobs(key, blobs);
         ts.setCompleted(key, true);
+    }
+
+    protected String getSourceDocumentModificationDate(DocumentModel doc) {
+        RenditionService rs = Framework.getService(RenditionService.class);
+        RenditionDefinition definition = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
+        RenditionProvider provider = definition.getProvider();
+        if (provider instanceof AbstractLazyCachableRenditionProvider) {
+            return ((AbstractLazyCachableRenditionProvider) provider).getSourceDocumentModificationDate(doc,
+                    definition);
+        }
+        return null;
     }
 
     /**
