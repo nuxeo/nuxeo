@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -204,32 +203,6 @@ public class SimpleTransientStore extends AbstractTransientStore {
     }
 
     @Override
-    public void remove(String key) {
-        synchronized (this) {
-            StorageEntry entry = (StorageEntry) getL1Cache().getIfPresent(key);
-            if (entry == null) {
-                entry = (StorageEntry) getL2Cache().getIfPresent(key);
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Invalidating StorageEntry stored at key %s form L2 cache", key));
-                }
-                getL2Cache().invalidate(key);
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Invalidating StorageEntry stored at key %s form L1 cache", key));
-                }
-                getL1Cache().invalidate(key);
-            }
-            if (entry != null) {
-                long entrySize = entry.getSize();
-                if (entrySize > 0) {
-                    decrementStorageSize(entrySize);
-                }
-            }
-            FileUtils.deleteQuietly(getCachingDirectory(key));
-        }
-    }
-
-    @Override
     public void release(String key) {
         StorageEntry entry = (StorageEntry) getL1Cache().getIfPresent(key);
         if (entry != null) {
@@ -303,6 +276,31 @@ public class SimpleTransientStore extends AbstractTransientStore {
             log.debug(String.format("Decremented storage size of store %s to %s", config.getName(), decremented));
         }
         return decremented;
+    }
+
+    @Override
+    protected void removeEntry(String key) {
+        synchronized (this) {
+            StorageEntry entry = (StorageEntry) getL1Cache().getIfPresent(key);
+            if (entry == null) {
+                entry = (StorageEntry) getL2Cache().getIfPresent(key);
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Invalidating StorageEntry stored at key %s form L2 cache", key));
+                }
+                getL2Cache().invalidate(key);
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Invalidating StorageEntry stored at key %s form L1 cache", key));
+                }
+                getL1Cache().invalidate(key);
+            }
+            if (entry != null) {
+                long entrySize = entry.getSize();
+                if (entrySize > 0) {
+                    decrementStorageSize(entrySize);
+                }
+            }
+        }
     }
 
     @Override

@@ -109,9 +109,6 @@ public abstract class AbstractTransientStore implements TransientStoreProvider {
     public abstract void setCompleted(String key, boolean completed);
 
     @Override
-    public abstract void remove(String key);
-
-    @Override
     public abstract void release(String key);
 
     /**
@@ -130,6 +127,8 @@ public abstract class AbstractTransientStore implements TransientStoreProvider {
     protected abstract long decrementStorageSize(long size);
 
     protected abstract void removeAllEntries();
+
+    protected abstract void removeEntry(String key);
 
     @Override
     public void putBlobs(String key, List<Blob> blobs) {
@@ -267,6 +266,16 @@ public abstract class AbstractTransientStore implements TransientStoreProvider {
             size += file.length();
         }
         return size;
+    }
+
+    @Override
+    public void remove(String key) {
+        removeEntry(key);
+        removeBlobs(key);
+    }
+
+    protected void removeBlobs(String key) {
+        FileUtils.deleteQuietly(getCachingDirectory(key));
     }
 
     @Override
