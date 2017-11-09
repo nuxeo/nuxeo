@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.tokenauth.servlet;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.Principal;
@@ -27,11 +29,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpStatus;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
@@ -57,17 +58,17 @@ public class TokenAuthenticationServlet extends HttpServlet {
 
     private static final Log log = LogFactory.getLog(TokenAuthenticationServlet.class);
 
-    protected static final String TOKEN_AUTH_PLUGIN_NAME = "TOKEN_AUTH";
+    public static final String TOKEN_AUTH_PLUGIN_NAME = "TOKEN_AUTH";
 
-    protected static final String APPLICATION_NAME_PARAM = "applicationName";
+    public static final String APPLICATION_NAME_PARAM = "applicationName";
 
-    protected static final String DEVICE_ID_PARAM = "deviceId";
+    public static final String DEVICE_ID_PARAM = "deviceId";
 
-    protected static final String DEVICE_DESCRIPTION_PARAM = "deviceDescription";
+    public static final String DEVICE_DESCRIPTION_PARAM = "deviceDescription";
 
-    protected static final String PERMISSION_PARAM = "permission";
+    public static final String PERMISSION_PARAM = "permission";
 
-    protected static final String REVOKE_PARAM = "revoke";
+    public static final String REVOKE_PARAM = "revoke";
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -108,16 +109,6 @@ public class TokenAuthenticationServlet extends HttpServlet {
             log.error("The following request parameters are mandatory to revoke an authentication token: applicationName, deviceId.");
             resp.sendError(HttpStatus.SC_BAD_REQUEST);
             return;
-        }
-
-        // Decode parameters
-        applicationName = URIUtil.decode(applicationName);
-        deviceId = URIUtil.decode(deviceId);
-        if (!StringUtils.isEmpty(deviceDescription)) {
-            deviceDescription = URIUtil.decode(deviceDescription);
-        }
-        if (!StringUtils.isEmpty(permission)) {
-            permission = URIUtil.decode(permission);
         }
 
         // Get user name from request Principal
@@ -164,10 +155,11 @@ public class TokenAuthenticationServlet extends HttpServlet {
     protected void sendTextResponse(HttpServletResponse resp, String textResponse, int statusCode) throws IOException {
 
         resp.setContentType("text/plain");
+        resp.setCharacterEncoding(UTF_8.name());
         resp.setStatus(statusCode);
         resp.setContentLength(textResponse.getBytes().length);
         OutputStream out = resp.getOutputStream();
-        out.write(textResponse.getBytes());
+        out.write(textResponse.getBytes(UTF_8));
         out.close();
     }
 
