@@ -20,12 +20,21 @@ package org.nuxeo.ecm.tokenauth;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet.APPLICATION_NAME_PARAM;
+import static org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet.DEVICE_ID_PARAM;
+import static org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet.PERMISSION_PARAM;
+
+import java.net.URI;
 
 import javax.inject.Inject;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
@@ -54,30 +63,30 @@ public class TestAnonymousTokenAuthenticationServlet {
 
     @Test
     public void testServletAsAnonymous() throws Exception {
-
-        HttpClient httpClient = new HttpClient();
-
-        HttpMethod getMethod = null;
-        try {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             // ------------ Test anonymous user not allowed ----------------
-            getMethod = new GetMethod(
-                    "http://localhost:18080/authentication/token?applicationName=myFavoriteApp&deviceId=dead-beaf-cafe-babe&permission=rw");
-            int status = httpClient.executeMethod(getMethod);
-            assertEquals(401, status);
+            String baseURL = "http://localhost:18080/authentication/token";
+            URI uri = new URIBuilder(baseURL).addParameter(APPLICATION_NAME_PARAM, "myFavoriteApp") //
+                                             .addParameter(DEVICE_ID_PARAM, "dead-beaf-cafe-babe")
+                                             .addParameter(PERMISSION_PARAM, "rw")
+                                             .build();
+            HttpGet get = new HttpGet(uri);
+            try (CloseableHttpResponse response = httpClient.execute(get)) {
+                assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
+            }
 
             // ------------ Test anonymous user allowed ----------------
             deployer.deploy(
                     "org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-allow-anonymous-token-contrib.xml");
 
-            status = httpClient.executeMethod(getMethod);
-            assertEquals(201, status);
-            String token = getMethod.getResponseBodyAsString();
+            String token;
+            try (CloseableHttpResponse response = httpClient.execute(get)) {
+                assertEquals(HttpStatus.SC_CREATED, response.getStatusLine().getStatusCode());
+                token = EntityUtils.toString(response.getEntity());
+            }
             assertNotNull(token);
             assertNotNull(tokenAuthenticationService.getUserName(token));
             assertEquals(1, tokenAuthenticationService.getTokenBindings("Guest").size());
-
-        } finally {
-            getMethod.releaseConnection();
         }
     }
 
