@@ -23,6 +23,7 @@ package org.nuxeo.ecm.webdav.resource;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -85,8 +86,8 @@ public class RootResource {
     }
 
     @PROPFIND
-    public Object getRootPropfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth) throws IOException,
-            JAXBException {
+    public Object getRootPropfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth)
+            throws IOException, JAXBException, URISyntaxException {
         Object resource = findResource("");
         if (resource instanceof FolderResource) {
             return ((FolderResource) resource).propfind(uriInfo, depth);

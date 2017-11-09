@@ -25,6 +25,8 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -59,8 +61,6 @@ import net.java.dev.webdav.jaxrs.xml.elements.Status;
 import net.java.dev.webdav.jaxrs.xml.elements.TimeOut;
 import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
 
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -146,8 +146,8 @@ public class ExistingResource extends AbstractResource {
 
         destination = encode(destination.getBytes(), "ISO-8859-1");
         try {
-            destination = URIUtil.decode(destination);
-        } catch (URIException e) {
+            destination = new URI(destination).getPath();
+        } catch (URISyntaxException e) {
             throw new NuxeoException(e);
         }
 
@@ -258,7 +258,8 @@ public class ExistingResource extends AbstractResource {
             } else {
                 token = backend.getCheckoutUser(doc.getRef());
                 prop = new Prop(getLockDiscovery(doc, uriInfo));
-                return Response.ok().entity(prop).header("Lock-Token", "urn:uuid:" + token).build();
+                String codedUrl = "<urn:uuid:" + token + ">";
+                return Response.ok().entity(prop).header("Lock-Token", codedUrl).build();
             }
         }
 
@@ -272,7 +273,8 @@ public class ExistingResource extends AbstractResource {
         prop = new Prop(getLockDiscovery(doc, uriInfo));
 
         backend.saveChanges();
-        return Response.ok().entity(prop).header("Lock-Token", "urn:uuid:" + token).build();
+        String codedUrl = "<urn:uuid:" + token + ">";
+        return Response.ok().entity(prop).header("Lock-Token", codedUrl).build();
     }
 
     @UNLOCK
@@ -295,18 +297,19 @@ public class ExistingResource extends AbstractResource {
         LockDiscovery lockDiscovery = null;
         if (doc.isLocked()) {
             String token = backend.getCheckoutUser(doc.getRef());
+            String codedUrl = "<urn:uuid:" + token + ">";
             lockDiscovery = new LockDiscovery(new ActiveLock(LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
-                    new Owner(token), new TimeOut(10000L), new LockToken(new HRef("urn:uuid:" + token)), new LockRoot(
-                            new HRef(uriInfo.getRequestUri()))));
+                    new Owner(token), new TimeOut(10000L), new LockToken(new HRef(codedUrl)),
+                    new LockRoot(new HRef(uriInfo.getRequestUri()))));
         }
         return lockDiscovery;
     }
 
     protected PropStatBuilderExt getPropStatBuilderExt(DocumentModel doc, UriInfo uriInfo) throws
-            URIException {
+            URISyntaxException {
         Date lastModified = getTimePropertyWrapper(doc, "dc:modified");
         Date creationDate = getTimePropertyWrapper(doc, "dc:created");
-        String displayName = URIUtil.encodePath(backend.getDisplayName(doc));
+        String displayName = new URI(null, backend.getDisplayName(doc), null).toASCIIString();
         PropStatBuilderExt props = new PropStatBuilderExt();
         props.lastModified(lastModified).creationDate(creationDate).displayName(displayName).status(OK);
         if (doc.isFolder()) {

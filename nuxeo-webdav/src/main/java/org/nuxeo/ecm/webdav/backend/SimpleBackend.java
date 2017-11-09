@@ -24,6 +24,8 @@ package org.nuxeo.ecm.webdav.backend;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -31,8 +33,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -250,8 +250,8 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     private String urlEncode(String value) {
         try {
-            return URIUtil.encodePath(value);
-        } catch (URIException e) {
+            return new URI(null, value, null).toASCIIString();
+        } catch (URISyntaxException e) {
             log.warn("Can't encode path " + value);
             return value;
         }

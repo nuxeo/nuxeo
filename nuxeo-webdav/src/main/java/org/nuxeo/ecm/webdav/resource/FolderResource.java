@@ -25,6 +25,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,8 +50,6 @@ import net.java.dev.webdav.jaxrs.xml.elements.Status;
 import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
 import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
 
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -97,8 +96,8 @@ public class FolderResource extends ExistingResource {
     }
 
     @PROPFIND
-    public Response propfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth) throws IOException,
-            JAXBException {
+    public Response propfind(@Context UriInfo uriInfo, @HeaderParam("depth") String depth)
+            throws IOException, JAXBException, URISyntaxException {
 
         if (depth == null) {
             depth = "1";
@@ -145,12 +144,12 @@ public class FolderResource extends ExistingResource {
     }
 
     protected net.java.dev.webdav.jaxrs.xml.elements.Response createResponse(DocumentModel doc, UriInfo uriInfo,
-            Prop prop) throws URIException {
+            Prop prop) throws URISyntaxException {
         return createResponse(doc, uriInfo, prop, true);
     }
 
     protected net.java.dev.webdav.jaxrs.xml.elements.Response createResponse(DocumentModel doc, UriInfo uriInfo,
-            Prop prop, boolean append) throws URIException {
+            Prop prop, boolean append) throws URISyntaxException {
         PropStatBuilderExt props = getPropStatBuilderExt(doc, uriInfo);
         PropStat propStatFound = props.build();
         PropStat propStatNotFound = null;
@@ -161,7 +160,8 @@ public class FolderResource extends ExistingResource {
         net.java.dev.webdav.jaxrs.xml.elements.Response response;
         UriBuilder uriBuilder = uriInfo.getRequestUriBuilder();
         if (append) {
-            uriBuilder.path(URIUtil.encodePath(backend.getDisplayName(doc)));
+            String path = new URI(null, backend.getDisplayName(doc), null).toASCIIString();
+            uriBuilder.path(path);
         }
         URI uri = uriBuilder.build();
         if (doc.isFolder()) {
