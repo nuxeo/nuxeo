@@ -1479,6 +1479,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * @since 7.1
      */
     protected void computeFacetsAndSchemas(Set<String> instanceFacets) {
+        if (getDocumentType() == null) {
+            return;
+        }
+
         this.instanceFacets = instanceFacets;
         instanceFacetsOrig = new HashSet<>(instanceFacets);
         facets = new HashSet<>(instanceFacets);
