@@ -114,7 +114,8 @@ public class SimpleTransientStore extends AbstractTransientStore {
         }
         Serializable res = entry.getParam(parameter);
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Fetched parameter %s from StorageEntry stored at key %s: %s", parameter, key, res));
+            log.debug(
+                    String.format("Fetched parameter %s from StorageEntry stored at key %s: %s", parameter, key, res));
         }
         return res;
     }

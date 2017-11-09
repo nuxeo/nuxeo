@@ -172,8 +172,8 @@ public class RedisTransientStore extends AbstractTransientStore {
         redisExecutor.execute((RedisCallable<Void>) jedis -> {
             String paramsKey = namespace + join(key, "params");
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Setting field %s to value %s in Redis hash stored at key %s", parameter,
-                        value, paramsKey));
+                log.debug(String.format("Setting field %s to value %s in Redis hash stored at key %s", parameter, value,
+                        paramsKey));
             }
             jedis.hset(getBytes(paramsKey), getBytes(parameter), serialize(value));
             return null;
@@ -191,8 +191,8 @@ public class RedisTransientStore extends AbstractTransientStore {
             }
             Serializable res = deserialize(paramBytes);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Fetched field %s from Redis hash stored at key %s -> %s", parameter,
-                        paramsKey, res));
+                log.debug(String.format("Fetched field %s from Redis hash stored at key %s -> %s", parameter, paramsKey,
+                        res));
             }
             return res;
         });
@@ -241,8 +241,8 @@ public class RedisTransientStore extends AbstractTransientStore {
             return jedis.hget(namespace + key, "blobCount");
         });
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Fetched field \"blobCount\" from Redis hash stored at key %s -> %s", namespace
-                    + key, blobCount));
+            log.debug(String.format("Fetched field \"blobCount\" from Redis hash stored at key %s -> %s",
+                    namespace + key, blobCount));
         }
         if (blobCount == null) {
             // Check for existing parameters
@@ -266,9 +266,9 @@ public class RedisTransientStore extends AbstractTransientStore {
                 String blobInfoKey = namespace + join(key, "blobs", blobInfoIndex);
                 Map<String, String> blobInfo = jedis.hgetAll(blobInfoKey);
                 if (blobInfo.isEmpty()) {
-                    throw new NuxeoException(String.format(
-                            "Entry with key %s is inconsistent: blobCount = %d but key %s doesn't exist", key,
-                            entryBlobCount, blobInfoKey));
+                    throw new NuxeoException(
+                            String.format("Entry with key %s is inconsistent: blobCount = %d but key %s doesn't exist",
+                                    key, entryBlobCount, blobInfoKey));
                 }
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Fetched fields from Redis hash stored at key %s -> %s", blobInfoKey,
@@ -303,8 +303,8 @@ public class RedisTransientStore extends AbstractTransientStore {
         return redisExecutor.execute((RedisCallable<Boolean>) jedis -> {
             String completed = jedis.hget(namespace + key, "completed");
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Fetched field \"completed\" from Redis hash stored at key %s -> %s", namespace
-                        + key, completed));
+                log.debug(String.format("Fetched field \"completed\" from Redis hash stored at key %s -> %s",
+                        namespace + key, completed));
             }
             return Boolean.parseBoolean(completed);
         });
@@ -410,8 +410,8 @@ public class RedisTransientStore extends AbstractTransientStore {
         entrySummary.put(SIZE_KEY, String.valueOf(sizeOfBlobs));
         redisExecutor.execute((RedisCallable<Void>) jedis -> {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Setting fields %s in Redis hash stored at key %s", entrySummary, namespace
-                        + key));
+                log.debug(String.format("Setting fields %s in Redis hash stored at key %s", entrySummary,
+                        namespace + key));
             }
             jedis.hmset(namespace + key, entrySummary);
             jedis.expire(namespace + key, firstLevelTTL);
