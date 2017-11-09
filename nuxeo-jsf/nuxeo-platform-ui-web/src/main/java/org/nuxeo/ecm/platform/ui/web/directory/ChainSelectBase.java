@@ -73,6 +73,13 @@ public abstract class ChainSelectBase extends UIInput implements NamingContainer
     /** Directory with a parent column. */
     public static final String XVOCABULARY_SCHEMA = "xvocabulary";
 
+    /**
+     * Parent column.
+     *
+     * @since 9.3
+     */
+    public static final String PARENT_COLUMN = "parent";
+
     protected String directoryNames;
 
     protected String keySeparator = DEFAULT_KEYSEPARATOR;
@@ -261,15 +268,15 @@ public abstract class ChainSelectBase extends UIInput implements NamingContainer
 
             if (level == 0) {
                 if (schema.equals(XVOCABULARY_SCHEMA)) {
-                    filter.put("parent", null);
+                    filter.put(PARENT_COLUMN, null);
                 }
             } else {
                 if (getQualifiedParentKeys()) {
                     Iterator<String> iter = Arrays.asList(selectedKeys).subList(0, level).iterator();
                     String fullPath = StringUtils.join(iter, getKeySeparator());
-                    filter.put("parent", fullPath);
+                    filter.put(PARENT_COLUMN, fullPath);
                 } else {
-                    filter.put("parent", selectedKeys[level - 1]);
+                    filter.put(PARENT_COLUMN, selectedKeys[level - 1]);
                 }
             }
 
@@ -315,15 +322,15 @@ public abstract class ChainSelectBase extends UIInput implements NamingContainer
 
                 if (level == 0) {
                     if (schema.equals(XVOCABULARY_SCHEMA)) {
-                        filter.put("parent", null);
+                        filter.put(PARENT_COLUMN, null);
                     }
                 } else {
                     if (getQualifiedParentKeys()) {
                         Iterator<String> iter = Arrays.asList(keys).subList(0, level).iterator();
                         String fullPath = StringUtils.join(iter, getKeySeparator());
-                        filter.put("parent", fullPath);
+                        filter.put(PARENT_COLUMN, fullPath);
                     } else {
-                        filter.put("parent", keys[level - 1]);
+                        filter.put(PARENT_COLUMN, keys[level - 1]);
                     }
                 }
                 filter.put("id", keys[level]);
