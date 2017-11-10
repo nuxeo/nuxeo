@@ -74,7 +74,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.platform.ws" })
-@LocalDeploy("org.nuxeo.ecm.platform.tag:login-config.xml")
+@LocalDeploy({ "org.nuxeo.ecm.platform.tag:login-config.xml", "org.nuxeo.ecm.tag.tests:test-core-types-contrib.xml",
+        "org.nuxeo.ecm.tag.tests:test-versioning-contrib.xml" })
 public abstract class AbstractTestTagService {
 
     @Inject
@@ -791,7 +792,7 @@ public abstract class AbstractTestTagService {
         assertEquals("0.0", file.getVersionLabel());
         assertEquals(1, tagService.getTags(session, fileId).size());
 
-        DocumentModel note = session.createDocumentModel("/", "note", "Note");
+        DocumentModel note = session.createDocumentModel("/", "note", "TestNote");
         note = session.createDocument(note);
         String noteId = note.getId();
         DocumentRef noteRef = note.getRef();
@@ -813,7 +814,7 @@ public abstract class AbstractTestTagService {
         assertEquals(1, tagService.getTags(session, noteId).size());
 
         // Test copying tags
-        DocumentModel otherNote = session.createDocumentModel("/", "otherNote", "Note");
+        DocumentModel otherNote = session.createDocumentModel("/", "otherNote", "TestNote");
         otherNote = session.createDocument(otherNote);
         String otherId = otherNote.getId();
         tagService.tag(session, otherId, "othertag1");
