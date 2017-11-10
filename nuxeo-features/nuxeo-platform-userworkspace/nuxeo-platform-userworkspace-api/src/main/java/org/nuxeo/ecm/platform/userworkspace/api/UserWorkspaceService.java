@@ -36,6 +36,17 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 public interface UserWorkspaceService extends Serializable {
 
     /**
+     * Gets the current user personal workspace.
+     * <p>
+     * If this personal workspace does not exist then a new one will be created for the user owning the core session.
+     *
+     * @param userCoreSession the user core session
+     * @return the user personal workspace
+     * @since 9.3
+     */
+    DocumentModel getCurrentUserPersonalWorkspace(CoreSession userCoreSession);
+
+    /**
      * Gets the current user personal workspace from a lower level.
      * <p>
      * If this personal workspace does not exist then a new one will be created for the user who is represented by first
@@ -47,6 +58,11 @@ public interface UserWorkspaceService extends Serializable {
      */
     DocumentModel getCurrentUserPersonalWorkspace(String userName, DocumentModel currentDocument);
 
+    /**
+     * @deprecated since 9.3. User personal workspaces have always been stored in default domain. The context is
+     *             useless. Simply use {@link #getCurrentUserPersonalWorkspace(CoreSession)}.
+     */
+    @Deprecated
     DocumentModel getCurrentUserPersonalWorkspace(CoreSession userCoreSession, DocumentModel context);
 
     /**
@@ -79,5 +95,12 @@ public interface UserWorkspaceService extends Serializable {
      * @since 9.2
      */
     boolean isUnderUserWorkspace(Principal principal, String username, DocumentModel doc);
+
+    /**
+     * Invalidates the user workspace service and force re-computation of user workspace root location.
+     *
+     * @since 9.3
+     */
+    void invalidate();
 
 }

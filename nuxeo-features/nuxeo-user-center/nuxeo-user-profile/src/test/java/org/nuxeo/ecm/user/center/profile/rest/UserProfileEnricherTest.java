@@ -27,6 +27,8 @@ import static org.nuxeo.ecm.user.center.profile.rest.UserProfileEnricher.NAME;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -38,6 +40,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
@@ -110,6 +113,22 @@ public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<Nux
         jsonAssert.has("gender").isFalse();
         jsonAssert.has("locale").isNull();
         jsonAssert.has("phonenumber").isEquals("mynumber");
+    }
+
+    /**
+     * @since 9.3
+     */
+    @Test
+    public void testPrincipalWithoutDomain() throws IOException {
+        List<DocumentRef> refs = session.getChildren(session.getRootDocument().getRef())
+                                        .stream()
+                                        .map(DocumentModel::getRef)
+                                        .collect(Collectors.toList());
+        session.removeDocuments(refs.toArray(new DocumentRef[refs.size()]));
+        session.save();
+        RenderingContext ctx = CtxBuilder.session(session).enrich("user", NAME).get();
+        JsonAssert jsonAssert = jsonAssert((NuxeoPrincipal) session.getPrincipal(), ctx);
+        jsonAssert = jsonAssert.get(String.format("contextParameters.%s", NAME)).isNull();
     }
 
     @Test
