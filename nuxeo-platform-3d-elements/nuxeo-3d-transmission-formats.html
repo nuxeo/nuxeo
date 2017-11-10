@@ -202,14 +202,13 @@ Example - Load a ThreeD document:
     },
 
     _loadFormat: function(e) {
-      var lod = e.model.dataHost.itemForElement(e.target);
       this.fire('3d-viewer-content-change', {
-        content: lod.content.data
+        content: e.model.format.content.data
       });
     },
 
     _downloadFormat: function(e) {
-      location.href = e.model.dataHost.itemForElement(e.target).content.data;
+      location.href = e.model.format.content.data;
     }
   });
 </script>

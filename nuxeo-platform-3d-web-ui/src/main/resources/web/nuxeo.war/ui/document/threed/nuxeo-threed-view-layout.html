@@ -66,12 +66,17 @@ Contributors:
         '3d-viewer-content-change': '_onViewerContentChange'
       },
 
+      _getViewer: function() {
+        return !this.shadowRoot ? this.querySelector('#threedViewer') :
+          this.shadowRoot.querySelector('nuxeo-3d-preview').shadowRoot.querySelector('#threedViewer');
+      },
+
       _onViewerCoordsChange: function(e) {
-        (this.shadowRoot || this).querySelector("#threedViewer").set('sphericalCoords', [e.detail.azimuth, e.detail.zenith]);
+        this._getViewer().set('sphericalCoords', [e.detail.azimuth, e.detail.zenith]);
       },
 
       _onViewerContentChange: function(e) {
-        (this.shadowRoot || this).querySelector("#threedViewer").set('src', e.detail.content);
+        this._getViewer().set('src', e.detail.content);
       }
     });
   </script>
