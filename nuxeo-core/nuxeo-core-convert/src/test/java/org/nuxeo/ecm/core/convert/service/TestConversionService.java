@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.convert.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.Function;
@@ -76,7 +77,7 @@ public class TestConversionService {
         };
         Path tempDirectory = Framework.createTempDirectory("blobs");
         Blob newBlob = ConversionServiceImpl.replaceURLsByAbsolutePaths(blob, tempDirectory, blobResolver);
-        String absolutePath = tempDirectory.toString() + "/" + filename;
+        String absolutePath = tempDirectory.toString() + File.separator + filename;
         assertEquals("<h1>Hello World</><img src=\"" + absolutePath + "\" />", newBlob.getString());
         FileUtils.deleteQuietly(tempDirectory.toFile());
     }
