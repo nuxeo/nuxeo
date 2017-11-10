@@ -28,9 +28,6 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.versioning.VersioningPolicyFilter;
 
-import java.io.Serializable;
-import java.util.Objects;
-
 /**
  * @since 9.3
  */
@@ -44,10 +41,8 @@ public class NoVersioningFacetedTagFilter implements VersioningPolicyFilter {
         for (String schema : currentDocument.getSchemas()) {
             for (Property prop : currentDocument.getPropertyObjects(schema)) {
                 try {
-                    Serializable value = prop.getValue();
                     String xpath = prop.getXPath();
-                    Serializable previousValue = previousDocument.getPropertyValue(xpath);
-                    if (!Objects.equals(value, previousValue) && !TAG_LIST.equals(xpath)) {
+                    if (!prop.isSameAs(previousDocument.getProperty(xpath)) && !TAG_LIST.equals(xpath)) {
                         return false;
                     }
                 } catch (PropertyNotFoundException e) {

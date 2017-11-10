@@ -27,8 +27,10 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,7 +78,13 @@ public class TestFacetedTagService extends AbstractTestTagService {
     @Test
     public void testNoVersioningFacetedTagFilter() {
 
-        DocumentModel note = session.createDocumentModel("/", "note", "Note");
+        DocumentModel note = session.createDocumentModel("/", "note", "TestNote");
+        note.setPropertyValue("test:stringArray", new String[] { "test1" });
+        note.setPropertyValue("test:stringList", (Serializable) Arrays.asList("test1"));
+        Map<String, Serializable> complex = new HashMap<>();
+        complex.put("foo", "test");
+        complex.put("bar", (Serializable) Arrays.asList("test1"));
+        note.setPropertyValue("test:complex", (Serializable) complex);
         note = session.createDocument(note);
         session.save();
 
@@ -98,11 +106,38 @@ public class TestFacetedTagService extends AbstractTestTagService {
         otherTag.put("label", "otherTag");
         otherTag.put("username", "Administrator");
         note.setPropertyValue(TAG_LIST, (Serializable) Arrays.asList(tag, otherTag));
-        // Edit an other property of the document to trigger auto versioning
-        note.setPropertyValue("dc:title", "myNote");
+        // Edit an other simple property of the document to trigger auto versioning
+        note.setPropertyValue("dc:title", "testNote");
         note = session.saveDocument(note);
 
         assertEquals("0.2", note.getVersionLabel());
+        assertEquals(2, tagService.getTags(session, note.getId()).size());
+
+        note.setPropertyValue(TAG_LIST, new ArrayList<>());
+        // Edit an array property of the document to trigger auto versioning
+        note.setPropertyValue("test:stringArray", new String[] { "test1", "test2" });
+        note = session.saveDocument(note);
+
+        assertEquals("0.3", note.getVersionLabel());
+        assertEquals(0, tagService.getTags(session, note.getId()).size());
+
+        note.setPropertyValue(TAG_LIST, (Serializable) Arrays.asList(tag));
+        // Edit a list property of the document to trigger auto versioning
+        note.setPropertyValue("test:stringList", (Serializable) Arrays.asList("test1", "test2", "test3"));
+        note = session.saveDocument(note);
+
+        assertEquals("0.4", note.getVersionLabel());
+        assertEquals(1, tagService.getTags(session, note.getId()).size());
+
+        note.setPropertyValue(TAG_LIST, (Serializable) Arrays.asList(tag, otherTag));
+        // Edit a complex property of the document to trigger auto versioning
+        Map<String, Serializable> othercomplex = new HashMap<>();
+        othercomplex.put("foo", "othertest");
+        othercomplex.put("bar", (Serializable) Arrays.asList("test1", "test2"));
+        note.setPropertyValue("test:complex", (Serializable) othercomplex);
+        note = session.saveDocument(note);
+
+        assertEquals("0.5", note.getVersionLabel());
         assertEquals(2, tagService.getTags(session, note.getId()).size());
     }
 }
