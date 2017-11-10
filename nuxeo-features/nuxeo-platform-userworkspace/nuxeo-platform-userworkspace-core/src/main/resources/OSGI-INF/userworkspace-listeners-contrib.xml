@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.userworkspace.listener">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="invalidateUserWorkspacesListener" async="false"
+      postCommit="false"
+      class="org.nuxeo.ecm.platform.userworkspace.core.listener.InvalidateUserWorkspacesListener"
+      priority="20">
+      <event>documentRemoved</event>
+    </listener>
+
+  </extension>
+
+</component>
