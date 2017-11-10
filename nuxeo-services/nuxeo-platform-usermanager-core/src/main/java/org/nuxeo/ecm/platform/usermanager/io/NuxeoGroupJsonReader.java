@@ -23,6 +23,8 @@ import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentProperties
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import static org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter.ENTITY_TYPE;
+import static org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter.GROUP_LABEL_COMPATIBILITY_FIELD;
+import static org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter.GROUP_NAME_COMPATIBILITY_FIELD;
 import static org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter.MEMBER_GROUPS_FETCH_PROPERTY;
 import static org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter.MEMBER_USERS_FETCH_PROPERTY;
 import static org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter.PARENT_GROUPS_FETCH_PROPERTY;
@@ -33,9 +35,11 @@ import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -88,12 +92,14 @@ public class NuxeoGroupJsonReader extends EntityJsonReader<NuxeoGroup> {
     protected NuxeoGroup readEntity(JsonNode jn) throws IOException {
         GroupConfig groupConfig = userManager.getGroupConfig();
         String id = getStringField(jn, "id");
-        DocumentModel groupModel = null;
-        if (id == null) {
-            // backward compatibility
-            id = getStringField(jn, "groupname");
+        String groupName = getStringField(jn, GROUP_NAME_COMPATIBILITY_FIELD);
+        if (StringUtils.isBlank(id) || (StringUtils.isNotBlank(groupName) && !id.equals(groupName))) {
+            // backward compatibility if `id` not found or if `groupname` is different
+            id = groupName;
         }
-        if (id != null) {
+
+        DocumentModel groupModel = null;
+        if (StringUtils.isNotBlank(id)) {
             groupModel = userManager.getGroupModel(id);
         }
         if (groupModel == null) {
@@ -101,16 +107,26 @@ public class NuxeoGroupJsonReader extends EntityJsonReader<NuxeoGroup> {
             groupModel.setProperty(groupConfig.schemaName, groupConfig.idField, id);
         }
 
+        String beforeReadLabel = (String) groupModel.getProperty(groupConfig.schemaName, groupConfig.labelField);
+
         readProperties(groupModel, groupConfig, jn);
         readMemberUsers(groupModel, groupConfig, jn);
         readMemberGroups(groupModel, groupConfig, jn);
         readParentGroups(groupModel, groupConfig, jn);
 
-        String label = (String) groupModel.getProperty(groupConfig.schemaName, groupConfig.labelField);
-        if (label == null) {
-            // backward compatibility
-            label = getStringField(jn, "grouplabel");
-            groupModel.setProperty(groupConfig.schemaName, groupConfig.labelField, label);
+        // override the `groupname` that may have been in the `properties` object
+        if (StringUtils.isNotBlank(id)) {
+            groupModel.setProperty(groupConfig.schemaName, groupConfig.idField, id);
+        }
+
+        // override with the compatibility `grouplabel` if needed
+        if (jn.has(GROUP_LABEL_COMPATIBILITY_FIELD)) {
+            String compatLabel = getStringField(jn, GROUP_LABEL_COMPATIBILITY_FIELD);
+            String label = (String) groupModel.getProperty(groupConfig.schemaName, groupConfig.labelField);
+            if (!Objects.equals(label, compatLabel)
+                    && (beforeReadLabel == null || Objects.equals(beforeReadLabel, label))) {
+                groupModel.setProperty(groupConfig.schemaName, groupConfig.labelField, compatLabel);
+            }
         }
 
         return new NuxeoGroupImpl(groupModel, groupConfig);
