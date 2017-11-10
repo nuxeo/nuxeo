@@ -245,6 +245,70 @@ public class UserGroupTest extends BaseUserTest {
     }
 
     @Test
+    public void itCanChangeAGroupWithCompatibilityFields(){
+        String modifiedGroup = "{\n" //
+                + "  \"entity-type\": \"group\",\n" //
+                + "  \"id\": \"group1bis\",\n" //
+                + "  \"groupname\": \"group1\",\n" //
+                + "  \"grouplabel\": \"modified label\",\n" //
+                + "  \"properties\": {\n" //
+                + "    \"groupname\": \"group1bis\",\n" //
+                + "    \"description\": \"modified description\"\n" //
+                + "  }\n" + //
+                "}";
+        changeGroupWithCompatibilityFields("group1", modifiedGroup, "modified label");
+
+        modifiedGroup = "{\n" //
+                + "  \"entity-type\": \"group\",\n" //
+                + "  \"id\": \"group1bis\",\n" //
+                + "  \"groupname\": \"group1\",\n" //
+                + "  \"grouplabel\": \"label\",\n" //
+                + "  \"properties\": {\n" //
+                + "    \"groupname\": \"group1bis\",\n" //
+                + "    \"grouplabel\": \"modified label\",\n" //
+                + "    \"description\": \"modified description\"\n" //
+                + "  }\n" + //
+                "}";
+        changeGroupWithCompatibilityFields("group1", modifiedGroup, "label");
+
+        modifiedGroup = "{\n" //
+                + "  \"entity-type\": \"group\",\n" //
+                + "  \"id\": \"group1\",\n" //
+                + "  \"grouplabel\": \"label\",\n" //
+                + "  \"properties\": {\n" //
+                + "    \"groupname\": \"group1bis\",\n" //
+                + "    \"grouplabel\": \"modified label\",\n" //
+                + "    \"description\": \"modified description\"\n" //
+                + "  }\n" + //
+                "}";
+        changeGroupWithCompatibilityFields("group1", modifiedGroup, "modified label");
+
+        modifiedGroup = "{\n" //
+                + "  \"entity-type\": \"group\",\n" //
+                + "  \"groupname\": \"group1\",\n" //
+                + "  \"grouplabel\": \"new label\",\n" //
+                + "  \"properties\": {\n" //
+                + "    \"groupname\": \"group1bis\",\n" //
+                + "    \"description\": \"modified description\"\n" //
+                + "  }\n" + //
+                "}";
+        changeGroupWithCompatibilityFields("group1", modifiedGroup, "new label");
+    }
+
+    protected void changeGroupWithCompatibilityFields(String groupName, String groupJSON, String expectedLabel) {
+        GroupConfig groupConfig = um.getGroupConfig();
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/group/" + groupName, groupJSON)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertNull(um.getGroup("group1bis"));
+            NuxeoGroup group = um.getGroup("group1");
+            assertEquals("group1", group.getName());
+            assertEquals(expectedLabel, group.getLabel());
+            assertEquals("modified description",
+                    um.getGroupModel("group1").getProperty(groupConfig.schemaName, "description"));
+        }
+    }
+
+    @Test
     public void itCanDeleteGroup() throws Exception {
 
         // When i DELETE on a group resources
@@ -283,30 +347,61 @@ public class UserGroupTest extends BaseUserTest {
     }
 
     @Test
-    public void itCanCreateAGroupWithCompatibilityFields() throws Exception {
-        // Given a modified group
-        NuxeoGroup group = new NuxeoGroupImpl("newCompatGroup");
-        group.setMemberUsers(Arrays.asList("user1", "user2"));
-        group.setMemberGroups(Collections.singletonList("group2"));
+    public void itCanCreateAGroupWithCompatibilityFields() {
+        String newGroup = "{\n" //
+                + "  \"entity-type\": \"group\",\n" //
+                + "  \"id\": \"newgroup\",\n" //
+                + "  \"groupname\": \"newgroupcompat\",\n" //
+                + "  \"grouplabel\": \"a new compatibility group\",\n" //
+                + "  \"properties\": {\n" //
+                + "    \"groupname\": \"newgroup\",\n" //
+                + "    \"grouplabel\": \"new group\"\n" //
+                + "  }\n" + //
+                "}";
+        createGroupWithCompatibilityFields(newGroup);
 
-        // update the JSON to remove new fields and keep compatibility ones
-        String jsonGroup = getGroupAsJson(group);
-        jsonGroup = jsonGroup.replaceAll("\"grouplabel\":\"newCompatGroup\",", "");
-        jsonGroup = jsonGroup.replaceAll("\"id\":\"newCompatGroup\"", "\"grouplabel\":\"a new compatibility group\"");
+        newGroup = "{\n" //
+                + "  \"entity-type\": \"group\",\n" //
+                + "  \"id\": \"newgroup\",\n" //
+                + "  \"groupname\": \"newgroupcompat\",\n" //
+                + "  \"properties\": {\n" //
+                + "    \"groupname\": \"newgroup\",\n" //
+                + "    \"grouplabel\": \"a new compatibility group\"\n" //
+                + "  }\n" + //
+                "}";
+        createGroupWithCompatibilityFields(newGroup);
 
-        // When i POST this group
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "/group/", jsonGroup)) {
+        newGroup = "{\n" //
+                + "  \"entity-type\": \"group\",\n" //
+                + "  \"groupname\": \"newgroupcompat\",\n" //
+                + "  \"grouplabel\": \"a new compatibility group\",\n" //
+                + "  \"properties\": {\n" //
+                + "    \"groupname\": \"newgroup\"\n" //
+                + "  }\n" + //
+                "}";
+        createGroupWithCompatibilityFields(newGroup);
+
+        newGroup = "{\n" //
+                + "  \"entity-type\": \"group\",\n" //
+                + "  \"grouplabel\": \"a new compatibility group\",\n" //
+                + "  \"properties\": {\n" //
+                + "    \"groupname\": \"newgroupcompat\"\n" //
+                + "  }\n" + //
+                "}";
+        createGroupWithCompatibilityFields(newGroup);
+    }
+
+    protected void createGroupWithCompatibilityFields(String groupJSON) {
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/group/", groupJSON)) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-
-            // Then the group is modified server side
-            group = um.getGroup("newCompatGroup");
+            assertNull(um.getGroup("newgroup"));
+            NuxeoGroup group = um.getGroup("newgroupcompat");
+            assertEquals("newgroupcompat", group.getName());
             assertEquals("a new compatibility group", group.getLabel());
-            assertEquals(2, group.getMemberUsers().size());
-            assertEquals(1, group.getMemberGroups().size());
+            um.deleteGroup("newgroupcompat");
+            assertNull(um.getGroup("newgroupcompat"));
+            nextTransaction(); // see committed changes
         }
-
-        um.deleteGroup("newCompatGroup");
-        assertNull(um.getGroup("newCompatGroup"));
     }
 
     @Test
