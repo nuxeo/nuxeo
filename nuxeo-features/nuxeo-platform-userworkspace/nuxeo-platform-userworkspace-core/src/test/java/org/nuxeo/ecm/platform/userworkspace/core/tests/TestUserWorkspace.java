@@ -26,6 +26,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -34,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
@@ -319,6 +322,23 @@ public class TestUserWorkspace {
 
             assertFalse(uwm.isUnderUserWorkspace(principal, null, userSession.getRootDocument()));
             assertFalse(uwm.isUnderUserWorkspace(principal, null, userSession.getDocument(foo.getRef())));
+        }
+    }
+
+    /**
+     * @since 9.3
+     */
+    @Test
+    public void testCannotRetrieveUserWorkspaceWithoutDomains() {
+        List<DocumentRef> refs = session.getChildren(session.getRootDocument().getRef())
+                                        .stream()
+                                        .map(DocumentModel::getRef)
+                                        .collect(Collectors.toList());
+        session.removeDocuments(refs.toArray(new DocumentRef[refs.size()]));
+        session.save();
+        try (CoreSession userSession = coreFeature.openCoreSession("toto")) {
+            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
+            assertNull(uw);
         }
     }
 
