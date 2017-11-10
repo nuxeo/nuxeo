@@ -777,26 +777,40 @@ public abstract class AbstractTestTagService {
     @Test
     public void testTagDoesNotTriggerAutomaticVersioning() {
 
-        DocumentModel note = session.createDocumentModel("/", "note", "Note");
-        note = session.createDocument(note);
-        String id = note.getId();
-        DocumentRef ref = note.getRef();
+        DocumentModel file = session.createDocumentModel("/", "file", "File");
+        file = session.createDocument(file);
+        String fileId = file.getId();
+        DocumentRef fileRef = file.getRef();
         session.save();
-        assertEquals("0.1", note.getVersionLabel());
-        assertEquals(0, tagService.getTags(session, id).size());
+        assertEquals("0.0", file.getVersionLabel());
+        assertEquals(0, tagService.getTags(session, fileId).size());
 
         // Test tagging
-        tagService.tag(session, id, "tag1");
-        tagService.tag(session, id, "tag2");
-        note = session.getDocument(ref);
+        tagService.tag(session, fileId, "tag1");
+        file = session.getDocument(fileRef);
+        assertEquals("0.0", file.getVersionLabel());
+        assertEquals(1, tagService.getTags(session, fileId).size());
+
+        DocumentModel note = session.createDocumentModel("/", "note", "Note");
+        note = session.createDocument(note);
+        String noteId = note.getId();
+        DocumentRef noteRef = note.getRef();
+        session.save();
         assertEquals("0.1", note.getVersionLabel());
-        assertEquals(2, tagService.getTags(session, id).size());
+        assertEquals(0, tagService.getTags(session, noteId).size());
+
+        // Test tagging
+        tagService.tag(session, noteId, "tag1");
+        tagService.tag(session, noteId, "tag2");
+        note = session.getDocument(noteRef);
+        assertEquals("0.1", note.getVersionLabel());
+        assertEquals(2, tagService.getTags(session, noteId).size());
 
         // Test untagging
-        tagService.untag(session, id, "tag2");
-        note = session.getDocument(ref);
+        tagService.untag(session, noteId, "tag2");
+        note = session.getDocument(noteRef);
         assertEquals("0.1", note.getVersionLabel());
-        assertEquals(1, tagService.getTags(session, id).size());
+        assertEquals(1, tagService.getTags(session, noteId).size());
 
         // Test copying tags
         DocumentModel otherNote = session.createDocumentModel("/", "otherNote", "Note");
@@ -806,10 +820,10 @@ public abstract class AbstractTestTagService {
         tagService.tag(session, otherId, "othertag2");
         tagService.tag(session, otherId, "othertag3");
 
-        tagService.copyTags(session, otherId, id);
-        note = session.getDocument(ref);
+        tagService.copyTags(session, otherId, noteId);
+        note = session.getDocument(noteRef);
         assertEquals("0.1", note.getVersionLabel());
-        assertEquals(4, tagService.getTags(session, id).size());
+        assertEquals(4, tagService.getTags(session, noteId).size());
     }
 
     protected abstract void createTags();
