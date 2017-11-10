@@ -48,13 +48,13 @@ Example - Load a ThreeD document:
       }
 
       .render-views {
-        @apply(--layout-horizontal);
-        @apply(--layout-wrap);
+        @apply --layout-horizontal;
+        @apply --layout-wrap;
       }
 
       .render-views > .item {
-        @apply(--layout-vertical);
-        @apply(--layout-center);
+        @apply --layout-vertical;
+        @apply --layout-center;
       }
 
       .render-views > .item label {
@@ -109,15 +109,14 @@ Example - Load a ThreeD document:
     },
 
     _setCoords: function(e) {
-      var renderView = e.model.dataHost.itemForElement(e.target);
       this.fire('3d-viewer-coords-change', {
-        azimuth: renderView.azimuth,
-        zenith: renderView.zenith
+        azimuth: e.model.renderView.azimuth,
+        zenith: e.model.renderView.zenith
       });
     },
 
     _downloadView: function(e) {
-      location.href = e.model.dataHost.itemForElement(e.target).content.data;
+      location.href = e.model.renderView.content.data;
     }
   });
 </script>
