@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -76,7 +75,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
 
     protected static final String ESCAPED_CHARS = ESCAPE_CHAR + "/\\?&;@";
 
-    protected String targetDomainName;
+    protected volatile String targetDomainName;
 
     protected final int maxsize;
 
@@ -86,11 +85,22 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
                 .getMaxSize();
     }
 
-    protected String getDomainName(CoreSession userCoreSession, DocumentModel currentDocument) {
+    protected String getDomainName(CoreSession userCoreSession) {
         if (targetDomainName == null) {
-            RootDomainFinder finder = new RootDomainFinder(userCoreSession);
-            finder.runUnrestricted();
-            targetDomainName = finder.domaineName;
+            CoreInstance.doPrivileged(userCoreSession, (CoreSession session) -> {
+                String targetName = getComponent().getTargetDomainName();
+                PathRef ref = new PathRef("/" + targetName);
+                if (session.exists(ref)) {
+                    targetDomainName = targetName;
+                    return;
+                }
+                // configured domain does not exist !!!
+                DocumentModelList domains = session.query("select * from Domain order by dc:created");
+
+                if (!domains.isEmpty()) {
+                    targetDomainName = domains.get(0).getName();
+                }
+            });
         }
         return targetDomainName;
     }
@@ -180,28 +190,32 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         }
     }
 
-    protected String computePathUserWorkspaceRoot(CoreSession userCoreSession, String usedUsername,
-            DocumentModel currentDocument) {
-        String domainName = getDomainName(userCoreSession, currentDocument);
+    protected String computePathUserWorkspaceRoot(CoreSession userCoreSession, String usedUsername) {
+        String domainName = getDomainName(userCoreSession);
         if (domainName == null) {
-            throw new NuxeoException("Unable to find root domain for UserWorkspace");
+            return null;
         }
-        return new Path("/" + domainName)
-                .append(UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT)
-                .toString();
+        return new Path("/" + domainName).append(UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT).toString();
     }
 
     @Override
     public DocumentModel getCurrentUserPersonalWorkspace(String userName, DocumentModel currentDocument) {
-        if (currentDocument == null) {
-            return null;
-        }
-        return getCurrentUserPersonalWorkspace(null, userName, currentDocument.getCoreSession(), currentDocument);
+        return getCurrentUserPersonalWorkspace(null, userName, currentDocument.getCoreSession());
     }
 
     @Override
+    public DocumentModel getCurrentUserPersonalWorkspace(CoreSession userCoreSession) {
+        return getCurrentUserPersonalWorkspace(userCoreSession.getPrincipal(), null, userCoreSession);
+    }
+
+    /**
+     * Only for compatibility.
+     *
+     * @deprecated since 9.3
+     */
+    @Override
     public DocumentModel getCurrentUserPersonalWorkspace(CoreSession userCoreSession, DocumentModel context) {
-        return getCurrentUserPersonalWorkspace(userCoreSession.getPrincipal(), null, userCoreSession, context);
+       return getCurrentUserPersonalWorkspace(userCoreSession);
     }
 
     /**
@@ -211,36 +225,34 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
      * @since 5.7 "userWorkspaceCreated" is triggered
      */
     protected DocumentModel getCurrentUserPersonalWorkspace(Principal principal, String userName,
-            CoreSession userCoreSession, DocumentModel context) {
+            CoreSession userCoreSession) {
         String usedUsername = getUserName(principal, userName);
         if (usedUsername == null) {
             return null;
         }
-        PathRef rootref = getExistingUserWorkspaceRoot(userCoreSession, usedUsername, context);
+        PathRef rootref = getExistingUserWorkspaceRoot(userCoreSession, usedUsername);
+        if (rootref == null) {
+            return null;
+        }
         PathRef uwref = getExistingUserWorkspace(userCoreSession, rootref, principal, usedUsername);
         DocumentModel uw = userCoreSession.getDocument(uwref);
 
         return uw;
     }
 
-    protected PathRef getExistingUserWorkspaceRoot(CoreSession session, String username, DocumentModel context) {
-        PathRef rootref = new PathRef(computePathUserWorkspaceRoot(session, username, context));
+    protected PathRef getExistingUserWorkspaceRoot(CoreSession session, String username) {
+        String uwrPath = computePathUserWorkspaceRoot(session, username);
+        if (uwrPath == null) {
+            return null;
+        }
+        PathRef rootref = new PathRef(uwrPath);
         if (session.exists(rootref)) {
             return rootref;
         }
 
         String path = CoreInstance.doPrivileged(session, s -> {
-            DocumentModel docModel;
-            try {
-                DocumentModel uwsRootModel = doCreateUserWorkspacesRoot(session, rootref);
-                docModel = s.getOrCreateDocument(uwsRootModel, doc -> initCreateUserWorkspacesRoot(s, doc));
-            } catch (DocumentNotFoundException e) {
-                // domain may have been removed !
-                targetDomainName = null;
-                PathRef ref = new PathRef(computePathUserWorkspaceRoot(s, username, null));
-                DocumentModel rootModel = doCreateUserWorkspacesRoot(s, ref);
-                docModel = s.getOrCreateDocument(rootModel, doc -> initCreateUserWorkspacesRoot(s, doc));
-            }
+            DocumentModel uwsRootModel = doCreateUserWorkspacesRoot(session, rootref);
+            DocumentModel docModel = s.getOrCreateDocument(uwsRootModel, doc -> initCreateUserWorkspacesRoot(s, doc));
             return docModel.getPathAsString();
         });
 
@@ -280,7 +292,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
 
     @Override
     public DocumentModel getUserPersonalWorkspace(NuxeoPrincipal principal, DocumentModel context) {
-        return getCurrentUserPersonalWorkspace(principal, null, context.getCoreSession(), context);
+        return getCurrentUserPersonalWorkspace(principal, null, context.getCoreSession());
     }
 
     @Override
@@ -306,7 +318,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
             return false;
         }
         // check domain
-        String domainName = getDomainName(doc.getCoreSession(), doc);
+        String domainName = getDomainName(doc.getCoreSession());
         if (!domainName.equals(path.segment(0))) {
             return false;
         }
@@ -320,7 +332,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         }
 
         // fetch actual workspace to compare its path
-        DocumentModel uws = getCurrentUserPersonalWorkspace(principal, username, doc.getCoreSession(), doc);
+        DocumentModel uws = getCurrentUserPersonalWorkspace(principal, username, doc.getCoreSession());
         return uws.getPath().isPrefixOf(doc.getPath());
     }
 
@@ -399,18 +411,15 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
 
         protected String userName;
 
-        protected DocumentModel context;
-
         protected UnrestrictedUserWorkspaceFinder(String userName, DocumentModel context) {
             super(context.getCoreSession()
                     .getRepositoryName(), userName);
             this.userName = userName;
-            this.context = context;
         }
 
         @Override
         public void run() {
-            userWorkspace = getCurrentUserPersonalWorkspace(null, userName, session, context);
+            userWorkspace = getCurrentUserPersonalWorkspace(null, userName, session);
             if (userWorkspace != null) {
                 userWorkspace.detach(true);
             }
@@ -418,33 +427,6 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
 
         public DocumentModel getDetachedUserWorkspace() {
             return userWorkspace;
-        }
-    }
-
-    protected class RootDomainFinder extends UnrestrictedSessionRunner {
-
-        public RootDomainFinder(CoreSession userCoreSession) {
-            super(userCoreSession);
-        }
-
-        protected String domaineName;
-
-        @Override
-        public void run() {
-
-            String targetName = getComponent().getTargetDomainName();
-            PathRef ref = new PathRef("/" + targetName);
-            if (session.exists(ref)) {
-                domaineName = targetName;
-                return;
-            }
-            // configured domain does not exist !!!
-            DocumentModelList domains = session.query("select * from Domain order by dc:created");
-
-            if (!domains.isEmpty()) {
-                domaineName = domains.get(0)
-                        .getName();
-            }
         }
     }
 
@@ -463,5 +445,10 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
 
     protected abstract DocumentModel initCreateUserWorkspace(CoreSession unrestrictedSession, DocumentModel doc,
             String username);
+
+    @Override
+    public void invalidate() {
+        targetDomainName = null;
+    }
 
 }
