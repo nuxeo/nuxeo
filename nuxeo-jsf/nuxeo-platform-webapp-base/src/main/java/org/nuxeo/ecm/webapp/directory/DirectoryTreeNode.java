@@ -150,7 +150,7 @@ public class DirectoryTreeNode {
         // raise this event in order to reset the documents lists from
         // 'conversationDocumentsListsManager'
         Events.instance().raiseEvent(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
-                DocumentModelFactory.createDocumentModel("folder"));
+                DocumentModelFactory.createDocumentModel("Folder"));
         pathProcessing();
         return config.getOutcome();
     }
