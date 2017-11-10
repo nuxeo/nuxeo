@@ -111,6 +111,16 @@ public class NuxeoGroupJsonWriter extends ExtensibleEntityJsonWriter<NuxeoGroup>
      */
     public static final String PARENT_GROUPS_FETCH_PROPERTY = "parentGroups";
 
+    /**
+     * @since 9.3
+     */
+    public static final String GROUP_NAME_COMPATIBILITY_FIELD = "groupname";
+
+    /**
+     * @since 9.3
+     */
+    public static final String GROUP_LABEL_COMPATIBILITY_FIELD = "grouplabel";
+
     @Inject
     private UserManager userManager;
 
@@ -121,8 +131,8 @@ public class NuxeoGroupJsonWriter extends ExtensibleEntityJsonWriter<NuxeoGroup>
     @Override
     protected void writeEntityBody(NuxeoGroup group, JsonGenerator jg) throws IOException {
         // for backward compatibility, those are now in the 'properties' field
-        jg.writeStringField("groupname", group.getName());
-        jg.writeStringField("grouplabel", group.getLabel());
+        jg.writeStringField(GROUP_NAME_COMPATIBILITY_FIELD, group.getName());
+        jg.writeStringField(GROUP_LABEL_COMPATIBILITY_FIELD, group.getLabel());
 
         jg.writeStringField("id", group.getName());
         writeProperties(group, jg);
