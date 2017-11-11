@@ -18,6 +18,9 @@
  */
 package org.nuxeo.runtime.kv;
 
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Key/Value Store.
  * <p>
@@ -93,6 +96,25 @@ public interface KeyValueStore {
      * @since 9.3
      */
     String getString(String key);
+
+    /**
+     * Retrieves the key/value map associated with the set of keys.
+     *
+     * @param keys the keys
+     * @return the key/value map
+     * @since 9.10
+     */
+    Map<String, byte[]> get(Set<String> keys);
+
+    /**
+     * Retrieves the key/value map associated with the set of keys.
+     *
+     * @param keys the keys
+     * @return the key/value map
+     * @throws IllegalArgumentException if one of the values cannot be returned as a {@link String}
+     * @since 9.10
+     */
+    Map<String, String> getStrings(Set<String> keys);
 
     /**
      * Atomically sets the value associated to the key to the given value if the current value is the expected value.
