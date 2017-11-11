@@ -31,7 +31,11 @@ import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -113,6 +117,37 @@ public abstract class AbstractKeyValueStoreTest {
         store.put(key, (String) null);
         assertNull(store.get(key));
         assertEquals(Collections.emptySet(), storeKeys());
+    }
+
+    @Test
+    public void testGetMany() {
+        String key1 = "foo1";
+        String key2 = "foo2";
+        String key3 = "foo3";
+        String key4 = "foo4";
+        String key5 = "foo5";
+        Set<String> keys = new HashSet<>(Arrays.asList(key1, key2, key3, key4, key5));
+
+        assertEquals(Collections.emptyMap(), store.get(keys));
+
+        Map<String, String> map = new HashMap<>();
+        map.put(key1, BAR);
+        map.put(key2, GEE);
+        map.put(key3, MOO);
+        store.put(key1, BAR);
+        store.put(key2, GEE);
+        store.put(key3, MOO);
+        store.put(key4, (String) null);
+        assertEquals(map, store.getStrings(keys));
+
+        store.put(key1, BAR_B);
+        store.put(key2, GEE_B);
+        store.put(key3, MOO_B);
+        Map<String, byte[]> storeBMap = store.get(keys);
+        assertArrayEquals(BAR_B, storeBMap.get(key1));
+        assertArrayEquals(GEE_B, storeBMap.get(key2));
+        assertArrayEquals(MOO_B, storeBMap.get(key3));
+        assertEquals(3, storeBMap.entrySet().size());
     }
 
     @Test
