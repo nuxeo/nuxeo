@@ -24,6 +24,9 @@ import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Key/Value Store common methods.
@@ -75,6 +78,38 @@ public abstract class AbstractKeyValueStoreProvider implements KeyValueStoreProv
         } catch (CharacterCodingException e) {
             throw new IllegalArgumentException("Value is not a String for key: " + key);
         }
+    }
+
+    /*
+     * This default implementation is uninteresting. It is expected that underlying storage implementations
+     * will leverage bulk fetching to deliver significant optimizations over this simple loop.
+     */
+    @Override
+    public Map<String, byte[]> get(Collection<String> keys) {
+        Map<String, byte[]> map = new HashMap<>(keys.size());
+        for (String key : keys) {
+            byte[] value = get(key);
+            if (value != null) {
+                map.put(key, value);
+            }
+        }
+        return map;
+    }
+
+    /*
+     * This default implementation is uninteresting. It is expected that underlying storage implementations
+     * will leverage bulk fetching to deliver significant optimizations over this simple loop.
+     */
+    @Override
+    public Map<String, String> getStrings(Collection<String> keys) {
+        Map<String, String> map = new HashMap<>(keys.size());
+        for (String key : keys) {
+            String value = getString(key);
+            if (value != null) {
+                map.put(key, value);
+            }
+        }
+        return map;
     }
 
     @Override

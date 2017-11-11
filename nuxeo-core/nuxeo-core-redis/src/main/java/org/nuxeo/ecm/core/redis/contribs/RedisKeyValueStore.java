@@ -21,8 +21,11 @@ package org.nuxeo.ecm.core.redis.contribs;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
+import java.nio.charset.CharacterCodingException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -126,6 +129,51 @@ public class RedisKeyValueStore extends AbstractKeyValueStoreProvider {
     public byte[] get(String key) {
         RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
         return redisExecutor.execute(jedis -> jedis.get(getBytes(namespace + key)));
+    }
+
+    @Override
+    public Map<String, byte[]> get(Collection<String> keys) {
+        Map<String, byte[]> map = new HashMap<>(keys.size());
+        List<byte[]> values = getValuesForKeys(keys);
+        int i = 0;
+        for (String key : keys) {
+            byte[] value = values.get(i++);
+            if (value != null) {
+                map.put(key, value);
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, String> getStrings(Collection<String> keys) {
+        Map<String, String> map = new HashMap<>(keys.size());
+        List<byte[]> values = getValuesForKeys(keys);
+        int i = 0;
+        for (String key : keys) {
+            byte[] value = values.get(i++);
+            if (value != null) {
+                try {
+                    map.put(key, bytesToString(value));
+                } catch (CharacterCodingException e) {
+                    throw new IllegalArgumentException("Value is not a String for key: " + key);
+                }
+            }
+        }
+        return map;
+    }
+
+    /**
+     * @since 9.10
+     */
+    protected List<byte[]> getValuesForKeys(Collection<String> keys) {
+        byte[][] byteKeys = new byte[keys.size()][];
+        int i = 0;
+        for (String key : keys) {
+            byteKeys[i++] = getBytes(namespace + key);
+        }
+        RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
+        return redisExecutor.execute(jedis -> jedis.mget(byteKeys));
     }
 
     @Override

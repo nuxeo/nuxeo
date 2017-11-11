@@ -20,18 +20,22 @@ package org.nuxeo.ecm.core.mongodb.kv;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.in;
 import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Updates.set;
 import static com.mongodb.client.model.Updates.unset;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.nio.charset.CharacterCodingException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.mongodb.Block;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -179,6 +183,64 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
             log.trace("MongoDB: GET " + key + " = " + value);
         }
         return value;
+    }
+
+    @Override
+    public Map<String, byte[]> get(Collection<String> keys) {
+        Map<String, byte[]> map = new HashMap<>(keys.size());
+        Block<Document> block = doc -> {
+            String key = doc.getString(ID_KEY);
+            Object value = doc.get(VALUE_KEY);
+            if (value != null) {
+                byte[] bytesValue = null;
+                if (value instanceof String) {
+                    bytesValue = ((String) value).getBytes(UTF_8);
+                } else if (value instanceof Binary) {
+                    bytesValue = ((Binary) value).getData();
+                } else {
+                    throw new UnsupportedOperationException(String.format(
+                            "Value of class %s is not supported for key: %s", value.getClass().getName(), key));
+                }
+                map.put(key, bytesValue);
+            }
+        };
+        findByKeys(keys, block);
+        return map;
+    }
+
+    @Override
+    public Map<String, String> getStrings(Collection<String> keys) {
+        Map<String, String> map = new HashMap<>(keys.size());
+        Block<Document> block = doc -> {
+            String key = doc.getString(ID_KEY);
+            Object value = doc.get(VALUE_KEY);
+            if (value != null) {
+                String strValue = null;
+                if (value instanceof String) {
+                    strValue = (String) value;
+                } else if (value instanceof Binary) {
+                    byte[] bytes = ((Binary) value).getData();
+                    try {
+                        strValue = bytesToString(bytes);
+                    } catch (CharacterCodingException e) {
+                        // fall through to throw
+                    }
+                }
+                if (strValue == null) {
+                    throw new IllegalArgumentException("Value is not a String for key: " + key);
+                }
+                map.put(key, strValue);
+            }
+        };
+        findByKeys(keys, block);
+        return map;
+    }
+
+    /**
+     * @since 9.10
+     */
+    protected void findByKeys(Collection<String> keys, Block<Document> block) {
+        coll.find(in(ID_KEY, keys)).projection(include(ID_KEY, VALUE_KEY)).forEach(block);
     }
 
     protected Date getDateFromTTL(long ttl) {
