@@ -73,6 +73,7 @@ public class ExtendedInfoDeserializer extends JsonDeserializer<ExtendedInfo> {
             info = new ExtendedInfoImpl.BlobInfo(SerializationUtils.deserialize(Base64.decode(node.binaryValue())));
             break;
         case ARRAY:
+        case OBJECT:
             info = new ExtendedInfoImpl.StringInfo(mapper.writeValueAsString(node));
             break;
         default:

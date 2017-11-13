@@ -15,6 +15,40 @@
             "logDate": {
               "format": "dateOptionalTime",
               "type": "date"
+            },
+            "extended": {
+              "properties": {
+                "json": {
+                  "properties": {
+                    "k1": {
+                      "type": "string"
+                    },
+                    "k2": {
+                      "type": "string"
+                    },
+                    "k3": {
+                      "properties": {
+                        "k4": {
+                          "type": "string"
+                        },
+                        "k5": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "json2": {
+                  "properties": {
+                    "t1": {
+                      "type": "string"
+                    },
+                    "t2": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
             }
           }
         }

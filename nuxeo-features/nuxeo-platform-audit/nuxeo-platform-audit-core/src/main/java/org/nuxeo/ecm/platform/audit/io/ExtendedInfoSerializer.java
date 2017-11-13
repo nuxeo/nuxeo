@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.SerializationUtils;
-import org.json.JSONObject;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 
@@ -47,7 +46,8 @@ public class ExtendedInfoSerializer extends JsonSerializer<ExtendedInfo> {
     public void serialize(ExtendedInfo info, JsonGenerator jg,
             SerializerProvider provider) throws IOException {
 
-        jg.setCodec(new ObjectMapper());
+        ObjectMapper mapper = new ObjectMapper();
+        jg.setCodec(mapper);
         if (info instanceof ExtendedInfoImpl.DateInfo) {
             ExtendedInfoImpl.DateInfo dateInfo = (ExtendedInfoImpl.DateInfo) info;
             DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendInstant(3).toFormatter();
@@ -60,12 +60,18 @@ public class ExtendedInfoSerializer extends JsonSerializer<ExtendedInfo> {
             String stringValue = ((ExtendedInfoImpl.StringInfo) info).getStringValue().trim();
             if ((stringValue.startsWith("{") && stringValue.endsWith("}"))
                     || (stringValue.startsWith("[") && stringValue.endsWith("]"))) {
-                jg.writeRawValue(JSONObject.quote(stringValue));
+                try {
+                    mapper.readTree(stringValue);
+                    jg.writeRawValue(stringValue);
+                } catch (IOException e) {
+                    // If the value represents an invalid JSON, send a null value to ES to prevent potential
+                    // mapping exceptions
+                    jg.writeObject(null);
+                }
             } else {
                 jg.writeString(stringValue);
             }
-        }
-        else {
+        } else {
             jg.writeObject(info.getSerializableValue());
         }
     }
