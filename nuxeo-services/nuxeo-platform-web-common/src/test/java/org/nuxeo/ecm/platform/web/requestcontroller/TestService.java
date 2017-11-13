@@ -29,7 +29,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.servlet.FilterConfig;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestFilterConfig;
@@ -41,7 +40,6 @@ public class TestService extends NXRuntimeTestCase {
     protected RequestControllerService requestControllerService;
 
     @Override
-    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.web.common", "OSGI-INF/web-request-controller-framework.xml");
