@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.cloud.managment.contrib">
+
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent" point="probes">
+    <probe name="s3BinaryManagerStatus" class="org.nuxeo.ecm.core.storage.status.S3BinaryManagerStatusProbe">
+      <label>S3BinaryManager probe</label>
+    </probe>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent" point="healthCheck">
+    <probe name="s3BinaryManagerStatus" enabled="true" />
+  </extension>
+
+</component>
