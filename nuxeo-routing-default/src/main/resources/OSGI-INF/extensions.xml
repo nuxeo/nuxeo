@@ -189,13 +189,11 @@ NodeVariables["comment"]= null;}</param>
       <operation id="Context.FetchDocument"/>
     </chain>
   </extension>
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
-    <directory name="WorkflowType">
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+    <directory name="WorkflowType" extends="template-directory">
       <schema>vocabulary</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
       <table>studio_vocabulary_WorkflowType</table>
       <dataFile>data/vocabularies/WorkflowType.csv</dataFile>
       <cacheEntryName>vocab-WorkflowType-cache</cacheEntryName>
