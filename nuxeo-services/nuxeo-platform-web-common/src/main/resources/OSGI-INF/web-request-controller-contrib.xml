@@ -4,8 +4,7 @@
   <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
     point="filterConfig">
 
-    <filterConfig name="nxfile" cached="true" private="true"
-      transactional="false" synchonize="false">
+    <filterConfig name="nxfile" transactional="false" synchonize="false">
       <!-- transaction is manually handled in DownloadServlet -->
       <pattern>${org.nuxeo.ecm.contextPath}/nxfile/.*</pattern>
     </filterConfig>
