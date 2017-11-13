@@ -40,7 +40,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
+import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
@@ -116,7 +118,14 @@ public class TestAuditMigration {
         List<LogEntry> entries = new ArrayList<>();
 
         for (int i = 0; i < 1000; i++) {
-            entries.add(LogEntryGen.doCreateEntry("mydoc", "evt" + i, "cat" + i % 2));
+            LogEntry entry = LogEntryGen.doCreateEntry("mydoc", "evt" + i, "cat" + i % 2);
+            Map<String, ExtendedInfo> extendedInfos = new HashMap<>();
+            extendedInfos.put("json", new ExtendedInfoImpl.StringInfo(
+                    "{\"k1\":\"test\", \"k2\":\"test\", \"k3\":{\"k4\":\"test\", \"k5\":\"test\"}}"));
+            extendedInfos.put("json2",
+                    new ExtendedInfoImpl.StringInfo("[{t1=test1:toto, t2=test1},{t1=test2, t2=test2}]"));
+            entry.setExtendedInfos(extendedInfos);
+            entries.add(entry);
         }
         jpaBackend.addLogEntries(entries);
 
