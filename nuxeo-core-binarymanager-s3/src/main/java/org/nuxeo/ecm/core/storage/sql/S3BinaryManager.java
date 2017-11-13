@@ -405,6 +405,15 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     public static boolean isMD5(String digest) {
         return MD5_RE.matcher(digest).matches();
     }
+    
+    /**
+     * Used in the healthCheck; the transferManager should be initialized and the bucket accessible
+     *
+     * @since 9.3
+     */
+    public boolean canAccessBucket() {
+        return transferManager != null && transferManager.getAmazonS3Client().doesBucketExist(bucketName);
+    }
 
     @Override
     protected FileStorage getFileStorage() {

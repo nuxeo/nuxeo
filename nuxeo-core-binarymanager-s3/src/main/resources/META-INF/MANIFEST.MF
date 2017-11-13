@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage.binarymanager.s3;singleton:=true
+Nuxeo-Component: OSGI-INF/s3binarymanager-managment-contrib.xml
