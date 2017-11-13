@@ -224,7 +224,10 @@ input:focus, textarea:focus {
     top: 1.1em;
 }
 
-.navItem:hover a,
+.navItem:hover a {
+    color: #4ad5d0;
+}
+
 .navItemSelected a,
 .navItemSelected a.checked {
     color: #1F28BF;
@@ -591,7 +594,7 @@ body .package.disabled {
 }
 
 .footer a:hover {
-    color: #0075af;
+    color: #4ad5d0;
 }
 
 .footer span a {
