@@ -22,7 +22,6 @@ package org.nuxeo.ecm.multi.tenant.userworkspace;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.multi.tenant.MultiTenantHelper;
 import org.nuxeo.ecm.multi.tenant.MultiTenantService;
 import org.nuxeo.ecm.platform.userworkspace.constants.UserWorkspaceConstants;
@@ -55,13 +54,11 @@ public class MultiTenantUserWorkspaceService extends DefaultUserWorkspaceService
     }
 
     @Override
-    protected String computePathUserWorkspaceRoot(CoreSession userCoreSession, String userName,
-            DocumentModel currentDocument) {
-
+    protected String computePathUserWorkspaceRoot(CoreSession userCoreSession, String userName) {
         String tenantId = getTenantId(userCoreSession, userName);
         if (StringUtils.isBlank(tenantId)) {
             // default behavior
-            return super.computePathUserWorkspaceRoot(userCoreSession, userName, currentDocument);
+            return super.computePathUserWorkspaceRoot(userCoreSession, userName);
         } else {
             // tenant specific behavior
             return computePathUserWorkspaceRootForTenant(userCoreSession, tenantId);
