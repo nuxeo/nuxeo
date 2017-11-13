@@ -71,7 +71,7 @@ Nuxeo.LiveConnectBehavior = {
     };
 
     if (options) {
-      jQuery.extend(settings, options);
+      Object.assign(settings, options);
     }
 
     var left = window.screenX + (window.outerWidth / 2) - (settings.width / 2);
