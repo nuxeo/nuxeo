@@ -923,11 +923,11 @@ public class TestConnectBroker {
 
         assertThat(connectBroker.pkgHotfix()).isTrue();
 
-        // After: [studioA-1.0.0, hfA-1.0.0, hfB-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "hfB-1.0.0", "A-1.0.0",
+        // After: [studioA-1.0.0, hfA-1.0.8, hfB-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
+        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.8", "hfB-1.0.0", "A-1.0.0",
                 "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
                         "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
@@ -935,10 +935,13 @@ public class TestConnectBroker {
         // check logs
         String expectedLogs = "\n" //
                 + "Dependency resolution:\n" //
-                + "  Installation order (1):        hfB-1.0.0\n" //
-                + "  Unchanged packages (10):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Local packages to install (1): hfB:1.0.0\n" //
+                + "  Installation order (2):        hfA-1.0.8/hfB-1.0.0\n" //
+                + "  Unchanged packages (9):        A:1.0.0, B:1.0.1-SNAPSHOT, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
+                + "  Packages to upgrade (1):       hfA:1.0.0\n" //
+                + "  Local packages to install (2): hfA:1.0.8, hfB:1.0.0\n" //
                 + "\n" //
+                + "Uninstalling hfA-1.0.0\n" //
+                + "Installing hfA-1.0.8\n" //
                 + "Installing hfB-1.0.0";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
@@ -946,27 +949,28 @@ public class TestConnectBroker {
         connectBroker.setAllowSNAPSHOT(true);
         assertThat(connectBroker.pkgHotfix()).isTrue();
 
-        // After: [studioA-1.0.0, hfA-1.0.0, hfB-1.0.0, hfC-1.0.0-SNAPSHOT, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0,
+        // After: [studioA-1.0.0, hfA-1.0.8, hfB-1.0.0, hfC-1.0.0-SNAPSHOT, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0,
         // D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
+        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.8", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT",
                 "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.8", "A-1.2.0", "A-1.2.1-SNAPSHOT",
+                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfA-1.0.0", "A-1.2.0", "A-1.2.1-SNAPSHOT",
                         "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2", "C-1.0.1-SNAPSHOT",
                         "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
                 PackageState.DOWNLOADED);
 
         // check logs
-        expectedLogs = "\n" //
-                + "Dependency resolution:\n" //
-                + "  Installation order (1):        hfC-1.0.0-SNAPSHOT\n" //
-                + "  Unchanged packages (11):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, hfB:1.0.0, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
-                + "  Local packages to install (1): hfC:1.0.0-SNAPSHOT\n" //
-                + "\n" //
+        expectedLogs = "The following SNAPSHOT package(s) will be replaced in local cache (if available): [hfC-1.0.0-SNAPSHOT]\n" //
                 + "Download of 'hfC-1.0.0-SNAPSHOT' will replace the one already in local cache.\n" //
                 + "Downloading [hfC-1.0.0-SNAPSHOT]...\n" //
                 + "Replacement of hfC-1.0.0-SNAPSHOT in local cache...\n" //
                 + "Added hfC-1.0.0-SNAPSHOT\n" //
+                + "\n" //
+                + "Dependency resolution:\n" //
+                + "  Installation order (1):        hfC-1.0.0-SNAPSHOT\n" //
+                + "  Unchanged packages (11):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.8, C:1.0.0, D:1.0.2-SNAPSHOT, hfB:1.0.0, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1, K:1.0.0-SNAPSHOT\n" //
+                + "  Local packages to install (1): hfC:1.0.0-SNAPSHOT\n" //
+                + "\n" //
                 + "Installing hfC-1.0.0-SNAPSHOT";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
