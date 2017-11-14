@@ -19,7 +19,13 @@
  */
 package org.nuxeo.ecm.automation.core.trace;
 
+import static org.nuxeo.ecm.automation.core.Constants.LF;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,7 +62,6 @@ public class Call {
 
     protected final Details details;
 
-
     protected Call(OperationType chain, OperationType op, Details details) {
         type = op;
         chainId = chain.getId();
@@ -90,7 +95,7 @@ public class Call {
             input = null;
         }
 
-        protected Details(OperationContext context, InvokableMethod method,  Map<String, Object> parms) {
+        protected Details(OperationContext context, InvokableMethod method, Map<String, Object> parms) {
             this.method = method;
             input = context.getInput();
             variables.putAll(context);
@@ -126,7 +131,6 @@ public class Call {
                 }
             }
         }
-
 
     }
 
@@ -190,4 +194,83 @@ public class Call {
         return aliases;
     }
 
+    /**
+     * @since 9.3
+     */
+    public void print(BufferedWriter writer) throws IOException {
+        try {
+            writer.append(LF);
+            writer.append(LF);
+            writer.append("****** " + getType().getId() + " ******");
+            writer.append(LF);
+            writer.append("Chain ID: ");
+            writer.append(getChainId());
+            if (getAliases() != null) {
+                writer.append(LF);
+                writer.append("Chain Aliases: ");
+                writer.append(getAliases());
+            }
+            writer.append(LF);
+            writer.append("Class: ");
+            writer.append(getType().getType().getSimpleName());
+            writer.append(LF);
+            writer.append("Method: '");
+            writer.append(getMethod().getMethod().getName());
+            writer.append("' | Input Type: ");
+            writer.append(getMethod().getConsume().getName());
+            writer.append(" | Output Type: ");
+            writer.append(getMethod().getProduce().getName());
+            writer.append(LF);
+            writer.append("Input: ");
+            writer.append(getInput() == null ? "null" : getInput().toString());
+            if (!getParameters().isEmpty()) {
+                writer.append(LF);
+                writer.append("Parameters ");
+                for (String parameter : getParameters().keySet()) {
+                    writer.append(" | ");
+                    writer.append("Name: ");
+                    writer.append(parameter);
+                    writer.append(", Value: ");
+                    Object value = getParameters().get(parameter);
+                    if (value instanceof Call.ExpressionParameter) {
+                        value = String.format("Expr:(id=%s | value=%s)",
+                                ((Call.ExpressionParameter) getParameters().get(parameter)).getParameterId(),
+                                ((Call.ExpressionParameter) getParameters().get(parameter)).getParameterValue());
+                    }
+                    writer.append(value.toString());
+                }
+            }
+            if (!getVariables().isEmpty()) {
+                writer.append(LF);
+                writer.append("Context Variables");
+                for (String keyVariable : getVariables().keySet()) {
+                    writer.append(" | ");
+                    writer.append("Key: ");
+                    writer.append(keyVariable);
+                    writer.append(", Value: ");
+                    Object variable = getVariables().get(keyVariable);
+                    if (variable instanceof Calendar) {
+                        writer.append(((Calendar) variable).getTime().toString());
+                    } else {
+                        writer.append(variable == null ? "null" : variable.toString());
+                    }
+                }
+            }
+            if (!getNested().isEmpty()) {
+                printHeading("start sub chain", writer);
+                for (Trace trace : getNested()) {
+                    writer.append(LF);
+                    trace.print(writer);
+                    writer.append(LF);
+                }
+                printHeading("end sub chain", writer);
+            }
+        } catch (IOException e) {
+            log.error("Nuxeo TracePrinter cannot write traces output", e);
+        }
+    }
+
+    protected void printHeading(String heading, BufferedWriter writer) throws IOException {
+        writer.append(LF + LF + "****** " + heading + " ******");
+    }
 }
