@@ -768,16 +768,9 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     protected static String getSavedRequestedURL(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
-        String requestedPage = null;
         HttpSession session = httpRequest.getSession(false);
-        String requestedUrl = httpRequest.getParameter(REQUESTED_URL);
-        if (!StringUtils.isEmpty(requestedUrl)) {
-            try {
-                requestedPage = URLDecoder.decode(requestedUrl, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                log.error("Unable to get the requestedUrl parameter" + e);
-            }
-        } else {
+        String requestedPage = httpRequest.getParameter(REQUESTED_URL);
+        if (StringUtils.isBlank(requestedPage)) {
             // retrieve from session
             if (session != null) {
                 requestedPage = (String) session.getAttribute(START_PAGE_SAVE_KEY);
