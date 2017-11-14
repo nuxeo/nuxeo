@@ -43,8 +43,11 @@ public class Tracer implements OperationCallback {
 
     class Context {
         final Call parent;
+
         final OperationType typeof;
+
         final LinkedList<Call> calls = new LinkedList<Call>();
+
         OperationException error;
 
         Context(Call parent, OperationType oftype) {
@@ -64,7 +67,8 @@ public class Tracer implements OperationCallback {
 
     protected void popContext() {
         Context context = stack.pop();
-        Trace trace = factory.newTrace(context.parent, context.typeof, context.calls, context.calls.getLast().getOutput(), context.error);
+        Trace trace = factory.newTrace(context.parent, context.typeof, context.calls,
+                context.calls.getLast().getOutput(), context.error);
         if (stack.isEmpty()) {
             factory.onTrace(trace);
         } else {
