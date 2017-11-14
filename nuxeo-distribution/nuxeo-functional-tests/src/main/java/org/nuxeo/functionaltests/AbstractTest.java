@@ -443,6 +443,7 @@ public abstract class AbstractTest {
     }
 
     public LoginPage logout() {
+        JavaScriptErrorCollector.from(driver).ignore(ignores).checkForErrors();
         return getLoginPage();
     }
 
