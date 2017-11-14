@@ -7,7 +7,7 @@
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator"%>
-<%@ page import="org.apache.commons.httpclient.HttpStatus"%>
+<%@ page import="org.apache.http.HttpStatus"%>
 <%@ page import="org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService"%>
 <%
 Principal principal = request.getUserPrincipal();
