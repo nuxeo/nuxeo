@@ -89,6 +89,8 @@ public class WorkflowTabSubPage extends DocumentBasePage {
         // wait for load
         AbstractPage.getFancyBoxContent();
         Locator.waitUntilElementPresent(By.id("fancybox-close"));
+        // wait for graph to be loaded to avoid js errors when closing the fancybox too early
+        Locator.waitUntilElementPresent(By.id("jsPlumb_1_6"));
     }
 
     public void closeGraphView() {
