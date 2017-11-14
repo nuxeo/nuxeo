@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -54,7 +55,7 @@ public class TracerFactory implements TracerFactoryMBean {
 
     protected String printable;
 
-    protected Function<String,Boolean> printableAssertor;
+    protected Function<String, Boolean> printableAssertor;
 
     protected Cache<String, ChainTraces> tracesCache;
 
@@ -63,8 +64,11 @@ public class TracerFactory implements TracerFactoryMBean {
     protected Trace lastError;
 
     public TracerFactory() {
-        tracesCache = CacheBuilder.newBuilder().concurrencyLevel(CACHE_CONCURRENCY_LEVEL)
-                .maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.MINUTES).build();
+        tracesCache = CacheBuilder.newBuilder()
+                                  .concurrencyLevel(CACHE_CONCURRENCY_LEVEL)
+                                  .maximumSize(CACHE_MAXIMUM_SIZE)
+                                  .expireAfterWrite(CACHE_TIMEOUT, TimeUnit.MINUTES)
+                                  .build();
         recording = Framework.isBooleanPropertyTrue(AUTOMATION_TRACE_PROPERTY);
         setPrintableTraces(Framework.getProperty(AUTOMATION_TRACE_PRINTABLE_PROPERTY, "*"));
     }
@@ -103,22 +107,23 @@ public class TracerFactory implements TracerFactoryMBean {
 
     }
 
-    /**
-     * If trace mode is enabled, instantiate {@link Tracer}. If not, instantiate {@link TracerLite}.
-     */
     public OperationCallback newTracer() {
         return new Tracer(this);
     }
 
+    /**
+     * If trace mode is enabled, instantiate {@link Call}. If not, instantiate {@link LiteCall}.
+     */
     public Call newCall(OperationType chain, OperationContext context, OperationType type, InvokableMethod method,
             Map<String, Object> params) {
         if (!recording) {
-            return new Call(chain, type);
+            return new LiteCall(chain, type);
         }
         return new Call(chain, context, type, method, params);
     }
 
-    public Trace newTrace(Call parent, OperationType typeof, List<Call> calls, Object output, OperationException error) {
+    public Trace newTrace(Call parent, OperationType typeof, List<Call> calls, Object output,
+            OperationException error) {
         return new Trace(parent, typeof, calls, calls.get(0).details.input, output, error);
     }
 
@@ -143,8 +148,7 @@ public class TracerFactory implements TracerFactoryMBean {
     }
 
     /**
-     * @param key
-     *            The name of the chain.
+     * @param key The name of the chain.
      * @return The last trace of the given chain.
      */
     public Trace getTrace(String key) {
@@ -191,7 +195,7 @@ public class TracerFactory implements TracerFactoryMBean {
             return;
         }
         if (printableAssertor.apply(trace.chain.getId())) {
-            LogFactory.getLog(Trace.class).debug(print(trace));
+            LogFactory.getLog(Trace.class).info(print(trace));
         }
         recordTrace(trace);
     }
@@ -225,7 +229,7 @@ public class TracerFactory implements TracerFactoryMBean {
         return printable;
     }
 
-    public String print(Trace trace)  {
-        return TracePrinter.print(trace, !recording);
+    public String print(Trace trace) {
+        return trace.print(!recording);
     }
 }

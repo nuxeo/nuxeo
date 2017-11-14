@@ -168,6 +168,8 @@ public class Constants {
     // key for setting chain runtime variables on the operation context
     public static final String VAR_RUNTIME_CHAIN = "ChainParameters";
 
+    // Configured System's line separator
+    public static final String LF = System.getProperty("line.separator");
 
     private Constants() {
     }

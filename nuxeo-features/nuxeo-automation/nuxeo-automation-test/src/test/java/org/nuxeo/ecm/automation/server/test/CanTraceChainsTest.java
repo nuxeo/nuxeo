@@ -20,14 +20,15 @@
 package org.nuxeo.ecm.automation.server.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.inject.Inject;
 
 import org.junit.After;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList;
+import org.nuxeo.ecm.automation.core.operations.traces.AutomationTraceToggleOperation;
 import org.nuxeo.ecm.automation.core.trace.Call;
 import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
@@ -184,5 +186,17 @@ public class CanTraceChainsTest {
             assertEquals("baz", ctx.get("baz"));
             assertEquals("bum", ctx.get("bum"));
         }
+    }
+
+    @Test
+    public void canEnableTracesViaOperation() throws Exception {
+        // Disable trace mode
+        if (factory.getRecordingState()) {
+            factory.toggleRecording();
+        }
+        assertFalse(factory.getRecordingState());
+        // re-enable with the operation
+        service.run(context, AutomationTraceToggleOperation.ID);
+        assertTrue(factory.getRecordingState());
     }
 }
