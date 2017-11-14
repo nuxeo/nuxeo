@@ -28,7 +28,7 @@ Example:
 -->
 <dom-module id="nuxeo-drive-desktop-packages">
   <template>
-    <style>
+    <style include="iron-flex iron-flex-alignment iron-flex-factors nuxeo-styles">
       :host {
         display: block;
       }
@@ -40,7 +40,7 @@ Example:
 
       .row {
         border-bottom: 1px solid var(--nuxeo-border);
-        @apply(--layout-horizontal);
+        @apply --layout-horizontal;
       }
 
       .row:hover {
@@ -99,7 +99,6 @@ Example:
         </div>
       </template>
     </div>
-  </template>
   </template>
   <script>
     (function() {

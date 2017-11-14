@@ -29,11 +29,11 @@ Contributors:
         display: inline-block;
       }
 
-      ::content iron-icon:hover {
+      ::slotted(iron-icon:hover) {
         fill: var(--nuxeo-link-hover-color);
       }
 
-      :host([synchronized]) ::content iron-icon {
+      :host([synchronized]) ::slotted(iron-icon) {
         fill: var(--icon-toggle-pressed-color, --nuxeo-action-color-activated);
       }
     </style>
