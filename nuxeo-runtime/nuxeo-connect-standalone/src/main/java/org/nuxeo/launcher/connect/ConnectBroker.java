@@ -1570,8 +1570,8 @@ public class ConnectBroker {
     }
 
     public boolean pkgHotfix() {
-        List<String> hotFixNames = getPackageManager().listHotfixesNames(targetPlatform, allowSNAPSHOT);
-        return pkgRequest(null, hotFixNames, null, null, true, false);
+        List<String> lastHotfixes = getPackageManager().listLastHotfixes(targetPlatform, allowSNAPSHOT);
+        return pkgRequest(null, lastHotfixes, null, null, true, false);
     }
 
     public boolean pkgUpgrade() {
