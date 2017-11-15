@@ -360,14 +360,16 @@ public class NuxeoDriveActions extends InputController implements Serializable {
             String packageURL = desktopPackageBaseURL + packageName;
             packages.add(new DesktopPackageDefinition(packageURL, packageName, OSX_PLATFORM));
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Added %s to the list of desktop packages available for download.", packageURL));
+                log.debug(
+                        String.format("Added %s to the list of desktop packages available for download.", packageURL));
             }
             // Windows
             packageName = DESKTOP_PACKAGE_PREFIX + MSI_EXTENSION;
             packageURL = desktopPackageBaseURL + packageName;
             packages.add(new DesktopPackageDefinition(packageURL, packageName, WINDOWS_PLATFORM));
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Added %s to the list of desktop packages available for download.", packageURL));
+                log.debug(
+                        String.format("Added %s to the list of desktop packages available for download.", packageURL));
             }
         }
         // Debian / Ubuntu
@@ -417,8 +419,8 @@ public class NuxeoDriveActions extends InputController implements Serializable {
                                                  .getFileSystemItem(doc, null, false, false, false);
         if (fileSystemItem == null) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Document %s (%s) is not adaptable as a FileSystemItem.",
-                        doc.getPathAsString(), doc.getId()));
+                log.debug(String.format("Document %s (%s) is not adaptable as a FileSystemItem.", doc.getPathAsString(),
+                        doc.getId()));
             }
         }
         return fileSystemItem;
