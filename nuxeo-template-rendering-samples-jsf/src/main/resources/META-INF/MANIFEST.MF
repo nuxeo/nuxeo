@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: nuxeo-template-rendering-samples-jsf
+Bundle-Version: 1.0.0
+Bundle-Name: nuxeo-template-rendering-samples-jsf
+Require-Bundle: org.nuxeo.runtime
+Bundle-ManifestVersion: 2
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/extensions.xml
+Created-By: Nuxeo Studio
+

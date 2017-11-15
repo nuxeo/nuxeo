@@ -1,0 +1,125 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  id="#{layout.id}">
+
+  <c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
+  <nxu:set var="layoutWidgetsDisplay"
+    value="#{layout.properties.widgetsDisplay}"
+    resolveTwice="true">
+  <nxu:set var="layoutStyleClass"
+    value="#{layout.properties.styleClass}"
+    resolveTwice="true">
+
+    <table class="dataInput studioFormTable #{layoutStyleClass}">
+      <tbody>
+
+        <nxl:layoutRow>
+          <nxu:set var="rowStyleClass"
+            value="#{layoutRow.properties.styleClass}"
+            resolveTwice="true">
+            <tr class="#{rowStyleClass}">
+              <nxl:layoutRowWidget>
+
+                <c:set var="colspanName" value="nxl_colspan_#{widgetIndex}" />
+                <c:set var="colspan" value="#{layoutRow.properties[colspanName]}" />
+                <c:set var="labelOnLeft" value="#{layoutWidgetsDisplay != 'no_label' and layoutWidgetsDisplay != 'label_top'}" />
+                <c:set var="addOneForLabel" value="#{(widget == null or widget.handlingLabels) and labelOnLeft}" />
+                <c:if test="#{labelOnLeft}">
+                  <c:set var="renderingColspan" value="#{nxu:test(layout.columns == 1, nxu:test(addOneForLabel, colspan + 1, 0), (2*layout.columns + 1)*colspan - 1 + nxu:test(addOneForLabel, 1, 0))}" />
+                </c:if>
+                <c:if test="#{not labelOnLeft}">
+                  <c:set var="renderingColspan" value="#{nxu:test(layout.columns == 1, 0, colspan)}" />
+                </c:if>
+
+                <c:choose>
+
+                  <c:when test="#{widget.type == 'studio_header'}">
+                    <td class="studioHeader" colspan="#{renderingColspan + 1}">
+                      <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                        <ui:param name="labelStyleClass"
+                          value="boldLabel #{widget.properties['styleClass']}" />
+                      </ui:include>
+                    </td>
+                  </c:when>
+
+                  <c:otherwise>
+
+                    <c:if test="#{layoutWidgetsDisplay == 'label_top'}">
+                      <td class="fieldColumn" colspan="#{renderingColspan}">
+                        <c:if test="#{widget != null and not widget.handlingLabels}">
+                          <div>
+                            <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                              <ui:param name="labelStyleClass" value="boldLabel" />
+                            </ui:include>
+                          </div>
+                        </c:if>
+                        <ui:decorate template="/widgets/incl/form_template.xhtml">
+                          <ui:param name="addForm" value="#{widgetControl_requireSurroundingForm}" />
+                          <ui:param name="formId" value="#{widget.id}_form" />
+                          <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+                          <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
+                          <ui:define name="form_template_content">
+                            <nxl:widget widget="#{widget}" value="#{value}" />
+                          </ui:define>
+                        </ui:decorate>
+                      </td>
+                    </c:if>
+
+                    <c:if test="#{layoutWidgetsDisplay != 'label_top'}">
+                      <c:if test="#{widget != null and layoutWidgetsDisplay != 'no_label'}">
+                        <c:if test="#{not widget.handlingLabels}">
+                          <td class="labelColumn">
+                            <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+                          </td>
+                        </c:if>
+                      </c:if>
+                      <c:if test="#{renderingColspan != 0}">
+                        <td class="fieldColumn" colspan="#{renderingColspan}">
+                          <ui:decorate template="/widgets/incl/form_template.xhtml">
+                            <ui:param name="addForm" value="#{widgetControl_requireSurroundingForm}" />
+                            <ui:param name="formId" value="#{widget.id}_form" />
+                            <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+                            <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
+                            <ui:define name="form_template_content">
+                              <nxl:widget widget="#{widget}" value="#{value}" />
+                            </ui:define>
+                          </ui:decorate>
+                        </td>
+                      </c:if>
+                      <c:if test="#{renderingColspan == 0}">
+                        <td class="fieldColumn">
+                          <ui:decorate template="/widgets/incl/form_template.xhtml">
+                            <ui:param name="addForm" value="#{widgetControl_requireSurroundingForm}" />
+                            <ui:param name="formId" value="#{widget.id}_form" />
+                            <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+                            <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
+                            <ui:define name="form_template_content">
+                              <nxl:widget widget="#{widget}" value="#{value}" />
+                            </ui:define>
+                          </ui:decorate>
+                        </td>
+                      </c:if>
+                    </c:if>
+
+                  </c:otherwise>
+
+                </c:choose>
+
+              </nxl:layoutRowWidget>
+            </tr>
+          </nxu:set>
+        </nxl:layoutRow>
+
+      </tbody>
+    </table>
+
+  </nxu:set>
+  </nxu:set>
+
+</f:subview>
