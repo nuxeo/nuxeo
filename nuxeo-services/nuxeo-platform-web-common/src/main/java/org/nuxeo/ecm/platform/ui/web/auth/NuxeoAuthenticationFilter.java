@@ -813,10 +813,14 @@ public class NuxeoAuthenticationFilter implements Filter {
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
                     if (NXAuthConstants.START_PAGE_FRAGMENT_KEY.equals(cookie.getName())) {
-                        requestedPage = UriBuilder.fromUri(requestedPage)
-                                                  .fragment(cookie.getValue())
-                                                  .build()
-                                                  .toString();
+                        try {
+                            requestedPage = UriBuilder.fromUri(requestedPage)
+                                                      .fragment(URLDecoder.decode(cookie.getValue(), "UTF-8"))
+                                                      .build()
+                                                      .toString();
+                        } catch (UnsupportedEncodingException e) {
+                            log.error("Failed to decode start page url fragment", e);
+                        }
                         // enforce cookie removal
                         cookie.setMaxAge(0);
                         httpResponse.addCookie(cookie);
@@ -1012,9 +1016,8 @@ public class NuxeoAuthenticationFilter implements Filter {
                         HttpServletResponse response = (HttpServletResponse) getResponse();
                         StringBuilder sb = new StringBuilder();
                         sb.append("<script type=\"text/javascript\">\n");
-                        sb.append("var h = window.location.hash.substring(1) || '';");
                         sb.append("document.cookie = '" + NXAuthConstants.START_PAGE_FRAGMENT_KEY
-                                + "=' + h.replace(/'/g, '\\\''); + '; path=/';\n");
+                                + "=' + encodeURIComponent(window.location.hash.substring(1) || '') + '; path=/';\n");
                         sb.append("window.location = '" + location + "';\n");
                         sb.append("</script>");
                         String script = sb.toString();
