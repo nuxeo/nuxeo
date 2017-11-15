@@ -20,6 +20,9 @@
 package org.nuxeo.drive.seam;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +82,9 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(NuxeoDriveActions.class);
+
+    /** @since 9.3 */
+    public static final String NUXEO_DRIVE_APPLICATION_NAME = "Nuxeo Drive";
 
     protected static final String IS_UNDER_SYNCHRONIZATION_ROOT = "nuxeoDriveIsUnderSynchronizationRoot";
 
@@ -167,10 +173,17 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return getFileSystemItem(doc) != null;
     }
 
-    public boolean hasOneDriveToken(Principal user) {
-        TokenAuthenticationService tokenService = Framework.getLocalService(TokenAuthenticationService.class);
+    public boolean hasOneDriveToken(Principal user) throws UnsupportedEncodingException {
+        TokenAuthenticationService tokenService = Framework.getService(TokenAuthenticationService.class);
         for (DocumentModel token : tokenService.getTokenBindings(user.getName())) {
-            if ("Nuxeo Drive".equals(token.getPropertyValue("authtoken:applicationName"))) {
+            String applicationName = (String) token.getPropertyValue("authtoken:applicationName");
+            if (applicationName == null) {
+                continue;
+            }
+            // We do the URL decoding for backward compatibility reasons, but in the future token parameters should be
+            // stored in their natural format (i.e. not needing re-decoding).
+            if (NUXEO_DRIVE_APPLICATION_NAME.equals(
+                    URLDecoder.decode(applicationName, StandardCharsets.UTF_8.toString()))) {
                 return true;
             }
         }
@@ -304,7 +317,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return UserWorkspaceHelper.isUserWorkspace(currentDocument);
     }
 
-    public String synchronizeCurrentDocument() {
+    public String synchronizeCurrentDocument() throws UnsupportedEncodingException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Principal principal = documentManager.getPrincipal();
         DocumentModel newSyncRoot = navigationContext.getCurrentDocument();
