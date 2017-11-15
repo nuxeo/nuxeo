@@ -242,4 +242,11 @@ public interface TagService {
      */
     boolean hasFeature(Feature feature);
 
+    /**
+     * Checks if document support tag.
+     *
+     * @since 9.3
+     */
+    boolean supportsTag(CoreSession session, String docId);
+
 }
