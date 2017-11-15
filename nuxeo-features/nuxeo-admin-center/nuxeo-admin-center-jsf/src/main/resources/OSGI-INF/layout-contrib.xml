@@ -417,7 +417,7 @@
             first non-default database
             selection -->
           <property name="rendered">
-            #{value['nuxeo.dbtemplate']!='default'}
+            #{value['nuxeo.dbtemplate']!='default' and value['nuxeo.dbtemplate']!='mongodb'}
           </property>
         </properties>
         <subWidgets>
