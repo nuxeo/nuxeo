@@ -1,14 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
   <%@ page contentType="text/html; charset=UTF-8" %>
   <%@ page language="java" %>
-  <%@ page import="java.security.Principal" %>
-  <%@ page import="org.nuxeo.ecm.core.api.NuxeoPrincipal" %>
   <%@ page import="org.nuxeo.runtime.api.Framework" %>
-  <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" %>
-  <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor" %>
-  <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator" %>
-  <%@ page import="org.apache.http.HttpStatus" %>
   <%@ page import="org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService" %>
+  <%@ page import="org.apache.http.HttpStatus" %>
   <%
 TokenAuthenticationService tokenAuthService = Framework.getService(TokenAuthenticationService.class);
 String token = tokenAuthService.acquireToken(request);
