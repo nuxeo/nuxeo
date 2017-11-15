@@ -58,18 +58,28 @@ public class IWork2PDFConverter implements Converter {
             if (mimeType == null || !IWORK_MIME_TYPES.contains(mimeType)) {
                 throw new ConversionException("not an iWork file");
             }
-            // look for the pdf file
-            if (ZipUtils.hasEntry(blob.getStream(), IWORK_PREVIEW_FILE)) {
-                // pdf file exist, let's extract it and return it as a
-                // BlobHolder.
-                Blob previewBlob;
-                try (InputStream previewPDFFile = ZipUtils.getEntryContentAsStream(blob.getStream(), IWORK_PREVIEW_FILE)) {
-                    previewBlob = Blobs.createBlob(previewPDFFile);
+
+            // check if the stream represents a valid zip
+            try (InputStream blobStream = blob.getStream()) {
+                if (!ZipUtils.isValid(blobStream)) {
+                    throw new ConversionException("not a valid iWork file");
                 }
-                return new SimpleCachableBlobHolder(previewBlob);
-            } else {
-                // Pdf file does not exist, conversion cannot be done.
-                throw new ConversionException("iWork file does not contain a pdf preview.");
+            }
+
+            // look for the pdf file
+            try (InputStream blobStream = blob.getStream()) {
+                if (ZipUtils.hasEntry(blobStream, IWORK_PREVIEW_FILE)) {
+                    // pdf file exist, let's extract it and return it as a
+                    // BlobHolder.
+                    Blob previewBlob;
+                    try (InputStream previewPDFFile = ZipUtils.getEntryContentAsStream(blob.getStream(), IWORK_PREVIEW_FILE)) {
+                        previewBlob = Blobs.createBlob(previewPDFFile);
+                    }
+                    return new SimpleCachableBlobHolder(previewBlob);
+                } else {
+                    // Pdf file does not exist, conversion cannot be done.
+                    throw new ConversionException("iWork file does not contain a pdf preview.");
+                }
             }
         } catch (IOException e) {
             throw new ConversionException("Could not find the pdf preview in the iWork file", e);
