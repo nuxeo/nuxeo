@@ -19,6 +19,20 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
+import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_FACET;
+import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_LIST;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -27,22 +41,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.versioning.VersioningService;
-import org.nuxeo.ecm.platform.tag.TagService.Feature;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
-import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
-import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_FACET;
-import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_LIST;
 
 /**
  * Implementation of the tag service based on facet
@@ -65,6 +63,11 @@ public class FacetedTagService extends AbstractTagService {
         default:
             throw new UnsupportedOperationException(feature.name());
         }
+    }
+
+    @Override
+    public boolean supportsTag(CoreSession session, String docId) {
+        return session.getDocument(new IdRef(docId)).hasFacet(TAG_FACET);
     }
 
     @Override

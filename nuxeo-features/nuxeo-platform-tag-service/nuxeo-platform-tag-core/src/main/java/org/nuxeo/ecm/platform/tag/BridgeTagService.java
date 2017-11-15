@@ -51,6 +51,11 @@ public class BridgeTagService extends AbstractTagService {
         }
     }
 
+    @Override
+    public boolean supportsTag(CoreSession session, String docId) {
+        return first.supportsTag(session, docId) || second.supportsTag(session, docId);
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     public List<Tag> getTagCloud(CoreSession session, String docId, String username, Boolean normalize) {
