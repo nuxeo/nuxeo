@@ -147,4 +147,20 @@ public class TestIWorkToPDF extends NXRuntimeTestCase {
         cs.convert(converterName, pagesBH, null);
         fail("pdf preview isn't available");
     }
+
+    @Test(expected = ConversionException.class)
+    public void testIWorkConverterWithWrongMimetype() throws Exception {
+        String converterName = cs.getConverterName("application/vnd.apple.iwork", "application/pdf");
+        assertEquals("iwork2pdf", converterName);
+
+        ConverterCheckResult check = cs.isConverterAvailable(converterName);
+        Assume.assumeTrue("iwork2pdf is not available, skipping test", check.isAvailable());
+
+        BlobHolder blobHolder = getBlobFromPath("test-docs/hello.txt");
+        // set a wrong mimetype to the blob
+        blobHolder.getBlob().setMimeType("application/vnd.apple.iwork");
+
+        cs.convert(converterName, blobHolder, null);
+        fail("not a valid iWork file");
+    }
 }
