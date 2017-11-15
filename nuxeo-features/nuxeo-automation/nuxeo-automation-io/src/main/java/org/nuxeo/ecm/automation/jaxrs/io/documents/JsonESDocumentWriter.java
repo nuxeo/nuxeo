@@ -47,6 +47,7 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.core.util.JSONPropertyWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -90,7 +91,7 @@ public class JsonESDocumentWriter implements MessageBodyWriter<DocumentModel> {
     @Override
     public void writeTo(DocumentModel doc, Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-            throws IOException, WebApplicationException {
+                    throws IOException, WebApplicationException {
         // schema names: dublincore, file, ... or *
         List<String> props = headers.getRequestHeader(DOCUMENT_PROPERTIES_HEADER);
         String[] schemas = null;
@@ -115,8 +116,10 @@ public class JsonESDocumentWriter implements MessageBodyWriter<DocumentModel> {
      * @since 7.2
      */
     protected void writeSystemProperties(JsonGenerator jg, DocumentModel doc) throws IOException {
+        String docId = doc.getId();
+        CoreSession session = doc.getCoreSession();
         jg.writeStringField("ecm:repository", doc.getRepositoryName());
-        jg.writeStringField("ecm:uuid", doc.getId());
+        jg.writeStringField("ecm:uuid", docId);
         jg.writeStringField("ecm:name", doc.getName());
         jg.writeStringField("ecm:title", doc.getTitle());
 
@@ -150,9 +153,9 @@ public class JsonESDocumentWriter implements MessageBodyWriter<DocumentModel> {
         }
         jg.writeEndArray();
         TagService tagService = Framework.getService(TagService.class);
-        if (tagService != null) {
+        if (tagService != null && tagService.supportsTag(session, docId)) {
             jg.writeArrayFieldStart("ecm:tag");
-            for (String tag : tagService.getTags(doc.getCoreSession(), doc.getId())) {
+            for (String tag : tagService.getTags(session, docId)) {
                 jg.writeString(tag);
             }
             jg.writeEndArray();
@@ -160,12 +163,11 @@ public class JsonESDocumentWriter implements MessageBodyWriter<DocumentModel> {
         jg.writeStringField("ecm:changeToken", doc.getChangeToken());
         Long pos = doc.getPos();
         if (pos != null) {
-            jg.writeNumberField("ecm:pos", pos);
+            jg.writeNumberField("ecm:pos", pos.longValue());
         }
         // Add a positive ACL only
         SecurityService securityService = Framework.getService(SecurityService.class);
-        List<String> browsePermissions = new ArrayList<String>(
-                Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
+        List<String> browsePermissions = new ArrayList<>(Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
         ACP acp = doc.getACP();
         if (acp == null) {
             acp = new ACPImpl();
@@ -247,8 +249,8 @@ public class JsonESDocumentWriter implements MessageBodyWriter<DocumentModel> {
 
         if (request != null) {
             DownloadService downloadService = Framework.getService(DownloadService.class);
-            String blobUrlPrefix =
-                    VirtualHostHelper.getBaseURL(request) + downloadService.getDownloadUrl(doc, null, null) + "/";
+            String blobUrlPrefix = VirtualHostHelper.getBaseURL(request)
+                    + downloadService.getDownloadUrl(doc, null, null) + "/";
             writer.filesBaseUrl(blobUrlPrefix);
         }
 
