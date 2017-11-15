@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +61,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -566,11 +567,40 @@ public class TestScriptRunnerInfrastructure {
     }
 
     @Test
-    public void testInputAdaptedAsDocument() throws OperationException {
+    public void testDocumentPathInputAdaptedAsDocument() throws OperationException {
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput("/default-domain");
-            DocumentModel doc = (DocumentModel) automationService.run(ctx, "Scripting.TestInputAdaptedAsDocument");
+            DocumentModel doc = (DocumentModel) automationService.run(ctx,
+                    "Scripting.TestInputAdaptedAsDocument");
             assertTrue(doc.getPathAsString().equals("/default-domain"));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testDocumentPathsInputAdaptedAsDocuments() throws OperationException {
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput("/default-domain,/default-domain/workspaces");
+            List<DocumentModel> docs = (List<DocumentModel>) automationService.run(ctx,
+                    "Scripting.TestInputAdaptedAsDocuments");
+            assertEquals(2, docs.size());
+            assertTrue(docs.get(0).getPathAsString().equals("/default-domain"));
+            assertTrue(docs.get(1).getPathAsString().equals("/default-domain/workspaces"));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testDocumentsInputAdaptedAsDocuments() throws OperationException {
+        DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
+        DocumentModel workspaces = session.getDocument(new PathRef("/default-domain/workspaces"));
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(Arrays.asList(domain, workspaces));
+            List<DocumentModel> docs = (List<DocumentModel>) automationService.run(ctx,
+                    "Scripting.TestInputAdaptedAsDocuments");
+            assertEquals(2, docs.size());
+            assertTrue(docs.get(0).getPathAsString().equals("/default-domain"));
+            assertTrue(docs.get(1).getPathAsString().equals("/default-domain/workspaces"));
         }
     }
 
