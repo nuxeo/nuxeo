@@ -28,7 +28,7 @@ import java.util.Collection;
 /**
  * @since 7.3
  */
-public class ArrayListToStringList implements TypeAdapter {
+public class CollectionToStringList implements TypeAdapter {
 
     @Override
     public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
