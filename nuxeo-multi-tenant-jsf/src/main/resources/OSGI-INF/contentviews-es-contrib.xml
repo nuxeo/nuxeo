@@ -18,12 +18,10 @@
         <whereClause docType="BasicAuditSearch">
           <fixedPart>
             {
-              "query": {
-                "bool": {
-                  "must": {
-                    "term": {
-                      "docPath.children": "?"
-                    }
+              "bool": {
+                "must": {
+                  "term": {
+                    "docPath.children": "?"
                   }
                 }
               }
