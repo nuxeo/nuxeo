@@ -152,8 +152,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     @Override
     public void reloadProperties() throws IOException {
-        log.info("Reload runtime properties");
+        log.info("Before reload runtime properties");
         Framework.getRuntime().reloadProperties();
+        log.info("After reload runtime properties");
     }
 
     @Override
@@ -165,18 +166,20 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     @Override
     public void flush() {
-        log.info("Flush caches");
+        log.info("Before flush caches");
         Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, FLUSH_EVENT_ID, this, null));
         flushJaasCache();
         setFlushedNow();
+        log.info("After flush caches");
     }
 
     @Override
     public void flushJaasCache() {
-        log.info("Flush the JAAS cache");
+        log.info("Before flush the JAAS cache");
         Framework.getLocalService(EventService.class)
                  .sendEvent(new Event("usermanager", "user_changed", this, "Deployer"));
         setFlushedNow();
+        log.info("After flush the JAAS cache");
     }
 
     @Override
@@ -305,12 +308,14 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             }
 
             watch.start("stop/standby");
+            log.info("Before stop/standby component manager");
             if (RELOAD_STRATEGY_VALUE_RESTART.equals(reloadStrategy)) {
                 componentManager.stop();
             } else {
                 // standby strategy by default
                 componentManager.standby();
             }
+            log.info("After stop/standby component manager");
             watch.stop("stop/standby");
 
             // Undeploy bundles
@@ -333,6 +338,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
             watch.start("delete-copy");
             // Delete old bundles
+            log.info("Before delete-copy");
             List<URL> urlsToRemove = result.undeployedBundles.stream()
                                                              .map(Bundle::getLocation)
                                                              .map(File::new)
@@ -342,6 +348,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             // Then copy new ones
             List<File> bundlesToDeploy = copyBundlesToDeploy(context);
             List<URL> urlsToAdd = bundlesToDeploy.stream().map(this::toURL).collect(Collectors.toList());
+            log.info("After delete-copy");
             watch.stop("delete-copy");
 
             // Reload resources
@@ -368,12 +375,14 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
             // Start or Resume the component manager
             watch.start("start/resume");
+            log.info("Before start/resume component manager");
             if (RELOAD_STRATEGY_VALUE_RESTART.equals(reloadStrategy)) {
                 componentManager.start();
             } else {
                 // standby strategy by default
                 componentManager.resume();
             }
+            log.info("After start/resume component manager");
             watch.stop("start/resume");
 
             try {
@@ -575,7 +584,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     @Override
     public void runDeploymentPreprocessor() throws IOException {
-        log.debug("Start running deployment preprocessor");
+        log.info("Start running deployment preprocessor");
         String rootPath = Environment.getDefault().getRuntimeHome().getAbsolutePath();
         File root = new File(rootPath);
         DeploymentPreprocessor processor = new DeploymentPreprocessor(root);
@@ -583,7 +592,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         processor.init();
         // and predeploy
         processor.predeploy();
-        log.debug("Deployment preprocessing done");
+        log.info("Deployment preprocessing done");
     }
 
     protected static File getAppDir() {
