@@ -588,4 +588,18 @@ public final class ZipUtils {
         return hasEntry(url.openStream(), entryName);
     }
 
+    /**
+     * Checks if the content of the {@link InputStream} is a valid zip.
+     * The method does not close the stream.
+     * @param stream the {@link InputStream} to be validated
+     * @return true if the {@link InputStream} is a valid zip, false otherwise
+     */
+    public static boolean isValid(InputStream stream) {
+        try (ZipInputStream zip = new ZipInputStream(stream)) {
+            return zip.getNextEntry() != null;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
 }
