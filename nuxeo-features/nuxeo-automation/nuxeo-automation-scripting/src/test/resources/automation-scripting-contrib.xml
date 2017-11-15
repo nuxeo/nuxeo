@@ -507,6 +507,24 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.TestInputAdaptedAsDocuments">
+      <inputType>documents</inputType>
+      <outputType>documents</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+          if (typeof input === 'string') {
+            // should be an array of documents
+            throw new Error('input should be a Document');
+          }
+          if (input.length !== 2) {
+            throw new Error('input should be an array of 2 documents');
+          }
+          return input;
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"

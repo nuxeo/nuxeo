@@ -26,6 +26,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.automation.core.impl.adapters.helper.TypeAdapterHelper;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
@@ -33,9 +34,10 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 /**
  * @since 9.1
  */
-public class ArrayListToDocModelList implements TypeAdapter {
+public class CollectionToDocModelList implements TypeAdapter {
 
     @Override
+    @SuppressWarnings("unchecked")
     public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         Collection<Object> list = (Collection<Object>) objectToAdapt;
         DocumentModelList result = new DocumentModelListImpl(list.size());
@@ -44,6 +46,8 @@ public class ArrayListToDocModelList implements TypeAdapter {
                 result.add(TypeAdapterHelper.createDocumentModel(ctx, (String) val));
             } else if (val instanceof DocumentRef) {
                 result.add(TypeAdapterHelper.createDocumentModel(ctx, (DocumentRef) val));
+            } else if (val instanceof DocumentModel) {
+                result.add((DocumentModel) val);
             }
         }
         return result;
