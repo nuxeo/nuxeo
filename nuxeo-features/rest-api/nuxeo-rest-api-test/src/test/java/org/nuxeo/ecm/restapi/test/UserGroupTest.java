@@ -36,6 +36,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -244,8 +245,67 @@ public class UserGroupTest extends BaseUserTest {
         }
     }
 
+    /**
+     * @since 9.3
+     */
     @Test
-    public void itCanChangeAGroupWithCompatibilityFields(){
+    public void itCanChangeAGroupWithMissingProperties() throws Exception {
+        // Given a group with properties, members, subgroups and parent groups
+        DocumentModel groupModel = um.getGroupModel("group1");
+        GroupConfig groupConfig = um.getGroupConfig();
+        groupModel.setProperty(groupConfig.schemaName, "description", "Initial description");
+        groupModel.setProperty(groupConfig.schemaName, "members", Arrays.asList(new String[] { "user1", "user2" }));
+        groupModel.setProperty(groupConfig.schemaName, "subGroups", Arrays.asList(new String[] { "group2" }));
+        groupModel.setProperty(groupConfig.schemaName, "parentGroups", Arrays.asList(new String[] { "group3" }));
+        um.updateGroup(groupModel);
+        nextTransaction();
+
+        // When I PUT this group including the properties field but omitting the memberUsers, memberGroups and
+        // parentGroups fields in the JSON object
+        StringBuilder groupAsJSON = new StringBuilder();
+        groupAsJSON.append("{");
+        groupAsJSON.append("  \"entity-type\": \"group\",");
+        groupAsJSON.append("  \"id\": \"group1\",");
+        groupAsJSON.append("  \"properties\": {");
+        groupAsJSON.append("    \"description\": \"Updated description\"");
+        groupAsJSON.append("  }");
+        groupAsJSON.append("}");
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/group/group1", groupAsJSON.toString())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            // Then the group properties are updated server side and the members, subgroups and parent groups are
+            // unchanged
+            nextTransaction(); // see committed changes
+            NuxeoGroup group = um.getGroup("group1");
+            assertEquals("Updated description", group.getModel().getProperty(groupConfig.schemaName, "description"));
+            assertEquals(2, group.getMemberUsers().size());
+            assertEquals(1, group.getMemberGroups().size());
+            assertEquals(1, group.getParentGroups().size());
+        }
+
+        // When I PUT this group including the memberUsers field but omitting the properties field in the JSON object
+        groupAsJSON = new StringBuilder();
+        groupAsJSON.append("{");
+        groupAsJSON.append("  \"entity-type\": \"group\",");
+        groupAsJSON.append("  \"id\": \"group1\",");
+        groupAsJSON.append("  \"memberUsers\": [\"user1\", \"user2\", \"user3\"]");
+        groupAsJSON.append("}");
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/group/group1", groupAsJSON.toString())) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            // Then the group members are updated server side and the properties, subgroups and parent groups are
+            // unchanged
+            nextTransaction(); // see committed changes
+            NuxeoGroup group = um.getGroup("group1");
+            assertEquals(3, group.getMemberUsers().size());
+            assertEquals("Updated description", group.getModel().getProperty(groupConfig.schemaName, "description"));
+            assertEquals(1, group.getMemberGroups().size());
+            assertEquals(1, group.getParentGroups().size());
+        }
+    }
+
+    @Test
+    public void itCanChangeAGroupWithCompatibilityFields() {
         String modifiedGroup = "{\n" //
                 + "  \"entity-type\": \"group\",\n" //
                 + "  \"id\": \"group1bis\",\n" //
