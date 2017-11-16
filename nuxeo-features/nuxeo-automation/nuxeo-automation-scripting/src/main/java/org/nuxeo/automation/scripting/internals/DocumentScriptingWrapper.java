@@ -121,7 +121,7 @@ public class DocumentScriptingWrapper extends HashMap<String, Object> {
         } else if (result instanceof Map<?, ?>) {
             @SuppressWarnings("unchecked")
             final Map<String, Object> map = (Map<String, Object>) result;
-            result = computeProperties(unwrap(map));
+            result = computeProperties(map);
         }
         return result;
     }

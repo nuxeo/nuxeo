@@ -604,4 +604,36 @@ public class TestScriptRunnerInfrastructure {
         }
     }
 
+    @Test
+    public void testUpdateProperties() throws OperationException {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc.setPropertyValue("dc:description", "description");
+        doc.setPropertyValue("dc:source", "source");
+        doc = session.createDocument(doc);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(doc);
+            DocumentModel res = (DocumentModel) automationService.run(ctx, "Scripting.TestUpdateProperties");
+            assertEquals("foo", res.getPropertyValue("dc:description"));
+            assertEquals("bar", res.getPropertyValue("dc:source"));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testUpdateComplexProperties() throws OperationException {
+        DocumentModel doc = session.createDocumentModel("/", "docComplex", "List");
+        Map<String, Serializable> map = new HashMap<>();
+        map.put("name", "name");
+        map.put("description", "description");
+        doc.setPropertyValue("list:complexItem", (Serializable) map);
+        doc = session.createDocument(doc);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(doc);
+            DocumentModel res = (DocumentModel) automationService.run(ctx, "Scripting.TestUpdateComplexProperties");
+            Map<String, Serializable> complexItem = (Map<String, Serializable>) res.getPropertyValue("list:complexItem");
+            assertEquals("foo", complexItem.get("name"));
+            assertEquals("bar", complexItem.get("description"));
+        }
+    }
+
 }
