@@ -147,18 +147,24 @@ public class NuxeoGroupJsonReader extends EntityJsonReader<NuxeoGroup> {
     }
 
     protected void readMemberUsers(DocumentModel groupModel, GroupConfig groupConfig, JsonNode jn) {
-        List<String> users = getArrayStringValues(jn.get(MEMBER_USERS_FETCH_PROPERTY));
-        groupModel.setProperty(groupConfig.schemaName, groupConfig.membersField, users);
+        if (jn.has(MEMBER_USERS_FETCH_PROPERTY)) {
+            List<String> users = getArrayStringValues(jn.get(MEMBER_USERS_FETCH_PROPERTY));
+            groupModel.setProperty(groupConfig.schemaName, groupConfig.membersField, users);
+        }
     }
 
     protected void readMemberGroups(DocumentModel groupModel, GroupConfig groupConfig, JsonNode jn) {
-        List<String> groups = getArrayStringValues(jn.get(MEMBER_GROUPS_FETCH_PROPERTY));
-        groupModel.setProperty(groupConfig.schemaName, groupConfig.subGroupsField, groups);
+        if (jn.has(MEMBER_GROUPS_FETCH_PROPERTY)) {
+            List<String> groups = getArrayStringValues(jn.get(MEMBER_GROUPS_FETCH_PROPERTY));
+            groupModel.setProperty(groupConfig.schemaName, groupConfig.subGroupsField, groups);
+        }
     }
 
     protected void readParentGroups(DocumentModel groupModel, GroupConfig groupConfig, JsonNode jn) {
-        List<String> parents = getArrayStringValues(jn.get(PARENT_GROUPS_FETCH_PROPERTY));
-        groupModel.setProperty(groupConfig.schemaName, groupConfig.parentGroupsField, parents);
+        if (jn.has(PARENT_GROUPS_FETCH_PROPERTY)) {
+            List<String> parents = getArrayStringValues(jn.get(PARENT_GROUPS_FETCH_PROPERTY));
+            groupModel.setProperty(groupConfig.schemaName, groupConfig.parentGroupsField, parents);
+        }
     }
 
     private List<String> getArrayStringValues(JsonNode node) {
