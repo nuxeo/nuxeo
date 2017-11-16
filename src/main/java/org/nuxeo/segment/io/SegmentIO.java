@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Thierry Delprat
+ *     Yannis JULIENNE
  */
 package org.nuxeo.segment.io;
 
@@ -37,8 +38,7 @@ public interface SegmentIO {
 
     void track(NuxeoPrincipal principal, String eventName);
 
-    void track(NuxeoPrincipal principal, String eventName,
-            Map<String, Serializable> metadata);
+    void track(NuxeoPrincipal principal, String eventName, Map<String, Serializable> metadata);
 
     void flush();
 
@@ -51,4 +51,10 @@ public interface SegmentIO {
     Map<String, List<SegmentIOMapper>> getMappers(List<String> events);
 
     Map<String, List<SegmentIOMapper>> getAllMappers();
+
+    /**
+     * @return true if the service is in debug mode
+     * @since 9.10
+     */
+    boolean isDebugMode();
 }
