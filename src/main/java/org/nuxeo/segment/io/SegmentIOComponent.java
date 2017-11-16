@@ -370,4 +370,8 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return userFilters;
     }
 
+    @Override
+    public boolean isDebugMode() {
+        return debugMode;
+    }
 }
