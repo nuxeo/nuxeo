@@ -716,6 +716,7 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-directory-test</artifactId>
         <version>${nuxeo.services.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
