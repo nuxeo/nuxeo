@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Thierry Delprat
+ *     Yannis JULIENNE
  */
 package org.nuxeo.segment.io.web;
 
@@ -25,6 +26,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -40,6 +43,8 @@ import org.nuxeo.segment.io.SegmentIOUserFilter;
 public class SegmentIOScriptResource extends ModuleRoot {
 
     protected static final Log log = LogFactory.getLog(SegmentIOScriptResource.class);
+
+    public static final String OPTED_OUT_CONDITION_PARAM = "optedOutCondition";
 
     @GET
     public Object anonymous() {
@@ -82,6 +87,13 @@ public class SegmentIOScriptResource extends ModuleRoot {
 
         Map<String, Object> ctx = new HashMap<String, Object>();
         ctx.put("writeKey", segmentIO.getWriteKey());
+        ctx.put("debugMode", segmentIO.isDebugMode());
+        // get opted out condition
+        String optedOutCondition = segmentIO.getGlobalParameters().get(OPTED_OUT_CONDITION_PARAM);
+        if(StringUtils.isBlank(optedOutCondition)){
+            optedOutCondition = "false";
+        }
+        ctx.put("optedOutCondition", optedOutCondition);
 
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getPrincipal();
 
