@@ -158,7 +158,7 @@
     <apache.httpcomponents.version>4.5.3</apache.httpcomponents.version>
     <apache.poi.version>3.17</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
-    <jxls.version>1.0.6</jxls.version>
+    <jxls.version>1.0.6-NX01</jxls.version>
     <xdocreport.version>1.0.5</xdocreport.version>
     <itext.version>2.1.7</itext.version>
     <jclouds.version>1.9.2</jclouds.version>
