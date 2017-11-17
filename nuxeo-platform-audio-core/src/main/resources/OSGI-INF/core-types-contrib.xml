@@ -2,6 +2,7 @@
 <component name="org.nuxeo.nuxeo.ecm.platform.audio.doctype">
 
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
+  <require>org.nuxeo.ecm.tags.schemas</require>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="audio" src="schema/audio.xsd" prefix="aud" />
@@ -21,6 +22,7 @@
       <facet name="Commentable" />
       <facet name="Versionable" />
       <facet name="Publishable" />
+      <facet name="NXTag" />
     </doctype>
 
     <doctype name="Workspace" append="true">
