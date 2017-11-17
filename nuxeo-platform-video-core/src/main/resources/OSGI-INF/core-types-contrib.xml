@@ -2,6 +2,7 @@
 <component name="org.nuxeo.nuxeo.ecm.platform.video.doctype">
 
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
+  <require>org.nuxeo.ecm.tags.schemas</require>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="video" src="schemas/video.xsd" prefix="vid" />
@@ -28,6 +29,7 @@
       <facet name="Video" />
       <facet name="HasStoryboard" />
       <facet name="HasVideoPreview" />
+      <facet name="NXTag" />
     </doctype>
 
     <doctype name="Workspace" append="true">
