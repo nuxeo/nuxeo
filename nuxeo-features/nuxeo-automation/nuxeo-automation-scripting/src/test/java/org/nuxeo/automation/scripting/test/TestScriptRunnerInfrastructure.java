@@ -648,4 +648,50 @@ public class TestScriptRunnerInfrastructure {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testDocumentProperty() throws OperationException {
+        DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
+        DocumentModel doc = session.createDocumentModel("/", "file", "FileWithDocumentFields");
+        doc.setPropertyValue("df:documentId", computeDocumentFieldRef(domain.getId()));
+        doc.setPropertyValue("df:documentPath", computeDocumentFieldRef(domain.getPathAsString()));
+        doc = session.createDocument(doc);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(doc);
+            List<DocumentModel> docs = (List<DocumentModel>) automationService.run(ctx,
+                    "Scripting.TestDocumentProperty");
+            assertEquals(2, docs.size());
+            assertEquals("/default-domain", docs.get(0).getPathAsString());
+            assertEquals("/default-domain", docs.get(1).getPathAsString());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void tesDocumentListProperty() throws OperationException {
+        DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
+        DocumentModel workspaces = session.getDocument(new PathRef("/default-domain/workspaces"));
+        DocumentModel doc = session.createDocumentModel("/", "file", "FileWithDocumentFields");
+        doc.setPropertyValue("df:documentIds", (Serializable) Arrays.asList(computeDocumentFieldRef(domain.getId()),
+                computeDocumentFieldRef(workspaces.getId())));
+        doc.setPropertyValue("df:documentPaths",
+                (Serializable) Arrays.asList(computeDocumentFieldRef(workspaces.getPathAsString()),
+                        computeDocumentFieldRef(domain.getPathAsString())));
+        doc = session.createDocument(doc);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(doc);
+            List<DocumentModel> docs = (List<DocumentModel>) automationService.run(ctx,
+                    "Scripting.TestDocumentListProperty");
+            assertEquals(4, docs.size());
+            assertEquals("/default-domain", docs.get(0).getPathAsString());
+            assertEquals("/default-domain/workspaces", docs.get(1).getPathAsString());
+            assertEquals("/default-domain/workspaces", docs.get(2).getPathAsString());
+            assertEquals("/default-domain", docs.get(3).getPathAsString());
+        }
+    }
+
+    protected String computeDocumentFieldRef(String value) {
+        return session.getRepositoryName() + ":" + value;
+    }
+
 }
