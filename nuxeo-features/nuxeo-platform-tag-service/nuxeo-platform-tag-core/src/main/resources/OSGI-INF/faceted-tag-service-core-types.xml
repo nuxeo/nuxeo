@@ -19,28 +19,12 @@
     <doctype name="Folder" append="true">
       <facet name="NXTag" />
     </doctype>
-    
-    <doctype name="Collection" append="true">
-      <facet name="NXTag" />
-    </doctype>
 
     <doctype name="File" append="true">
       <facet name="NXTag" />
     </doctype>
 
     <doctype name="Note" append="true">
-      <facet name="NXTag" />
-    </doctype>
-
-    <doctype name="Picture" append="true">
-      <facet name="NXTag" />
-    </doctype>
-
-    <doctype name="Video" append="true">
-      <facet name="NXTag" />
-    </doctype>
-
-    <doctype name="Sound" append="true">
       <facet name="NXTag" />
     </doctype>
 

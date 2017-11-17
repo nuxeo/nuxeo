@@ -59,7 +59,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.actions",
         "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core",
-        "org.nuxeo.ecm.platform.picture.convert" })
+        "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.platform.tag" })
 @LocalDeploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
 public class TestBlobHolderSet {
 

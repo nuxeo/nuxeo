@@ -51,7 +51,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.api",
-        "org.nuxeo.ecm.platform.picture.core" })
+        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.tag" })
 @LocalDeploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
 public class TestPictureImport {
 
