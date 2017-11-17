@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -188,14 +189,21 @@ public class TracerFactory implements TracerFactoryMBean {
     }
 
     public void onTrace(Trace trace) {
-        if (trace.error != null) {
-            trace.error.addSuppressed(new Throwable(print(trace)));
-        }
-        if (!recording) {
+        boolean containsError = trace.error != null;
+        if (!(recording || containsError)) {
             return;
         }
+
+        if (containsError) {
+            trace.error.addSuppressed(new Throwable(print(trace)));
+        }
         if (printableAssertor.apply(trace.chain.getId())) {
-            LogFactory.getLog(Trace.class).info(print(trace));
+            Log log = LogFactory.getLog(Trace.class);
+            if (containsError) {
+                log.warn(print(trace));
+            } else {
+                log.info(print(trace));
+            }
         }
         recordTrace(trace);
     }

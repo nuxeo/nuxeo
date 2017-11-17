@@ -23,23 +23,32 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.internal.util.reflection.Whitebox;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
+import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList;
 import org.nuxeo.ecm.automation.core.operations.traces.AutomationTraceToggleOperation;
@@ -186,6 +195,25 @@ public class CanTraceChainsTest {
             assertEquals("baz", ctx.get("baz"));
             assertEquals("bum", ctx.get("bum"));
         }
+    }
+
+    @Test
+    public void ensureTraceWithErrorIsPrinted() {
+        TracerFactory tracerFactory = new TracerFactory();
+        Trace mockedTrace = mock(Trace.class);
+
+        OperationType mockedOpeType = mock(OperationType.class);
+        when(mockedOpeType.getId()).thenReturn("fooid");
+        Whitebox.setInternalState(mockedTrace, "chain", mockedOpeType);
+
+        // Trigger onTrace once without any Error in the trace
+        tracerFactory.onTrace(mockedTrace);
+        verify(mockedTrace, times(0)).print(anyBoolean());
+
+        // Add an error related to the trace
+        Whitebox.setInternalState(mockedTrace, "error", new OperationException("foo"));
+        tracerFactory.onTrace(mockedTrace);
+        verify(mockedTrace, atLeastOnce()).print(anyBoolean());
     }
 
     @Test
