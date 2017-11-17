@@ -5,6 +5,7 @@
     point="schema">
     <schema name="dataset" src="schemas/dataset.xsd" prefix="ds" />
     <schema name="list" src="schemas/list.xsd" prefix="list" />
+    <schema name="documentfields" src="schemas/documentfields.xsd" prefix="df" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
@@ -18,6 +19,9 @@
       <schema name="list" />
     </doctype>
 
+    <doctype name="FileWithDocumentFields" extends="File">
+      <schema name="documentfields" />
+    </doctype>
 
   </extension>
 

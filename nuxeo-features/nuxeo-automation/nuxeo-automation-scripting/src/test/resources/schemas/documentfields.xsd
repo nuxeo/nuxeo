@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.nuxeo.org/ecm/schemas/documentfields"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/documentfields"
+  xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/">
+
+  <xs:element name="documentId">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="id"/>
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="documentPath">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="path"/>
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:complexType name="documentIdItems">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0"
+        name="documentId" type="xs:string">
+        <xs:simpleType>
+          <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="id"/>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="documentIds" type="nxs:documentIdItems" />
+
+  <xs:complexType name="documentPathItems">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="documentPath" type="xs:string">
+        <xs:simpleType>
+          <xs:restriction base="xs:string" ref:resolver="documentResolver" ref:store="path"/>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="documentPaths" type="nxs:documentPathItems" />
+</xs:schema>
