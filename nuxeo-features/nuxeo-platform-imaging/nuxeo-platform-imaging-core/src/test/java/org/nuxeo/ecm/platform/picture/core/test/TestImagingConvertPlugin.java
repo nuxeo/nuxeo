@@ -63,7 +63,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features({ AutomationFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core",
-        "org.nuxeo.ecm.platform.picture.convert" })
+        "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.platform.tag" })
 public class TestImagingConvertPlugin {
 
     @Inject

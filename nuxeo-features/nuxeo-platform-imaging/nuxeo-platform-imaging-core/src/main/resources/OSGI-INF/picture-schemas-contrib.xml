@@ -3,6 +3,7 @@
 
   <require>org.nuxeo.ecm.core.schema.TypeService</require>
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
+  <require>org.nuxeo.ecm.tags.schemas</require>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
              point="schema">
@@ -32,6 +33,7 @@
       <facet name="Publishable"/>
       <facet name="Commentable"/>
       <facet name="HasRelatedText"/>
+      <facet name="NXTag" />
     </doctype>
 
     <doctype name="Folder" append="true">
