@@ -567,6 +567,25 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.TestPropertiesAccessOnDocuments">
+      <inputType>documents</inputType>
+      <outputType>documents</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+          var creator = input[0]['dc:creator'];
+          if (creator !== 'system') {
+            throw new Error("input[0]['dc:creator'] should return system");
+          }
+          creator = input[1].getPropertyValue('dc:creator');
+          if (creator !== 'system') {
+            throw new Error("input[1].getPropertyValue('dc:creator') should return system");
+          }
+          return input;
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"
