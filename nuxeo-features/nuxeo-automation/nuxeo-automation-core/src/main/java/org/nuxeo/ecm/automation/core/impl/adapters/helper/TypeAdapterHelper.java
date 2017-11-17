@@ -31,38 +31,41 @@ import org.nuxeo.ecm.core.api.PathRef;
 
 /**
  * Helper for type adapters
- * 
+ *
  * @since 9.1
  */
 public class TypeAdapterHelper {
 
     /**
-     * Create document reference from its path
+     * Create document reference from an id or a path.
      *
-     * @param value the document path
      * @return the document reference
      */
     public static DocumentRef createDocumentRef(String value) {
-        return value.startsWith("/") ? new PathRef(value) : new IdRef(value);
+        if (value.startsWith("/")) {
+            return new PathRef(value);
+        }
+        // value could be of the form "repositoryName:docId|docPath" if so, remove the repositoryName
+        int index = value.indexOf(":");
+        return index != -1 ? createDocumentRef(value.substring(index + 1)) : new IdRef(value);
     }
 
     /**
-     * Create a document reference from its path
-     * 
-     * @param value the document path
+     * Create a document reference from an expression, an id or a path.
+     *
      * @return the document reference
      */
     public static Object createDocumentRefOrExpression(String value) {
         if (value.startsWith(".")) {
             return Scripting.newExpression("Document.resolvePathAsRef(\"" + value + "\")");
         } else {
-            return value.startsWith("/") ? new PathRef(value) : new IdRef(value);
+            return createDocumentRef(value);
         }
     }
 
     /**
      * Create a document reference from its path
-     * 
+     *
      * @param ctx the operation context
      * @param value the document path
      * @return the document reference
