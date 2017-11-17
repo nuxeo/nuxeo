@@ -42,8 +42,8 @@ Contributors:
 
       a {
         @apply --layout-horizontal;
-        @apply --layout-center);
-        @apply --layout-center-justified);
+        @apply --layout-center;
+        @apply --layout-center-justified;
         @apply --nuxeo-liveconnect-anchor-layout;
       }
     </style>
@@ -51,7 +51,7 @@ Contributors:
     <nuxeo-liveconnect-onedrive-provider id="provider" is-available="{{isProviderAvailable}}"></nuxeo-liveconnect-onedrive-provider>
     <template is="dom-if" if="[[isProviderAvailable]]">
       <a href="javascript:undefined" on-tap="_openPicker">
-        <iron-icon src="images/OneDrive.png"></iron-icon>
+        <iron-icon src="[[importPath]]images/OneDrive.png"></iron-icon>
         [[i18n('liveconnectImportActions.onedrive', 'OneDrive')]]
       </a>
     </template>

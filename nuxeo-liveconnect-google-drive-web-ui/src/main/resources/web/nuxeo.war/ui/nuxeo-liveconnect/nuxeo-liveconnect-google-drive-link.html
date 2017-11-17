@@ -29,8 +29,8 @@ Contributors:
     <style>
       :host {
         display: inline-block;
-        @apply(--layout-horizontal);
-        @apply(--nuxeo-liveconnect-link-layout);
+        @apply --layout-horizontal;
+        @apply --nuxeo-liveconnect-link-layout;
       }
 
       iron-icon {
@@ -51,7 +51,7 @@ Contributors:
     <nuxeo-liveconnect-google-drive-provider id="provider" is-available="{{isProviderAvailable}}"></nuxeo-liveconnect-google-drive-provider>
     <template is="dom-if" if="[[isProviderAvailable]]">
       <a href="javascript:undefined" on-tap="_openPicker">
-        <iron-icon src="images/google_drive.png"></iron-icon>
+        <iron-icon src="[[importPath]]images/google_drive.png"></iron-icon>
         [[i18n('liveconnectImportActions.googledrive', 'Google Drive')]]
       </a>
     </template>
