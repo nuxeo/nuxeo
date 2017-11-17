@@ -7,7 +7,7 @@ Integrate segment.io API with Nuxeo Event system
 
 The bundles provides a service that wraps the Analytics Java lib provided by segment.io
 
-    Framework.getLocalService(SegmentIO.class);
+    Framework.getService(SegmentIO.class);
 
 This Service gives access to the 2 main API entry points : `identify`and `track`.
 
@@ -116,7 +116,7 @@ Typically, this XML configuration
 Will result in this script
 
       <groovy>
-        mapping.put("plugin", );
+        mapping.put("plugin", eventContext.getProperty("AuthenticationPlugin"));
         mapping.put("company", principal.getCompany());
       </groovy>
 
@@ -163,11 +163,11 @@ This script will :
 
 If you want to call the `identify` API, you can directly call
 
-    identifyIfNeeded(login, email)
+    identifyIfNeeded(login, email, traits)
 
 A typical call in the context of a WebEngine page would be :
 
-    identifyIfNeeded('${Context.principal.name}', '${Context.principal.email}');
+    identifyIfNeeded('${Context.principal.name}', '${Context.principal.email}', {company: ${Context.principal.company}});
 
 NB : this script is served as anonymous.
 
@@ -183,6 +183,85 @@ Typically :
 
 NB : this script is served for authenticated users.
 
+### Configuration
+
+Some client and/or server side configuration parameters are available through the `config`, `integrations` and`filters` extension points.
+
+#### config
+
+This extension point will allow you to define your segmentIO write key :
+
+	<extension target="org.nuxeo.segment.io.SegmentIOComponent"
+		point="config">
+		<segmentio>
+			<writeKey>TestKey</writeKey>
+		</segmentio>
+	</extension>
+
+NB : There is a default debug key that will prevent actual server calls on development servers => `FakeKey_ChangeMe`
+
+You can also define some custom global parameters to use anywhere in your code by calling `Framework.getService(SegmentIO.class).getGlobalParameters()`, it will return a `Map<String,String>` :
+
+	<extension target="org.nuxeo.segment.io.SegmentIOComponent"
+		point="config">
+		<segmentio>
+			<parameters>
+				<patameter name="myParamKey">MyParamValue</parameter>
+			</parameters>
+		</segmentio>
+	</extension>
+	
+Some of these parameters are used by the Service to do special things :
+
+##### MARKETO_SECRET parameter
+
+	<patameter name="MARKETO_SECRET">XXXX</parameter>
+	
+Will allow you to call the `marketo/{email}` endpoint to retrieve the Marketo Lead Hash corresponding to the passed email (see http://developers.marketo.com/javascript-api/lead-tracking/api-reference/#associateLead for detailed usage)
+
+##### optedOutCondition parameter
+
+	<patameter name="optedOutCondition">typeof myCookieManager !== 'undefined' && myCookieManager.isUserOptedOut()</parameter>
+
+Will allow you to check a JS condition before loading client side analytics scripts. This is useful to manage legal cookie policy in some countries.
+
+#### filter
+
+This extension point will allow you to filter the logins that will actually identify when calling the <i>identify</i> method (server side) or the  <i>identifyIfNeeded</i> method (client side).
+
+You can enable or disable the identification of your Nuxeo Anonymous user (default value is false) :
+
+	<extension target="org.nuxeo.segment.io.SegmentIOComponent"
+		point="filters">
+		<userFilter>
+			<enableAnonymous>true</enableAnonymous>
+		</userFilter>
+	</extension>
+
+And define a custom list of blacklisted users :
+
+	<extension target="org.nuxeo.segment.io.SegmentIOComponent"
+		point="filters">
+		<userFilter>
+			<blackListedUser>testUser1</blackListedUser>
+			<blackListedUser>testUser2</blackListedUser>
+		</userFilter>
+	</extension>
+
+#### integrations
+
+This extension point allow you to control the segmentIO integrations to enable for each `identify` or `track` call :
+
+	<extension target="org.nuxeo.segment.io.SegmentIOComponent"
+		point="integrations">
+		<integrationsConfig>
+			<integrations>
+				<integration name="Marketo">true</integration>
+			</integrations>
+		</integrationsConfig>
+	</extension>
+
+NB: by default, all integrations are enabled. If only one is enabled, it will disable the others.
 
 ## QA results
 
