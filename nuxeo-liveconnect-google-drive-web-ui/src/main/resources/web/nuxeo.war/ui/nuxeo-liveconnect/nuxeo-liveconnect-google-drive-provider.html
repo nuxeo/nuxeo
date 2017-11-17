@@ -107,9 +107,9 @@ Contributors:
 
       _handleAuthResult: function(token) {
         if (token) {
-          this.$.xhr.send({url:'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token= ' + token})
-              .then(function(info) {
-                this.userId = info.email;
+          this.$.xhr.send({url:'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token= ' + token, handleAs: 'json'})
+              .then(function() {
+                this.userId = this.$.xhr.response.email;
                 this._showPicker(token);
               }.bind(this));
         } else {
