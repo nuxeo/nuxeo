@@ -199,7 +199,10 @@ public class OperationChainCompiler {
                         ctx.setRollback();
                     }
                     return ctx.getInput();
-                } finally {
+                } catch (OperationException op) {
+                    throw ctx.getCallback().onError(op);
+                }
+                finally {
                     ctx.getCallback().onChainExit();
                 }
             } finally {
