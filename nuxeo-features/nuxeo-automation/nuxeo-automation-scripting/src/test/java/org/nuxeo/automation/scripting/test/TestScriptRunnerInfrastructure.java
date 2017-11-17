@@ -570,8 +570,7 @@ public class TestScriptRunnerInfrastructure {
     public void testDocumentPathInputAdaptedAsDocument() throws OperationException {
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput("/default-domain");
-            DocumentModel doc = (DocumentModel) automationService.run(ctx,
-                    "Scripting.TestInputAdaptedAsDocument");
+            DocumentModel doc = (DocumentModel) automationService.run(ctx, "Scripting.TestInputAdaptedAsDocument");
             assertTrue(doc.getPathAsString().equals("/default-domain"));
         }
     }
@@ -633,6 +632,19 @@ public class TestScriptRunnerInfrastructure {
             Map<String, Serializable> complexItem = (Map<String, Serializable>) res.getPropertyValue("list:complexItem");
             assertEquals("foo", complexItem.get("name"));
             assertEquals("bar", complexItem.get("description"));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testPropertiesAccessOnDocuments() throws OperationException {
+        DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
+        DocumentModel workspaces = session.getDocument(new PathRef("/default-domain/workspaces"));
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(Arrays.asList(domain, workspaces));
+            List<DocumentModel> docs = (List<DocumentModel>) automationService.run(ctx,
+                    "Scripting.TestPropertiesAccessOnDocuments");
+            assertEquals(2, docs.size());
         }
     }
 
