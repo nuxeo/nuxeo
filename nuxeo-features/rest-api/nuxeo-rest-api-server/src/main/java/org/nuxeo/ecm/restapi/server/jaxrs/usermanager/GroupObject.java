@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -61,7 +62,9 @@ public class GroupObject extends AbstractUMObject<NuxeoGroup> {
 
         DocumentModel model = updateGroup.getModel();
         if (model != null) {
-            groupModel.copyContent(model);
+            String groupSchemaName = um.getGroupSchemaName();
+            model.getPropertyObjects(groupSchemaName).stream().filter(Property::isDirty).forEach(
+                    (property) -> groupModel.setProperty(groupSchemaName, property.getName(), property.getValue()));
         }
 
         // make sure to override group properties for compat

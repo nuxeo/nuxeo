@@ -90,15 +90,22 @@ public class NuxeoGroupJsonReader extends EntityJsonReader<NuxeoGroup> {
         if (group == null) {
             group = new NuxeoGroupImpl(id);
         }
-        String label = getStringField(jn, "grouplabel");
-        group.setLabel(label);
-        List<String> users = getArrayStringValues(jn.get("memberUsers"));
-        group.setMemberUsers(users);
-        List<String> groups = getArrayStringValues(jn.get("memberGroups"));
-        group.setMemberGroups(groups);
-
-        List<String> parentGroups = getArrayStringValues(jn.get("parentGroups"));
-        group.setParentGroups(parentGroups);
+        if (jn.has("grouplabel")) {
+            String label = getStringField(jn, "grouplabel");
+            group.setLabel(label);
+        }
+        if (jn.has("memberUsers")) {
+            List<String> users = getArrayStringValues(jn.get("memberUsers"));
+            group.setMemberUsers(users);
+        }
+        if (jn.has("memberGroups")) {
+            List<String> groups = getArrayStringValues(jn.get("memberGroups"));
+            group.setMemberGroups(groups);
+        }
+        if (jn.has("parentGroups")) {
+            List<String> parentGroups = getArrayStringValues(jn.get("parentGroups"));
+            group.setParentGroups(parentGroups);
+        }
 
         readProperties(group, jn);
 

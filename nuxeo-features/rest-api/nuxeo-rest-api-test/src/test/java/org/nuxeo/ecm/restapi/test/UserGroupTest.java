@@ -202,8 +202,7 @@ public class UserGroupTest extends BaseUserTest {
         queryParams.putSingle(FETCH_PROPERTIES + "." + NuxeoGroupJsonWriter.ENTITY_TYPE,
                 "memberUsers,memberGroups,parentGroups");
         try {
-            ClientResponse response = getResponse(RequestType.GET, "/group/" + groupId,
-                    queryParams);
+            ClientResponse response = getResponse(RequestType.GET, "/group/" + groupId, queryParams);
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(7, node.size());
@@ -244,6 +243,67 @@ public class UserGroupTest extends BaseUserTest {
         assertEquals("updated description", group.getModel().getProperty(groupSchema, "description"));
         assertEquals(2, group.getMemberUsers().size());
         assertEquals(1, group.getMemberGroups().size());
+    }
+
+    /**
+     * @since 9.3
+     */
+    @Test
+    public void itCanChangeAGroupWithMissingProperties() throws Exception {
+        // Given a group with properties, members, subgroups and parent groups
+        DocumentModel groupModel = um.getGroupModel("group1");
+        String groupSchemaName = um.getGroupSchemaName();
+        groupModel.setProperty(groupSchemaName, "description", "Initial description");
+        groupModel.setProperty(groupSchemaName, "members", Arrays.asList(new String[] { "user1", "user2" }));
+        groupModel.setProperty(groupSchemaName, "subGroups", Arrays.asList(new String[] { "group2" }));
+        groupModel.setProperty(groupSchemaName, "parentGroups", Arrays.asList(new String[] { "group3" }));
+        um.updateGroup(groupModel);
+        nextTransaction();
+
+        // When I PUT this group including the properties field but omitting the grouplabel, memberUsers, memberGroups
+        // and parentGroups fields in the JSON object
+        StringBuilder groupAsJSON = new StringBuilder();
+        groupAsJSON.append("{");
+        groupAsJSON.append("  \"entity-type\": \"group\",");
+        groupAsJSON.append("  \"groupname\": \"group1\",");
+        groupAsJSON.append("  \"properties\": {");
+        groupAsJSON.append("    \"description\": \"Updated description\"");
+        groupAsJSON.append("  }");
+        groupAsJSON.append("}");
+        ClientResponse response = getResponse(RequestType.PUT, "/group/group1", groupAsJSON.toString());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Then the group properties are updated server side and the label, members, subgroups and parent groups are
+        // unchanged
+        nextTransaction(); // see committed changes
+        NuxeoGroup group = um.getGroup("group1");
+        assertEquals("Updated description", group.getModel().getProperty(groupSchemaName, "description"));
+        assertEquals("Lannister", group.getLabel());
+        assertEquals(2, group.getMemberUsers().size());
+        assertEquals(1, group.getMemberGroups().size());
+        assertEquals(1, group.getParentGroups().size());
+
+        // When I PUT this group including the grouplabel and memberUsers fields but omitting the properties field in
+        // the JSON object
+        groupAsJSON = new StringBuilder();
+        groupAsJSON.append("{");
+        groupAsJSON.append("  \"entity-type\": \"group\",");
+        groupAsJSON.append("  \"groupname\": \"group1\",");
+        groupAsJSON.append("  \"grouplabel\": \"Stark\",");
+        groupAsJSON.append("  \"memberUsers\": [\"user1\", \"user2\", \"user3\"]");
+        groupAsJSON.append("}");
+        response = getResponse(RequestType.PUT, "/group/group1", groupAsJSON.toString());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Then the label and group members are updated server side and the properties, subgroups and parent groups are
+        // unchanged
+        nextTransaction(); // see committed changes
+        group = um.getGroup("group1");
+        assertEquals("Stark", group.getLabel());
+        assertEquals(3, group.getMemberUsers().size());
+        assertEquals("Updated description", group.getModel().getProperty(groupSchemaName, "description"));
+        assertEquals(1, group.getMemberGroups().size());
+        assertEquals(1, group.getParentGroups().size());
     }
 
     @Test
