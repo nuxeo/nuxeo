@@ -52,7 +52,7 @@ import static org.junit.Assert.assertTrue;
 @Features({ CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.video.convert",
-        "org.nuxeo.ecm.platform.picture.core" })
+        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.tag" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.video.core:OSGI-INF/core-types-contrib.xml",
         "org.nuxeo.ecm.platform.video.core:OSGI-INF/video-tools-commandlines-contrib.xml",
         "org.nuxeo.ecm.platform.video.core:OSGI-INF/video-tools-operations-contrib.xml",

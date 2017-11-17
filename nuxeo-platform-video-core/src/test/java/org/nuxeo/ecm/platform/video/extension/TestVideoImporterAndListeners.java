@@ -82,7 +82,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
         "org.nuxeo.ecm.platform.video.core", //
         "org.nuxeo.ecm.platform.filemanager.api", //
         "org.nuxeo.ecm.platform.filemanager.core", //
-})
+        "org.nuxeo.ecm.platform.tag" })
 public class TestVideoImporterAndListeners {
 
     // http://www.elephantsdream.org/
