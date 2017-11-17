@@ -56,7 +56,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.convert",
-        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.commandline.executor" })
+        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.platform.tag" })
 public class TestPictureMigrationHandler {
 
     @Inject

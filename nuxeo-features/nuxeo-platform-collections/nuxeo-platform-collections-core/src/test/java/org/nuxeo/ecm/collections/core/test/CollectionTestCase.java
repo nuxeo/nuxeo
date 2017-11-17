@@ -47,7 +47,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(PlatformFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.collections.core",
         "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.platform.web.common" })
+        "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.platform.tag" })
 public class CollectionTestCase {
 
     @Inject
