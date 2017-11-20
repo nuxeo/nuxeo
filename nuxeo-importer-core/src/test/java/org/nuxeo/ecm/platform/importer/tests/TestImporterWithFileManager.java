@@ -52,7 +52,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
     "org.nuxeo.ecm.platform.types.core",
     "org.nuxeo.ecm.platform.video.core",
     "org.nuxeo.ecm.platform.audio.core",
-    "org.nuxeo.ecm.platform.picture.core"
+    "org.nuxeo.ecm.platform.picture.core",
+    "org.nuxeo.ecm.platform.tag"
 })
 @LocalDeploy({
     "org.nuxeo.ecm.platform.importer.core.test:test-importer-with-filemanager-contrib.xml"
