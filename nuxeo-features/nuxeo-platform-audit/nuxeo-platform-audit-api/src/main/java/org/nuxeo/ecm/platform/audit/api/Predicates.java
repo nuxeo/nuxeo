@@ -68,6 +68,10 @@ public class Predicates {
         return createPredicate(name, Operator.IN, Stream.concat(Stream.of(value), Stream.of(values)));
     }
 
+    public static Predicate in(String name, Object[] values) {
+        return createPredicate(name, Operator.IN, Stream.of(values));
+    }
+
     private static Predicate createPredicate(String name, Operator operator, Object value) {
         return new Predicate(new Reference(name), operator, Literals.toLiteral(value));
     }

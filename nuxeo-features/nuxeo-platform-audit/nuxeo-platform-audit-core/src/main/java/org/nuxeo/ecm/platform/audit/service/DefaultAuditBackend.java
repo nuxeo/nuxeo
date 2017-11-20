@@ -333,9 +333,9 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
     }
 
     @Override
-    public long getLatestLogId(String repositoryId, String... eventId) {
-        Map<String, Object> params = getParams(eventId);
-        String paramNames = getParamNames(eventId);
+    public long getLatestLogId(String repositoryId, String... eventIds) {
+        Map<String, Object> params = getParams(eventIds);
+        String paramNames = getParamNames(eventIds);
         params.put("repoId", repositoryId);
         String query = String.format("FROM LogEntry log" //
                 + " WHERE log.eventId IN (%s)" //
@@ -348,9 +348,9 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
     }
 
     @Override
-    public List<LogEntry> getLogEntriesAfter(long logIdOffset, int limit, String repositoryId, String... eventId) {
-        Map<String, Object> params = getParams(eventId);
-        String paramNames = getParamNames(eventId);
+    public List<LogEntry> getLogEntriesAfter(long logIdOffset, int limit, String repositoryId, String... eventIds) {
+        Map<String, Object> params = getParams(eventIds);
+        String paramNames = getParamNames(eventIds);
         params.put("repoId", repositoryId);
         params.put("minId", logIdOffset);
         String query = String.format("FROM LogEntry log" //

@@ -24,6 +24,8 @@ import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_PATH;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -42,8 +44,6 @@ import java.util.stream.Collectors;
 
 import javax.el.ELException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,6 +75,7 @@ import org.nuxeo.ecm.platform.audit.api.AuditStorage;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.api.OrderByExprs;
 import org.nuxeo.ecm.platform.audit.api.Predicates;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
@@ -82,6 +83,9 @@ import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Abstract class to share code between {@link AuditBackend} implementations
@@ -471,6 +475,27 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
             builder.addAndPredicate(Predicates.lt(LOG_EVENT_DATE, limit));
         }
         builder.offset(pageNb * pageSize).limit(pageSize);
+        return queryLogs(builder);
+    }
+
+    @Override
+    public long getLatestLogId(String repositoryId, String... eventIds) {
+        AuditQueryBuilder builder = new AuditQueryBuilder().addAndPredicate(
+                Predicates.eq(LOG_REPOSITORY_ID, repositoryId))
+                                                           .addAndPredicate(Predicates.in(LOG_EVENT_ID, eventIds))
+                                                           .order(OrderByExprs.desc(LOG_ID))
+                                                           .limit(1);
+        return queryLogs(builder).stream().map(LogEntry::getId).findFirst().orElse(0L).longValue();
+    }
+
+    @Override
+    public List<LogEntry> getLogEntriesAfter(long logIdOffset, int limit, String repositoryId, String... eventIds) {
+        AuditQueryBuilder builder = new AuditQueryBuilder().addAndPredicate(
+                Predicates.eq(LOG_REPOSITORY_ID, repositoryId))
+                                                           .addAndPredicate(Predicates.in(LOG_EVENT_ID, eventIds))
+                                                           .addAndPredicate(Predicates.gte(LOG_ID, logIdOffset))
+                                                           .order(OrderByExprs.asc(LOG_ID))
+                                                           .limit(limit);
         return queryLogs(builder);
     }
 

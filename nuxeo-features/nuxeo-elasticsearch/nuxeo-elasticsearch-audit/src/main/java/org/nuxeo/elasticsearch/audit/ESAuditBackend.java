@@ -33,9 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -99,6 +96,10 @@ import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Implementation of the {@link AuditBackend} interface using Elasticsearch persistence
@@ -717,50 +718,4 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         return esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
     }
 
-    @Override
-    public long getLatestLogId(String repositoryId, String... eventId) {
-        long id = 0;
-        SearchRequest request = createSearchRequest();
-        BoolQueryBuilder query = QueryBuilders.boolQuery()
-                .must(QueryBuilders.matchAllQuery())
-                .filter(QueryBuilders.termQuery("repositoryId", repositoryId))
-                .filter(QueryBuilders.termsQuery("eventId", eventId));
-
-        request.source(new SearchSourceBuilder().query(query).size(1).sort("id", SortOrder.DESC));
-        // TODO refactor this to use max clause
-        SearchResponse response = esClient.search(request);
-        SearchHit[] hits = response.getHits().getHits();
-        if (hits.length > 0) {
-            String hit = hits[0].getSourceAsString();
-            try {
-                id = new ObjectMapper().readValue(hit, LogEntryImpl.class).getId();
-            } catch (IOException e) {
-                throw new IllegalStateException("Failed to parse audit entry: " + hit, e);
-            }
-        }
-        return id;
-    }
-
-    @Override
-    public List<LogEntry> getLogEntriesAfter(long logIdOffset, int limit, String repositoryId, String... eventId) {
-        SearchRequest request = createSearchRequest();
-        BoolQueryBuilder query = QueryBuilders.boolQuery()
-                .must(QueryBuilders.matchAllQuery())
-                .filter(QueryBuilders.termQuery("repositoryId", repositoryId))
-                .filter(QueryBuilders.termsQuery("eventId", eventId))
-                .filter(QueryBuilders.rangeQuery("id").gte(logIdOffset));
-        request.source(new SearchSourceBuilder().query(query).size(limit).sort("id", SortOrder.ASC));
-        SearchResponse response = esClient.search(request);
-        SearchHit[] hits = response.getHits().getHits();
-        List<LogEntry> ret = new ArrayList<>(hits.length);
-        ObjectMapper mapper = new ObjectMapper();
-        for (SearchHit hit : response.getHits()) {
-            try {
-                ret.add(mapper.readValue(hit.getSourceAsString(), LogEntryImpl.class));
-            } catch (IOException e) {
-                throw new IllegalStateException("Failed to parse audit entry: " + hit, e);
-            }
-        }
-        return ret;
-    }
 }

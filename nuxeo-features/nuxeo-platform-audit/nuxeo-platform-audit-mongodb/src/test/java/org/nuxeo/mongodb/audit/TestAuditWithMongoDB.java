@@ -182,4 +182,55 @@ public class TestAuditWithMongoDB {
 
     }
 
+    @Test
+    public void testGetLatestLogId() throws Exception {
+        String repositoryId = "test";
+        AuditReader reader = Framework.getLocalService(AuditReader.class);
+
+        LogEntryGen.generate("mydoc", "documentModified", "cat", 1);
+        long id1 = reader.getLatestLogId(repositoryId, "documentModified0");
+        Assert.assertTrue("id: " + id1, id1 > 0);
+
+        LogEntryGen.generate("mydoc", "documentCreated", "cat", 1);
+        long id2 = reader.getLatestLogId(repositoryId, "documentModified0", "documentCreated0");
+        Assert.assertTrue("id2: " + id2, id2 > 0);
+        Assert.assertTrue(id2 > id1);
+
+        long id = reader.getLatestLogId(repositoryId, "documentModified0");
+        Assert.assertEquals(id1, id);
+        id = reader.getLatestLogId(repositoryId, "unknown");
+        Assert.assertEquals(0, id);
+    }
+
+
+    @Test
+    public void testGetLogEntriesAfter() throws Exception {
+        String repositoryId = "test";
+        AuditReader reader = Framework.getLocalService(AuditReader.class);
+
+        LogEntryGen.generate("mydoc", "documentModified", "cat", 1);
+        long id1 = reader.getLatestLogId(repositoryId, "documentModified0");
+
+        LogEntryGen.generate("mydoc", "documentModified", "cat", 1);
+        long id2 = reader.getLatestLogId(repositoryId, "documentModified0");
+        Assert.assertTrue(id2 > id1);
+
+        LogEntryGen.generate("mydoc", "documentModified", "cat", 1);
+        long id3 = reader.getLatestLogId(repositoryId, "documentModified0");
+        Assert.assertTrue(id3 > id2);
+
+        LogEntryGen.generate("mydoc", "documentModified", "cat", 1);
+        long id4 = reader.getLatestLogId(repositoryId, "documentModified0");
+        Assert.assertTrue(id4 > id3);
+
+        List<LogEntry> entries = reader.getLogEntriesAfter(id1, 5, repositoryId, "documentCreated0", "documentModified0");
+        Assert.assertEquals(4, entries.size());
+        Assert.assertEquals(id1, entries.get(0).getId());
+
+        entries = reader.getLogEntriesAfter(id2, 2, repositoryId, "documentCreated0", "documentModified0");
+        Assert.assertEquals(2, entries.size());
+        Assert.assertEquals(id2, entries.get(0).getId());
+        Assert.assertEquals(id3, entries.get(1).getId());
+    }
+
 }
