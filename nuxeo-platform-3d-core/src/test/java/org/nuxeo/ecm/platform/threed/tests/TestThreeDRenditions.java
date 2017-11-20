@@ -74,7 +74,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.actions",
         "org.nuxeo.ecm.platform.rendition.api", "org.nuxeo.ecm.platform.rendition.core",
-        "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core" })
+        "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.tag" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.threed.api", "org.nuxeo.ecm.platform.threed.core",
         "org.nuxeo.ecm.platform.threed.convert" })
 public class TestThreeDRenditions {
