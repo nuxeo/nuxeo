@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.drive.auth">
 
- <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="startURL">
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="startURL">
 
-  <startURLPattern>
-    <patterns>
-      <pattern>drive_login.jsp</pattern>
-    </patterns>
-  </startURLPattern>
+    <startURLPattern>
+      <patterns>
+        <pattern>drive_login.jsp</pattern>
+      </patterns>
+    </startURLPattern>
 
- </extension>
+  </extension>
 
 </component>
