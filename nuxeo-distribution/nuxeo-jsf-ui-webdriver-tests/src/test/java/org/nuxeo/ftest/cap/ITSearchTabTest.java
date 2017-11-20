@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Assert;
@@ -119,7 +120,7 @@ public class ITSearchTabTest extends AbstractTest {
     @After
     public void after() throws UserNotConnectedException {
         RestHelper.cleanupUsers();
-
+        RestHelper.cleanupGroups();
         try {
             // test aggregate on deleted user, on user workspace
             DocumentBasePage documentBasePage = login();
@@ -352,6 +353,42 @@ public class ITSearchTabTest extends AbstractTest {
 
         deleteSavedSearches(asPage(SearchPage.class));
         logout();
+    }
+
+    /**
+     * Non-regression test for NXP-22784 use case.
+     */
+    @Test
+    public void testSearchWithUpdatedPermissionsOnRootDocument() throws UserNotConnectedException {
+
+        String testuser = "testuser";
+        String testpassword = "testpassword";
+        String testgroup = "testgroup";
+
+        RestHelper.createUser(testuser, testuser);
+        RestHelper.createGroup(testgroup, testgroup, new String[] { testuser }, null);
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, "permissions", null);
+        RestHelper.createDocument(WORKSPACES_PATH + "permissions", "File", "test", null);
+        RestHelper.addPermission("/", testgroup, SecurityConstants.EVERYTHING);
+
+        DocumentBasePage documentBasePage = login();
+        SearchPage searchPage = documentBasePage.goToSearchPage();
+        DefaultSearchSubPage searchLayoutSubPage = searchPage.getDefaultSearch();
+        SearchResultsSubPage resultPanelSubPage = searchPage.getSearchResultsSubPage();
+        searchLayoutSubPage.selectPath("/Domain/Workspaces/permissions");
+        searchLayoutSubPage.filter();
+        assertEquals(1, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
+        logout();
+
+        searchPage = login(testuser, testuser).goToSearchPage();
+        resultPanelSubPage = searchPage.getSearchResultsSubPage();
+        searchLayoutSubPage = searchPage.getDefaultSearch();
+        searchLayoutSubPage.selectPath("/Domain/Workspaces/permissions");
+        searchLayoutSubPage.filter();
+        assertEquals(1, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
+        logout();
+
+        RestHelper.removePermissions("/", testgroup);
     }
 
 }
