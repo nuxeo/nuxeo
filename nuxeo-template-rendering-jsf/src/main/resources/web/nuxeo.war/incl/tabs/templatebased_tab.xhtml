@@ -21,15 +21,14 @@
     <tr>
       <td>
        <nxu:graphicImage
-        value="#{nxd:iconPath(template.adaptedDoc)}" alt="#{template.name}" title="#{template.name}"
+        value="#{nxd:iconPath(template.adaptedDoc)}" alt="#{template.title}" title="#{template.title}"
         rendered="#{!empty nxd:iconPath(template.adaptedDoc)}"
         styleClass="smallIcon" />
 
           <nxd:restDocumentLink document="#{template.adaptedDoc}">
-            #{template.name}
+            #{template.title}
           </nxd:restDocumentLink>
           <h:outputText value="&#160;" />
-
       </td>
 
          <c:if test="#{template.name == templateBasedActions.getEditableTemplateName()}">
