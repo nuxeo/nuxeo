@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_CATEGORY;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_PATH;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -156,7 +157,7 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
         // create MongoDB order
         List<Bson> orderList = new ArrayList<>(orders.size());
         for (OrderByExpr order : orders) {
-            String name = order.reference.name;
+            String name = getMongoDBKey(order.reference.name);
             if (order.isDescending) {
                 orderList.add(Sorts.descending(name));
             } else {
@@ -176,6 +177,7 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
     protected Bson createFilter(List<Predicate> predicates) {
         // current implementation only use Predicate/OrderByExpr with a simple Reference for left and right
         Function<Operand, String> getFieldName = operand -> ((Reference) operand).name;
+        getFieldName = getFieldName.andThen(this::getMongoDBKey);
 
         List<Bson> filterList = new ArrayList<>(predicates.size());
         for (Predicate predicate : predicates) {
@@ -199,6 +201,13 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
             }
         }
         return Filters.and(filterList);
+    }
+
+    protected String getMongoDBKey(String key) {
+        if (LOG_ID.equals(key)) {
+            return MongoDBSerializationHelper.MONGODB_ID;
+        }
+        return key;
     }
 
     @Override

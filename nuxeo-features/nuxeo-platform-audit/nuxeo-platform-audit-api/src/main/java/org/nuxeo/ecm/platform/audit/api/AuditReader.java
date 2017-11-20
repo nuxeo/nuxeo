@@ -203,17 +203,13 @@ public interface AuditReader {
      *
      * @since 9.3
      */
-    default long getLatestLogId(String repositoryId, String... eventId) {
-        throw new UnsupportedOperationException("getLatestLogId is not yet implemented in this audit backend");
-    }
+    long getLatestLogId(String repositoryId, String... eventIds);
 
     /**
      * Returns up to limit log entries matching events and repository with log id greater or equal to logIdOffset.
      *
      * @since 9.3
      */
-    default List<LogEntry> getLogEntriesAfter(long logIdOffset, int limit, String repositoryId, String... eventId) {
-        throw new UnsupportedOperationException("getLogEntriesAfter is not yet implemented in this audit backend");
-    }
+    List<LogEntry> getLogEntriesAfter(long logIdOffset, int limit, String repositoryId, String... eventIds);
 
 }
