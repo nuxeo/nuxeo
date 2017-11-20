@@ -121,14 +121,13 @@ public class StreamWorkManager extends WorkManagerImpl {
             return;
         }
         WorkSchedulePath.newInstance(work);
-        // TODO: may be choose a key with a transaction id so all jobs from the same tx are ordered ?
-        String key = work.getId();
         LogAppender<Record> appender = logManager.getAppender(getStreamForCategory(work.getCategory()));
         if (appender == null) {
             log.error(String.format("Not scheduled work, unknown category: %s, mapped to %s", work.getCategory(),
                     getStreamForCategory(work.getCategory())));
             return;
         }
+        String key = work.getPartitionKey();
         appender.append(key, new Record(key, WorkComputation.serialize(work),
                 Watermark.ofTimestamp(System.currentTimeMillis()).getValue(), null));
     }

@@ -27,6 +27,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -40,12 +41,16 @@ import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 
 /**
- * A Stream computation that consume works.
+ * A Stream computation that consumes works.
  *
  * @since 9.3
  */
 public class WorkComputation extends AbstractComputation {
     private static final Log log = LogFactory.getLog(WorkComputation.class);
+
+    protected static final int IDS_SIZE = 50;
+
+    protected static final CircularFifoBuffer workIds = new CircularFifoBuffer(IDS_SIZE);
 
     protected final Timer workTimer;
 
@@ -59,7 +64,12 @@ public class WorkComputation extends AbstractComputation {
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
         Work work = deserialize(record.data);
         try {
-            new WorkHolder(work).run();
+            if (workIds.contains(work.getId())) {
+                log.warn("Duplicate work id: " + work.getId() + " skipping");
+            } else {
+                new WorkHolder(work).run();
+                workIds.add(work.getId());
+            }
         } catch (Exception e) {
             // TODO: check what to catch exactly we don't want to kill the computation on error
             log.warn("Work failure, marked as completed: " + record);

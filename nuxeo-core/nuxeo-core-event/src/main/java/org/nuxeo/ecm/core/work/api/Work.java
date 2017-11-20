@@ -375,4 +375,14 @@ public interface Work extends Serializable {
      */
     void setSchedulePath(WorkSchedulePath path);
 
+    /**
+     * Returns a key that can be used by the WorkManager implementation to guarantee that works with the same partition
+     * key will be executed in the order they are submitted.
+     *
+     * @since 9.3
+     */
+    default String getPartitionKey() {
+        return getId();
+    }
+
 }
