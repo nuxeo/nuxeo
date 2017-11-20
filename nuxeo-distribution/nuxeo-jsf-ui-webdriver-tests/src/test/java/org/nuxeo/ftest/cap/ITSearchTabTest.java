@@ -20,6 +20,9 @@ package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
 import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
 import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
 import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
@@ -36,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Assert;
@@ -118,7 +122,7 @@ public class ITSearchTabTest extends AbstractTest {
     @After
     public void after() throws UserNotConnectedException {
         RestHelper.cleanupUsers();
-
+        RestHelper.cleanupGroups();
         try {
             // test aggregate on deleted user, on user workspace
             DocumentBasePage documentBasePage = login();
@@ -350,6 +354,40 @@ public class ITSearchTabTest extends AbstractTest {
         assertEquals(3, resultSubPage1.getNumberOfDocumentInCurrentPage());
 
         deleteSavedSearches(asPage(SearchPage.class));
+        logout();
+    }
+
+    /**
+     * Non-regression test for NXP-22784 use case.
+     */
+    @Test
+    public void testSearchWithUpdatedPermissionsOnRootDocument() throws UserNotConnectedException {
+
+        String testuser = "testuser";
+        String testpassword = "testpassword";
+        String testgroup = "testgroup";
+
+        RestHelper.createUser(testuser, testuser);
+        RestHelper.createGroup(testgroup, testgroup, new String[] { testuser }, null);
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, "permissions");
+        RestHelper.createDocument(WORKSPACES_PATH + "permissions", FILE_TYPE, "test");
+        RestHelper.addPermission("/", testgroup, SecurityConstants.EVERYTHING);
+
+        DocumentBasePage documentBasePage = login();
+        SearchPage searchPage = documentBasePage.goToSearchPage();
+        DefaultSearchSubPage searchLayoutSubPage = searchPage.getDefaultSearch();
+        SearchResultsSubPage resultPanelSubPage = searchPage.getSearchResultsSubPage();
+        searchLayoutSubPage.selectPath("/Domain/Workspaces/permissions");
+        searchLayoutSubPage.filter();
+        assertEquals(1, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
+        logout();
+
+        searchPage = login(testuser, testuser).goToSearchPage();
+        resultPanelSubPage = searchPage.getSearchResultsSubPage();
+        searchLayoutSubPage = searchPage.getDefaultSearch();
+        searchLayoutSubPage.selectPath("/Domain/Workspaces/permissions");
+        searchLayoutSubPage.filter();
+        assertEquals(1, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
         logout();
     }
 
