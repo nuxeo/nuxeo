@@ -178,7 +178,8 @@ public class TestDefaultFileSystemItemFactory {
 
         // FolderishFile: doc type with the "file" schema and the "Folderish"
         // facet
-        folderishFile = session.createDocumentModel(syncRootFolder.getPathAsString(), "aFolderishFile", "FolderishFile");
+        folderishFile = session.createDocumentModel(syncRootFolder.getPathAsString(), "aFolderishFile",
+                "FolderishFile");
         folderishFile.setPropertyValue("dc:title", "Sarah's folderish file");
         folderishFile = session.createDocument(folderishFile);
 
@@ -191,7 +192,8 @@ public class TestDefaultFileSystemItemFactory {
         session.save();
 
         // Get default file system item factory
-        defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
+        defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                "defaultFileSystemItemFactory");
         assertTrue(defaultFileSystemItemFactory instanceof VersioningFileSystemItemFactory);
 
         // Set versioning delay to 1 second
@@ -388,14 +390,16 @@ public class TestDefaultFileSystemItemFactory {
             assertFalse(folderItem.getCanDelete());
             assertFalse(folderItem.getCanCreateChild());
 
-            log.trace("Check canDelete/canCreateChild flags on folder for user joe with Write granted on folder, AddChildren not granted on folder and RemoveChildren not granted on parent folder");
+            log.trace(
+                    "Check canDelete/canCreateChild flags on folder for user joe with Write granted on folder, AddChildren not granted on folder and RemoveChildren not granted on parent folder");
             setPermission(folder, "joe", SecurityConstants.WRITE, true);
             folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
             // True here as optimized => no explicit check of AddChildren on folder nor RemoveChildren on parent folder
             assertTrue(folderItem.getCanDelete());
             assertTrue(folderItem.getCanCreateChild());
 
-            log.trace("Check canDelete flag on folder for user joe with Write (thus RemoveChildren) granted on parent folder");
+            log.trace(
+                    "Check canDelete flag on folder for user joe with Write (thus RemoveChildren) granted on parent folder");
             setPermission(syncRootFolder, "joe", SecurityConstants.WRITE, true);
             folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
             // Still true with RemoveChildren on the parent folder
@@ -425,7 +429,8 @@ public class TestDefaultFileSystemItemFactory {
             assertFalse(folderItem.getCanDelete());
             assertFalse(folderItem.getCanCreateChild());
 
-            log.trace("Check canDelete/canCreateChild flags on folder for user joe with Write granted on folder, AddChildren not granted on folder and RemoveChildren not granted on parent folder");
+            log.trace(
+                    "Check canDelete/canCreateChild flags on folder for user joe with Write granted on folder, AddChildren not granted on folder and RemoveChildren not granted on parent folder");
             setPermission(folder, "joe", SecurityConstants.WRITE, true);
             folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
             // False here as not optimized => explicit check of RemoveChildren on parent folder and AddChildren on
@@ -433,7 +438,8 @@ public class TestDefaultFileSystemItemFactory {
             assertFalse(folderItem.getCanDelete());
             assertFalse(folderItem.getCanCreateChild());
 
-            log.trace("Check canDelete flag on folder for user joe with Write (thus RemoveChildren) granted on parent folder");
+            log.trace(
+                    "Check canDelete flag on folder for user joe with Write (thus RemoveChildren) granted on parent folder");
             setPermission(syncRootFolder, "joe", SecurityConstants.WRITE, true);
             folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
             // True here thanks to RemoveChildren on the parent folder
@@ -471,8 +477,8 @@ public class TestDefaultFileSystemItemFactory {
         // Note
         assertTrue(defaultFileSystemItemFactory.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(), principal));
         // Not adaptable as a FileSystemItem
-        assertFalse(defaultFileSystemItemFactory.exists(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(), principal));
+        assertFalse(defaultFileSystemItemFactory.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(),
+                principal));
         // Deleted
         file.followTransition("delete");
         assertFalse(defaultFileSystemItemFactory.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), principal));
@@ -482,14 +488,14 @@ public class TestDefaultFileSystemItemFactory {
     public void testGetFileSystemItemById() throws Exception {
 
         // Non existent doc id, must return null
-        assertNull(defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
-                + "nonExistentDocId", principal));
+        assertNull(defaultFileSystemItemFactory.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + "nonExistentDocId", principal));
         // File without a blob
         file.setPropertyValue("file:content", null);
         file = session.saveDocument(file);
         session.save();
-        FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
-                + file.getId(), principal);
+        FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), principal);
         assertNull(fsItem);
         // Note
         fsItem = defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(),
@@ -504,8 +510,8 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("aNote.txt", fileItemBlob.getFilename());
         assertEquals("Content of Bob's note.", fileItemBlob.getString());
         // Folder
-        fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal);
+        fsItem = defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
+                principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), fsItem.getId());
@@ -514,13 +520,13 @@ public class TestDefaultFileSystemItemFactory {
         assertTrue(fsItem.isFolder());
         assertTrue(((FolderItem) fsItem).getChildren().isEmpty());
         // Not adaptable as a FileSystemItem
-        fsItem = defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
-                + notAFileSystemItem.getId(), principal);
+        fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(), principal);
         assertNull(fsItem);
         // Deleted
         custom.followTransition("delete");
-        fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(), principal);
+        fsItem = defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(),
+                principal);
         assertNull(fsItem);
         // Use parent id
         fsItem = defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(),
@@ -799,8 +805,8 @@ public class TestDefaultFileSystemItemFactory {
         adaptableChild = session.createDocument(adaptableChild);
         // Create another child not adaptable as a FileSystemItem => should
         // not be retrieved
-        session.createDocument(session.createDocumentModel("/syncRoot/aFolder", "notAdaptableChild",
-                "NotSynchronizable"));
+        session.createDocument(
+                session.createDocumentModel("/syncRoot/aFolder", "notAdaptableChild", "NotSynchronizable"));
         session.save();
 
         List<FileSystemItem> folderChildren = folderItem.getChildren();
@@ -817,7 +823,8 @@ public class TestDefaultFileSystemItemFactory {
         // Check that a Section is adaptable as a FileSystemItem by the defaultSyncRootFolderItemFactory
         DocumentModel section = session.createDocument(session.createDocumentModel("/", "sectionSyncRoot", "Section"));
         nuxeoDriveManager.registerSynchronizationRoot(principal, section, session);
-        FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultSyncRootFolderItemFactory");
+        FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                "defaultSyncRootFolderItemFactory");
         FolderItem sectionItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(section);
         assertNotNull(sectionItem);
         assertFalse(sectionItem.getCanCreateChild());
@@ -864,8 +871,10 @@ public class TestDefaultFileSystemItemFactory {
             assertNotNull(lockInfo.getCreated());
 
             // Check that the lock info is not fetched for FileSystemItem adaptation when calling getChildren
-            FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultSyncRootFolderItemFactory");
-            FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
+            FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                    "defaultSyncRootFolderItemFactory");
+            FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(
+                    syncRootFolder);
             List<FileSystemItem> children = syncRootFolderItem.getChildren();
             assertEquals(5, children.size());
             for (FileSystemItem child : children) {
@@ -914,7 +923,8 @@ public class TestDefaultFileSystemItemFactory {
     @Test
     public void testFolderItemChildrenPageProviderOverride() throws Exception {
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), syncRootFolder, session);
-        FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultSyncRootFolderItemFactory");
+        FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                "defaultSyncRootFolderItemFactory");
         FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
         assertEquals(5, syncRootFolderItem.getChildren().size());
 
@@ -990,7 +1000,7 @@ public class TestDefaultFileSystemItemFactory {
         FileItem fileItem2 = folderItem.createFile(blob);
         assertNotEquals(fileItem.getId(), fileItem2.getId());
     }
-    
+
     protected void setPermission(DocumentModel doc, String userName, String permission, boolean isGranted) {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);

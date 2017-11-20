@@ -56,15 +56,13 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * The purpose of this class is to test the {@link DefaultFileSystemItemFactory}
- * with various versioning options.
+ * The purpose of this class is to test the {@link DefaultFileSystemItemFactory} with various versioning options.
  * <ul>
  * <li>default configuration (DF)</li>
  * <li>automatic minor versioning (AMV)</li>
  * <li>drive version forced (DVF)</li>
  * <li>automatic minor versioning + drive version forced (AM+DV)</li>
  * </ul>
- *
  * The tested scenario is
  * <ul>
  * <li>1. change without delay by same user</li>
@@ -74,7 +72,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * <li>5. change without delay by another user</li>
  * <li>6. change with delay by another user</li>
  * </ul>
- *
  * The expected version label is
  * <table>
  * <caption>Matrix of the expected version label for each step for the give scenario</caption>
@@ -165,8 +162,7 @@ public class TestVersioningFileSystemItemFactory {
     protected VersioningFileSystemItemFactory customFileSystemItemFactory;
 
     /**
-     * For databases that don't have sub-second resolution, sleep a bit to get
-     * to the next second.
+     * For databases that don't have sub-second resolution, sleep a bit to get to the next second.
      */
     protected void maybeSleepToNextSecond() {
         coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
@@ -349,7 +345,7 @@ public class TestVersioningFileSystemItemFactory {
             file = session.getDocument(file.getRef());
             updatedBlob = (Blob) file.getPropertyValue("file:content");
             assertEquals("File name modified by Joe again.txt", updatedBlob.getFilename());
-            // Check versioning => should be versioned  since last
+            // Check versioning => should be versioned since last
             // modification was done after the versioning delay
             assertEquals("4.0+", file.getVersionLabel());
             fileVersions = session.getVersions(file.getRef());
@@ -469,7 +465,7 @@ public class TestVersioningFileSystemItemFactory {
             file = session.getDocument(file.getRef());
             updatedBlob = (Blob) file.getPropertyValue("file:content");
             assertEquals("File name modified again as draft.txt", updatedBlob.getFilename());
-            // Check versioning => should not be versioned  by Drive since last
+            // Check versioning => should not be versioned by Drive since last
             // modification was done before the versioning delay
             // but minor version because of the automatic versioning
             assertEquals("0.4", file.getVersionLabel());
