@@ -60,22 +60,36 @@ the second is dedicated for cluster deployment.
   Each partition is persisted on disk and a retention policy can be applied to keep only the last `n` cycles.
   The default retention is to keep the messages of the last 4 days.
 
-  For instance a directory layout for a Log with 5 partitions looks like:
+  For instance a directory layout for a Log with 4 partitions looks like:
    ```
-   basePath                    # basePath of the LogManager
-    └── queueName              # the name of the Log
-        ├── offset-default     # directory to hold consumer offsets of default consumer group
-        │   └── 20170616.cq4   # chronicle files, one per cycle
-        ├── Q-00               # directory for the partition 0
-        │   └── 20170616.cq4   # chronicle files
-        ├── Q-01
-        │   └── 20170616.cq4
-        ├── Q-02
-        │   └── 20170616.cq4
-        ├── Q-03
-        │   └── 20170616.cq4
-        └── Q-04
-            └── 20170616.cq4
+   basePath                    # The base path of the LogManager
+    └── logName                # The name of the Log
+        ├── P-00               # Chronicle Queue for partition 00
+        │   ├── 20171114.cq4   # Cycle for day 2017-11-14
+        │   ├── 20171115.cq4
+        │   ├── 20171116.cq4
+        │   ├── 20171117.cq4
+        │   └── directory-listing.cq4t # Chronicle queue interal file
+        ├── P-01               # Chronicle Queue for partition 01
+        │   ├── 20171113.cq4   # Retention keep the last 4 cycles
+        │   ├── 20171114.cq4
+        │   ├── 20171116.cq4   # There was no record on this partition 2017-11-15
+        │   ├── 20171117.cq4
+        │   └── directory-listing.cq4t
+        ├── P-02               # Chronicle Queue for partition 02
+        │   ├── 20171115.cq4
+        │   ├── 20171117.cq4
+        │   └── directory-listing.cq4t
+        ├── P-03               # Chronicle Queue for partition 03
+        │   ├── 20171116.cq4
+        │   ├── 20171117.cq4
+        │   └── directory-listing.cq4t
+        └── offset-myGroup     # Chronicle Queue for consumer offset of group myGroup
+            ├── 20171114.cq4
+            ├── 20171115.cq4
+            ├── 20171116.cq4
+            ├── 20171117.cq4
+            └── directory-listing.cq4t
   ```
 
   Note that this implementation has some important limitations:

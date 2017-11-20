@@ -85,6 +85,10 @@ public class WorkManagerTest {
     protected static class SleepAndFailWork extends SleepWork {
         private static final long serialVersionUID = 1L;
 
+        public SleepAndFailWork(long durationMillis, boolean debug) {
+            super(durationMillis, debug);
+        }
+
         public SleepAndFailWork(long durationMillis, boolean debug, String id) {
             super(durationMillis, debug, id);
         }
@@ -204,10 +208,11 @@ public class WorkManagerTest {
     @Test
     public void testWorkManagerScheduling() throws Exception {
         MetricsTracker tracker = new MetricsTracker();
+        tracker.assertDiff(0, 0, 0, 0);
         int duration = 5000; // 2s
-        SleepWork work1 = new SleepWork(duration, false, "1");
-        SleepWork work2 = new SleepWork(duration, false, "2");
-        SleepWork work3 = new SleepWork(duration, false, "3");
+        SleepWork work1 = new SleepWork(duration, false);
+        SleepWork work2 = new SleepWork(duration, false);
+        SleepWork work3 = new SleepWork(duration, false);
         service.schedule(work1);
         service.schedule(work2);
         service.schedule(work3);
@@ -217,27 +222,27 @@ public class WorkManagerTest {
         assertState(RUNNING, work1);
         assertState(RUNNING, work2);
         assertState(SCHEDULED, work3);
-        assertWorkIdsEquals(Collections.singletonList("3"), SCHEDULED);
-        assertWorkIdsEquals(Arrays.asList("1", "2"), RUNNING);
-        assertWorkIdsEquals(Arrays.asList("1", "2", "3"), null);
+        assertWorkIdsEquals(Collections.singletonList(work3.getId()), SCHEDULED);
+        assertWorkIdsEquals(Arrays.asList(work1.getId(), work2.getId()), RUNNING);
+        assertWorkIdsEquals(Arrays.asList(work1.getId(), work2.getId(), work3.getId()), null);
 
         // disabled IF_NOT_* features
         if (Boolean.FALSE.booleanValue()) {
-            SleepWork work4 = new SleepWork(duration, false, "3"); // id=3
+            SleepWork work4 = new SleepWork(duration, false, work3.getId());
             service.schedule(work4, Scheduling.IF_NOT_SCHEDULED);
             assertState(UNKNOWN, work4);
 
-            SleepWork work5 = new SleepWork(duration, false, "1"); // id=1
+            SleepWork work5 = new SleepWork(duration, false, work1.getId());
             service.schedule(work5, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
             assertState(UNKNOWN, work5);
         }
 
-        SleepWork work7 = new SleepWork(duration, false, "3"); // id=3
+        SleepWork work7 = new SleepWork(duration, false, work3.getId());
         service.schedule(work7, Scheduling.CANCEL_SCHEDULED);
         assertState(SCHEDULED, work7);
         tracker.assertDiff(1, 2, 0, 1);
 
-        SleepAndFailWork work8 = new SleepAndFailWork(0, false, "4");
+        SleepAndFailWork work8 = new SleepAndFailWork(0, false);
         service.schedule(work8);
         tracker.assertDiff(2, 2, 0, 1);
 
@@ -253,9 +258,9 @@ public class WorkManagerTest {
     public void testWorkManagerCancelScheduling() throws Exception {
         MetricsTracker tracker = new MetricsTracker();
         int duration = 5000; // 2s
-        SleepWork work1 = new SleepWork(duration, false, "1");
-        SleepWork work2 = new SleepWork(duration, false, "2");
-        SleepWork work3 = new SleepWork(duration, false, "3");
+        SleepWork work1 = new SleepWork(duration, false);
+        SleepWork work2 = new SleepWork(duration, false);
+        SleepWork work3 = new SleepWork(duration, false);
         service.schedule(work1);
         service.schedule(work2);
         service.schedule(work3);
@@ -263,7 +268,7 @@ public class WorkManagerTest {
         tracker.assertDiff(1, 2, 0, 0);
 
         // cancel the scheduled task
-        SleepWork work4 = new SleepWork(duration, false, "3"); // id=3
+        SleepWork work4 = new SleepWork(duration, false, work3.getId());
         service.schedule(work4, Scheduling.CANCEL_SCHEDULED);
         // wait
         assertTrue(service.awaitCompletion(2 * duration, TimeUnit.MILLISECONDS));
@@ -294,9 +299,9 @@ public class WorkManagerTest {
     @Ignore
     public void testWorkManagerShutdown() throws Exception {
         int duration = 2000; // 2s
-        SleepWork work1 = new SleepWork(duration, false, "1");
-        SleepWork work2 = new SleepWork(duration, false, "2");
-        SleepWork work3 = new SleepWork(duration, false, "3");
+        SleepWork work1 = new SleepWork(duration, false);
+        SleepWork work2 = new SleepWork(duration, false);
+        SleepWork work3 = new SleepWork(duration, false);
         service.schedule(work1);
         service.schedule(work2);
         service.schedule(work3);
@@ -449,15 +454,15 @@ public class WorkManagerTest {
 
         // create an init work to warm up the service, this is needed only for the embedded redis mode
         // sometime embedded mode takes around 1s to init, this prevent to put reliable assertion on time execution
-        SleepWork initWork = new SleepWork(1, false, "0");
+        SleepWork initWork = new SleepWork(1, false);
         service.schedule(initWork);
         assertTrue(service.awaitCompletion(5, TimeUnit.SECONDS));
         assertMetrics(0, 0, 1, 0);
 
         // Schedule a first work
         int durationMS = 3000;
-        String workId = "1234";
-        SleepWork work = new SleepWork(durationMS, false, workId);
+        SleepWork work = new SleepWork(durationMS, false);
+        String workId = work.getId();
         service.schedule(work);
 
         // wait a bit to make sure it is running
