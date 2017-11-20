@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.work;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Simple work that just sleeps, mostly used for tests.
  */
@@ -28,6 +30,8 @@ public class SleepWork extends AbstractWork {
     protected long durationMillis;
 
     protected String category;
+
+    protected AtomicInteger count = new AtomicInteger();
 
     /**
      * Creates a work instance that does nothing but sleep.
@@ -107,6 +111,11 @@ public class SleepWork extends AbstractWork {
             Thread.sleep(10);
         }
 
+    }
+
+    @Override
+    public String getPartitionKey() {
+        return String.valueOf(count.incrementAndGet());
     }
 
     @Override

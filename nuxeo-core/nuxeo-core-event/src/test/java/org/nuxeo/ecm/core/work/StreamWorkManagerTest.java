@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -81,4 +82,57 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         super.testWorkManagerConfigDisableAllAfterStart();
     }
 
+    @Test
+    public void testWorkIdempotent() throws InterruptedException {
+        MetricsTracker tracker = new MetricsTracker();
+        SleepWork work = new SleepWork(1000, false);
+        service.schedule(work);
+        assertTrue(service.awaitCompletion(5, TimeUnit.SECONDS));
+        assertMetrics(0, 0, 1, 0);
+
+        // schedule again the exact same work 5 times
+        service.schedule(work);
+        service.schedule(work);
+        service.schedule(work);
+        service.schedule(work);
+        service.schedule(work);
+
+        // works with the same id are skipped immediately and marked as completed, we don't have to wait 5s
+        assertTrue(service.awaitCompletion(500, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 6, 1);
+    }
+
+    @Test
+    public void testWorkIdempotentConcurrent() throws InterruptedException {
+        MetricsTracker tracker = new MetricsTracker();
+        tracker.assertDiff(0, 0, 0, 0);
+        SleepWork work1 = new SleepWork(1000, false);
+        SleepWork work2 = new SleepWork(1000, false);
+        service.schedule(work1);
+        service.schedule(work1);
+        service.schedule(work1);
+        service.schedule(work2);
+        service.schedule(work2);
+        service.schedule(work2);
+        // we don't know if work1 and work2 are executed on the same thread
+        // but we assume that the max duration is work1 + work2 because there is only one invocation of each
+        assertTrue(service.awaitCompletion(2500, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 6, 1);
+    }
+
+
+    @Ignore()
+    @Test
+    public void testNoConcurrentJobsWithSameId() throws Exception {
+        // default workmanager guaranty that works with the same id can not be scheduled while another is running
+        // stream impl provides stronger guaranty, works with same id are executed only once (scheduled, running or completed)
+        super.testNoConcurrentJobsWithSameId();
+    }
+
+    @Ignore
+    @Test
+    public void testWorkManagerCancelScheduling() throws Exception {
+        // Canceling is not supported, but we can not assume on duration with random id
+        super.testWorkManagerCancelScheduling();
+    }
 }
