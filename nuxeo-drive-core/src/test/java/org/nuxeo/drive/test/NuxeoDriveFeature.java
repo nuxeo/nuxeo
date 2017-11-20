@@ -27,7 +27,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.collections.core",
         "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.platform.filemanager.core",
-        "org.nuxeo.ecm.platform.webapp.types" })
+        "org.nuxeo.ecm.platform.webapp.types", "org.nuxeo.ecm.platform.tag" })
 @LocalDeploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml",
         "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml",
         "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-descendants-scrolling-cache-contrib.xml" })
