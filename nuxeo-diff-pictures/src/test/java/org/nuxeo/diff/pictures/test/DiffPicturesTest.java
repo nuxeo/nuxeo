@@ -56,8 +56,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.diff.pictures",
-        "org.nuxeo.ecm.platform.commandline.executor" })
+        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.diff.pictures", "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.platform.tag" })
 public class DiffPicturesTest {
 
     protected static final Log log = LogFactory.getLog(DiffPicturesTest.class);
