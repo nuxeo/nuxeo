@@ -1,32 +1,30 @@
-
-
 <h1 id="nuxeoplatform9.10-SNAPSHOTreleasenotes">Nuxeo platform 9.10-SNAPSHOT</h1>
 
-<p>Welcome to the Nuxeo Platform 9.10-SNAPSHOT.</p>
+<p>Welcome to the Nuxeo Platform 9.3-SNAPSHOT.</p>
 
 <p>You can always download the latest releases of Nuxeo packages (distributions, installers, virtual machine images, ...) from
-<a href="http://www.nuxeo.com/downloads">http://www.nuxeo.com/downloads</a>.<br>Previous releases are available at
+<a href="https://www.nuxeo.com/downloads">https://www.nuxeo.com/downloads</a>.<br>Previous releases are available at
 <a href="http://nuxeo.github.com/downloads.html">http://nuxeo.github.com/downloads.html</a>.</p>
 
 <h2 id="requirements">Requirements</h2>
 
 <p>The applications based on the Nuxeo Platform need Java.<br>Please install and
-set up a Java Development Kit 7 or 8 (JDK 7 or 8, also called Java 1.7 and Java 1.8; JRE is not enough)* if it&#8217;s not
-already installed on your computer.<br>* We currently support <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html">Oracle's JDK</a>
+set up a Java Development Kit 8 (JDK 8, also called Java 1.8; JRE is not enough)* if it&#8217;s not
+already installed on your computer.<br>* We currently support <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Oracle's JDK</a>
 and <a href="http://openjdk.java.net/install/index.html">OpenJDK</a> as a default Java setup. Don't hesitate to contact us if you need us to support a JDK from another vendor.</p>
 
 <p>Even if not supported, we welcome your feedback if you encounter any trouble with earlier versions of the JDK.<br>
-Nuxeo won&#8217;t work with any previous release of Java (e.g. Java 6).</p>
+Nuxeo won&#8217;t work with any previous release of Java.</p>
 
 <p>Under Windows, virus scan should be configured to avoid scanning
-Nuxeo&#8217;s installation folder. See <a href="https://doc.nuxeo.com/x/ngQz">lock problems leading to server errors</a>.</p>
+Nuxeo&#8217;s installation folder. See <a href="https://doc.nuxeo.com/nxdoc/adding-an-antivirus/">lock problems leading to server errors</a>.</p>
 
-<p>Read the <a href="http://doc.nuxeo.com/x/OwA7">Hardware and Software Requirements</a> for more information.</p>
+<p>Read the <a href="https://doc.nuxeo.com/nxdoc/installation/">Installation documentation</a> for more information.</p>
 
 <h2 id="gettingstarted">Getting Started</h2>
 
 <p>After you have installed the Nuxeo Platform, either follow the Quick configuration steps described on the online
-<a href="https://doc.nuxeo.com/x/G4AO">Installation and Administration Guide</a> or the instructions below:</p>
+<a href="https://doc.nuxeo.com/nxdoc/installation/">Installation Guide</a> or the instructions below:</p>
 
 <ol>
 <li>Go to your installation directory.</li>
@@ -36,95 +34,47 @@ the terminal or <code>./bin/nuxeoctl gui start</code> to display the
 Control Panel (run <code>./bin/nuxeoctl help</code> for list of available
 commands).</li>
 <li>under Windows, run <code>bin\nuxeoctl.bat</code> (the Control Panel is displayed by default, use <code>--gui=false</code> option for terminal only).</li>
-<li>you can also use a <a href="http://doc.nuxeo.com/x/NIpH">Debian</a> or <a href="http://doc.nuxeo.com/x/6QJc">Windows</a> service.</li></ul></li>
+<li>you can also use a <a href="https://doc.nuxeo.com/nxdoc/configuring-the-nuxeo-platform-as-a-daemon-with-sysvinit/">Debian</a> or <a href="https://doc.nuxeo.com/nxdoc/installing-the-nuxeo-platform-as-a-windows-service/">Windows</a> service.</li></ul></li>
 <li>Point your browser to <a href="http://localhost:8080/nuxeo/">http://localhost:8080/nuxeo/</a>.</li>
 <li>Configure your server using the displayed Startup Wizard.</li>
-<li>Select the modules you want to install on the Platform (a lot of other modules are available in <a href="http://localhost:8080/nuxeo/nxhome/default@view_admin?tabIds=NUXEO_ADMIN%3AConnectApps">the Update Center</a> and on <a href="https://marketplace.nuxeo.com/">the Nuxeo Marketplace</a>).</li>
+<li>Select the addons you want to install on the Platform (a lot of other addons are available on <a href="https://marketplace.nuxeo.com/">the Nuxeo Marketplace</a>).</li>
 <li>When the server is restarted, log in using the &#8220;Administrator&#8221;
 login and the &#8220;Administrator&#8221; password (no quotes, of course, but
 capital &#8220;A&#8221;).</li>
 </ol>
 
-<p>For complete setup and configuration, you should refer to the <a href="https://doc.nuxeo.com/x/PwA7">Setup pages of
-the Installation and Administration Guide</a>.</p>
+<p>For complete setup and configuration, you should refer to the <a href="ttps://doc.nuxeo.com/nxdoc/administration/">Administration pages of
+the documentation</a>.</p>
 
 <h2 id="complementaryfeatures">Complementary Features</h2>
 
-<p>The Nuxeo Platform uses some third party software for complementary features. Check out <a href="http://doc.nuxeo.com/x/zgJc">Installing and Setting up Related Software</a> for the complete list.</p>
-<p>We also provide some extensions:</p>
-<ul>
-<li>Drag and drop plugins: <a href="https://download.nuxeo.com/browser/firefox/nuxeo-dragdrop-ff-extension.xpi">Firefox</a>, <a href="http://download.nuxeo.org/desktop-integration/drag-drop/msie/">Internet Explorer</a>.</li>
-<li>Desktop integration thanks to LiveEdit: see the <a href="http://doc.nuxeo.com/x/K4Wo">plugins documentation page</a>.</li>
-</ul>
+<p>The Nuxeo Platform uses some third party software for complementary features. Check out <a href="https://doc.nuxeo.com/nxdoc/installing-and-setting-up-related-software/">Installing and Setting up Related Software</a> for the complete list.</p>
 
 <h2 id="aboutnuxeo">About Nuxeo</h2>
 
-<p>Nuxeo provides an <a href="http://www.nuxeo.com/en/products/enterprise-platform/">Open Source Content Management Platform</a> enabling
-architects and developers to easily build, deploy, and run
-content-centric  business applications. In the cloud or on premise,
-Nuxeo&#8217;s Enterprise Content Management (ECM) technology offers an
-integrated solution for <a href="http://www.nuxeo.com/en/products/document-management">Document Management</a>, <a href="http://www.nuxeo.com/en/products/dam">Digital Asset Management</a>,
-<a href="http://www.nuxeo.com/en/products/case-management">Case Management</a> and much more. Built on a modern,
-Java-based architecture, the Nuxeo Platform is architected for modularity
-and extensibility, unlike traditional ECM solutions. This means that
-your content-centric application aligns with your business and technical
-needs and easily integrates into your IT infrastructure, all in a highly
-sustainable way.</p>
-
-<p>The Nuxeo Platform is a robust, extensible, global content management
-platform available as Open Source Software (OSS). Nuxeo imagined,
-developed and is releasing its platform, helped by a vibrant
-community of professional and individual contributors:</p>
-
-<ul>
-<li>Capture: With the Nuxeo Platform, you can create your documents
-using your day-to-day favorite tools (MS Office, Mail, etc.) or
-you can batch import your exiting documents (drag and drop, form
-and import, email capture).</li>
-<li>Share &amp; Collaborate: Save time by finding the right information
-when you need it! Empower your co-workers to share, access, enrich
-and store high quality content in a single place. The Nuxeo
-Platform can manage all of your organization&#8217;s documents and IP
-assets in a scalable and secured document repository. Create and
-enrich documents within collaborative workspaces, follow their
-validation process via customizable workflows, publish in one or
-any hierarchy you chose. Join our existing customers, take all the
-benefits from our collaborative and open source content management
-platform.</li>
-<li>Process &amp; Review: Customize your documents life cycle, quickly
-adapt workflows to reflect internal procedures and to meet your
-legal compliancy requirements. The Nuxeo Platform can handle the
-way you work!</li>
-<li>Publish &amp; Archive: Keep track of any and all changes that have
-happened within the document repository. The Nuxeo Platform allows
-you to publish the validated documents you have created to a larger
-audience, and the audit trail offers the legal compliance that your
-organization requires.</li>
-<li>Search &amp; Find: With the Nuxeo Platform search features, you can
-easily find your documents through their content or their metadata.
-Save time: you can save and reuse your most frequent queries.</li>
-</ul>
+<p>Nuxeo, maker of the leading, cloud-native content services platform, is reinventing enterprise content and digital asset management. Nuxeo is fundamentally changing how people work with both data and content to realize new value from digital information. Its cloud-native, hyper-scalable content services platform has been deployed by large enterprises, mid-sized businesses and government agencies worldwide. Customers like Verizon, Boeing, Electronic Arts, and the US Department of Defense have used Nuxeo's technology to transform the way they do business. Founded in 2008, the company is based in New York with offices across the United States and Europe. Additional information is available at <a href="https://www.nuxeo.com/">www.nuxeo.com</a>.</p>
 
 <h2 id="releasenotes">Release Notes</h2>
 
-<p>See <a href="http://nuxeo.github.io/releasenotes/9.10-SNAPSHOT/">http://nuxeo.github.io/releasenotes/9.10-SNAPSHOT/</a>.</p>
+<p>See <a href="https://doc.nuxeo.com/nxdoc/nuxeo-server-release-notes/">https://doc.nuxeo.com/nxdoc/nuxeo-server-release-notes/</a>.</p>
 
 <h2 id="issues">Issues</h2>
 
-<p>Please go to the <a href="http://jira.nuxeo.org/browse/NXP?report=com.atlassian.jira.plugin.system.project:versions-panel">JIRA issue tracker</a> for the Nuxeo Platform
-project to check the <a href="https://jira.nuxeo.org/browse/NXP/fixforversion/">fixed and currently known bugs and issues with this release</a>.</p>
+<p>Please go to the <a href="https://jira.nuxeo.com/browse/NXP">JIRA issue tracker</a> for the Nuxeo Platform
+project to check the <a href="https://jira.nuxeo.com/browse/NXP/fixforversion/">fixed and currently known bugs and issues with this release</a>.</p>
 
 <h2 id="documentationandhelp">Documentation and Help</h2>
 
-<p>You will find documentation on the <a href="http://doc.nuxeo.com/">the Nuxeo community site</a>.</p>
+<p>You will find documentation on <a href="https://doc.nuxeo.com/">doc.nuxeo.com</a>.</p>
 
 <p>More specifically:</p>
 
 <ul>
-<li>The <a href="http://doc.nuxeo.com/x/aYEk">Nuxeo User Guide</a></li>
-<li><a href="http://doc.nuxeo.com/x/E4AO">Customization and Development with Nuxeo</a></li>
-<li>The <a href="https://doc.nuxeo.com/x/PIAO">Nuxeo Technical Documentation Center</a></li>
-<li>The <a href="https://doc.nuxeo.com/x/G4AO">Nuxeo Administration Guide</a></li>
+<li>The <a href="https://doc.nuxeo.com/userdoc/">Nuxeo User Guide</a></li>
+<li><a href="https://doc.nuxeo.com/nxdoc/getting-started/">Tutorials and How-Tos</a></li>
+<li>The <a href="https://doc.nuxeo.com/nxdoc/nuxeo-server/">Nuxeo Server documentation</a></li>
+<li>The <a href="https://doc.nuxeo.com/nxdoc/client-sdks/">Clients and SDKs documentation</a></li>
+<li><a href="https://doc.nuxeo.com/nxdoc/nuxeo-tools/">Tools for the Nuxeo Platform documentation</a></li>
 </ul>
 
 <h2 id="licenses">Licenses</h2>
@@ -154,10 +104,10 @@ Many more people have suggested improvements, spotted issues or contributed patc
 <li>Italian: Mirto Silvio Busico, Samuele Innocenti, Stefane Fermigier</li>
 <li>Japanese: Damien Dupraz, Hiromi Kimura</li>
 <li>Polish: Adam Lozy</li>
-<li>Portuguese: Jose Luis de la Rosa</li>
+<li>Portuguese: Jose Luis de la Rosa, Nuxeo Team</li>
 <li>Brazilian: Rogerio J. Gentil, Klyff Harlley</li>
 <li>Russian: Jane Smorodnik</li>
-<li>Spanish: Daniel Tellez, Jose Luis de la Rosa</li>
+<li>Spanish: Daniel Tellez, Jose Luis de la Rosa, Nuxeo Team</li>
 <li>Serbian - Cyrillic: Goran Ljubic</li>
 <li>Vietnamese: Le Tuan Dat, Daniel Tellez</li>
 <li>Czech: Miroslav Lednicky</li></ul>
