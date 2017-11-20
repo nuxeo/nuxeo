@@ -3,7 +3,7 @@
 Welcome to the Nuxeo Platform 9.10-SNAPSHOT.
 
 You can always download the latest releases of Nuxeo packages (distributions, 
-installers, virtual machine images, ...) from [http://www.nuxeo.com/downloads/][1].
+installers, virtual machine images, ...) from [https://www.nuxeo.com/downloads/][1].
 Previous releases are available at [http://nuxeo.github.com/downloads.html][2]
 
 ## Requirements
@@ -66,7 +66,7 @@ with this release][27].
 
 ## Documentation and Help
 
-You will find documentation on [doc.nuxeo.com]][28].
+You will find documentation on [https://doc.nuxeo.com/]][28].
 
 More specifically:
 
@@ -120,7 +120,7 @@ Ant, Maven, JIRA, Hudson, YourKit Java Profiler (thanks to free
 licenses donated by YourKit), etc.
 
 
-[1]: http://www.nuxeo.com/downloads/
+[1]: https://www.nuxeo.com/downloads/
 [2]: http://nuxeo.github.com/downloads.html
 [3]: http://www.oracle.com/technetwork/java/javase/downloads/index.html
 [4]: http://openjdk.java.net/install/index.html
@@ -131,12 +131,11 @@ licenses donated by YourKit), etc.
 [11]: https://doc.nuxeo.com/nxdoc/administration/
 [17]: https://download.nuxeo.com/browser/firefox/nuxeo-dragdrop-ff-extension.xpi
 [18]: http://download.nuxeo.org/desktop-integration/drag-drop/msie/
-[19]: http://doc.nuxeo.com/x/K4Wo
-[21]: http://www.nuxeo.com/
+[21]: https://www.nuxeo.com/
 [25]: https://doc.nuxeo.com/nxdoc/nuxeo-server-release-notes/
-[26]: http://jira.nuxeo.com/browse/NXP?report=com.atlassian.jira.plugin.system.project:versions-panel
+[26]: https://jira.nuxeo.com/browse/NXP
 [27]: https://jira.nuxeo.com/browse/NXP/fixforversion/
-[28]: http://doc.nuxeo.com/
+[28]: https://doc.nuxeo.com/
 [29]: https://doc.nuxeo.com/userdoc/
 [30]: https://doc.nuxeo.com/nxdoc/getting-started/
 [31]: https://doc.nuxeo.com/nxdoc/nuxeo-server/
