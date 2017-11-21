@@ -38,6 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.security.auth.login.LoginException;
 
 import org.apache.commons.lang.SerializationUtils;
 import org.junit.Before;
@@ -45,6 +46,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.SystemPrincipal;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -393,6 +396,24 @@ public class TestDirectoryEntryResolver {
         assertEquals(ENTRY_LABEL, ((DirectoryEntry) entity).getDocumentModel().getPropertyValue("drs:label"));
         // test it works: getReference
         assertEquals(ENTRY_ID, readDerr.getReference(entry1));
+    }
+
+    @Test
+    public void testFetchDirWhenUnauthenticated() throws LoginException {
+
+        ClientLoginModule.getThreadLocalLogin().pop();
+        try {
+            DirectoryEntryResolver derr = new DirectoryEntryResolver();
+            HashMap<String, String> parameters = new HashMap<>();
+            parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
+            derr.configure(parameters);
+            Object entity = derr.fetch(ENTRY_ID);
+            assertNotNull(entity);
+            assertTrue(entity instanceof DirectoryEntry);
+            assertEquals(ENTRY_LABEL, ((DirectoryEntry) entity).getDocumentModel().getPropertyValue("drs:label"));
+        } finally {
+            ClientLoginModule.getThreadLocalLogin().push(new SystemPrincipal(null), null, null);
+        }
     }
 
     private void checkMessage(DirectoryEntryResolver derr) {
