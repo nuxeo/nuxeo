@@ -41,6 +41,12 @@ public class MultiExpression extends Predicate {
         this.values = values;
     }
 
+    @SuppressWarnings("unchecked")
+    public static MultiExpression fromExpressionList(Operator operator, List<Expression> list) {
+        // bypass variance, as we know we won't modify the list by putting arbitrary Operands in it
+        return new MultiExpression(operator, (List<Operand>) ((List<?>) list));
+    }
+
     @Override
     public void accept(IVisitor visitor) {
         visitor.visitMultiExpression(this);

@@ -117,7 +117,7 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
-import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
+import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
@@ -1524,8 +1524,8 @@ public class DBSSession implements Session {
         selectClause.elements.putIfAbsent(NXQL.ECM_PARENTID, new Reference(NXQL.ECM_PARENTID));
         selectClause.elements.putIfAbsent(NXQL.ECM_NAME, new Reference(NXQL.ECM_NAME));
 
-        QueryOptimizer optimizer = new QueryOptimizer();
-        MultiExpression expression = optimizer.getOptimizedQuery(sqlQuery, queryFilter.getFacetFilter());
+        QueryOptimizer optimizer = new DBSQueryOptimizer();
+        Expression expression = optimizer.getOptimizedQuery(sqlQuery, queryFilter.getFacetFilter());
         OrderByClause orderByClause = sqlQuery.orderBy;
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, selectClause, expression, orderByClause,
                 queryFilter.getPrincipals(), fulltextSearchDisabled);
@@ -1742,8 +1742,8 @@ public class DBSSession implements Session {
         SQLQuery sqlQuery = SQLQueryParser.parse(query);
         SelectClause selectClause = sqlQuery.select;
         selectClause.add(new Reference(NXQL.ECM_UUID));
-        QueryOptimizer optimizer = new QueryOptimizer();
-        MultiExpression expression = optimizer.getOptimizedQuery(sqlQuery, null);
+        QueryOptimizer optimizer = new DBSQueryOptimizer();
+        Expression expression = optimizer.getOptimizedQuery(sqlQuery, null);
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, selectClause, expression, null, null,
                 fulltextSearchDisabled);
         return repository.scroll(evaluator, batchSize, keepAliveSeconds);
