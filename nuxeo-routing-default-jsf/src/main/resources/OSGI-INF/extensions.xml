@@ -77,10 +77,10 @@
           <field>['participants']</field>
         </fields>
         <properties widgetMode="edit">
-          <property name="orderable">true</property>
-          <property name="placeholder">label.security.search</property>
           <property name="width">70%</property>
+          <property name="placeholder">label.security.search</property>
           <property name="prefixed">true</property>
+          <property name="orderable">true</property>
           <property name="required">#{request.getParameter('button') == 'start_review'}</property>
         </properties>
       </widget>
@@ -194,11 +194,11 @@
           <field>['participants']</field>
         </fields>
         <properties widgetMode="edit">
-          <property name="orderable">true</property>
-          <property name="placeholder">label.security.search</property>
-          <property name="width">70%</property>
-          <property name="prefixed">true</property>
           <property name="helpLabel">wf.serialDocumentReview.ParticipantsOnTheReview.order</property>
+          <property name="prefixed">true</property>
+          <property name="orderable">true</property>
+          <property name="width">70%</property>
+          <property name="placeholder">label.security.search</property>
           <property name="required">#{request.getParameter('button') == 'start_review'}</property>
         </properties>
       </widget>
@@ -219,8 +219,8 @@
           <property name="required">#{request.getParameter('button') == 'start_review'}</property>
         </properties>
         <properties widgetMode="view">
-          <property name="localize">true</property>
           <property name="directoryName">WorkflowType</property>
+          <property name="localize">true</property>
         </properties>
       </widget>
       <widget name="comment" type="textarea">
