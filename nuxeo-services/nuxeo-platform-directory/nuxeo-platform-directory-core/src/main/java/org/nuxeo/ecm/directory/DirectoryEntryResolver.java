@@ -201,7 +201,8 @@ public class DirectoryEntryResolver implements ObjectResolver {
                 }
             }
             try (Session session = directory.getSession()) {
-                DocumentModel doc = session.getEntry(id);
+                String finalId = id; // Effectively final
+                DocumentModel doc = Framework.doPrivileged(() -> session.getEntry(finalId));
                 if (doc != null) {
                     return new DirectoryEntry(directory.getName(), doc);
                 }
@@ -245,7 +246,8 @@ public class DirectoryEntryResolver implements ObjectResolver {
                     String parent = (String) entry.getProperty(schema, parentField);
                     try (Session session = directory.getSession()) {
                         while (parent != null) {
-                            entry = session.getEntry(parent);
+                            String finalParent = parent; // Effectively final
+                            entry = Framework.doPrivileged(() -> session.getEntry(finalParent));
                             if (entry == null) {
                                 break;
                             }
