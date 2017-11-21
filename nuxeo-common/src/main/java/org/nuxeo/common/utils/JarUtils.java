@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,23 @@
  * 
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.common.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.CopyOption;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collections;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
@@ -79,6 +86,47 @@ public final class JarUtils {
         } catch (IOException e) {
             return null;
         }
+    }
+
+    /**
+     * Zips recursively as a jar the content of {@code source} to the {@code target} zip file.
+     *
+     * @since 9.3
+     */
+    public static Path zipDirectory(Path source, Path target, CopyOption... options) throws IOException {
+        if (!Files.isDirectory(source)) {
+            throw new IllegalArgumentException("Source argument must be a directory to zip");
+        }
+        // locate file system by using the syntax defined in java.net.JarURLConnection
+        // for Windows, replace all \ by /, otherwise FileSystems#newFileSystem throw java.net.URISyntaxException:
+        // Illegal character in opaque part
+        URI uri = URI.create("jar:file:" + target.toString().replace('\\', '/'));
+
+        try (FileSystem zipfs = FileSystems.newFileSystem(uri, Collections.singletonMap("create", "true"))) {
+            Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
+
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    if (source.equals(dir)) {
+                        // don't process root element
+                        return FileVisitResult.CONTINUE;
+                    }
+                    return visitFile(dir, attrs);
+                }
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    // retrieve the destination path in zip
+                    Path relativePath = source.relativize(file);
+                    Path pathInZipFile = zipfs.getPath(relativePath.toString());
+                    // copy a file into the zip file
+                    Files.copy(file, pathInZipFile, options);
+                    return FileVisitResult.CONTINUE;
+                }
+
+            });
+        }
+        return target;
     }
 
 }

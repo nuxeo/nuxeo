@@ -441,7 +441,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                 if (!bundlePath.startsWith(destinationPath)) {
                     if (Files.isDirectory(bundlePath)) {
                         // If it's a directory, assume that it's an exploded jar
-                        bundlePath = ZipUtils.zipDirectory(bundlePath,
+                        bundlePath = JarUtils.zipDirectory(bundlePath,
                                 destinationPath.resolve("hotreload-bundle-" + System.currentTimeMillis() + ".jar"),
                                 StandardCopyOption.REPLACE_EXISTING);
                     } else {
