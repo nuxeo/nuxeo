@@ -36,6 +36,9 @@ public class Reference implements Operand {
 
     public final EsHint esHint;
 
+    /** Arbitrary info associated to the reference. */
+    public Object info;
+
     public Reference(String name) {
         this.name = name;
         cast = null;
@@ -66,6 +69,14 @@ public class Reference implements Operand {
     @Override
     public void accept(IVisitor visitor) {
         visitor.visitReference(this);
+    }
+
+    public void setInfo(Object info) {
+        this.info = info;
+    }
+
+    public Object getInfo() {
+        return info;
     }
 
     @Override

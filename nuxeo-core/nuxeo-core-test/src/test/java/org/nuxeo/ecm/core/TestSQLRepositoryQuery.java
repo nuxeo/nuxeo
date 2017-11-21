@@ -1500,6 +1500,12 @@ public class TestSQLRepositoryQuery {
 
         acl.add(ACE.BLOCK);
         acp.addACL(acl);
+
+        // another non-local acl (placed before the local one)
+        acl = new ACLImpl("notlocal");
+        acl.add(new ACE("pete", "Write", true));
+        acp.addACL(acl);
+
         folder1.setACP(acp, true);
         session.save();
 
@@ -1516,6 +1522,12 @@ public class TestSQLRepositoryQuery {
 
         // bob with Browse
         checkQueryACL(1, queryBase + "ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/permission = 'Browse'");
+
+        // cannot correlate with notlocal ACL
+        checkQueryACL(0, queryBase + "ecm:acl/*1/name = 'notlocal' AND ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/permission = 'Browse'");
+
+        // bob with Browse in local ACL
+        checkQueryACL(1, queryBase + "ecm:acl/*1/name = 'local' AND ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/permission = 'Browse'");
 
         // bob with Browse granted
         checkQueryACL(1, queryBase
@@ -1558,7 +1570,10 @@ public class TestSQLRepositoryQuery {
 
         if (!isDBS()) {
             // explicit array index
-            checkQueryACL(1, queryBase + "ecm:acl/1/principal = 'bob'");
+            checkQueryACL(1, queryBase + "ecm:acl/0/principal = 'pete'");
+            checkQueryACL(1, queryBase + "ecm:acl/1/principal = 'Administrator'");
+            checkQueryACL(1, queryBase + "ecm:acl/2/principal = 'bob'");
+            checkQueryACL(1, queryBase + "ecm:acl/3/principal = 'steve'");
         }
     }
 
@@ -2700,6 +2715,63 @@ public class TestSQLRepositoryQuery {
         clause = "tst:friends/item[*1]/firstname = 'John'" + " AND tst:friends/item[*1]/lastname = 'Smith'";
         res = session.query(SELECT_WHERE + clause);
         assertEquals(Arrays.asList(docId), getIds(res));
+    }
+
+    @Test
+    public void testQueryComplexCorrelation() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "TestDoc");
+        doc.setPropertyValue("tst:title", "title");
+        Map<String, Object> friend0 = new HashMap<>();
+        friend0.put("firstname", "John");
+        friend0.put("lastname", "Lennon");
+        Map<String, Object> friend1 = new HashMap<>();
+        friend1.put("firstname", "Adam");
+        friend1.put("lastname", "Smith");
+        doc.setPropertyValue("tst:friends", (Serializable) Arrays.asList(friend0, friend1));
+        doc = session.createDocument(doc);
+        session.save();
+
+        String clause;
+        DocumentModelList res;
+
+        // query with correlation, and no single element of the map matches the query
+        // the backend must interpret the correlation correctly
+
+        clause = "tst:friends/*1/firstname = 'John' AND " //
+                + "tst:friends/*1/lastname = 'Smith'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(0, res.size());
+
+        // same one with interleaved unrelated clause
+
+        clause = "tst:friends/*1/firstname = 'John' AND " //
+                + "tst:title = 'foo' AND " //
+                + "tst:friends/*1/lastname = 'Smith'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(0, res.size());
+
+        // more complex correlation with sub-clauses
+
+        clause = "(tst:friends/*1/firstname = 'John' OR tst:friends/*1/firstname = 'XYZ') AND " //
+                + "(tst:friends/*1/lastname = 'Smith' OR tst:friends/*1/lastname = 'XYZ')";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(0, res.size());
+
+        // same one with interleaved unrelated clause
+
+        clause = "(tst:friends/*1/firstname = 'John' OR tst:friends/*1/firstname = 'XYZ') AND " //
+                + "tst:title = 'foo' AND" //
+                + "(tst:friends/*1/lastname = 'Smith' OR tst:friends/*1/lastname = 'XYZ')";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(0, res.size());
+
+        // test that such complex queries can match documents too
+
+        clause = "(tst:friends/*1/firstname = 'John' OR tst:friends/*1/firstname = 'XYZ') AND " //
+                + "tst:title = 'title' AND" //
+                + "(tst:friends/*1/lastname = 'Lennon' OR tst:friends/*1/lastname = 'XYZ')";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(1, res.size());
     }
 
     @Test
