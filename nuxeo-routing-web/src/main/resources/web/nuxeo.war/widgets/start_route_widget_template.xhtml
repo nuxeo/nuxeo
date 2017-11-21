@@ -25,7 +25,8 @@
             <h:selectOneListbox id="#{widget.id}" value="#{field}" size="1">
               <nxu:selectItems
                 var="routeModel" value="#{routeModels}"
-                itemValue="#{routeModel.id}" itemLabel="#{messages[routeModel.title]}" />
+                itemValue="#{routeModel.id}" itemLabel="#{messages[routeModel.title]}"
+                ordering="#{empty widgetProperty_ordering?'label':widgetProperty_ordering}" />
               <f:attribute name="sourceComponentId" value="#{widget.id}" />
               <f:attribute name="targetComponentId" value="#{widget.id}_valueHolder" />
               <f:ajax execute="@this" render="#{widget.id}_preview"
