@@ -31,8 +31,9 @@ import java.util.function.Function;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.rules.TestWatcher;
+import org.junit.rules.TestRule;
 import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.functionaltests.RestHelper;
 
@@ -41,7 +42,7 @@ import org.nuxeo.functionaltests.RestHelper;
  * 
  * @since 9.3
  */
-public class HotReloadTestRule extends TestWatcher {
+public class HotReloadTestRule implements TestRule {
 
     public static final String NUXEO_RELOAD_PATH = "/sdk/reload";
 
@@ -56,13 +57,28 @@ public class HotReloadTestRule extends TestWatcher {
     };
 
     @Override
+    public Statement apply(Statement base, Description description) {
+        return new Statement() {
+
+            @Override
+            public void evaluate() throws Throwable {
+                starting(description);
+                try {
+                    base.evaluate();
+                } finally {
+                    finished(description);
+                }
+            }
+
+        };
+    }
+
     protected void starting(Description description) {
         RestHelper.logOnServer(String.format("Starting test '%s#%s'", description.getTestClass().getSimpleName(),
                 description.getMethodName()));
         deployDevBundle(description);
     }
 
-    @Override
     protected void finished(Description description) {
         String className = description.getTestClass().getSimpleName();
         String methodName = description.getMethodName();
