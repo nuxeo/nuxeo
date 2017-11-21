@@ -243,9 +243,7 @@ public class DirectoryTest extends BaseTest {
     @Test
     public void itCanUpdateADirectoryEntryWithAnIntId() throws IOException {
         try (Session dirSession = ds.open(INT_ID_TEST_DIR_NAME)) {
-            Map<String, Object> entry = new HashMap<>();
-            entry.put("label", "test label");
-            DocumentModel docEntry = dirSession.createEntry(entry);
+            DocumentModel docEntry = dirSession.createEntry(Collections.singletonMap("label", "test label"));
             nextTransaction(); // see committed changes
 
             docEntry.setPropertyValue("intIdSchema:label", "new label");

@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.oauth.tokens;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,9 +160,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
         try (Session session = ds.open(DIRECTORY_NAME)) {
             DocumentModel entry = session.getEntry(aToken.getToken());
             if (entry == null) {
-                Map<String, Object> init = new HashMap<String, Object>();
-                init.put("token", aToken.getToken());
-                entry = session.createEntry(init);
+                entry = session.createEntry(Collections.singletonMap("token", aToken.getToken()));
             }
 
             aToken.updateEntry(entry);

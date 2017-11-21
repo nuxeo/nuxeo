@@ -711,6 +711,9 @@ public class SQLSession extends BaseSession {
 
     @Override
     protected DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
+        // Make a copy of fieldMap to avoid modifying it
+        fieldMap = new HashMap<>(fieldMap);
+
         Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
         Field schemaIdField = schemaFieldMap.get(getIdField());
 
