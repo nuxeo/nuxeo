@@ -50,8 +50,8 @@ public class TestCmisBindingES extends TestCmisBinding {
 
     @Override
     protected boolean returnsRootInFolderQueries() {
-        // since NXP-21968 root is not indexed anymore
-        return false;
+        // since NXP-21968 root is not indexed anymore, but children are indexed since NXP-22784
+        return true;
     }
 
     @Override
