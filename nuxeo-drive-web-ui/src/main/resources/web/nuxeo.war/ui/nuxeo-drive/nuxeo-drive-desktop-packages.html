@@ -81,6 +81,8 @@ Example:
       }
     </style>
 
+    <nuxeo-connection platform-version="{{_tp}}"></nuxeo-connection>
+
     <div class="table">
       <div class="header">
         <div class="cell flex">[[i18n('driveDesktopPackages.platform', 'Platform')]]</div>
@@ -102,44 +104,53 @@ Example:
   </template>
   <script>
     (function() {
-      var PACKAGES = [];
-
-      var prefix = 'nuxeo-drive';
-      var baseUrl = [
-        'http://community.nuxeo.com/static/drive/', // XXX org.nuxeo.drive.update.site.url
-        'latest'
-      ].join('/');
-
-      var name = prefix + '.dmg';
-      PACKAGES.push({
-        name: name,
-        platform: 'osx',
-        url: baseUrl + '/' + name
-      });
-
-      name = prefix + '.msi';
-      PACKAGES.push({
-        name: name,
-        platform: 'windows',
-        url: baseUrl + '/' + name
-      });
-
-      PACKAGES.push({
-        name: window.nuxeo.I18n.translate('driveDesktopPackages.ubuntu.name',
-                                          'Read the documentation about the Linux client'),
-        platform: 'ubuntu',
-        url: 'https://github.com/nuxeo/nuxeo-drive#ubuntudebian-and-other-linux-variants-client'
-      });
 
       Polymer({
         is: 'nuxeo-drive-desktop-packages',
         properties: {
           packages: {
             type: Array,
-            value: PACKAGES
-          }
+            computed: '_computeUrls(_tp)'
+          },
+          _tp: String
         },
         behaviors: [Nuxeo.I18nBehavior],
+
+        _computeUrls: function(tp) {
+          if (!tp) {
+            return;
+          }
+          var pkgs = [];
+
+          var prefix = 'nuxeo-drive';
+          var baseUrl = [
+            'http://community.nuxeo.com/static/drive', // XXX org.nuxeo.drive.update.site.url
+            'latest',
+            tp
+          ].join('/');
+
+          var name = prefix + '.dmg';
+          pkgs.push({
+            name: name,
+            platform: 'osx',
+            url: baseUrl + '/' + name
+          });
+
+          name = prefix + '.msi';
+          pkgs.push({
+            name: name,
+            platform: 'windows',
+            url: baseUrl + '/' + name
+          });
+
+          pkgs.push({
+            name: window.nuxeo.I18n.translate('driveDesktopPackages.ubuntu.name',
+                                              'Read the documentation about the Linux client'),
+            platform: 'ubuntu',
+            url: 'https://github.com/nuxeo/nuxeo-drive#ubuntudebian-and-other-linux-variants-client'
+          });
+          return pkgs;
+        }
       });
     })();
   </script>
