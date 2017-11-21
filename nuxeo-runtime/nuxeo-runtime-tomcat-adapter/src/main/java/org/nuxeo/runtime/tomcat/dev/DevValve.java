@@ -134,14 +134,17 @@ public class DevValve extends ValveBase {
             String devBundlesLocation = bootstrap.getDevBundlesLocation();
             try {
                 Files.copy(req.getStream(), Paths.get(devBundlesLocation), StandardCopyOption.REPLACE_EXISTING);
+                // only if dev.bundles was modified
+                bootstrap.loadDevBundles();
+                resp.setStatus(200);
             } catch (IOException e) {
                 log.error("Unable to write to dev.bundles", e);
                 resp.sendError(500, "Unable to write to dev.bundles");
+            } catch (RuntimeException e) {
+                log.error("Unable to reload dev.bundles", e);
+                resp.sendError(500, "Unable to reload dev.bundles");
             }
-            // only if dev.bundles was modified
-            bootstrap.loadDevBundles();
         }
-        resp.setStatus(200);
     }
 
 }

@@ -130,7 +130,11 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
             bundlesCheck.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    loadDevBundles();
+                    try {
+                        loadDevBundles();
+                    } catch (RuntimeException e) {
+                        log.error("Failed to reload dev bundles", e);
+                    }
                 }
             }, 2000, 2000);
         }
@@ -208,15 +212,19 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
         try {
             reloadDevBundles(DevBundle.parseDevBundleLines(new FileInputStream(devBundlesFile)));
         } catch (ReflectiveOperationException | IOException e) {
-            log.error("Failed to deploy dev bundles", e);
+            throw new RuntimeException("Failed to reload dev bundles", e);
         }
     }
 
     @Override
     public void resetDevBundles(String path) {
-        devBundlesFile = new File(path);
-        lastModified = 0;
-        loadDevBundles();
+        try {
+            devBundlesFile = new File(path);
+            lastModified = 0;
+            loadDevBundles();
+        } catch (RuntimeException e) {
+            log.error("Unable to reset dev bundles", e);
+        }
     }
 
     @Override
