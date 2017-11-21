@@ -190,10 +190,9 @@ NodeVariables["comment"]= null;}</param>
     </chain>
   </extension>
   <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
-    <directory name="WorkflowType" extends="template-directory">
-      <schema>vocabulary</schema>
-      <idField>id</idField>
+    <directory name="WorkflowType" extends="template-vocabulary">
       <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
       <table>studio_vocabulary_WorkflowType</table>
       <dataFile>data/vocabularies/WorkflowType.csv</dataFile>
       <cacheEntryName>vocab-WorkflowType-cache</cacheEntryName>
@@ -201,12 +200,12 @@ NodeVariables["comment"]= null;}</param>
     </directory>
   </extension>
   <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
-    <cache name="vocab-WorkflowType-cache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+    <cache name="vocab-WorkflowType-cache">
       <option name="maxSize">1000</option>
       <option name="concurrencyLevel">500</option>
       <ttl>60</ttl>
     </cache>
-    <cache name="vocab-WorkflowType-cache-without-references" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+    <cache name="vocab-WorkflowType-cache-without-references">
       <option name="maxSize">1000</option>
       <option name="concurrencyLevel">500</option>
       <ttl>60</ttl>

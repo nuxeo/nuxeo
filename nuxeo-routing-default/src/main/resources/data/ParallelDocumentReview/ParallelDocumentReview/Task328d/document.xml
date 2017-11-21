@@ -9,101 +9,66 @@
     <facet>facet-var_Task328d</facet>
     <access-control/>
   </system>
+  <schema xmlns:var_Task328d="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_Task328d" name="var_Task328d"></schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common"></schema>
   <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
-    <dc:creator/>
-    <dc:source/>
-    <dc:nature/>
-    <dc:contributors/>
-    <dc:created/>
     <dc:description><![CDATA[Thank you for aknowledging]]></dc:description>
-    <dc:rights/>
-    <dc:subjects/>
-    <dc:publisher/>
-    <dc:valid/>
-    <dc:format/>
-    <dc:issued/>
-    <dc:modified/>
-    <dc:language/>
-    <dc:coverage/>
-    <dc:expired/>
-    <dc:lastContributor/>
     <dc:title><![CDATA[wf.parallelDocumentReview.give_opinion.title]]></dc:title>
   </schema>
-  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
-    <common:icon/>
-    <common:icon-expanded/>
-  </schema>
   <schema xmlns:rnode="http://www.nuxeo.org/ecm/schemas/route_node/" name="route_node">
-    <rnode:lastActor/>
-    <rnode:canceled/>
-    <rnode:taskLayout><![CDATA[Task328d@taskLayout]]></rnode:taskLayout>
+    <rnode:taskDocType><![CDATA[TaskDoc]]></rnode:taskDocType>
     <rnode:taskButtons>
       <button>
+        <filter><![CDATA[]]></filter>
         <name><![CDATA[NA]]></name>
         <label><![CDATA[wf.parallelDocumentReview.NA]]></label>
-        <filter><![CDATA[]]></filter>
       </button>
       <button>
+        <filter><![CDATA[]]></filter>
         <name><![CDATA[approve]]></name>
         <label><![CDATA[wf.parallelDocumentReview.approve]]></label>
-        <filter><![CDATA[]]></filter>
       </button>
       <button>
+        <filter><![CDATA[]]></filter>
         <name><![CDATA[reject]]></name>
         <label><![CDATA[wf.parallelDocumentReview.reject]]></label>
-        <filter><![CDATA[]]></filter>
       </button>
     </rnode:taskButtons>
-    <rnode:executeOnlyFirstTransition><![CDATA[false]]></rnode:executeOnlyFirstTransition>
-    <rnode:stop><![CDATA[false]]></rnode:stop>
-    <rnode:button/>
-    <rnode:taskDocType><![CDATA[TaskDoc]]></rnode:taskDocType>
-    <rnode:start><![CDATA[false]]></rnode:start>
-    <rnode:startDate/>
-    <rnode:taskNotificationTemplate><![CDATA[workflowTaskAssigned]]></rnode:taskNotificationTemplate>
     <rnode:transitions>
       <transition>
-        <chain><![CDATA[NRD-AC-PR-storeTaskInfo]]></chain>
         <condition><![CDATA[true]]></condition>
-        <name><![CDATA[automaticTask328d]]></name>
+        <chain><![CDATA[NRD-AC-PR-storeTaskInfo]]></chain>
         <targetId><![CDATA[Task2169]]></targetId>
+        <name><![CDATA[automaticTask328d]]></name>
         <label><![CDATA[automatic]]></label>
       </transition>
     </rnode:transitions>
-    <rnode:nodeId><![CDATA[Task328d]]></rnode:nodeId>
-    <rnode:hasMultipleTasks><![CDATA[true]]></rnode:hasMultipleTasks>
-    <rnode:outputChain><![CDATA[]]></rnode:outputChain>
-    <rnode:merge/>
-    <rnode:subRouteVariables/>
-    <rnode:taskAssignees/>
-    <rnode:taskAssigneesExpr><![CDATA[WorkflowVariables["participants"]]]></rnode:taskAssigneesExpr>
+    <rnode:taskLayout><![CDATA[Task328d@taskLayout]]></rnode:taskLayout>
     <rnode:taskY><![CDATA[240]]></rnode:taskY>
-    <rnode:count/>
-    <rnode:taskX><![CDATA[140]]></rnode:taskX>
-    <rnode:taskAssigneesPermission><![CDATA[Read]]></rnode:taskAssigneesPermission>
-    <rnode:subRouteInstanceId/>
-    <rnode:taskDueDateExpr><![CDATA[WorkflowVariables["end_date"]]]></rnode:taskDueDateExpr>
     <rnode:variablesFacet><![CDATA[facet-var_Task328d]]></rnode:variablesFacet>
-    <rnode:tasksInfo/>
-    <rnode:endDate/>
-    <rnode:allowTaskReassignment><![CDATA[true]]></rnode:allowTaskReassignment>
-    <rnode:taskDueDate/>
+    <rnode:taskX><![CDATA[140]]></rnode:taskX>
     <rnode:inputChain><![CDATA[]]></rnode:inputChain>
-    <rnode:taskDescription/>
+    <rnode:executeOnlyFirstTransition><![CDATA[false]]></rnode:executeOnlyFirstTransition>
+    <rnode:hasMultipleTasks><![CDATA[true]]></rnode:hasMultipleTasks>
+    <rnode:taskNotificationTemplate><![CDATA[workflowTaskAssigned]]></rnode:taskNotificationTemplate>
+    <rnode:allowTaskReassignment><![CDATA[true]]></rnode:allowTaskReassignment>
+    <rnode:stop><![CDATA[false]]></rnode:stop>
+    <rnode:taskAssignees/>
+    <rnode:taskDueDateExpr><![CDATA[WorkflowVariables["end_date"]]]></rnode:taskDueDateExpr>
     <rnode:hasTask><![CDATA[true]]></rnode:hasTask>
-    <rnode:taskDirective><![CDATA[wf.parallelDocumentReview.give_opinion.directive]]></rnode:taskDirective>
-    <rnode:subRouteModelExpr/>
     <rnode:escalationRules>
       <escalation_rule>
-        <multipleExecution><![CDATA[false]]></multipleExecution>
-        <chain><![CDATA[NRD-AC-PR-force-validate]]></chain>
         <condition><![CDATA[Fn.date(WorkflowVariables["end_date"]).days(1).calendar.compareTo(CurrentDate.calendar)<0]]></condition>
+        <chain><![CDATA[NRD-AC-PR-force-validate]]></chain>
         <name><![CDATA[forceNext]]></name>
+        <multipleExecution><![CDATA[false]]></multipleExecution>
       </escalation_rule>
     </rnode:escalationRules>
-  </schema>
-  <schema xmlns:var_Task328d="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_Task328d" name="var_Task328d">
-    <var_Task328d:comment/>
-    <var_Task328d:assignees/>
+    <rnode:outputChain><![CDATA[]]></rnode:outputChain>
+    <rnode:taskDirective><![CDATA[wf.parallelDocumentReview.give_opinion.directive]]></rnode:taskDirective>
+    <rnode:taskAssigneesExpr><![CDATA[WorkflowVariables["participants"]]]></rnode:taskAssigneesExpr>
+    <rnode:nodeId><![CDATA[Task328d]]></rnode:nodeId>
+    <rnode:start><![CDATA[false]]></rnode:start>
+    <rnode:taskAssigneesPermission><![CDATA[Read]]></rnode:taskAssigneesPermission>
   </schema>
 </document>
