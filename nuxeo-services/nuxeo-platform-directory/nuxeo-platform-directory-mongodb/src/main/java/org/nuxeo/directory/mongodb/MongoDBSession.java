@@ -100,6 +100,9 @@ public class MongoDBSession extends BaseSession {
 
     @Override
     protected DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
+        // Make a copy of fieldMap to avoid modifying it
+        fieldMap = new HashMap<>(fieldMap);
+
         // Filter out reference fields for creation as we keep it in a different collection
         Map<String, Object> newDocMap = fieldMap.entrySet()
                                                 .stream()

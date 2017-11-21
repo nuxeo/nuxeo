@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -161,9 +162,7 @@ public class TestShibbolethComputedGroup {
     }
 
     protected DocumentModel createUser(String username) throws Exception {
-        Map<String, Object> user = new HashMap<String, Object>();
-        user.put("username", username);
-        DocumentModel doc = userDir.createEntry(user);
+        DocumentModel doc = userDir.createEntry(Collections.singletonMap("username", username));
         return doc;
     }
 

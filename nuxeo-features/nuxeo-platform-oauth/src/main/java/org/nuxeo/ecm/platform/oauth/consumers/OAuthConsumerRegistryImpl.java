@@ -80,9 +80,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
     public NuxeoOAuthConsumer storeConsumer(NuxeoOAuthConsumer consumer) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
-            Map<String, Object> init = new HashMap<String, Object>();
-            init.put("consumerKey", consumer.consumerKey);
-            DocumentModel entry = session.createEntry(init);
+            DocumentModel entry = session.createEntry(Collections.singletonMap("consumerKey", consumer.consumerKey));
             consumer.asDocumentModel(entry);
             session.updateEntry(entry);
             if (entry == null) {

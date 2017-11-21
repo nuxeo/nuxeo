@@ -145,6 +145,9 @@ public class LDAPSession extends BaseSession {
 
     @Override
     protected DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
+        // Make a copy of fieldMap to avoid modifying it
+        fieldMap = new HashMap<>(fieldMap);
+
         LDAPDirectoryDescriptor descriptor = getDirectory().getDescriptor();
         List<String> referenceFieldList = new LinkedList<>();
         try {
