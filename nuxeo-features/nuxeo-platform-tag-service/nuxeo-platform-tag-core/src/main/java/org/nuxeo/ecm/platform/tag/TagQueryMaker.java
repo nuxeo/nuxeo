@@ -104,7 +104,7 @@ public class TagQueryMaker extends NXQLQueryMaker {
      */
     @Override
     protected void fixInitialJoins() {
-        relationTable = getFragmentTable(dataHierTable, SCHEMA_RELATION, SCHEMA_RELATION, -1, false);
+        relationTable = getFragmentTable(dataHierTable, SCHEMA_RELATION);
     }
 
     /**

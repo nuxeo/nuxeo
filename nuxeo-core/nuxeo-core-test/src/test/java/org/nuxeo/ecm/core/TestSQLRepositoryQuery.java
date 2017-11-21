@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
@@ -3237,6 +3238,82 @@ public class TestSQLRepositoryQuery {
         assertEquals(1, dml.size());
         DocumentModel doc = dml.get(0);
         assertEquals(doc1.getId(), doc.getId());
+    }
+
+    @Test
+    public void testQueryIdNotFromUuidWithMissingDoc() throws Exception {
+        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
+        doc1 = session.createDocument(doc1);
+
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
+        doc2.setPropertyValue("dc:source", "not-a-doc-id");
+        doc2 = session.createDocument(doc2);
+        session.save();
+
+        String nxql = "SELECT dc:source FROM File WHERE ecm:name = 'doc2'";
+        DocumentModelList dml = session.query(nxql);
+        assertEquals(0, dml.size());
+        assertEquals(0, dml.totalSize());
+
+        IterableQueryResult res = session.queryAndFetch(nxql, NXQL.NXQL);
+        assertEquals(1, res.size());
+        Map<String, Serializable> map = res.iterator().next();
+        assertEquals("not-a-doc-id", map.get("dc:source"));
+        res.close();
+
+        PartialList<Map<String, Serializable>> projection = session.queryProjection(nxql, 0, 0, true);
+        assertEquals(1, projection.size());
+        assertEquals(1, projection.totalSize());
+        map = projection.get(0);
+        assertEquals("not-a-doc-id", map.get("dc:source"));
+    }
+
+    // SELECT dc:subjects/* ... must not return NULLs (due to LEFT JOIN) if there is no match
+    @Test
+    public void testQueryIdListNotFromUuidButFromArray() throws Exception {
+        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
+        doc1 = session.createDocument(doc1);
+        // don't set any dc:subjects at all
+        session.save();
+
+        String nxql = "SELECT dc:subjects/* FROM File WHERE ecm:name = 'doc1'";
+        DocumentModelList dml = session.query(nxql, null, 10, 0, true);
+        assertEquals(0, dml.size());
+        assertEquals(0, dml.totalSize());
+
+        IterableQueryResult res = session.queryAndFetch(nxql, NXQL.NXQL);
+        assertEquals(0, res.size());
+        res.close();
+
+        PartialList<Map<String, Serializable>> projection = session.queryProjection(nxql, 10, 0, true);
+        assertEquals(0, projection.size());
+        assertEquals(0, projection.totalSize());
+    }
+
+    // SELECT dc:subjects/*1 ... WHERE dc:subjects/*1 ... may return NULLs
+    @Test
+    public void testQueryIdListNotFromUuidButFromArrayMentionedInWhereClause() throws Exception {
+        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
+        doc1 = session.createDocument(doc1);
+        // don't set any dc:subjects at all
+        session.save();
+
+        String nxql = "SELECT dc:subjects/*1 FROM File WHERE ecm:name = 'doc1' AND dc:subjects/*1 IS NULL";
+        DocumentModelList dml = session.query(nxql, null, 10, 0, true);
+        assertEquals(0, dml.size()); // null docs filtered out
+        assertEquals(1, dml.totalSize());
+
+        IterableQueryResult res = session.queryAndFetch(nxql, NXQL.NXQL);
+        assertEquals(1, res.size());
+        Map<String, Serializable> map = res.iterator().next();
+        assertNull(map.get("dc:subjects/*1"));
+        res.close();
+
+        PartialList<Map<String, Serializable>> projection = session.queryProjection(nxql, 10, 0, true);
+        assertEquals(1, projection.size());
+        assertEquals(1, projection.totalSize());
+        map = projection.get(0);
+        assertNull(map.get("dc:subjects/*1"));
     }
 
     @Test
