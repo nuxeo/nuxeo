@@ -40,15 +40,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -87,6 +83,7 @@ import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
+import org.nuxeo.ecm.core.storage.QueryOptimizer.PrefixInfo;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.api.Framework;
@@ -143,6 +140,11 @@ public class MongoDBQueryBuilder {
     boolean projectionHasWildcard;
 
     private boolean fulltextSearchDisabled;
+
+    /**
+     * Prefix to remove for $elemMatch (including final dot), or {@code null} if there's no current prefix to remove.
+     */
+    protected String elemMatchPrefix;
 
     public MongoDBQueryBuilder(MongoDBRepository repository, Expression expression, SelectClause selectClause,
             OrderByClause orderByClause, PathResolver pathResolver, boolean fulltextSearchDisabled) {
@@ -224,7 +226,7 @@ public class MongoDBQueryBuilder {
                 propertyKeys.put(fieldInfo.projectionField, propertyField);
             }
             projection.put(fieldInfo.projectionField, ONE);
-            if (fieldInfo.hasWildcard) {
+            if (propertyField.contains("*")) {
                 projectionHasWildcard = true;
             }
             if (fieldInfo.projectionField.equals(KEY_FULLTEXT_SCORE)) {
@@ -279,9 +281,9 @@ public class MongoDBQueryBuilder {
             return walkGtEq(lvalue, rvalue);
         } else if (op == Operator.AND) {
             if (expr instanceof MultiExpression) {
-                return walkMultiExpression((MultiExpression) expr);
+                return walkAndMultiExpression((MultiExpression) expr);
             } else {
-                return walkAnd(lvalue, rvalue);
+                return walkAnd(expr);
             }
         } else if (op == Operator.NOT) {
             return walkNot(lvalue);
@@ -526,94 +528,62 @@ public class MongoDBQueryBuilder {
         throw new QueryParseException("Unknown operator for NOT: " + key);
     }
 
+    protected Document newDocumentWithField(FieldInfo fieldInfo, Object value) {
+        return new Document(fieldInfo.queryField, value);
+    }
+
     public Document walkIsNull(Operand value) {
         FieldInfo fieldInfo = walkReference(value);
-        return new FieldInfoDocument(fieldInfo, null);
+        return newDocumentWithField(fieldInfo, null);
     }
 
     public Document walkIsNotNull(Operand value) {
         FieldInfo fieldInfo = walkReference(value);
-        return new FieldInfoDocument(fieldInfo, new Document(QueryOperators.NE, null));
+        return newDocumentWithField(fieldInfo, new Document(QueryOperators.NE, null));
     }
 
-    public Document walkMultiExpression(MultiExpression expr) {
-        return walkAnd(expr.values);
+    public Document walkAndMultiExpression(MultiExpression expr) {
+        return walkAnd(expr, expr.values);
     }
 
-    public Document walkAnd(Operand lvalue, Operand rvalue) {
-        return walkAnd(Arrays.asList(lvalue, rvalue));
+    public Document walkAnd(Expression expr) {
+        return walkAnd(expr, Arrays.asList(expr.lvalue, expr.rvalue));
     }
 
-    protected Document walkAnd(List<Operand> values) {
-        List<Object> list = walkOperandList(values);
-        // check wildcards in the operands, extract common prefixes to use $elemMatch
-        Map<String, List<FieldInfoDocument>> propBaseKeyToDBOs = new LinkedHashMap<>();
-        Map<String, String> propBaseKeyToFieldBase = new HashMap<>();
-        for (Iterator<Object> it = list.iterator(); it.hasNext();) {
-            Object ob = it.next();
-            if (ob instanceof FieldInfoDocument) {
-                FieldInfoDocument fidbo = (FieldInfoDocument) ob;
-                FieldInfo fieldInfo = fidbo.fieldInfo;
-                if (fieldInfo.hasWildcard) {
-                    if (fieldInfo.fieldSuffix != null && fieldInfo.fieldSuffix.contains("*")) {
-                        // a double wildcard of the form foo/*/bar/* is not a problem if bar is an array
-                        // TODO prevent deep complex multiple wildcards
-                        // throw new QueryParseException("Cannot use two wildcards: " + fieldInfo.prop);
-                    }
-                    // generate a key unique per correlation for this element match
-                    String wildcardNumber = fieldInfo.fieldWildcard;
-                    if (wildcardNumber.isEmpty()) {
-                        // negative to not collide with regular correlated wildcards
-                        wildcardNumber = String.valueOf(-counter.incrementAndGet());
-                    }
-                    String propBaseKey = fieldInfo.fieldPrefix + "/*" + wildcardNumber;
-                    // store object for this key
-                    List<FieldInfoDocument> dbos = propBaseKeyToDBOs.get(propBaseKey);
-                    if (dbos == null) {
-                        propBaseKeyToDBOs.put(propBaseKey, dbos = new LinkedList<>());
-                    }
-                    dbos.add(fidbo);
-                    // remember for which field base this is
-                    String fieldBase = fieldInfo.fieldPrefix.replace("/", ".");
-                    propBaseKeyToFieldBase.put(propBaseKey, fieldBase);
-                    // remove from list, will be re-added later through propBaseKeyToDBOs
-                    it.remove();
-                }
-            }
+    protected static final Pattern SLASH_WILDCARD_SLASH = Pattern.compile("/\\*\\d+(/)?");
+
+    protected Document walkAnd(Expression expr, List<Operand> values) {
+        if (values.size() == 1) {
+            return (Document) walkOperand(values.get(0));
         }
-        // generate $elemMatch items for correlated queries
-        for (Entry<String, List<FieldInfoDocument>> es : propBaseKeyToDBOs.entrySet()) {
-            String propBaseKey = es.getKey();
-            List<FieldInfoDocument> fidbos = es.getValue();
-            if (fidbos.size() == 1) {
-                // regular uncorrelated match
-                list.addAll(fidbos);
-            } else {
-                Document elemMatch = new Document();
-                for (FieldInfoDocument fidbo : fidbos) {
-                    // truncate field name to just the suffix
-                    FieldInfo fieldInfo = fidbo.fieldInfo;
-                    Object value = fidbo.get(fieldInfo.queryField);
-                    String fieldSuffix = fieldInfo.fieldSuffix.replace("/", ".");
-                    if (elemMatch.containsKey(fieldSuffix)) {
-                        // ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/principal = 'steve'
-                        // cannot match
-                        // TODO do better
-                        value = "__NOSUCHVALUE__";
-                    }
-                    elemMatch.put(fieldSuffix, value);
-                }
-                String fieldBase = propBaseKeyToFieldBase.get(propBaseKey);
-                Document dbo = new Document(fieldBase,
-                        new Document(QueryOperators.ELEM_MATCH, elemMatch));
-                list.add(dbo);
-            }
-        }
-        if (list.size() == 1) {
-            return (Document) list.get(0);
-        } else {
+        // PrefixInfo was computed by the QueryOptimizer
+        PrefixInfo info = (PrefixInfo) expr.getInfo();
+        if (info == null || info.count < 2) {
+            List<Object> list = walkOperandList(values);
             return new Document(QueryOperators.AND, list);
         }
+
+        // we have a common prefix for all underlying references, extract it into an $elemMatch node
+
+        // info.prefix is the DBS common prefix, ex: foo/bar/*1; ecm:acp/*1/acl/*1
+        // compute MongoDB prefix: foo.bar.; ecm:acp.acl.
+        String prefix = SLASH_WILDCARD_SLASH.matcher(info.prefix).replaceAll(".");
+        // remove current prefix and trailing . for actual field match
+        String fieldBase = stripElemMatchPrefix(prefix.substring(0, prefix.length() - 1));
+
+        String previousElemMatchPrefix = elemMatchPrefix;
+        elemMatchPrefix = prefix;
+        List<Object> list = walkOperandList(values);
+        elemMatchPrefix = previousElemMatchPrefix;
+
+        return new Document(fieldBase, new Document(QueryOperators.ELEM_MATCH, new Document(QueryOperators.AND, list)));
+    }
+
+    protected String stripElemMatchPrefix(String field) {
+        if (elemMatchPrefix != null && field.startsWith(elemMatchPrefix)) {
+            field = field.substring(elemMatchPrefix.length());
+        }
+        return field;
     }
 
     public Document walkOr(Operand lvalue, Operand rvalue) {
@@ -650,7 +620,7 @@ public class MongoDBQueryBuilder {
         }
         right = checkBoolean(fieldInfo, right);
         // TODO check list fields
-        return new FieldInfoDocument(fieldInfo, right);
+        return newDocumentWithField(fieldInfo, right);
     }
 
     public Document walkNotEq(Operand lvalue, Operand rvalue) {
@@ -664,31 +634,31 @@ public class MongoDBQueryBuilder {
         }
         right = checkBoolean(fieldInfo, right);
         // TODO check list fields
-        return new FieldInfoDocument(fieldInfo, new Document(QueryOperators.NE, right));
+        return newDocumentWithField(fieldInfo, new Document(QueryOperators.NE, right));
     }
 
     public Document walkLt(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
-        return new FieldInfoDocument(fieldInfo, new Document(QueryOperators.LT, right));
+        return newDocumentWithField(fieldInfo, new Document(QueryOperators.LT, right));
     }
 
     public Document walkGt(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
-        return new FieldInfoDocument(fieldInfo, new Document(QueryOperators.GT, right));
+        return newDocumentWithField(fieldInfo, new Document(QueryOperators.GT, right));
     }
 
     public Document walkLtEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
-        return new FieldInfoDocument(fieldInfo, new Document(QueryOperators.LTE, right));
+        return newDocumentWithField(fieldInfo, new Document(QueryOperators.LTE, right));
     }
 
     public Document walkGtEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
-        return new FieldInfoDocument(fieldInfo, new Document(QueryOperators.GTE, right));
+        return newDocumentWithField(fieldInfo, new Document(QueryOperators.GTE, right));
     }
 
     public Document walkBetween(Operand lvalue, Operand rvalue, boolean positive) {
@@ -700,10 +670,10 @@ public class MongoDBQueryBuilder {
             Document range = new Document();
             range.put(QueryOperators.GTE, left);
             range.put(QueryOperators.LTE, right);
-            return new FieldInfoDocument(fieldInfo, range);
+            return newDocumentWithField(fieldInfo, range);
         } else {
-            Document a = new FieldInfoDocument(fieldInfo, new Document(QueryOperators.LT, left));
-            Document b = new FieldInfoDocument(fieldInfo, new Document(QueryOperators.GT, right));
+            Document a = newDocumentWithField(fieldInfo, new Document(QueryOperators.LT, left));
+            Document b = newDocumentWithField(fieldInfo, new Document(QueryOperators.GT, right));
             return new Document(QueryOperators.OR, Arrays.asList(a, b));
         }
     }
@@ -719,8 +689,7 @@ public class MongoDBQueryBuilder {
         }
         // TODO check list fields
         List<Object> list = (List<Object>) right;
-        return new FieldInfoDocument(fieldInfo,
-                new Document(positive ? QueryOperators.IN : QueryOperators.NIN, list));
+        return newDocumentWithField(fieldInfo, new Document(positive ? QueryOperators.IN : QueryOperators.NIN, list));
     }
 
     public Document walkLike(Operand lvalue, Operand rvalue, boolean positive, boolean caseInsensitive) {
@@ -740,7 +709,7 @@ public class MongoDBQueryBuilder {
         } else {
             value = new Document(QueryOperators.NOT, pattern);
         }
-        return new FieldInfoDocument(fieldInfo, value);
+        return newDocumentWithField(fieldInfo, value);
     }
 
     public Object walkOperand(Operand op) {
@@ -849,11 +818,11 @@ public class MongoDBQueryBuilder {
 
     protected Document walkStartsWithNonPath(Operand lvalue, String path) {
         FieldInfo fieldInfo = walkReference(lvalue);
-        Document eq = new FieldInfoDocument(fieldInfo, path);
+        Document eq = newDocumentWithField(fieldInfo, path);
         // escape except alphanumeric and others not needing escaping
         String regex = path.replaceAll("([^a-zA-Z0-9 /])", "\\\\$1");
         Pattern pattern = Pattern.compile(regex + "/.*");
-        Document like = new FieldInfoDocument(fieldInfo, pattern);
+        Document like = newDocumentWithField(fieldInfo, pattern);
         return new Document(QueryOperators.OR, Arrays.asList(eq, like));
     }
 
@@ -890,16 +859,10 @@ public class MongoDBQueryBuilder {
         }
     }
 
-    /** Splits foo.*.bar into foo, *, bar and split foo.*1.bar into foo, *1, bar with the last bar part optional */
-    protected final static Pattern WILDCARD_SPLIT = Pattern.compile("([^*]*)\\.\\*(\\d*)(?:\\.(.*))?");
-
     protected static class FieldInfo {
 
         /** NXQL property. */
         protected final String prop;
-
-        /** MongoDB field including wildcards (not used as-is). */
-        protected final String fullField;
 
         /** MongoDB field for query. foo/0/bar -> foo.0.bar; foo / * / bar -> foo.bar */
         protected final String queryField;
@@ -914,51 +877,17 @@ public class MongoDBQueryBuilder {
          */
         protected final boolean isTrueOrNullBoolean;
 
-        protected final boolean hasWildcard;
-
-        /** Prefix before the wildcard. */
-        protected final String fieldPrefix;
-
-        /** Wildcard part after * */
-        protected final String fieldWildcard;
-
-        /** Part after wildcard, may be null. */
-        protected final String fieldSuffix;
-
-        protected FieldInfo(String prop, String fullField, String queryField, String projectionField, Type type,
+        protected FieldInfo(String prop, String queryField, String projectionField, Type type,
                 boolean isTrueOrNullBoolean) {
             this.prop = prop;
-            this.fullField = fullField;
             this.queryField = queryField;
             this.projectionField = projectionField;
             this.type = type;
             this.isTrueOrNullBoolean = isTrueOrNullBoolean;
-            Matcher m = WILDCARD_SPLIT.matcher(fullField);
-            if (m.matches()) {
-                hasWildcard = true;
-                fieldPrefix = m.group(1);
-                fieldWildcard = m.group(2);
-                fieldSuffix = m.group(3);
-            } else {
-                hasWildcard = false;
-                fieldPrefix = fieldWildcard = fieldSuffix = null;
-            }
         }
 
         protected boolean isBoolean() {
             return type instanceof BooleanType;
-        }
-    }
-
-    protected static class FieldInfoDocument extends Document {
-
-        private static final long serialVersionUID = 1L;
-
-        protected FieldInfo fieldInfo;
-
-        public FieldInfoDocument(FieldInfo fieldInfo, Object value) {
-            super(fieldInfo.queryField, value);
-            this.fieldInfo = fieldInfo;
         }
     }
 
@@ -986,20 +915,16 @@ public class MongoDBQueryBuilder {
                 return parseACP(prop, parts);
             }
             if (prop.startsWith(NXQL.ECM_TAG)) {
-                String field;
-                if (prop.equals(NXQL.ECM_TAG)) {
-                    field = FACETED_TAG + ".*1." + FACETED_TAG_LABEL;
-                } else {
-                    field = FACETED_TAG + "." + parts[1] + "." + FACETED_TAG_LABEL;
-                }
                 String queryField = FACETED_TAG + "." + FACETED_TAG_LABEL;
-                return new FieldInfo(prop, field, queryField, queryField, StringType.INSTANCE, true);
+                queryField = stripElemMatchPrefix(queryField);
+                return new FieldInfo(prop, queryField, queryField, StringType.INSTANCE, true);
             }
             // simple field
             String field = DBSSession.convToInternal(prop);
             Type type = DBSSession.getType(field);
             String queryField = converter.keyToBson(field);
-            return new FieldInfo(prop, field, queryField, field, type, true);
+            queryField = stripElemMatchPrefix(queryField);
+            return new FieldInfo(prop, queryField, field, type, true);
         } else {
             String first = parts[0];
             Field field = schemaManager.getField(first);
@@ -1029,7 +954,7 @@ public class MongoDBQueryBuilder {
             if (PROP_UID_MAJOR_VERSION.equals(prop) || PROP_UID_MINOR_VERSION.equals(prop)
                  || PROP_MAJOR_VERSION.equals(prop) || PROP_MINOR_VERSION.equals(prop)) {
                 String fieldName = DBSSession.convToInternal(prop);
-                return new FieldInfo(prop, fieldName, fieldName, fieldName, type, true);
+                return new FieldInfo(prop, fieldName, fieldName, type, true);
             }
 
             // canonical name
@@ -1061,10 +986,10 @@ public class MongoDBQueryBuilder {
                 }
                 firstPart = false;
             }
-            String fullField = StringUtils.join(parts, '.');
             String queryField = StringUtils.join(queryFieldParts, '.');
             String projectionField = StringUtils.join(projectionFieldParts, '.');
-            return new FieldInfo(prop, fullField, queryField, projectionField, type, false);
+            queryField = stripElemMatchPrefix(queryField);
+            return new FieldInfo(prop, queryField, projectionField, type, false);
         }
     }
 
@@ -1077,24 +1002,19 @@ public class MongoDBQueryBuilder {
             throw new QueryParseException("Cannot use explicit index in ACLs: " + prop);
         }
         String last = parts[2];
-        String fullField;
         String queryField;
-        String projectionField;
         if (NXQL.ECM_ACL_NAME.equals(last)) {
-            fullField = KEY_ACP + "." + KEY_ACL_NAME;
             queryField = KEY_ACP + "." + KEY_ACL_NAME;
-            // TODO remember wildcard correlation
         } else {
             String fieldLast = DBSSession.convToInternalAce(last);
             if (fieldLast == null) {
                 throw new QueryParseException("No such property: " + prop);
             }
-            fullField = KEY_ACP + "." + KEY_ACL + "." + wildcard + "." + fieldLast;
             queryField = KEY_ACP + "." + KEY_ACL + "." + fieldLast;
         }
         Type type = DBSSession.getType(last);
-        projectionField = queryField;
-        return new FieldInfo(prop, fullField, queryField, projectionField, type, false);
+        queryField = stripElemMatchPrefix(queryField);
+        return new FieldInfo(prop, queryField, queryField, type, false);
     }
 
     protected boolean isMixinTypes(FieldInfo fieldInfo) {

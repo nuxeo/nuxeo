@@ -38,6 +38,9 @@ public class Expression implements Operand {
 
     public final Operand rvalue;
 
+    /** Arbitrary info associated to the expression. */
+    public Object info;
+
     public Expression(Operand lvalue, Operator operator, Operand rvalue) {
         this.lvalue = lvalue;
         this.rvalue = rvalue;
@@ -54,6 +57,14 @@ public class Expression implements Operand {
      */
     public boolean isSuffix() {
         return operator == Operator.ISNULL || operator == Operator.ISNOTNULL;
+    }
+
+    public void setInfo(Object info) {
+        this.info = info;
+    }
+
+    public Object getInfo() {
+        return info;
     }
 
     @Override

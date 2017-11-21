@@ -18,14 +18,24 @@
  */
 package org.nuxeo.ecm.core.storage;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.query.sql.model.DefaultQueryVisitor;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.FromClause;
 import org.nuxeo.ecm.core.query.sql.model.FromList;
@@ -46,7 +56,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.9.4
  */
-public class QueryOptimizer {
+public abstract class QueryOptimizer {
 
     public static final String TYPE_ROOT = "Root";
 
@@ -58,27 +68,172 @@ public class QueryOptimizer {
 
     protected final Set<String> neverPerInstanceMixins;
 
-    protected final LinkedList<Operand> toplevelOperands;
+    protected final List<Expression> toplevelExpressions;
 
     /** Do we match only relations? */
     protected boolean onlyRelations;
 
+    // group by prefix, keeping order
+    protected static Collector<Expression, ?, Map<String, List<Expression>>> GROUPING_BY_EXPR_PREFIX = Collectors.groupingBy(
+            QueryOptimizer::getExpressionPrefix, LinkedHashMap::new, Collectors.toList());
+
     public QueryOptimizer() {
+        // schemaManager may be null in unit tests
         schemaManager = Framework.getLocalService(SchemaManager.class);
-        neverPerInstanceMixins = new HashSet<>(schemaManager.getNoPerDocumentQueryFacets());
-        toplevelOperands = new LinkedList<>();
+        Set<String> facets = schemaManager == null ? Collections.emptySet()
+                : schemaManager.getNoPerDocumentQueryFacets();
+        neverPerInstanceMixins = new HashSet<>(facets);
+        toplevelExpressions = new LinkedList<>();
     }
 
-    public MultiExpression getOptimizedQuery(SQLQuery query, FacetFilter facetFilter) {
+    public Expression getOptimizedQuery(SQLQuery query, FacetFilter facetFilter) {
         if (facetFilter != null) {
             addFacetFilterClauses(facetFilter);
         }
         visitFromClause(query.from); // for primary types
         if (query.where != null) {
-            analyzeToplevelOperands(query.where.predicate);
+            analyzeToplevelExpressions(query.where.predicate);
         }
-        simplifyToplevelOperands();
-        return new MultiExpression(Operator.AND, toplevelOperands);
+        simplifyToplevelExpressions();
+        MultiExpression multiExpression = MultiExpression.fromExpressionList(Operator.AND, toplevelExpressions);
+
+        // collect information about common reference prefixes (stored on Reference and Expression)
+        multiExpression.accept(new ReferencePrefixAnalyzer());
+
+        // group toplevel operands by common reference prefixes
+        PrefixInfo info = (PrefixInfo) multiExpression.getInfo();
+        if (!info.prefix.isEmpty()) {
+            // all references have a common prefix
+            return multiExpression;
+        }
+
+        // do grouping by common prefix
+        Map<String, List<Expression>> grouped = toplevelExpressions.stream().collect(GROUPING_BY_EXPR_PREFIX);
+        Map<String, Expression> groupedExpressions = new LinkedHashMap<>();
+        for (Entry<String, List<Expression>> en : grouped.entrySet()) {
+            String prefix = en.getKey();
+            List<Expression> list = en.getValue();
+            groupedExpressions.put(prefix, makeSingleAndExpression(prefix, list));
+        }
+
+        // potentially reorganize into nested grouping
+        reorganizeGroupedExpressions(groupedExpressions);
+
+        List<Expression> expressions = new ArrayList<>(groupedExpressions.values());
+        return makeSingleAndExpression("", expressions);
+    }
+
+    /**
+     * Makes a single AND expression from several expressions known to have a common prefix.
+     */
+    public static Expression makeSingleAndExpression(String prefix, List<Expression> exprs) {
+        if (exprs.size() == 1) {
+            return exprs.get(0);
+        } else {
+            int count = prefix.isEmpty() ? 0 : exprs.stream().mapToInt(QueryOptimizer::getExpressionCount).sum();
+            Expression e = MultiExpression.fromExpressionList(Operator.AND, exprs);
+            e.setInfo(new PrefixInfo(prefix, count));
+            return e;
+        }
+    }
+
+    protected static String getExpressionPrefix(Expression expr) {
+        PrefixInfo info = (PrefixInfo) expr.getInfo();
+        return info == null ? "" : info.prefix;
+    }
+
+    protected static int getExpressionCount(Expression expr) {
+        PrefixInfo info = (PrefixInfo) expr.getInfo();
+        return info == null ? 0 : info.count;
+    }
+
+    /**
+     * Reorganizes the grouped expressions in order to have 2-level nesting in case a group is a prefix of another.
+     *
+     * @since 9.3
+     */
+    public static void reorganizeGroupedExpressions(Map<String, Expression> groupedExpressions) {
+        if (groupedExpressions.size() > 1) {
+            List<String> keys = new ArrayList<>(groupedExpressions.keySet());
+            List<String> withPrefix = new ArrayList<>();
+            String prefix = findPrefix(keys, withPrefix);
+            if (prefix != null) {
+                // first part, the expression corresponding to the prefix
+                Expression first = groupedExpressions.remove(prefix);
+
+                // second part, all those that had that prefix
+                List<Expression> exprs = new ArrayList<>();
+                for (String k : withPrefix) {
+                    exprs.add(groupedExpressions.remove(k));
+                }
+                String secondPrefix;
+                if (withPrefix.size() == 1) {
+                    secondPrefix = withPrefix.get(0);
+                } else {
+                    throw new QueryParseException("Too complex correlated wildcards in query: " + groupedExpressions);
+                }
+                Expression second = makeSingleAndExpression(secondPrefix, exprs);
+
+                // finally bring them all together
+                Expression expr = makeSingleAndExpression(prefix, Arrays.asList(first, second));
+                groupedExpressions.put(prefix, expr);
+            }
+        }
+    }
+
+    /**
+     * Finds a non-empty prefix in the strings.
+     * <p>
+     * If a prefix is found, the other strings having it as a prefix are collected in {@code withPrefix}, and the prefix
+     * and the found strings are moved from the input {@code string}.
+     * <p>
+     * {@code strings} and {@code withPrefix} must both be ArrayLists as they will be mutated and queried by index.
+     *
+     * @param strings the input strings
+     * @param withPrefix (return value) the strings that have the found prefix as a prefix
+     * @return the prefix if found, or null if not
+     * @since 9.3
+     */
+    public static String findPrefix(List<String> strings, List<String> withPrefix) {
+        // naive algorithm as list size is very small
+        String prefix = null;
+        ALL: //
+        for (int i = 0; i < strings.size(); i++) {
+            String candidate = strings.get(i);
+            if (candidate.isEmpty()) {
+                continue;
+            }
+            for (int j = 0; j < strings.size(); j++) {
+                if (i == j) {
+                    continue;
+                }
+                String s = strings.get(j);
+                if (s.isEmpty()) {
+                    continue;
+                }
+                if (s.startsWith(candidate + '/')) {
+                    prefix = candidate;
+                    break ALL;
+                }
+            }
+        }
+        if (prefix != null) {
+            for (Iterator<String> it = strings.iterator(); it.hasNext();) {
+                String s = it.next();
+                if (s.isEmpty()) {
+                    continue;
+                }
+                if (s.equals(prefix)) {
+                    it.remove(); // will be returned as method result
+                    continue;
+                }
+                if (s.startsWith(prefix + '/')) {
+                    it.remove(); // will be returned in withPrefix
+                    withPrefix.add(s);
+                }
+            }
+        }
+        return prefix;
     }
 
     protected void addFacetFilterClauses(FacetFilter facetFilter) {
@@ -86,7 +241,7 @@ public class QueryOptimizer {
             // every facet is required, not just any of them,
             // so do them one by one
             Expression expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.EQ, new StringLiteral(mixin));
-            toplevelOperands.add(expr);
+            toplevelExpressions.add(expr);
         }
         if (!facetFilter.excluded.isEmpty()) {
             LiteralList list = new LiteralList();
@@ -94,8 +249,41 @@ public class QueryOptimizer {
                 list.add(new StringLiteral(mixin));
             }
             Expression expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.NOTIN, list);
-            toplevelOperands.add(expr);
+            toplevelExpressions.add(expr);
         }
+    }
+
+    // methods using SchemaManager easily overrideable for easier testing
+
+    protected Set<String> getDocumentTypeNamesForFacet(String mixin) {
+        Set<String> types = schemaManager.getDocumentTypeNamesForFacet(mixin);
+        if (types == null) {
+            // unknown mixin
+            types = Collections.emptySet();
+        }
+        return types;
+    }
+
+    protected Set<String> getDocumentTypeNamesExtending(String typeName) {
+        Set<String> types = schemaManager.getDocumentTypeNamesExtending(typeName);
+        if (types == null) {
+            throw new RuntimeException("Unknown type: " + typeName);
+        }
+        return types;
+    }
+
+    protected boolean isTypeRelation(String typeName) {
+        do {
+            if (TYPE_RELATION.equals(typeName)) {
+                return true;
+            }
+            Type t = schemaManager.getDocumentType(typeName);
+            if (t != null) {
+                t = t.getSuperType();
+            }
+            typeName = t == null ? null : t.getName();
+        } while (typeName != null);
+        return false;
     }
 
     /**
@@ -112,24 +300,8 @@ public class QueryOptimizer {
             if (TYPE_DOCUMENT.equalsIgnoreCase(typeName)) {
                 typeName = TYPE_DOCUMENT;
             }
-
-            Set<String> subTypes = schemaManager.getDocumentTypeNamesExtending(typeName);
-            if (subTypes == null) {
-                throw new RuntimeException("Unknown type: " + typeName);
-            }
-            fromTypes.addAll(subTypes);
-            boolean isRelation = false;
-            do {
-                if (TYPE_RELATION.equals(typeName)) {
-                    isRelation = true;
-                    break;
-                }
-                Type t = schemaManager.getDocumentType(typeName);
-                if (t != null) {
-                    t = t.getSuperType();
-                }
-                typeName = t == null ? null : t.getName();
-            } while (typeName != null);
+            fromTypes.addAll(getDocumentTypeNamesExtending(typeName));
+            boolean isRelation = isTypeRelation(typeName);
             onlyRelations = onlyRelations && isRelation;
         }
         fromTypes.remove(TYPE_ROOT);
@@ -137,38 +309,30 @@ public class QueryOptimizer {
         for (String type : fromTypes) {
             list.add(new StringLiteral(type));
         }
-        toplevelOperands.add(new Expression(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list));
+        toplevelExpressions.add(new Expression(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list));
     }
 
     /**
-     * Expand toplevel ANDed operands into simple list.
+     * Expand toplevel ANDed expressions into simple list.
      */
-    protected void analyzeToplevelOperands(Operand node) {
-        if (node instanceof Expression) {
-            Expression expr = (Expression) node;
-            Operator op = expr.operator;
-            if (op == Operator.AND) {
-                analyzeToplevelOperands(expr.lvalue);
-                analyzeToplevelOperands(expr.rvalue);
-                return;
-            }
+    protected void analyzeToplevelExpressions(Expression expr) {
+        if (expr.operator == Operator.AND && expr.lvalue instanceof Expression && expr.rvalue instanceof Expression) {
+            analyzeToplevelExpressions((Expression) expr.lvalue);
+            analyzeToplevelExpressions((Expression) expr.rvalue);
+            return;
         }
-        toplevelOperands.add(node);
+        toplevelExpressions.add(expr);
     }
 
     /**
      * Simplify ecm:primaryType positive references, and non-per-instance mixin types.
      */
-    protected void simplifyToplevelOperands() {
+    protected void simplifyToplevelExpressions() {
         Set<String> primaryTypes = null; // if defined, required
-        for (Iterator<Operand> it = toplevelOperands.iterator(); it.hasNext();) {
+        for (Iterator<Expression> it = toplevelExpressions.iterator(); it.hasNext();) {
             // whenever we don't know how to optimize the expression,
             // we just continue the loop
-            Operand node = it.next();
-            if (!(node instanceof Expression)) {
-                continue;
-            }
-            Expression expr = (Expression) node;
+            Expression expr = it.next();
             if (!(expr.lvalue instanceof Reference)) {
                 continue;
             }
@@ -210,11 +374,7 @@ public class QueryOptimizer {
                     // mixin per instance -> primary type checks not enough
                     continue;
                 }
-                Set<String> set = schemaManager.getDocumentTypeNamesForFacet(mixin);
-                if (set == null) {
-                    // unknown mixin
-                    set = Collections.emptySet();
-                }
+                Set<String> set = getDocumentTypeNamesForFacet(mixin);
                 if (primaryTypes == null) {
                     if (op == Operator.EQ) {
                         primaryTypes = new HashSet<>(set); // copy
@@ -248,7 +408,7 @@ public class QueryOptimizer {
                 }
                 expr = new Expression(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list);
             }
-            toplevelOperands.addFirst(expr);
+            toplevelExpressions.add(0, expr);
         }
     }
 
@@ -262,4 +422,96 @@ public class QueryOptimizer {
         }
         return set;
     }
+
+    /**
+     * Info about a prefix: the prefix, and how many times it was encountered.
+     *
+     * @since 9.3
+     */
+    public static class PrefixInfo {
+
+        public static final PrefixInfo EMPTY = new PrefixInfo("", 0);
+
+        public final String prefix;
+
+        public final int count;
+
+        public PrefixInfo(String prefix, int count) {
+            this.prefix = prefix;
+            this.count = count;
+        }
+    }
+
+    /**
+     * Analyzes references to propagate common prefixes to parent expressions.
+     *
+     * @since 9.3
+     */
+    public class ReferencePrefixAnalyzer extends DefaultQueryVisitor {
+
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void visitReference(Reference node) {
+            super.visitReference(node);
+            processReference(node);
+        }
+
+        @Override
+        public void visitMultiExpression(MultiExpression node) {
+            super.visitMultiExpression(node);
+            processExpression(node, node.values);
+        }
+
+        @Override
+        public void visitExpression(Expression node) {
+            super.visitExpression(node);
+            processExpression(node, Arrays.asList(node.lvalue, node.rvalue));
+        }
+
+        protected void processReference(Reference node) {
+            String prefix = getCorrelatedWildcardPrefix(node.name);
+            int count = prefix.isEmpty() ? 0 : 1;
+            node.setInfo(new PrefixInfo(prefix, count));
+        }
+
+        protected void processExpression(Expression node, List<Operand> operands) {
+            PrefixInfo commonInfo = null;
+            for (Operand operand : operands) {
+                // find longest prefix for the operand
+                PrefixInfo info;
+                if (operand instanceof Reference) {
+                    Reference reference = (Reference) operand;
+                    info = (PrefixInfo) reference.getInfo();
+                } else if (operand instanceof Expression) {
+                    Expression expression = (Expression) operand;
+                    info = (PrefixInfo) expression.getInfo();
+                } else {
+                    info = null;
+                }
+                if (info != null) {
+                    if (commonInfo == null) {
+                        commonInfo = info;
+                    } else if (commonInfo.prefix.equals(info.prefix)) {
+                        commonInfo = new PrefixInfo(commonInfo.prefix, commonInfo.count + info.count);
+                    } else {
+                        commonInfo = PrefixInfo.EMPTY;
+                    }
+                }
+            }
+            node.setInfo(commonInfo);
+        }
+    }
+
+    /**
+     * Gets the prefix to use for this reference name (NXQL) if it contains a correlated wildcard.
+     * <p>
+     * The prefix is used to group together sets of expression that all use references with the same prefix.
+     *
+     * @param name the reference name (NXQL)
+     * @return the prefix, or an empty string if there is no correlated wildcard
+     * @since 9.3
+     */
+    public abstract String getCorrelatedWildcardPrefix(String name);
+
 }
