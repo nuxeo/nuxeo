@@ -240,6 +240,9 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected final List<String> aliases = new LinkedList<>();
 
+    /** The select columns which we don't want to be NULL. */
+    protected Set<String> selectCollectionNotNull;
+
     /**
      * Whether the query must match only proxies (TRUE), no proxies (FALSE), or not specified (null).
      */
@@ -774,15 +777,12 @@ public class NXQLQueryMaker implements QueryMaker {
     }
 
     /**
-     * Gets the table for the given fragmentName in the given contextKey, and maybe adds a join if one is not already
-     * done.
+     * Gets the table for the given fragmentName, and maybe adds a join if one is not already done.
      * <p>
      * LEFT JOIN fragmentName _F123 ON contextHier.id = _F123.id
      */
-    protected Table getFragmentTable(Table contextHier, String contextKey, String fragmentName, int index,
-            boolean skipJoin) {
-        return getFragmentTable(Join.LEFT, contextHier, contextKey, fragmentName, Model.MAIN_KEY, index, skipJoin,
-                null);
+    protected Table getFragmentTable(Table contextHier, String fragmentName) {
+        return getFragmentTable(Join.LEFT, contextHier, fragmentName, fragmentName, Model.MAIN_KEY, -1, false, null);
     }
 
     /**
@@ -1030,6 +1030,7 @@ public class NXQLQueryMaker implements QueryMaker {
             toplevelOperands = new LinkedList<>();
             whatColumnNames = new LinkedList<>();
             orderByColumnNames = new LinkedList<>();
+            selectCollectionNotNull = new HashSet<>();
             hasWildcardIndex = false;
             orderByHasWildcardIndex = false;
             ftCount = 0;
@@ -1388,9 +1389,6 @@ public class NXQLQueryMaker implements QueryMaker {
 
             if (inSelect) {
                 whatColumnNames.add(name);
-                if (hasFinalWildcardIndex(name)) {
-                    hasSelectCollection = true;
-                }
             } else if (inOrderBy) {
                 orderByColumnNames.add(name);
             }
@@ -1398,6 +1396,15 @@ public class NXQLQueryMaker implements QueryMaker {
                 hasWildcardIndex = true;
                 if (inOrderBy) {
                     orderByHasWildcardIndex = true;
+                }
+                if (hasFinalWildcardIndex(name)) {
+                    if (inSelect) {
+                        hasSelectCollection = true;
+                        selectCollectionNotNull.add(name);
+                    } else if (!inOrderBy) {
+                        // if also explicit in the where clause, then we don't add the IS NOT NULL
+                        selectCollectionNotNull.remove(name);
+                    }
                 }
             }
         }
@@ -1669,7 +1676,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 if (fragmentName.equals(Model.HIER_TABLE_NAME)) {
                     table = dataHierTable;
                 } else {
-                    table = getFragmentTable(dataHierTable, fragmentName, fragmentName, -1, false);
+                    table = getFragmentTable(dataHierTable, fragmentName);
                 }
             }
             Column column = table.getColumn(fragmentKey);
@@ -1792,8 +1799,11 @@ public class NXQLQueryMaker implements QueryMaker {
                     } else {
                         // use fragment name, not segment, for table context key
                         contextKey = contextStart + prop.fragmentName + contextSuffix;
-                        table = getFragmentTable(contextHier, contextKey, prop.fragmentName,
-                                column.isArray() ? -1 : index, skipJoin);
+                        // maybe do an INNER JOIN instead of a LEFT JOIN if we require this column in the results
+                        // and there is no WHERE clause mentioning it
+                        int joinKind = selectCollectionNotNull.contains(xpath) ? Join.INNER : Join.LEFT;
+                        table = getFragmentTable(joinKind, contextHier, contextKey, prop.fragmentName, Model.MAIN_KEY,
+                                column.isArray() ? -1 : index, skipJoin, null);
                         column = table.getColumn(prop.fragmentKey);
                         if (star) {
                             // we'll have to do an ORDER BY on the pos column as well
