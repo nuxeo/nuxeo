@@ -60,45 +60,6 @@ public final class ZipUtils {
     private ZipUtils() {
     }
 
-    /**
-     * Zips recursively the content of {@code source} to the {@code target} zip file.
-     *
-     * @since 9.3
-     */
-    public static Path zipDirectory(Path source, Path target, CopyOption... options) throws IOException {
-        if (!Files.isDirectory(source)) {
-            throw new IllegalArgumentException("Source argument must be a directory to zip");
-        }
-        // locate file system by using the syntax defined in java.net.JarURLConnection
-        URI uri = URI.create("jar:file:" + target.toString());
-
-        try (FileSystem zipfs = FileSystems.newFileSystem(uri, Collections.singletonMap("create", "true"))) {
-            Files.walkFileTree(source, new SimpleFileVisitor<java.nio.file.Path>() {
-
-                @Override
-                public FileVisitResult preVisitDirectory(java.nio.file.Path dir, BasicFileAttributes attrs) throws IOException {
-                    if (source.equals(dir)) {
-                        // don't process root element
-                        return FileVisitResult.CONTINUE;
-                    }
-                    return visitFile(dir, attrs);
-                }
-
-                @Override
-                public FileVisitResult visitFile(java.nio.file.Path file, BasicFileAttributes attrs) throws IOException {
-                    // retrieve the destination path in zip
-                    java.nio.file.Path relativePath = source.relativize(file);
-                    java.nio.file.Path pathInZipFile = zipfs.getPath(relativePath.toString());
-                    // copy a file into the zip file
-                    Files.copy(file, pathInZipFile, options);
-                    return FileVisitResult.CONTINUE;
-                }
-
-            });
-        }
-        return target;
-    }
-
     // _____________________________ ZIP ________________________________
 
     public static void _putDirectoryEntry(String entryName, ZipOutputStream out) throws IOException {
