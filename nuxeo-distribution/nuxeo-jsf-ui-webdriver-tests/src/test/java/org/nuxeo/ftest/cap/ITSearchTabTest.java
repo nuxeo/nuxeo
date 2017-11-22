@@ -389,6 +389,8 @@ public class ITSearchTabTest extends AbstractTest {
         searchLayoutSubPage.filter();
         assertEquals(1, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
         logout();
+
+        RestHelper.removePermissions("/", testgroup);
     }
 
 }

@@ -80,7 +80,7 @@ public abstract class IndexingCommandsStacker {
                     log.debug("Indexing root document children to update their permissions");
                 }
                 DocumentModelList children = doc.getCoreSession().getChildren(doc.getRef());
-                children.forEach(child -> stackCommand(doc, docCtx, eventId));
+                children.forEach(child -> stackCommand(child, docCtx, eventId));
             }
         } else {
             stackCommand(doc, docCtx, eventId);
