@@ -21,6 +21,7 @@ package org.nuxeo.elasticsearch.seqgen;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.VersionType;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.uidgen.AbstractUIDSequencer;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
@@ -75,6 +76,15 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
         }
         esClient = null;
         indexName = null;
+    }
+
+    @Override
+    public void initSequence(String key, int id) {
+        String source = "{ \"ts\" : " + System.currentTimeMillis() + "}";
+        IndexResponse res = esClient.index(
+                new IndexRequest(indexName, ElasticSearchConstants.SEQ_ID_TYPE, key).versionType(VersionType.EXTERNAL)
+                        .version(id)
+                        .source(source, XContentType.JSON));
     }
 
     @Override
