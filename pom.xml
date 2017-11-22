@@ -701,6 +701,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-rest-api</artifactId>
+        <version>${nuxeo.drive.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-drive-jsf</artifactId>
         <version>${nuxeo.drive.version}</version>
       </dependency>
