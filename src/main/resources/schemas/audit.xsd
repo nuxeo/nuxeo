@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
-<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/sql_audit"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/sql_audit">
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/audit"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/audit">
 
   <xs:include schemaLocation="base.xsd" />
 

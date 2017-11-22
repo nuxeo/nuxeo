@@ -42,10 +42,9 @@ import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
+import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.sql.SQLDirectory;
-import org.nuxeo.ecm.directory.sql.SQLSession;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditStorage;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
@@ -54,17 +53,17 @@ import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Audit storage implementation for a SQL Audit directory.
+ * Audit storage implementation for an Audit directory.
  * 
  * @since 9.3
  */
-public class SQLAuditStorage implements AuditStorage {
+public class DirectoryAuditStorage implements AuditStorage {
 
-    private static final Log log = LogFactory.getLog(SQLAuditStorage.class);
+    private static final Log log = LogFactory.getLog(DirectoryAuditStorage.class);
 
-    public static final String NAME = "SQLAuditStorage";
+    public static final String NAME = "DirectoryAuditStorage";
 
-    public static final String DIRECTORY_NAME = "sqlAuditDirectory";
+    public static final String DIRECTORY_NAME = "audit";
 
     public static final String ID_COLUMN = "id";
 
@@ -78,16 +77,16 @@ public class SQLAuditStorage implements AuditStorage {
 
     protected CursorService<Iterator<LogEntry>, LogEntry> cursorService = new CursorService<>();
 
-    protected SQLDirectory getSqlDirectory() {
-        return (SQLDirectory) Framework.getService(DirectoryService.class).getDirectory(DIRECTORY_NAME);
+    protected Directory getAuditDirectory() {
+        return Framework.getService(DirectoryService.class).getDirectory(DIRECTORY_NAME);
     }
 
     /**
-     * Insert entries as Json in the SQL Audit directory.
+     * Insert entries as Json in the Audit directory.
      */
     @Override
     public void append(List<String> jsonEntries) {
-        try (Session session = getSqlDirectory().getSession()) {
+        try (Session session = getAuditDirectory().getSession()) {
             for (String jsonEntry : jsonEntries) {
                 Map<String, Object> jsonMap = new HashMap<>();
                 jsonMap.put(JSON_COLUMN, jsonEntry);
@@ -97,7 +96,7 @@ public class SQLAuditStorage implements AuditStorage {
     }
 
     /**
-     * Scroll log entries in the SQL Audit directory, given a scroll Id.
+     * Scroll log entries in the Audit directory, given a scroll Id.
      */
     @Override
     public ScrollResult scroll(String scrollId) {
@@ -105,7 +104,7 @@ public class SQLAuditStorage implements AuditStorage {
     }
 
     /**
-     * Scroll log entries in the SQL Audit directory, given an audit query builder.
+     * Scroll log entries in the Audit directory, given an audit query builder.
      */
     @Override
     public ScrollResult scroll(AuditQueryBuilder queryBuilder, int batchSize, int keepAlive) {
@@ -116,8 +115,8 @@ public class SQLAuditStorage implements AuditStorage {
     }
 
     /**
-     * Query log entries in the SQL Audit directory, given an audit query builder. Does not support literals other than
-     * StringLiteral: see {@link SQLSession.query(Map<String, Serializable>, Set<String>, Map<String, String>, boolean,
+     * Query log entries in the Audit directory, given an audit query builder. Does not support literals other than
+     * StringLiteral: see {@link Session.query(Map<String, Serializable>, Set<String>, Map<String, String>, boolean,
      * int, int)};
      */
     protected List<LogEntry> queryLogs(AuditQueryBuilder queryBuilder) {
@@ -149,14 +148,14 @@ public class SQLAuditStorage implements AuditStorage {
         int limit = (int) queryBuilder.limit();
         int offset = (int) queryBuilder.offset();
 
-        // Query the Json Entries via the SQL directory session.
-        SQLDirectory sqlDirectory = getSqlDirectory();
-        try (SQLSession session = (SQLSession) sqlDirectory.getSession()) {
+        // Query the Json Entries via the directory session.
+        Directory directory = getAuditDirectory();
+        try (Session session = directory.getSession()) {
             DocumentModelList jsonEntriesDocs = session.query(filter, Collections.singleton(JSON_COLUMN), orderBy,
                     false, limit, offset);
 
             // Build a list of Log Entries from the Json Entries.
-            String auditPropertyName = sqlDirectory.getSchema() + ":" + JSON_COLUMN;
+            String auditPropertyName = directory.getSchema() + ":" + JSON_COLUMN;
             for (DocumentModel jsonEntryDoc : jsonEntriesDocs) {
                 String jsonEntry = String.valueOf(jsonEntryDoc.getPropertyValue(auditPropertyName));
                 LogEntry logEntry = getLogEntryFromJson(jsonEntry);

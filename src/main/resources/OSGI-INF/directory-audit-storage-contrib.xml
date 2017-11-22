@@ -1,27 +1,25 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.audit.storage.sql">
+<component name="org.nuxeo.audit.storage.directory">
 
   <require>org.nuxeo.ecm.platform.audit.service.NXAuditEventsService
   </require>
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
     point="storage">
-    <storage id="SQLAuditStorage" class="org.nuxeo.audit.storage.impl.SQLAuditStorage" />
+    <storage id="DirectoryAuditStorage"
+      class="org.nuxeo.audit.storage.impl.DirectoryAuditStorage" />
   </extension>
 
   <extension point="schema" target="org.nuxeo.ecm.core.schema.TypeService">
-    <schema name="sql_audit" src="schemas/sql_audit.xsd" />
+    <schema name="audit" src="schemas/audit.xsd" />
   </extension>
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory"
     point="directories">
-    <directory name="sqlAuditDirectory">
-      <schema>sql_audit</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <table>sql_audit</table>
+    <directory name="audit" extends="template-directory">
+      <schema>audit</schema>
       <idField>id</idField>
       <autoincrementIdField>true</autoincrementIdField>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
       <substringMatchType>subany</substringMatchType>
     </directory>
   </extension>

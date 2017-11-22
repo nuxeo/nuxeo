@@ -38,9 +38,9 @@ import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.sql.SQLDirectory;
-import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -56,12 +56,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ SQLDirectoryFeature.class, AuditFeature.class })
+@Features({ DirectoryFeature.class, AuditFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.audit.storage" })
-public class TestSQLAuditStorage {
+public class TestDirectoryAuditStorage {
 
-    protected static SQLAuditStorage storage;
+    protected static DirectoryAuditStorage storage;
 
     protected static String jsonEntry1 = "{\"entity-type\":\"logEntry\",\"category\":\"Document\",\"principalName\":\"Administrator\","
             + "\"comment\":null,\"docLifeCycle\":\"Draft\",\"docPath\":\"/My doc 1\",\"docType\":\"File\","
@@ -79,13 +79,13 @@ public class TestSQLAuditStorage {
     public static void before() {
         NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
                                                                      .getComponent(NXAuditEventsService.NAME);
-        storage = (SQLAuditStorage) audit.getAuditStorage(SQLAuditStorage.NAME);
+        storage = (DirectoryAuditStorage) audit.getAuditStorage(DirectoryAuditStorage.NAME);
     }
 
     @Test
     public void testStorage() {
         assertNotNull(storage);
-        assertTrue(storage instanceof SQLAuditStorage);
+        assertTrue(storage instanceof DirectoryAuditStorage);
     }
 
     @SuppressWarnings("deprecation")
@@ -93,21 +93,21 @@ public class TestSQLAuditStorage {
     public void testAppend() {
         storage.append(jsonEntries);
 
-        SQLDirectory sqlDirectory = storage.getSqlDirectory();
-        String schemaName = sqlDirectory.getSchema();
-        try (Session session = sqlDirectory.getSession()) {
+        Directory directory = storage.getAuditDirectory();
+        String schemaName = directory.getSchema();
+        try (Session session = directory.getSession()) {
             DocumentModelList auditEntries = session.getEntries();
             assertEquals(2, auditEntries.size());
 
             DocumentModel auditEntry1 = auditEntries.get(0);
             assertTrue(auditEntry1.hasSchema(schemaName));
-            assertEquals(new Long(1), auditEntry1.getPropertyValue(SQLAuditStorage.ID_COLUMN));
-            assertEquals(jsonEntry1, auditEntry1.getPropertyValue(SQLAuditStorage.JSON_COLUMN));
+            assertEquals(new Long(1), auditEntry1.getPropertyValue(DirectoryAuditStorage.ID_COLUMN));
+            assertEquals(jsonEntry1, auditEntry1.getPropertyValue(DirectoryAuditStorage.JSON_COLUMN));
 
             DocumentModel auditEntry2 = auditEntries.get(1);
             assertTrue(auditEntry2.hasSchema(schemaName));
-            assertEquals(new Long(2), auditEntry2.getPropertyValue(SQLAuditStorage.ID_COLUMN));
-            assertEquals(jsonEntry2, auditEntry2.getPropertyValue(SQLAuditStorage.JSON_COLUMN));
+            assertEquals(new Long(2), auditEntry2.getPropertyValue(DirectoryAuditStorage.ID_COLUMN));
+            assertEquals(jsonEntry2, auditEntry2.getPropertyValue(DirectoryAuditStorage.JSON_COLUMN));
         }
     }
 
@@ -135,14 +135,14 @@ public class TestSQLAuditStorage {
         assertEquals(2, storage.queryLogs(queryBuilder).size());
 
         // Query builder with an orderBy ASC.
-        queryBuilder.order(new OrderByExpr(new Reference(SQLAuditStorage.ID_COLUMN), true));
+        queryBuilder.order(new OrderByExpr(new Reference(DirectoryAuditStorage.ID_COLUMN), true));
         logEntries = storage.queryLogs(queryBuilder);
         assertEquals(2, logEntries.size());
         assertEquals("/My doc 2", logEntries.get(0).getDocPath());
 
         // Query builder with an orderBy DESC.
         queryBuilder = new AuditQueryBuilder();
-        queryBuilder.order(new OrderByExpr(new Reference(SQLAuditStorage.ID_COLUMN), false));
+        queryBuilder.order(new OrderByExpr(new Reference(DirectoryAuditStorage.ID_COLUMN), false));
         logEntries = storage.queryLogs(queryBuilder);
         assertEquals(2, logEntries.size());
         assertEquals("/My doc 1", logEntries.get(0).getDocPath());
@@ -159,14 +159,14 @@ public class TestSQLAuditStorage {
 
         // Query builder with a 'AND entry = ' condition.
         queryBuilder = new AuditQueryBuilder();
-        queryBuilder.addAndPredicate(Predicates.eq(SQLAuditStorage.JSON_COLUMN, jsonEntry2));
+        queryBuilder.addAndPredicate(Predicates.eq(DirectoryAuditStorage.JSON_COLUMN, jsonEntry2));
         logEntries = storage.queryLogs(queryBuilder);
         assertEquals(1, logEntries.size());
         assertEquals("/My doc 2", logEntries.get(0).getDocPath());
 
         // Query builder with a 'AND entry LIKE ' condition.
         queryBuilder = new AuditQueryBuilder();
-        queryBuilder.addAndPredicate(new Predicate(new Reference(SQLAuditStorage.JSON_COLUMN), Operator.LIKE,
+        queryBuilder.addAndPredicate(new Predicate(new Reference(DirectoryAuditStorage.JSON_COLUMN), Operator.LIKE,
                 Literals.toLiteral("My doc 2")));
         logEntries = storage.queryLogs(queryBuilder);
         assertEquals(1, logEntries.size());
