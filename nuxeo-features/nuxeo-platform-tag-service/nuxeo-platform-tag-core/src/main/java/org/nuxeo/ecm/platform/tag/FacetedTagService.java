@@ -190,7 +190,7 @@ public class FacetedTagService extends AbstractTagService {
 
     @Override
     public List<Tag> getTagCloud(CoreSession session, String docId, String username, Boolean normalize) {
-        return null;
+        return Collections.emptyList();
     }
 
     @SuppressWarnings("unchecked")
