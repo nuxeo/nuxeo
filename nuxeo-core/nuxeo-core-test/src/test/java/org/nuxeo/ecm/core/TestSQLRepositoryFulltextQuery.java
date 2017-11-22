@@ -527,8 +527,13 @@ public class TestSQLRepositoryFulltextQuery {
         }
     }
 
+    /**
+     * We want fulltext queries work only for H2, assuming that it's a development environment
+     * and we still want to perform these queries. For instance for our REST calls */
     @Test
-    public void testWildCardsInFulltextSearch() throws Exception {
+    public void testWildcardsInFulltextSearchForH2() throws Exception {
+        if (!coreFeature.getStorageConfiguration().isVCSH2()) { return; }
+
         createDocs();
 
         String query;
