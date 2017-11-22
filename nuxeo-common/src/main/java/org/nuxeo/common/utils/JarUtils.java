@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.CopyOption;
 import java.nio.file.FileSystem;
@@ -98,9 +99,7 @@ public final class JarUtils {
             throw new IllegalArgumentException("Source argument must be a directory to zip");
         }
         // locate file system by using the syntax defined in java.net.JarURLConnection
-        // for Windows, replace all \ by /, otherwise FileSystems#newFileSystem throw java.net.URISyntaxException:
-        // Illegal character in opaque part
-        URI uri = URI.create("jar:file:" + target.toString().replace('\\', '/'));
+        URI uri = toJarURI(target);
 
         try (FileSystem zipfs = FileSystems.newFileSystem(uri, Collections.singletonMap("create", "true"))) {
             Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
@@ -127,6 +126,19 @@ public final class JarUtils {
             });
         }
         return target;
+    }
+
+    /**
+     * Convert a {@link Path} to an {@link URI} with {@code jar} scheme.
+     *
+     * @since 9.10
+     */
+    public static URI toJarURI(Path path) {
+        try {
+            return new URI("jar", path.toUri().toString(), null);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Unable to create Jar URI", e);
+        }
     }
 
 }
