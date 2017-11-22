@@ -66,15 +66,14 @@ public class TestSequenceGeneratorWithElasticSearch {
     @Test
     public void testInitSequence() {
         UIDSequencer seq = uidGeneratorService.getSequencer();
-
         seq.getNext("mySequence");
         seq.getNext("mySequence");
 
-        seq.initSequence("mySequence", 1);
         assertTrue(seq.getNext("mySequence") > 1);
-        seq.initSequence("mySequence", 10);
-        assertTrue(seq.getNext("mySequence") > 10);
-        assertTrue(seq.getNextLong("mySequence") > 10);
+        // initSequence will work only for greater value
+        seq.initSequence("mySequence", 1_000_000);
+        assertEquals(1_000_001, seq.getNext("mySequence"));
+        assertEquals(1_000_002L, seq.getNextLong("mySequence"));
     }
 
     @Test
