@@ -77,7 +77,10 @@ public abstract class AbstractGroupMemberPageProvider<T> extends AbstractPagePro
             }
 
             for (String member : members.subList(safeLongToInt(getCurrentPageOffset()), limit)) {
-                currentPage.add(getMember(member));
+                T object = getMember(member);
+                if (object != null) {
+                    currentPage.add(object);
+                }
             }
 
             setResultsCount(members.size());
