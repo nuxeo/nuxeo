@@ -282,7 +282,9 @@ public class JSONContentViewState {
 
     @SuppressWarnings("unchecked")
     protected static Serializable getDocumentPropertyValue(Object o) throws JSONException {
-        if (o instanceof String) {
+        if (o == null || o instanceof JSONNull) {
+            return null;
+        } else if (o instanceof String) {
             Calendar calendar = null;
             try {
                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
@@ -301,7 +303,10 @@ public class JSONContentViewState {
             JSONArray jsonArray = (JSONArray) o;
             ArrayList<Serializable> list = new ArrayList<Serializable>();
             for (Object aJsonArray : jsonArray) {
-                list.add(getDocumentPropertyValue(aJsonArray));
+                Serializable pValue = getDocumentPropertyValue(aJsonArray);
+                if (pValue != null) {
+                  list.add(pValue);
+                }
             }
             return list;
         } else if (o instanceof JSONObject) {

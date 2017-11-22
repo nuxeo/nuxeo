@@ -307,6 +307,27 @@ public class TestContentViewState {
     }
 
     @Test
+    public void testRestoreJSONContentViewWithNullArray() throws Exception {
+        assertNull(service.saveContentView(null));
+
+        String json = "{" + "\"contentViewName\":\"SEARCH_DOCUMENT\"," + "\"pageSize\":2,"
+                + "\"currentPage\":0,"
+                + "\"queryParameters\":[],"
+                + "\"searchDocument\":{\"type\":\"File\",\n" +
+                "    \"properties\":{\"dc:contributors\":[null]}},"
+                + "\"sortInfos\":[],"
+                + "\"resultLayout\":{\"name\":\"document_listing\",\"title\":\"label.document_listing.layout\",\"translateTitle\":true,\"iconPath\":\"/icons/myicon.png\",\"showCSVExport\":true},"
+                + "\"resultColumns\":[\"column_1\"]" + "}";
+        ContentViewState state = JSONContentViewState.fromJSON(json, false);
+        assertNotNull(state);
+        assertEquals("SEARCH_DOCUMENT", state.getContentViewName());
+        DocumentModel searchDoc = state.getSearchDocumentModel();
+        assertNotNull(searchDoc);
+        String[] searchProp = (String[]) searchDoc.getPropertyValue("dc:contributors");
+        assertNull("Null object should be ignored, so array is empty, therefore null property", searchProp);
+    }
+
+    @Test
     public void testRestoreJSONContentView() throws Exception {
         assertNull(service.saveContentView(null));
 
