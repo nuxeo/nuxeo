@@ -1,5 +1,5 @@
 // Check if user opted out
-if (${optedOutCondition} || ${debugMode}) {
+if ((${optedOutCondition}) || ${debugMode}) {
   function logDisabledAnalyticsMessage() {
     window.console && console.debug && console.debug("The segmentIO tracking is disabled on this page.");
   }
