@@ -77,6 +77,10 @@
         {
             "path": "/convertAdapter.{format}",
             "description": "Convert Blobs"
+        },
+        {
+            "path": "/drive.{format}",
+            "description": "Get Nuxeo Drive configuration"
         }
     ],
     "authorizations": {
