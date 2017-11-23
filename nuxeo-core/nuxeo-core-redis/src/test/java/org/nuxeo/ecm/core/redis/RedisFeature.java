@@ -190,7 +190,7 @@ public class RedisFeature extends SimpleFeature {
     protected Config config = Defaults.of(Config.class);
 
     protected void registerComponentListener() {
-        Framework.getRuntime().getComponentManager().addListener(new ComponentManager.LifeCycleHandler() {
+        Framework.getRuntime().getComponentManager().addListener(new ComponentManager.Listener() {
             @Override
             public void afterActivation(ComponentManager mgr) {
                 // overwrite the redis config (before redis component is started)

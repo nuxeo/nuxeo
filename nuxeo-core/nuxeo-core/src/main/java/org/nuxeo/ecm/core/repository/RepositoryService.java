@@ -63,7 +63,7 @@ public class RepositoryService extends DefaultComponent {
     @Override
     public void start(ComponentContext context) {
         TransactionHelper.runInTransaction(this::doCreateRepositories);
-        Framework.getRuntime().getComponentManager().addListener(new ComponentManager.LifeCycleHandler() {
+        Framework.getRuntime().getComponentManager().addListener(new ComponentManager.Listener() {
             @Override
             public void afterStart(ComponentManager mgr, boolean isResume) {
                 initRepositories(); // call all RepositoryInitializationHandler

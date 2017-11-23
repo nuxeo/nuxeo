@@ -166,12 +166,12 @@ public class StreamWorkManager extends WorkManagerImpl {
             this.streamProcessor = new LogStreamProcessor(logManager);
             streamProcessor.init(topology, settings);
             started = true;
-            Framework.getRuntime().getComponentManager().addListener(new ComponentListener());
+            new ComponentListener().install();
             log.info("Initialized");
         }
     }
 
-    class ComponentListener extends ComponentManager.LifeCycleHandler {
+    class ComponentListener implements ComponentManager.Listener {
         @Override
         public void beforeStop(ComponentManager mgr, boolean isStandby) {
             try {

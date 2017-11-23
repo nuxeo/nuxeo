@@ -681,7 +681,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                     log.error("Unable to get Service " + PluggableAuthenticationService.NAME);
                     throw new ServletException("Can't initialize Nuxeo Pluggable Authentication Service");
                 } else {
-                    new ComponentManager.LifeCycleHandler() {
+                    new ComponentManager.Listener() {
                         // nullify service field if components are restarting
                         @Override
                         public void beforeStart(ComponentManager mgr, boolean isResume) {
