@@ -363,7 +363,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         }
 
         executor = new MigrationThreadPoolExecutor();
-        Framework.getRuntime().getComponentManager().addListener(new ComponentManager.LifeCycleHandler() {
+        Framework.getRuntime().getComponentManager().addListener(new ComponentManager.Listener() {
 
             @Override
             public void beforeStop(ComponentManager mgr, boolean isStandby) {

@@ -41,7 +41,6 @@ import org.nuxeo.runtime.kafka.KafkaConfigServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
-import org.nuxeo.runtime.model.ComponentManager.LifeCycleHandler;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -139,7 +138,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         super.start(context);
         configs.forEach(this::createStreamIfNotExists);
         processorDescriptors.forEach(this::initProcessor);
-        Framework.getRuntime().getComponentManager().addListener(new ComponentsLifeCycleListener());
+        new ComponentsLifeCycleListener().install();
     }
 
     protected void initProcessor(String name, StreamProcessorDescriptor descriptor) {
@@ -211,7 +210,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         }
     }
 
-    protected class ComponentsLifeCycleListener extends LifeCycleHandler {
+    protected class ComponentsLifeCycleListener implements ComponentManager.Listener {
         @Override
         public void afterStart(ComponentManager mgr, boolean isResume) {
             // this is called once all components are started and ready

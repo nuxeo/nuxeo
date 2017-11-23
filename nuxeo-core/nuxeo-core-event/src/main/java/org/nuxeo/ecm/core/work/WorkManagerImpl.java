@@ -353,7 +353,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     @Override
     public void stop(ComponentContext context) throws InterruptedException {
         // do nothing: we shutdown the thread pool at first before stopping any component
-        // see LifeCycleHandler.beforeStop
+        // see ComponentManager.Listener.beforeStop
     }
 
     protected volatile boolean started = false;
@@ -377,7 +377,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 initializeQueue(workQueueConfig.get(id));
             }
 
-            Framework.getRuntime().getComponentManager().addListener(new ComponentManager.LifeCycleHandler() {
+            Framework.getRuntime().getComponentManager().addListener(new ComponentManager.Listener() {
                 @Override
                 public void beforeStop(ComponentManager mgr, boolean isStandby) {
                     for (String id : workQueueConfig.getQueueIds()) {

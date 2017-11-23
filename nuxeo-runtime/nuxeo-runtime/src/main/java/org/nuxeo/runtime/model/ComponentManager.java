@@ -413,37 +413,43 @@ public interface ComponentManager {
         /**
          * Called just before activating components. This is fired when entering {@link ComponentManager#start()}
          */
-        void beforeActivation(ComponentManager mgr);
+        default void beforeActivation(ComponentManager mgr) {
+        }
 
         /**
          * Called just after all the components were activated.
          */
-        void afterActivation(ComponentManager mgr);
+        default void afterActivation(ComponentManager mgr) {
+        }
 
         /**
          * Called just before activating components.
          */
-        void beforeDeactivation(ComponentManager mgr);
+        default void beforeDeactivation(ComponentManager mgr) {
+        }
 
         /**
          * Called just after all the components were deactivated. This is fired just before exiting from
          * {@link ComponentManager#stop()}.
          */
-        void afterDeactivation(ComponentManager mgr);
+        default void afterDeactivation(ComponentManager mgr) {
+        }
 
         /**
          * Called just before starting components.
          *
          * @param isResume true if the event was initiated by a {@link ComponentManager#resume()} call, false otherwise.
          */
-        void beforeStart(ComponentManager mgr, boolean isResume);
+        default void beforeStart(ComponentManager mgr, boolean isResume) {
+        }
 
         /**
          * Called just after all components were started
          *
          * @param isResume true if the event was initiated by a {@link ComponentManager#resume()} call, false otherwise.
          */
-        void afterStart(ComponentManager mgr, boolean isResume);
+        default void afterStart(ComponentManager mgr, boolean isResume) {
+        }
 
         /**
          * Called just before stopping components.
@@ -451,7 +457,8 @@ public interface ComponentManager {
          * @param isStandby true if the event was initiated by a {@link ComponentManager#standby()} call, false
          *            otherwise
          */
-        void beforeStop(ComponentManager mgr, boolean isStandby);
+        default void beforeStop(ComponentManager mgr, boolean isStandby) {
+        }
 
         /**
          * Called just after the components were stopped.
@@ -459,59 +466,19 @@ public interface ComponentManager {
          * @param isStandby true if the event was initiated by a {@link ComponentManager#standby()} call, false
          *            otherwise
          */
-        void afterStop(ComponentManager mgr, boolean isStandby);
-    }
-
-    /**
-     * Abstract base class for component manager listeners. Subclass this instead of directly implementing
-     * {@link Listener}
-     *
-     * @author bogdan
-     * @since 9.2
-     */
-    class LifeCycleHandler implements Listener {
-
-        @Override
-        public void beforeActivation(ComponentManager mgr) {
+        default void afterStop(ComponentManager mgr, boolean isStandby) {
         }
 
-        @Override
-        public void afterActivation(ComponentManager mgr) {
-        }
-
-        @Override
-        public void beforeDeactivation(ComponentManager mgr) {
-        }
-
-        @Override
-        public void afterDeactivation(ComponentManager mgr) {
-        }
-
-        @Override
-        public void beforeStart(ComponentManager mgr, boolean isResume) {
-        }
-
-        @Override
-        public void afterStart(ComponentManager mgr, boolean isResume) {
-        }
-
-        @Override
-        public void beforeStop(ComponentManager mgr, boolean isStandby) {
-        }
-
-        @Override
-        public void afterStop(ComponentManager mgr, boolean isStandby) {
-        }
-
-        public LifeCycleHandler install() {
+        default Listener install() {
             Framework.getRuntime().getComponentManager().addListener(this);
             return this;
         }
 
-        public LifeCycleHandler uninstall() {
+        default Listener uninstall() {
             Framework.getRuntime().getComponentManager().removeListener(this);
             return this;
         }
+
     }
 
 }

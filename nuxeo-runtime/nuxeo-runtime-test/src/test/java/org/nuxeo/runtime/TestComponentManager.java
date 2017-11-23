@@ -68,7 +68,7 @@ public class TestComponentManager {
 
     }
 
-    protected static class MyListener extends ComponentManager.LifeCycleHandler {
+    protected static class MyListener implements ComponentManager.Listener {
 
         public EventsInfo info = new EventsInfo();
 
