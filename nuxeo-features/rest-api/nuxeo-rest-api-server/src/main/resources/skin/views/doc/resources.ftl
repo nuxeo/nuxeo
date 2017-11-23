@@ -97,6 +97,10 @@
         {
             "path": "/emptyDocAdapter.{format}",
             "description": "Initialize an empty document"
+        },
+        {
+            "path": "/drive.{format}",
+            "description": "Get Nuxeo Drive configuration"
         }
     ],
     "authorizations": {
