@@ -87,7 +87,7 @@ public class SegmentIOScriptResource extends ModuleRoot {
 
         Map<String, Object> ctx = new HashMap<String, Object>();
         ctx.put("writeKey", segmentIO.getWriteKey());
-        ctx.put("debugMode", segmentIO.isDebugMode());
+        ctx.put("debugMode", Boolean.toString(segmentIO.isDebugMode()));
         // get opted out condition
         String optedOutCondition = segmentIO.getGlobalParameters().get(OPTED_OUT_CONDITION_PARAM);
         if(StringUtils.isBlank(optedOutCondition)){
