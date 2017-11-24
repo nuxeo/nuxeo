@@ -95,7 +95,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
      * Should be overriden by subclasses needing something different.
      */
     @Override
-    public Blob readBlob(BlobInfo blobInfo) throws IOException {
+    public Blob readBlob(BlobInfo blobInfo) {
         return toBlob(toFileInfo(blobInfo.key));
     }
 
@@ -202,8 +202,15 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
     }
 
     @Override
-    public SimpleManagedBlob toBlob(LiveConnectFileInfo fileInfo) throws IOException {
-        LiveConnectFile file = getFile(fileInfo);
+    public SimpleManagedBlob toBlob(LiveConnectFileInfo fileInfo) {
+        LiveConnectFile file;
+        try {
+            file = getFile(fileInfo);
+        } catch (IOException e) {
+            // we don't want to crash everything if the remote file cannot be accessed
+            log.error("Failed to access file: " + fileInfo, e);
+            file = new ErrorLiveConnectFile(fileInfo);
+        }
         return toBlob(file);
     }
 

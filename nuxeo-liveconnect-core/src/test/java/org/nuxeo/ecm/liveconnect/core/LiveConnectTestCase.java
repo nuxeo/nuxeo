@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.liveconnect.core;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.util.UUID;
 
 import org.junit.Ignore;
@@ -30,10 +32,12 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.LogFeature;
 
 @Ignore
 @RunWith(FeaturesRunner.class)
-@Features({CoreFeature.class, DirectoryFeature.class})
+@Features({ CoreFeature.class, DirectoryFeature.class, LogFeature.class, LogCaptureFeature.class })
 @Deploy({ "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.mimetype", "org.nuxeo.ecm.platform.oauth", "org.nuxeo.ecm.default.config" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml",
         "org.nuxeo.ecm.liveconnect.core:OSGI-INF/test-core-cache-config.xml",
@@ -54,6 +58,10 @@ public class LiveConnectTestCase {
     public static final String FILE_1_NAME = "tigers.jpeg";
 
     public static final String FILE_1_DIGEST = UUID.randomUUID().toString();
+
+    public static final byte[] FILE_1_BYTES = "picture of a tiger".getBytes(UTF_8);
+
+    public static final String INVALID_FILE_ID = "invalid-file-id";
 
     protected SimpleManagedBlob createBlob(String fileId) {
         return createBlob(fileId, UUID.randomUUID().toString());

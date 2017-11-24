@@ -22,12 +22,9 @@ package org.nuxeo.ecm.liveconnect.core;
 import org.codehaus.jackson.node.ObjectNode;
 import org.nuxeo.ecm.automation.core.util.JSONBlobDecoder;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.IOException;
 
 /**
  * @since 8.4
@@ -46,14 +43,8 @@ public class JSONLiveConnectBlobDecoder implements JSONBlobDecoder {
         if (!(provider instanceof LiveConnectBlobProvider)) {
             return null;
         }
-        try {
-            return ((LiveConnectBlobProvider) provider).toBlob(
-                new LiveConnectFileInfo(jsonObject.get("user").getTextValue(),
-                    jsonObject.get("fileId").getTextValue()));
-        } catch (IOException e) {
-            throw new NuxeoException(e);
-        }
-        
+        return ((LiveConnectBlobProvider<?>) provider).toBlob(new LiveConnectFileInfo(
+                jsonObject.get("user").getTextValue(), jsonObject.get("fileId").getTextValue()));
     }
 
 }

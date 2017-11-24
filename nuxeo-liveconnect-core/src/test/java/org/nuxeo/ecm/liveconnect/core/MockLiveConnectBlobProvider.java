@@ -18,8 +18,19 @@
  */
 package org.nuxeo.ecm.liveconnect.core;
 
-import java.io.IOException;
+import static org.nuxeo.ecm.liveconnect.core.LiveConnectTestCase.FILE_1_DIGEST;
+import static org.nuxeo.ecm.liveconnect.core.LiveConnectTestCase.FILE_1_ID;
+import static org.nuxeo.ecm.liveconnect.core.LiveConnectTestCase.FILE_1_NAME;
+import static org.nuxeo.ecm.liveconnect.core.LiveConnectTestCase.FILE_1_SIZE;
+import static org.nuxeo.ecm.liveconnect.core.LiveConnectTestCase.INVALID_FILE_ID;
+import static org.nuxeo.ecm.liveconnect.core.LiveConnectTestCase.SERVICE_ID;
+import static org.nuxeo.ecm.liveconnect.core.LiveConnectTestCase.USERID;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 
 /**
@@ -39,8 +50,24 @@ public class MockLiveConnectBlobProvider extends AbstractLiveConnectBlobProvider
 
     @Override
     protected LiveConnectFile retrieveFile(LiveConnectFileInfo fileInfo) throws IOException {
-        return new MockLiveConnectFile(fileInfo, LiveConnectTestCase.FILE_1_NAME, LiveConnectTestCase.FILE_1_SIZE,
-                LiveConnectTestCase.FILE_1_DIGEST);
+        if (INVALID_FILE_ID.equals(fileInfo.getFileId())) {
+            // test crashing case
+            throw new IOException("Invalid file id: " + INVALID_FILE_ID);
+        }
+        return new MockLiveConnectFile(fileInfo, FILE_1_NAME, FILE_1_SIZE, FILE_1_DIGEST);
+    }
+
+    @Override
+    public InputStream getStream(ManagedBlob blob) throws IOException {
+        String key = blob.getKey();
+        if ((SERVICE_ID + ':' + USERID + ':' + INVALID_FILE_ID).equals(key)) {
+            // test crashing case
+            throw new IOException("Invalid file id: " + INVALID_FILE_ID);
+        }
+        if ((SERVICE_ID + ':' + USERID + ':' + FILE_1_ID).equals(key)) {
+            return new ByteArrayInputStream(LiveConnectTestCase.FILE_1_BYTES);
+        }
+        throw new IOException(key);
     }
 
 }
