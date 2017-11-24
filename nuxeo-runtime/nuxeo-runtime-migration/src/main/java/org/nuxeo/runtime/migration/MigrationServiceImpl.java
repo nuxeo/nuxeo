@@ -32,6 +32,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.commons.io.IOUtils;
@@ -296,9 +297,13 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
         protected final MigrationContext migrationContext;
 
-        public MigratorWithContext(Consumer<MigrationContext> migrator, ProgressReporter progressReporter) {
+        protected final BiConsumer<MigrationContext, Throwable> cleaner;
+
+        public MigratorWithContext(Consumer<MigrationContext> migrator, ProgressReporter progressReporter,
+                BiConsumer<MigrationContext, Throwable> cleaner) {
             this.migrator = migrator;
             this.migrationContext = new MigrationContextImpl(progressReporter);
+            this.cleaner = cleaner;
         }
 
         @Override
@@ -306,8 +311,12 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
             migrator.accept(migrationContext);
         }
 
-        public MigrationContext getMigrationContext() {
-            return migrationContext;
+        public void cleanup(Throwable t) {
+            cleaner.accept(migrationContext, t);
+        }
+
+        public void requestShutdown() {
+            migrationContext.requestShutdown();
         }
     }
 
@@ -318,7 +327,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
      */
     protected static class MigrationThreadPoolExecutor extends ThreadPoolExecutor {
 
-        protected final List<Runnable> runnables = new CopyOnWriteArrayList<>();
+        protected final List<MigratorWithContext> runnables = new CopyOnWriteArrayList<>();
 
         public MigrationThreadPoolExecutor() {
             // like Executors.newCachedThreadPool but with keepAliveTime of 0
@@ -327,18 +336,17 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
         @Override
         protected void beforeExecute(Thread thread, Runnable runnable) {
-            super.beforeExecute(thread, runnable);
-            runnables.add(runnable);
+            runnables.add((MigratorWithContext) runnable);
         }
 
         @Override
         protected void afterExecute(Runnable runnable, Throwable t) {
-            super.afterExecute(runnable, t);
             runnables.remove(runnable);
+            ((MigratorWithContext) runnable).cleanup(t);
         }
 
         public void requestShutdown() {
-            runnables.forEach(runnable -> ((MigratorWithContext) runnable).getMigrationContext().requestShutdown());
+            runnables.forEach(migratorWithContext -> migratorWithContext.requestShutdown());
         }
     }
 
@@ -467,11 +475,18 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         // allow notification of running step
         notifier.notifyStatusChange();
 
-        executor.submit(new MigratorWithContext(migrationContext -> {
+        Consumer<MigrationContext> migration = migrationContext -> {
             Thread.currentThread().setName("Nuxeo-Migrator-" + id);
             migrator.run(migrationContext);
-            // after the migrator is finished, change state, except if shutdown is requested
-            String state = migrationContext.isShutdownRequested() ? stepDescr.getFromState() : stepDescr.getToState();
+        };
+
+        BiConsumer<MigrationContext, Throwable> cleaner = (migrationContext, t) -> {
+            if (t != null) {
+                log.error("Exception during execution of step: " + step + " for migration: " + id, t);
+            }
+            // after the migrator is finished, change state, except if shutdown is requested or exception
+            String state = (t != null || migrationContext.isShutdownRequested()) ? stepDescr.getFromState()
+                    : stepDescr.getToState();
             atomic(id, kv -> {
                 kv.put(id, state);
                 kv.put(id + STEP, (String) null);
@@ -480,7 +495,9 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
             });
             // allow notification of new state
             notifier.notifyStatusChange();
-        }, progressReporter));
+        };
+
+        executor.execute(new MigratorWithContext(migration, progressReporter, cleaner));
     }
 
     protected StatusChangeNotifier getStatusChangeNotifier(String id) {
