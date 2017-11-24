@@ -527,12 +527,12 @@ public final class Framework {
      *
      * @param t the exception or null if none
      * @deprecated since 9.1 DON'T USE THIS METHOD ANYMORE, its behavior is not documented. It also seems to not work.
-     *             If you want to stop server startup add messages to {@link RuntimeService#getErrors()}.
+     *             If you want to stop server startup add error messages to {@link RuntimeService#getMessageHandler()}.
      */
     @Deprecated
     public static void handleDevError(Throwable t) {
         if (isBooleanPropertyTrue(NUXEO_STRICT_RUNTIME_SYSTEM_PROP)) {
-            System.err.println("Fatal error caught in strict " + "runtime mode => exiting.");
+            System.err.println("Fatal error caught in strict runtime mode => exiting.");
             if (t != null) {
                 t.printStackTrace();
             }

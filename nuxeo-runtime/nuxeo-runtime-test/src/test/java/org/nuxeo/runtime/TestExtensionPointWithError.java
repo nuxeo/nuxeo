@@ -96,7 +96,7 @@ public class TestExtensionPointWithError extends NXRuntimeTestCase {
         assertEquals(0, contribs.length); // contrib with errors not loaded
 
         // check runtime warnings
-        List<String> warnings = Framework.getRuntime().getWarnings();
+        List<String> warnings = Framework.getRuntime().getMessageHandler().getWarnings();
         assertEquals(1, warnings.size());
         assertEquals("Failed to load contributions for component service:OverridingXPoint-witherror", warnings.get(0));
 

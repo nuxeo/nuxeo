@@ -20,7 +20,6 @@ package org.nuxeo.runtime;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
 
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -53,7 +52,6 @@ public interface RuntimeService {
 
     /**
      * Stops the runtime.
-     * @throws InterruptedException
      */
     void stop() throws InterruptedException;
 
@@ -196,23 +194,14 @@ public interface RuntimeService {
     <T> T getService(Class<T> serviceClass);
 
     /**
-     * Gets a list of startup warnings. Can be modified to add new warnings.
+     * Gets the runtime message handler. You can add new messages or just retrieve them.
      * <p />
-     * Warning messages don't block server startup.
+     * Warning messages don't block server startup, but error messages do in strict mode.
      *
-     * @return the warning list
+     * @return the message handler for runtime.
+     * @since 9.10
      */
-    List<String> getWarnings();
-
-    /**
-     * Gets a list of startup errors. Can be modified to add new errors.
-     * <p />
-     * Error messages block server startup in strict mode.
-     *
-     * @return the error list
-     * @since 9.1
-     */
-    List<String> getErrors();
+    RuntimeMessageHandler getMessageHandler();
 
     /**
      * OSGi frameworks are using a string {@link Bundle#getLocation()} to identify bundle locations.

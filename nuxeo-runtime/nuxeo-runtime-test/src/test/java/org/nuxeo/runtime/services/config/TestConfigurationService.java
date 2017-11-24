@@ -101,15 +101,15 @@ public class TestConfigurationService extends NXRuntimeTestCase {
     @Test
     public void testCompatWarn() throws Exception {
         Framework.getProperties().setProperty("nuxeo.test.dummyStringProperty", "anotherDummyValue");
-        assertEquals(0, Framework.getRuntime().getWarnings().size());
+        assertEquals(0, Framework.getRuntime().getMessageHandler().getWarnings().size());
         // Deploy contribution with properties
         pushInlineDeployments("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml");
         postSetUp();
-        assertEquals(1, Framework.getRuntime().getWarnings().size());
+        assertEquals(1, Framework.getRuntime().getMessageHandler().getWarnings().size());
         assertEquals(
                 "Property 'nuxeo.test.dummyStringProperty' should now be contributed to "
                         + "extension point 'org.nuxeo.runtime.ConfigurationService', using target 'configuration'",
-                Framework.getRuntime().getWarnings().get(0));
+                Framework.getRuntime().getMessageHandler().getWarnings().get(0));
         Framework.getProperties().remove("nuxeo.test.dummyStringProperty");
     }
 

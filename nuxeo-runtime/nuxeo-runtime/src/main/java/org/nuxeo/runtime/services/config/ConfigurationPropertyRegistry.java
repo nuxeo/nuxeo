@@ -58,7 +58,7 @@ public class ConfigurationPropertyRegistry extends SimpleContributionRegistry<Co
             String message = "Property '" + key + "' should now be contributed to extension "
                     + "point 'org.nuxeo.runtime.ConfigurationService', using target 'configuration'";
             DeprecationLogger.log(message, "7.4");
-            Framework.getRuntime().getWarnings().add(message);
+            Framework.getRuntime().getMessageHandler().addWarning(message);
         }
         String value = contrib.getValue();
         properties.put(name, value);

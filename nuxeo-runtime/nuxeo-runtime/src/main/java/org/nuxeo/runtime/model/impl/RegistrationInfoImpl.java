@@ -343,7 +343,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             String msg = "Failed to instantiate component: " + implementation;
             log.error(msg, e);
             msg += " (" + e.toString() + ')';
-            Framework.getRuntime().getErrors().add(msg);
+            Framework.getRuntime().getMessageHandler().addError(msg);
             throw e;
         }
     }
@@ -442,7 +442,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getErrors().add(msg);
+                    Framework.getRuntime().getMessageHandler().addError(msg);
                 }
             }
         }
@@ -465,7 +465,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getErrors().add(msg);
+                    Framework.getRuntime().getMessageHandler().addError(msg);
                 }
             }
         }
@@ -500,7 +500,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                         String message = "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
                                 + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint();
                         log.error(message, e);
-                        Framework.getRuntime().getErrors().add(message);
+                        Framework.getRuntime().getMessageHandler().addError(message);
                     }
                 }
             }
@@ -575,7 +575,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         // HashSet<String> targets = new HashSet<String>();
         for (ExtensionImpl xt : extensions) {
             if (xt.target == null) {
-                Framework.getRuntime().getWarnings().add(
+                Framework.getRuntime().getMessageHandler().addWarning(
                         "Bad extension declaration (no target attribute specified). Component: " + getName());
                 continue;
             }
@@ -586,7 +586,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             // target point declared in same component
             // String message =
             // "Component "+getName()+" contains multiple extensions to "+key;
-            // Framework.getRuntime().getWarnings().add(message);
+            // Framework.getRuntime().getMessageHandler().addWarning(message);
             // //TODO: un-comment the following line if you want to treat this
             // as a dev. error
             // //Framework.handleDevError(new Error(message));
