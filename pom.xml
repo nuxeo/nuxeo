@@ -246,7 +246,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-importer-queues</artifactId>
+        <artifactId>nuxeo-importer-stream</artifactId>
         <version>${nuxeo.importer.version}</version>
       </dependency>
 
