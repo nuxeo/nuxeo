@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.repository.RepositoryService;
@@ -194,18 +195,33 @@ public class TagsRelationsToFacetsMigrator implements Migrator {
         checkShutdownRequested();
 
         // recreate all doc tags
-        processBatched(docTags.entrySet(), es -> {
-            String docId = es.getKey();
-            Set<Tag> tags = es.getValue();
-            DocumentModel doc = session.getDocument(new IdRef(docId));
-            addTags(doc, tags);
-        }, "Creating new tags");
+        processBatched(docTags.entrySet(), es -> addTags(session, es.getKey(), es.getValue()), "Creating new tags");
 
         // delete all Tagging and Tag documents
-        processBatched(taggingIds, id -> session.removeDocument(new IdRef(id)), "Deleting old Tagging documents");
-        processBatched(tagIds, id -> session.removeDocument(new IdRef(id)), "Deleting old Tag documents");
+        processBatched(taggingIds, docId -> removeDocument(session, docId), "Deleting old Tagging documents");
+        processBatched(tagIds, docId -> removeDocument(session, docId), "Deleting old Tag documents");
 
         reportProgress("Done", docTags.size(), docTags.size());
+    }
+
+    protected void removeDocument(CoreSession session, String docId) {
+        try {
+            session.removeDocument(new IdRef(docId));
+        } catch (DocumentNotFoundException e) {
+            // ignore document that was already removed, or whose type is unknown
+            return;
+        }
+    }
+
+    protected void addTags(CoreSession session, String docId, Set<Tag> tags) {
+        DocumentModel doc;
+        try {
+            doc = session.getDocument(new IdRef(docId));
+        } catch (DocumentNotFoundException e) {
+            // ignore document that was already removed, or whose type is unknown
+            return;
+        }
+        addTags(doc, tags);
     }
 
     @SuppressWarnings("unchecked")
