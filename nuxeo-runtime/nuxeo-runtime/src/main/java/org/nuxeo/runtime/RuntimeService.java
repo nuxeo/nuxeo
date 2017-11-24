@@ -149,7 +149,9 @@ public interface RuntimeService {
      * @param name the component name as a string
      * @return the component
      */
-    Object getComponent(String name);
+    default Object getComponent(String name) {
+        return getComponent(new ComponentName(name));
+    }
 
     /**
      * Gets a component given its name.
@@ -165,7 +167,9 @@ public interface RuntimeService {
      * @param name the component name as a string
      * @return the component
      */
-    ComponentInstance getComponentInstance(String name);
+    default ComponentInstance getComponentInstance(String name) {
+        return getComponentInstance(new ComponentName(name));
+    }
 
     /**
      * Gets a component implementation instance given its name.
