@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.pattern.KeyValueMessage;
 import org.nuxeo.lib.stream.pattern.consumer.BatchPolicy;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
@@ -39,7 +40,6 @@ import org.nuxeo.lib.stream.pattern.producer.ProducerPool;
 import org.nuxeo.lib.stream.pattern.producer.ProducerStatus;
 import org.nuxeo.lib.stream.tests.pattern.consumer.IdMessageFactory;
 import org.nuxeo.lib.stream.tests.pattern.producer.RandomIdMessageProducerFactory;
-import org.nuxeo.lib.stream.log.LogManager;
 
 import net.jodah.failsafe.RetryPolicy;
 

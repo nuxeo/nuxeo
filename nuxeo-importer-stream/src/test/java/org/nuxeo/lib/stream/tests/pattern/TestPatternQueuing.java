@@ -32,14 +32,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.nuxeo.lib.stream.log.LogAppender;
+import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.pattern.KeyValueMessage;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPool;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerStatus;
 import org.nuxeo.lib.stream.tests.pattern.consumer.IdMessageFactory;
-import org.nuxeo.lib.stream.log.LogAppender;
-import org.nuxeo.lib.stream.log.LogManager;
-import org.nuxeo.lib.stream.log.LogOffset;
 
 public abstract class TestPatternQueuing {
     protected static final Log log = LogFactory.getLog(TestPatternQueuing.class);

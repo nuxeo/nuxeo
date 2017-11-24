@@ -135,9 +135,7 @@ public class KeyValueMessage implements Message {
 
         KeyValueMessage keyValueMessage = (KeyValueMessage) o;
 
-        if (poisonPill != keyValueMessage.poisonPill)
-            return false;
-        return forceBatch == keyValueMessage.forceBatch
+        return poisonPill == keyValueMessage.poisonPill && forceBatch == keyValueMessage.forceBatch
                 && (key != null ? key.equals(keyValueMessage.key) : keyValueMessage.key == null);
 
     }
