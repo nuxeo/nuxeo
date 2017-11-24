@@ -21,7 +21,6 @@ package org.nuxeo.runtime;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -86,24 +85,18 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     protected final RuntimeContext context;
 
-    protected AbstractRuntimeService(DefaultRuntimeContext context) {
-        this(context, null);
-    }
-
-    /**
-     * Warnings during the deployment. These messages don't block startup, even in strict mode.
-     */
-    protected final List<String> warnings = new ArrayList<>();
-
     protected LogConfig logConfig = new LogConfig();
 
     /**
-     * Errors during the deployment. Here are collected all errors occurred during the startup. These messages block
-     * startup in strict mode.
+     * Message handler for runtime. This handler takes care to store messages with the component manager step.
      *
-     * @since 9.1
+     * @since 9.10
      */
-    protected final List<String> errors = new ArrayList<>();
+    protected final RuntimeMessageHandlerImpl messageHandler = new RuntimeMessageHandlerImpl();
+
+    protected AbstractRuntimeService(DefaultRuntimeContext context) {
+        this(context, null);
+    }
 
     protected AbstractRuntimeService(DefaultRuntimeContext context, Map<String, String> properties) {
         this.context = context;
@@ -114,22 +107,17 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         // get errors set by NuxeoDeployer
         String errs = System.getProperty("org.nuxeo.runtime.deployment.errors");
         if (errs != null) {
-            errors.addAll(Arrays.asList(errs.split("\n")));
+            Arrays.asList(errs.split("\n")).forEach(messageHandler::addError);
             System.clearProperty("org.nuxeo.runtime.deployment.errors");
         }
     }
 
-    @Override
-    public List<String> getWarnings() {
-        return warnings;
-    }
-
     /**
-     * @since 9.1
+     * @since 9.10
      */
     @Override
-    public List<String> getErrors() {
-        return errors;
+    public RuntimeMessageHandler getMessageHandler() {
+        return messageHandler;
     }
 
     protected ComponentManager createComponentManager() {
@@ -147,6 +135,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         }
 
         manager = createComponentManager();
+        manager.addListener(messageHandler);
         try {
             loadConfig();
         } catch (IOException e) {
@@ -161,8 +150,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         try {
             doStart();
         } finally {
-            Framework.sendEvent(
-                    new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STARTED, this));
+            Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STARTED, this));
             isStarted = true;
         }
     }
@@ -181,8 +169,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
                 doStop();
             } finally {
                 isStarted = false;
-                Framework.sendEvent(
-                        new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STOPPED, this));
+                Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STOPPED, this));
                 manager = null;
             }
         } finally {
@@ -315,6 +302,8 @@ public abstract class AbstractRuntimeService implements RuntimeService {
      */
     @Override
     public boolean getStatusMessage(StringBuilder msg) {
+        List<String> warnings = messageHandler.getWarnings();
+        List<String> errors = messageHandler.getErrors();
         String hr = "======================================================================";
         if (!warnings.isEmpty()) {
             msg.append(hr).append("\n= Component Loading Warnings:\n");
@@ -333,28 +322,28 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         Collection<ComponentName> unstartedRegistrations = manager.getActivatingRegistrations();
         unstartedRegistrations.addAll(manager.getStartFailureRegistrations());
         msg.append(hr)
-                .append("\n= Component Loading Status: Pending: ")
-                .append(pendingRegistrations.size())
+           .append("\n= Component Loading Status: Pending: ")
+           .append(pendingRegistrations.size())
            .append(" / Missing: ")
            .append(missingRegistrations.size())
-                .append(" / Unstarted: ")
-                .append(unstartedRegistrations.size())
-                .append(" / Total: ")
+           .append(" / Unstarted: ")
+           .append(unstartedRegistrations.size())
+           .append(" / Total: ")
            .append(manager.getRegistrations().size())
-                .append('\n');
+           .append('\n');
         for (Entry<ComponentName, Set<ComponentName>> e : pendingRegistrations.entrySet()) {
             msg.append("  * ").append(e.getKey()).append(" requires ").append(e.getValue()).append('\n');
         }
         for (Entry<ComponentName, Set<Extension>> e : missingRegistrations.entrySet()) {
             msg.append("  * ")
-                    .append(e.getKey())
+               .append(e.getKey())
                .append(" references missing ")
                .append(e.getValue()
                         .stream()
                         .map(ext -> "target=" + ext.getTargetComponent().getName() + ";point="
                                 + ext.getExtensionPoint())
                         .collect(Collectors.toList()))
-                    .append('\n');
+               .append('\n');
         }
         for (ComponentName componentName : unstartedRegistrations) {
             msg.append("  - ").append(componentName).append('\n');
@@ -387,7 +376,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
         Log4jWatchdogHandle wdog;
 
-        public void configure(){
+        public void configure() {
             if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "true"))) {
                 Level threshold = Level.parse(getProperty(REDIRECT_JUL_THRESHOLD, "INFO").toUpperCase());
                 JavaUtilLoggingHelper.redirectToApacheCommons(threshold);

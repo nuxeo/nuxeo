@@ -110,7 +110,7 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
         pushInlineDeployments("org.nuxeo.ecm.core.event:test-InvalidListeners.xml");
 
         assertEquals(0, serviceImpl.getEventListenerList().getAsyncPostCommitListeners().size());
-        List<String> errors = Framework.getRuntime().getErrors();
+        List<String> errors = Framework.getRuntime().getMessageHandler().getErrors();
         assertNotNull(errors);
         assertEquals(3, errors.size());
 

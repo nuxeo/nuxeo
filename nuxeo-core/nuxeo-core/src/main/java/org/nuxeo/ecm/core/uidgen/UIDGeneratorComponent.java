@@ -87,7 +87,7 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
         } else if (EXTENSION_POINT_SEQUENCER_FACTORY.equals(extPoint)) {
             String msg = "UIDSequencer factory no more supported from version 5.4. Faulty component: "
                     + extension.getComponent();
-            Framework.getRuntime().getWarnings().add(msg);
+            Framework.getRuntime().getMessageHandler().addWarning(msg);
             log.error(msg);
         } else {
             log.warn("extension not handled: " + extPoint);

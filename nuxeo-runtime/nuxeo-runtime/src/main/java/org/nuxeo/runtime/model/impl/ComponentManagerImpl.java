@@ -500,7 +500,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
     protected static void handleError(String message, Exception e) {
         log.error(message, e);
-        Framework.getRuntime().getWarnings().add(message);
+        Framework.getRuntime().getMessageHandler().addWarning(message);
     }
 
     /**
@@ -569,7 +569,7 @@ public class ComponentManagerImpl implements ComponentManager {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getErrors().add(msg);
+                    Framework.getRuntime().getMessageHandler().addError(msg);
                 }
             }
         }
@@ -592,7 +592,7 @@ public class ComponentManagerImpl implements ComponentManager {
                             + xt.getExtensionPoint() + " in component: " + xt.getComponent().getName();
                     log.error(msg, e);
                     msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getErrors().add(msg);
+                    Framework.getRuntime().getMessageHandler().addError(msg);
                 }
             }
         }
@@ -666,7 +666,7 @@ public class ComponentManagerImpl implements ComponentManager {
                     String message = "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
                             + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint();
                     log.error(message, e);
-                    Framework.getRuntime().getErrors().add(message);
+                    Framework.getRuntime().getMessageHandler().addError(message);
                 }
             }
         }

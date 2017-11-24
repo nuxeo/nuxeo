@@ -310,7 +310,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             String message = "Extension point 'versioning' has been deprecated and corresponding behavior removed from "
                     + "Nuxeo Platform. Please use versioning policy instead.";
             DeprecationLogger.log(message, "9.1");
-            Framework.getRuntime().getWarnings().add(message);
+            Framework.getRuntime().getMessageHandler().addWarning(message);
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
                 if (contrib instanceof VersioningDescriptor) {

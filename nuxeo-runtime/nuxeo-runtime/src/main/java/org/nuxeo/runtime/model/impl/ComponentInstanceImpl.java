@@ -249,7 +249,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
             ee = ExceptionUtils.unwrapInvoke(e);
         }
         log.error(message, ee);
-        Framework.getRuntime().getErrors().add(message);
+        Framework.getRuntime().getMessageHandler().addError(message);
     }
 
     @Override
