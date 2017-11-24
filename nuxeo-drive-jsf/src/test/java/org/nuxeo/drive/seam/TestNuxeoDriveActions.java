@@ -43,7 +43,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy("org.nuxeo.ecm.platform.login.token")
+@Deploy({ "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.automation.server:OSGI-INF/auth-contrib.xml",
+        "org.nuxeo.ecm.platform.login.token" })
 public class TestNuxeoDriveActions {
 
     @Inject
