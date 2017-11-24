@@ -244,20 +244,9 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     }
 
     @Override
-    public Object getComponent(String name) {
-        ComponentInstance co = getComponentInstance(name);
-        return co != null ? co.getInstance() : null;
-    }
-
-    @Override
     public Object getComponent(ComponentName name) {
         ComponentInstance co = getComponentInstance(name);
         return co != null ? co.getInstance() : null;
-    }
-
-    @Override
-    public ComponentInstance getComponentInstance(String name) {
-        return manager.getComponent(new ComponentName(name));
     }
 
     @Override
