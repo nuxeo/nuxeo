@@ -914,6 +914,7 @@ public class TestSQLRepositoryVersioning {
          * major checkin
          */
 
+        Thread.sleep(2); // make sure the second version doesn't have the same "created" as the first
         DocumentRef majRef = doc.checkIn(VersioningOption.MAJOR, "yo");
         DocumentModel maj = session.getDocument(majRef);
         ver.refresh();
