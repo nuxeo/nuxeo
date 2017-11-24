@@ -293,26 +293,26 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
      */
     protected static class MigratorWithContext implements Runnable {
 
-        protected final Consumer<MigrationContext> migrator;
+        protected final Consumer<MigrationContext> migration;
 
         protected final MigrationContext migrationContext;
 
-        protected final BiConsumer<MigrationContext, Throwable> cleaner;
+        protected final BiConsumer<MigrationContext, Throwable> afterMigration;
 
-        public MigratorWithContext(Consumer<MigrationContext> migrator, ProgressReporter progressReporter,
-                BiConsumer<MigrationContext, Throwable> cleaner) {
-            this.migrator = migrator;
+        public MigratorWithContext(Consumer<MigrationContext> migration, ProgressReporter progressReporter,
+                BiConsumer<MigrationContext, Throwable> afterMigration) {
+            this.migration = migration;
             this.migrationContext = new MigrationContextImpl(progressReporter);
-            this.cleaner = cleaner;
+            this.afterMigration = afterMigration;
         }
 
         @Override
         public void run() {
-            migrator.accept(migrationContext);
+            migration.accept(migrationContext);
         }
 
-        public void cleanup(Throwable t) {
-            cleaner.accept(migrationContext, t);
+        public void afterMigration(Throwable t) {
+            afterMigration.accept(migrationContext, t);
         }
 
         public void requestShutdown() {
@@ -342,7 +342,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         @Override
         protected void afterExecute(Runnable runnable, Throwable t) {
             runnables.remove(runnable);
-            ((MigratorWithContext) runnable).cleanup(t);
+            ((MigratorWithContext) runnable).afterMigration(t);
         }
 
         public void requestShutdown() {
@@ -480,7 +480,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
             migrator.run(migrationContext);
         };
 
-        BiConsumer<MigrationContext, Throwable> cleaner = (migrationContext, t) -> {
+        BiConsumer<MigrationContext, Throwable> afterMigration = (migrationContext, t) -> {
             if (t != null) {
                 log.error("Exception during execution of step: " + step + " for migration: " + id, t);
             }
@@ -497,7 +497,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
             notifier.notifyStatusChange();
         };
 
-        executor.execute(new MigratorWithContext(migration, progressReporter, cleaner));
+        executor.execute(new MigratorWithContext(migration, progressReporter, afterMigration));
     }
 
     protected StatusChangeNotifier getStatusChangeNotifier(String id) {
