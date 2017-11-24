@@ -22,21 +22,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,10 +45,12 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @RunWith(FeaturesRunner.class)
-@Features(BlobManagerFeature.class)
+@Features({ BlobManagerFeature.class, LogFeature.class, LogCaptureFeature.class })
 @LocalDeploy("org.nuxeo.ecm.core.api:OSGI-INF/test-fs-blobprovider.xml")
 public class TestFilesystemBlobProvider {
 
@@ -67,6 +68,12 @@ public class TestFilesystemBlobProvider {
 
     @Inject
     protected HotDeployer deployer;
+
+    @Inject
+    protected LogFeature logFeature;
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     protected Path tmpFile;
 
@@ -134,6 +141,7 @@ public class TestFilesystemBlobProvider {
     }
 
     @Test
+    @LogCaptureFeature.FilterOn(logLevel = "ERROR")
     public void testReadNotFound() throws Exception {
         String path = "/NO_SUCH_FILE_EXISTS";
         assertFalse(Files.exists(Paths.get(path)));
@@ -143,12 +151,17 @@ public class TestFilesystemBlobProvider {
         blobInfo.key = key;
         BlobProvider blobProvider = blobManager.getBlobProvider(PROVIDER_ID);
         ManagedBlob blob = (ManagedBlob) blobProvider.readBlob(blobInfo);
-        try {
-            blob.getStream();
-            fail("Should not be able to read non-existent file");
-        } catch (NoSuchFileException e) {
-            // expected
+        byte[] bytes;
+        logFeature.hideErrorFromConsoleLog();
+        try (InputStream in = blob.getStream()) {
+            bytes = IOUtils.toByteArray(in);
+        } finally {
+            logFeature.restoreConsoleLog();
         }
+        assertEquals(0, bytes.length);
+        List<LoggingEvent> caughtEvents = logCaptureResult.getCaughtEvents();
+        assertEquals(1, caughtEvents.size());
+        assertEquals("Failed to access file: testfs:/NO_SUCH_FILE_EXISTS", caughtEvents.get(0).getRenderedMessage());
     }
 
     @Test
@@ -177,6 +190,7 @@ public class TestFilesystemBlobProvider {
     }
 
     @Test
+    @LogCaptureFeature.FilterOn(logLevel = "ERROR")
     public void testIllegalPath() throws Exception {
         String illegalPath = "../foo";
 
@@ -194,12 +208,17 @@ public class TestFilesystemBlobProvider {
             ManagedBlob blob = (ManagedBlob) blobProvider.readBlob(blobInfo);
             assertNotNull(blob);
             assertEquals(key, blob.getKey());
-            try {
-                blob.getStream();
-                fail("Should not be able to read file with illegal path");
-            } catch (FileNotFoundException e) {
-                // ok
+            byte[] bytes;
+            logFeature.hideErrorFromConsoleLog();
+            try (InputStream in = blob.getStream()) {
+                bytes = IOUtils.toByteArray(in);
+            } finally {
+                logFeature.restoreConsoleLog();
             }
+            assertEquals(0, bytes.length);
+            List<LoggingEvent> caughtEvents = logCaptureResult.getCaughtEvents();
+            assertEquals(1, caughtEvents.size());
+            assertEquals("Failed to access file: testfs2:../foo", caughtEvents.get(0).getRenderedMessage());
         } finally {
             ((BlobManagerComponent) blobManager).unregisterBlobProvider(descr);
         }
