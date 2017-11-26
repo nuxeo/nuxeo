@@ -115,7 +115,7 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
                     writeBuckets("extendedBuckets", agg.getExtendedBuckets(), field, jg);
                 }
             } else {
-                log.warn(String.format("Could not resolve field %s for aggrgeate %s", fieldName, agg.getId()));
+                log.warn(String.format("Could not resolve field %s for aggregate %s", fieldName, agg.getId()));
                 jg.writeObjectField("buckets", agg.getBuckets());
                 jg.writeObjectField("extendedBuckets", agg.getExtendedBuckets());
             }
