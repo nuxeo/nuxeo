@@ -52,3 +52,5 @@
      (AL 2.0) sitebricks (com.google.sitebricks:sitebricks:0.8.3 - http://code.google.com/p/google-sitebricks/)
      (Microsoft JDBC) sqljdbc (com.microsoft.sqlserver:sqljdbc:4.2.6420 - no url defined)
      (AL 2.0) standard (taglibs:standard:1.1.2 - no url defined)
+     (AL 2.0) chronicle-queue (net.openhft:chronicle-queue:4.6.44 - no url defined)
+     (AL 2.0) zookeeper (org.apache.zookeeper:zookeeper:3.4.8 - no url defined)
