@@ -59,7 +59,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, RepositoryElasticSearchFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.io", "org.nuxeo.drive.core",
+@Deploy({ "org.nuxeo.ecm.core.cache", //
+        "org.nuxeo.ecm.core.io", //
+        "org.nuxeo.drive.core", //
         "org.nuxeo.drive.elasticsearch:OSGI-INF/nuxeodrive-elasticsearch-adapter-contrib.xml",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 @LocalDeploy("org.nuxeo.drive.elasticsearch:OSGI-INF/test-nuxeodrive-elasticsearch-contrib.xml")
@@ -104,7 +106,8 @@ public class TestESSyncRootFolderItem {
         // => 105 documents
         buildAndIndexTree(syncRootFolder.getPathAsString(), 4, 5, 2);
 
-        esSyncRootFolderItemFactory = (ESSyncRootFolderItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultSyncRootFolderItemFactory");
+        esSyncRootFolderItemFactory = (ESSyncRootFolderItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                "defaultSyncRootFolderItemFactory");
     }
 
     protected void buildAndIndexTree(String parentPath, int maxLevel, int fileCount, int folderCount) throws Exception {
@@ -169,7 +172,8 @@ public class TestESSyncRootFolderItem {
                                                 .stream()
                                                 .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
                                                 .collect(Collectors.toList());
-        assertEquals(expectedFSItemIds, descendants.stream().map(fsItem -> fsItem.getId()).collect(Collectors.toList()));
+        assertEquals(expectedFSItemIds,
+                descendants.stream().map(fsItem -> fsItem.getId()).collect(Collectors.toList()));
 
         // Scroll through descendants in several steps
         descendants.clear();
@@ -183,7 +187,8 @@ public class TestESSyncRootFolderItem {
         }
         assertEquals(105, descendants.size());
         // Check that descendants are ordered by path
-        assertEquals(expectedFSItemIds, descendants.stream().map(fsItem -> fsItem.getId()).collect(Collectors.toList()));
+        assertEquals(expectedFSItemIds,
+                descendants.stream().map(fsItem -> fsItem.getId()).collect(Collectors.toList()));
     }
 
 }

@@ -89,9 +89,14 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 // We handle transaction start and commit manually to make it possible to have
 // several consecutive transactions in a test method
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.runtime.reload", "org.nuxeo.drive.core",
-        "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.core.cache",
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", //
+        "org.nuxeo.ecm.platform.userworkspace.api", //
+        "org.nuxeo.ecm.platform.userworkspace.core", //
+        "org.nuxeo.runtime.reload", //
+        "org.nuxeo.drive.core", //
+        "org.nuxeo.ecm.platform.collections.core", //
+        "org.nuxeo.ecm.platform.query.api", //
+        "org.nuxeo.ecm.core.cache", //
         "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 public class TestPermissionHierarchyFileSystemChanges {

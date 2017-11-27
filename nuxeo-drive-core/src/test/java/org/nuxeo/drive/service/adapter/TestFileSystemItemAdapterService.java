@@ -300,10 +300,8 @@ public class TestFileSystemItemAdapterService {
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
         assertEquals("defaultFileSystemItemFactory#test#" + custom.getId(), fsItem.getId());
-        assertEquals(
-                "/org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#/" + syncRootItemId + "/"
-                        + fsItem.getId(),
-                fsItem.getPath());
+        assertEquals("/org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#/" + syncRootItemId + "/"
+                + fsItem.getId(), fsItem.getPath());
         assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Bonnie's file.txt", fsItem.getName());
         assertFalse(fsItem.isFolder());
@@ -409,7 +407,8 @@ public class TestFileSystemItemAdapterService {
                     "Factory class org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory for factory defaultFileSystemItemFactory is not a VirtualFolderItemFactory.",
                     e.getMessage());
         }
-        VirtualFolderItemFactory virtualFolderItemFactory = fileSystemItemAdapterService.getVirtualFolderItemFactory("dummyVirtualFolderItemFactory");
+        VirtualFolderItemFactory virtualFolderItemFactory = fileSystemItemAdapterService.getVirtualFolderItemFactory(
+                "dummyVirtualFolderItemFactory");
         assertNotNull(virtualFolderItemFactory);
         assertTrue(virtualFolderItemFactory.getClass().getName().endsWith("DummyVirtualFolderItemFactory"));
 

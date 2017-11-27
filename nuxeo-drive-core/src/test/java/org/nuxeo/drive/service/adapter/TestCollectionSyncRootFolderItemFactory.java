@@ -58,8 +58,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.core.cache",
+@Deploy({ "org.nuxeo.drive.core", //
+        "org.nuxeo.ecm.platform.collections.core", //
+        "org.nuxeo.ecm.platform.query.api", //
+        "org.nuxeo.ecm.core.io", //
+        "org.nuxeo.ecm.core.cache", //
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 public class TestCollectionSyncRootFolderItemFactory {
 

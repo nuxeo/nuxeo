@@ -455,7 +455,7 @@ public class TestVersioningFileSystemItemFactory {
             file = session.getDocument(file.getRef());
             updatedBlob = (Blob) file.getPropertyValue("file:content");
             assertEquals("File name modified again as draft.txt", updatedBlob.getFilename());
-            // Check versioning => should not be versioned since last
+            // Check versioning => should not be versioned by Drive since last
             // modification was done before the versioning delay
             assertEquals("2.0+", file.getVersionLabel());
             fileVersions = session.getVersions(file.getRef());
