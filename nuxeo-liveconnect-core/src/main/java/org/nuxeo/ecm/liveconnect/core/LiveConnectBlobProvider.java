@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.liveconnect.core;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
@@ -32,6 +34,6 @@ public interface LiveConnectBlobProvider<O extends OAuth2ServiceProvider> extend
 
     O getOAuth2Provider();
 
-    Blob toBlob(LiveConnectFileInfo fileInfo);
+    Blob toBlob(LiveConnectFileInfo fileInfo) throws IOException;
 
 }

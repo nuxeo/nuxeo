@@ -95,7 +95,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
      * Should be overriden by subclasses needing something different.
      */
     @Override
-    public Blob readBlob(BlobInfo blobInfo) {
+    public Blob readBlob(BlobInfo blobInfo) throws IOException {
         return toBlob(toFileInfo(blobInfo.key));
     }
 
@@ -202,7 +202,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
     }
 
     @Override
-    public SimpleManagedBlob toBlob(LiveConnectFileInfo fileInfo) {
+    public SimpleManagedBlob toBlob(LiveConnectFileInfo fileInfo) throws IOException {
         LiveConnectFile file;
         try {
             file = getFile(fileInfo);
