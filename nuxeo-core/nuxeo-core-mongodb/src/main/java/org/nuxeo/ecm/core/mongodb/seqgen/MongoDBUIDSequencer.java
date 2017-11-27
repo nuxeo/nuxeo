@@ -18,10 +18,16 @@
  */
 package org.nuxeo.ecm.core.mongodb.seqgen;
 
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.gte;
+import static com.mongodb.client.model.Filters.not;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.uidgen.AbstractUIDSequencer;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.runtime.api.Framework;
@@ -32,9 +38,9 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
+import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 
 /**
@@ -65,6 +71,19 @@ public class MongoDBUIDSequencer extends AbstractUIDSequencer {
         getSequencerCollection();
     }
 
+    @Override
+    public void initSequence(String key, int id) {
+        try {
+            Bson filter = and(eq(MongoDBSerializationHelper.MONGODB_ID, key), not(gte(SEQUENCE_VALUE_FIELD, id)));
+            Document sequence = new Document();
+            sequence.put(MongoDBSerializationHelper.MONGODB_ID, key);
+            sequence.put(SEQUENCE_VALUE_FIELD, id);
+            getSequencerCollection().replaceOne(filter, sequence, new UpdateOptions().upsert(true));
+        } catch (MongoWriteException e) {
+            throw new NuxeoException("Failed to update the sequence '" + key + "' with value " + id, e);
+        }
+    }
+
     public MongoCollection<Document> getSequencerCollection() {
         if (coll == null) {
             // Get collection name
@@ -88,7 +107,7 @@ public class MongoDBUIDSequencer extends AbstractUIDSequencer {
     @Override
     public long getNextLong(String key) {
         FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER);
-        Bson filter = Filters.eq(MongoDBSerializationHelper.MONGODB_ID, key);
+        Bson filter = eq(MongoDBSerializationHelper.MONGODB_ID, key);
         Bson update = Updates.inc(SEQUENCE_VALUE_FIELD, ONE);
         Document sequence = getSequencerCollection().findOneAndUpdate(filter, update, options);
         // If sequence is null, we need to create it

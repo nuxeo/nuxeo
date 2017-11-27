@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.mongodb.seqgen;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -31,7 +32,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.mongodb.seqgen.MongoDBUIDSequencer;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.runtime.mongodb.MongoDBFeature;
@@ -67,14 +68,44 @@ public class TestSequenceGeneratorWithMongoDB {
     public void testInitSequence() {
         UIDSequencer seq = uidGeneratorService.getSequencer();
 
-        seq.getNext("mySequence");
-        seq.getNext("mySequence");
+        seq.getNext("autoSequence");
+        seq.getNext("autoSequence");
+        assertTrue(seq.getNext("autoSequence") > 2);
 
         seq.initSequence("mySequence", 1);
         assertTrue(seq.getNext("mySequence") > 1);
+        assertTrue(seq.getNext("mySequence") < 10);
         seq.initSequence("mySequence", 10);
-        assertTrue(seq.getNext("mySequence") > 10);
+        assertTrue("Sequence should skip ahead to 10", seq.getNext("mySequence") > 10);
         assertTrue(seq.getNextLong("mySequence") > 10);
+
+        try {
+            seq.initSequence("mySequence", 5);
+            fail(); // should never get here.
+        } catch (NuxeoException ne) {
+            assertEquals("Failed to update the sequence 'mySequence' with value 5", ne.getMessage());
+        }
+
+        seq.initSequence("another", 500);
+
+        try {
+            seq.initSequence("another", 500);
+            fail(); // should never get here.
+        } catch (NuxeoException ne) {
+            assertEquals("Failed to update the sequence 'another' with value 500", ne.getMessage());
+        }
+
+        assertTrue("Sequence should be greater than 500",seq.getNext("another") > 500);
+
+        try {
+            seq.initSequence("another", 499);
+            fail(); // should never get here.
+        } catch (NuxeoException ne) {
+            assertEquals("Failed to update the sequence 'another' with value 499", ne.getMessage());
+        }
+
+        seq.initSequence("another", 9999);
+        assertTrue("Sequence should be at 10000",seq.getNext("another") >= 10000);
     }
 
     @SuppressWarnings("boxing")
