@@ -28,6 +28,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
 import java.io.Serializable;
 
+import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.StateHelper;
@@ -93,6 +94,11 @@ public class DBSDocumentState {
     public void setNotDirty() {
         originalState = null;
         StateHelper.resetDeltas(state);
+        // reset the change token delta even if delta processing is disabled in StateHelper.resetDeltas
+        Serializable value = state.get(KEY_SYS_CHANGE_TOKEN);
+        if (value instanceof Delta) {
+            state.put(KEY_SYS_CHANGE_TOKEN, ((Delta) value).getFullValue());
+        }
     }
 
     /**
