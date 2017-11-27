@@ -93,6 +93,11 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
         "org.nuxeo.ecm.platform.userworkspace.api", //
         "org.nuxeo.ecm.platform.userworkspace.core", //
         "org.nuxeo.runtime.reload", //
+        "org.nuxeo.ecm.webengine.core", //
+        "org.nuxeo.ecm.platform.web.common", //
+        "org.nuxeo.ecm.automation.io", //
+        "org.nuxeo.ecm.automation.server", //
+        "org.nuxeo.ecm.platform.login.token", //
         "org.nuxeo.drive.core", //
         "org.nuxeo.ecm.platform.collections.core", //
         "org.nuxeo.ecm.platform.query.api", //

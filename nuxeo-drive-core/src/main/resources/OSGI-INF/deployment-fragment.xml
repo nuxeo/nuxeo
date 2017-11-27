@@ -17,6 +17,27 @@
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
 
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/api/v1/drive/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+  </extension>
+
+  <!-- Nuxeo Drive configuration servlet -->
+  <extension target="web#SERVLET">
+
+    <servlet>
+      <servlet-name>Nuxeo Drive Configuration Servlet</servlet-name>
+      <servlet-class>org.nuxeo.drive.servlet.NuxeoDriveConfigurationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo Drive Configuration Servlet</servlet-name>
+      <url-pattern>/api/v1/drive/configuration</url-pattern>
+    </servlet-mapping>
+
   </extension>
 
 </fragment>

@@ -6,7 +6,6 @@ Bundle-Version: 5.7
 Bundle-Name: org.nuxeo.drive.operations
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/nuxeodrive-operations.xml,
- OSGI-INF/nuxeodrive-automation-bindings-contrib.xml,
- OSGI-INF/nuxeodrive-auth-contrib.xml
+ OSGI-INF/nuxeodrive-automation-bindings-contrib.xml
 Bundle-SymbolicName: org.nuxeo.drive.operations;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

@@ -58,7 +58,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.drive.core", //
+@Deploy({ "org.nuxeo.ecm.platform.web.common", //
+        "org.nuxeo.ecm.webengine.core", //
+        "org.nuxeo.ecm.automation.io", //
+        "org.nuxeo.ecm.automation.server", //
+        "org.nuxeo.ecm.directory", //
+        "org.nuxeo.ecm.platform.login.token", //
+        "org.nuxeo.drive.core", //
         "org.nuxeo.ecm.platform.collections.core", //
         "org.nuxeo.ecm.platform.query.api", //
         "org.nuxeo.ecm.core.io", //

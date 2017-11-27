@@ -24,7 +24,12 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features({ JtajcaManagementFeature.class, PlatformFeature.class })
-@Deploy({ "org.nuxeo.drive.core", //
+@Deploy({ "org.nuxeo.ecm.platform.web.common", //
+        "org.nuxeo.ecm.webengine.core", //
+        "org.nuxeo.ecm.automation.io", //
+        "org.nuxeo.ecm.automation.server", //
+        "org.nuxeo.ecm.platform.login.token", //
+        "org.nuxeo.drive.core", //
         "org.nuxeo.ecm.core.io", //
         "org.nuxeo.runtime.reload", //
         "org.nuxeo.ecm.core.cache", //
@@ -32,7 +37,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.ecm.platform.userworkspace.types", //
         "org.nuxeo.ecm.platform.userworkspace.core", //
         "org.nuxeo.ecm.platform.collections.core", //
-        "org.nuxeo.ecm.platform.web.common", //
         "org.nuxeo.ecm.platform.filemanager.core", //
         "org.nuxeo.ecm.platform.webapp.types" })
 @LocalDeploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml",

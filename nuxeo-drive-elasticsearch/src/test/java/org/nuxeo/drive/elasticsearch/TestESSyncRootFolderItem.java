@@ -61,6 +61,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features({ CoreFeature.class, RepositoryElasticSearchFeature.class })
 @Deploy({ "org.nuxeo.ecm.core.cache", //
         "org.nuxeo.ecm.core.io", //
+        "org.nuxeo.ecm.directory", //
+        "org.nuxeo.ecm.automation.server", //
+        "org.nuxeo.ecm.platform.login.token", //
         "org.nuxeo.drive.core", //
         "org.nuxeo.drive.elasticsearch:OSGI-INF/nuxeodrive-elasticsearch-adapter-contrib.xml",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
