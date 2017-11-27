@@ -87,9 +87,6 @@ def withBuildStatus(String context, String sha, Closure body) {
     } catch (Throwable cause) {
         setBuildStatus(cause.toString().take(140), context, "FAILURE", sha)
         throw cause
-    } finally {
-        warningsPublisher()
-        claimPublisher()
     }
 }
 
