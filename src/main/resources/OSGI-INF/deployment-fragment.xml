@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <extension target="web#AUTH-FILTER">
+    <filter>
+      <display-name>Nuxeo JSF To Web UI Redirect Filter</display-name>
+      <filter-name>NuxeoJSFWebUIRedirectFilter</filter-name>
+      <filter-class>
+        org.nuxeo.web.ui.NuxeoJSFWebUIRedirectFilter
+      </filter-class>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>NuxeoJSFWebUIRedirectFilter</filter-name>
+      <url-pattern>/nxdoc/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoJSFWebUIRedirectFilter</filter-name>
+      <url-pattern>/nxpath/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+  </extension>
+
+</fragment>
+
