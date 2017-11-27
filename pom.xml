@@ -62,7 +62,8 @@
     <nuxeo.mongodb.ext.version>9.10-SNAPSHOT</nuxeo.mongodb.ext.version>
     <nuxeo.target.platforms.version>9.10-SNAPSHOT</nuxeo.target.platforms.version>
     <nuxeo.web.ui.version>9.10-SNAPSHOT</nuxeo.web.ui.version>
-    
+    <nuxeo.jsf.to.web.ui.version>9.10-SNAPSHOT</nuxeo.jsf.to.web.ui.version>
+
     <!-- optional addons -->
     <nuxeo.sync.version>9.10-SNAPSHOT</nuxeo.sync.version>
     <!-- end of optional addons -->
@@ -129,6 +130,7 @@
     <module>nuxeo-target-platforms</module>
     <module>nuxeo-web-ui</module>
     <module>nuxeo-api-playground</module>
+    <module>nuxeo-jsf-to-web-ui</module>
   </modules>
 
   <dependencyManagement>
@@ -1111,6 +1113,13 @@
         <groupId>org.nuxeo.web.ui</groupId>
         <artifactId>nuxeo-web-ui</artifactId>
         <version>${nuxeo.web.ui.version}</version>
+      </dependency>
+
+      <!-- JSF to Web UI -->
+      <dependency>
+        <groupId>org.nuxeo.web.ui</groupId>
+        <artifactId>nuxeo-jsf-to-web-ui</artifactId>
+        <version>${nuxeo.jsf.to.web.ui.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
