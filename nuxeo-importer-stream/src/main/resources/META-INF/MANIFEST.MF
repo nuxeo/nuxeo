@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-SymbolicName: org.nuxeo.importer.stream;singleton:=true
+Bundle-Name: Nuxeo Importer Stream
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/operations-contrib.xml

@@ -18,6 +18,7 @@
     <module>nuxeo-importer-scan</module>
     <module>nuxeo-importer-xml-parser</module>
     <module>nuxeo-importer-scan-xml-parser</module>
+    <module>nuxeo-importer-stream</module>
   </modules>
 
   <properties>

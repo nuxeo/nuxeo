@@ -1,0 +1,149 @@
+/*
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     bdelbosc
+ */
+package org.nuxeo.importer.stream.tests.importer;
+
+import static org.junit.Assert.assertEquals;
+
+import java.nio.file.Path;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.importer.stream.consumer.BlobInfoWriter;
+import org.nuxeo.importer.stream.consumer.BlobMessageConsumerFactory;
+import org.nuxeo.importer.stream.consumer.DocumentMessageConsumerFactory;
+import org.nuxeo.importer.stream.consumer.LogBlobInfoWriter;
+import org.nuxeo.importer.stream.message.BlobMessage;
+import org.nuxeo.importer.stream.message.DocumentMessage;
+import org.nuxeo.importer.stream.producer.RandomDocumentMessageProducerFactory;
+import org.nuxeo.importer.stream.producer.RandomStringBlobMessageProducerFactory;
+import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.pattern.consumer.ConsumerFactory;
+import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
+import org.nuxeo.lib.stream.pattern.consumer.ConsumerPool;
+import org.nuxeo.lib.stream.pattern.consumer.ConsumerStatus;
+import org.nuxeo.lib.stream.pattern.producer.ProducerFactory;
+import org.nuxeo.lib.stream.pattern.producer.ProducerPool;
+import org.nuxeo.lib.stream.pattern.producer.ProducerStatus;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@Deploy({ "org.nuxeo.runtime.stream", "org.nuxeo.ecm.platform.dublincore" })
+public abstract class TestDocumentImport {
+
+    protected static final Log log = LogFactory.getLog(TestDocumentImport.class);
+
+    public abstract LogManager getManager() throws Exception;
+
+    @Inject
+    CoreSession session;
+
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void twoStepsImport() throws Exception {
+        final int NB_QUEUE = 5;
+        final short NB_PRODUCERS = 5;
+        final int NB_DOCUMENTS = 2 * 100;
+        try (LogManager manager = getManager()) {
+            // 1. generate documents with blobs
+            manager.createIfNotExists("document-import", NB_QUEUE);
+            ProducerPool<DocumentMessage> producers = new ProducerPool<>("document-import", manager,
+                    new RandomDocumentMessageProducerFactory(NB_DOCUMENTS, "en_US", 2), NB_PRODUCERS);
+            List<ProducerStatus> ret = producers.start().get();
+            assertEquals(NB_PRODUCERS, (long) ret.size());
+            assertEquals(NB_PRODUCERS * NB_DOCUMENTS, ret.stream().mapToLong(r -> r.nbProcessed).sum());
+
+            // 2. import documents
+            DocumentModel root = session.getRootDocument();
+            ConsumerPool<DocumentMessage> consumers = new ConsumerPool<>("document-import", manager,
+                    new DocumentMessageConsumerFactory(root.getRepositoryName(), root.getPathAsString()),
+                    ConsumerPolicy.BOUNDED);
+            List<ConsumerStatus> ret2 = consumers.start().get();
+            assertEquals(NB_QUEUE, (long) ret2.size());
+            assertEquals(NB_PRODUCERS * NB_DOCUMENTS, ret2.stream().mapToLong(r -> r.committed).sum());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void fourStepsImport() throws Exception {
+        final int NB_QUEUE = 5;
+        final short NB_PRODUCERS = 5;
+        final long NB_BLOBS = 100;
+        final long NB_DOCUMENTS = 2 * 100;
+        final Path blobInfoPath = folder.newFolder("blob-info").toPath();
+
+        try (LogManager manager = getManager()) {
+            manager.createIfNotExists("blob", NB_QUEUE);
+            // 1. generates blobs
+            ProducerPool<BlobMessage> blobProducers = new ProducerPool<>("blob", manager,
+                    new RandomStringBlobMessageProducerFactory(NB_BLOBS, "en_US", 2, "1234"), NB_PRODUCERS);
+            List<ProducerStatus> blobProducersStatus = blobProducers.start().get();
+            assertEquals(NB_PRODUCERS, (long) blobProducersStatus.size());
+            assertEquals(NB_PRODUCERS * NB_BLOBS, blobProducersStatus.stream().mapToLong(r -> r.nbProcessed).sum());
+
+            // 2. import blobs
+            String blobProviderName = "test";
+            manager.createIfNotExists("blob-info", NB_QUEUE);
+            BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(manager.getAppender("blob-info"));
+            ConsumerFactory<BlobMessage> blobFactory = new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter);
+            ConsumerPool<BlobMessage> blobConsumers = new ConsumerPool<>("blob", manager, blobFactory, ConsumerPolicy.BOUNDED);
+            List<ConsumerStatus> blobConsumersStatus = blobConsumers.start().get();
+            assertEquals(NB_QUEUE, (long) blobConsumersStatus.size());
+            assertEquals(NB_PRODUCERS * NB_BLOBS, blobConsumersStatus.stream().mapToLong(r -> r.committed).sum());
+
+            manager.createIfNotExists("document", NB_QUEUE);
+            // 3. generate documents using blob reference
+            ProducerFactory<DocumentMessage> randomDocFactory = new RandomDocumentMessageProducerFactory(NB_DOCUMENTS, "en_US",
+                    manager, "blob-info");
+            ProducerPool<DocumentMessage> docProducers = new ProducerPool<>("document", manager, randomDocFactory, NB_PRODUCERS);
+            List<ProducerStatus> docProducersStatus = docProducers.start().get();
+            assertEquals(NB_PRODUCERS, (long) docProducersStatus.size());
+            assertEquals(NB_PRODUCERS * NB_DOCUMENTS, docProducersStatus.stream().mapToLong(r -> r.nbProcessed).sum());
+
+            // 4. import documents without creating blobs
+            DocumentModel root = session.getRootDocument();
+            ConsumerFactory<DocumentMessage> docFactory = new DocumentMessageConsumerFactory(root.getRepositoryName(),
+                    root.getPathAsString());
+            ConsumerPool<DocumentMessage> docConsumers = new ConsumerPool<>("document", manager, docFactory,
+                    ConsumerPolicy.BOUNDED);
+            List<ConsumerStatus> docConsumersStatus = docConsumers.start().get();
+            assertEquals(NB_QUEUE, (long) docConsumersStatus.size());
+            assertEquals(NB_PRODUCERS * NB_DOCUMENTS, docConsumersStatus.stream().mapToLong(r -> r.committed).sum());
+
+        }
+
+    }
+
+}
