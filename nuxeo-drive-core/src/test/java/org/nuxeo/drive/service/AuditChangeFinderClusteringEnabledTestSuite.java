@@ -39,7 +39,9 @@ import org.nuxeo.runtime.test.runner.Deploy;
  *
  * @since 8.2
  */
-@Deploy("org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-clustering-enabled-repo-contrib.xml")
+@Deploy({ "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.webengine.core", "org.nuxeo.ecm.automation.io",
+        "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.platform.login.token",
+        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-clustering-enabled-repo-contrib.xml" })
 public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeFinderTestCase {
 
     private static final Log log = LogFactory.getLog(AuditChangeFinderClusteringEnabledTestSuite.class);

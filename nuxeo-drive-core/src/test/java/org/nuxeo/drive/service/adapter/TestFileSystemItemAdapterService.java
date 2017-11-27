@@ -72,6 +72,8 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.core.io", "org.nuxeo.runtime.reload", "org.nuxeo.ecm.core.cache",
+        "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.webengine.core", "org.nuxeo.ecm.automation.io",
+        "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.platform.login.token",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 @LocalDeploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml",
         "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-adapter-service-contrib.xml" })

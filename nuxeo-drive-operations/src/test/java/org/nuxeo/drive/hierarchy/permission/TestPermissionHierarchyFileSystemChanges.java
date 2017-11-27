@@ -89,6 +89,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.runtime.reload", "org.nuxeo.drive.core",
         "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.core.cache",
+        "org.nuxeo.ecm.webengine.core", "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.automation.io",
+        "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.platform.login.token",
         "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 public class TestPermissionHierarchyFileSystemChanges {

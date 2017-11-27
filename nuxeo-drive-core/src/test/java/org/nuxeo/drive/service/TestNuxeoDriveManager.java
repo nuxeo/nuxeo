@@ -74,7 +74,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core",
-        "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.core.cache",
+        "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.webengine.core", "org.nuxeo.ecm.automation.io",
+        "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.platform.login.token", "org.nuxeo.ecm.core.cache",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 public class TestNuxeoDriveManager {
 

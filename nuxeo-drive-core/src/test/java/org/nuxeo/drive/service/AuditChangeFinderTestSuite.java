@@ -56,7 +56,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
  *
  * @since 8.2
  */
-@Deploy("org.nuxeo.ecm.platform.web.common")
+@Deploy({ "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.webengine.core", "org.nuxeo.ecm.automation.io",
+        "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.platform.login.token" })
 public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
     private static final Log log = LogFactory.getLog(AuditChangeFinderTestSuite.class);

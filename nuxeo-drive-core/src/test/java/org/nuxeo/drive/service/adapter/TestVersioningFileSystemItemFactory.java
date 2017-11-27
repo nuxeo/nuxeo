@@ -133,7 +133,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.core.io",
         "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml",
-        "org.nuxeo.runtime.reload", "org.nuxeo.ecm.core.cache",
+        "org.nuxeo.runtime.reload", "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.platform.web.common",
+        "org.nuxeo.ecm.webengine.core", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.server",
+        "org.nuxeo.ecm.platform.login.token",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 @LocalDeploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml" })
 public class TestVersioningFileSystemItemFactory {
