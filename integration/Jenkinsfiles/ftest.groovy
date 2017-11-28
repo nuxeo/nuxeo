@@ -39,6 +39,7 @@ node('SLAVE') {
                         extensions: [
                             [$class: 'PathRestriction', excludedRegions: '', includedRegions: '''nuxeo-distribution/.*integration/.*'''],
                             [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'nuxeo-distribution'], [path: 'integration']]],
+                            [$class: 'WipeWorkspace'],
                             [$class: 'CleanBeforeCheckout'],
                             [$class: 'CloneOption', depth: 5, noTags: true, reference: '', shallow: true]
                         ],
