@@ -50,66 +50,71 @@ node('SLAVE') {
                 stash 'clone'
             }
 
-            parallel (
-                "cmis" : {
-                    node('SLAVE') {
-                        stage('cmis') {
-                            ws("$WORKSPACE-cmis") {
-                                unstash "clone"
-                                timeout(time: 2, unit: 'HOURS') {
-                                    withBuildStatus("$DBPROFILE-$DBVERSION/ftest/cmis", sha) {
-                                        withDockerCompose("$JOB_NAME-$BUILD_NUMBER-cmis", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml", "mvn -B -f $WORKSPACE/nuxeo-distribution/nuxeo-server-cmis-tests/pom.xml clean verify -Pqa,tomcat,$DBPROFILE") {
-                                            archive 'nuxeo-distribution/nuxeo-server-cmis-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-server-cmis-tests/target/*.png, nuxeo-distribution/nuxeo-server-cmis-tests/target/*.json, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/*.log, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/log/*, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*'
-                                            sh """#!/bin/bash -ex
+            try {
+                parallel (
+                    "cmis" : {
+                        node('SLAVE') {
+                            stage('cmis') {
+                                ws("$WORKSPACE-cmis") {
+                                    unstash "clone"
+                                    timeout(time: 2, unit: 'HOURS') {
+                                        withBuildStatus("$DBPROFILE-$DBVERSION/ftest/cmis", sha) {
+                                            withDockerCompose("$JOB_NAME-$BUILD_NUMBER-cmis", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml", "mvn -B -f $WORKSPACE/nuxeo-distribution/nuxeo-server-cmis-tests/pom.xml clean verify -Pqa,tomcat,$DBPROFILE") {
+                                                archive 'nuxeo-distribution/nuxeo-server-cmis-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-server-cmis-tests/target/*.png, nuxeo-distribution/nuxeo-server-cmis-tests/target/*.json, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/*.log, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/log/*, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*'
+                                                sh """#!/bin/bash -ex
                                                   ! grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}.*ERROR.*' nuxeo-distribution/nuxeo-server-cmis-tests/target/tomcat/log/server.log
                                             """
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                },
-                "funkload" : {
-                    node('SLAVE') {
-                        stage('funkload') {
-                            ws("$WORKSPACE-funkload") {
-                                unstash "clone"
-                                timeout(time: 2, unit: 'HOURS') {
-                                    withBuildStatus("$DBPROFILE-$DBVERSION/ftest/cmis", sha) {
-                                        withDockerCompose("$JOB_NAME-$BUILD_NUMBER-funkload", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml", "mvn -B -f $WORKSPACE/nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/pom.xml clean verify -Pqa,tomcat,$DBPROFILE") {
-                                            archive 'nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/*.png, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/*.json, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/*.log, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/log/*, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/results/*/*'
-                                            sh """#!/bin/bash -ex
+                    },
+                    "funkload" : {
+                        node('SLAVE') {
+                            stage('funkload') {
+                                ws("$WORKSPACE-funkload") {
+                                    unstash "clone"
+                                    timeout(time: 2, unit: 'HOURS') {
+                                        withBuildStatus("$DBPROFILE-$DBVERSION/ftest/cmis", sha) {
+                                            withDockerCompose("$JOB_NAME-$BUILD_NUMBER-funkload", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml", "mvn -B -f $WORKSPACE/nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/pom.xml clean verify -Pqa,tomcat,$DBPROFILE") {
+                                                archive 'nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/*.png, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/*.json, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/*.log, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/log/*, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/results/*/*'
+                                                sh """#!/bin/bash -ex
                                                   ! grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}.*ERROR.*' nuxeo-distribution/nuxeo-server-funkload-tests/target/tomcat/log/server.log
                                             """
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                },
-                "webdriver" : {
-                    node('SLAVE') {
-                        stage('webdriver') {
-                            ws("$WORKSPACE-webdriver") {
-                                unstash "clone"
-                                timeout(time: 2, unit: 'HOURS') {
-                                    withBuildStatus("$DBPROFILE-$DBVERSION/ftest/cmis", sha) {
-                                        withDockerCompose("$JOB_NAME-$BUILD_NUMBER-webdriver", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml", "mvn -B -f $WORKSPACE/nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/pom.xml clean verify -Pqa,tomcat,$DBPROFILE") {
-                                            archive 'nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.png, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.json, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/*.log, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/log/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/results/*/*'
-                                            junit '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
-                                            sh """#!/bin/bash -ex
+                    },
+                    "webdriver" : {
+                        node('SLAVE') {
+                            stage('webdriver') {
+                                ws("$WORKSPACE-webdriver") {
+                                    unstash "clone"
+                                    timeout(time: 2, unit: 'HOURS') {
+                                        withBuildStatus("$DBPROFILE-$DBVERSION/ftest/cmis", sha) {
+                                            withDockerCompose("$JOB_NAME-$BUILD_NUMBER-webdriver", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml", "mvn -B -f $WORKSPACE/nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/pom.xml clean verify -Pqa,tomcat,$DBPROFILE") {
+                                                archive 'nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.png, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.json, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/*.log, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/log/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/results/*/*'
+                                                junit '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
+                                                sh """#!/bin/bash -ex
                                                   ! grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}.*ERROR.*' nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/tomcat/log/server.log
                                             """
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
-            )
+                )
+            } finally {
+                warningPublishers()
+                claimPublisher()
+            }
         }
     }
 }
@@ -137,9 +142,6 @@ def withBuildStatus(String context, String sha, Closure body) {
         body.call()
         setBuildStatus("", "SUCCESS", context, sha)
     } catch (Throwable cause) {
-        if (currentBuild.getResult == null) {
-            currentBuild.setResult(Result.FAILURE)
-        }
         setBuildStatus(cause.toString().take(140), context, "FAILURE", sha)
         throw cause
     }
