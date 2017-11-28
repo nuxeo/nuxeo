@@ -37,6 +37,7 @@ node('SLAVE') {
                         browser: [$class: 'GithubWeb', repoUrl: 'https://github.com/nuxeo/nuxeo'],
                         doGenerateSubmoduleConfigurations: false,
                         extensions: [
+                            [$class: 'WipeWorkspace'],
                             [$class: 'CleanBeforeCheckout'],
                             [$class: 'CloneOption', depth: 5, noTags: true, reference: '', shallow: true]
                         ],
