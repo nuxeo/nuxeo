@@ -19,7 +19,7 @@ def withBuildStatus(String context, String sha, Closure body) {
         body.call()
         setBuildStatus("", "SUCCESS", context, sha)
     } catch (Throwable cause) {
-        setBuildStatus(cause.toString().take(140), context, "FAILURE", sha)
+        setBuildStatus(cause.toString().take(140), "FAILURE", context, sha)
         throw cause
     }
 }
