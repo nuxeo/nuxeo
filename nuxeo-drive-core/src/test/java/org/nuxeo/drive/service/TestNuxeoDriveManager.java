@@ -22,9 +22,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -595,6 +597,27 @@ public class TestNuxeoDriveManager {
         txFeature.nextTransaction();
         DocumentModel syncRootVersion = session.getDocument(syncRootVersionRef);
         assertFalse(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(), syncRootVersion));
+    }
+
+    @Test
+    public void testFilterVersionSyncRoots() {
+        // Create a version document
+        DocumentRef versionRef = session.checkIn(workspace_1.getRef(), VersioningOption.MAJOR, null);
+        DocumentModel version = session.getDocument(versionRef);
+
+        // Force its registration as a synchronization root
+        version.addFacet(NuxeoDriveManagerImpl.NUXEO_DRIVE_FACET);
+        Map<String, Serializable> subscription = new HashMap<>();
+        subscription.put("username", session.getPrincipal().getName());
+        subscription.put("enabled", Boolean.TRUE);
+        List<Map<String, Serializable>> subscriptions = Collections.singletonList(subscription);
+        version.setPropertyValue("drv:subscriptions", (Serializable) subscriptions);
+        version.putContextData(CoreSession.ALLOW_VERSION_WRITE, Boolean.TRUE);
+        session.saveDocument(version);
+        txFeature.nextTransaction();
+
+        // Check the version is filtered among the synchronization roots
+        assertFalse(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(), version));
     }
 
     protected DocumentModel doc(String path) {
