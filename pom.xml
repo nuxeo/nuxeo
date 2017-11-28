@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>9.3-SNAPSHOT</version>
+    <version>9.3</version>
   </parent>
 
   <artifactId>nuxeo-addons-parent</artifactId>
@@ -19,52 +19,52 @@
   </scm>
 
   <properties>
-    <nuxeo.addons.version>9.3-SNAPSHOT</nuxeo.addons.version>
-    <nuxeo.opencmis.version>9.3-SNAPSHOT</nuxeo.opencmis.version>
-    <nuxeo.businessdays.version>9.3-SNAPSHOT</nuxeo.businessdays.version>
-    <nuxeo.shell.version>9.3-SNAPSHOT</nuxeo.shell.version>
-    <nuxeo.webembedded.version>9.3-SNAPSHOT</nuxeo.webembedded.version>
-    <nuxeo.fsconnectors.version>9.3-SNAPSHOT</nuxeo.fsconnectors.version>
-    <nuxeo.importer.version>9.3-SNAPSHOT</nuxeo.importer.version>
-    <nuxeo.routing.version>9.3-SNAPSHOT</nuxeo.routing.version>
-    <nuxeo.smartsearch.version>9.3-SNAPSHOT</nuxeo.smartsearch.version>
-    <nuxeo.audio.version>9.3-SNAPSHOT</nuxeo.audio.version>
-    <nuxeo.video.version>9.3-SNAPSHOT</nuxeo.video.version>
-    <nuxeo.replication.version>9.3-SNAPSHOT</nuxeo.replication.version>
-    <nuxeo.activity.version>9.3-SNAPSHOT</nuxeo.activity.version>
-    <nuxeo.suggestbox.version>9.3-SNAPSHOT</nuxeo.suggestbox.version>
-    <nuxeo.dam.version>9.3-SNAPSHOT</nuxeo.dam.version>
-    <nuxeo.quota.version>9.3-SNAPSHOT</nuxeo.quota.version>
-    <nuxeo.binary.metadata.version>9.3-SNAPSHOT</nuxeo.binary.metadata.version>
-    <nuxeo.web.mobile.version>9.3-SNAPSHOT</nuxeo.web.mobile.version>
-    <nuxeo.indexing.gateway.version>9.3-SNAPSHOT</nuxeo.indexing.gateway.version>
-    <nuxeo.exalead.connector.version>9.3-SNAPSHOT</nuxeo.exalead.connector.version>
-    <nuxeo.user.registration.version>9.3-SNAPSHOT</nuxeo.user.registration.version>
-    <nuxeo.rating.version>9.3-SNAPSHOT</nuxeo.rating.version>
-    <nuxeo.agenda.version>9.3-SNAPSHOT</nuxeo.agenda.version>
-    <nuxeo.templates.version>9.3-SNAPSHOT</nuxeo.templates.version>
-    <nuxeo.csv.version>9.3-SNAPSHOT</nuxeo.csv.version>
-    <nuxeo.drive.version>9.3-SNAPSHOT</nuxeo.drive.version>
-    <nuxeo.resources.compat.version>9.3-SNAPSHOT</nuxeo.resources.compat.version>
-    <nuxeo.dmk.version>9.3-SNAPSHOT</nuxeo.dmk.version>
-    <nuxeo.style.guide.version>9.3-SNAPSHOT</nuxeo.style.guide.version>
-    <nuxeo.easyshare.version>9.3-SNAPSHOT</nuxeo.easyshare.version>
-    <nuxeo.logs.viewer.version>9.3-SNAPSHOT</nuxeo.logs.viewer.version>
-    <nuxeo.spreadsheet.version>9.3-SNAPSHOT</nuxeo.spreadsheet.version>
-    <nuxeo.datadog.reporter.version>9.3-SNAPSHOT</nuxeo.datadog.reporter.version>
-    <nuxeo.review.workflows.dashboards.version>9.3-SNAPSHOT</nuxeo.review.workflows.dashboards.version>
-    <nuxeo.playground.version>9.3-SNAPSHOT</nuxeo.playground.version>
-    <nuxeo.fsexporter.version>9.3-SNAPSHOT</nuxeo.fsexporter.version>
-    <nuxeo.javaagent.version>9.3-SNAPSHOT</nuxeo.javaagent.version>
-    <nuxeo.pdfutils.version>9.3-SNAPSHOT</nuxeo.pdfutils.version>
-    <nuxeo.threed.version>9.3-SNAPSHOT</nuxeo.threed.version>
-    <nuxeo.mqueues.version>9.3-SNAPSHOT</nuxeo.mqueues.version>
-    <nuxeo.mongodb.ext.version>9.3-SNAPSHOT</nuxeo.mongodb.ext.version>
-    <nuxeo.target.platforms.version>9.3-SNAPSHOT</nuxeo.target.platforms.version>
-    <nuxeo.web.ui.version>9.3-SNAPSHOT</nuxeo.web.ui.version>
+    <nuxeo.addons.version>9.3</nuxeo.addons.version>
+    <nuxeo.opencmis.version>9.3</nuxeo.opencmis.version>
+    <nuxeo.businessdays.version>9.3</nuxeo.businessdays.version>
+    <nuxeo.shell.version>9.3</nuxeo.shell.version>
+    <nuxeo.webembedded.version>9.3</nuxeo.webembedded.version>
+    <nuxeo.fsconnectors.version>9.3</nuxeo.fsconnectors.version>
+    <nuxeo.importer.version>9.3</nuxeo.importer.version>
+    <nuxeo.routing.version>9.3</nuxeo.routing.version>
+    <nuxeo.smartsearch.version>9.3</nuxeo.smartsearch.version>
+    <nuxeo.audio.version>9.3</nuxeo.audio.version>
+    <nuxeo.video.version>9.3</nuxeo.video.version>
+    <nuxeo.replication.version>9.3</nuxeo.replication.version>
+    <nuxeo.activity.version>9.3</nuxeo.activity.version>
+    <nuxeo.suggestbox.version>9.3</nuxeo.suggestbox.version>
+    <nuxeo.dam.version>9.3</nuxeo.dam.version>
+    <nuxeo.quota.version>9.3</nuxeo.quota.version>
+    <nuxeo.binary.metadata.version>9.3</nuxeo.binary.metadata.version>
+    <nuxeo.web.mobile.version>9.3</nuxeo.web.mobile.version>
+    <nuxeo.indexing.gateway.version>9.3</nuxeo.indexing.gateway.version>
+    <nuxeo.exalead.connector.version>9.3</nuxeo.exalead.connector.version>
+    <nuxeo.user.registration.version>9.3</nuxeo.user.registration.version>
+    <nuxeo.rating.version>9.3</nuxeo.rating.version>
+    <nuxeo.agenda.version>9.3</nuxeo.agenda.version>
+    <nuxeo.templates.version>9.3</nuxeo.templates.version>
+    <nuxeo.csv.version>9.3</nuxeo.csv.version>
+    <nuxeo.drive.version>9.3</nuxeo.drive.version>
+    <nuxeo.resources.compat.version>9.3</nuxeo.resources.compat.version>
+    <nuxeo.dmk.version>9.3</nuxeo.dmk.version>
+    <nuxeo.style.guide.version>9.3</nuxeo.style.guide.version>
+    <nuxeo.easyshare.version>9.3</nuxeo.easyshare.version>
+    <nuxeo.logs.viewer.version>9.3</nuxeo.logs.viewer.version>
+    <nuxeo.spreadsheet.version>9.3</nuxeo.spreadsheet.version>
+    <nuxeo.datadog.reporter.version>9.3</nuxeo.datadog.reporter.version>
+    <nuxeo.review.workflows.dashboards.version>9.3</nuxeo.review.workflows.dashboards.version>
+    <nuxeo.playground.version>9.3</nuxeo.playground.version>
+    <nuxeo.fsexporter.version>9.3</nuxeo.fsexporter.version>
+    <nuxeo.javaagent.version>9.3</nuxeo.javaagent.version>
+    <nuxeo.pdfutils.version>9.3</nuxeo.pdfutils.version>
+    <nuxeo.threed.version>9.3</nuxeo.threed.version>
+    <nuxeo.mqueues.version>9.3</nuxeo.mqueues.version>
+    <nuxeo.mongodb.ext.version>9.3</nuxeo.mongodb.ext.version>
+    <nuxeo.target.platforms.version>9.3</nuxeo.target.platforms.version>
+    <nuxeo.web.ui.version>9.3</nuxeo.web.ui.version>
     
     <!-- optional addons -->
-    <nuxeo.sync.version>9.3-SNAPSHOT</nuxeo.sync.version>
+    <nuxeo.sync.version>9.3</nuxeo.sync.version>
     <!-- end of optional addons -->
   </properties>
 
