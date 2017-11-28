@@ -7,6 +7,7 @@
     <policy id="versioning-delay" increment="MINOR" beforeUpdate="true" order="150">
       <filter-id>versioning-delay</filter-id>
       <filter-id>drive-filter</filter-id>
+      <filter-id>not-folderish</filter-id>
     </policy>
   </extension>
 
@@ -19,6 +20,9 @@
     </filter>
     <filter id="not-drive-filter">
       <condition>#{currentDocument.contextData.source != "drive"}</condition>
+    </filter>
+    <filter id="not-folderish">
+      <condition>#{!currentDocument.folder}</condition>
     </filter>
   </extension>
 

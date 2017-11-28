@@ -12,6 +12,7 @@
     <policy id="versioning-delay" increment="MAJOR" beforeUpdate="true" order="150">
       <filter-id>versioning-delay</filter-id>
       <filter-id>drive-filter</filter-id>
+      <filter-id>not-folderish</filter-id>
     </policy>
   </extension>
 

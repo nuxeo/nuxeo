@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
+import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
@@ -701,6 +702,45 @@ public class TestDriveVersioning {
             assertEquals("File name modified by Joe again.txt", versionedBlob.getFilename());
         }
         resetPermissions(rootDoc, "joe");
+    }
+
+    @Test
+    public void testSyncRootVersioning() throws Exception {
+        // Expect no versions initially
+        // Cannot use DocumentModel#getVersionLabel since it relies on the uid schema not held by the Folder type
+        assertTrue(session.getVersions(syncRootFolder.getRef()).isEmpty());
+
+        // Wait for the versioning delay and update the synchronization root
+        Thread.sleep(VERSIONING_DELAY);
+        FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                "defaultSyncRootFolderItemFactory");
+        FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
+        syncRootFolderItem.rename("syncRootRenamed");
+        syncRootFolder = session.getDocument(syncRootFolder.getRef());
+
+        // Expect no versions since the "versioning-delay" policy doesn't apply to folderish documents
+        assertTrue(session.getVersions(syncRootFolder.getRef()).isEmpty());
+    }
+
+    @Test
+    public void testFolderVersioning() throws Exception {
+        // Create a Folder in the synchronization root
+        DocumentModel folder = session.createDocumentModel("/syncRoot", "aFolder", "Folder");
+        folder = session.createDocument(folder);
+        session.save();
+
+        // Expect no versions initially
+        // Cannot use DocumentModel#getVersionLabel since it relies on the uid schema not held by the Folder type
+        assertTrue(session.getVersions(folder.getRef()).isEmpty());
+
+        // Wait for the versioning delay and update the folder
+        Thread.sleep(VERSIONING_DELAY);
+        FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        folderItem.rename("aFolderRenamed");
+        folder = session.getDocument(folder.getRef());
+
+        // Expect no versions since the "versioning-delay" policy doesn't apply to folderish documents
+        assertTrue(session.getVersions(folder.getRef()).isEmpty());
     }
 
     protected void setPermission(DocumentModel doc, String userName, String permission, boolean isGranted) {
