@@ -23,15 +23,10 @@ node('SLAVE') {
     tool name: 'ant-1.9', type: 'ant'
     tool name: 'java-8-openjdk', type: 'hudson.model.JDK'
     tool name: 'maven-3', type: 'hudson.tasks.Maven$MavenInstallation'
-
     timeout(time: 3, unit: 'HOURS') {
-
         timestamps {
-
             def sha
-
             def shared
-            
             stage('clone') {
                 checkout(
                     [$class: 'GitSCM',
@@ -52,7 +47,6 @@ node('SLAVE') {
                 sha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
                 stash 'clone'
             }
-
             try {
                 parallel (
                     "cmis" : {
@@ -80,7 +74,7 @@ node('SLAVE') {
                                 ws("$WORKSPACE-funkload") {
                                     unstash "clone"
                                     timeout(time: 2, unit: 'HOURS') {
-                                        shared.withBuildStatus("$DBPROFILE-$DBVERSION/ftest/cmis", sha) {
+                                        shared.withBuildStatus("$DBPROFILE-$DBVERSION/ftest/funkload", sha) {
                                             shared.withDockerCompose("$JOB_NAME-$BUILD_NUMBER-funkload", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml", "mvn -B -f $WORKSPACE/nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/pom.xml clean verify -Pqa,tomcat,$DBPROFILE") {
                                                 archive 'nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/*.png, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/*.json, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/*.log, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/log/*, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-jsf-ui-funkload-tests/target/results/*/*'
                                                 sh """#!/bin/bash -ex
@@ -99,7 +93,7 @@ node('SLAVE') {
                                 ws("$WORKSPACE-webdriver") {
                                     unstash "clone"
                                     timeout(time: 2, unit: 'HOURS') {
-                                        shared.withBuildStatus("$DBPROFILE-$DBVERSION/ftest/cmis", sha) {
+                                        shared.withBuildStatus("$DBPROFILE-$DBVERSION/ftest/webdriver", sha) {
                                             shared.withDockerCompose("$JOB_NAME-$BUILD_NUMBER-webdriver", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml", "mvn -B -f $WORKSPACE/nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/pom.xml clean verify -Pqa,tomcat,$DBPROFILE") {
                                                 archive 'nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.png, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.json, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/*.log, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/log/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/results/*/*'
                                                 junit '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
