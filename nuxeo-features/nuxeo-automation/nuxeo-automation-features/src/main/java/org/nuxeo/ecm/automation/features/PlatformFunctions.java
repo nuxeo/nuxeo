@@ -175,7 +175,7 @@ public class PlatformFunctions extends CoreFunctions {
     public String getNextId(final String key, final String sequencerName) {
         UIDGeneratorService uidGeneratorService = Framework.getService(UIDGeneratorService.class);
         UIDSequencer seq = uidGeneratorService.getSequencer(sequencerName);
-        return Integer.toString(seq.getNext(key));
+        return Long.toString(seq.getNextLong(key));
     }
 
     public static String htmlEscape(String str) {

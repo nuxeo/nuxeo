@@ -23,12 +23,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
-import org.nuxeo.ecm.core.redis.RedisCallable;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.ecm.core.uidgen.AbstractUIDSequencer;
 import org.nuxeo.runtime.api.Framework;
 
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisException;
 
 /**
@@ -53,18 +51,13 @@ public class RedisUIDSequencer extends AbstractUIDSequencer {
     }
 
     @Override
-    public void initSequence(String key, int id) {
+    public void initSequence(String key, long id) {
         RedisExecutor executor = Framework.getService(RedisExecutor.class);
         try {
             executor.execute(jedis -> jedis.set(namespace + key, String.valueOf(id)));
         } catch (JedisException e) {
             throw new NuxeoException(e);
         }
-    }
-
-    @Override
-    public int getNext(String key) {
-        return (int) getNextLong(key);
     }
 
     @Override

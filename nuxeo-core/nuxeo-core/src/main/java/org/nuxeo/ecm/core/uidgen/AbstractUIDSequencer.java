@@ -26,18 +26,9 @@ public abstract class AbstractUIDSequencer implements UIDSequencer {
     protected String name;
 
     @Override
-    public abstract void init();
-
-    @Override
-    public abstract int getNext(String key);
-
-    @Override
-    public long getNextLong(String key) {
-        throw new UnsupportedOperationException("Not implemented");
+    public int getNext(String key) {
+        return (int) getNextLong(key);
     }
-
-    @Override
-    public abstract void dispose();
 
     @Override
     public String getName() {
@@ -50,10 +41,15 @@ public abstract class AbstractUIDSequencer implements UIDSequencer {
     }
 
     @Override
-    public void initSequence(String key, int id) {
-        while ((getNext(key)) < id) {
+    public void initSequence(String key, long id) {
+        while (getNextLong(key) < id) {
             continue;
         }
+    }
+
+    @Override
+    public void initSequence(String key, int id) {
+        initSequence(key, (long) id);
     }
 
 }

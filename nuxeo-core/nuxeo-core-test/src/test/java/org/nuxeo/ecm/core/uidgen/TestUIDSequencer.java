@@ -56,7 +56,7 @@ public class TestUIDSequencer extends NXRuntimeTestCase {
         // Test UIDSequencer#initSequence
         seq.initSequence("mySequence", 1);
         assertTrue(seq.getNext("mySequence") > 1);
-        seq.initSequence("mySequence", 10);
+        seq.initSequence("mySequence", 10L);
         assertTrue(seq.getNext("mySequence") > 10);
         assertTrue(seq.getNextLong("mySequence") > 10);
     }

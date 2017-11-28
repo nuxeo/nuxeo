@@ -72,7 +72,7 @@ public class MongoDBUIDSequencer extends AbstractUIDSequencer {
     }
 
     @Override
-    public void initSequence(String key, int id) {
+    public void initSequence(String key, long id) {
         try {
             Bson filter = and(eq(MongoDBSerializationHelper.MONGODB_ID, key), not(gte(SEQUENCE_VALUE_FIELD, id)));
             Document sequence = new Document();
@@ -97,11 +97,6 @@ public class MongoDBUIDSequencer extends AbstractUIDSequencer {
             coll = database.getCollection(collName);
         }
         return coll;
-    }
-
-    @Override
-    public int getNext(String key) {
-        return (int) getNextLong(key);
     }
 
     @Override

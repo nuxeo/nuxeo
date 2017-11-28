@@ -31,8 +31,8 @@ import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
-import org.nuxeo.ecm.core.uidgen.AbstractUIDSequencer;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
+import org.nuxeo.ecm.core.uidgen.AbstractUIDSequencer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -137,7 +137,14 @@ public class JPAUIDSequencerImpl extends AbstractUIDSequencer {
     }
 
     @Override
-    public int getNext(final String key) {
+    public void initSequence(String key, long id) {
+        while (getNextLong(key) < id) {
+            continue;
+        }
+    }
+
+    @Override
+    public long getNextLong(final String key) {
 
         SeqRunner runner = new SeqRunner(key);
 

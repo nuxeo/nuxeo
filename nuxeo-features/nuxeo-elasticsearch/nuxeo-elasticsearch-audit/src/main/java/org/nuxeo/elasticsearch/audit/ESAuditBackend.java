@@ -480,7 +480,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         try {
 
             for (LogEntry entry : entries) {
-                entry.setId(seq.getNext(SEQ_NAME));
+                entry.setId(seq.getNextLong(SEQ_NAME));
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Indexing log entry: %s", entry));
                 }
@@ -692,13 +692,13 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         request.source(new SearchSourceBuilder().query(QueryBuilders.matchAllQuery()).aggregation(AggregationBuilders.max("maxAgg").field("id")));
         SearchResponse searchResponse = esClient.search(request);
         Max agg = searchResponse.getAggregations().get("maxAgg");
-        int maxLogEntryId = (int) agg.getValue();
+        long maxLogEntryId = (long) agg.getValue();
 
         // Get next sequence id
         UIDGeneratorService uidGeneratorService = Framework.getService(UIDGeneratorService.class);
         UIDSequencer seq = uidGeneratorService.getSequencer();
         seq.init();
-        int nextSequenceId = seq.getNext(SEQ_NAME);
+        long nextSequenceId = seq.getNextLong(SEQ_NAME);
 
         // Increment sequence to max log entry id if needed
         if (nextSequenceId < maxLogEntryId) {
