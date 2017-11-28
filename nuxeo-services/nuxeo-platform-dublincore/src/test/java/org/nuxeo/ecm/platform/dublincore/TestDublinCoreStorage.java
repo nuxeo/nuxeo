@@ -23,6 +23,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
 import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
 
 import java.util.Arrays;
@@ -42,7 +43,6 @@ import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -367,6 +367,10 @@ public class TestDublinCoreStorage {
 
     @Test
     public void testCopyDocument() throws Exception {
+        // MySQL rounds the millisecond whereas MariaDB truncates them
+        // AND we have no way to distinct them in 8.10 - NOTE this test is enabled and works on 9.10
+        assumeFalse("Disable this test under MySQL/MariaDB because the two DBs doesn't handle date in the same way",
+                storageConfiguration.isVCSMySQL());
         DocumentModel file = session.createDocument(session.createDocumentModel("/", "file-007", "File"));
         storageConfiguration.maybeSleepToNextSecond();
         DocumentModel copy = session.copy(file.getRef(), file.getParentRef(), "file-008");
