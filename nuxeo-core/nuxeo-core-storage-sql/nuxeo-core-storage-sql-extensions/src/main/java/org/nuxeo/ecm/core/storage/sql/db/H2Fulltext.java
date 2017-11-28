@@ -348,7 +348,6 @@ public class H2Fulltext {
             String defaultField = fieldForIndex(indexName);
             Analyzer analyzer = getAnalyzer(analyzerName);
             QueryParser parser = new QueryParser(defaultField, analyzer);
-            parser.setAllowLeadingWildcard(true);
             queryBuilder.add(parser.parse(text), BooleanClause.Occur.MUST);
 
             try (IndexReader reader = DirectoryReader.open(writer.getDirectory())) {

@@ -528,34 +528,6 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testWildCardsInFulltextSearch() throws Exception {
-        createDocs();
-
-        String query;
-        DocumentModelList dml;
-
-        DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
-        file1.setProperty("dublincore", "title", "hello world 1");
-
-        session.saveDocument(file1);
-        session.save();
-
-        waitForFulltextIndexing();
-
-        query = "SELECT * FROM File Where ecm:fulltext = 'hello world*'";
-        dml = session.query(query);
-        assertIdSet(dml, file1.getId());
-
-        query = "SELECT * FROM File Where ecm:fulltext = '*world 1'";
-        dml = session.query(query);
-        assertIdSet(dml, file1.getId());
-
-        query = "SELECT * FROM File Where ecm:fulltext = '*world*'";
-        dml = session.query(query);
-        assertIdSet(dml, file1.getId());
-    }
-
-    @Test
     public void testFulltextSpuriousCharacters() throws Exception {
         assumeTrue("DBS cannot remove spurious characters in fulltext search", !isDBS());
 
