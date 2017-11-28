@@ -18,6 +18,8 @@
  */
 package org.nuxeo.elasticsearch.seqgen;
 
+import java.util.NoSuchElementException;
+
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -29,8 +31,6 @@ import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
-
-import java.util.NoSuchElementException;
 
 /**
  * Elasticsearch implementation of {@link UIDSequencer}.
@@ -79,7 +79,7 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
     }
 
     @Override
-    public void initSequence(String key, int id) {
+    public void initSequence(String key, long id) {
         String source = "{ \"ts\" : " + System.currentTimeMillis() + "}";
         IndexResponse res = esClient.index(
                 new IndexRequest(indexName, ElasticSearchConstants.SEQ_ID_TYPE, key).versionType(VersionType.EXTERNAL)
@@ -94,11 +94,6 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
                 new IndexRequest(indexName, ElasticSearchConstants.SEQ_ID_TYPE, sequenceName)
                         .source(source, XContentType.JSON));
         return res.getVersion();
-    }
-
-    @Override
-    public int getNext(String sequenceName) {
-        return (int) getNextLong(sequenceName);
     }
 
 }

@@ -32,11 +32,6 @@ public class DummyUIDSequencerImpl extends AbstractUIDSequencer {
     }
 
     @Override
-    public int getNext(String key) {
-        return (int) getNextLong(key);
-    }
-
-    @Override
     public long getNextLong(String key) {
         counters.putIfAbsent(key, new AtomicLong());
         return counters.get(key).incrementAndGet();

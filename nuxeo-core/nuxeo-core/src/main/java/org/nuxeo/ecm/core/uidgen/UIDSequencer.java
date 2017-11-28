@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2007 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,22 +45,30 @@ public interface UIDSequencer {
     void init();
 
     /**
-     * Initializes the sequencer with the given key to at least the given id.
+     * Initializes the sequencer with the given key to at least the given long id.
      * <p>
      * A sequence can only be incremented, so if its current id is greater than the given id the sequence won't be
      * decremented to reach the given id.
      *
-     * @since 7.4
+     * @since 9.10
      */
+    void initSequence(String key, long id);
+
+    /**
+     * Initializes the sequencer with the given key to at least the given id.
+     * @since 7.4
+     * @deprecated since 9.10 use {@link #initSequence(String, long)} instead.
+     */
+    @Deprecated
     void initSequence(String key, int id);
 
     /**
      * For the given key returns the incremented UID which is also stored in the same sequence entry. This is a
      * "one time use" function for a document.
      *
-     * @param key
-     * @return
+     * @deprecated since 9.10 use {@link #getNextLong(String)} instead.
      */
+    @Deprecated
     int getNext(String key);
 
     /**

@@ -74,38 +74,41 @@ public class TestSequenceGeneratorWithMongoDB {
 
         seq.initSequence("mySequence", 1);
         assertTrue(seq.getNext("mySequence") > 1);
-        assertTrue(seq.getNext("mySequence") < 10);
-        seq.initSequence("mySequence", 10);
-        assertTrue("Sequence should skip ahead to 10", seq.getNext("mySequence") > 10);
-        assertTrue(seq.getNextLong("mySequence") > 10);
+        assertTrue(seq.getNextLong("mySequence") < 10L);
+        seq.initSequence("mySequence", 10L);
+        assertTrue("Sequence should skip ahead to 10", seq.getNextLong("mySequence") > 10L);
+        assertTrue(seq.getNextLong("mySequence") > 10L);
 
         try {
-            seq.initSequence("mySequence", 5);
+            seq.initSequence("mySequence", 5L);
             fail(); // should never get here.
         } catch (NuxeoException ne) {
             assertEquals("Failed to update the sequence 'mySequence' with value 5", ne.getMessage());
         }
 
-        seq.initSequence("another", 500);
+        seq.initSequence("another", 500L);
 
         try {
-            seq.initSequence("another", 500);
+            seq.initSequence("another", 500L);
             fail(); // should never get here.
         } catch (NuxeoException ne) {
             assertEquals("Failed to update the sequence 'another' with value 500", ne.getMessage());
         }
 
-        assertTrue("Sequence should be greater than 500",seq.getNext("another") > 500);
+        assertTrue("Sequence should be greater than 500",seq.getNextLong("another") > 500L);
 
         try {
-            seq.initSequence("another", 499);
+            seq.initSequence("another", 499L);
             fail(); // should never get here.
         } catch (NuxeoException ne) {
             assertEquals("Failed to update the sequence 'another' with value 499", ne.getMessage());
         }
 
-        seq.initSequence("another", 9999);
-        assertTrue("Sequence should be at 10000",seq.getNext("another") >= 10000);
+        seq.initSequence("another", 9999L);
+        assertTrue("Sequence should be at 10000",seq.getNextLong("another") >= 10000L);
+
+        seq.initSequence("another", 3_147_483_647L);
+        assertTrue("Sequence should be a long",seq.getNextLong("another") > 3_147_483_647L);
     }
 
     @SuppressWarnings("boxing")

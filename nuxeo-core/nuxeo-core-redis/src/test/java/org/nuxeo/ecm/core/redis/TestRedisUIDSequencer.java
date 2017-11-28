@@ -50,14 +50,14 @@ public class TestRedisUIDSequencer {
         assertTrue(sequencer instanceof RedisUIDSequencer);
         sequencer.init(); // not correctly done in tests TODO fix this
 
-        assertEquals(1, sequencer.getNext("A"));
-        assertEquals(2, sequencer.getNext("A"));
+        assertEquals(1L, sequencer.getNextLong("A"));
+        assertEquals(2L, sequencer.getNextLong("A"));
         assertEquals(1, sequencer.getNext("B"));
-        assertEquals(3, sequencer.getNext("A"));
+        assertEquals(3L, sequencer.getNextLong("A"));
         assertEquals(2, sequencer.getNext("B"));
 
-        sequencer.initSequence("A", 100000);
-        assertEquals(100001, sequencer.getNext("A"));
+        sequencer.initSequence("A", 100000L);
+        assertEquals(100001L, sequencer.getNextLong("A"));
     }
 
 }

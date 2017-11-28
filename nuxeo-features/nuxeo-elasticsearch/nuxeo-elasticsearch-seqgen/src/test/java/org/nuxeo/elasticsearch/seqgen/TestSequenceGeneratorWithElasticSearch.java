@@ -71,9 +71,13 @@ public class TestSequenceGeneratorWithElasticSearch {
 
         assertTrue(seq.getNext("mySequence") > 1);
         // initSequence will work only for greater value
-        seq.initSequence("mySequence", 1_000_000);
-        assertEquals(1_000_001, seq.getNext("mySequence"));
+        seq.initSequence("mySequence", 1_000_000L);
+        assertEquals(1_000_001L, seq.getNextLong("mySequence"));
         assertEquals(1_000_002L, seq.getNextLong("mySequence"));
+
+        seq.initSequence("another", 3_147_483_647L);
+        assertTrue("Sequence should be a long",seq.getNextLong("another") > 3_147_483_647L);
+
     }
 
     @Test
