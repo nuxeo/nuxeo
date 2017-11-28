@@ -68,6 +68,14 @@
       <event>documentCreatedByCopy</event>
     </listener>
 
+    <documentation>
+      Reset synchronization root registrations on a versioned document.
+    </documentation>
+    <listener name="nuxeoDriveSyncRootVersioningListener" async="false" postCommit="false"
+      class="org.nuxeo.drive.listener.NuxeoDriveSyncRootVersioningListener">
+      <event>documentCheckedIn</event>
+    </listener>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" point="event">

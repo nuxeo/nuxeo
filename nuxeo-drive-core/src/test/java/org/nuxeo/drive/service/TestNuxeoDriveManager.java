@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -585,6 +586,15 @@ public class TestNuxeoDriveManager {
         txFeature.nextTransaction();
         assertTrue(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(),
                 session.getDocument(new PathRef(copy.getPathAsString() + "/" + folder_1_1.getName()))));
+    }
+
+    @Test
+    public void testResetSyncRootsOnVersioning() {
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), workspace_1, session);
+        DocumentRef syncRootVersionRef = session.checkIn(workspace_1.getRef(), VersioningOption.MAJOR, null);
+        txFeature.nextTransaction();
+        DocumentModel syncRootVersion = session.getDocument(syncRootVersionRef);
+        assertFalse(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(), syncRootVersion));
     }
 
     protected DocumentModel doc(String path) {
