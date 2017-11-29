@@ -129,6 +129,7 @@
     <module>nuxeo-agenda</module>
     <module>nuxeo-target-platforms</module>
     <module>nuxeo-web-ui</module>
+    <module>nuxeo-web-ui-itests</module>
     <module>nuxeo-api-playground</module>
     <module>nuxeo-jsf-to-web-ui</module>
     <module>nuxeo-audit-storage</module>
@@ -1113,6 +1114,11 @@
       <dependency>
         <groupId>org.nuxeo.web.ui</groupId>
         <artifactId>nuxeo-web-ui</artifactId>
+        <version>${nuxeo.web.ui.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.web.ui</groupId>
+        <artifactId>nuxeo-web-ui-itests</artifactId>
         <version>${nuxeo.web.ui.version}</version>
       </dependency>
 
