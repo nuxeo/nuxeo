@@ -87,6 +87,9 @@ public class BlobConsumers {
     @Param(name = "logConfig", required = false)
     protected String logConfig;
 
+    @Param(name = "waitMessageTimeoutSeconds", required = false)
+    protected Integer waitMessageTimeoutSeconds = 20;
+
     @OperationMethod
     public void run() {
         RandomBlobProducers.checkAccess(ctx);
@@ -103,6 +106,7 @@ public class BlobConsumers {
                                                       .retryPolicy(new RetryPolicy().withMaxRetries(retryMax).withDelay(
                                                               retryDelayS, TimeUnit.SECONDS))
                                                       .maxThreads(getNbThreads())
+                                                      .waitMessageTimeout(Duration.ofSeconds(waitMessageTimeoutSeconds))
                                                       .build();
         StreamService service = Framework.getService(StreamService.class);
         LogManager manager = service.getLogManager(getLogConfig());

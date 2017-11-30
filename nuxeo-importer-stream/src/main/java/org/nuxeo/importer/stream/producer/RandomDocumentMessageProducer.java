@@ -20,8 +20,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.logging.Log;
@@ -96,7 +98,7 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
 
     protected List<String> folderishChildren = new ArrayList<>();
 
-    protected List<String> children = new ArrayList<>();
+    protected Set<String> children = new HashSet<>();
 
     protected int documentInCurrentFolderCount = 0;
 
@@ -163,7 +165,7 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
         case Folder:
             ret = createFolder(parents.get(parentIndex), children);
             folderishChildren.add(ret.getId());
-            children.add(ret.getId());
+            children.add(ret.getName());
             if (folderishChildren.size() >= foldersInCurrentFolderLimit) {
                 currentType = DocType.Document;
                 documentInCurrentFolderCount = 0;
@@ -173,7 +175,7 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
         default:
         case Document:
             ret = createDocument(parents.get(parentIndex), children);
-            children.add(ret.getId());
+            children.add(ret.getName());
             documentInCurrentFolderCount += 1;
             if (documentInCurrentFolderCount > documentInCurrentFolderLimit) {
                 parentIndex += 1;
@@ -181,7 +183,7 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
                     parents.clear();
                     parents = folderishChildren;
                     folderishChildren = new ArrayList<>();
-                    children = new ArrayList<>();
+                    children = new HashSet<>();
                     parentIndex = 0;
                 }
                 currentType = DocType.Folder;
@@ -198,25 +200,25 @@ public class RandomDocumentMessageProducer extends AbstractProducer<DocumentMess
         return getRandomNodeWithPrefix(String.format("%02d-", getProducerId()), "Folder", "");
     }
 
-    protected DocumentMessage createFolder(String parentPath, List<String> exclude) {
-        DocumentMessage node = getRandomNode("Folder", parentPath, false, exclude);
+    protected DocumentMessage createFolder(String parentPath, Set<String> exclude) {
+        DocumentMessage node = getRandomNodeWithExclusion("Folder", parentPath, false, exclude);
         folderCount++;
         return node;
     }
 
-    protected DocumentMessage createDocument(String parentPath, List<String> exclude) {
-        DocumentMessage node = getRandomNode("File", parentPath, true, exclude);
+    protected DocumentMessage createDocument(String parentPath, Set<String> exclude) {
+        DocumentMessage node = getRandomNodeWithExclusion("File", parentPath, true, exclude);
         documentCount++;
         return node;
     }
 
-    protected DocumentMessage getRandomNode(String type, String parentPath, boolean withBlob, List<String> exclude) {
+    protected DocumentMessage getRandomNodeWithExclusion(String type, String parentPath, boolean withBlob,
+            Set<String> exclude) {
         DocumentMessage node = getRandomNode(type, parentPath, withBlob);
-        String nodeId = node.getId();
-        while (exclude.contains(nodeId)) {
-            log.debug("duplicate found");
-            node = getRandomNode(type, parentPath, withBlob);
-            nodeId = node.getId();
+        String name = node.getName();
+        if (exclude.contains(name)) {
+            String newName = name + "-" + rand.nextInt(exclude.size());
+            node = DocumentMessage.copy(node, newName);
         }
         return node;
     }

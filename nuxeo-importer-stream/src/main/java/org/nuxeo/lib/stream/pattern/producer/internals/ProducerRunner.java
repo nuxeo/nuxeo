@@ -59,24 +59,15 @@ public class ProducerRunner<M extends Message> implements Callable<ProducerStatu
 
     protected final Counter producersCount;
 
+    protected long counter;
+
     public ProducerRunner(ProducerFactory<M> factory, LogAppender<M> appender, int producerId) {
         this.factory = factory;
         this.producerId = producerId;
         this.appender = appender;
-        producerTimer = newTimer(
-                MetricRegistry.name("nuxeo", "importer", "queue", "producer", String.valueOf(producerId)));
-        producersCount = newCounter(MetricRegistry.name("nuxeo", "importer", "queue", "producers"));
+        producerTimer = registry.timer(MetricRegistry.name("nuxeo", "importer", "stream", "producer"));
+        producersCount = registry.counter(MetricRegistry.name("nuxeo", "importer", "stream", "producers"));
         log.debug("ProducerIterator thread created: " + producerId);
-    }
-
-    protected Counter newCounter(String name) {
-        registry.remove(name);
-        return registry.counter(name);
-    }
-
-    protected Timer newTimer(String name) {
-        registry.remove(name);
-        return registry.timer(name);
     }
 
     @Override
@@ -89,7 +80,7 @@ public class ProducerRunner<M extends Message> implements Callable<ProducerStatu
         } finally {
             producersCount.dec();
         }
-        return new ProducerStatus(producerId, producerTimer.getCount(), start, System.currentTimeMillis(), false);
+        return new ProducerStatus(producerId, counter, start, System.currentTimeMillis(), false);
     }
 
     protected void producerLoop(ProducerIterator<M> producer) {
@@ -98,13 +89,14 @@ public class ProducerRunner<M extends Message> implements Callable<ProducerStatu
             try (Timer.Context ignored = producerTimer.time()) {
                 message = producer.next();
                 setThreadName(message);
+                counter++;
             }
             appender.append(producer.getPartition(message, appender.size()), message);
         }
     }
 
     protected void setThreadName(M message) {
-        String name = threadName + "-" + producerTimer.getCount();
+        String name = threadName + "-" + counter;
         if (message != null) {
             name += "-" + message.getId();
         } else {

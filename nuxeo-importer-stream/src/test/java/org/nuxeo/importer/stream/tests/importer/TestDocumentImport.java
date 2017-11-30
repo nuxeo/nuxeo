@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -118,16 +119,18 @@ public abstract class TestDocumentImport {
             manager.createIfNotExists("blob-info", NB_QUEUE);
             BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(manager.getAppender("blob-info"));
             ConsumerFactory<BlobMessage> blobFactory = new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter);
-            ConsumerPool<BlobMessage> blobConsumers = new ConsumerPool<>("blob", manager, blobFactory, ConsumerPolicy.BOUNDED);
+            ConsumerPool<BlobMessage> blobConsumers = new ConsumerPool<>("blob", manager, blobFactory,
+                    ConsumerPolicy.BOUNDED);
             List<ConsumerStatus> blobConsumersStatus = blobConsumers.start().get();
             assertEquals(NB_QUEUE, (long) blobConsumersStatus.size());
             assertEquals(NB_PRODUCERS * NB_BLOBS, blobConsumersStatus.stream().mapToLong(r -> r.committed).sum());
 
             manager.createIfNotExists("document", NB_QUEUE);
             // 3. generate documents using blob reference
-            ProducerFactory<DocumentMessage> randomDocFactory = new RandomDocumentMessageProducerFactory(NB_DOCUMENTS, "en_US",
-                    manager, "blob-info");
-            ProducerPool<DocumentMessage> docProducers = new ProducerPool<>("document", manager, randomDocFactory, NB_PRODUCERS);
+            ProducerFactory<DocumentMessage> randomDocFactory = new RandomDocumentMessageProducerFactory(NB_DOCUMENTS,
+                    "en_US", manager, "blob-info");
+            ProducerPool<DocumentMessage> docProducers = new ProducerPool<>("document", manager, randomDocFactory,
+                    NB_PRODUCERS);
             List<ProducerStatus> docProducersStatus = docProducers.start().get();
             assertEquals(NB_PRODUCERS, (long) docProducersStatus.size());
             assertEquals(NB_PRODUCERS * NB_DOCUMENTS, docProducersStatus.stream().mapToLong(r -> r.nbProcessed).sum());
@@ -143,7 +146,22 @@ public abstract class TestDocumentImport {
             assertEquals(NB_PRODUCERS * NB_DOCUMENTS, docConsumersStatus.stream().mapToLong(r -> r.committed).sum());
 
         }
-
     }
 
+    @Ignore("Only to work on perf")
+    @Test
+    public void docGenerationPerf() throws Exception {
+        final int NB_QUEUE = 1;
+        final short NB_PRODUCERS = 1;
+        final int NB_DOCUMENTS = 1_000_000;
+        try (LogManager manager = getManager()) {
+            // 1. generate documents with blobs
+            manager.createIfNotExists("document-import", NB_QUEUE);
+            ProducerPool<DocumentMessage> producers = new ProducerPool<>("document-import", manager,
+                    new RandomDocumentMessageProducerFactory(NB_DOCUMENTS, "en_US", 2), NB_PRODUCERS);
+            List<ProducerStatus> ret = producers.start().get();
+            assertEquals(NB_PRODUCERS, (long) ret.size());
+            assertEquals(NB_PRODUCERS * NB_DOCUMENTS, ret.stream().mapToLong(r -> r.nbProcessed).sum());
+        }
+    }
 }

@@ -97,6 +97,9 @@ public class DocumentConsumers {
     @Param(name = "useBulkMode", required = false)
     protected Boolean useBulkMode = false;
 
+    @Param(name = "waitMessageTimeoutSeconds", required = false)
+    protected Integer waitMessageTimeoutSeconds = 20;
+
     @OperationMethod
     public void run() {
         RandomBlobProducers.checkAccess(ctx);
@@ -117,6 +120,8 @@ public class DocumentConsumers {
                                                                                             .withDelay(retryDelayS,
                                                                                                     TimeUnit.SECONDS))
                                                               .maxThreads(getNbThreads())
+                                                              .waitMessageTimeout(
+                                                                      Duration.ofSeconds(waitMessageTimeoutSeconds))
                                                               .salted()
                                                               .build();
         log.warn(String.format("Import documents from log: %s into: %s/%s, with policy: %s", getMQName(),

@@ -29,18 +29,18 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.lib.stream.pattern.Message;
-import org.nuxeo.lib.stream.pattern.consumer.BatchPolicy;
-import org.nuxeo.lib.stream.pattern.consumer.Consumer;
-import org.nuxeo.lib.stream.pattern.consumer.ConsumerFactory;
-import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
-import org.nuxeo.lib.stream.pattern.consumer.ConsumerStatus;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.RebalanceException;
 import org.nuxeo.lib.stream.log.RebalanceListener;
+import org.nuxeo.lib.stream.pattern.Message;
+import org.nuxeo.lib.stream.pattern.consumer.BatchPolicy;
+import org.nuxeo.lib.stream.pattern.consumer.Consumer;
+import org.nuxeo.lib.stream.pattern.consumer.ConsumerFactory;
+import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
+import org.nuxeo.lib.stream.pattern.consumer.ConsumerStatus;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
@@ -76,17 +76,26 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
 
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(NUXEO_METRICS_REGISTRY_NAME);
 
-    protected Timer acceptTimer;
+    protected long acceptCounter;
 
-    protected Counter committedCounter;
+    protected long committedCounter;
 
-    protected Timer batchCommitTimer;
+    protected long batchCommitCounter;
 
-    protected Counter batchFailureCount;
+    protected long batchFailureCounter;
 
-    protected Counter consumersCount;
+    protected boolean alreadySalted;
 
-    protected boolean alreadySalted = false;
+    // Metrics global to all threads, having metrics per thread is way too much
+    protected Timer globalAcceptTimer;
+
+    protected Counter globalCommittedCounter;
+
+    protected Timer globalBatchCommitTimer;
+
+    protected Counter globalBatchFailureCounter;
+
+    protected Counter globalConsumersCounter;
 
     public ConsumerRunner(ConsumerFactory<M> factory, ConsumerPolicy policy, LogManager manager,
             List<LogPartition> defaultAssignments) {
@@ -95,7 +104,7 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
         this.policy = policy;
         this.tailer = createTailer(manager, defaultAssignments);
         consumerId = tailer.toString();
-        consumersCount = newCounter(MetricRegistry.name("nuxeo", "importer", "queue", "consumers"));
+        globalConsumersCounter = registry.counter(MetricRegistry.name("nuxeo", "importer", "stream", "consumers"));
         setTailerPosition(manager);
         log.debug("Consumer thread created tailing on: " + consumerId);
     }
@@ -111,40 +120,32 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
         return tailer;
     }
 
-    protected Counter newCounter(String name) {
-        registry.remove(name);
-        return registry.counter(name);
-    }
-
-    protected Timer newTimer(String name) {
-        registry.remove(name);
-        return registry.timer(name);
-    }
-
     @Override
     public ConsumerStatus call() throws Exception {
         threadName = currentThread().getName();
-        setMetrics(threadName);
-        consumersCount.inc();
+        setMetrics();
+        globalConsumersCounter.inc();
         long start = System.currentTimeMillis();
         consumer = factory.createConsumer(consumerId);
         try {
             consumerLoop();
         } finally {
             consumer.close();
-            consumersCount.dec();
+            globalConsumersCounter.dec();
             tailer.close();
         }
-        return new ConsumerStatus(consumerId, acceptTimer.getCount(), committedCounter.getCount(),
-                batchCommitTimer.getCount(), batchFailureCount.getCount(), start, System.currentTimeMillis(), false);
+        return new ConsumerStatus(consumerId, acceptCounter, committedCounter, batchCommitCounter, batchFailureCounter,
+                start, System.currentTimeMillis(), false);
     }
 
-    protected void setMetrics(String name) {
-        acceptTimer = newTimer(MetricRegistry.name("nuxeo", "importer", "queue", "consumer", "accepted", name));
-        committedCounter = newCounter(MetricRegistry.name("nuxeo", "importer", "queue", "consumer", "committed", name));
-        batchFailureCount = newCounter(
-                MetricRegistry.name("nuxeo", "importer", "queue", "consumer", "batchFailure", name));
-        batchCommitTimer = newTimer(MetricRegistry.name("nuxeo", "importer", "queue", "consumer", "batchCommit", name));
+    protected void setMetrics() {
+        globalAcceptTimer = registry.timer(MetricRegistry.name("nuxeo", "importer", "stream", "consumer", "accepted"));
+        globalCommittedCounter = registry.counter(
+                MetricRegistry.name("nuxeo", "importer", "stream", "consumer", "committed"));
+        globalBatchFailureCounter = registry.counter(
+                MetricRegistry.name("nuxeo", "importer", "stream", "consumer", "batchFailure"));
+        globalBatchCommitTimer = registry.timer(
+                MetricRegistry.name("nuxeo", "importer", "stream", "consumer", "batchCommit"));
     }
 
     protected void addSalt() throws InterruptedException {
@@ -202,7 +203,8 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
                 tailer.commit();
                 execution.complete();
             } catch (Throwable t) {
-                batchFailureCount.inc();
+                globalBatchFailureCounter.inc();
+                batchFailureCounter += 1;
                 if (t instanceof InterruptedException) {
                     Thread.currentThread().interrupt();
                     throw t;
@@ -258,12 +260,13 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
     }
 
     protected void commitBatch(BatchState state) {
-        try (Timer.Context ignore = batchCommitTimer.time()) {
+        try (Timer.Context ignore = globalBatchCommitTimer.time()) {
             consumer.commit();
-            committedCounter.inc(state.getSize());
+            committedCounter += state.getSize();
+            globalCommittedCounter.inc(state.getSize());
+            batchCommitCounter += 1;
             if (log.isDebugEnabled()) {
-                log.debug(
-                        "Commit batch size: " + state.getSize() + ", total committed: " + committedCounter.getCount());
+                log.debug("Commit batch size: " + state.getSize() + ", total committed: " + committedCounter);
             }
         }
     }
@@ -283,15 +286,16 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
         LogRecord<M> record;
         M message;
         while ((record = tailer.read(policy.getWaitMessageTimeout())) != null) {
-            // addSalt(); // do this here so kafka subscription happens concurrently
+            addSalt(); // do this here so kafka subscription happens concurrently
             message = record.message();
             if (message.poisonPill()) {
                 log.warn("Receive a poison pill: " + message);
                 batch.last();
             } else {
-                try (Timer.Context ignore = acceptTimer.time()) {
-                    setThreadName(message);
+                try (Timer.Context ignore = globalAcceptTimer.time()) {
+                    setThreadName(message.getId());
                     consumer.accept(message);
+                    acceptCounter += 1;
                 }
                 batch.inc();
                 if (message.forceBatch()) {
@@ -306,16 +310,13 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
             }
         }
         batch.last();
+        log.info(String.format("No record after: %ds on %s, terminating", policy.getWaitMessageTimeout().getSeconds(),
+                consumerId));
         return batch;
     }
 
-    protected void setThreadName(M message) {
-        String name = threadName + "-" + acceptTimer.getCount();
-        if (message != null) {
-            name += "-" + message.getId();
-        } else {
-            name += "-null";
-        }
+    protected void setThreadName(String message) {
+        String name = threadName + "-" + acceptCounter + "-" + message;
         currentThread().setName(name);
     }
 
@@ -327,6 +328,7 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
     @Override
     public void onPartitionsAssigned(Collection<LogPartition> partitions) {
         consumerId = tailer.toString();
+        setThreadName("rebalance-" + consumerId);
         // log.error("Partitions assigned: " + consumerId);
         // partitions are opened on last committed by default
     }

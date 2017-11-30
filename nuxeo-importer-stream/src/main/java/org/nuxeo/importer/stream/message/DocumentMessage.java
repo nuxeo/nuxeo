@@ -106,6 +106,14 @@ public class DocumentMessage implements Message {
         return new Builder(type, parentPath, name);
     }
 
+    public static DocumentMessage copy(DocumentMessage node, String newName) {
+        Builder builder = builder(node.type, node.parentPath, newName);
+        builder.blob = node.blob;
+        builder.blobInfo = node.blobInfo;
+        builder.properties = node.properties;
+        return builder.build();
+    }
+
     public static class Builder {
         protected final String name;
 
