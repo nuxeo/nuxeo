@@ -185,6 +185,12 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     @Override
+    public State readPartialState(String id, Collection<String> keys) {
+        // bypass caches, as the goal of this method is to not trash caches for one-shot reads
+        return repository.readPartialState(id, keys);
+    }
+
+    @Override
     public List<State> readStates(List<String> ids) {
         ImmutableMap<String, State> statesMap = cache.getAllPresent(ids);
         List<String> idsToRetrieve = new ArrayList<>(ids);
@@ -344,6 +350,12 @@ public class DBSCachingRepository implements DBSRepository {
     public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
             Map<String, Object[]> targetProxies) {
         repository.queryKeyValueArray(key, value, ids, proxyTargets, targetProxies);
+    }
+
+    @Override
+    public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
+            Map<String, Object[]> targetProxies, int limit) {
+        repository.queryKeyValueArray(key, value, ids, proxyTargets, targetProxies, limit);
     }
 
     @Override
