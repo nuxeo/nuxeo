@@ -51,8 +51,10 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_SYS_CHANGE_TOKEN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,9 +69,15 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.BatchFinderWork;
+import org.nuxeo.ecm.core.BatchProcessorWork;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
+import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
@@ -105,6 +113,18 @@ public class DBSTransactionState {
     private static final Log log = LogFactory.getLog(DBSTransactionState.class);
 
     private static final String KEY_UNDOLOG_CREATE = "__UNDOLOG_CREATE__\0\0";
+
+    /** Keys used when computing Read ACLs. */
+    protected static final Set<String> READ_ACL_RECURSION_KEYS = new HashSet<>(
+            Arrays.asList(KEY_READ_ACL, KEY_ACP, KEY_IS_VERSION, KEY_VERSION_SERIES_ID, KEY_PARENT_ID));
+
+    public static final String READ_ACL_ASYNC_ENABLED_PROPERTY = "nuxeo.core.readacl.async.enabled";
+
+    public static final String READ_ACL_ASYNC_ENABLED_DEFAULT = "false";
+
+    public static final String READ_ACL_ASYNC_THRESHOLD_PROPERTY = "nuxeo.core.readacl.async.threshold";
+
+    public static final String READ_ACL_ASYNC_THRESHOLD_DEFAULT = "500";
 
     protected final DBSRepository repository;
 
@@ -403,7 +423,7 @@ public class DBSTransactionState {
         int nadd = ancestorIds.length;
         Set<String> ids = new HashSet<>();
         ids.add(id);
-        try (Stream<State> states = getDescendants(id, Collections.emptySet())) {
+        try (Stream<State> states = getDescendants(id, Collections.emptySet(), 0)) {
             states.forEach(state -> ids.add((String) state.get(KEY_ID)));
         }
         // we collect all ids first to avoid reentrancy to the repository
@@ -423,35 +443,169 @@ public class DBSTransactionState {
         }
     }
 
+    protected int getReadAclsAsyncThreshold() {
+        boolean enabled = Boolean.parseBoolean(
+                Framework.getProperty(READ_ACL_ASYNC_ENABLED_PROPERTY, READ_ACL_ASYNC_ENABLED_DEFAULT));
+        if (enabled) {
+            return Integer.parseInt(
+                    Framework.getProperty(READ_ACL_ASYNC_THRESHOLD_PROPERTY, READ_ACL_ASYNC_THRESHOLD_DEFAULT));
+        } else {
+            return 0;
+        }
+    }
+
     /**
      * Updates the Read ACLs recursively on a document.
      */
     public void updateTreeReadAcls(String id) {
         // versions too XXX TODO
+
+        save(); // flush everything to the database
+
+        // update the doc itself
+        updateDocumentReadAcls(id);
+
+        // check if we have a small enough number of descendants that we can process them synchronously
+        int limit = getReadAclsAsyncThreshold();
         Set<String> ids = new HashSet<>();
-        ids.add(id);
-        try (Stream<State> states = getDescendants(id, Collections.emptySet())) {
+        try (Stream<State> states = getDescendants(id, Collections.emptySet(), limit)) {
             states.forEach(state -> ids.add((String) state.get(KEY_ID)));
         }
-        // we collect all ids first to avoid reentrancy to the repository
-        ids.forEach(this::updateDocumentReadAcls);
+        if (limit == 0 || ids.size() < limit) {
+            // update all descendants synchronously
+            ids.forEach(this::updateDocumentReadAcls);
+        } else {
+            // update the direct children synchronously, the rest asynchronously
+
+            // update the direct children (with a limit in case it's too big)
+            String nxql = String.format("SELECT ecm:uuid FROM Document WHERE ecm:parentId = '%s'", id);
+            Principal principal = new SystemPrincipal(null);
+            QueryFilter queryFilter = new QueryFilter(principal, null, null, null, Collections.emptyList(), limit, 0);
+            PartialList<Map<String, Serializable>> pl = session.queryProjection(nxql, NXQL.NXQL, queryFilter, false, 0,
+                    new Object[0]);
+            for (Map<String, Serializable> map : pl) {
+                String childId = (String) map.get(NXQL.ECM_UUID);
+                updateDocumentReadAcls(childId);
+            }
+
+            // asynchronous work to do the whole tree
+            nxql = String.format("SELECT ecm:uuid FROM Document WHERE ecm:ancestorId = '%s'", id);
+            Work work = new FindReadAclsWork(repository.getName(), nxql, null);
+            Framework.getService(WorkManager.class).schedule(work);
+        }
+    }
+
+    /**
+     * Work to find the ids of documents for which Read ACLs must be recomputed, and launch the needed update works.
+     *
+     * @since 9.10
+     */
+    public static class FindReadAclsWork extends BatchFinderWork {
+
+        private static final long serialVersionUID = 1L;
+
+        public FindReadAclsWork(String repositoryName, String nxql, String originatingUsername) {
+            super(repositoryName, nxql, originatingUsername);
+        }
+
+        @Override
+        public String getTitle() {
+            return "Find descendants for Read ACLs";
+        }
+
+        @Override
+        public String getCategory() {
+            return "security";
+        }
+
+        @Override
+        public int getBatchSize() {
+            return 500;
+        }
+
+        @Override
+        public Work getBatchProcessorWork(List<String> docIds) {
+            return new UpdateReadAclsWork(repositoryName, docIds, getOriginatingUsername());
+        }
+    }
+
+    /**
+     * Work to update the Read ACLs on a list of documents, without recursion.
+     *
+     * @since 9.10
+     */
+    public static class UpdateReadAclsWork extends BatchProcessorWork {
+
+        private static final long serialVersionUID = 1L;
+
+        public UpdateReadAclsWork(String repositoryName, List<String> docIds, String originatingUsername) {
+            super(repositoryName, docIds, originatingUsername);
+        }
+
+        @Override
+        public String getTitle() {
+            return "Update Read ACLs";
+        }
+
+        @Override
+        public String getCategory() {
+            return "security";
+        }
+
+        @Override
+        public int getBatchSize() {
+            return 50;
+        }
+
+        @Override
+        public void processBatch(List<String> docIds) {
+            session.updateReadACLs(docIds);
+        }
+    }
+
+    /**
+     * Updates the Read ACLs on a document (not recursively), bypassing transient space and caches for the document
+     * itself (not the ancestors, needed for ACL inheritance and for which caching is useful).
+     */
+    public void updateReadACLs(Collection<String> docIds) {
+        docIds.forEach(id -> updateDocumentReadAclsNoCache(id));
     }
 
     /**
      * Updates the Read ACLs on a document (not recursively)
      */
     protected void updateDocumentReadAcls(String id) {
-        // XXX TODO oneShot update, don't pollute transient space
         DBSDocumentState docState = getStateForUpdate(id);
-        docState.put(KEY_READ_ACL, getReadACL(docState));
+        docState.put(KEY_READ_ACL, getReadACL(docState.getState()));
+    }
+
+    /**
+     * Updates the Read ACLs on a document, without polluting caches.
+     * <p>
+     * When fetching parents recursively to compute inheritance, the regular transient space and repository caching are
+     * used.
+     */
+    protected void updateDocumentReadAclsNoCache(String id) {
+        // no transient for state read, and we don't want to trash caches
+        // fetch from repository only the properties needed for Read ACL computation and recursion
+        State state = repository.readPartialState(id, READ_ACL_RECURSION_KEYS);
+        State oldState = new State(1);
+        oldState.put(KEY_READ_ACL, state.get(KEY_READ_ACL));
+        // compute new value
+        State newState = new State(1);
+        newState.put(KEY_READ_ACL, getReadACL(state));
+        StateDiff diff = StateHelper.diff(oldState, newState);
+        if (!diff.isEmpty()) {
+            // no transient for state write, we write directly and just invalidate caches
+            repository.updateState(id, diff, null);
+        }
     }
 
     /**
      * Gets the Read ACL (flat list of users having browse permission, including inheritance) on a document.
      */
-    protected String[] getReadACL(DBSDocumentState docState) {
+    protected String[] getReadACL(State state) {
         Set<String> racls = new HashSet<>();
-        State state = docState.getState();
         LOOP: do {
             @SuppressWarnings("unchecked")
             List<Serializable> aclList = (List<Serializable>) state.get(KEY_ACP);
@@ -480,14 +634,10 @@ public class DBSTransactionState {
                     }
                 }
             }
-            // get parent
-            if (TRUE.equals(state.get(KEY_IS_VERSION))) {
-                String versionSeriesId = (String) state.get(KEY_VERSION_SERIES_ID);
-                state = versionSeriesId == null ? null : getStateForRead(versionSeriesId);
-            } else {
-                String parentId = (String) state.get(KEY_PARENT_ID);
-                state = parentId == null ? null : getStateForRead(parentId);
-            }
+            // get the parent; for a version the parent is the live document
+            String parentKey = TRUE.equals(state.get(KEY_IS_VERSION)) ? KEY_VERSION_SERIES_ID : KEY_PARENT_ID;
+            String parentId = (String) state.get(parentKey);
+            state = parentId == null ? null : getStateForRead(parentId);
         } while (state != null);
 
         // sort to have canonical order
@@ -496,8 +646,8 @@ public class DBSTransactionState {
         return racl.toArray(new String[racl.size()]);
     }
 
-    protected Stream<State> getDescendants(String id, Set<String> keys) {
-        return repository.getDescendants(id, keys);
+    protected Stream<State> getDescendants(String id, Set<String> keys, int limit) {
+        return repository.getDescendants(id, keys, limit);
     }
 
     public List<DBSDocumentState> getKeyValuedStates(String key, Object value) {

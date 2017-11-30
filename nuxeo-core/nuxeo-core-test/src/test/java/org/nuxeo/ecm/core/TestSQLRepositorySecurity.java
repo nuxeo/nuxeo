@@ -40,9 +40,11 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -60,6 +62,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
@@ -71,6 +74,7 @@ import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -99,6 +103,9 @@ public class TestSQLRepositorySecurity {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected EventService eventService;
 
     @Before
     public void setUp() {
@@ -846,6 +853,74 @@ public class TestSQLRepositorySecurity {
         assertEquals(4, acl.size());
         // at least we have a warning about duplicate
         logCaptureResults.assertHasEvent();
+    }
+
+    @Test
+    public void testReadAclOnLargeTree() {
+        String enabledProp = "nuxeo.core.readacl.async.enabled";
+        String thresholdProp = "nuxeo.core.readacl.async.threshold";
+        Framework.getProperties().put(enabledProp, "true");
+        Framework.getProperties().put(thresholdProp, "10");
+        try {
+            doTestReadAclOnLargeTree();
+        } finally {
+            Framework.getProperties().remove(enabledProp);
+            Framework.getProperties().remove(thresholdProp);
+        }
+    }
+
+    protected void doTestReadAclOnLargeTree() {
+        DocumentModel rootFolder = session.createDocumentModel("/", "folder", "Folder");
+        rootFolder = session.createDocument(rootFolder);
+        String firstUser = "mickey";
+        String secondUser = "minnie";
+
+        // set ACL for first user on root folder
+        ACP acp = new ACPImpl();
+        acp.addACE(ACL.LOCAL_ACL, new ACE(firstUser, READ, true));
+        rootFolder.setACP(acp, true);
+
+        int nbLevels = 10;
+        int nbPerLevel = 10;
+        DocumentModel parent = rootFolder;
+        for (int level = 0; level < nbLevels; level++) {
+            DocumentModel folder = session.createDocumentModel(parent.getPathAsString(), "folder-" + level, "Folder");
+            folder = session.createDocument(folder);
+            for (int i = 0; i < nbPerLevel; i++) {
+                DocumentModel doc = session.createDocumentModel(folder.getPathAsString(), "doc-" + level + "-" + i,
+                        "File");
+                doc = session.createDocument(doc);
+            }
+            parent = folder;
+        }
+        session.save();
+        int nbDocs = 1 + nbLevels * (nbPerLevel + 1);
+
+        // check that only first user has access to everything, but not second user
+        assertEquals(nbDocs, numberOfReadableDocuments(firstUser));
+        assertEquals(0, numberOfReadableDocuments(secondUser));
+
+        // set ACL for user on root folder
+        acp.addACE(ACL.LOCAL_ACL, new ACE(secondUser, READ, true));
+        rootFolder.setACP(acp, true);
+        session.save();
+
+        // wait for asynchronous stuff to finish
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        eventService.waitForAsyncCompletion();
+
+        // check that both users now have access to everything
+        assertEquals(nbDocs, numberOfReadableDocuments(firstUser));
+        assertEquals(nbDocs, numberOfReadableDocuments(secondUser));
+    }
+
+    protected int numberOfReadableDocuments(String username) {
+        try (CoreSession userSession = openSessionAs(username)) {
+            String nxql = "SELECT ecm:uuid FROM Document";
+            PartialList<Map<String, Serializable>> pl = userSession.queryProjection(nxql, 0, 0);
+            return pl.size();
+        }
     }
 
 }

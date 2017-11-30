@@ -33,6 +33,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -128,8 +129,23 @@ public class MemRepository extends DBSRepositoryBase {
 
     @Override
     public State readState(String id) {
+        return readPartialState(id, null);
+    }
+
+    @Override
+    public State readPartialState(String id, Collection<String> keys) {
         State state = states.get(id);
         if (state != null) {
+            if (keys != null && !keys.isEmpty()) {
+                State partialState = new State();
+                for (String key : keys) {
+                    Serializable value = state.get(key);
+                    if (value != null) {
+                        partialState.put(key, value);
+                    }
+                }
+                state = partialState;
+            }
             if (log.isTraceEnabled()) {
                 log.trace("Mem: READ  " + id + ": " + state);
             }
@@ -266,12 +282,21 @@ public class MemRepository extends DBSRepositoryBase {
 
     @Override
     public Stream<State> getDescendants(String rootId, Set<String> keys) {
+        return getDescendants(rootId, keys, 0);
+    }
+
+    @Override
+    public Stream<State> getDescendants(String rootId, Set<String> keys, int limit) {
         if (log.isTraceEnabled()) {
             log.trace("Mem: QUERY " + KEY_ANCESTOR_IDS + " = " + rootId);
         }
-        return states.values() //
-                     .stream()
-                     .filter(state -> hasAncestor(state, rootId));
+        Stream<State> stream = states.values() //
+                                     .stream()
+                                     .filter(state -> hasAncestor(state, rootId));
+        if (limit != 0) {
+            stream = stream.limit(limit);
+        }
+        return stream;
     }
 
     protected static boolean hasAncestor(State state, String id) {

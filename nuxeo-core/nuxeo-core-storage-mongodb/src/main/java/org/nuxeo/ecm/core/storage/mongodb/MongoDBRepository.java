@@ -43,6 +43,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -311,6 +312,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
+    public State readPartialState(String id, Collection<String> keys) {
+        Document fields = new Document();
+        keys.forEach(key -> fields.put(converter.keyToBson(key), ONE));
+        return findOne(Filters.eq(idKey, id), fields);
+    }
+
+    @Override
     public List<State> readStates(List<String> ids) {
         return findAll(Filters.in(idKey, ids));
     }
@@ -424,19 +432,24 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public Stream<State> getDescendants(String rootId, Set<String> keys) {
+        return getDescendants(rootId, keys, 0);
+    }
+
+    @Override
+    public Stream<State> getDescendants(String rootId, Set<String> keys, int limit) {
         Bson filter = Filters.eq(KEY_ANCESTOR_IDS, rootId);
         Document fields = new Document();
         if (useCustomId) {
             fields.put(MONGODB_ID, ZERO);
         }
         fields.put(idKey, ONE);
-        keys.forEach(key -> fields.put(key, ONE));
-        return stream(filter, fields);
+        keys.forEach(key -> fields.put(converter.keyToBson(key), ONE));
+        return stream(filter, fields, limit);
     }
 
     @Override
     public boolean queryKeyValuePresence(String key, String value, Set<String> ignored) {
-        Document filter = new Document(key, value);
+        Document filter = new Document(converter.keyToBson(key), value);
         addIgnoredIds(filter, ignored);
         return exists(filter);
     }
@@ -453,11 +466,14 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected State findOne(Bson filter) {
-        try (Stream<State> stream = stream(filter, null)) {
+        return findOne(filter, null);
+    }
+
+    protected State findOne(Bson filter, Bson projection) {
+        try (Stream<State> stream = stream(filter, projection)) {
             return stream.findAny().orElse(null);
         }
     }
-
 
     protected List<State> findAll(Bson filter) {
         try (Stream<State> stream = stream(filter)) {
@@ -465,11 +481,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
     }
 
-    /**
-     * @see #stream(Bson, Bson)
-     */
     protected Stream<State> stream(Bson filter) {
-        return stream(filter, null);
+        return stream(filter, null, 0);
+    }
+
+    protected Stream<State> stream(Bson filter, Bson projection) {
+        return stream(filter, projection, 0);
     }
 
     /**
@@ -482,7 +499,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
      *
      * @return a closeable {@link Stream} instance linked to {@link MongoCursor}
      */
-    protected Stream<State> stream(Bson filter, Bson projection) {
+    protected Stream<State> stream(Bson filter, Bson projection, int limit) {
         if (filter == null) {
             // empty filter
             filter = new Document();
@@ -493,7 +510,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
 
         boolean completedAbruptly = true;
-        MongoCursor<Document> cursor = coll.find(filter).projection(projection).iterator();
+        MongoCursor<Document> cursor = coll.find(filter).limit(limit).projection(projection).iterator();
         try {
             Set<String> seen = new HashSet<>();
             Stream<State> stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(cursor, 0), false) //

@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.storage.dbs;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -94,6 +95,19 @@ public interface DBSRepository extends Repository, LockManager {
      * @return the document state, or {@code null} if not found
      */
     State readState(String id);
+
+    /**
+     * Reads the partial state of a document.
+     *
+     * @param id the document id
+     * @param keys the keys to read
+     * @return the document partial state, or {@code null} if not found
+     * @since 9.10
+     */
+    default State readPartialState(String id, Collection<String> keys) {
+        // overrides should optimize to only return the required keys and nothing more
+        return readState(id);
+    }
 
     /**
      * Reads the states of several documents.
@@ -191,6 +205,23 @@ public interface DBSRepository extends Repository, LockManager {
      * @since 9.3
      */
     Stream<State> getDescendants(String id, Set<String> keys);
+
+    /**
+     * Returns a stream of descendants from a given root document, in no particular order. This does not include
+     * information about the root document itself.
+     * <p>
+     * THE STREAM MUST BE CLOSED WHEN DONE to release resources.
+     *
+     * @param id the root document id
+     * @param keys what to collect about the descendants in addition to their ids
+     * @param limit the maximum number of descendants to return
+     * @return a stream of {@link State}s; THE STREAM MUST BE CLOSED WHEN DONE
+     * @since 9.10
+     */
+    default Stream<State> getDescendants(String id, Set<String> keys, int limit) {
+        // limit unused by default, override for a more efficient implementation
+        return getDescendants(id, keys);
+    }
 
     /**
      * Queries the repository to check if there are documents having key = value.
