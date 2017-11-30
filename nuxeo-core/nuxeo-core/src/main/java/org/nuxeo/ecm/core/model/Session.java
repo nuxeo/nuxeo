@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.model;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +72,7 @@ public interface Session {
     /**
      * Executes the given query and returns the first batch of results of batchSize, next batch must be requested within
      * the keepAliveSeconds delay.
-     * 
+     *
      * @since 8.4
      */
     ScrollResult scroll(String query, int batchSize, int keepAliveSeconds);
@@ -235,6 +236,14 @@ public interface Session {
     ACP getMergedACP(Document doc);
 
     void setACP(Document doc, ACP acp, boolean overwrite);
+
+    /**
+     * Updates the Read ACLs for some documents.
+     *
+     * @param docIds the document ids
+     * @since 9.10
+     */
+    void updateReadACLs(Collection<String> docIds);
 
     /**
      * Gets the fulltext extracted from the binary fields.

@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.storage.dbs;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -84,6 +85,19 @@ public interface DBSRepository extends Repository, LockManager {
      * @return the document state, or {@code null} if not found
      */
     State readState(String id);
+
+    /**
+     * Reads the partial state of a document.
+     *
+     * @param id the document id
+     * @param keys the keys to read
+     * @return the document partial state, or {@code null} if not found
+     * @since 9.10
+     */
+    default State readPartialState(String id, Collection<String> keys) {
+        // overrides should optimize to only return the required keys and nothing more
+        return readState(id);
+    }
 
     /**
      * Reads the states of several documents.
@@ -179,6 +193,23 @@ public interface DBSRepository extends Repository, LockManager {
      */
     void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
             Map<String, Object[]> targetProxies);
+
+    /**
+     * Queries the repository for document ids having value in key (an array).
+     *
+     * @param key the key
+     * @param value the value
+     * @param ids the set which receives the documents ids
+     * @param proxyTargets returns a map of proxy to target among the documents found
+     * @param targetProxies returns a map of target to proxies among the document found
+     * @param limit the maximum number of ids to return
+     * @since 9.10
+     */
+    default void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
+            Map<String, Object[]> targetProxies, int limit) {
+        // limit unused by default, override for a more efficient implementation
+        queryKeyValueArray(key, value, ids, proxyTargets, targetProxies);
+    }
 
     /**
      * Queries the repository to check if there are documents having key = value.

@@ -50,6 +50,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -663,6 +664,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
+    public State readPartialState(String id, Collection<String> keys) {
+        DBObject query = new BasicDBObject(idKey, id);
+        return findOne(query, keys);
+    }
+
+    @Override
     public List<State> readStates(List<String> ids) {
         DBObject query = new BasicDBObject(idKey, new BasicDBObject(QueryOperators.IN, ids));
         return findAll(query, ids.size());
@@ -758,6 +765,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @Override
     public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
             Map<String, Object[]> targetProxies) {
+        queryKeyValueArray(key, value, ids, proxyTargets, targetProxies, 0);
+    }
+
+    @Override
+    public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
+            Map<String, Object[]> targetProxies, int limit) {
         DBObject query = new BasicDBObject(key, value);
         DBObject fields = new BasicDBObject();
         if (useCustomId) {
@@ -770,7 +783,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         if (log.isTraceEnabled()) {
             logQuery(query, fields);
         }
-        DBCursor cursor = coll.find(query, fields);
+        DBCursor cursor = coll.find(query, fields).limit(limit);
         try {
             for (DBObject ob : cursor) {
                 String id = (String) ob.get(idKey);
@@ -806,6 +819,15 @@ public class MongoDBRepository extends DBSRepositoryBase {
             logQuery(query, null);
         }
         return bsonToState(coll.findOne(query));
+    }
+
+    protected State findOne(DBObject query, Collection<String> keys) {
+        DBObject fields = new BasicDBObject(keys.size());
+        keys.forEach(key -> fields.put(keyToBson(key), ONE));
+        if (log.isTraceEnabled()) {
+            logQuery(query, fields);
+        }
+        return bsonToState(coll.findOne(query, fields));
     }
 
     protected List<State> findAll(DBObject query, int sizeHint) {

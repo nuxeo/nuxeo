@@ -36,6 +36,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -128,8 +129,23 @@ public class MemRepository extends DBSRepositoryBase {
 
     @Override
     public State readState(String id) {
+        return readPartialState(id, null);
+    }
+
+    @Override
+    public State readPartialState(String id, Collection<String> keys) {
         State state = states.get(id);
         if (state != null) {
+            if (keys != null && !keys.isEmpty()) {
+                State partialState = new State();
+                for (String key : keys) {
+                    Serializable value = state.get(key);
+                    if (value != null) {
+                        partialState.put(key, value);
+                    }
+                }
+                state = partialState;
+            }
             if (log.isTraceEnabled()) {
                 log.trace("Mem: READ  " + id + ": " + state);
             }
@@ -254,6 +270,12 @@ public class MemRepository extends DBSRepositoryBase {
     @Override
     public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
             Map<String, Object[]> targetProxies) {
+        queryKeyValueArray(key, value, ids, proxyTargets, targetProxies, 0);
+    }
+
+    @Override
+    public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
+            Map<String, Object[]> targetProxies, int limit) {
         if (log.isTraceEnabled()) {
             log.trace("Mem: QUERY " + key + " = " + value);
         }
@@ -273,6 +295,9 @@ public class MemRepository extends DBSRepositoryBase {
                             if (proxyIds != null) {
                                 targetProxies.put(id, proxyIds);
                             }
+                        }
+                        if (limit != 0 && ids.size() >= limit) {
+                            break STATE;
                         }
                         continue STATE;
                     }
