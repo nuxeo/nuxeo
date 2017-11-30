@@ -80,7 +80,7 @@ public class TestDirectorySecurity {
         // as system, create an dummy entry
         login(SYSTEM_USERNAME);
         try (Session session = directoryService.open(DIR_NAME)) {
-            DocumentModel entry = session.createEntry(new HashMap<>(Collections.singletonMap(ID_FIELD, "123")));
+            DocumentModel entry = session.createEntry(Collections.singletonMap(ID_FIELD, "123"));
             entryId = entry.getPropertyValue(SCHEMA_NAME + ":" + ID_FIELD);
         } finally {
             logout();
