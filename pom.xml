@@ -10,9 +10,8 @@
     <version>9.10-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-audit-storage</artifactId>
   <groupId>org.nuxeo.audit.storage</groupId>
-  <version>1.0-SNAPSHOT</version>
+  <artifactId>nuxeo-audit-storage</artifactId>
   <name>Nuxeo Audit Storage</name>
 
   <dependencies>
@@ -130,4 +129,11 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
+  <scm>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-audit-storage.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-audit-storage.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-audit-storage</url>
+  </scm>
+
 </project>
