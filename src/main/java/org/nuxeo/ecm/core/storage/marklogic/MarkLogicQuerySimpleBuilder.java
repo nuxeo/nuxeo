@@ -42,6 +42,10 @@ class MarkLogicQuerySimpleBuilder {
 
     private final List<MarkLogicRangeElementIndexDescriptor> rangeElementIndexes;
 
+    protected int limit;
+
+    protected int offset;
+
     public MarkLogicQuerySimpleBuilder(List<MarkLogicRangeElementIndexDescriptor> rangeElementIndexes) {
         this.queries = new ArrayList<>();
         this.rangeElementIndexes = rangeElementIndexes;
@@ -104,8 +108,22 @@ class MarkLogicQuerySimpleBuilder {
         return Arrays.stream(values).map(serializer).collect(Collectors.joining(",", "(", ")"));
     }
 
+    public MarkLogicQuerySimpleBuilder limit(int limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public MarkLogicQuerySimpleBuilder offset(int offset) {
+        this.offset = offset;
+        return this;
+    }
+
     public String build() {
-        return String.format("cts:search(fn:doc(),cts:and-query((%s)))", String.join(",", queries));
+        String searchQuery = String.format("cts:search(fn:doc(),cts:and-query((%s)))", String.join(",", queries));
+        if (limit != 0) {
+            searchQuery = String.format("%s[%s to %s]", searchQuery, offset + 1, offset + limit);
+        }
+        return searchQuery;
     }
 
 }

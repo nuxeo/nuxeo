@@ -31,6 +31,7 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import java.util.Spliterator;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -177,11 +179,19 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public State readState(String id) {
+        return readPartialState(id, null);
+    }
+
+    @Override
+    public State readPartialState(String id, Collection<String> keys) {
         if (log.isTraceEnabled()) {
             log.trace("MarkLogic: READ " + id);
         }
         try (Session session = xccContentSource.newSession()) {
             String query = "fn:doc('" + ID_FORMATTER.apply(id) + "')";
+            if (keys != null && !keys.isEmpty()) {
+                query = getProjectedQuery(query, keys);
+            }
             AdhocQuery request = session.newAdhocQuery(query);
             // ResultSequence will be closed by Session close
             ResultSequence rs = session.submitRequest(request);
@@ -322,8 +332,13 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public Stream<State> getDescendants(String rootId, Set<String> keys) {
+        return getDescendants(rootId, keys, 0);
+    }
+
+    @Override
+    public Stream<State> getDescendants(String rootId, Set<String> keys, int limit) {
         MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(rangeElementIndexes);
-        builder.eq(KEY_ANCESTOR_IDS, rootId);
+        builder.eq(KEY_ANCESTOR_IDS, rootId).limit(limit);
         List<String> selects = new ArrayList<>();
         selects.add(KEY_ID);
         selects.addAll(keys);
@@ -656,14 +671,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     protected Stream<State> findAll(String ctsQuery, String... selects) {
         String query = ctsQuery;
         if (selects.length > 0) {
-            query = "import module namespace extract = 'http://nuxeo.com/extract' at '/ext/nuxeo/extract.xqy';\n"
-                    + "let $paths := (" + Arrays.stream(selects)
-                                                .map(MarkLogicHelper::serializeKey)
-                                                .map(select -> "\"" + MarkLogicHelper.DOCUMENT_ROOT_PATH + "/" + select
-                                                        + "\"")
-                                                .collect(Collectors.joining(",\n"))
-                    + ")let $namespaces := ()\n" + "for $i in " + query
-                    + " return extract:extract-nodes($i, $paths, $namespaces)";
+            query = getProjectedQuery(query, Arrays.asList(selects));
         }
         if (log.isTraceEnabled()) {
             logQuery(query);
@@ -703,6 +711,23 @@ public class MarkLogicRepository extends DBSRepositoryBase {
                 session.close();
             }
         }
+    }
+
+    protected static final String PATH_COLLECTOR_BEGIN = "\"" + MarkLogicHelper.DOCUMENT_ROOT_PATH + "/";
+
+    protected static final String PATH_COLLECTOR_END = "\"";
+
+    protected static final String PATH_COLLECTOR_SEP = ",\n";
+
+    protected static final Collector<CharSequence, ?, String> PATH_COLLECTOR = Collectors.joining(
+            PATH_COLLECTOR_END + PATH_COLLECTOR_SEP + PATH_COLLECTOR_BEGIN, PATH_COLLECTOR_BEGIN, PATH_COLLECTOR_END);
+
+    protected String getProjectedQuery(String query, Collection<String> keys) {
+        String paths = keys.stream().map(MarkLogicHelper::serializeKey).collect(PATH_COLLECTOR);
+        return "import module namespace extract = 'http://nuxeo.com/extract' at '/ext/nuxeo/extract.xqy';\n"
+                + "let $paths := (" + paths + ")\n" //
+                + "let $namespaces := ()\n" //
+                + "for $i in " + query + " return extract:extract-nodes($i, $paths, $namespaces)";
     }
 
 }
