@@ -88,9 +88,7 @@ public class DirectoryAuditStorage implements AuditStorage {
     public void append(List<String> jsonEntries) {
         try (Session session = getAuditDirectory().getSession()) {
             for (String jsonEntry : jsonEntries) {
-                Map<String, Object> jsonMap = new HashMap<>();
-                jsonMap.put(JSON_COLUMN, jsonEntry);
-                session.createEntry(jsonMap);
+                session.createEntry(Collections.singletonMap(JSON_COLUMN, jsonEntry));
             }
         }
     }
