@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -654,6 +655,11 @@ public class SQLSession implements Session {
     @Override
     public boolean isNegativeAclAllowed() {
         return negativeAclAllowed;
+    }
+
+    @Override
+    public void updateReadACLs(Collection<String> docIds) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

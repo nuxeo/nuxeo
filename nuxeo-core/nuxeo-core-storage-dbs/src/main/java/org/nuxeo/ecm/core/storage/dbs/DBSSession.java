@@ -71,6 +71,7 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
@@ -699,8 +700,6 @@ public class DBSSession implements Session {
         copyState.put(KEY_POS, pos);
 
         // update read acls
-        // the save also makes copy results visible in searches, like in VCS
-        transaction.save(); // read acls update needs full tree
         transaction.updateTreeReadAcls(copyId);
 
         return getDocument(copyState);
@@ -825,7 +824,6 @@ public class DBSSession implements Session {
         transaction.updateAncestors(sourceId, ndel, ancestorIds);
 
         // update read acls
-        transaction.save(); // read acls update needs full tree
         transaction.updateTreeReadAcls(sourceId);
 
         return source;
@@ -874,7 +872,7 @@ public class DBSSession implements Session {
             }
         };
         collector.accept(rootState); // add the root node too
-        try (Stream<State> states = transaction.getDescendants(rootId, KEYS_RETENTION_ACTIVE_AND_PROXIES)) {
+        try (Stream<State> states = transaction.getDescendants(rootId, KEYS_RETENTION_ACTIVE_AND_PROXIES, 0)) {
             states.forEach(collector);
         }
 
@@ -1202,6 +1200,11 @@ public class DBSSession implements Session {
     };
 
     @Override
+    public void updateReadACLs(Collection<String> docIds) {
+        transaction.updateReadACLs(docIds);
+    }
+
+    @Override
     public boolean isNegativeAclAllowed() {
         return false;
     }
@@ -1276,7 +1279,6 @@ public class DBSSession implements Session {
         docState.put(KEY_ACP, acpToMem(acp));
 
         // update read acls
-        transaction.save(); // read acls update needs full tree
         transaction.updateTreeReadAcls(id);
     }
 

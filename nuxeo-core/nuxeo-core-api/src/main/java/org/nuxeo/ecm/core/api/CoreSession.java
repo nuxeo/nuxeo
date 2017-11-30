@@ -753,6 +753,16 @@ public interface CoreSession extends AutoCloseable {
     void replaceACE(DocumentRef docRef, String aclName, ACE oldACE, ACE newACE);
 
     /**
+     * Updates the Read ACLs for some documents.
+     * <p>
+     * For INTERNAL use by the core.
+     *
+     * @param docIds the document ids
+     * @since 9.10
+     */
+    void updateReadACLs(Collection<String> docIds);
+
+    /**
      * Returns {@code true} if negative ACLs are allowed.
      * <p>
      * Negative ACLs are ACLs that include an ACE with a deny (isGranted=false). This does not include the full-blocking

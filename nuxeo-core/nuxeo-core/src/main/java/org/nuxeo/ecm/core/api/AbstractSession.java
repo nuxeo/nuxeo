@@ -599,6 +599,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
+    public void updateReadACLs(Collection<String> docIds) {
+        getSession().updateReadACLs(docIds);
+    }
+
+    @Override
     public boolean isNegativeAclAllowed() {
         return getSession().isNegativeAclAllowed();
     }
