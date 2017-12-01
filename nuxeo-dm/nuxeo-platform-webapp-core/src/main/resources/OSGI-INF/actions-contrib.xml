@@ -116,6 +116,7 @@
     <action id="TAB_PERMISSIONS" link="/permissions/document_permissions.xhtml"
       order="50" label="action.view.permissions" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
+      <filter-id>isNotVersion</filter-id>
       <properties>
         <!-- NXP-18320: disable ajax support on Polymer tabs -->
         <property name="ajaxSupport">false</property>
