@@ -9,7 +9,7 @@
         "method":"GET",
         "nickname":"query",
         "type":"documents",
-        <@params names = ["queryLanguage", "query","pageSize","currentPageIndex","maxResults","sortBy","sortOrder","queryParams"]/>,
+        <@params names = ["queryLanguage", "query","pageSize","currentPageIndex","offset","maxResults","sortBy","sortOrder","queryParams"]/>,
         "summary":"Performs a search query.",
         "notes": "You can have also named parameters in the query. See http://doc.nuxeo.com/x/qAc5AQ",
         <#include "views/doc/errorresponses.ftl"/>
@@ -24,7 +24,7 @@
         "method":"GET",
         "nickname":"pageprovider",
         "type":"documents",
-        <@params names = ["providerName","pageSize","currentPageIndex","maxResults","sortBy","sortOrder","queryParams"]/>,
+        <@params names = ["providerName","pageSize","currentPageIndex","offset","maxResults","sortBy","sortOrder","queryParams"]/>,
         "summary":"Perform Named Page Provider on the repository",
         "notes": "You can have also named parameters in the query. See http://doc.nuxeo.com/x/qAc5AQ",
         <#include "views/doc/errorresponses.ftl"/>
@@ -104,7 +104,7 @@
         "method":"GET",
         "nickname":"executeSavedSearch",
         "type":"documents",
-        <@params names = ["searchId","pageSize","currentPageIndex","maxResults","sortBy","sortOrder"]/>,
+        <@params names = ["searchId","pageSize","currentPageIndex","offset","maxResults","sortBy","sortOrder"]/>,
         "summary":"Executes saved searches, returning its results.",
         <#include "views/doc/errorresponses.ftl"/>
       }
