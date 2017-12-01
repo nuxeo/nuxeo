@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.audit.storage.test.stream">
+
+  <require>org.nuxeo.runtime.stream.service</require>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="auditStorageLogWriter"
+      logConfig="audit" defaultConcurrency="1" defaultPartitions="1"
+      class="org.nuxeo.audit.storage.stream.StreamAuditStorageWriter">
+    </streamProcessor>
+  </extension>
+
+</component>
