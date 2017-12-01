@@ -72,7 +72,8 @@ public class WorkComputation extends AbstractComputation {
             }
         } catch (Exception e) {
             // TODO: check what to catch exactly we don't want to kill the computation on error
-            log.warn("Work failure, marked as completed: " + record);
+            log.warn(String.format("Work id: %s title: %s, raise an exception, work is marked as completed",
+                    work.getId(), work.getTitle()), e);
         } finally {
             work.cleanUp(true, null);
             workTimer.update(work.getCompletionTime() - work.getStartTime(), TimeUnit.MILLISECONDS);

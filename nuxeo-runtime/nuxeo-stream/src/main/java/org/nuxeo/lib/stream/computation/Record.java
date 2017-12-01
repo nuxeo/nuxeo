@@ -71,12 +71,11 @@ public class Record implements Externalizable {
         String wmDate = "";
         if (data != null) {
             try {
-                overview = ", data=\"" + new String(data, "UTF-8").substring(0, min(data.length, 512)) + '"';
+                overview = ", data=\"" + new String(data, "UTF-8").substring(0, min(data.length, 127)) + '"';
             } catch (UnsupportedEncodingException e) {
                 overview = "unsupported encoding";
             }
-            overview = overview.replace('\r', ' ');
-            overview = overview.replace('\n', ' ');
+            overview = overview.replaceAll("[^\\x20-\\x7e]", ".");
         }
         if (watermark > 0) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
