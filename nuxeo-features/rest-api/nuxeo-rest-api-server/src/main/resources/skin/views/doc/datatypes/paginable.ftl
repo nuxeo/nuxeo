@@ -28,6 +28,11 @@
     "type": "long",
     "required": false
 },
+"currentPageOffset": {
+    "uniqueItems": false,
+    "type": "long",
+    "required": false
+},
 "numberOfPages": {
     "uniqueItems": false,
     "type": "long",
