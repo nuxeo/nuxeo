@@ -10,6 +10,9 @@
     <binding name="Elasticsearch.Index">
       <administrator>true</administrator>
     </binding>
+    <binding name="Elasticsearch.WaitForIndexing">
+      <administrator>true</administrator>
+    </binding>
   </extension>
 
 </component>
