@@ -57,6 +57,8 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
 
     protected static final ThreadLocal<List<LogEntry>> entries = ThreadLocal.withInitial(ArrayList::new);
 
+    public static final String STREAM_AUDIT_ENABLED_PROP = "nuxeo.stream.audit.enabled";
+
     public static final String AUDIT_LOG_CONFIG_PROP = "nuxeo.stream.audit.log.config";
 
     public static final String DEFAULT_LOG_CONFIG = "audit";

@@ -117,4 +117,5 @@ public abstract class AbstractLogManager implements LogManager {
         tailers.clear();
         tailersAssignments.clear();
     }
+
 }

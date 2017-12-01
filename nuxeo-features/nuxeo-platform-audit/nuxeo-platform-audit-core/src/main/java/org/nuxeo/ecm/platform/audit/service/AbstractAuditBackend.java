@@ -26,6 +26,10 @@ import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DAT
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
+import static org.nuxeo.ecm.platform.audit.impl.StreamAuditWriter.COMPUTATION_NAME;
+import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.DEFAULT_LOG_CONFIG;
+import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_AUDIT_ENABLED_PROP;
+import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_NAME;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -83,6 +87,9 @@ import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
+import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.stream.StreamService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -410,7 +417,21 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
 
     @Override
     public boolean await(long time, TimeUnit unit) throws InterruptedException {
-        return component.bulker.await(time, unit);
+        if (Framework.isBooleanPropertyTrue(STREAM_AUDIT_ENABLED_PROP)) {
+            StreamService service = Framework.getService(StreamService.class);
+            LogManager logManager = service.getLogManager(DEFAULT_LOG_CONFIG);
+            // when there is no lag between producer and consumer we are done
+            long deadline = System.currentTimeMillis() + unit.toMillis(time);
+            while (logManager.getLag(STREAM_NAME, COMPUTATION_NAME).lag() > 0) {
+                if (System.currentTimeMillis() > deadline) {
+                    return false;
+                }
+                Thread.sleep(50);
+            }
+            return true;
+        } else {
+            return component.bulker.await(time, unit);
+        }
     }
 
     @Override

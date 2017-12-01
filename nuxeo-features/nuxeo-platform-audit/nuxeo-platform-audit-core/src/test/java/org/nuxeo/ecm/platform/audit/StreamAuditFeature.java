@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,11 @@
 
 package org.nuxeo.ecm.platform.audit;
 
-import static org.nuxeo.ecm.platform.audit.impl.StreamAuditWriter.COMPUTATION_NAME;
-import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.DEFAULT_LOG_CONFIG;
-import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_NAME;
+import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_AUDIT_ENABLED_PROP;
 
-import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature.Waiter;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ManagementFeature;
-import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -42,26 +36,14 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 public class StreamAuditFeature extends AuditFeature {
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
-        runner.getFeature(TransactionalFeature.class).addWaiter(new StreamAuditWaiter());
+    public void start(FeaturesRunner runner) throws Exception {
+        // enable it for AuditLogger#await
+        Framework.getProperties().setProperty(STREAM_AUDIT_ENABLED_PROP, "true");
     }
 
-    protected class StreamAuditWaiter implements Waiter {
-        @Override
-        public boolean await(long deadline) throws InterruptedException {
-            // when there is no lag between producer and consumer we are done
-            while (getLogManager().getLag(STREAM_NAME, COMPUTATION_NAME).lag() > 0) {
-                if (System.currentTimeMillis() > deadline) {
-                    return false;
-                }
-                Thread.sleep(50);
-            }
-            return true;
-        }
+    public void stop(FeaturesRunner runner) throws Exception {
+        // disable it for next tests
+        Framework.getProperties().setProperty(STREAM_AUDIT_ENABLED_PROP, "false");
     }
 
-    protected LogManager getLogManager() {
-        StreamService service = Framework.getService(StreamService.class);
-        return service.getLogManager(DEFAULT_LOG_CONFIG);
-    }
 }
