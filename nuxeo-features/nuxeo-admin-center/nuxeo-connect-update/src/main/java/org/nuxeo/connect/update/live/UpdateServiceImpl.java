@@ -67,7 +67,11 @@ public class UpdateServiceImpl extends StandaloneUpdateService implements Packag
         addCommand(Rollback.ID, RollbackAndUndeploy.class);
     }
 
+    /**
+     * @deprecated since 9.10 - use {@link org.nuxeo.ecm.admin.NuxeoCtlManager#restart()} instead.
+     */
     @Override
+    @Deprecated
     public void restart() throws PackageException {
         try {
             NuxeoRestart.restart();
