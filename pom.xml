@@ -6605,6 +6605,7 @@
       </properties>
     </profile>
     <profile>
+      <!-- DEPRECATED since 9.10 see NXP-23813 -->
       <id>oracle10g</id>
       <dependencies>
         <dependency>
@@ -6619,6 +6620,7 @@
     </profile>
     <profile>
       <id>oracle11g</id>
+      <!-- DEPRECATED since 9.10 see NXP-23813 -->
       <dependencies>
         <dependency>
           <groupId>com.oracle</groupId>
