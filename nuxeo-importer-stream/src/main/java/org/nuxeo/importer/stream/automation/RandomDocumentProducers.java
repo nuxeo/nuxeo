@@ -48,7 +48,7 @@ public class RandomDocumentProducers implements RebalanceListener {
 
     public static final String ID = "StreamImporter.runRandomDocumentProducers";
 
-    public static final String DEFAULT_DOC_LOG_NAME = "doc";
+    public static final String DEFAULT_DOC_LOG_NAME = "import-doc";
 
     @Context
     protected OperationContext ctx;

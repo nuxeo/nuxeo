@@ -53,9 +53,9 @@ public class BlobConsumers {
 
     public static final String ID = "StreamImporter.runBlobConsumers";
 
-    public static final String DEFAULT_LOG_BLOB_INFO_NAME = "blob-info";
+    public static final String DEFAULT_LOG_BLOB_INFO_NAME = "import-blob-info";
 
-    public static final String DEFAULT_LOG_CONFIG = "import";
+    public static final String DEFAULT_LOG_CONFIG = "default";
 
     @Context
     protected OperationContext ctx;

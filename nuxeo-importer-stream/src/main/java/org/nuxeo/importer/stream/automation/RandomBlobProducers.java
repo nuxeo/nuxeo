@@ -45,7 +45,7 @@ public class RandomBlobProducers {
 
     public static final String ID = "StreamImporter.runRandomBlobProducers";
 
-    public static final String DEFAULT_BLOB_LOG_NAME = "blob";
+    public static final String DEFAULT_BLOB_LOG_NAME = "import-blob";
 
     @Context
     protected OperationContext ctx;
