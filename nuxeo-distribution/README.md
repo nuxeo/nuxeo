@@ -49,7 +49,7 @@ Ant usage: `ant package`
 
  * sdk: build SDK distributions for use in Nuxeo IDE
  * qa, nightly: for internal use at Nuxeo (daily, internal, nightly builds)
- * tomcat, pgsql, mssql, oracle10g, oracle11g, oracle12c, monitor, mongodb, bench, perf: for internal use at Nuxeo (testing)
+ * tomcat, pgsql, mssql, oracle12c, monitor, mongodb, bench, perf: for internal use at Nuxeo (testing)
 
 ## Modules listing
 

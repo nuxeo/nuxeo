@@ -205,7 +205,7 @@
 
     <!-- Tests properties -->
     <!-- for use integration/vcstests.xml and org.nuxeo:nuxeo-ftest -->
-    <!-- (related profiles: customdb, default, pgsql, oracle10g, oracle11g, oracle12c, mysql, mongodb) -->
+    <!-- (related profiles: customdb, default, pgsql, oracle12c, mysql, mongodb) -->
     <nuxeo.test.core>vcs</nuxeo.test.core>
     <nuxeo.db.host.default>localhost</nuxeo.db.host.default>
 
@@ -6602,32 +6602,6 @@
       <properties>
         <nuxeo.test.vcs.db>SQLServer</nuxeo.test.vcs.db>
         <nuxeo.db.port.default>1433</nuxeo.db.port.default>
-      </properties>
-    </profile>
-    <profile>
-      <id>oracle10g</id>
-      <dependencies>
-        <dependency>
-          <groupId>com.oracle</groupId>
-          <artifactId>ojdbc14</artifactId>
-        </dependency>
-      </dependencies>
-      <properties>
-        <nuxeo.test.vcs.db>Oracle</nuxeo.test.vcs.db>
-        <nuxeo.db.port.default>1521</nuxeo.db.port.default>
-      </properties>
-    </profile>
-    <profile>
-      <id>oracle11g</id>
-      <dependencies>
-        <dependency>
-          <groupId>com.oracle</groupId>
-          <artifactId>ojdbc6</artifactId>
-        </dependency>
-      </dependencies>
-      <properties>
-        <nuxeo.test.vcs.db>Oracle</nuxeo.test.vcs.db>
-        <nuxeo.db.port.default>1521</nuxeo.db.port.default>
       </properties>
     </profile>
     <profile>
