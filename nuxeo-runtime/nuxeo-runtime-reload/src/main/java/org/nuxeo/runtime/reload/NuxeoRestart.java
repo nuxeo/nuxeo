@@ -33,7 +33,9 @@ import org.nuxeo.runtime.api.Framework;
  * Usage: <code>NuxeoRestart.restart()</code>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 9.10 - use {@link org.nuxeo.ecm.admin.NuxeoCtlManager#restart()} instead which handles windows OS.
  */
+@Deprecated
 public class NuxeoRestart {
 
     public static void restart() throws IOException {
