@@ -19,6 +19,7 @@
 package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_URL;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_NOTE_TITLE;
@@ -44,6 +45,7 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedExceptio
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.tabs.ArchivedVersionsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
+import org.openqa.selenium.NoSuchElementException;
 
 /**
  * Tests the Archived versions screen.
@@ -123,6 +125,7 @@ public class ITArchivedVersionsTest extends AbstractTest {
         // View version 1.0 and check its title
         DocumentBasePage versionPage = archivedVersionsPage.viewVersion("1.0");
         versionPage.checkDocTitle("Test file: modif 1 (Version 1.0)");
+        assertNoPermission(versionPage);
 
         // Go back to doc
         docPage = versionPage.goToDocumentByBreadcrumb("Test file: modif 2");
@@ -133,9 +136,22 @@ public class ITArchivedVersionsTest extends AbstractTest {
         // View version 2.0 and check its title
         versionPage = archivedVersionsPage.viewVersion("2.0");
         versionPage.checkDocTitle("Test file: modif 2 (Version 2.0)");
+        assertNoPermission(versionPage);
 
         // Go back to doc and return it
         return versionPage.goToDocumentByBreadcrumb("Test file: modif 2");
+    }
+
+    /**
+     * @since 9.10
+     */
+    private void assertNoPermission(DocumentBasePage versionPage) {
+        try {
+            versionPage.getPermissionsTab();
+            fail("Permission tab is visible.");
+        } catch (NoSuchElementException e) {
+            // Expected
+        }
     }
 
     /**
