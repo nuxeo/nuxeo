@@ -120,7 +120,7 @@ public class DBSTransactionState {
 
     public static final String READ_ACL_ASYNC_ENABLED_PROPERTY = "nuxeo.core.readacl.async.enabled";
 
-    public static final String READ_ACL_ASYNC_ENABLED_DEFAULT = "false";
+    public static final String READ_ACL_ASYNC_ENABLED_DEFAULT = "true";
 
     public static final String READ_ACL_ASYNC_THRESHOLD_PROPERTY = "nuxeo.core.readacl.async.threshold";
 
