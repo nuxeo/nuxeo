@@ -39,8 +39,22 @@ public class DBSQueryOptimizer extends QueryOptimizer {
 
     protected static final Pattern CORRELATED_WILDCARD_SPLIT = Pattern.compile("(([^*]+)/(\\*\\d+))/(.*)");
 
+    protected static final Pattern CORRELATED_ECM_TAG = Pattern.compile(NXQL.ECM_TAG + "/\\*\\d+");
+
+    protected static final String CORRELATED_ECM_TAG_IMPLICIT = "__ecm_tag_correlated__";
+
     @Override
     public String getCorrelatedWildcardPrefix(String name) {
+        if (name.startsWith(NXQL.ECM_TAG)) {
+            if (name.equals(NXQL.ECM_TAG)) {
+                // naked ecm:tag are always correlated with themselves
+                return CORRELATED_ECM_TAG_IMPLICIT;
+            } else if (CORRELATED_ECM_TAG.matcher(name).matches()) {
+                return name;
+            } else {
+                return "";
+            }
+        }
         Matcher m = CORRELATED_WILDCARD_SPLIT.matcher(name);
         if (!m.matches()) {
             return "";
