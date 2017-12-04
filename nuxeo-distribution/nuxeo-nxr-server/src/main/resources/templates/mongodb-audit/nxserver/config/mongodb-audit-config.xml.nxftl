@@ -7,7 +7,7 @@
     <sequencer name="uidgen" class="org.nuxeo.ecm.core.mongodb.seqgen.MongoDBUIDSequencer" default="true" />
   </extension>
 
-<#if ((elasticsearch.enabled)!"false") == "true">
+<#if ((audit.elasticsearch.enabled)!"false") == "true">
   <require>org.nuxeo.elasticsearch.audit.contrib</require>
 </#if>
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" point="backend">
