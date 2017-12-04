@@ -8,7 +8,7 @@ This plugin is available for Nuxeo Platform 5.8 and above.
 
 ### Getting Started
 
-- [Download a Nuxeo server](http://www.nuxeo.com/en/downloads) (the zip version)
+- [Download a Nuxeo server](http://www.nuxeo.com/downloads) (the zip version)
 
 - Unzip it
 
@@ -106,4 +106,4 @@ Nuxeo dramatically improves how content-based applications are built, managed an
 ### Duo
 Duo signup:
 
-- <https://signup.duosecurity.com/> -> DuoWeb Signup
+- <https://signup.duosecurity.com/> -> Duo Signup
