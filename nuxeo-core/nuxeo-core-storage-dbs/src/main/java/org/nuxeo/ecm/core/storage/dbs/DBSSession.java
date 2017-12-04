@@ -1526,11 +1526,10 @@ public class DBSSession implements Session {
         selectClause.elements.putIfAbsent(NXQL.ECM_PARENTID, new Reference(NXQL.ECM_PARENTID));
         selectClause.elements.putIfAbsent(NXQL.ECM_NAME, new Reference(NXQL.ECM_NAME));
 
-        QueryOptimizer optimizer = new DBSQueryOptimizer();
-        Expression expression = optimizer.getOptimizedQuery(sqlQuery, queryFilter.getFacetFilter());
-        OrderByClause orderByClause = sqlQuery.orderBy;
-        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, selectClause, expression, orderByClause,
-                queryFilter.getPrincipals(), fulltextSearchDisabled);
+        QueryOptimizer optimizer = new DBSQueryOptimizer().withFacetFilter(queryFilter.getFacetFilter());
+        sqlQuery = optimizer.optimize(sqlQuery);
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, sqlQuery, queryFilter.getPrincipals(),
+                fulltextSearchDisabled);
 
         int limit = (int) queryFilter.getLimit();
         int offset = (int) queryFilter.getOffset();
@@ -1544,6 +1543,7 @@ public class DBSSession implements Session {
         int repoLimit;
         int repoOffset;
         OrderByClause repoOrderByClause;
+        OrderByClause orderByClause = sqlQuery.orderBy;
         boolean postFilter = isOrderByPath(orderByClause);
         if (postFilter) {
             // we have to merge ordering and batching between memory and
@@ -1744,10 +1744,8 @@ public class DBSSession implements Session {
         SQLQuery sqlQuery = SQLQueryParser.parse(query);
         SelectClause selectClause = sqlQuery.select;
         selectClause.add(new Reference(NXQL.ECM_UUID));
-        QueryOptimizer optimizer = new DBSQueryOptimizer();
-        Expression expression = optimizer.getOptimizedQuery(sqlQuery, null);
-        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, selectClause, expression, null, null,
-                fulltextSearchDisabled);
+        sqlQuery = new DBSQueryOptimizer().optimize(sqlQuery);
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, sqlQuery, null, fulltextSearchDisabled);
         return repository.scroll(evaluator, batchSize, keepAliveSeconds);
     }
 

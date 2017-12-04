@@ -32,10 +32,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
-import org.nuxeo.ecm.core.query.sql.model.Expression;
-import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
-import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
@@ -97,11 +94,7 @@ public class TestDBSExpressionEvaluator extends NXRuntimeTestCase {
     public void testMatch() throws Exception {
         SQLQuery query = SQLQueryParser.parse("SELECT ecm:uuid, cmp:addresses/*1/street FROM D WHERE " //
                 + "cmp:addresses/*1/city = 'Paris'");
-        SelectClause selectClause = query.getSelectClause();
-        Expression expression = query.getWhereClause().predicate;
-        OrderByClause orderByClause = query.getOrderByClause();
-        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, orderByClause,
-                null, false);
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, query, null, false);
         evaluator.parse();
         assertTrue(evaluator.hasWildcardProjection());
         State state = state(//
@@ -122,11 +115,7 @@ public class TestDBSExpressionEvaluator extends NXRuntimeTestCase {
     public void testMatch2() throws Exception {
         SQLQuery query = SQLQueryParser.parse("SELECT ecm:uuid, cmp:addresses/*1/street FROM D WHERE "
                 + "cmp:addresses/*1/city = 'Paris' OR cmp:addresses/*1/number = 1");
-        SelectClause selectClause = query.getSelectClause();
-        Expression expression = query.getWhereClause().predicate;
-        OrderByClause orderByClause = query.getOrderByClause();
-        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, orderByClause,
-                null, false);
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, query, null, false);
         evaluator.parse();
         assertTrue(evaluator.hasWildcardProjection());
         State state = state(//
@@ -149,11 +138,7 @@ public class TestDBSExpressionEvaluator extends NXRuntimeTestCase {
     public void testWildcardCrossProduct() throws Exception {
         SQLQuery query = SQLQueryParser.parse("SELECT cmp:addresses/*1/city, cmp:addresses/*2/city FROM D WHERE " //
                 + "ecm:uuid <> 'nothing'");
-        SelectClause selectClause = query.getSelectClause();
-        Expression expression = query.getWhereClause().predicate;
-        OrderByClause orderByClause = query.getOrderByClause();
-        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, orderByClause,
-                null, false);
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, query, null, false);
         evaluator.parse();
         assertTrue(evaluator.hasWildcardProjection());
         State state = state(//

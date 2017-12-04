@@ -28,13 +28,13 @@ public class WhereClause extends Clause {
 
     private static final long serialVersionUID = -6192874148042567401L;
 
-    public final Predicate predicate;
+    public final Expression predicate;
 
     public WhereClause() {
         this(null);
     }
 
-    public WhereClause(Predicate predicate) {
+    public WhereClause(Expression predicate) {
         super("WHERE");
         this.predicate = predicate;
     }

@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
-import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.QueryOptimizer;
 import org.nuxeo.ecm.core.storage.QueryOptimizer.PrefixInfo;
@@ -109,7 +108,7 @@ public class TestDBSQueryOptimizer {
 
     protected void checkPrefixInfo(String clause, String prefix, int count) {
         SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE " + clause);
-        Predicate predicate = query.getWhereClause().predicate;
+        Expression predicate = query.getWhereClause().predicate;
         ReferencePrefixAnalyzer visitor = getOptimizer().new ReferencePrefixAnalyzer();
         predicate.accept(visitor);
         PrefixInfo info = (PrefixInfo) predicate.getInfo();
@@ -142,8 +141,9 @@ public class TestDBSQueryOptimizer {
     public void testPrefixGroupingInOptimizedQuery() {
         String clause = "dc:title = 'foo' AND ecm:acl/*1/name = 'local' AND ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/permission = 'Browse'";
         SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE " + clause);
-        Expression expr = getOptimizer().getOptimizedQuery(query, null);
-        assertEquals("AND(AND(ecm:primaryType = 't', dc:title = 'foo'), " //
+        query = getOptimizer().optimize(query);
+        Expression expr = query.getWhereClause().predicate;
+        assertEquals("AND(AND(dc:title = 'foo', ecm:primaryType = 't'), " //
                 + "AND(ecm:acl/*1/name = 'local'," //
                 + " AND(ecm:acl/*1/principal = 'bob', ecm:acl/*1/permission = 'Browse')))", expr.toString());
 

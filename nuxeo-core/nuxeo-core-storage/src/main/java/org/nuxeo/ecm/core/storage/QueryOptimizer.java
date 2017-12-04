@@ -18,19 +18,20 @@
  */
 package org.nuxeo.ecm.core.storage;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -47,6 +48,7 @@ import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
+import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
@@ -64,18 +66,18 @@ public abstract class QueryOptimizer {
 
     public static final String TYPE_RELATION = "Relation";
 
+    protected FacetFilter facetFilter;
+
     protected final SchemaManager schemaManager;
 
     protected final Set<String> neverPerInstanceMixins;
-
-    protected final List<Expression> toplevelExpressions;
 
     /** Do we match only relations? */
     protected boolean onlyRelations;
 
     // group by prefix, keeping order
-    protected static Collector<Expression, ?, Map<String, List<Expression>>> GROUPING_BY_EXPR_PREFIX = Collectors.groupingBy(
-            QueryOptimizer::getExpressionPrefix, LinkedHashMap::new, Collectors.toList());
+    protected static Collector<Expression, ?, Map<String, List<Expression>>> GROUPING_BY_EXPR_PREFIX = groupingBy(
+            QueryOptimizer::getExpressionPrefix, LinkedHashMap::new, toList());
 
     public QueryOptimizer() {
         // schemaManager may be null in unit tests
@@ -83,44 +85,51 @@ public abstract class QueryOptimizer {
         Set<String> facets = schemaManager == null ? Collections.emptySet()
                 : schemaManager.getNoPerDocumentQueryFacets();
         neverPerInstanceMixins = new HashSet<>(facets);
-        toplevelExpressions = new LinkedList<>();
     }
 
-    public Expression getOptimizedQuery(SQLQuery query, FacetFilter facetFilter) {
-        if (facetFilter != null) {
-            addFacetFilterClauses(facetFilter);
-        }
-        visitFromClause(query.from); // for primary types
-        if (query.where != null) {
-            analyzeToplevelExpressions(query.where.predicate);
-        }
-        simplifyToplevelExpressions();
-        MultiExpression multiExpression = MultiExpression.fromExpressionList(Operator.AND, toplevelExpressions);
+    public QueryOptimizer withFacetFilter(FacetFilter facetFilter) {
+        this.facetFilter = facetFilter;
+        return this;
+    }
+
+    /**
+     * Optimizes a query to provide a WHERE clause containing facet filters, primary and mixin types. In addition, the
+     * top-level AND clauses are analyzed to provide prefix info.
+     */
+    public SQLQuery optimize(SQLQuery query) {
+        List<Expression> clauses = new ArrayList<>();
+        addFacetFilters(clauses, facetFilter);
+        addTypes(clauses, query.from);
+        addWhere(clauses, query.where);
+        simplifyTypes(clauses);
+        MultiExpression multiExpression = MultiExpression.fromExpressionList(Operator.AND, clauses);
 
         // collect information about common reference prefixes (stored on Reference and Expression)
-        multiExpression.accept(new ReferencePrefixAnalyzer());
+        new ReferencePrefixAnalyzer().visitMultiExpression(multiExpression);
 
-        // group toplevel operands by common reference prefixes
+        Expression whereExpr;
         PrefixInfo info = (PrefixInfo) multiExpression.getInfo();
         if (!info.prefix.isEmpty()) {
             // all references have a common prefix
-            return multiExpression;
+            whereExpr = multiExpression;
+        } else {
+            // do grouping by common prefix
+            Map<String, List<Expression>> grouped = clauses.stream().collect(GROUPING_BY_EXPR_PREFIX);
+            Map<String, Expression> groupedExpressions = new LinkedHashMap<>();
+            for (Entry<String, List<Expression>> en : grouped.entrySet()) {
+                String prefix = en.getKey();
+                List<Expression> list = en.getValue();
+                groupedExpressions.put(prefix, makeSingleAndExpression(prefix, list));
+            }
+
+            // potentially reorganize into nested grouping
+            reorganizeGroupedExpressions(groupedExpressions);
+
+            List<Expression> expressions = new ArrayList<>(groupedExpressions.values());
+            whereExpr = makeSingleAndExpression("", expressions);
         }
 
-        // do grouping by common prefix
-        Map<String, List<Expression>> grouped = toplevelExpressions.stream().collect(GROUPING_BY_EXPR_PREFIX);
-        Map<String, Expression> groupedExpressions = new LinkedHashMap<>();
-        for (Entry<String, List<Expression>> en : grouped.entrySet()) {
-            String prefix = en.getKey();
-            List<Expression> list = en.getValue();
-            groupedExpressions.put(prefix, makeSingleAndExpression(prefix, list));
-        }
-
-        // potentially reorganize into nested grouping
-        reorganizeGroupedExpressions(groupedExpressions);
-
-        List<Expression> expressions = new ArrayList<>(groupedExpressions.values());
-        return makeSingleAndExpression("", expressions);
+        return query.withWhereExpression(whereExpr);
     }
 
     /**
@@ -236,12 +245,15 @@ public abstract class QueryOptimizer {
         return prefix;
     }
 
-    protected void addFacetFilterClauses(FacetFilter facetFilter) {
+    protected void addFacetFilters(List<Expression> clauses, FacetFilter facetFilter) {
+        if (facetFilter == null) {
+            return;
+        }
         for (String mixin : facetFilter.required) {
             // every facet is required, not just any of them,
             // so do them one by one
             Expression expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.EQ, new StringLiteral(mixin));
-            toplevelExpressions.add(expr);
+            clauses.add(expr);
         }
         if (!facetFilter.excluded.isEmpty()) {
             LiteralList list = new LiteralList();
@@ -249,7 +261,7 @@ public abstract class QueryOptimizer {
                 list.add(new StringLiteral(mixin));
             }
             Expression expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.NOTIN, list);
-            toplevelExpressions.add(expr);
+            clauses.add(expr);
         }
     }
 
@@ -292,7 +304,7 @@ public abstract class QueryOptimizer {
      * <p>
      * Adds them as a ecm:primaryType match in the toplevel operands.
      */
-    protected void visitFromClause(FromClause node) {
+    protected void addTypes(List<Expression> clauses, FromClause node) {
         onlyRelations = true;
         Set<String> fromTypes = new HashSet<>();
         FromList elements = node.elements;
@@ -309,27 +321,45 @@ public abstract class QueryOptimizer {
         for (String type : fromTypes) {
             list.add(new StringLiteral(type));
         }
-        toplevelExpressions.add(new Expression(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list));
+        clauses.add(new Expression(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list));
     }
 
     /**
-     * Expand toplevel ANDed expressions into simple list.
+     * Adds a flattened version of all toplevel ANDed WHERE clauses.
      */
-    protected void analyzeToplevelExpressions(Expression expr) {
-        if (expr.operator == Operator.AND && expr.lvalue instanceof Expression && expr.rvalue instanceof Expression) {
-            analyzeToplevelExpressions((Expression) expr.lvalue);
-            analyzeToplevelExpressions((Expression) expr.rvalue);
-            return;
+    protected void addWhere(List<Expression> clauses, WhereClause where) {
+        if (where != null) {
+            addWhere(clauses, where.predicate);
         }
-        toplevelExpressions.add(expr);
+    }
+
+    protected void addWhere(List<Expression> clauses, Expression expr) {
+        if (expr.operator == Operator.AND && expr.lvalue instanceof Expression && expr.rvalue instanceof Expression) {
+            addWhere(clauses, (Expression) expr.lvalue);
+            addWhere(clauses, (Expression) expr.rvalue);
+        } else if (expr.operator == Operator.AND && expr instanceof MultiExpression) {
+            List<Operand> remainingOperands = new ArrayList<>();
+            for (Operand oper : ((MultiExpression) expr).values) {
+                if (oper instanceof Expression) {
+                    addWhere(clauses, (Expression) oper);
+                } else {
+                    remainingOperands.add(oper);
+                }
+            }
+            if (!remainingOperands.isEmpty()) {
+                clauses.add(new MultiExpression(Operator.AND, remainingOperands));
+            }
+        } else {
+            clauses.add(expr);
+        }
     }
 
     /**
      * Simplify ecm:primaryType positive references, and non-per-instance mixin types.
      */
-    protected void simplifyToplevelExpressions() {
+    protected void simplifyTypes(List<Expression> clauses) {
         Set<String> primaryTypes = null; // if defined, required
-        for (Iterator<Expression> it = toplevelExpressions.iterator(); it.hasNext();) {
+        for (Iterator<Expression> it = clauses.iterator(); it.hasNext();) {
             // whenever we don't know how to optimize the expression,
             // we just continue the loop
             Expression expr = it.next();
@@ -408,7 +438,7 @@ public abstract class QueryOptimizer {
                 }
                 expr = new Expression(new Reference(NXQL.ECM_PRIMARYTYPE), Operator.IN, list);
             }
-            toplevelExpressions.add(0, expr);
+            clauses.add(expr);
         }
     }
 
@@ -443,7 +473,7 @@ public abstract class QueryOptimizer {
     }
 
     /**
-     * Analyzes references to propagate common prefixes to parent expressions.
+     * Analyzes references to compute common prefix info in order to later factor them in a parent expression.
      *
      * @since 9.3
      */

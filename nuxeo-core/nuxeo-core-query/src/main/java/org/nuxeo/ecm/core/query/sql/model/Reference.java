@@ -32,6 +32,8 @@ public class Reference implements Operand {
 
     public final String name;
 
+    public String originalName;
+
     public final String cast;
 
     public final EsHint esHint;
@@ -50,6 +52,13 @@ public class Reference implements Operand {
         this.name = name;
         this.cast = cast;
         esHint = null;
+    }
+
+    /** @since 9.10 */
+    public Reference(String name, String cast, EsHint hint) {
+        this.name = name;
+        this.cast = cast;
+        this.esHint = hint;
     }
 
     /** @since 5.6 */
