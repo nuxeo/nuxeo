@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -53,8 +55,17 @@ import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 public class TestLibChronicle implements StoreFileListener {
     protected static final Log log = LogFactory.getLog(TestLibChronicle.class);
 
+    protected final static String OS = System.getProperty("os.name").toLowerCase();
+
+    public final static boolean IS_WIN = OS.startsWith("win");
+
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
+
+    @Before
+    public void skipWindowsThatDontCleanTempFolder() {
+        assumeFalse(IS_WIN);
+    }
 
     ChronicleQueue createQueue() throws IOException {
         File path = folder.newFolder("cq");
