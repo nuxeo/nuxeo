@@ -140,9 +140,9 @@ public class TestQueryParser {
         SelectClause select = query.getSelectClause();
         String v = ((Reference) select.operands().iterator().next()).name;
         assertEquals("dc:foo/bar/baz", v);
-        Predicate where = query.getWhereClause().predicate;
-        Predicate p1 = (Predicate) where.lvalue;
-        Predicate p2 = (Predicate) where.rvalue;
+        Expression where = query.getWhereClause().predicate;
+        Expression p1 = (Expression) where.lvalue;
+        Expression p2 = (Expression) where.rvalue;
         assertEquals("dc:foo/3/ho", ((Reference) p1.lvalue).name);
         assertEquals("dc:bar/*/bobby", ((Reference) p1.rvalue).name);
         assertEquals("dc:foo/bar[5]/gee", ((Reference) p2.lvalue).name);
@@ -471,7 +471,7 @@ public class TestQueryParser {
     @Test
     public void testOperatorPrecedence() {
         SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE p * -2 / 3 + 4 - 5 = 2");
-        Predicate pred = query.getWhereClause().predicate;
+        Expression pred = query.getWhereClause().predicate;
         assertEquals(Operator.EQ, pred.operator);
 
         Expression e = (Expression) pred.lvalue;

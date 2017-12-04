@@ -85,10 +85,7 @@ public class NoFileSecurityPolicy extends AbstractSecurityPolicy implements Secu
             } else {
                 predicate = NO_FILE;
             }
-
-            SQLQuery newQuery = new SQLQuery(query.select, query.from, new WhereClause(predicate), query.groupBy,
-                    query.having, query.orderBy, query.limit, query.offset);
-            return newQuery;
+            return query.withWhereExpression(predicate);
         }
     }
 }

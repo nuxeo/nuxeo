@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.SelectList;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -278,12 +279,12 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
     // which reference index is being visited, reset / updated during each pass
     protected int refCount;
 
-    public DBSExpressionEvaluator(DBSSession session, SelectClause selectClause, Expression expression,
-            OrderByClause orderByClause, String[] principals, boolean fulltextSearchDisabled) {
+    public DBSExpressionEvaluator(DBSSession session, SQLQuery query, String[] principals,
+            boolean fulltextSearchDisabled) {
         super(new DBSPathResolver(session), principals, fulltextSearchDisabled);
-        this.selectClause = selectClause;
-        this.expression = expression;
-        this.orderByClause = orderByClause;
+        this.selectClause = query.select;
+        this.expression = query.where.predicate;
+        this.orderByClause = query.orderBy;
     }
 
     public SelectClause getSelectClause() {
@@ -487,7 +488,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
      * Parses and computes value and iterator information for a reference.
      */
     protected ValueInfo parseReference(Reference ref) {
-        ValueInfo parsed = parseReference(ref.name);
+        ValueInfo parsed = parseReference(ref.name, ref.originalName);
         if (DATE_CAST.equals(ref.cast)) {
             Type type = parsed.type;
             if (!(type instanceof DateType
@@ -551,7 +552,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
      *
      * @return the canonical reference (with resolved uncorrelated wildcards)
      */
-    protected ValueInfo parseReference(String name) {
+    protected ValueInfo parseReference(String name, String originalName) {
 
         if (name.startsWith(NXQL.ECM_TAG)) {
             if (name.equals(NXQL.ECM_TAG)) {
@@ -656,7 +657,8 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
             firstPart = false;
         }
         String canonRef = StringUtils.join(canonParts, '/');
-        ValueInfo valueInfo = new ValueInfo(steps, name, canonRef);
+        String nxqlProp = originalName == null ? name : originalName;
+        ValueInfo valueInfo = new ValueInfo(steps, nxqlProp, canonRef);
         valueInfo.type = type;
         valueInfo.isTrueOrNullBoolean = isTrueOrNullBoolean;
         return valueInfo;

@@ -28,13 +28,13 @@ public class HavingClause extends Clause {
 
     private static final long serialVersionUID = 3686852512501042627L;
 
-    public final Predicate predicate;
+    public final Expression predicate;
 
     public HavingClause() {
         this(null);
     }
 
-    public HavingClause(Predicate predicate) {
+    public HavingClause(Expression predicate) {
         super("HAVING");
         this.predicate = predicate;
     }
