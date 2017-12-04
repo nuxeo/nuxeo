@@ -1,8 +1,8 @@
-#Nuxeo DuoWeb Two Factors Authentication
+# Nuxeo DuoWeb Two Factors Authentication
 
 ## General information and motivation
 
-The **Nuxeo** addon _nuxeo-duoweb-authentication_ is an integration of [DuoWeb](http://www.duosecurity.com) access in Nuxeo login plugin and provides two factors authentication through the Nuxeo login page.
+The **Nuxeo** addon _nuxeo-duoweb-authentication_ is an integration of [Duo](http://www.duosecurity.com) access in Nuxeo login plugin and provides two factors authentication through the Nuxeo login page.
 
 This plugin is available for Nuxeo Platform 5.8 and above.
 
@@ -14,9 +14,9 @@ This plugin is available for Nuxeo Platform 5.8 and above.
 
 - Install _nuxeo-duoweb-authentication_ Marketplace Package from command line
   - Linux/Mac:
-    - `NUXEO_HOME/bin/nuxeoctl mp-init`
-    - `NUXEO_HOME/bin/nuxeoctl mp-install nuxeo-duoweb-authentication`
-    - `NUXEO_HOME/bin/nuxeoctl start`
+    - `$NUXEO_HOME/bin/nuxeoctl mp-init`
+    - `$NUXEO_HOME/bin/nuxeoctl mp-install nuxeo-duoweb-authentication`
+    - `$NUXEO_HOME/bin/nuxeoctl start`
   - Windows:
     - `NUXEO_HOME\bin\nuxeoctl.bat mp-init`
     - `NUXEO_HOME\bin\nuxeoctl.bat mp-install nuxeo-duoweb-authentication`
@@ -32,24 +32,23 @@ This plugin is available for Nuxeo Platform 5.8 and above.
   - username: Administrator
   - password: Administrator
 
-- You will be able to enroll at DuoWeb and control login access through [applications or by sms/call](https://duosecurity.com/product#effective).
-
+- You will be able to enroll at Duo and control login access through [applications or by sms/call](https://duosecurity.com/product#effective).
 
 Note: Your machine needs internet access. If you have a proxy setting, skip the mp-init and mp-install steps at first, just do nuxeoctl start and run the wizard where you will be asked your proxy settings.
 
-###Login Plugin Configuration:
+### Login Plugin Configuration:
 
-You must [subscribe](https://signup.duosecurity.com/) to DuoWeb services and follow [DuoWeb documentation](https://www.duosecurity.com/docs/duoweb) to create all DuoWeb Keys.
+You must [subscribe](https://signup.duosecurity.com/) to Duo services and follow [Duo documentation](https://www.duosecurity.com/docs/duoweb) to create all Duo Keys.
 
-After installing the plugin, make sure before starting to include your DuoWeb Keys (provided by DuoWeb) in the following configuration file `NUXEO_HOME/templates/duoweb-authentication/config/duo-authentication-config.xml`:
+After installing the plugin, make sure before starting to include your Duo Keys (provided by Duo) in the following configuration file `NUXEO_HOME/templates/duoweb-authentication/config/duo-authentication-config.xml`:
 
-    <?xml version="1.0"?>
+  <?xml version="1.0"?>
   <component name="org.nuxeo.duo.factors.login.contrib">
 
     <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
 
     <documentation>
-      This authentication plugin processes DuoWeb Two Factors Authentication
+      This authentication plugin processes Duo Two Factors Authentication
     </documentation>
 
     <extension
@@ -86,25 +85,25 @@ After installing the plugin, make sure before starting to include your DuoWeb Ke
 
   </component>
 
-The `YOUR_APPLICATION_KEY` can be generated as followed in [DuoWeb documentation](https://www.duosecurity.com/docs/duoweb#1.-generate-an-akey)
+The `YOUR_APPLICATION_KEY` can be generated as followed in [Duo documentation](https://www.duosecurity.com/docs/duoweb#1.-generate-an-akey)
 
 ## QA results
 
 [![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-duoweb-authentication-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-duoweb-authentication-master/)
 
-###Report & Contribute
+### Report & Contribute
 
 We are glad to welcome new developers on this initiative, and even simple usage feedback is great.
 - Ask your questions on [Nuxeo Answers](http://answers.nuxeo.com)
 - Report issues on this github repository (see [issues link](http://github.com/nuxeo/nuxeo-duoweb-authentication/issues) on the right)
 - Contribute: Send pull requests!
 
-##About
-###Nuxeo
+## About
+### Nuxeo
 
 Nuxeo dramatically improves how content-based applications are built, managed and deployed, making customers more agile, innovative and successful. Nuxeo provides a next generation, enterprise ready platform for building traditional and cutting-edge content oriented applications. Combining a powerful application development environment with SaaS-based tools and a modular architecture, the Nuxeo Platform and Products provide clear business value to some of the most recognizable brands including Verizon, Electronic Arts, Sharp, FICO, the U.S. Navy, and Boeing. Nuxeo is headquartered in New York and Paris. More information is available at www.nuxeo.com.
 
-###DuoWeb
-DuoWeb signup:
+### Duo
+Duo signup:
 
 - <https://signup.duosecurity.com/> -> DuoWeb Signup
