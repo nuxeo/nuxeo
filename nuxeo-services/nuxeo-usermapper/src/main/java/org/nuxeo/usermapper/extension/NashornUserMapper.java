@@ -63,11 +63,11 @@ public class NashornUserMapper extends AbstractUserMapper {
         if (StringUtils.isEmpty(wrapperSource)) {
             return null;
         }
-        try (CoreSession core = CoreInstance
-                .openCoreSession(Framework.getService(RepositoryManager.class).getDefaultRepositoryName())) {
+        try (CoreSession core = CoreInstance.openCoreSession(
+                Framework.getService(RepositoryManager.class).getDefaultRepositoryName())) {
             try (Session session = Framework.getService(AutomationScriptingService.class).get(core)) {
                 Map<String, Object> bindings = session.adapt(ScriptEngine.class)
-                        .getBindings(ScriptContext.ENGINE_SCOPE);
+                                                      .getBindings(ScriptContext.ENGINE_SCOPE);
                 bindings.put("nuxeoPrincipal", principal);
                 bindings.put("userObject", userObject);
                 bindings.put("params", params);
@@ -93,8 +93,8 @@ public class NashornUserMapper extends AbstractUserMapper {
     protected void resolveAttributes(Object userObject, Map<String, Serializable> searchAttributes,
             Map<String, Serializable> userAttributes, Map<String, Serializable> profileAttributes) {
 
-        try (CoreSession core = CoreInstance
-                .openCoreSession(Framework.getService(RepositoryManager.class).getDefaultRepositoryName())) {
+        try (CoreSession core = CoreInstance.openCoreSession(
+                Framework.getService(RepositoryManager.class).getDefaultRepositoryName())) {
             try (Session session = Framework.getService(AutomationScriptingService.class).get(core)) {
                 AutomationMapper mapper = session.adapt(AutomationMapper.class);
                 mapper.put("searchAttributes", searchAttributes);
