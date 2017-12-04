@@ -18,6 +18,21 @@
  */
 package org.nuxeo.ecm.platform.auth.saml;
 
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,9 +46,9 @@ import org.nuxeo.ecm.platform.auth.saml.slo.SLOProfile;
 import org.nuxeo.ecm.platform.auth.saml.slo.SLOProfileImpl;
 import org.nuxeo.ecm.platform.auth.saml.sso.WebSSOProfile;
 import org.nuxeo.ecm.platform.auth.saml.sso.WebSSOProfileImpl;
+import org.nuxeo.ecm.platform.auth.saml.user.AbstractUserResolver;
 import org.nuxeo.ecm.platform.auth.saml.user.EmailBasedUserResolver;
 import org.nuxeo.ecm.platform.auth.saml.user.UserMapperBasedResolver;
-import org.nuxeo.ecm.platform.auth.saml.user.AbstractUserResolver;
 import org.nuxeo.ecm.platform.auth.saml.user.UserResolver;
 import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
@@ -83,39 +98,26 @@ import org.opensaml.xml.security.keyinfo.StaticKeyInfoCredentialResolver;
 import org.opensaml.xml.signature.SignatureTrustEngine;
 import org.opensaml.xml.signature.impl.ExplicitKeySignatureTrustEngine;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
-
 /**
  * A SAML2 authentication provider.
  *
  * @since 6.0
  */
-public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, LoginProviderLinkComputer,
-        NuxeoAuthenticationPluginLogoutExtension {
+public class SAMLAuthenticationProvider
+        implements NuxeoAuthenticationPlugin, LoginProviderLinkComputer, NuxeoAuthenticationPluginLogoutExtension {
 
     private static final Log log = LogFactory.getLog(SAMLAuthenticationProvider.class);
 
     private static final String ERROR_PAGE = "saml/error.jsp";
+
     private static final String ERROR_AUTH = "error.saml.auth";
+
     private static final String ERROR_USER = "error.saml.userMapping";
 
     // User Resolver
     private static final Class<? extends UserResolver> DEFAULT_USER_RESOLVER_CLASS = EmailBasedUserResolver.class;
-    private static final Class<? extends UserResolver> USERMAPPER_USER_RESOLVER_CLASS = UserMapperBasedResolver.class;
 
+    private static final Class<? extends UserResolver> USERMAPPER_USER_RESOLVER_CLASS = UserMapperBasedResolver.class;
 
     // SAML Constants
     static final String SAML_SESSION_KEY = "SAML_SESSION";
@@ -157,7 +159,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
         Class<? extends UserResolver> userResolverClass = null;
         if (StringUtils.isBlank(userResolverClassname)) {
             UserMapperService ums = Framework.getService(UserMapperService.class);
-            if (ums!=null) {
+            if (ums != null) {
                 userResolverClass = USERMAPPER_USER_RESOLVER_CLASS;
             } else {
                 userResolverClass = DEFAULT_USER_RESOLVER_CLASS;
@@ -191,9 +193,9 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
 
             // Setup Signature Trust Engine
             MetadataCredentialResolver metadataCredentialResolver = new MetadataCredentialResolver(metadataProvider);
-            trustEngine = new ExplicitKeySignatureTrustEngine(
-                    metadataCredentialResolver,
-                    org.opensaml.xml.Configuration.getGlobalSecurityConfiguration().getDefaultKeyInfoCredentialResolver());
+            trustEngine = new ExplicitKeySignatureTrustEngine(metadataCredentialResolver,
+                    org.opensaml.xml.Configuration.getGlobalSecurityConfiguration()
+                                                  .getDefaultKeyInfoCredentialResolver());
 
             // Setup decrypter
             Credential encryptionCredential = getKeyManager().getEncryptionCredential();
@@ -564,8 +566,9 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
             String nameValue = parts[1];
             String nameFormat = parts[2];
 
-            NameID nameID = (NameID) Configuration.getBuilderFactory().getBuilder(NameID.DEFAULT_ELEMENT_NAME).buildObject(
-                    NameID.DEFAULT_ELEMENT_NAME);
+            NameID nameID = (NameID) Configuration.getBuilderFactory()
+                                                  .getBuilder(NameID.DEFAULT_ELEMENT_NAME)
+                                                  .buildObject(NameID.DEFAULT_ELEMENT_NAME);
             nameID.setValue(nameValue);
             nameID.setFormat(nameFormat);
 
