@@ -32,11 +32,9 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService.Session;
 import org.nuxeo.automation.scripting.internals.AutomationMapper;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -63,19 +61,15 @@ public class NashornUserMapper extends AbstractUserMapper {
         if (StringUtils.isEmpty(wrapperSource)) {
             return null;
         }
-        try (CoreSession core = CoreInstance.openCoreSession(
-                Framework.getService(RepositoryManager.class).getDefaultRepositoryName())) {
-            try (Session session = Framework.getService(AutomationScriptingService.class).get(core)) {
-                Map<String, Object> bindings = session.adapt(ScriptEngine.class)
-                                                      .getBindings(ScriptContext.ENGINE_SCOPE);
-                bindings.put("nuxeoPrincipal", principal);
-                bindings.put("userObject", userObject);
-                bindings.put("params", params);
-                session.run(new ByteArrayInputStream(wrapperSource.getBytes(Charsets.UTF_8)));
-                return bindings.get("userObject");
-            } catch (Exception e) {
-                throw new NuxeoException("Error while executing JavaScript mapper", e);
-            }
+        try (Session session = Framework.getService(AutomationScriptingService.class).get((CoreSession) null)) {
+            Map<String, Object> bindings = session.adapt(ScriptEngine.class).getBindings(ScriptContext.ENGINE_SCOPE);
+            bindings.put("nuxeoPrincipal", principal);
+            bindings.put("userObject", userObject);
+            bindings.put("params", params);
+            session.run(new ByteArrayInputStream(wrapperSource.getBytes(Charsets.UTF_8)));
+            return bindings.get("userObject");
+        } catch (Exception e) {
+            throw new NuxeoException("Error while executing JavaScript mapper", e);
         }
     }
 
@@ -92,21 +86,16 @@ public class NashornUserMapper extends AbstractUserMapper {
     @Override
     protected void resolveAttributes(Object userObject, Map<String, Serializable> searchAttributes,
             Map<String, Serializable> userAttributes, Map<String, Serializable> profileAttributes) {
-
-        try (CoreSession core = CoreInstance.openCoreSession(
-                Framework.getService(RepositoryManager.class).getDefaultRepositoryName())) {
-            try (Session session = Framework.getService(AutomationScriptingService.class).get(core)) {
-                AutomationMapper mapper = session.adapt(AutomationMapper.class);
-                mapper.put("searchAttributes", searchAttributes);
-                mapper.put("profileAttributes", profileAttributes);
-                mapper.put("userAttributes", userAttributes);
-                mapper.put("userObject", userObject);
-                session.run(new ByteArrayInputStream(mapperSource.getBytes(Charsets.UTF_8)));
-            } catch (Exception e) {
-                throw new NuxeoException("Error while executing JavaScript mapper", e);
-            }
+        try (Session session = Framework.getService(AutomationScriptingService.class).get((CoreSession) null)) {
+            AutomationMapper mapper = session.adapt(AutomationMapper.class);
+            mapper.put("searchAttributes", searchAttributes);
+            mapper.put("profileAttributes", profileAttributes);
+            mapper.put("userAttributes", userAttributes);
+            mapper.put("userObject", userObject);
+            session.run(new ByteArrayInputStream(mapperSource.getBytes(Charsets.UTF_8)));
+        } catch (Exception e) {
+            throw new NuxeoException("Error while executing JavaScript mapper", e);
         }
-
     }
 
 }
