@@ -21,12 +21,15 @@ package org.nuxeo.lib.stream.tests.computation;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
+
+import static org.nuxeo.lib.stream.tests.TestLibChronicle.IS_WIN;
 
 /**
  * @since 9.3
@@ -37,6 +40,11 @@ public class TestLogStreamProcessorChronicle extends TestStreamProcessor {
     public TemporaryFolder folder = new TemporaryFolder();
 
     protected File basePath;
+
+    @Before
+    public void skipWindowsThatDontCleanTempFolder() {
+        org.junit.Assume.assumeFalse(IS_WIN);
+    }
 
     public LogManager getLogManager() throws Exception {
         this.basePath = folder.newFolder();

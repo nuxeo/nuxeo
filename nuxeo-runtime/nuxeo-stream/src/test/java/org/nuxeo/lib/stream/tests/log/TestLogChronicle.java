@@ -21,6 +21,7 @@ package org.nuxeo.lib.stream.tests.log;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.lib.stream.tests.TestLibChronicle.IS_WIN;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,6 +33,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -50,6 +52,11 @@ public class TestLogChronicle extends TestLog {
     public TemporaryFolder folder = new TemporaryFolder();
 
     protected Path basePath;
+
+    @Before
+    public void skipWindowsThatDontCleanTempFolder() {
+        org.junit.Assume.assumeFalse(IS_WIN);
+    }
 
     @After
     public void resetBasePath() throws IOException {
