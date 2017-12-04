@@ -55,6 +55,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
+import org.nuxeo.ecm.platform.web.common.CookieHelper;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.usermapper.service.UserMapperService;
@@ -437,8 +438,7 @@ public class SAMLAuthenticationProvider
             return null;
         }
 
-        String userId = userResolver.findOrCreateNuxeoUser(credential);
-
+        String userId = Framework.doPrivileged(() -> userResolver.findOrCreateNuxeoUser(credential));
         if (userId == null) {
             log.warn("Failed to resolve user with NameID \"" + credential.getNameID().getValue() + "\".");
             sendError(request, ERROR_USER);
@@ -450,7 +450,9 @@ public class SAMLAuthenticationProvider
             String nameValue = credential.getNameID().getValue();
             String nameFormat = credential.getNameID().getFormat();
             String sessionId = credential.getSessionIndexes().get(0);
-            addCookie(response, SAML_SESSION_KEY, sessionId + "|" + nameValue + "|" + nameFormat);
+            Cookie cookie = CookieHelper.createCookie(request, SAML_SESSION_KEY,
+                    String.join("|", sessionId, nameValue, nameFormat));
+            response.addCookie(cookie);
         }
 
         // Redirect to URL in relay state if any
@@ -619,11 +621,6 @@ public class SAMLAuthenticationProvider
             keyManager = Framework.getLocalService(KeyManager.class);
         }
         return keyManager;
-    }
-
-    private void addCookie(HttpServletResponse httpResponse, String name, String value) {
-        Cookie cookie = new Cookie(name, value);
-        httpResponse.addCookie(cookie);
     }
 
     private Cookie getCookie(HttpServletRequest httpRequest, String cookieName) {
