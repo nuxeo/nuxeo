@@ -140,7 +140,7 @@ public class DirectoryAuditStorage implements AuditStorage {
 
         // Get the orderBy map from the query builder.
         Map<String, String> orderBy = queryBuilder.orders().stream().collect(
-                Collectors.toMap(o -> o.reference.name, o -> o.isDescending ? "DESC" : "ASC"));
+                Collectors.toMap(o -> o.reference.name, o -> o.isDescending ? "desc" : "asc"));
 
         // Get the limit and offset from the query builder.
         int limit = (int) queryBuilder.limit();

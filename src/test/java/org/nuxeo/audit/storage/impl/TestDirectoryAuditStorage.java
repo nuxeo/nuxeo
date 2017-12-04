@@ -134,13 +134,13 @@ public class TestDirectoryAuditStorage {
         List<LogEntry> logEntries = storage.queryLogs(queryBuilder);
         assertEquals(2, storage.queryLogs(queryBuilder).size());
 
-        // Query builder with an orderBy ASC.
+        // Query builder with an orderBy DESC.
         queryBuilder.order(new OrderByExpr(new Reference(DirectoryAuditStorage.ID_COLUMN), true));
         logEntries = storage.queryLogs(queryBuilder);
         assertEquals(2, logEntries.size());
         assertEquals("/My doc 2", logEntries.get(0).getDocPath());
 
-        // Query builder with an orderBy DESC.
+        // Query builder with an orderBy ASC.
         queryBuilder = new AuditQueryBuilder();
         queryBuilder.order(new OrderByExpr(new Reference(DirectoryAuditStorage.ID_COLUMN), false));
         logEntries = storage.queryLogs(queryBuilder);
