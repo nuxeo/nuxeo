@@ -293,15 +293,19 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         return esa.getIndexNameForType(type);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public long getPendingWorkerCount() {
         WorkManager wm = Framework.getLocalService(WorkManager.class);
+        // api is deprecated for completed work
         return wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.SCHEDULED);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public long getRunningWorkerCount() {
         WorkManager wm = Framework.getLocalService(WorkManager.class);
+        // api is deprecated for completed work
         return runIndexingWorkerCount.get() + wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.RUNNING);
     }
 
