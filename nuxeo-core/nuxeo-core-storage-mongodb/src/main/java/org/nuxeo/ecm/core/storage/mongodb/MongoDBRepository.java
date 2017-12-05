@@ -587,6 +587,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
             // count full size
             if (limit == 0) {
                 totalSize = projections.size();
+            } else if (manualProjection) {
+                totalSize = -1; // unknown due to manual projection
             } else {
                 totalSize = coll.count(filter);
             }
@@ -597,6 +599,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
             // count only if less than countUpTo
             if (limit == 0) {
                 totalSize = projections.size();
+            } else if (manualProjection) {
+                totalSize = -1; // unknown due to manual projection
             } else {
                 totalSize = coll.count(filter, new CountOptions().limit(countUpTo + 1));
             }
