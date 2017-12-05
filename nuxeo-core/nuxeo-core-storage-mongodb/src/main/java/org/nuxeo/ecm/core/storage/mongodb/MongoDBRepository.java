@@ -367,7 +367,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
         DeleteResult w = coll.deleteMany(filter);
         if (w.getDeletedCount() != ids.size()) {
-            log.error("Removed " + w.getDeletedCount() + " docs for " + ids.size() + " ids: " + ids);
+            if (log.isDebugEnabled()) {
+                log.debug("Removed " + w.getDeletedCount() + " docs for " + ids.size() + " ids: " + ids);
+            }
         }
     }
 
