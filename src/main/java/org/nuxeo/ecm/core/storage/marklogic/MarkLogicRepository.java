@@ -392,6 +392,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
                 // count full size
                 if (limit == 0) {
                     totalSize = projections.size();
+                } else if (manualProjection) {
+                    totalSize = -1; // unknown due to manual projection
                 } else {
                     AdhocQuery countRequest = session.newAdhocQuery(query.getCountQuery());
                     // ResultSequence will be closed by Session close
@@ -405,6 +407,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
                 // count only if less than countUpTo
                 if (limit == 0) {
                     totalSize = projections.size();
+                } else if (manualProjection) {
+                    totalSize = -1; // unknown due to manual projection
                 } else {
                     AdhocQuery countRequest = session.newAdhocQuery(query.getCountQuery(countUpTo + 1));
                     // ResultSequence will be closed by Session close
