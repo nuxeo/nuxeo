@@ -452,7 +452,6 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
     }
 
     @Test
-    @RandomBug.Repeat(issue = "NXP-22172")
     public void shouldSetCreatorToTheUserImporting() throws InterruptedException {
         // give access to leela
         DocumentModel root = session.getRootDocument();
