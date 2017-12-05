@@ -23,6 +23,11 @@ limitations under the License.
 <dom-module id="nuxeo-picture-view-layout">
 
   <template>
+    <style>
+      nuxeo-document-viewer {
+        @apply --paper-card;
+      }
+    </style>
     <nuxeo-document-viewer role="widget" document="[[document]]"></nuxeo-document-viewer>
   </template>
 
