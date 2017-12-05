@@ -23,7 +23,9 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -40,13 +42,16 @@ import org.nuxeo.ecm.core.query.sql.model.DefaultQueryVisitor;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.FromClause;
 import org.nuxeo.ecm.core.query.sql.model.FromList;
+import org.nuxeo.ecm.core.query.sql.model.IdentityQueryTransformer;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
+import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -66,11 +71,15 @@ public abstract class QueryOptimizer {
 
     public static final String TYPE_RELATION = "Relation";
 
+    protected static final int CORR_BASE = 100_000;
+
     protected FacetFilter facetFilter;
 
     protected final SchemaManager schemaManager;
 
     protected final Set<String> neverPerInstanceMixins;
+
+    protected int correlationCounter;
 
     /** Do we match only relations? */
     protected boolean onlyRelations;
@@ -97,6 +106,9 @@ public abstract class QueryOptimizer {
      * top-level AND clauses are analyzed to provide prefix info.
      */
     public SQLQuery optimize(SQLQuery query) {
+        // rewrite some uncorrelated wildcards and add NOT NULL clauses for projection ones
+        query = addWildcardNotNullClauses(query);
+
         List<Expression> clauses = new ArrayList<>();
         addFacetFilters(clauses, facetFilter);
         addTypes(clauses, query.from);
@@ -451,6 +463,131 @@ public abstract class QueryOptimizer {
             set.add(((StringLiteral) literal).value);
         }
         return set;
+    }
+
+    /**
+     * If we have a query like {@code SELECT dc:subjects/* FROM ...} then we must make sure we don't match documents
+     * that don't have a {@code dc:subjects} at all, as this would make the evaluator return one {@code null} value for
+     * each due to its semantics of doing the equivalent of LEFT JOINs.
+     * <p>
+     * To prevent this, we add a clause {@code ... AND dc:subjects/* IS NOT NULL}.
+     * <p>
+     * For correlated wildcards this is enough, but for uncorrelated wildcards we must avoid adding extra JOINs, so we
+     * must artificially correlated them. This requires rewriting the query with correlated wildcards instead of
+     * uncorrelated ones.
+     */
+    protected SQLQuery addWildcardNotNullClauses(SQLQuery query) {
+        ProjectionWildcardsFinder finder = new ProjectionWildcardsFinder();
+        finder.visitQuery(query);
+
+        // find wildcards in the projection
+        Set<String> wildcards = finder.projectionWildcards;
+        Set<String> uncorrelatedWildcards = finder.uncorrelatedProjectionWildcards;
+        if (!uncorrelatedWildcards.isEmpty()) {
+            // rename uncorrelated wildcards to unique correlation names
+            Map<String, String> map = new HashMap<>(uncorrelatedWildcards.size());
+            for (String name : uncorrelatedWildcards) {
+                String newName = name + (CORR_BASE + correlationCounter++);
+                map.put(name, newName);
+                wildcards.remove(name);
+                wildcards.add(newName);
+            }
+            // rename them in the whole query
+            query = new ProjectionReferenceRenamer(map).transform(query);
+        }
+
+        // add IS NOT NULL clauses for all projection wildcards (now all correlated)
+        if (!wildcards.isEmpty()) {
+            query = addIsNotNullClauses(query, wildcards);
+        }
+
+        return query;
+    }
+
+    protected SQLQuery addIsNotNullClauses(SQLQuery query, Collection<String> names) {
+        List<Operand> values = names.stream()
+                                    .map(name -> new Expression(new Reference(name), Operator.ISNOTNULL, null))
+                                    .collect(toList());
+        Expression expr = new Expression(query.where.predicate, Operator.AND,
+                new MultiExpression(Operator.AND, values));
+        return query.withWhereExpression(expr);
+    }
+
+    protected static class ProjectionWildcardsFinder extends DefaultQueryVisitor {
+
+        private static final long serialVersionUID = 1L;
+
+        protected final Set<String> projectionWildcards = new HashSet<>();
+
+        protected final Set<String> uncorrelatedProjectionWildcards = new HashSet<>();
+
+        protected boolean inProjection;
+
+        protected boolean inOrderBy;
+
+        @Override
+        public void visitSelectClause(SelectClause node) {
+            inProjection = true;
+            super.visitSelectClause(node);
+            inProjection = false;
+        }
+
+        @Override
+        public void visitOrderByClause(OrderByClause node) {
+            inOrderBy = true;
+            super.visitOrderByClause(node);
+            inOrderBy = false;
+        }
+
+        @Override
+        public void visitReference(Reference ref) {
+            if (inProjection) {
+                String name = ref.name;
+                if (name.endsWith("*")) {
+                    projectionWildcards.add(name);
+                    if (name.endsWith("/*")) {
+                        uncorrelatedProjectionWildcards.add(name);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Renames references if they are in the projection part.
+     */
+    protected static class ProjectionReferenceRenamer extends IdentityQueryTransformer {
+
+        protected final Map<String, String> map;
+
+        protected boolean inProjection;
+
+        public ProjectionReferenceRenamer(Map<String, String> map) {
+            this.map = map;
+        }
+
+        @Override
+        public SelectClause transform(SelectClause node) {
+            inProjection = true;
+            node = super.transform(node);
+            inProjection = false;
+            return node;
+        }
+
+        @Override
+        public Reference transform(Reference node) {
+            if (!inProjection) {
+                return node;
+            }
+            String name = node.name;
+            String newName = map.getOrDefault(name, name);
+            Reference newReference = new Reference(newName, node.cast, node.esHint);
+            if (newReference.originalName == null) {
+                newReference.originalName = name;
+            }
+            newReference.info = node.info;
+            return newReference;
+        }
     }
 
     /**
