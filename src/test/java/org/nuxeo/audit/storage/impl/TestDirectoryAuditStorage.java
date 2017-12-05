@@ -22,8 +22,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +48,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -56,30 +63,55 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ DirectoryFeature.class, AuditFeature.class })
+@Features({ AuditFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.audit.storage" })
 public class TestDirectoryAuditStorage {
 
     protected static DirectoryAuditStorage storage;
 
-    protected static String jsonEntry1 = "{\"entity-type\":\"logEntry\",\"category\":\"Document\",\"principalName\":\"Administrator\","
-            + "\"comment\":null,\"docLifeCycle\":\"Draft\",\"docPath\":\"/My doc 1\",\"docType\":\"File\","
-            + "\"eventId\":\"documentCreated\",\"repositoryId\":\"default\",\"eventDate\":\"2017-10-10T10:35:13.102Z\","
-            + "\"docUUID\":\"3f86a83f-1523-432a-92c5-8ec5f68a6451\",\"logDate\":\"2017-10-10T10:35:13.138Z\",\"extended\":{}}";
-
-    protected static String jsonEntry2 = "{\"entity-type\":\"logEntry\",\"category\":\"Document\",\"principalName\":\"Administrator\","
-            + "\"comment\":null,\"docLifeCycle\":\"Approved\",\"docPath\":\"/My doc 2\",\"docType\":\"File\","
-            + "\"eventId\":\"documentModified\",\"repositoryId\":\"default\",\"eventDate\":\"2017-11-13T09:15:13.102Z\","
-            + "\"docUUID\":\"4f86a82f-3521-132b-92c3-6ac5f65c6422\",\"logDate\":\"2017-11-13T09:15:13.138Z\",\"extended\":{}}";
-
-    protected static List<String> jsonEntries = Arrays.asList(jsonEntry1, jsonEntry2);
+    protected static List<String> jsonEntries;
 
     @BeforeClass
-    public static void before() {
+    public static void before() throws JsonGenerationException, JsonMappingException, IOException {
         NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
                                                                      .getComponent(NXAuditEventsService.NAME);
         storage = (DirectoryAuditStorage) audit.getAuditStorage(DirectoryAuditStorage.NAME);
+
+        Map<String, Object> jsonEntryMap1 = new HashMap<>();
+        jsonEntryMap1.put("entity-type", "logEntry");
+        jsonEntryMap1.put("category", "Document");
+        jsonEntryMap1.put("principalName", "Administrator");
+        jsonEntryMap1.put("comment", null);
+        jsonEntryMap1.put("docLifeCycle", "Draft");
+        jsonEntryMap1.put("docPath", "/My doc 1");
+        jsonEntryMap1.put("docType", "File");
+        jsonEntryMap1.put("eventId", "documentCreated");
+        jsonEntryMap1.put("repositoryId", "default");
+        jsonEntryMap1.put("eventDate", "2017-10-10T10:35:13.102Z");
+        jsonEntryMap1.put("docUUID", "3f86a83f-1523-432a-92c5-8ec5f68a6451");
+        jsonEntryMap1.put("logDate", "2017-10-10T10:35:13.138Z");
+        jsonEntryMap1.put("extended", Collections.emptyMap());
+
+        Map<String, Object> jsonEntryMap2 = new HashMap<>();
+        jsonEntryMap2.put("entity-type", "logEntry");
+        jsonEntryMap2.put("category", "Document");
+        jsonEntryMap2.put("principalName", "Administrator");
+        jsonEntryMap2.put("comment", null);
+        jsonEntryMap2.put("docLifeCycle", "Approved");
+        jsonEntryMap2.put("docPath", "/My doc 2");
+        jsonEntryMap2.put("docType", "File");
+        jsonEntryMap2.put("eventId", "documentModified");
+        jsonEntryMap2.put("repositoryId", "default");
+        jsonEntryMap2.put("eventDate", "2017-11-13T09:15:13.102Z");
+        jsonEntryMap2.put("docUUID", "4f86a82f-3521-132b-92c3-6ac5f65c6422");
+        jsonEntryMap2.put("logDate", "2017-11-13T09:15:13.138ZZ");
+        jsonEntryMap2.put("extended", Collections.emptyMap());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonEntry1 = objectMapper.writeValueAsString(jsonEntryMap1);
+        String jsonEntry2 = objectMapper.writeValueAsString(jsonEntryMap2);
+        jsonEntries = Arrays.asList(jsonEntry1, jsonEntry2);
     }
 
     @Test
@@ -99,11 +131,13 @@ public class TestDirectoryAuditStorage {
             DocumentModelList auditEntries = session.getEntries();
             assertEquals(2, auditEntries.size());
 
+            String jsonEntry1 = jsonEntries.get(0);
             DocumentModel auditEntry1 = auditEntries.get(0);
             assertTrue(auditEntry1.hasSchema(schemaName));
             assertEquals(new Long(1), auditEntry1.getPropertyValue(DirectoryAuditStorage.ID_COLUMN));
             assertEquals(jsonEntry1, auditEntry1.getPropertyValue(DirectoryAuditStorage.JSON_COLUMN));
 
+            String jsonEntry2 = jsonEntries.get(1);
             DocumentModel auditEntry2 = auditEntries.get(1);
             assertTrue(auditEntry2.hasSchema(schemaName));
             assertEquals(new Long(2), auditEntry2.getPropertyValue(DirectoryAuditStorage.ID_COLUMN));
@@ -113,7 +147,7 @@ public class TestDirectoryAuditStorage {
 
     @Test
     public void testGetLogEntryFromJson() {
-        LogEntry logEntry = storage.getLogEntryFromJson(jsonEntry1);
+        LogEntry logEntry = storage.getLogEntryFromJson(jsonEntries.get(0));
         assertNotNull(logEntry);
         assertEquals("Document", logEntry.getCategory());
         assertEquals("Administrator", logEntry.getPrincipalName());
@@ -159,7 +193,7 @@ public class TestDirectoryAuditStorage {
 
         // Query builder with a 'AND entry = ' condition.
         queryBuilder = new AuditQueryBuilder();
-        queryBuilder.addAndPredicate(Predicates.eq(DirectoryAuditStorage.JSON_COLUMN, jsonEntry2));
+        queryBuilder.addAndPredicate(Predicates.eq(DirectoryAuditStorage.JSON_COLUMN, jsonEntries.get(1)));
         logEntries = storage.queryLogs(queryBuilder);
         assertEquals(1, logEntries.size());
         assertEquals("/My doc 2", logEntries.get(0).getDocPath());
