@@ -22,11 +22,13 @@ package org.nuxeo.audit.storage.impl;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -40,6 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
+import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.directory.Directory;
@@ -122,6 +125,7 @@ public class DirectoryAuditStorage implements AuditStorage {
 
         // Get the predicates filter map from the query builder.
         Map<String, Serializable> filter = new HashMap<>();
+        Set<String> fulltext = null;
         MultiExpression predicate = (MultiExpression) queryBuilder.predicate();
         @SuppressWarnings("unchecked")
         List<Predicate> predicateList = (List<Predicate>) ((List<?>) predicate.values);
@@ -136,6 +140,10 @@ public class DirectoryAuditStorage implements AuditStorage {
                         rvalue));
             }
             filter.put(p.lvalue.toString(), rvalue);
+
+            if (fulltext == null && Arrays.asList(Operator.LIKE, Operator.ILIKE).contains(p.operator)) {
+                fulltext = Collections.singleton(JSON_COLUMN);
+            }
         }
 
         // Get the orderBy map from the query builder.
@@ -149,8 +157,7 @@ public class DirectoryAuditStorage implements AuditStorage {
         // Query the Json Entries via the directory session.
         Directory directory = getAuditDirectory();
         try (Session session = directory.getSession()) {
-            DocumentModelList jsonEntriesDocs = session.query(filter, Collections.singleton(JSON_COLUMN), orderBy,
-                    false, limit, offset);
+            DocumentModelList jsonEntriesDocs = session.query(filter, fulltext, orderBy, false, limit, offset);
 
             // Build a list of Log Entries from the Json Entries.
             String auditPropertyName = directory.getSchema() + ":" + JSON_COLUMN;
