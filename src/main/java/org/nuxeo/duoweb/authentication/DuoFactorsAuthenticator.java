@@ -217,7 +217,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
             if (manager == null) {
                 principal = new NuxeoPrincipalImpl(username);
             } else {
-                principal = manager.getPrincipal(username);
+                principal = Framework.doPrivileged(() -> manager.getPrincipal(username));
                 if (principal == null) {
                     throw new LoginException(String.format("principal %s does not exist", username));
                 }
