@@ -33,6 +33,8 @@ public class SleepWork extends AbstractWork {
 
     protected AtomicInteger count = new AtomicInteger();
 
+    protected String partitionKey;
+
     /**
      * Creates a work instance that does nothing but sleep.
      *
@@ -70,6 +72,7 @@ public class SleepWork extends AbstractWork {
     private void init(long durationMillis, String category, boolean debug) {
         this.durationMillis = durationMillis;
         this.category = category;
+        this.partitionKey = String.valueOf(count.incrementAndGet());
         setProgress(Progress.PROGRESS_0_PC);
     }
 
@@ -115,7 +118,7 @@ public class SleepWork extends AbstractWork {
 
     @Override
     public String getPartitionKey() {
-        return String.valueOf(count.incrementAndGet());
+        return partitionKey;
     }
 
     @Override
