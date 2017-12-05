@@ -131,6 +131,10 @@ public class TestSQLRepositoryQuery {
         return coreFeature.getStorageConfiguration().isDBS();
     }
 
+    protected boolean isDBSMem() {
+        return coreFeature.getStorageConfiguration().isDBSMem();
+    }
+
     protected boolean isDBSMongoDB() {
         return coreFeature.getStorageConfiguration().isDBSMongoDB();
     }
@@ -3309,7 +3313,62 @@ public class TestSQLRepositoryQuery {
 
         PartialList<Map<String, Serializable>> projection = session.queryProjection(nxql, 10, 0, true);
         assertEquals(0, projection.size());
-        assertEquals(0, projection.totalSize());
+        if (isDBS() && !isDBSMem()) {
+            assertEquals(-1, projection.totalSize());
+        } else {
+            assertEquals(0, projection.totalSize());
+        }
+    }
+
+    // SELECT dc:subjects/* ... cannot compute total size on DBS due to manual projection
+    @Test
+    public void testQueryIdListFromArrayTotalSize() throws Exception {
+        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
+        doc1.setPropertyValue("dc:subjects", (Serializable) Arrays.asList("a", "b", "c"));
+        doc1 = session.createDocument(doc1);
+        session.save();
+
+        String nxql = "SELECT dc:subjects/* FROM File WHERE ecm:name = 'doc1'";
+        PartialList<Map<String, Serializable>> projection;
+
+        int expectedTotal = 3;
+        int expectedUnknown = -1;
+        int expectedUnknownForDBS = isDBS() && !isDBSMem() ? expectedUnknown : expectedTotal;
+
+        // no limit, countUpTo -1 (countTotal true)
+        projection = session.queryProjection(nxql, NXQL.NXQL, false, 0, 0, -1);
+        assertEquals(expectedTotal, projection.size());
+        assertEquals(expectedTotal, projection.totalSize());
+
+        // no limit, countUpTo 0 (countTotal false)
+        projection = session.queryProjection(nxql, NXQL.NXQL, false, 0, 0, 0);
+        assertEquals(expectedTotal, projection.size());
+        assertEquals(expectedUnknown, projection.totalSize());
+
+        // no limit, countUpTo 5
+        projection = session.queryProjection(nxql, NXQL.NXQL, false, 0, 0, 5);
+        assertEquals(expectedTotal, projection.size());
+        assertEquals(expectedTotal, projection.totalSize());
+
+        // no limit, countUpTo 15
+        projection = session.queryProjection(nxql, NXQL.NXQL, false, 0, 0, 15);
+        assertEquals(expectedTotal, projection.size());
+        assertEquals(expectedTotal, projection.totalSize());
+
+        // limit, countUpTo -1 (countTotal true)
+        projection = session.queryProjection(nxql, NXQL.NXQL, false, 10, 0, -1);
+        assertEquals(expectedTotal, projection.size());
+        assertEquals(expectedUnknownForDBS, projection.totalSize());
+
+        // limit, countUpTo 0 (countTotal false)
+        projection = session.queryProjection(nxql, NXQL.NXQL, false, 10, 0, 0);
+        assertEquals(expectedTotal, projection.size());
+        assertEquals(expectedUnknown, projection.totalSize());
+
+        // limit, countUpTo 5
+        projection = session.queryProjection(nxql, NXQL.NXQL, false, 10, 0, 5);
+        assertEquals(expectedTotal, projection.size());
+        assertEquals(expectedUnknownForDBS, projection.totalSize());
     }
 
     // SELECT dc:subjects/*1 ... WHERE dc:subjects/*1 ... may return NULLs
@@ -3323,7 +3382,11 @@ public class TestSQLRepositoryQuery {
         String nxql = "SELECT dc:subjects/*1 FROM File WHERE ecm:name = 'doc1' AND dc:subjects/*1 IS NULL";
         DocumentModelList dml = session.query(nxql, null, 10, 0, true);
         assertEquals(0, dml.size()); // null docs filtered out
-        assertEquals(1, dml.totalSize());
+        if (isDBS() && !isDBSMem()) {
+            assertEquals(0, dml.totalSize()); // 0 instead of -1 because DocumentModelList is weird
+        } else {
+            assertEquals(1, dml.totalSize());
+        }
 
         IterableQueryResult res = session.queryAndFetch(nxql, NXQL.NXQL);
         assertEquals(1, res.size());
@@ -3333,7 +3396,11 @@ public class TestSQLRepositoryQuery {
 
         PartialList<Map<String, Serializable>> projection = session.queryProjection(nxql, 10, 0, true);
         assertEquals(1, projection.size());
-        assertEquals(1, projection.totalSize());
+        if (isDBS() && !isDBSMem()) {
+            assertEquals(-1, projection.totalSize());
+        } else {
+            assertEquals(1, projection.totalSize());
+        }
         map = projection.get(0);
         assertNull(map.get("dc:subjects/*1"));
     }
