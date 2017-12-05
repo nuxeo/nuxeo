@@ -50,7 +50,7 @@ public class WorkComputation extends AbstractComputation {
 
     protected static final int IDS_SIZE = 50;
 
-    protected static final CircularFifoBuffer workIds = new CircularFifoBuffer(IDS_SIZE);
+    protected final CircularFifoBuffer workIds = new CircularFifoBuffer(IDS_SIZE);
 
     protected final Timer workTimer;
 
