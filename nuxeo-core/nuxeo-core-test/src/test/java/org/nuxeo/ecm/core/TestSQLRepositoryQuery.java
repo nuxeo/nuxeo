@@ -2922,6 +2922,28 @@ public class TestSQLRepositoryQuery {
         assertEquals(new HashSet<>(Arrays.asList("foo", "moo")), set);
         it.close();
 
+        // projection only
+        clause = "tst:title = 'hello world'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+        it = session.queryAndFetch("SELECT tst:subjects/*1" + FROM_WHERE + clause, "NXQL");
+        assertEquals(3, it.size());
+        set = new HashSet<>();
+        for (Map<String, Serializable> map : it) {
+            set.add((String) map.get("tst:subjects/*1"));
+        }
+        assertEquals(new HashSet<>(Arrays.asList("foo", "moo", "bar")), set);
+        it.close();
+
+        // projection only on non-matching doc
+        clause = "tst:title = 'nosuchtitle'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Collections.emptyList(), getIds(res));
+        it = session.queryAndFetch("SELECT tst:subjects/*1" + FROM_WHERE + clause, "NXQL");
+        assertEquals(0, it.size());
+        it.close();
+
+        // projection on uncorrelated wildcard
         clause = "tst:subjects/* LIKE '%oo'";
         res = session.query(SELECT_WHERE + clause);
         assertEquals(Arrays.asList(docId), getIds(res));
