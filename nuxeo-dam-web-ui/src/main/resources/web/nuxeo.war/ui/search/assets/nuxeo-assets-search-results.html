@@ -23,7 +23,13 @@ limitations under the License.
 <dom-module id="nuxeo-assets-search-results">
   <template>
 
-    <style>
+    <style include="nuxeo-styles">
+      nuxeo-data-table {
+        display: block;
+        position: relative;
+        min-height: calc(100vh - 130px - var(--nuxeo-app-top));
+      }
+
       nuxeo-justified-grid {
         min-height: calc(100vh - 10em);
       }
