@@ -58,7 +58,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Audit storage implementation for an Audit directory.
  * 
- * @since 9.3
+ * @since 9.10
  */
 public class DirectoryAuditStorage implements AuditStorage {
 

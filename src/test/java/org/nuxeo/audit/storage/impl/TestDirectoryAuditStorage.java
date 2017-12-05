@@ -60,7 +60,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
- * @since 9.3
+ * @since 9.10
  */
 @RunWith(FeaturesRunner.class)
 @Features({ AuditFeature.class })
