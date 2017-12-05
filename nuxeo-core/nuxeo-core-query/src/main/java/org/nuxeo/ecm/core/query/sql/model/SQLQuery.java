@@ -67,7 +67,6 @@ public class SQLQuery implements ASTNode {
 
     public SQLQuery(SelectClause select, FromClause from, WhereClause where, GroupByClause groupBy,
             HavingClause having, OrderByClause orderBy) {
-        assert select != null && from != null;
         this.select = select;
         this.from = from;
         this.where = where;
@@ -78,7 +77,6 @@ public class SQLQuery implements ASTNode {
 
     public SQLQuery(SelectClause select, FromClause from, WhereClause where, GroupByClause groupBy,
             HavingClause having, OrderByClause orderBy, long limit, long offset) {
-        assert select != null && from != null;
         this.select = select;
         this.from = from;
         this.where = where;
