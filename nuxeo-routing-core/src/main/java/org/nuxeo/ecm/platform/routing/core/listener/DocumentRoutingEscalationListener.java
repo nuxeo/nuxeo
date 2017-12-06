@@ -46,7 +46,7 @@ public class DocumentRoutingEscalationListener implements EventListener {
         if (!EXECUTE_ESCALATION_RULE_EVENT.equals(event.getName())) {
             return;
         }
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
             triggerEsclationRulesExecution(repositoryName);
         }
@@ -57,7 +57,7 @@ public class DocumentRoutingEscalationListener implements EventListener {
 
             @Override
             public void run() {
-                DocumentRoutingEscalationService escalationService = Framework.getLocalService(DocumentRoutingEscalationService.class);
+                DocumentRoutingEscalationService escalationService = Framework.getService(DocumentRoutingEscalationService.class);
                 List<String> nodeIds = escalationService.queryForSuspendedNodesWithEscalation(session);
                 for (String id : nodeIds) {
                     DocumentModel nodeDoc = session.getDocument(new IdRef(id));

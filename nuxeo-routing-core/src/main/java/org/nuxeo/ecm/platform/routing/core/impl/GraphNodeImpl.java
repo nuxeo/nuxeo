@@ -510,7 +510,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
                 context.put("transition", transitionId);
             }
 
-            AutomationService automationService = Framework.getLocalService(AutomationService.class);
+            AutomationService automationService = Framework.getService(AutomationService.class);
             automationService.run(context, chainId);
 
             setAllVariables(context);
@@ -767,7 +767,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     public DocumentRoute startSubRoute() throws DocumentRouteException {
         String subRouteModelId = getSubRouteModelId();
         // create the instance without starting it
-        DocumentRoutingService service = Framework.getLocalService(DocumentRoutingService.class);
+        DocumentRoutingService service = Framework.getService(DocumentRoutingService.class);
         List<String> docs = graph.getAttachedDocuments();
         String subRouteInstanceId = service.createNewInstance(subRouteModelId, docs, getSession(), false);
         // set info about parent in subroute
@@ -1001,7 +1001,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         if (!session.exists(taskRef)) {
             log.info(String.format("Task with id %s does not exist anymore", taskId));
             DocumentModelList docs = graph.getAttachedDocumentModels();
-            Framework.getLocalService(DocumentRoutingService.class).removePermissionsForTaskActors(session, docs,
+            Framework.getService(DocumentRoutingService.class).removePermissionsForTaskActors(session, docs,
                     taskId);
             NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
             String actor = principal.getActingUser();
@@ -1014,7 +1014,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
             throw new DocumentRouteException("Invalid taskId: " + taskId);
         }
         DocumentModelList docs = graph.getAttachedDocumentModels();
-        Framework.getLocalService(DocumentRoutingService.class).removePermissionsForTaskActors(session, docs, task);
+        Framework.getService(DocumentRoutingService.class).removePermissionsForTaskActors(session, docs, task);
         if (task.isOpened()) {
             task.cancel(session);
         }

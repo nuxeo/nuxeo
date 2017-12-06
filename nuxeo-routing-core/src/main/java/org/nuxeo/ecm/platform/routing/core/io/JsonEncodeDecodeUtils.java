@@ -98,7 +98,7 @@ public class JsonEncodeDecodeUtils {
         if (StringUtils.isBlank(facet)) {
             return;
         }
-        CompositeType type = Framework.getLocalService(SchemaManager.class).getFacet(facet);
+        CompositeType type = Framework.getService(SchemaManager.class).getFacet(facet);
 
         DownloadService downloadService = Framework.getService(DownloadService.class);
         String xpath = type.getField(variableName).getName().getPrefixedName();

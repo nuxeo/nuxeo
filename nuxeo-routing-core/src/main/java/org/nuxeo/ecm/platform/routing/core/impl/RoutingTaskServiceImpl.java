@@ -38,20 +38,20 @@ public class RoutingTaskServiceImpl extends DefaultComponent implements RoutingT
 
     @Override
     public void makeRoutingTasks(CoreSession session, List<Task> tasks) {
-        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+        DocumentRoutingService routing = Framework.getService(DocumentRoutingService.class);
         routing.makeRoutingTasks(session, tasks);
     }
 
     @Override
     public void endTask(CoreSession session, Task task, Map<String, Object> data, String status)
             throws DocumentRouteException {
-        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+        DocumentRoutingService routing = Framework.getService(DocumentRoutingService.class);
         routing.endTask(session, task, data, status);
     }
 
     @Override
     public List<DocumentModel> getWorkflowInputDocuments(CoreSession session, Task task) throws DocumentRouteException {
-        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+        DocumentRoutingService routing = Framework.getService(DocumentRoutingService.class);
         return routing.getWorkflowInputDocuments(session, task);
     }
 

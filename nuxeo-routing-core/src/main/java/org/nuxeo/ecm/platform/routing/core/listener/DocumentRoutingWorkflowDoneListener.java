@@ -49,7 +49,7 @@ public class DocumentRoutingWorkflowDoneListener implements EventListener {
         CoreSession session = docCtx.getCoreSession();
         DocumentModel routeInstanceDoc = docCtx.getSourceDocument();
 
-        List<Task> openTasks = Framework.getLocalService(TaskService.class).getAllTaskInstances(
+        List<Task> openTasks = Framework.getService(TaskService.class).getAllTaskInstances(
                 routeInstanceDoc.getId(), session);
         for (Task task : openTasks) {
             getDocumentRoutingService().cancelTask(session, task.getId());
@@ -58,7 +58,7 @@ public class DocumentRoutingWorkflowDoneListener implements EventListener {
 
     protected DocumentRoutingService getDocumentRoutingService() {
         if (routingService == null) {
-            routingService = Framework.getLocalService(DocumentRoutingService.class);
+            routingService = Framework.getService(DocumentRoutingService.class);
         }
         return routingService;
     }

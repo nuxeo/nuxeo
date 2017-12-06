@@ -73,7 +73,7 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
 
     @Override
     public void scheduleExecution(EscalationRule rule, CoreSession session) {
-        WorkManager manager = Framework.getLocalService(WorkManager.class);
+        WorkManager manager = Framework.getService(WorkManager.class);
         manager.schedule(
                 new EscalationRuleWork(rule.getId(), rule.getNode().getDocument().getId(), session.getRepositoryName()),
                 WorkManager.Scheduling.IF_NOT_SCHEDULED);

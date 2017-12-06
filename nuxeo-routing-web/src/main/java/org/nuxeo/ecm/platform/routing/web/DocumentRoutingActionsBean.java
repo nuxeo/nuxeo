@@ -246,7 +246,7 @@ public class DocumentRoutingActionsBean implements Serializable {
             return null;
         }
         DocumentRoute route = routes.get(0);
-        Framework.getLocalService(DocumentRoutingEngineService.class).cancel(route, documentManager);
+        Framework.getService(DocumentRoutingEngineService.class).cancel(route, documentManager);
         // force computing of tabs
         webActions.resetTabList();
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_CANCELED);
@@ -849,7 +849,7 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @since 5.6
      */
     public List<DocumentModel> getFilteredRouteModels() {
-        DocumentRoutingService documentRoutingService = Framework.getLocalService(DocumentRoutingService.class);
+        DocumentRoutingService documentRoutingService = Framework.getService(DocumentRoutingService.class);
         List<DocumentModel> routeModels = documentRoutingService.searchRouteModels(documentManager, "");
         for (Iterator<DocumentModel> it = routeModels.iterator(); it.hasNext();) {
             DocumentModel route = it.next();
@@ -873,7 +873,7 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @since 5.6
      */
     public List<Task> getCurrentRouteAllTasks() {
-        TaskService taskService = Framework.getLocalService(TaskService.class);
+        TaskService taskService = Framework.getService(TaskService.class);
         DocumentRoute currentRoute = getRelatedRoute();
         if (currentRoute != null) {
             return taskService.getAllTaskInstances(currentRoute.getDocument().getId(), documentManager);
@@ -885,7 +885,7 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @since 5.6
      */
     public List<Task> getCurrentRouteCurrentUserTasks() {
-        TaskService taskService = Framework.getLocalService(TaskService.class);
+        TaskService taskService = Framework.getService(TaskService.class);
         DocumentRoute currentRoute = getRelatedRoute();
         if (currentRoute != null) {
             return taskService.getAllTaskInstances(currentRoute.getDocument().getId(),

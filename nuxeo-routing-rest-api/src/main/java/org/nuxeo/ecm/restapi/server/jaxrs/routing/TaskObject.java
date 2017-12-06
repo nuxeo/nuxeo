@@ -58,7 +58,7 @@ public class TaskObject extends DefaultObject {
     @Consumes
     public Response reassignTask(@PathParam("taskId") String taskId, @QueryParam("actors") List<String> actors,
             @QueryParam("comment") String comment) {
-        Framework.getLocalService(DocumentRoutingService.class).reassignTask(getContext().getCoreSession(), taskId,
+        Framework.getService(DocumentRoutingService.class).reassignTask(getContext().getCoreSession(), taskId,
                 actors, comment);
         return Response.ok().status(Status.OK).build();
     }
@@ -67,7 +67,7 @@ public class TaskObject extends DefaultObject {
     @Path("{taskId}/delegate")
     public Response delegateTask(@PathParam("taskId") String taskId,
             @QueryParam("delegatedActors") List<String> delegatedActors, @QueryParam("comment") String comment) {
-        Framework.getLocalService(DocumentRoutingService.class).delegateTask(getContext().getCoreSession(), taskId,
+        Framework.getService(DocumentRoutingService.class).delegateTask(getContext().getCoreSession(), taskId,
                 delegatedActors, comment);
         return Response.ok().status(Status.OK).build();
     }
@@ -78,7 +78,7 @@ public class TaskObject extends DefaultObject {
             TaskCompletionRequest taskCompletionRequest) {
         Map<String, Object> data = taskCompletionRequest.getDataMap();
         CoreSession session = getContext().getCoreSession();
-        Framework.getLocalService(DocumentRoutingService.class).endTask(session,
+        Framework.getService(DocumentRoutingService.class).endTask(session,
                 session.getDocument(new IdRef(taskId)).getAdapter(Task.class), data, action);
         Task completedTask = session.getDocument(new IdRef(taskId)).getAdapter(Task.class);
         return Response.ok(completedTask).status(Status.OK).build();

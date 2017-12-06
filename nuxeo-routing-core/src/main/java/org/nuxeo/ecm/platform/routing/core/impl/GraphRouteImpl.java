@@ -268,7 +268,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
 
     @Override
     public void resumeParentRoute(CoreSession session) {
-        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+        DocumentRoutingService routing = Framework.getService(DocumentRoutingService.class);
         String parentRouteInstanceId = (String) document.getPropertyValue(PROP_PARENT_ROUTE);
         String parentRouteNodeId = (String) document.getPropertyValue(PROP_PARENT_NODE);
         routing.resumeInstance(parentRouteInstanceId, parentRouteNodeId, null, null, session);

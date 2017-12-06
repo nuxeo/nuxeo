@@ -152,7 +152,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
 
                 DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), task.getDocument());
                 envContext.setProperties(eventProperties);
-                EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
+                EventProducer eventProducer = Framework.getService(EventProducer.class);
                 eventProducer.fireEvent(envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskEnded.name()));
             }
         } else {
@@ -378,8 +378,8 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
         // evaluate taskDueDate from the taskDueDateExpr;
         Date dueDate = node.computeTaskDueDate();
         DocumentModelList docs = graph.getAttachedDocumentModels();
-        TaskService taskService = Framework.getLocalService(TaskService.class);
-        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+        TaskService taskService = Framework.getService(TaskService.class);
+        DocumentRoutingService routing = Framework.getService(DocumentRoutingService.class);
         // TODO documents other than the first are not attached to the task
         // (task API allows only one document)
         // we may get several tasks if there's one per actor when the node
@@ -413,7 +413,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
 
             DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), task.getDocument());
             envContext.setProperties(eventProperties);
-            EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
+            EventProducer eventProducer = Framework.getService(EventProducer.class);
             eventProducer.fireEvent(envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskCreated.name()));
         }
 
@@ -437,7 +437,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
 
     protected void finishTask(CoreSession session, GraphRoute graph, GraphNode node, Task task, boolean delete,
             String status) throws DocumentRouteException {
-        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+        DocumentRoutingService routing = Framework.getService(DocumentRoutingService.class);
         DocumentModelList docs = graph.getAttachedDocumentModels();
         routing.removePermissionsForTaskActors(session, docs, task);
         // delete task
