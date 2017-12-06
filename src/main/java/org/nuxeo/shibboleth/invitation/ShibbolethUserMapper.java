@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import com.google.common.collect.BiMap;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -43,6 +42,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.invite.UserInvitationService;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.usermapper.extension.UserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +99,8 @@ public class ShibbolethUserMapper implements UserMapper {
             userDoc = findUser(userManager.getUserIdField(), email);
         }
         if (userDoc != null && userName != null) {
-            updateACP(userName, email, userDoc);
+            DocumentModel finalUserDoc = userDoc; // Effectively final
+            TransactionHelper.runInTransaction(() -> updateACP(userName, email, finalUserDoc));
         } else {
             userDoc = findUser(userManager.getUserIdField(), userInfo.getUserName());
         }
