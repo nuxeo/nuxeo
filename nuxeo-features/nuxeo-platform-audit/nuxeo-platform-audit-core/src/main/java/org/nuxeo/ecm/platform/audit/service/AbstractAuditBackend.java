@@ -92,7 +92,6 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamService;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -110,7 +109,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
 
     protected final AuditBackendDescriptor config;
 
-    protected final CursorService<Iterator<LogEntry>, LogEntry, LogEntry> cursorService = new CursorService<>(
+    protected final CursorService<Iterator<String>, String, String> cursorService = new CursorService<>(
             Function.identity());
 
     protected AbstractAuditBackend(NXAuditEventsService component, AuditBackendDescriptor config) {
@@ -534,16 +533,23 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
     }
 
     @Override
-    public ScrollResult<LogEntry> scroll(AuditQueryBuilder queryBuilder, int batchSize, int keepAlive) {
+    public ScrollResult<String> scroll(AuditQueryBuilder queryBuilder, int batchSize, int keepAlive) {
 
         cursorService.checkForTimedOutScroll();
-        List<LogEntry> logEntries = queryLogs(queryBuilder);
-        String scrollId = cursorService.registerCursor(logEntries.iterator(), batchSize, keepAlive);
+        ObjectMapper mapper = new ObjectMapper();
+        Iterator<String> jsonEntries = queryLogs(queryBuilder).stream().map(entry -> {
+            try {
+                return mapper.writeValueAsString(entry);
+            } catch (IOException e) {
+                throw new NuxeoException("Invalid json logEntry: " + entry, e);
+            }
+        }).iterator();
+        String scrollId = cursorService.registerCursor(jsonEntries, batchSize, keepAlive);
         return scroll(scrollId);
     }
 
     @Override
-    public ScrollResult<LogEntry> scroll(String scrollId) {
+    public ScrollResult<String> scroll(String scrollId) {
         return cursorService.scroll(scrollId);
     }
 
@@ -551,23 +557,16 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
     public void restore(AuditStorage auditStorage, int batchSize, int keepAlive) {
 
         AuditQueryBuilder builder = new AuditQueryBuilder();
-        ScrollResult<LogEntry> scrollResult = auditStorage.scroll(builder, batchSize, keepAlive);
+        ScrollResult<String> scrollResult = auditStorage.scroll(builder, batchSize, keepAlive);
         long t0 = System.currentTimeMillis();
         int total = 0;
-        ObjectMapper mapper = new ObjectMapper();
 
         log.info("Starting audit restoration");
 
         while (scrollResult.hasResults()) {
-            List<String> logEntries = scrollResult.getResults().stream().map(logEntry -> {
-                try {
-                    return mapper.writeValueAsString(logEntry);
-                } catch (JsonProcessingException e) {
-                    throw new NuxeoException(e);
-                }
-            }).collect(Collectors.toList());
-            total += logEntries.size();
-            append(logEntries);
+            List<String> jsonEntries = scrollResult.getResults();
+            total += jsonEntries.size();
+            append(jsonEntries);
 
             double dt = (System.currentTimeMillis() - t0) / 1000.0;
             if (dt != 0) {
