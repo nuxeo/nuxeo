@@ -129,8 +129,27 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             return;
         }
 
+        // If a token exists for the client id and username passed in the authorization request,
+        // bypass the grant page and redirect directly to the redirect_uri with an authorization code parameter
+        String clientId = authRequest.getClientId();
+        NuxeoOAuth2Token token = tokenStore.getToken(clientId, authRequest.getUsername());
+        if (token != null) {
+            String redirectURI = getRedirectURI(authRequest);
+            String authorizationCode = storeAuthorizationRequest(authRequest);
+            String state = request.getParameter(STATE_PARAM);
+            Map<String, String> params = new HashMap<>();
+            params.put(AUTHORIZATION_CODE_PARAM, authorizationCode);
+            if (StringUtils.isNotBlank(state)) {
+                params.put(STATE_PARAM, state);
+            }
+            sendRedirect(request, response, redirectURI, params);
+            return;
+
+        }
+
+        // Set the required request attributes and redirect to the grant page
         request.setAttribute(RESPONSE_TYPE_PARAM, authRequest.getResponseType());
-        request.setAttribute(CLIENT_ID_PARAM, authRequest.getClientId());
+        request.setAttribute(CLIENT_ID_PARAM, clientId);
         String redirectURI = authRequest.getRedirectURI();
         if (StringUtils.isNotBlank(redirectURI)) {
             request.setAttribute(REDIRECT_URI_PARAM, redirectURI);
@@ -150,7 +169,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             request.setAttribute(CODE_CHALLENGE_METHOD_PARAM, codeChallengeMethod);
         }
         request.setAttribute(CLIENT_NAME,
-                Framework.getService(OAuth2ClientService.class).getClient(authRequest.getClientId()).getName());
+                Framework.getService(OAuth2ClientService.class).getClient(clientId).getName());
 
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(GRANT_JSP_PAGE_PATH);
         requestDispatcher.forward(request, response);
@@ -173,15 +192,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             return;
         }
 
-        // If the redirect URI was included in the authorization request use it else fall back on the first one
-        // registered for the client
-        String redirectURI = authRequest.getRedirectURI();
-        if (StringUtils.isBlank(redirectURI)) {
-            redirectURI = Framework.getService(OAuth2ClientService.class)
-                                   .getClient(authRequest.getClientId())
-                                   .getRedirectURIs()
-                                   .get(0);
-        }
+        String redirectURI = getRedirectURI(authRequest);
         String state = request.getParameter(STATE_PARAM);
         String grantAccess = request.getParameter(GRANT_ACCESS_PARAM);
         if (grantAccess == null) {
@@ -202,8 +213,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
         // now store the authorization request according to its code
         // to be able to retrieve it in the "/oauth2/token" endpoint
-        String authorizationCode = authRequest.getAuthorizationCode();
-        AuthorizationRequest.store(authorizationCode, authRequest);
+        String authorizationCode = storeAuthorizationRequest(authRequest);
         Map<String, String> params = new HashMap<>();
         params.put(AUTHORIZATION_CODE_PARAM, authorizationCode);
         if (StringUtils.isNotBlank(state)) {
@@ -211,6 +221,28 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         }
 
         sendRedirect(request, response, redirectURI, params);
+    }
+
+    /**
+     * Returns the redirect URI included in the given authorization request or fall back on the first one registered for
+     * the related client.
+     */
+    protected String getRedirectURI(AuthorizationRequest authRequest) {
+        String redirectURI = authRequest.getRedirectURI();
+        if (StringUtils.isBlank(redirectURI)) {
+            return Framework.getService(OAuth2ClientService.class)
+                            .getClient(authRequest.getClientId())
+                            .getRedirectURIs()
+                            .get(0);
+        } else {
+            return redirectURI;
+        }
+    }
+
+    protected String storeAuthorizationRequest(AuthorizationRequest authRequest) {
+        String authorizationCode = authRequest.getAuthorizationCode();
+        AuthorizationRequest.store(authorizationCode, authRequest);
+        return authorizationCode;
     }
 
     protected void doPostToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -221,17 +253,17 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         if (AUTHORIZATION_CODE_GRANT_TYPE.equals(grantType)) {
             String authorizationCode = tokenRequest.getCode();
             AuthorizationRequest authRequest = AuthorizationRequest.get(authorizationCode);
+            final String clientId = tokenRequest.getClientId();
             OAuth2Error error = null;
             if (authRequest == null) {
                 error = OAuth2Error.invalidGrant("Invalid authorization code");
             }
             // Check that clientId is the good one, already verified in authorization request
             else {
-                String tokenClientId = tokenRequest.getClientId();
-                if (!authRequest.getClientId().equals(tokenClientId)) {
-                    error = OAuth2Error.invalidClient(String.format("Invalid client id: %s", tokenClientId));
+                if (!authRequest.getClientId().equals(clientId)) {
+                    error = OAuth2Error.invalidClient(String.format("Invalid client id: %s", clientId));
                 } else {
-                    OAuth2Client client = clientService.getClient(authRequest.getClientId());
+                    OAuth2Client client = clientService.getClient(clientId);
                     // Validate client secret
                     if (client == null
                             || !client.isValidWith(tokenRequest.getClientId(), tokenRequest.getClientSecret())) {
@@ -272,9 +304,18 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
                 return;
             }
 
-            // Store token
-            NuxeoOAuth2Token token = new NuxeoOAuth2Token(ACCESS_TOKEN_EXPIRATION_TIME, authRequest.getClientId());
-            TransactionHelper.runInTransaction(() -> tokenStore.store(authRequest.getUsername(), token));
+            // If no token exists for the client id and username passed in the token request store a new one,
+            // else retrieve the existing token, refreshing it if needed
+            String username = authRequest.getUsername();
+            NuxeoOAuth2Token token = tokenStore.getToken(clientId, username);
+            if (token == null) {
+                final NuxeoOAuth2Token newToken = new NuxeoOAuth2Token(ACCESS_TOKEN_EXPIRATION_TIME, clientId);
+                TransactionHelper.runInTransaction(() -> tokenStore.store(username, newToken));
+                token = newToken;
+            } else if (token.isExpired()) {
+                final String refreshToken = token.getRefreshToken();
+                token = TransactionHelper.runInTransaction(() -> tokenStore.refresh(refreshToken, clientId));
+            }
 
             handleTokenResponse(token, response);
         } else if (REFRESH_TOKEN_GRANT_TYPE.equals(grantType)) {

@@ -73,6 +73,8 @@ public final class JerseyClientHelper {
 
         protected int connectionRequestTimeout;
 
+        protected boolean redirectsEnabled;
+
         protected String username;
 
         protected String password;
@@ -81,6 +83,7 @@ public final class JerseyClientHelper {
             this.socketTimeout = DEFAULT_CONNECTION_TIMEOUT;
             this.connectTimeout = DEFAULT_CONNECTION_TIMEOUT;
             this.connectionRequestTimeout = DEFAULT_CONNECTION_TIMEOUT;
+            this.redirectsEnabled = true;
         }
 
         public ApacheHttpClientBuilder setSocketTimeout(final int socketTimeout) {
@@ -98,6 +101,11 @@ public final class JerseyClientHelper {
             return this;
         }
 
+        public ApacheHttpClientBuilder setRedirectsEnabled(final boolean redirectsEnabled) {
+            this.redirectsEnabled = redirectsEnabled;
+            return this;
+        }
+
         public ApacheHttpClientBuilder setCredentials(final String username, final String password) {
             this.username = username;
             this.password = password;
@@ -109,6 +117,7 @@ public final class JerseyClientHelper {
                                                        .setSocketTimeout(socketTimeout)
                                                        .setConnectTimeout(connectTimeout)
                                                        .setConnectionRequestTimeout(connectionRequestTimeout)
+                                                       .setRedirectsEnabled(redirectsEnabled)
                                                        .build();
             HttpClient httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
             Client client = new Client(new ApacheHttpClient4Handler(httpClient, new BasicCookieStore(), true));

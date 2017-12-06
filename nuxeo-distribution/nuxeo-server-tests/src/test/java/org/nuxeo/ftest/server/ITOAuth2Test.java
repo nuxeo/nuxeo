@@ -19,6 +19,7 @@
 package org.nuxeo.ftest.server;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.oauth2.Constants.AUTHORIZATION_CODE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.CLIENT_ID_PARAM;
@@ -35,6 +36,7 @@ import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_DESCRIPTION
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.OAuth2Error.ACCESS_DENIED;
 import static org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest.MISSING_REQUIRED_FIELD_MESSAGE;
+import static org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore.DIRECTORY_NAME;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -116,6 +118,7 @@ public class ITOAuth2Test extends AbstractTest {
 
     @After
     public void after() {
+        RestHelper.deleteDirectoryEntries(DIRECTORY_NAME);
         logoutSimply();
         client.destroy();
     }
@@ -306,7 +309,7 @@ public class ITOAuth2Test extends AbstractTest {
 
     @Test
     public void testAuthorizationOnRestAPI() throws IOException {
-        OAuth2Token token = getOAuth2Token();
+        OAuth2Token token = getOAuth2Token("Administrator", "Administrator");
         logoutSimply();
 
         checkAuthorizationWithValidAccessToken(DOC_PATH, token.accessToken);
@@ -321,7 +324,7 @@ public class ITOAuth2Test extends AbstractTest {
 
     @Test
     public void testAuthorizationOnCMIS() throws IOException {
-        OAuth2Token token = getOAuth2Token();
+        OAuth2Token token = getOAuth2Token("Administrator", "Administrator");
 
         checkAuthorizationWithValidAccessToken(JSON_CMIS_PATH, token.accessToken);
         checkAuthorizationWithValidAccessToken(ATOM_CMIS_PATH, token.accessToken);
@@ -347,9 +350,37 @@ public class ITOAuth2Test extends AbstractTest {
                 String.format("The /oauth2/%s endpoint only accepts POST requests.", ENDPOINT_TOKEN));
     }
 
-    protected OAuth2Token getOAuth2Token() throws IOException {
+    @Test
+    public void testAuthorizationWithExistingToken() throws IOException {
+        // Get an OAuth2 token
+        OAuth2Token initialToken = getOAuth2Token(TEST_USERNAME, TEST_PASSWORD);
+        logoutSimply();
+
+        // Ask for authorization
+        String url = NUXEO_URL + "/oauth2/authorize?client_id=test-client&response_type=code";
+        LoginPage loginPage = get(url, LoginPage.class);
+        loginPage.login(TEST_USERNAME, TEST_PASSWORD);
+
+        // Expecting to be redirected to the client's redirect_uri with a code parameter, bypassing the grant page
+        String currentURL = driver.getCurrentUrl();
+        assertEquals("http://localhost:8080/nuxeo/home.html", URIUtils.getURIPath(currentURL));
+        Map<String, String> queryParameters = URIUtils.getRequestParameters(currentURL);
+        assertEquals(1, queryParameters.size());
+        String code = queryParameters.get("code");
+        assertNotNull(code);
+
+        // Ask for a token, expecting the initial access token
+        Map<String, String> params = new HashMap<>();
+        params.put("grant_type", "authorization_code");
+        params.put("client_id", "test-client");
+        params.put("code", code);
+        OAuth2Token token = getOAuth2Token(params);
+        assertEquals(initialToken.accessToken, token.accessToken);
+    }
+
+    protected OAuth2Token getOAuth2Token(String username, String password) throws IOException {
         LoginPage loginPage = getLoginPage();
-        loginPage.login("Administrator", "Administrator");
+        loginPage.login(username, password);
 
         OAuth2GrantPage grantPage = getOAuth2GrantPageBuilder().build();
         grantPage.grant();
