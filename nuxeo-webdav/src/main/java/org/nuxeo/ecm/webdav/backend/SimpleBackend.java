@@ -135,7 +135,7 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     @Override
     public DocumentModel updateDocument(DocumentModel doc, String name, Blob content) {
-        FileManager fileManager = Framework.getLocalService(FileManager.class);
+        FileManager fileManager = Framework.getService(FileManager.class);
         String parentPath = new Path(doc.getPathAsString()).removeLastSegments(1).toString();
         try {
             // this cannot be done before the update anymore
@@ -417,7 +417,7 @@ public class SimpleBackend extends AbstractCoreBackend {
                 file = getSession().createDocument(file);
             } else {
                 // use the FileManager to create the file
-                FileManager fileManager = Framework.getLocalService(FileManager.class);
+                FileManager fileManager = Framework.getService(FileManager.class);
                 file = fileManager.createDocumentFromBlob(getSession(), content, parent.getPathAsString(), false, name);
             }
             getPathCache().put(parseLocation(parentPath) + "/" + name, file);
