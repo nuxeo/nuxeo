@@ -49,7 +49,7 @@ public class TestSnapshotOperations extends AbstractTestSnapshot {
         folderB1.addFacet(Snapshotable.FACET);
         session.save();
 
-        AutomationService as = Framework.getLocalService(AutomationService.class);
+        AutomationService as = Framework.getService(AutomationService.class);
         assertNotNull(as);
 
         OperationContext ctx = new OperationContext(session);
