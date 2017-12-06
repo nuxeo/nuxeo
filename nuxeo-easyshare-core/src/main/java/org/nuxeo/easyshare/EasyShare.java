@@ -234,7 +234,7 @@ public class EasyShare extends ModuleRoot {
                         params.put("event", "Download");
                         params.put("category", "Document");
                         params.put("comment", "IP: " + getIpAddr());
-                        AutomationService service = Framework.getLocalService(AutomationService.class);
+                        AutomationService service = Framework.getService(AutomationService.class);
                         service.run(ctx, "Audit.Log", params);
 
                         if (doc.isProxy()) {
