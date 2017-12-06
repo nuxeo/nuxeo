@@ -511,8 +511,8 @@ public class NuxeoCmisService extends AbstractCmisService
 
     /** Creates and save document model. */
     protected DocumentModel createDocumentModel(ObjectId folder, ContentStream contentStream, String name) {
-        FileManager fileManager = Framework.getLocalService(FileManager.class);
-        MimetypeRegistryService mtr = (MimetypeRegistryService) Framework.getLocalService(MimetypeRegistry.class);
+        FileManager fileManager = Framework.getService(FileManager.class);
+        MimetypeRegistryService mtr = (MimetypeRegistryService) Framework.getService(MimetypeRegistry.class);
         if (fileManager == null || mtr == null || name == null || folder == null) {
             return null;
         }
@@ -628,7 +628,7 @@ public class NuxeoCmisService extends AbstractCmisService
         }
         if (!created) {
             // set path segment from properties (name/title)
-            PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
+            PathSegmentService pss = Framework.getService(PathSegmentService.class);
             String pathSegment = pss.generatePathSegment(doc);
             Path path = doc.getPath();
             doc.setPathInfo(path == null ? null : path.removeLastSegments(1).toString(), pathSegment);
@@ -938,7 +938,7 @@ public class NuxeoCmisService extends AbstractCmisService
     }
 
     protected ContentStream getRenditionServiceStream(String objectId, String renditionName) {
-        RenditionService renditionService = Framework.getLocalService(RenditionService.class);
+        RenditionService renditionService = Framework.getService(RenditionService.class);
         DocumentModel doc = getDocumentModel(objectId);
         Rendition rendition = renditionService.getRendition(doc, renditionName);
         if (rendition == null) {
@@ -1384,7 +1384,7 @@ public class NuxeoCmisService extends AbstractCmisService
      * @return null if not enough elements found with the current page size
      */
     protected List<ObjectData> readAuditLog(String repositoryId, long minId, int max, int pageSize) {
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
         if (reader == null) {
             throw new CmisRuntimeException("Cannot find audit service");
         }

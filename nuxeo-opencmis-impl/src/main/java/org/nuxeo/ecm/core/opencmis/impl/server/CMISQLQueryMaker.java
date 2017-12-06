@@ -610,7 +610,7 @@ public class CMISQLQueryMaker implements QueryMaker {
      */
     protected String applySecurityPolicyQueryTransformers(NuxeoCmisService service, Principal principal,
             String statement) {
-        SecurityPolicyService securityPolicyService = Framework.getLocalService(SecurityPolicyService.class);
+        SecurityPolicyService securityPolicyService = Framework.getService(SecurityPolicyService.class);
         if (securityPolicyService == null) {
             return statement;
         }
