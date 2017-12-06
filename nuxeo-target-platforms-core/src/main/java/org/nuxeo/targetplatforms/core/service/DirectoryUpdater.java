@@ -57,7 +57,7 @@ public abstract class DirectoryUpdater {
         Session session = null;
         try {
             // check if entry already exists
-            DirectoryService service = Framework.getLocalService(DirectoryService.class);
+            DirectoryService service = Framework.getService(DirectoryService.class);
             session = service.open(dirName);
             run(service, session);
         } finally {

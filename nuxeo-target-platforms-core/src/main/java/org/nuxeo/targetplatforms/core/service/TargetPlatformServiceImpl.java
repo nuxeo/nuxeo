@@ -524,7 +524,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
         Session dirSession = null;
         try {
             // check if entry already exists
-            DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
+            DirectoryService dirService = Framework.getService(DirectoryService.class);
             String dirName = getOverrideDirectory();
             dirSession = dirService.open(dirName);
             return dirSession.getEntry(id);
