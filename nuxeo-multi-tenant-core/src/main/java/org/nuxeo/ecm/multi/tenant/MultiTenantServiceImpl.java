@@ -145,7 +145,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     }
 
     private DocumentModel registerTenant(DocumentModel doc) {
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
             Map<String, Object> m = new HashMap<String, Object>();
             m.put("id", getTenantIdForTenant(doc));
@@ -200,7 +200,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     }
 
     private void unregisterTenant(DocumentModel doc) {
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
             Framework.doPrivileged(() -> session.deleteEntry(getTenantIdForTenant(doc)));
         }
@@ -225,7 +225,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
 
     @Override
     public List<DocumentModel> getTenants() {
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
             return session.getEntries();
         }
@@ -243,7 +243,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     @Override
     public void applicationStarted(ComponentContext context) {
         TransactionHelper.runInTransaction(() -> {
-            RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+            RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
             for (String repositoryName : repositoryManager.getRepositoryNames()) {
                 new UnrestrictedSessionRunner(repositoryName) {
                     @Override

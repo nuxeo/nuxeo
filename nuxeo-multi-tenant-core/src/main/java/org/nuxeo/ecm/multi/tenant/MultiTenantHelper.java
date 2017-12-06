@@ -96,7 +96,7 @@ public class MultiTenantHelper {
      * Returns the tenantId for the given {@code username} if any, {@code null} otherwise.
      */
     public static String getTenantId(String username) {
-        UserManager userManager = Framework.getLocalService(UserManager.class);
+        UserManager userManager = Framework.getService(UserManager.class);
         String tenantId = null;
         DocumentModel userModel = userManager.getUserModel(username);
         if (userModel != null) {

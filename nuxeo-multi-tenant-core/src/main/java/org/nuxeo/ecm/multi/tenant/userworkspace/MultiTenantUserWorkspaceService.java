@@ -46,7 +46,7 @@ public class MultiTenantUserWorkspaceService extends DefaultUserWorkspaceService
         if (userName == null) {
             userName = userCoreSession.getPrincipal().getName();
         }
-        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+        MultiTenantService multiTenantService = Framework.getService(MultiTenantService.class);
         if (multiTenantService.isTenantIsolationEnabled(userCoreSession)) {
             tenantId = MultiTenantHelper.getTenantId(userName);
         }
