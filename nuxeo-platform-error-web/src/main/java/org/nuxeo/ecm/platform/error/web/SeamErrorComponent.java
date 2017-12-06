@@ -174,7 +174,7 @@ public class SeamErrorComponent implements Serializable {
     }
 
     protected DocumentModel createDummyUser() {
-        DirectoryService directories = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directories = Framework.getService(DirectoryService.class);
         try (Session userDir = directories.getDirectory("userDirectory").getSession()) {
             Map<String, Object> user = new HashMap<>();
             user.put("username", "dummy");
@@ -186,7 +186,7 @@ public class SeamErrorComponent implements Serializable {
     }
 
     protected void clearDummyUser() throws DirectoryException {
-        DirectoryService directories = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directories = Framework.getService(DirectoryService.class);
         try (Session userDir = directories.open("userDirectory")) {
             userDir.deleteEntry("dummy");
         }
@@ -197,7 +197,7 @@ public class SeamErrorComponent implements Serializable {
      */
     @Factory(scope = ScopeType.EVENT)
     public boolean isDummyUserExists() throws DirectoryException {
-        DirectoryService directories = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directories = Framework.getService(DirectoryService.class);
         try (Session userDir = directories.getDirectory("userDirectory").getSession()) {
             DocumentModel user = userDir.getEntry("dummy");
             return user != null;
@@ -207,7 +207,7 @@ public class SeamErrorComponent implements Serializable {
     }
 
     protected LogEntry createDummyLogEntry() {
-        Logs logs = Framework.getLocalService(Logs.class);
+        Logs logs = Framework.getService(Logs.class);
         LogEntry entry = logs.newLogEntry();
         entry.setEventId("dummy");
         entry.setDocUUID("dummy");
@@ -232,7 +232,7 @@ public class SeamErrorComponent implements Serializable {
      */
     @Factory(scope = ScopeType.EVENT)
     public boolean isDummyAuditExists() {
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> entries = reader.getLogEntriesFor("dummy");
         return !entries.isEmpty();
     }
