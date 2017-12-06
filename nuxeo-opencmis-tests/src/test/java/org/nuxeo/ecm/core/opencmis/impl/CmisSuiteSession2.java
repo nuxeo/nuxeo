@@ -83,7 +83,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManagerComponent;
 import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
@@ -168,7 +167,7 @@ public class CmisSuiteSession2 {
     protected void setUpData() throws Exception {
         Helper.makeNuxeoRepository(coreSession);
 
-        DocumentModel file7 = new DocumentModelImpl("/testfolder1", "testfile7", "File");
+        DocumentModel file7 = coreSession.createDocumentModel("/testfolder1", "testfile7", "File");
         file7.setPropertyValue("dc:title", "title7");
         String content = FILE1_CONTENT;
         String filename = "testfile.txt";
