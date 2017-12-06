@@ -41,6 +41,7 @@ public class StreamAuditFeature extends AuditFeature {
         Framework.getProperties().setProperty(STREAM_AUDIT_ENABLED_PROP, "true");
     }
 
+    @Override
     public void stop(FeaturesRunner runner) throws Exception {
         // disable it for next tests
         Framework.getProperties().setProperty(STREAM_AUDIT_ENABLED_PROP, "false");

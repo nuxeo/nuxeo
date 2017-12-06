@@ -154,7 +154,7 @@ public class NXAuditEventsService extends DefaultComponent {
 
     protected void doUnregisterAdapter(AdapterDescriptor desc) {
         // FIXME: this doesn't look right
-        documentAdapters.remove(desc.getName());
+        documentAdapters.remove(desc);
         if (log.isDebugEnabled()) {
             log.debug("Unregistered adapter: " + desc.getName());
         }
@@ -170,7 +170,7 @@ public class NXAuditEventsService extends DefaultComponent {
 
     protected void doUnregisterExtendedInfo(ExtendedInfoDescriptor desc) {
         // FIXME: this doesn't look right
-        extendedInfoDescriptors.remove(desc.getKey());
+        extendedInfoDescriptors.remove(desc);
         if (log.isDebugEnabled()) {
             log.debug("Unregistered extended info: " + desc.getKey());
         }

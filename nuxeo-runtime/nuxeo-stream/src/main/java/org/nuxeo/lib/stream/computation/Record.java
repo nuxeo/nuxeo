@@ -104,7 +104,7 @@ public class Record implements Externalizable {
         short ret = 0;
         if (flags != null) {
             for (Flag val : flags) {
-                ret |= (1 << val.ordinal());
+                ret = (short) (ret | (1 << val.ordinal()));
             }
         }
         return ret;

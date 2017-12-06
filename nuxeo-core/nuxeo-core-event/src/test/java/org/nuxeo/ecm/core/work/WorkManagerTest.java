@@ -276,6 +276,8 @@ public class WorkManagerTest {
         tracker.assertDiff(0, 0, 3, 1);
     }
 
+    @Test
+    @Ignore("Why this test is not run")
     public void testDuplicatedWorks() throws Exception {
         MetricsTracker tracker = new MetricsTracker();
         int duration = 2000; // 2s

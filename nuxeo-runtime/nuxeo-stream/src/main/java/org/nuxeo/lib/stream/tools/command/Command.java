@@ -37,10 +37,10 @@ public abstract class Command {
 
     protected Renderer getRecordRenderer(String render) {
         switch (render) {
-            case "markdown":
-                return new MarkdownRenderer();
-            default:
-                return new TextRenderer();
+        case "markdown":
+            return new MarkdownRenderer();
+        default:
+            return new TextRenderer();
         }
     }
 
