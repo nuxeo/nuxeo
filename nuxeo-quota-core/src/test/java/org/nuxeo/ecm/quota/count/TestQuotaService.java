@@ -89,7 +89,7 @@ public class TestQuotaService {
         }
         TransactionHelper.startTransaction();
         try (CoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jack")) {
-            uwm = Framework.getLocalService(UserWorkspaceService.class);
+            uwm = Framework.getService(UserWorkspaceService.class);
             assertNotNull(uwm);
 
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);

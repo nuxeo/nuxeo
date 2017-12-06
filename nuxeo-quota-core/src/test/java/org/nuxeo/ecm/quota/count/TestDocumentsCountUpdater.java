@@ -235,7 +235,7 @@ public class TestDocumentsCountUpdater {
         String updaterName = "documentsCountUpdater";
         quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName());
         TransactionHelper.commitOrRollbackTransaction();
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        WorkManager workManager = Framework.getService(WorkManager.class);
         String queueId = workManager.getCategoryQueueId(QuotaStatsInitialWork.CATEGORY_QUOTA_INITIAL);
         workManager.awaitCompletion(queueId, 10, TimeUnit.SECONDS);
 

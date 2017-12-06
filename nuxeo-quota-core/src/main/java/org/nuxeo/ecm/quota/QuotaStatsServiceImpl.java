@@ -114,7 +114,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
 
     @Override
     public void launchInitialStatisticsComputation(String updaterName, String repositoryName) {
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        WorkManager workManager = Framework.getService(WorkManager.class);
         if (workManager == null) {
             throw new RuntimeException("No WorkManager available");
         }
@@ -124,7 +124,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
 
     @Override
     public String getProgressStatus(String updaterName, String repositoryName) {
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        WorkManager workManager = Framework.getService(WorkManager.class);
         Work work = new QuotaStatsInitialWork(updaterName, repositoryName);
         State state = workManager.getWorkState(work.getId());
         if (state == null) {
@@ -237,7 +237,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
                         allIds.add((String) map.get("ecm:uuid"));
                     }
                     List<String> ids = new ArrayList<String>();
-                    WorkManager workManager = Framework.getLocalService(WorkManager.class);
+                    WorkManager workManager = Framework.getService(WorkManager.class);
                     for (String id : allIds) {
                         ids.add(id);
                         size++;
@@ -261,7 +261,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
     public String getUserWorkspaceRootId(DocumentModel context, CoreSession session) {
         // get only the userworkspaces root under the first domain
         // it should be only one
-        DocumentModel currentUserWorkspace = Framework.getLocalService(UserWorkspaceService.class).getUserPersonalWorkspace(
+        DocumentModel currentUserWorkspace = Framework.getService(UserWorkspaceService.class).getUserPersonalWorkspace(
                 session.getPrincipal().getName(), context);
 
         return ((IdRef) currentUserWorkspace.getParentRef()).value;

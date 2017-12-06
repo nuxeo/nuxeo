@@ -68,7 +68,7 @@ public class QuotaStatsInitialWork extends AbstractWork {
         new UnrestrictedSessionRunner(repositoryName) {
             @Override
             public void run() {
-                QuotaStatsService service = Framework.getLocalService(QuotaStatsService.class);
+                QuotaStatsService service = Framework.getService(QuotaStatsService.class);
                 service.computeInitialStatistics(updaterName, session, currentWorker);
             }
         }.runUnrestricted();

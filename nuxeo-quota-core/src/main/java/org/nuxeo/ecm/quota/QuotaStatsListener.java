@@ -72,7 +72,7 @@ public class QuotaStatsListener implements EventListener {
             return;
         }
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
-        QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
+        QuotaStatsService quotaStatsService = Framework.getService(QuotaStatsService.class);
         quotaStatsService.updateStatistics(docCtx, event);
     }
 

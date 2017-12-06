@@ -926,7 +926,7 @@ public class TestDocumentsSizeUpdater {
     @Test
     public void testComputeInitialStatistics() throws Exception {
 
-        EventServiceAdmin eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
+        EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
         eventAdmin.setListenerEnabledFlag("quotaStatsListener", false);
 
         addContent();
@@ -1002,7 +1002,7 @@ public class TestDocumentsSizeUpdater {
     @Test
     public void testComputeInitialStatisticsAfterFileMovedToTrash() throws Exception {
 
-        EventServiceAdmin eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
+        EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
         eventAdmin.setListenerEnabledFlag("quotaStatsListener", true);
 
         addContent(true);
@@ -1770,7 +1770,7 @@ public class TestDocumentsSizeUpdater {
 
                 List<DocumentModel> docs = new ArrayList<DocumentModel>();
                 docs.add(session.getDocument(firstFileRef));
-                Framework.getLocalService(TrashService.class).trashDocuments(docs);
+                Framework.getService(TrashService.class).trashDocuments(docs);
             }
         });
     }
@@ -1782,7 +1782,7 @@ public class TestDocumentsSizeUpdater {
 
                 List<DocumentModel> docs = new ArrayList<DocumentModel>();
                 docs.add(session.getDocument(fileRef));
-                Framework.getLocalService(TrashService.class).trashDocuments(docs);
+                Framework.getService(TrashService.class).trashDocuments(docs);
             }
         });
     }
@@ -1794,7 +1794,7 @@ public class TestDocumentsSizeUpdater {
 
                 List<DocumentModel> docs = new ArrayList<DocumentModel>();
                 docs.add(session.getDocument(firstFileRef));
-                Framework.getLocalService(TrashService.class).undeleteDocuments(docs);
+                Framework.getService(TrashService.class).undeleteDocuments(docs);
             }
         });
     }
