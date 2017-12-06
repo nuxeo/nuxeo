@@ -55,7 +55,7 @@ public class RenderViewActions {
     }
 
     public boolean isConvertingRenders(DocumentModel doc) {
-        ThreeDService service = Framework.getLocalService(ThreeDService.class);
+        ThreeDService service = Framework.getService(ThreeDService.class);
         return !service.getBatchProgress(doc.getRepositoryName(), doc.getId()).isUnknown();
     }
 

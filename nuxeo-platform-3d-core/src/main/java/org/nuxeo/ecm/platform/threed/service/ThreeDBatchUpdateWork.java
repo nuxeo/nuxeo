@@ -118,7 +118,7 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         }
         // Perform batch conversion
         setStatus("Batch conversion");
-        ThreeDService service = Framework.getLocalService(ThreeDService.class);
+        ThreeDService service = Framework.getService(ThreeDService.class);
         BlobHolder batch;
         try {
             batch = service.batchConvert(originalThreeD);
@@ -235,7 +235,7 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
      * document.
      */
     protected void fireThreeDConversionsDoneEvent(DocumentModel doc) {
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        WorkManager workManager = Framework.getService(WorkManager.class);
         List<String> workIds = workManager.listWorkIds(CATEGORY_THREED_CONVERSION, null);
         String idPrefix = computeIdPrefix(repositoryName, docId);
         int worksCount = 0;
@@ -250,10 +250,10 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
 
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         Event event = ctx.newEvent(THREED_CONVERSIONS_DONE_EVENT);
-        Framework.getLocalService(EventService.class).fireEvent(event);
+        Framework.getService(EventService.class).fireEvent(event);
         // force the 3d doc icon
         MimetypeIconUpdater iconUpdater = new MimetypeIconUpdater();
-        MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
+        MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
         MimetypeEntry mimeTypeEntry = mimetypeRegistry.getMimetypeEntryByMimeType(THREED_TYPE);
         iconUpdater.updateIconField(mimeTypeEntry, doc);
     }

@@ -54,7 +54,7 @@ public class ThreeDBatchGenerationListener implements EventListener {
         DocumentModel doc = docCtx.getSourceDocument();
         if (doc.hasFacet(THREED_FACET) && !doc.isProxy()) {
             ThreeDBatchUpdateWork work = new ThreeDBatchUpdateWork(doc.getRepositoryName(), doc.getId());
-            WorkManager manager = Framework.getLocalService(WorkManager.class);
+            WorkManager manager = Framework.getService(WorkManager.class);
 
             ThreeDBatchUpdateWork running = (ThreeDBatchUpdateWork) manager.find(work.getId(), Work.State.RUNNING);
             ThreeDBatchUpdateWork scheduled = (ThreeDBatchUpdateWork) manager.find(work.getId(), Work.State.SCHEDULED);

@@ -79,7 +79,7 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
 
     @Override
     public void deactivate(ComponentContext context) {
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        WorkManager workManager = Framework.getService(WorkManager.class);
         if (workManager != null && workManager.isStarted()) {
             try {
                 workManager.shutdownQueue(
@@ -135,7 +135,7 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
     public void launchBatchConversion(DocumentModel doc) {
         cleanBatchData(doc);
         ThreeDBatchUpdateWork work = new ThreeDBatchUpdateWork(doc.getRepositoryName(), doc.getId());
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        WorkManager workManager = Framework.getService(WorkManager.class);
         workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
     }
 
@@ -258,7 +258,7 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
 
     @Override
     public ThreeDBatchProgress getBatchProgress(String repositoryName, String docId) {
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        WorkManager workManager = Framework.getService(WorkManager.class);
         Work work = new ThreeDBatchUpdateWork(repositoryName, docId);
         Work workRunning = workManager.find(work.getId(), RUNNING);
         if (workRunning != null) {

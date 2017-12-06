@@ -55,7 +55,7 @@ public class TransmissionFormatActions {
     }
 
     public boolean isConvertingFormats(DocumentModel doc) {
-        ThreeDService service = Framework.getLocalService(ThreeDService.class);
+        ThreeDService service = Framework.getService(ThreeDService.class);
         return !service.getBatchProgress(doc.getRepositoryName(), doc.getId()).isUnknown();
     }
 
