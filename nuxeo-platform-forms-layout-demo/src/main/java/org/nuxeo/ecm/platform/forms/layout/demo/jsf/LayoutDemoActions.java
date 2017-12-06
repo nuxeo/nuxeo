@@ -163,7 +163,7 @@ public class LayoutDemoActions implements Serializable {
     public WidgetTypeDefinition getCurrentWidgetTypeDefinition() {
         if (currentWidgetType != null) {
             String type = currentWidgetType.getName();
-            LayoutStore lm = Framework.getLocalService(LayoutStore.class);
+            LayoutStore lm = Framework.getService(LayoutStore.class);
             return lm.getWidgetTypeDefinition(currentWidgetType.getWidgetTypeCategory(), type);
         }
         return null;
