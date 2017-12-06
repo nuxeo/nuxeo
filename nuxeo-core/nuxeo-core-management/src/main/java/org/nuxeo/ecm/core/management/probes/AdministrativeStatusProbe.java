@@ -36,7 +36,7 @@ public class AdministrativeStatusProbe implements Probe {
 
     @Override
     public ProbeStatus run() {
-        AdministrativeStatusManager adm = Framework.getLocalService(AdministrativeStatusManager.class);
+        AdministrativeStatusManager adm = Framework.getService(AdministrativeStatusManager.class);
         AdministrativeStatus status = adm.getNuxeoInstanceStatus();
 
         Map<String, String> infos = new HashMap<String, String>();

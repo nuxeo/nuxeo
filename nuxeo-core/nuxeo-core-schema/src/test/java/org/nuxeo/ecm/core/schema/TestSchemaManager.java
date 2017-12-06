@@ -51,7 +51,7 @@ public class TestSchemaManager extends NXRuntimeTestCase {
 
     @Override
     protected void postSetUp() throws Exception {
-	schemaManager = (SchemaManagerImpl) Framework.getLocalService(SchemaManager.class);
+	schemaManager = (SchemaManagerImpl) Framework.getService(SchemaManager.class);
     }
 
     @Test

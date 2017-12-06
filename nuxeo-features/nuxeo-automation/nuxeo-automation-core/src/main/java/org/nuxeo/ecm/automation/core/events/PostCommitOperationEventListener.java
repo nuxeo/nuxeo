@@ -32,7 +32,7 @@ public class PostCommitOperationEventListener implements PostCommitFilteringEven
 
     @Override
     public boolean acceptEvent(Event event) {
-        EventHandlerRegistry registry = Framework.getLocalService(EventHandlerRegistry.class);
+        EventHandlerRegistry registry = Framework.getService(EventHandlerRegistry.class);
         if (!registry.getPostCommitEventNames().contains(event.getName())) {
             return false;
         }
@@ -42,7 +42,7 @@ public class PostCommitOperationEventListener implements PostCommitFilteringEven
 
     @Override
     public void handleEvent(EventBundle events) {
-        EventHandlerRegistry registry = Framework.getLocalService(EventHandlerRegistry.class);
+        EventHandlerRegistry registry = Framework.getService(EventHandlerRegistry.class);
         boolean processEvents = false;
         for (String name : registry.getPostCommitEventNames()) {
             if (events.containsEventName(name)) {

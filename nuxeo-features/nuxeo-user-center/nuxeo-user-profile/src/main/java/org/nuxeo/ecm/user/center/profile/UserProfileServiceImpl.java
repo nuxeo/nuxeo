@@ -126,7 +126,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
 
     private UserWorkspaceService getUserWorkspaceService() {
         if (userWorkspaceService == null) {
-            userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
+            userWorkspaceService = Framework.getService(UserWorkspaceService.class);
         }
         return userWorkspaceService;
     }

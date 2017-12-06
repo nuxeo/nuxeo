@@ -67,7 +67,7 @@ public class SystemLoginModule implements LoginModule {
             log.trace("begin system login");
         }
         LoginService loginService =
-                Framework.getLocalService(LoginService.class);
+                Framework.getService(LoginService.class);
         if (loginService == null) {
             throw new LoginException(
                     "Nuxeo Login Service is not running - cannot do system login");

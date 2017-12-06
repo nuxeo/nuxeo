@@ -55,7 +55,7 @@ public class TestUserMapperService {
 
     @Test
     public void shouldDeclareService() throws Exception {
-        UserMapperService ums = Framework.getLocalService(UserMapperService.class);
+        UserMapperService ums = Framework.getService(UserMapperService.class);
         Assert.assertNotNull(ums);
         Assert.assertEquals(3, ums.getAvailableMappings().size());
     }
@@ -65,7 +65,7 @@ public class TestUserMapperService {
 
         // test create
         DummyUser dm = new DummyUser("jchan", "Jacky", "Chan");
-        UserMapperService ums = Framework.getLocalService(UserMapperService.class);
+        UserMapperService ums = Framework.getService(UserMapperService.class);
         NuxeoPrincipal principal = ums.getOrCreateAndUpdateNuxeoPrincipal("javaDummy", dm);
         Assert.assertNotNull(principal);
         Assert.assertEquals("jchan", principal.getName());
@@ -87,7 +87,7 @@ public class TestUserMapperService {
 
         // test create
         DummyUser dm = new DummyUser("bharper", "Ben", "Harper");
-        UserMapperService ums = Framework.getLocalService(UserMapperService.class);
+        UserMapperService ums = Framework.getService(UserMapperService.class);
         NuxeoPrincipal principal = ums.getOrCreateAndUpdateNuxeoPrincipal("groovyDummy", dm);
         Assert.assertNotNull(principal);
         Assert.assertEquals("bharper", principal.getName());
@@ -112,7 +112,7 @@ public class TestUserMapperService {
 
         // test create
         DummyUser dm = new DummyUser("bharper", "Ben", "Harper");
-        UserMapperService ums = Framework.getLocalService(UserMapperService.class);
+        UserMapperService ums = Framework.getService(UserMapperService.class);
         NuxeoPrincipal principal = ums.getOrCreateAndUpdateNuxeoPrincipal("jsDummy", dm);
         Assert.assertNotNull(principal);
         Assert.assertEquals("bharper", principal.getName());

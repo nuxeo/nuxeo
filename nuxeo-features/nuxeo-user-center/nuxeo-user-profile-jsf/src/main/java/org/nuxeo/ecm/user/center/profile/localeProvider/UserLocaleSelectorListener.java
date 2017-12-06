@@ -49,7 +49,7 @@ public class UserLocaleSelectorListener implements EventListener {
 
         // if the profile does not belong to the current user
         // => no need to sync Seam session
-        UserWorkspaceService uws = Framework.getLocalService(UserWorkspaceService.class);
+        UserWorkspaceService uws = Framework.getService(UserWorkspaceService.class);
         DocumentModel userWorkspace = uws.getCurrentUserPersonalWorkspace(ctx.getCoreSession(), userProfileDocument);
         if (!userProfileDocument.getPathAsString().startsWith(userWorkspace.getPathAsString())) {
             return;

@@ -45,7 +45,7 @@ public class HtmlPreviewConverter implements ExternalConverter {
 
     protected static ConversionService getConversionService() {
         if (cs == null) {
-            cs = Framework.getLocalService(ConversionService.class);
+            cs = Framework.getService(ConversionService.class);
         }
         return cs;
     }

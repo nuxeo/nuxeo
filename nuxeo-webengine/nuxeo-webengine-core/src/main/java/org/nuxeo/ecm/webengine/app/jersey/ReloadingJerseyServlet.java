@@ -46,7 +46,7 @@ public class ReloadingJerseyServlet extends ServletContainer implements Reloadab
     @Override
     public void init() throws ServletException {
         super.init();
-        engine = Framework.getLocalService(WebEngine.class);
+        engine = Framework.getService(WebEngine.class);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class ReloadingJerseyServlet extends ServletContainer implements Reloadab
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (engine == null) {
-            engine = Framework.getLocalService(WebEngine.class);
+            engine = Framework.getService(WebEngine.class);
         }
         String method = request.getMethod().toUpperCase();
         if (!"GET".equals(method)) {

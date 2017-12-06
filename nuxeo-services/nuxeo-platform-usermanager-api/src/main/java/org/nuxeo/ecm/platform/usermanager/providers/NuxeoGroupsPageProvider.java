@@ -42,7 +42,7 @@ public class NuxeoGroupsPageProvider extends AbstractGroupsPageProvider<NuxeoGro
     public List<NuxeoGroup> getCurrentPage() {
         List<DocumentModel> groups = computeCurrentPage();
         List<NuxeoGroup> nuxeoGroups = new ArrayList<>(groups.size());
-        UserManager userManager = Framework.getLocalService(UserManager.class);
+        UserManager userManager = Framework.getService(UserManager.class);
         for (DocumentModel group : groups) {
             NuxeoGroup nuxeoGroup = userManager.getGroup(
                     group.getProperty(userManager.getGroupIdField()).getValue(String.class));

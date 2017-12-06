@@ -41,16 +41,16 @@ public class TestServiceBindings extends NXRuntimeTestCase {
 
     @Test
     public void testServicesLookup() {
-        ConnectRegistrationService crs = Framework.getLocalService(ConnectRegistrationService.class);
+        ConnectRegistrationService crs = Framework.getService(ConnectRegistrationService.class);
         assertNotNull(crs);
 
-        ConnectConnector connector = Framework.getLocalService(ConnectConnector.class);
+        ConnectConnector connector = Framework.getService(ConnectConnector.class);
         assertNotNull(connector);
 
-        ConnectDownloadManager cdm = Framework.getLocalService(ConnectDownloadManager.class);
+        ConnectDownloadManager cdm = Framework.getService(ConnectDownloadManager.class);
         assertNotNull(cdm);
 
-        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        PackageManager pm = Framework.getService(PackageManager.class);
         assertNotNull(pm);
     }
 

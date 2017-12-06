@@ -77,11 +77,11 @@ public class MonitoringActionBean implements Serializable {
     }
 
     protected AdministrativeStatusManager getStatusManager() {
-        return Framework.getLocalService(AdministrativeStatusManager.class);
+        return Framework.getService(AdministrativeStatusManager.class);
     }
 
     public List<String> listNuxeoInstances() {
-        return Framework.getLocalService(GlobalAdministrativeStatusManager.class).listInstanceIds();
+        return Framework.getService(GlobalAdministrativeStatusManager.class).listInstanceIds();
     }
 
     @Factory(value = "isMultiServerInstallation", scope = ScopeType.EVENT)
@@ -131,18 +131,18 @@ public class MonitoringActionBean implements Serializable {
 
     public List<ProbeInfo> getProbeInfos() {
         List<ProbeInfo> infos = new ArrayList<ProbeInfo>();
-        ProbeManager pm = Framework.getLocalService(ProbeManager.class);
+        ProbeManager pm = Framework.getService(ProbeManager.class);
         infos.addAll(pm.getAllProbeInfos());
         return infos;
     }
 
     public void runProbe() {
-        ProbeManager pm = Framework.getLocalService(ProbeManager.class);
+        ProbeManager pm = Framework.getService(ProbeManager.class);
         pm.runProbe(probeName);
     }
 
     public void runAllProbes() {
-        ProbeManager pm = Framework.getLocalService(ProbeManager.class);
+        ProbeManager pm = Framework.getService(ProbeManager.class);
         pm.runAllProbes();
     }
 

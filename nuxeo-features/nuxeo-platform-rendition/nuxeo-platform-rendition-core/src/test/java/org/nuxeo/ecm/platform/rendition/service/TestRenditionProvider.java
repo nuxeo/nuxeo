@@ -106,7 +106,7 @@ public class TestRenditionProvider {
         assertEquals("pdf", def.getName());
         assertEquals("application/pdf", def.getContentType());
 
-        ConversionService conversionService = Framework.getLocalService(ConversionService.class);
+        ConversionService conversionService = Framework.getService(ConversionService.class);
         ConverterCheckResult check = conversionService.isConverterAvailable("any2pdf");
         if (!check.isAvailable()) {
             return;

@@ -57,7 +57,7 @@ public class AsyncEventExecutor {
     }
 
     public WorkManager getWorkManager() {
-        return Framework.getLocalService(WorkManager.class);
+        return Framework.getService(WorkManager.class);
     }
 
     public void init() {
@@ -211,7 +211,7 @@ public class AsyncEventExecutor {
 
         @Override
         public void work() {
-            EventService eventService = Framework.getLocalService(EventService.class);
+            EventService eventService = Framework.getService(EventService.class);
             listener = eventService.getEventListener(listenerName);
             if (listener == null) {
                 throw new RuntimeException("Cannot find listener: " + listenerName);
@@ -227,7 +227,7 @@ public class AsyncEventExecutor {
                 log.error("Failed to execute async event " + bundle.getName() + " on listener " + listenerName, e);
             }
             if (listener != null) {
-                EventStats stats = Framework.getLocalService(EventStats.class);
+                EventStats stats = Framework.getService(EventStats.class);
                 if (stats != null) {
                     stats.logAsyncExec(listener, System.currentTimeMillis() - getStartTime());
                 }

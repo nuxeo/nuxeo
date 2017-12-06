@@ -181,7 +181,7 @@ public class HotReloadStudioSnapshot {
         }
         // Install
         try {
-            PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+            PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
             String packageId = remotePkg.getId();
             LocalPackage pkg = pus.getPackage(packageId);
 

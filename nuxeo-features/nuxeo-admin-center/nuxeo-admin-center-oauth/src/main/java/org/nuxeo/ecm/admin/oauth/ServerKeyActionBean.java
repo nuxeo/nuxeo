@@ -29,12 +29,12 @@ import org.nuxeo.runtime.api.Framework;
 public class ServerKeyActionBean {
 
     public String getPublicCertificate() {
-        OAuthServerKeyManager skm = Framework.getLocalService(OAuthServerKeyManager.class);
+        OAuthServerKeyManager skm = Framework.getService(OAuthServerKeyManager.class);
         return skm.getPublicKeyCertificate();
     }
 
     public String getKeyName() {
-        OAuthServerKeyManager skm = Framework.getLocalService(OAuthServerKeyManager.class);
+        OAuthServerKeyManager skm = Framework.getService(OAuthServerKeyManager.class);
         return skm.getKeyName();
     }
 

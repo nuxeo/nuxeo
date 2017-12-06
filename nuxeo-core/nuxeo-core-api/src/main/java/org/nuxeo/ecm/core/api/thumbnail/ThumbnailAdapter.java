@@ -40,7 +40,7 @@ public class ThumbnailAdapter implements Thumbnail {
 
     @Override
     public Blob getThumbnail(CoreSession session) {
-        ThumbnailService thumbnailService = Framework.getLocalService(ThumbnailService.class);
+        ThumbnailService thumbnailService = Framework.getService(ThumbnailService.class);
         return thumbnailService.getThumbnail(doc, session);
     }
 
@@ -54,7 +54,7 @@ public class ThumbnailAdapter implements Thumbnail {
 
     @Override
     public Blob computeThumbnail(CoreSession session) {
-        ThumbnailService thumbnailService = Framework.getLocalService(ThumbnailService.class);
+        ThumbnailService thumbnailService = Framework.getService(ThumbnailService.class);
         return thumbnailService.computeThumbnail(doc, session);
     }
 

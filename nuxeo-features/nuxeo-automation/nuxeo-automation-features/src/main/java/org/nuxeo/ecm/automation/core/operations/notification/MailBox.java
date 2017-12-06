@@ -78,7 +78,7 @@ public class MailBox {
         }
 
         String[] valuesToResolve = value.split(",");
-        UserManager umgr = Framework.getLocalService(UserManager.class);
+        UserManager umgr = Framework.getService(UserManager.class);
         for (String info : valuesToResolve) {
 
             if (info.startsWith("user:")) {
@@ -179,7 +179,7 @@ public class MailBox {
     }
 
     public UserManager getUmgr() {
-        return Framework.getLocalService(UserManager.class);
+        return Framework.getService(UserManager.class);
     }
 
     /**

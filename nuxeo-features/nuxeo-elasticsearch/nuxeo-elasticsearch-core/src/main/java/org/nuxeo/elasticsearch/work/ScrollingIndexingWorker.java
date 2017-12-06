@@ -115,7 +115,7 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
 
     protected WorkManager getWorkManager() {
         if (workManager == null) {
-            workManager = Framework.getLocalService(WorkManager.class);
+            workManager = Framework.getService(WorkManager.class);
         }
         return workManager;
     }

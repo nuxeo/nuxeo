@@ -137,7 +137,7 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
     }
 
     private String getRepository() {
-        RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
+        RepositoryManager mgr = Framework.getService(RepositoryManager.class);
         return mgr.getDefaultRepositoryName();
     }
 

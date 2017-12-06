@@ -36,7 +36,7 @@ public class UpdateACEStatusListener implements EventListener {
     public void handleEvent(Event event) {
         if (UPDATE_ACE_STATUS_EVENT.equals(event.getName())) {
             UpdateACEStatusWork work = new UpdateACEStatusWork();
-            WorkManager workManager = Framework.getLocalService(WorkManager.class);
+            WorkManager workManager = Framework.getService(WorkManager.class);
             workManager.schedule(work, WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
         }
     }

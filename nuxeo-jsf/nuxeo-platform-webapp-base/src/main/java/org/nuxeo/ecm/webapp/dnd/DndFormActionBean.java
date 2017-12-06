@@ -84,7 +84,7 @@ public class DndFormActionBean implements Serializable {
     public List<String> getSchemas() {
         currentSchemas = new ArrayList<>();
         if (StringUtils.isNotBlank(schemas)) {
-            SchemaManager sc = Framework.getLocalService(SchemaManager.class);
+            SchemaManager sc = Framework.getService(SchemaManager.class);
             for (String schemaName : schemas.split(",")) {
                 Schema schema = sc.getSchemaFromPrefix(schemaName);
                 if (schema != null) {

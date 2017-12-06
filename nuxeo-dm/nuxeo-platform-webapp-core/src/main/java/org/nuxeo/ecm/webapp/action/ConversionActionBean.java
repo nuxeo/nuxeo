@@ -163,7 +163,7 @@ public class ConversionActionBean implements ConversionAction {
 
         try {
             ConverterCheckResult pdfConverterAvailability;
-            ConversionService conversionService = Framework.getLocalService(ConversionService.class);
+            ConversionService conversionService = Framework.getService(ConversionService.class);
             Iterator<String> converterNames = conversionService.getConverterNames(mimeType, PDF_MIMETYPE).iterator();
             while (converterNames.hasNext()) {
                 pdfConverterName = converterNames.next();

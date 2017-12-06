@@ -42,7 +42,7 @@ public class TestBlobHolderAdapterService extends NXRuntimeTestCase {
 
     @Test
     public void testService() throws Exception {
-        BlobHolderAdapterService bhas = Framework.getLocalService(BlobHolderAdapterService.class);
+        BlobHolderAdapterService bhas = Framework.getService(BlobHolderAdapterService.class);
         assertNotNull(bhas);
     }
 
@@ -54,7 +54,7 @@ public class TestBlobHolderAdapterService extends NXRuntimeTestCase {
 
         assertEquals(1, BlobHolderAdapterComponent.getFactoryNames().size());
 
-        BlobHolderAdapterService bhas = Framework.getLocalService(BlobHolderAdapterService.class);
+        BlobHolderAdapterService bhas = Framework.getService(BlobHolderAdapterService.class);
         assertNotNull(bhas);
 
         DocumentModel doc = new DocumentModelImpl("Test");

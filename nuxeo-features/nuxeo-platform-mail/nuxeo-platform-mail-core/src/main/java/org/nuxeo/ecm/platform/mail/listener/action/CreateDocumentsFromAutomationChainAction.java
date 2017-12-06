@@ -72,7 +72,7 @@ public class CreateDocumentsFromAutomationChainAction extends AbstractMailAction
     }
 
     protected String generateMailName(String subject) {
-        PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
         return pss.generatePathSegment(subject + System.currentTimeMillis() % 10000);
     }
 

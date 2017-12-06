@@ -93,7 +93,7 @@ public class DBSRepositoryService extends DefaultComponent {
      * Update repository registration in high-level repository service.
      */
     protected void updateRegistration(String repositoryName, Class<? extends DBSRepositoryFactory> factoryClass) {
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         DBSRepositoryDescriptor descriptor = registry.getRepositoryDescriptor(repositoryName);
         if (descriptor == null) {
             // last contribution removed

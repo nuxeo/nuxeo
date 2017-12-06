@@ -148,7 +148,7 @@ public class MongoDBQueryBuilder {
 
     public MongoDBQueryBuilder(MongoDBRepository repository, Expression expression, SelectClause selectClause,
             OrderByClause orderByClause, PathResolver pathResolver, boolean fulltextSearchDisabled) {
-        schemaManager = Framework.getLocalService(SchemaManager.class);
+        schemaManager = Framework.getService(SchemaManager.class);
         converter = repository.converter;
         idKey = repository.idKey;
         this.expression = expression;

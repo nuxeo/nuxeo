@@ -117,7 +117,7 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
     public void testAsyncRetry() throws Exception {
         pushInlineDeployments("org.nuxeo.ecm.core.event:test-async-listeners.xml");
 
-        EventService service = Framework.getLocalService(EventService.class);
+        EventService service = Framework.getService(EventService.class);
 
         // send two events, only one of which is recognized by the listener
         // (the other is filtered out of the bundle passed to this listener)
@@ -175,7 +175,7 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
             int expectedEvents) throws Exception {
         pushInlineDeployments("org.nuxeo.ecm.core.event:test-sync-postcommit-listeners.xml");
 
-        EventServiceAdmin eventServiceAdmin = Framework.getLocalService(EventServiceAdmin.class);
+        EventServiceAdmin eventServiceAdmin = Framework.getService(EventServiceAdmin.class);
         try {
             eventServiceAdmin.setBulkModeEnabled(bulk);
             if (timeout) {

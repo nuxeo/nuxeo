@@ -78,7 +78,7 @@ public class KeycloakUserMapper implements UserMapper {
 
     @Override
     public void init(Map<String, String> params) throws Exception {
-        userManager = Framework.getLocalService(UserManager.class);
+        userManager = Framework.getService(UserManager.class);
         userSchemaName = userManager.getUserSchemaName();
         groupSchemaName = userManager.getGroupSchemaName();
     }

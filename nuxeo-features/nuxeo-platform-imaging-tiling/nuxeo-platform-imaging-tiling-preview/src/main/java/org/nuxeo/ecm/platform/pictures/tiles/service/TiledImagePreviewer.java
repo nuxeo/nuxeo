@@ -76,7 +76,7 @@ public class TiledImagePreviewer extends AbstractPreviewer implements MimeTypePr
     }
 
     protected boolean useTiling(Blob blob) {
-        ImagingService imagingService = Framework.getLocalService(ImagingService.class);
+        ImagingService imagingService = Framework.getService(ImagingService.class);
         if (imagingService != null) {
             ImageInfo info = imagingService.getImageInfo(blob);
             if (info != null) {

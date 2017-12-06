@@ -561,7 +561,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     @Override
     public DocumentModelList getCreationContainers(Principal principal, String docType) {
         DocumentModelList containers = new DocumentModelListImpl();
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
             try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
                 containers.addAll(getCreationContainers(session, docType));

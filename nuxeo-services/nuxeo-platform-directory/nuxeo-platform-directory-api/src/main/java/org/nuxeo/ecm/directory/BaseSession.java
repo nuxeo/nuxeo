@@ -151,7 +151,7 @@ public abstract class BaseSession implements Session, EntrySource {
      */
     public void checkDeleteConstraints(String entryId) {
         List<DirectoryDeleteConstraint> deleteConstraints = directory.getDirectoryDeleteConstraints();
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
         if (deleteConstraints != null && !deleteConstraints.isEmpty()) {
             for (DirectoryDeleteConstraint deleteConstraint : deleteConstraints) {
                 if (!deleteConstraint.canDelete(directoryService, entryId)) {

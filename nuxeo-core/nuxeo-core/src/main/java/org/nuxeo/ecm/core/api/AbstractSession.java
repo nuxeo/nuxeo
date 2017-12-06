@@ -201,7 +201,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentType getDocumentType(String type) {
-        return Framework.getLocalService(SchemaManager.class).getDocumentType(type);
+        return Framework.getService(SchemaManager.class).getDocumentType(type);
     }
 
     protected final void checkPermission(Document doc, String permission) throws DocumentSecurityException {
@@ -268,7 +268,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 event.setInline(true);
             }
         }
-        Framework.getLocalService(EventService.class).fireEvent(event);
+        Framework.getService(EventService.class).fireEvent(event);
     }
 
     /**
@@ -614,7 +614,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     private DocumentModel createDocumentModelFromTypeName(String typeName, Map<String, Serializable> options) {
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         DocumentType docType = schemaManager.getDocumentType(typeName);
         if (docType == null) {
             throw new IllegalArgumentException(typeName + " is not a registered core type");
@@ -1427,7 +1427,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // version or not
         if (!doc.isVersion()) {
             notifyEvent(DocumentEventTypes.ABOUT_TO_REMOVE, docModel, options, null, null, true, true);
-            CoreService coreService = Framework.getLocalService(CoreService.class);
+            CoreService coreService = Framework.getService(CoreService.class);
             coreService.getVersionRemovalPolicy().removeVersions(getSession(), doc, this);
         } else {
             versionLabel = docModel.getVersionLabel();
@@ -2462,7 +2462,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     protected void loadDataModelsForFacet(DocumentModel docModel, Document doc, String facetName) {
         // Load all the data related to facet's schemas
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         CompositeType facet = schemaManager.getFacet(facetName);
         if (facet == null) {
             return;

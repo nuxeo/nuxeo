@@ -51,7 +51,7 @@ public class RollbackAndUndeploy extends Rollback {
             res = super.doRun(task, prefs);
 
             // then re-build the war now that jar is deleted
-            ReloadService srv = Framework.getLocalService(ReloadService.class);
+            ReloadService srv = Framework.getService(ReloadService.class);
             srv.runDeploymentPreprocessor();
         } catch (PackageException | IOException e) {
             // ignore uninstall -> this may break the entire chain. Usually

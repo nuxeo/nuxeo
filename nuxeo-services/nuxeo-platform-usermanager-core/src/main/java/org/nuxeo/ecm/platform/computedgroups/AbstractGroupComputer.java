@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class AbstractGroupComputer implements GroupComputer {
 
     protected UserManager getUM() {
-        return Framework.getLocalService(UserManager.class);
+        return Framework.getService(UserManager.class);
     }
 
     /**

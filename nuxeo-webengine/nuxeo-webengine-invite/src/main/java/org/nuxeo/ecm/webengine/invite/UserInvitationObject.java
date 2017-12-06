@@ -111,7 +111,7 @@ public class UserInvitationObject extends ModuleRoot {
     }
 
     protected UserInvitationService fetchService() {
-        UserInvitationService usr = Framework.getLocalService(UserInvitationService.class);
+        UserInvitationService usr = Framework.getService(UserInvitationService.class);
         return usr;
     }
 

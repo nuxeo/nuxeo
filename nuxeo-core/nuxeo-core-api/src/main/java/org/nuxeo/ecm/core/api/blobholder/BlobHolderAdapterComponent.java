@@ -100,7 +100,7 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements Blob
     /* for test */
 
     public static Set<String> getFactoryNames() {
-        return ((BlobHolderAdapterComponent) Framework.getLocalService(
+        return ((BlobHolderAdapterComponent) Framework.getService(
                 BlobHolderAdapterService.class)).factories.keySet();
     }
 

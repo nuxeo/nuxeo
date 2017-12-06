@@ -158,7 +158,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
     }
 
     protected ImagingService getImagingService() {
-        return Framework.getLocalService(ImagingService.class);
+        return Framework.getService(ImagingService.class);
     }
 
     protected ConversionService getConversionService() {

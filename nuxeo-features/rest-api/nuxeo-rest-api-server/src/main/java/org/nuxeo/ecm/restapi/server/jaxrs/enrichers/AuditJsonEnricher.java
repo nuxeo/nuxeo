@@ -66,7 +66,7 @@ public class AuditJsonEnricher extends AbstractJsonEnricher<DocumentModel>  {
             searchDocument.setPropertyValue("bas:startDate", AuditAdapter.getCalendarParameter(ctx.getParameter(AuditAdapter.START_EVENT_DATE_PARAMETER_NAME)));
             searchDocument.setPropertyValue("bas:endDate", AuditAdapter.getCalendarParameter(ctx.getParameter(AuditAdapter.END_EVENT_DATE_PARAMETER_NAME)));
 
-            PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+            PageProviderService ppService = Framework.getService(PageProviderService.class);
             PageProviderDefinition ppDefinition = ppService.getPageProviderDefinition(AuditAdapter.PAGE_PROVIDER_NAME);
             Map<String, Serializable> props = new HashMap<String, Serializable>();
             props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) wrapper.getSession());

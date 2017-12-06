@@ -46,10 +46,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestServiceProviderService {
 
     @Inject
-    OAuthServiceProviderRegistry providerRegistry = Framework.getLocalService(OAuthServiceProviderRegistry.class);
+    OAuthServiceProviderRegistry providerRegistry = Framework.getService(OAuthServiceProviderRegistry.class);
 
     @Inject
-    OAuth2ServiceProviderRegistry providerRegistry2 = Framework.getLocalService(OAuth2ServiceProviderRegistry.class);
+    OAuth2ServiceProviderRegistry providerRegistry2 = Framework.getService(OAuth2ServiceProviderRegistry.class);
 
     @Test
     public void testServiceLookup2() throws Exception {

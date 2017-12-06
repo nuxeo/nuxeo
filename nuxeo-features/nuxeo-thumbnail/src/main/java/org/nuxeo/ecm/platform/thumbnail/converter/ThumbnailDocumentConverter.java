@@ -60,7 +60,7 @@ public class ThumbnailDocumentConverter implements Converter {
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         try {
             // Make sure the toThumbnail command is available
-            CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+            CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
             CommandAvailability commandAvailability = cles.getCommandAvailability(THUMBNAIL_COMMAND);
             if (!commandAvailability.isAvailable()) {
                 return null;

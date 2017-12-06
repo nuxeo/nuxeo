@@ -39,7 +39,7 @@ public abstract class DBSRepositoryFactory implements RepositoryFactory {
     }
 
     public DBSRepositoryDescriptor getRepositoryDescriptor() {
-        DBSRepositoryService repositoryService = Framework.getLocalService(DBSRepositoryService.class);
+        DBSRepositoryService repositoryService = Framework.getService(DBSRepositoryService.class);
         DBSRepositoryDescriptor descriptor = repositoryService.getRepositoryDescriptor(repositoryName);
         if (descriptor == null) {
             throw new IllegalStateException("No descriptor registered for: " + repositoryName);

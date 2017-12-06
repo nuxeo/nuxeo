@@ -157,7 +157,7 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin, NuxeoAuthe
 
     protected String getUserByToken(String token) {
 
-        TokenAuthenticationService tokenAuthService = Framework.getLocalService(TokenAuthenticationService.class);
+        TokenAuthenticationService tokenAuthService = Framework.getService(TokenAuthenticationService.class);
         return tokenAuthService.getUserName(token);
     }
 

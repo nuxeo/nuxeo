@@ -118,7 +118,7 @@ public class TestCompareCoreWithES {
         TransactionHelper.commitOrRollbackTransaction();
 
         // wait for async jobs
-        Framework.getLocalService(WorkManager.class).awaitCompletion(20, TimeUnit.SECONDS);
+        Framework.getService(WorkManager.class).awaitCompletion(20, TimeUnit.SECONDS);
         esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
         esa.refresh();
         Assert.assertEquals(0, esa.getPendingWorkerCount());

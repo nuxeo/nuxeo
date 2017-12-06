@@ -156,7 +156,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
     }
 
     protected TaskService getTaskService() {
-        return Framework.getLocalService(TaskService.class);
+        return Framework.getService(TaskService.class);
     }
 
     protected void removeExistingProxiesOnPreviousVersions(DocumentModel newProxy) {

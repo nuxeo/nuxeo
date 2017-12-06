@@ -61,7 +61,7 @@ public class TokenAuthenticationActionsBean implements Serializable {
     public DocumentModelList getCurrentUserAuthTokenBindings() {
 
         if (currentUserAuthTokenBindings == null) {
-            TokenAuthenticationService tokenAuthenticationService = Framework.getLocalService(TokenAuthenticationService.class);
+            TokenAuthenticationService tokenAuthenticationService = Framework.getService(TokenAuthenticationService.class);
             currentUserAuthTokenBindings = tokenAuthenticationService.getTokenBindings(currentNuxeoPrincipal.getName());
         }
         return currentUserAuthTokenBindings;
@@ -69,7 +69,7 @@ public class TokenAuthenticationActionsBean implements Serializable {
 
     public void deleteAuthTokenBinding(String tokenId) {
 
-        TokenAuthenticationService tokenAuthenticationService = Framework.getLocalService(TokenAuthenticationService.class);
+        TokenAuthenticationService tokenAuthenticationService = Framework.getService(TokenAuthenticationService.class);
         tokenAuthenticationService.revokeToken(tokenId);
 
         reset();
@@ -78,7 +78,7 @@ public class TokenAuthenticationActionsBean implements Serializable {
 
     public void deleteAllTokenBindings() throws PropertyException {
         reset();
-        TokenAuthenticationService tokenAuthenticationService = Framework.getLocalService(TokenAuthenticationService.class);
+        TokenAuthenticationService tokenAuthenticationService = Framework.getService(TokenAuthenticationService.class);
         for (DocumentModel tokenBinding : getCurrentUserAuthTokenBindings()) {
             String tokenId = (String) tokenBinding.getPropertyValue("authtoken:token");
             tokenAuthenticationService.revokeToken(tokenId);

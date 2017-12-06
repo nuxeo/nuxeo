@@ -28,7 +28,7 @@ public class WorksQueueMonitoring implements WorksQueueMonitoringMBean {
     }
 
     protected WorkManager manager() {
-        return Framework.getLocalService(WorkManager.class);
+        return Framework.getService(WorkManager.class);
     }
 
     @Override

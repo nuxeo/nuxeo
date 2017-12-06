@@ -27,7 +27,7 @@ import org.nuxeo.runtime.api.Framework;
 public class OpenIDConnectHelper {
 
     public static Collection<OpenIDConnectProvider> getProviders() {
-        OpenIDConnectProviderRegistry registry = Framework.getLocalService(OpenIDConnectProviderRegistry.class);
+        OpenIDConnectProviderRegistry registry = Framework.getService(OpenIDConnectProviderRegistry.class);
         if (registry != null) {
             return registry.getProviders();
         }
@@ -35,7 +35,7 @@ public class OpenIDConnectHelper {
     }
 
     public static Collection<OpenIDConnectProvider> getEnabledProviders() {
-        OpenIDConnectProviderRegistry registry = Framework.getLocalService(OpenIDConnectProviderRegistry.class);
+        OpenIDConnectProviderRegistry registry = Framework.getService(OpenIDConnectProviderRegistry.class);
         if (registry != null) {
             return registry.getEnabledProviders();
         }

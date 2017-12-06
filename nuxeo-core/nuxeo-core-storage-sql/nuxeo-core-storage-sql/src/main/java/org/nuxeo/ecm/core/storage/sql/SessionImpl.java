@@ -349,9 +349,9 @@ public class SessionImpl implements Session, XAResource {
 
     protected void scheduleWork(List<Work> works) {
         // do async fulltext indexing only if high-level sessions are available
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         if (repositoryManager != null && !works.isEmpty()) {
-            WorkManager workManager = Framework.getLocalService(WorkManager.class);
+            WorkManager workManager = Framework.getService(WorkManager.class);
             for (Work work : works) {
                 // schedule work post-commit
                 // in non-tx mode, this may execute it nearly immediately

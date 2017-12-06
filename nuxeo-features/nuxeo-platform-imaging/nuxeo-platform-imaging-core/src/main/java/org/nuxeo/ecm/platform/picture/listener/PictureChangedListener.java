@@ -96,7 +96,7 @@ public class PictureChangedListener implements EventListener {
             }
 
             Blob blob = Blobs.createBlob(FileUtils.getFileFromURL(fileUrl));
-            MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
+            MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
             String mimeType = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob,
                     null);
             blob.setMimeType(mimeType);
@@ -114,7 +114,7 @@ public class PictureChangedListener implements EventListener {
             }
 
             if (emptyPictureImageInfo == null) {
-                ImagingService imagingService = Framework.getLocalService(ImagingService.class);
+                ImagingService imagingService = Framework.getService(ImagingService.class);
                 emptyPictureImageInfo = imagingService.getImageInfo(blob);
             }
 

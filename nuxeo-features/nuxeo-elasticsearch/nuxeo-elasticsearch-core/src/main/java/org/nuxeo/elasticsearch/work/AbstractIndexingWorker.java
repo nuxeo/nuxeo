@@ -57,7 +57,7 @@ public abstract class AbstractIndexingWorker extends BaseIndexingWorker {
         for (IndexingCommand cmd : cmds) {
             cmd.attach(session);
         }
-        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
+        ElasticSearchIndexing esi = Framework.getService(ElasticSearchIndexing.class);
         doIndexingWork(esi, cmds);
     }
 

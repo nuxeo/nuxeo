@@ -90,7 +90,7 @@ public abstract class QueryOptimizer {
 
     public QueryOptimizer() {
         // schemaManager may be null in unit tests
-        schemaManager = Framework.getLocalService(SchemaManager.class);
+        schemaManager = Framework.getService(SchemaManager.class);
         Set<String> facets = schemaManager == null ? Collections.emptySet()
                 : schemaManager.getNoPerDocumentQueryFacets();
         neverPerInstanceMixins = new HashSet<>(facets);

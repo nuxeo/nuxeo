@@ -48,7 +48,7 @@ public class FavoritesActionBean {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
-            final FavoritesManager favoritesManager = Framework.getLocalService(FavoritesManager.class);
+            final FavoritesManager favoritesManager = Framework.getService(FavoritesManager.class);
             final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
             if (!favoritesManager.isFavorite(currentDocument, session)) {
                 favoritesManager.addToFavorites(currentDocument, session);
@@ -68,8 +68,8 @@ public class FavoritesActionBean {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
-            final FavoritesManager favoritesManager = Framework.getLocalService(FavoritesManager.class);
-            final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+            final FavoritesManager favoritesManager = Framework.getService(FavoritesManager.class);
+            final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
             final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
             return collectionManager.isCollectable(currentDocument)
                     && !favoritesManager.isFavorite(currentDocument, session);
@@ -81,7 +81,7 @@ public class FavoritesActionBean {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
-            final FavoritesManager favoritesManager = Framework.getLocalService(FavoritesManager.class);
+            final FavoritesManager favoritesManager = Framework.getService(FavoritesManager.class);
             final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
             return favoritesManager.isFavorite(currentDocument, session);
         }
@@ -90,7 +90,7 @@ public class FavoritesActionBean {
 
     @Factory(value = "currentUserFavorites", scope = ScopeType.SESSION)
     public DocumentModel getCurrentFavorites() {
-        FavoritesManager favoritesManager = Framework.getLocalService(FavoritesManager.class);
+        FavoritesManager favoritesManager = Framework.getService(FavoritesManager.class);
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
         return favoritesManager.getFavorites(navigationContext.getCurrentDomain(), session);
@@ -100,7 +100,7 @@ public class FavoritesActionBean {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
-            final FavoritesManager favoritesManager = Framework.getLocalService(FavoritesManager.class);
+            final FavoritesManager favoritesManager = Framework.getService(FavoritesManager.class);
             final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
             if (favoritesManager.isFavorite(currentDocument, session)) {
                 favoritesManager.removeFromFavorites(currentDocument, session);

@@ -63,7 +63,7 @@ public class AutomationRenderer {
         if (session == null) {
             session = doc.getCoreSession();
         }
-        AutomationService as = Framework.getLocalService(AutomationService.class);
+        AutomationService as = Framework.getService(AutomationService.class);
         try (OperationContext oc = new OperationContext(session)) {
             oc.push(Constants.O_DOCUMENT, doc);
 
@@ -112,7 +112,7 @@ public class AutomationRenderer {
      */
     public static String getFilenameWithExtension(String filename, String mimeType, String defaultExtension) {
         String baseName = FilenameUtils.getBaseName(filename);
-        MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
+        MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
         MimetypeEntry mimeTypeEntry = mimetypeRegistry.getMimetypeEntryByMimeType(mimeType);
         List<String> extensions = mimeTypeEntry.getExtensions();
         String extension;

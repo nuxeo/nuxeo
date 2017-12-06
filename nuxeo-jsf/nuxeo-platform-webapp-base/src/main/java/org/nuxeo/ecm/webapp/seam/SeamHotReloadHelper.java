@@ -101,7 +101,7 @@ public class SeamHotReloadHelper {
      */
     protected static void flushWebResources() throws ReflectiveOperationException, JMException {
         ObjectName on = new ObjectName("org.nuxeo:type=sdk,name=web-resources");
-        MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
+        MBeanServer mbs = Framework.getService(ServerLocator.class).lookupServer();
         if (mbs.isRegistered(on)) {
             // only in tomcat container
             mbs.invoke(on, "flushWebResources", new Object[0], new String[0]);

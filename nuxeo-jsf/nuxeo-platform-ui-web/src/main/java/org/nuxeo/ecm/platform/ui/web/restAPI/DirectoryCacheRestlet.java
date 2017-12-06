@@ -62,7 +62,7 @@ public class DirectoryCacheRestlet extends BaseNuxeoRestlet {
         DOMDocument result = (DOMDocument) domFactory.createDocument();
 
         try {
-            DirectoryService service = Framework.getLocalService(DirectoryService.class);
+            DirectoryService service = Framework.getService(DirectoryService.class);
             List<Directory> directories = new LinkedList<Directory>();
             Form form = req.getResourceRef().getQueryAsForm();
 

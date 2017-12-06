@@ -44,7 +44,7 @@ public class TestRedisWorkManager extends WorkManagerTest {
         super.setUp();
         RedisFeature.setup(harness);
         if (monitorRedis) {
-            redisExecutor = Framework.getLocalService(RedisExecutor.class);
+            redisExecutor = Framework.getService(RedisExecutor.class);
             redisExecutor.startMonitor();
         }
     }

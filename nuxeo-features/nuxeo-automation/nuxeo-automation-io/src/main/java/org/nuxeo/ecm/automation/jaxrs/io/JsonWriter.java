@@ -50,7 +50,7 @@ import org.nuxeo.runtime.api.Framework;
 public class JsonWriter {
 
     private static JsonFactory getFactory() {
-        return Framework.getLocalService(JsonFactoryManager.class).getJsonFactory();
+        return Framework.getService(JsonFactoryManager.class).getJsonFactory();
     }
 
     private static JsonGenerator createGenerator(OutputStream out) throws IOException {
@@ -84,7 +84,7 @@ public class JsonWriter {
 
     private static void writeCodecs(JsonGenerator jg) throws IOException {
         jg.writeArrayFieldStart("codecs");
-        ObjectCodecService codecs = Framework.getLocalService(ObjectCodecService.class);
+        ObjectCodecService codecs = Framework.getService(ObjectCodecService.class);
         for (ObjectCodec<?> codec : codecs.getCodecs()) {
             if (!codec.isBuiltin()) {
                 jg.writeString(codec.getClass().getName());
@@ -107,7 +107,7 @@ public class JsonWriter {
      * @since 5.9.1
      */
     public static String exportOperations(boolean filterNotInStudio) throws IOException, OperationException {
-        List<OperationDocumentation> ops = Framework.getLocalService(AutomationService.class).getDocumentation();
+        List<OperationDocumentation> ops = Framework.getService(AutomationService.class).getDocumentation();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = getFactory().createJsonGenerator(out);
         jg.useDefaultPrettyPrinter();

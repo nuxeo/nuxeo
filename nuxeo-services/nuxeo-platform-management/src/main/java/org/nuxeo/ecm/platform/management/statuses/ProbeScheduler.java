@@ -28,17 +28,17 @@ import org.nuxeo.runtime.api.Framework;
 public class ProbeScheduler {
 
     public void enable() {
-        EventServiceAdmin admin = Framework.getLocalService(EventServiceAdmin.class);
+        EventServiceAdmin admin = Framework.getService(EventServiceAdmin.class);
         admin.setListenerEnabledFlag("probeScheduleListener", true);
     }
 
     public void disable() {
-        EventServiceAdmin admin = Framework.getLocalService(EventServiceAdmin.class);
+        EventServiceAdmin admin = Framework.getService(EventServiceAdmin.class);
         admin.setListenerEnabledFlag("probeScheduleListener", false);
     }
 
     public boolean isEnabled() {
-        EventServiceAdmin admin = Framework.getLocalService(EventServiceAdmin.class);
+        EventServiceAdmin admin = Framework.getService(EventServiceAdmin.class);
         EventListenerDescriptor descriptor = admin.getListenerList().getDescriptor("probeScheduleListener");
         return descriptor.isEnabled();
     }

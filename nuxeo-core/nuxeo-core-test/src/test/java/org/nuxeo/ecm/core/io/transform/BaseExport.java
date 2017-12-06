@@ -101,7 +101,7 @@ public class BaseExport {
 
         // Audit being async we must wait !
         Thread.sleep(200);
-        EventService es = Framework.getLocalService(EventService.class);
+        EventService es = Framework.getService(EventService.class);
         es.waitForAsyncCompletion();
 
         return workspace;

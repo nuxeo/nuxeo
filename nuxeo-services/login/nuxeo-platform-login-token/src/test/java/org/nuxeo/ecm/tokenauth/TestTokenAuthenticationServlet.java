@@ -172,6 +172,6 @@ public class TestTokenAuthenticationServlet {
     }
 
     protected TokenAuthenticationService getTokenAuthenticationService() {
-        return Framework.getLocalService(TokenAuthenticationService.class);
+        return Framework.getService(TokenAuthenticationService.class);
     }
 }

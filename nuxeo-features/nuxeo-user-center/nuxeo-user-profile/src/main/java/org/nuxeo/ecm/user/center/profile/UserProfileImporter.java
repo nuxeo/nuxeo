@@ -94,7 +94,7 @@ public class UserProfileImporter {
     }
 
     public void doImport(CoreSession session) {
-        UserProfileService ups = Framework.getLocalService(UserProfileService.class);
+        UserProfileService ups = Framework.getService(UserProfileService.class);
 
         config = ups.getImporterConfig();
         if (config == null) {
@@ -149,7 +149,7 @@ public class UserProfileImporter {
             throws IOException {
         log.info(String.format("Importing CSV file: %s", dataFileName));
 
-        DocumentType docType = Framework.getLocalService(SchemaManager.class).getDocumentType(
+        DocumentType docType = Framework.getService(SchemaManager.class).getDocumentType(
                 UserProfileConstants.USER_PROFILE_DOCTYPE);
         if (docType == null) {
             log.error("The type " + UserProfileConstants.USER_PROFILE_DOCTYPE + " does not exist");

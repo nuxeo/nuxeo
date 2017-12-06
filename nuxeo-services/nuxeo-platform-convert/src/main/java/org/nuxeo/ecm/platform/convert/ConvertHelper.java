@@ -36,22 +36,22 @@ import org.nuxeo.runtime.api.Framework;
 public class ConvertHelper {
 
     protected String findConverter(Blob blob, String destMimeType) {
-        MimetypeRegistry mtr = Framework.getLocalService(MimetypeRegistry.class);
+        MimetypeRegistry mtr = Framework.getService(MimetypeRegistry.class);
         String srcMt = mtr.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob, blob.getMimeType());
         blob.setMimeType(srcMt);
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConversionService cs = Framework.getService(ConversionService.class);
         return cs.getConverterName(srcMt, destMimeType);
     }
 
     protected Blob applyConverter(Blob blob, String converter, String destMimeType, Map<String, Serializable> params) {
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConversionService cs = Framework.getService(ConversionService.class);
         BlobHolder bh = cs.convert(converter, new SimpleBlobHolder(blob), params);
 
         if (bh == null || bh.getBlob() == null) {
             return blob;
         } else {
             Blob result = bh.getBlob();
-            MimetypeRegistry mtr = Framework.getLocalService(MimetypeRegistry.class);
+            MimetypeRegistry mtr = Framework.getService(MimetypeRegistry.class);
             String filename = FileUtils.getFileNameNoExt(blob.getFilename());
             filename = filename + "." + mtr.getExtensionsFromMimetypeName(destMimeType).get(0);
             result.setFilename(filename);

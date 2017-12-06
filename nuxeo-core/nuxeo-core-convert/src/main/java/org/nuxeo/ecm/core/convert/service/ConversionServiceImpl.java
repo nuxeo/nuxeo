@@ -359,7 +359,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
             if (srcBlob != null && StringUtils.isNotBlank(srcBlob.getFilename())) {
                 String baseName = FilenameUtils.getBaseName(srcBlob.getFilename());
 
-                MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
+                MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
                 MimetypeEntry mimeTypeEntry = mimetypeRegistry.getMimetypeEntryByMimeType(mainBlob.getMimeType());
                 List<String> extensions = mimeTypeEntry.getExtensions();
                 String extension;

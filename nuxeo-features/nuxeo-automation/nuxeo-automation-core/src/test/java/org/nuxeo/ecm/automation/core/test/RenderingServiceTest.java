@@ -133,9 +133,9 @@ public class RenderingServiceTest {
     @Test
     public void testRenderingFeed() throws Exception {
         URL url = getClass().getClassLoader().getResource("render.mvel");
-        Framework.getLocalService(ResourceService.class).addResource("render.mvel", url);
+        Framework.getService(ResourceService.class).addResource("render.mvel", url);
         url = getClass().getClassLoader().getResource("render.ftl");
-        Framework.getLocalService(ResourceService.class).addResource("render.ftl", url);
+        Framework.getService(ResourceService.class).addResource("render.ftl", url);
 
         OperationContext ctx = new OperationContext(session);
         DocumentModelList list = new DocumentModelListImpl();

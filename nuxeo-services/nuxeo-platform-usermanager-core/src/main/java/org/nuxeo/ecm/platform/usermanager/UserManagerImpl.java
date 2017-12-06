@@ -206,8 +206,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     protected final Map<String, VirtualUserDescriptor> virtualUsers;
 
     public UserManagerImpl() {
-        dirService = Framework.getLocalService(DirectoryService.class);
-        cacheService = Framework.getLocalService(CacheService.class);
+        dirService = Framework.getService(DirectoryService.class);
+        cacheService = Framework.getService(CacheService.class);
         virtualUsers = new HashMap<>();
         userConfig = new UserConfig();
     }

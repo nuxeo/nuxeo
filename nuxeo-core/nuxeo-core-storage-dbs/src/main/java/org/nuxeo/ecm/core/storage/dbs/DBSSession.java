@@ -427,7 +427,7 @@ public class DBSSession implements Session {
         boolean isVersion = TRUE.equals(docState.get(KEY_IS_VERSION));
 
         String typeName = docState.getPrimaryType();
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         DocumentType type = schemaManager.getDocumentType(typeName);
         if (type == null) {
             throw new DocumentNotFoundException("Unknown document type: " + typeName);
@@ -461,7 +461,7 @@ public class DBSSession implements Session {
     protected boolean isOrderable(String id) {
         State state = transaction.getStateForRead(id);
         String typeName = (String) state.get(KEY_PRIMARY_TYPE);
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         return schemaManager.getDocumentType(typeName).getFacets().contains(FacetNames.ORDERABLE);
     }
 

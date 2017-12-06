@@ -36,7 +36,7 @@ public class ImageCropper extends MagickExecutor {
 
     public static void crop(String inputFilePath, String outputFilePath, int tileWidth, int tileHeight, int offsetX,
             int offsetY) throws CommandNotAvailable, CommandException {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         CmdParameters params = cles.getDefaultCmdParameters();
         params.addNamedParameter("tileWidth", String.valueOf(tileWidth));
         params.addNamedParameter("tileHeight", String.valueOf(tileHeight));

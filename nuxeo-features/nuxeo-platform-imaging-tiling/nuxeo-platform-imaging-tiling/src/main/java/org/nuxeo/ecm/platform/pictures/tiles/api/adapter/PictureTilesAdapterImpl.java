@@ -71,7 +71,7 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
 
     protected PictureTilingService getService() {
         if (pts == null) {
-            pts = Framework.getLocalService(PictureTilingService.class);
+            pts = Framework.getService(PictureTilingService.class);
         }
         return pts;
     }

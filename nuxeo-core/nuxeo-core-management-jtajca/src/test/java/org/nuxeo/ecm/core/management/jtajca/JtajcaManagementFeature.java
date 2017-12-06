@@ -83,7 +83,7 @@ public class JtajcaManagementFeature extends SimpleFeature {
 
         @Override
         public T get() {
-            MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
+            MBeanServer mbs = Framework.getService(ServerLocator.class).lookupServer();
             return type.cast(JMX.newMXBeanProxy(mbs, name, type));
         }
     }
@@ -121,7 +121,7 @@ public class JtajcaManagementFeature extends SimpleFeature {
         String repositoryName = core.getStorageConfiguration().getRepositoryName();
         NuxeoContainer.getConnectionManager(repositoryName);
 
-        MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
+        MBeanServer mbs = Framework.getService(ServerLocator.class).lookupServer();
         bind(binder, mbs, ConnectionPoolMonitor.class);
         bind(binder, mbs, CoreSessionMonitor.class);
         TransactionManager tm = NuxeoContainer.getTransactionManager();

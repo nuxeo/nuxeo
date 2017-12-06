@@ -73,24 +73,24 @@ public class TestAdministrativeStatusService {
     @Test
     public void testServiceLookups() {
         // local manager lookup
-        AdministrativeStatusManager localManager = Framework.getLocalService(AdministrativeStatusManager.class);
+        AdministrativeStatusManager localManager = Framework.getService(AdministrativeStatusManager.class);
         assertNotNull(localManager);
 
         // global manager lookup
-        GlobalAdministrativeStatusManager globalManager = Framework.getLocalService(GlobalAdministrativeStatusManager.class);
+        GlobalAdministrativeStatusManager globalManager = Framework.getService(GlobalAdministrativeStatusManager.class);
         assertNotNull(globalManager);
 
         // ensure that local manager is a singleton
         AdministrativeStatusManager localManager2 = globalManager.getStatusManager(globalManager.getLocalNuxeoInstanceIdentifier());
         assertEquals(localManager, localManager2);
 
-        ProbeManager pm = Framework.getLocalService(ProbeManager.class);
+        ProbeManager pm = Framework.getService(ProbeManager.class);
         assertNotNull(pm);
     }
 
     @Test
     public void testInstanceStatus() {
-        AdministrativeStatusManager localManager = Framework.getLocalService(AdministrativeStatusManager.class);
+        AdministrativeStatusManager localManager = Framework.getService(AdministrativeStatusManager.class);
 
         AdministrativeStatus status = localManager.getNuxeoInstanceStatus();
         assertTrue(status.isActive());
@@ -113,7 +113,7 @@ public class TestAdministrativeStatusService {
     @Test
     public void testMiscStatusWithDefaultValue() {
         final String serviceId = "org.nuxeo.ecm.administrator.message";
-        AdministrativeStatusManager localManager = Framework.getLocalService(AdministrativeStatusManager.class);
+        AdministrativeStatusManager localManager = Framework.getService(AdministrativeStatusManager.class);
 
         AdministrativeStatus status = localManager.getStatus(serviceId);
         assertTrue(status.isPassive());
@@ -127,14 +127,14 @@ public class TestAdministrativeStatusService {
 
     @Test
     public void testNonExistingStatus() {
-        AdministrativeStatusManager localManager = Framework.getLocalService(AdministrativeStatusManager.class);
+        AdministrativeStatusManager localManager = Framework.getService(AdministrativeStatusManager.class);
         AdministrativeStatus nonExistingStatus = localManager.getStatus("org.nawak");
         assertNull(nonExistingStatus);
     }
 
     @Test
     public void testServiceListing() {
-        AdministrativeStatusManager localManager = Framework.getLocalService(AdministrativeStatusManager.class);
+        AdministrativeStatusManager localManager = Framework.getService(AdministrativeStatusManager.class);
         List<AdministrativeStatus> statuses = localManager.getAllStatuses();
         assertNotNull(statuses);
         assertEquals(3, statuses.size());
@@ -144,7 +144,7 @@ public class TestAdministrativeStatusService {
     public void testGlobalManager() {
         final String serviceId = "org.nuxeo.ecm.administrator.message";
 
-        GlobalAdministrativeStatusManager globalManager = Framework.getLocalService(GlobalAdministrativeStatusManager.class);
+        GlobalAdministrativeStatusManager globalManager = Framework.getService(GlobalAdministrativeStatusManager.class);
         assertNotNull(globalManager);
 
         // check that we only have on Nuxeo instance for now

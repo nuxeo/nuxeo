@@ -82,10 +82,10 @@ public class TestAuditWithMongoDB {
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        Assert.assertTrue(Framework.getLocalService(AuditLogger.class).await(10, TimeUnit.SECONDS));
+        Assert.assertTrue(Framework.getService(AuditLogger.class).await(10, TimeUnit.SECONDS));
 
         // test audit trail
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> trail = reader.getLogEntriesFor(doc.getId(), doc.getRepositoryName());
 
         assertNotNull(trail);
@@ -120,7 +120,7 @@ public class TestAuditWithMongoDB {
 
         LogEntryGen.generate("mydoc", "evt", "cat", 9);
 
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
 
         // simple Query
         String[] evts = { "evt1", "evt2" };
@@ -162,7 +162,7 @@ public class TestAuditWithMongoDB {
         LogEntryGen.generate("dummy", "entry", "category", 9);
 
         String jsonQuery;
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("query.json")) {
             jsonQuery = IOUtils.toString(is, "UTF-8");
         }
@@ -185,7 +185,7 @@ public class TestAuditWithMongoDB {
     @Test
     public void testGetLatestLogId() throws Exception {
         String repositoryId = "test";
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
 
         LogEntryGen.generate("mydoc", "documentModified", "cat", 1);
         long id1 = reader.getLatestLogId(repositoryId, "documentModified0");
@@ -206,7 +206,7 @@ public class TestAuditWithMongoDB {
     @Test
     public void testGetLogEntriesAfter() throws Exception {
         String repositoryId = "test";
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
 
         LogEntryGen.generate("mydoc", "documentModified", "cat", 1);
         long id1 = reader.getLatestLogId(repositoryId, "documentModified0");

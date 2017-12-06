@@ -73,7 +73,7 @@ public class OrphanVersionRemoverListener implements PostCommitEventListener {
     }
 
     protected Collection<OrphanVersionRemovalFilter> getFilters() {
-        return Framework.getLocalService(CoreService.class).getOrphanVersionRemovalFilters();
+        return Framework.getService(CoreService.class).getOrphanVersionRemovalFilters();
     }
 
     protected void removeIfPossible(CoreSession session, ShallowDocumentModel deletedLiveDoc, List<String> versionUUIDs)

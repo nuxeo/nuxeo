@@ -43,7 +43,7 @@ public class PoolingRepositoryFactory implements RepositoryFactory {
 
     @Override
     public Object call() {
-        SQLRepositoryService sqlRepositoryService = Framework.getLocalService(SQLRepositoryService.class);
+        SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         RepositoryDescriptor descriptor = sqlRepositoryService.getRepositoryDescriptor(repositoryName);
         ManagedConnectionFactoryImpl managedConnectionFactory = new ManagedConnectionFactoryImpl(repositoryName);
         try {

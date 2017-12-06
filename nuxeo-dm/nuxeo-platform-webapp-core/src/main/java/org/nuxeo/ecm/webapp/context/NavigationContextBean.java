@@ -526,7 +526,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     private boolean hasSuperType(String targetDocType, String superType) {
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         return schemaManager.hasSuperType(targetDocType, superType);
     }
 

@@ -91,7 +91,7 @@ public class VirusScannerProcessor extends AbstractLongRunningListener {
     protected boolean handleEventLongRunning(List<String> eventNames, Map<String, Object> data) {
 
         boolean doContinue = false;
-        ScanService scanService = Framework.getLocalService(ScanService.class);
+        ScanService scanService = Framework.getService(ScanService.class);
 
         for (String key : data.keySet()) {
             Map<String, Blob> blobs = (Map<String, Blob>) data.get(key);

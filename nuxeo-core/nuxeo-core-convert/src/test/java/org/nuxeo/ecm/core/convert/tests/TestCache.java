@@ -51,7 +51,7 @@ public class TestCache {
 
     @Test
     public void testCache() throws Exception {
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConversionService cs = Framework.getService(ConversionService.class);
 
         Converter cv = ConversionServiceImpl.getConverter("identity");
         assertNotNull(cv);

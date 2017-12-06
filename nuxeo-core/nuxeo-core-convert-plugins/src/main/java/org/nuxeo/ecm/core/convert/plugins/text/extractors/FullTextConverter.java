@@ -56,7 +56,7 @@ public class FullTextConverter implements Converter {
             return blobHolder;
         }
 
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConversionService cs = Framework.getService(ConversionService.class);
 
         String converterName = cs.getConverterName(srcMT, TEXT_PLAIN_MT);
 

@@ -76,7 +76,7 @@ public class TestOOoServiceManagerService extends BaseConverterTest {
     public void testPipeConnection() throws Exception {
         Framework.getProperties().load(
                 new FileInputStream(TestOOoServiceManagerService.class.getResource("/jodPipe.properties").getFile()));
-        ods = Framework.getLocalService(OOoManagerService.class);
+        ods = Framework.getService(OOoManagerService.class);
         assertNotNull(ods);
 
         OfficeDocumentConverter converter = ods.getDocumentConverter();

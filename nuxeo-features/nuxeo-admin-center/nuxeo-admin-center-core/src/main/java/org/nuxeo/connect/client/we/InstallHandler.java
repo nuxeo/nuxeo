@@ -97,7 +97,7 @@ public class InstallHandler extends DefaultObject {
             depCheck = true;
         }
         try {
-            PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+            PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
             LocalPackage pkg = pus.getPackage(pkgId);
             String content = pkg.getTermsAndConditionsContent();
             return getView("termsAndConditions").arg("pkg", pkg).arg("source", source).arg("content", content).arg(
@@ -115,7 +115,7 @@ public class InstallHandler extends DefaultObject {
             @QueryParam("tacAccepted") Boolean acceptedTAC, @QueryParam("depCheck") Boolean depCheck,
             @QueryParam("autoMode") Boolean autoMode) {
         try {
-            PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+            PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
             LocalPackage pkg = pus.getPackage(pkgId);
             if (pkg == null) {
                 throw new NuxeoException("Can not find package " + pkgId);
@@ -126,7 +126,7 @@ public class InstallHandler extends DefaultObject {
             if (!Boolean.FALSE.equals(depCheck)) {
                 // check deps requirements
                 if (pkg.getDependencies() != null && pkg.getDependencies().length > 0) {
-                    PackageManager pm = Framework.getLocalService(PackageManager.class);
+                    PackageManager pm = Framework.getService(PackageManager.class);
                     DependencyResolution resolution = pm.resolveDependencies(Collections.singletonList(pkgId),
                             Collections.emptyList(), Collections.emptyList(), PlatformVersionHelper.getPlatformFilter());
                     if (resolution.isFailed() && PlatformVersionHelper.getPlatformFilter() != null) {
@@ -178,7 +178,7 @@ public class InstallHandler extends DefaultObject {
     @Path(value = "form/{pkgId}/{formId}")
     public Object showInstallForm(@PathParam("pkgId") String pkgId, @PathParam("formId") int formId,
             @QueryParam("source") String source) {
-        PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+        PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
         try {
             LocalPackage pkg = pus.getPackage(pkgId);
             Task installTask = pkg.getInstallTask();
@@ -201,7 +201,7 @@ public class InstallHandler extends DefaultObject {
     @Path(value = "form/{pkgId}/{formId}")
     public Object processInstallForm(@PathParam("pkgId") String pkgId, @PathParam("formId") int formId,
             @QueryParam("source") String source) {
-        PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+        PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
         try {
             LocalPackage pkg = pus.getPackage(pkgId);
             Task installTask = pkg.getInstallTask();
@@ -245,8 +245,8 @@ public class InstallHandler extends DefaultObject {
                     new NuxeoException("Installation seems to have been started from an external link.")).arg(
                     "source", source);
         }
-        PackageManager pm = Framework.getLocalService(PackageManager.class);
-        PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+        PackageManager pm = Framework.getService(PackageManager.class);
+        PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
         try {
             DependencyResolution resolution = pm.resolveDependencies(Collections.singletonList(pkgId),
                     Collections.emptyList(), Collections.emptyList(), PlatformVersionHelper.getPlatformFilter());
@@ -313,7 +313,7 @@ public class InstallHandler extends DefaultObject {
                     new NuxeoException("Installation seems to have been started from an external link.")).arg(
                     "source", source);
         }
-        PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+        PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
         try {
             LocalPackage pkg = pus.getPackage(pkgId);
             if (InstallAfterRestart.isNeededForPackage(pkg)) {

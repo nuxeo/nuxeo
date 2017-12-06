@@ -39,7 +39,7 @@ public class EmailBasedUserResolver extends AbstractUserResolver {
     public String findNuxeoUser(SAMLCredential credential) {
 
         try {
-            UserManager userManager = Framework.getLocalService(UserManager.class);
+            UserManager userManager = Framework.getService(UserManager.class);
             Map<String, Serializable> query = new HashMap<>();
             query.put(userManager.getUserEmailField(), credential.getNameID().getValue());
 
@@ -61,7 +61,7 @@ public class EmailBasedUserResolver extends AbstractUserResolver {
     @Override
     public DocumentModel updateUserInfo(DocumentModel user, SAMLCredential credential) {
         try {
-            UserManager userManager = Framework.getLocalService(UserManager.class);
+            UserManager userManager = Framework.getService(UserManager.class);
             user.setPropertyValue(userManager.getUserEmailField(), credential.getNameID().getValue());
         } catch (NuxeoException e) {
             log.error("Error while search user in UserManager using email " + credential.getNameID().getValue(), e);

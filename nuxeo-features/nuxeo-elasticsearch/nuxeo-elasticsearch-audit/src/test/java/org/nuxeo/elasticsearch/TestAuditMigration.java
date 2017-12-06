@@ -143,7 +143,7 @@ public class TestAuditMigration {
 
         esBackend.migrate(100);
 
-        Framework.getLocalService(WorkManager.class).awaitCompletion(1, TimeUnit.MINUTES);
+        Framework.getService(WorkManager.class).awaitCompletion(1, TimeUnit.MINUTES);
 
         LogEntryGen.flushAndSync();
 

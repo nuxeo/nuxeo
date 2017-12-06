@@ -76,7 +76,7 @@ public class OAuth2UserTokensActions extends DirectoryBasedEditor implements Ser
 
     public DocumentModelList getProviderAccounts(String provider, boolean includeShared) {
 
-        NuxeoOAuth2ServiceProvider serviceProvider = (NuxeoOAuth2ServiceProvider) Framework.getLocalService(
+        NuxeoOAuth2ServiceProvider serviceProvider = (NuxeoOAuth2ServiceProvider) Framework.getService(
             OAuth2ServiceProviderRegistry.class).getProvider(provider);
         OAuth2TokenStore tokenStore = serviceProvider.getCredentialDataStore();
 

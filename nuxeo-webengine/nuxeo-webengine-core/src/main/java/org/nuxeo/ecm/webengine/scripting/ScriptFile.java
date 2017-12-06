@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public final class ScriptFile {
 
-    public static final String ROOT_PATH = Framework.getLocalService(WebEngine.class).getRootDirectory().getAbsolutePath();
+    public static final String ROOT_PATH = Framework.getService(WebEngine.class).getRootDirectory().getAbsolutePath();
 
     File file;
 

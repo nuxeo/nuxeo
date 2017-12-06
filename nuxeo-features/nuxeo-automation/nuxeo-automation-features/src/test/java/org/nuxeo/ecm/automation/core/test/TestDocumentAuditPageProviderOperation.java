@@ -81,7 +81,7 @@ public class TestDocumentAuditPageProviderOperation {
 
         @Override
         public void populate(CoreSession session) {
-            AuditLogger auditLogger = Framework.getLocalService(AuditLogger.class);
+            AuditLogger auditLogger = Framework.getService(AuditLogger.class);
 
             DocumentModel section = session.createDocumentModel("/", "section", "Folder");
             section = session.createDocument(section);

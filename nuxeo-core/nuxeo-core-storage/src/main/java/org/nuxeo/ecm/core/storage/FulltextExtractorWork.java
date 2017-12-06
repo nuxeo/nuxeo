@@ -167,7 +167,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
         if (!indexesAndText.isEmpty()) {
             Work work = new FulltextUpdaterWork(repositoryName, docId, false, true, indexesAndText);
             if (!fulltextConfiguration.fulltextSearchDisabled) {
-                WorkManager workManager = Framework.getLocalService(WorkManager.class);
+                WorkManager workManager = Framework.getService(WorkManager.class);
                 workManager.schedule(work, true);
             } else {
                 ((FulltextUpdaterWork)work).updateWithSession(session);
@@ -218,7 +218,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
     }
 
     protected BlobHolder convert(BlobHolder blobHolder) throws ConversionException {
-        ConversionService conversionService = Framework.getLocalService(ConversionService.class);
+        ConversionService conversionService = Framework.getService(ConversionService.class);
         if (conversionService == null) {
             log.debug("No ConversionService available");
             return null;

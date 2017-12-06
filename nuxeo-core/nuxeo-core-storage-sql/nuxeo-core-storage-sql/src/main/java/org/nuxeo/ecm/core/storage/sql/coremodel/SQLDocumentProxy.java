@@ -66,7 +66,7 @@ public class SQLDocumentProxy implements SQLDocument {
             throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
         String prefix = xpath.substring(0, p);
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         Schema schema = schemaManager.getSchemaFromPrefix(prefix);
         if (schema == null) {
             schema = schemaManager.getSchema(prefix);
@@ -81,7 +81,7 @@ public class SQLDocumentProxy implements SQLDocument {
      * Checks if the given schema should be resolved on the proxy or the target.
      */
     protected boolean isSchemaForProxy(String schema) {
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         return schemaManager.isProxySchema(schema, getType().getName());
     }
 

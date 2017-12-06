@@ -63,14 +63,14 @@ public class UninstallHandler extends DefaultObject {
     public Object startUninstall(@PathParam("pkgId") String pkgId, @QueryParam("source") String source,
             @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         try {
-            PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+            PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
             LocalPackage pkg = pus.getPackage(pkgId);
             Task uninstallTask = pkg.getUninstallTask();
             ValidationStatus status = uninstallTask.validate();
             if (status.hasErrors()) {
                 return getView("canNotUninstall").arg("status", status).arg("pkg", pkg).arg("source", source);
             }
-            PackageManager pm = Framework.getLocalService(PackageManager.class);
+            PackageManager pm = Framework.getService(PackageManager.class);
             List<DownloadablePackage> pkgToRemove = pm.getUninstallDependencies(pkg,
                     getTargetPlatform(filterOnPlatform));
             if (pkgToRemove.size() > 0) {
@@ -103,10 +103,10 @@ public class UninstallHandler extends DefaultObject {
     @Path(value = "run/{pkgId}")
     public Object doUninstall(@PathParam("pkgId") String pkgId, @QueryParam("source") String source,
             @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
-        PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+        PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
         try {
             LocalPackage pkg = pus.getPackage(pkgId);
-            PackageManager pm = Framework.getLocalService(PackageManager.class);
+            PackageManager pm = Framework.getService(PackageManager.class);
             List<DownloadablePackage> pkgToRemove = pm.getUninstallDependencies(pkg,
                     getTargetPlatform(filterOnPlatform));
             boolean restartRequired = InstallAfterRestart.isNeededForPackage(pkg);

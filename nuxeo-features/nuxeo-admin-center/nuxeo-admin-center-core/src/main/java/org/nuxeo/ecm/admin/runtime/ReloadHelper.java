@@ -60,7 +60,7 @@ public class ReloadHelper {
 
             PackageManager pm = Framework.getService(PackageManager.class);
 
-            PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+            PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
             LocalPackage pkg = pus.getPackage(packageId);
 
             // Remove package from PackageUpdateService and get its bundleName to hot reload it

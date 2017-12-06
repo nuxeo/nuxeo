@@ -132,7 +132,7 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker impleme
                     commandList.add(cmd);
                 }
             }
-            ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
+            ElasticSearchIndexing esi = Framework.getService(ElasticSearchIndexing.class);
             esi.runIndexingWorker(commandList);
         } finally {
             isEnlisted.set(false);

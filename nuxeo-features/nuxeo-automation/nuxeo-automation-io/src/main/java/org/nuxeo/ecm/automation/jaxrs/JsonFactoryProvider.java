@@ -40,7 +40,7 @@ public class JsonFactoryProvider implements InjectableProvider<Context, Type>, I
 
     @Override
     public JsonFactory getValue() {
-        return Framework.getLocalService(JsonFactoryManager.class).getJsonFactory();
+        return Framework.getService(JsonFactoryManager.class).getJsonFactory();
     }
 
     @Override

@@ -46,7 +46,7 @@ public class TestContributionPersistence extends NXRuntimeTestCase {
 
     @Override
     protected void postSetUp() throws Exception {
-        mgr = Framework.getLocalService(ContributionPersistenceManager.class);
+        mgr = Framework.getService(ContributionPersistenceManager.class);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class TestContributionPersistence extends NXRuntimeTestCase {
         assertTrue(mgr.isInstalled(c1));
 
         // fire an event.
-        EventService es = Framework.getLocalService(EventService.class);
+        EventService es = Framework.getService(EventService.class);
         assertEquals(0, MyListener.getCounter());
         es.sendEvent(new Event("test", "a test", null, null));
         assertEquals(1, MyListener.getCounter());

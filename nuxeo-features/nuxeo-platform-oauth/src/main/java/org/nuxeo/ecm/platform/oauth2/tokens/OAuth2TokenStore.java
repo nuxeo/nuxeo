@@ -77,7 +77,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
 
     @Override
     public DataStore<StoredCredential> delete(String key) throws IOException {
-        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+        DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("serviceName", serviceName);
@@ -183,7 +183,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
     }
 
     public NuxeoOAuth2Token refresh(DocumentModel entry, NuxeoOAuth2Token token) {
-        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+        DirectoryService ds = Framework.getService(DirectoryService.class);
         return Framework.doPrivileged(() -> {
             try (Session session = ds.open(DIRECTORY_NAME)) {
                 entry.setProperty("oauth2Token", "accessToken", token.getAccessToken());
@@ -197,7 +197,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
     }
 
     public void delete(String token, String clientId) {
-        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+        DirectoryService ds = Framework.getService(DirectoryService.class);
         Framework.doPrivileged(() -> {
             try (Session session = ds.open(DIRECTORY_NAME)) {
                 Map<String, Serializable> filter = new HashMap<String, Serializable>();
@@ -235,7 +235,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
     }
 
     public DocumentModelList query(Map<String, Serializable> filter) {
-        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+        DirectoryService ds = Framework.getService(DirectoryService.class);
         return Framework.doPrivileged(() -> {
             try (Session session = ds.open(DIRECTORY_NAME)) {
                 filter.put("serviceName", serviceName);
@@ -249,7 +249,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
     }
 
     protected NuxeoOAuth2Token storeTokenAsDirectoryEntry(NuxeoOAuth2Token aToken) {
-        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+        DirectoryService ds = Framework.getService(DirectoryService.class);
         return Framework.doPrivileged(() -> {
             try (Session session = ds.open(DIRECTORY_NAME)) {
                 DocumentModel entry = session.createEntry(aToken.toMap());

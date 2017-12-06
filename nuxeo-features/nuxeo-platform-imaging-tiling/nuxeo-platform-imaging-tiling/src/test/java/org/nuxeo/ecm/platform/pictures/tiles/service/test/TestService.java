@@ -68,13 +68,13 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testLookup() {
-        PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
+        PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
     }
 
     @Test
     public void testTilingSimple() throws Exception {
-        PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
+        PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
 
         File file = FileUtils.getResourceFileFromContext("test.jpg");
@@ -93,7 +93,7 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testTilingSpead() throws Exception {
-        PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
+        PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
 
         File file = FileUtils.getResourceFileFromContext("test.jpg");
@@ -116,7 +116,7 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testLazy() throws Exception {
-        PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
+        PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
 
         File wdir = new File(Environment.getDefault().getTemp(), "testMe");
@@ -144,7 +144,7 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testTilingWithShrink() throws Exception {
-        PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
+        PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
 
         File file = FileUtils.getResourceFileFromContext("test.jpg");
@@ -159,7 +159,7 @@ public class TestService extends NXRuntimeTestCase {
     @Test
     public void testTilingSimpleMagick() throws Exception {
 
-        PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
+        PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
 
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
@@ -181,7 +181,7 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testMagick() throws Exception {
-        PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
+        PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         File file = FileUtils.getResourceFileFromContext("test.jpg");
@@ -195,7 +195,7 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testMagick2() throws Exception {
-        PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
+        PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         File file = FileUtils.getResourceFileFromContext("test.jpg");
@@ -210,7 +210,7 @@ public class TestService extends NXRuntimeTestCase {
     @Test
     @Ignore
     public void testBig() throws Exception {
-        PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
+        PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         File file = new File("/home/tiry/photos/orion.jpg");
@@ -273,7 +273,7 @@ public class TestService extends NXRuntimeTestCase {
     public void testGC() throws Exception {
         int gcRuns = PictureTilingCacheGCManager.getGCRuns();
 
-        PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
+        PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
         benchTiler(pts, new MagickTiler());
         testMagick2();
@@ -314,7 +314,7 @@ public class TestService extends NXRuntimeTestCase {
         PictureTilingComponent.setEnvValue(PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY,
                 Integer.toString(reduceSize));
 
-        PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
+        PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
         benchTiler(pts, new MagickTiler());
 
@@ -369,7 +369,7 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testBorderTiles() throws Exception {
-        PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
+        PictureTilingService pts = Framework.getService(PictureTilingService.class);
         assertNotNull(pts);
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         File file = FileUtils.getResourceFileFromContext("chutes.jpg");

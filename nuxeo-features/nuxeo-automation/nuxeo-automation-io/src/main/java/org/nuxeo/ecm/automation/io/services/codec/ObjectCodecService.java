@@ -88,7 +88,7 @@ public class ObjectCodecService {
     }
 
     public void postInit() {
-        DocumentAdapterCodec.register(this, Framework.getLocalService(DocumentAdapterService.class));
+        DocumentAdapterCodec.register(this, Framework.getService(DocumentAdapterService.class));
     }
 
     /**

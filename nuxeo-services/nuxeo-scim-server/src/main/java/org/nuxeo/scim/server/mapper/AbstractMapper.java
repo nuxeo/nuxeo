@@ -45,7 +45,7 @@ public abstract class AbstractMapper {
     protected final String baseUrl;
 
     public AbstractMapper(String baseUrl) {
-        um = Framework.getLocalService(UserManager.class);
+        um = Framework.getService(UserManager.class);
         this.baseUrl = baseUrl;
     }
 

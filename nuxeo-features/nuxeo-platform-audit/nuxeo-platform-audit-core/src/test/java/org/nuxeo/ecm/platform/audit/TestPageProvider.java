@@ -90,12 +90,12 @@ public class TestPageProvider {
     @Before
     public void createTestEntries() {
 
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
         assertNotNull(reader);
 
         audit.clear();
 
-        AuditLogger logger = Framework.getLocalService(AuditLogger.class);
+        AuditLogger logger = Framework.getService(AuditLogger.class);
         assertNotNull(logger);
         List<LogEntry> entries = new ArrayList<LogEntry>();
 

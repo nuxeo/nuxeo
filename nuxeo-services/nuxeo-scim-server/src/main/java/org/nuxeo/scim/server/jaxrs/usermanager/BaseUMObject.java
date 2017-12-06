@@ -63,7 +63,7 @@ public abstract class BaseUMObject extends DefaultObject {
 
     @Override
     protected void initialize(Object... args) {
-        um = Framework.getLocalService(UserManager.class);
+        um = Framework.getService(UserManager.class);
         // build base url
         baseUrl = VirtualHostHelper.getBaseURL(WebEngine.getActiveContext().getRequest());
         while (baseUrl.endsWith("/")) {

@@ -176,7 +176,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
     }
 
     protected static ServerInstance bind(Class<?> itf, Object managed, String name) {
-        MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
+        MBeanServer mbs = Framework.getService(ServerLocator.class).lookupServer();
         name = Defaults.instance.name(itf, name);
         try {
             ObjectInstance oi = mbs.registerMBean(managed, new ObjectName(name));

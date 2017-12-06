@@ -39,7 +39,7 @@ public class GroupObject extends AbstractUMObject<NuxeoGroup> {
 
     @Path("user/{username}")
     public Object doGetUserToGroup(@PathParam("username") String username) {
-        UserManager um = Framework.getLocalService(UserManager.class);
+        UserManager um = Framework.getService(UserManager.class);
         NuxeoPrincipal principal = um.getPrincipal(username);
         if (principal == null) {
             throw new WebResourceNotFoundException("User not found");

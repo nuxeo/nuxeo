@@ -83,7 +83,7 @@ public class JPAUIDSequencerImpl extends AbstractUIDSequencer {
         ClassLoader last = thread.getContextClassLoader();
         try {
             thread.setContextClassLoader(PersistenceProvider.class.getClassLoader());
-            PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
+            PersistenceProviderFactory persistenceProviderFactory = Framework.getService(PersistenceProviderFactory.class);
             persistenceProvider = persistenceProviderFactory.newProvider("NXUIDSequencer");
             persistenceProvider.openPersistenceUnit();
         } finally {

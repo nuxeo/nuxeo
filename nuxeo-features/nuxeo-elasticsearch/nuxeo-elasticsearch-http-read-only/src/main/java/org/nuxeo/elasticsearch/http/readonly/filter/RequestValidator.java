@@ -46,7 +46,7 @@ public class RequestValidator {
     final private Map<String, List<String>> indexTypes;
 
     public RequestValidator() {
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
         indexTypes = new HashMap<>();
         for (String name : esa.getRepositoryNames()) {
             List<String> types = new ArrayList<>();

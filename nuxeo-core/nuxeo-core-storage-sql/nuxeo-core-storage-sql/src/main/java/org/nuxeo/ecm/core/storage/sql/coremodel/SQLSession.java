@@ -460,7 +460,7 @@ public class SQLSession implements Session {
             targetNode = session.getNodeById(targetId);
             typeName = targetNode.getPrimaryType();
         }
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         DocumentType type = schemaManager.getDocumentType(typeName);
         if (type == null) {
             throw new DocumentNotFoundException("Unknown document type: " + typeName);

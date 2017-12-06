@@ -53,7 +53,7 @@ public class TestCommands extends NXRuntimeTestCase {
 
     @Test
     public void testReplaceParams() throws Exception {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         CmdParameters params = cles.getDefaultCmdParameters();
 
         // test default param
@@ -86,7 +86,7 @@ public class TestCommands extends NXRuntimeTestCase {
 
     @Test
     public void testCmdEnvironment() throws Exception {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
         pushInlineDeployments("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-env-test-contrib.xml");
@@ -106,7 +106,7 @@ public class TestCommands extends NXRuntimeTestCase {
 
     @Test
     public void testCmdPipe() throws Exception {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
 
         pushInlineDeployments("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-env-test-contrib.xml");
 

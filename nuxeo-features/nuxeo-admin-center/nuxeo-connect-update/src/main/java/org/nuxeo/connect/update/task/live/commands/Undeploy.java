@@ -95,7 +95,7 @@ public class Undeploy extends UndeployPlaceholder {
             return new Deploy(file);
         }
         try {
-            ReloadService srv = Framework.getLocalService(ReloadService.class);
+            ReloadService srv = Framework.getService(ReloadService.class);
             if (file.isDirectory()) {
                 _undeployDirectory(file, srv);
             } else {
@@ -117,7 +117,7 @@ public class Undeploy extends UndeployPlaceholder {
     @Deprecated
     protected void doCompatRun(Task task) throws PackageException {
         try {
-            ReloadService srv = Framework.getLocalService(ReloadService.class);
+            ReloadService srv = Framework.getService(ReloadService.class);
             if (file.isDirectory()) {
                 undeployDirectory(file, srv);
             } else {

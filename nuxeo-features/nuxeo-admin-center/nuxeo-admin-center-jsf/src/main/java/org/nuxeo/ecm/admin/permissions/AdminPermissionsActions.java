@@ -92,7 +92,7 @@ public class AdminPermissionsActions implements Serializable {
     }
 
     public boolean canStartPurge() {
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        WorkManager workManager = Framework.getService(WorkManager.class);
         return workManager.getMetrics(PermissionsPurgeWork.CATEGORY).getRunning().intValue() <= 0;
     }
 

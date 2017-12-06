@@ -89,7 +89,7 @@ public class ExternalLinkManager implements Serializable {
             return null;
         }
 
-        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        PackageManager pm = Framework.getService(PackageManager.class);
         pkg = pm.getPackage(packageId);
 
         if (getUser().isAdministrator() && pkg != null) {

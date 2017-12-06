@@ -46,13 +46,13 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testServiceExist() {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         assertNotNull(cles);
     }
 
     @Test
     public void testCmdRegistration() throws Exception {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
         pushInlineDeployments(
@@ -82,7 +82,7 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testCmdAvailable() {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
         /**
@@ -103,7 +103,7 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testCmdExecption() {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
         try {

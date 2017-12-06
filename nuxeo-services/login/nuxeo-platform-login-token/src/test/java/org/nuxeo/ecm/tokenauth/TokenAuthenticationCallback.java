@@ -84,7 +84,7 @@ public class TokenAuthenticationCallback implements TokenCallback {
         String permission = tokenParams.get(PERMISSION_KEY);
 
         try {
-            TokenAuthenticationService tokenAuthenticationService = Framework.getLocalService(TokenAuthenticationService.class);
+            TokenAuthenticationService tokenAuthenticationService = Framework.getService(TokenAuthenticationService.class);
             String remoteToken = tokenAuthenticationService.acquireToken(userName, applicationName, deviceId,
                     deviceDescription, permission);
             // commit transaction so that token is committed in remote directory

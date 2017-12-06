@@ -94,7 +94,7 @@ public class DirectoryEntryObject extends DefaultObject {
      */
     private void checkDeleteGuards() {
         List<DirectoryDeleteConstraint> deleteConstraints = directory.getDirectoryDeleteConstraints();
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
         if (deleteConstraints != null && !deleteConstraints.isEmpty()) {
             for (DirectoryDeleteConstraint deleteConstraint : deleteConstraints) {
                 if (!deleteConstraint.canDelete(directoryService, entryId)) {
@@ -122,7 +122,7 @@ public class DirectoryEntryObject extends DefaultObject {
     }
 
     private Directory getDirectoryFromEntry(final DirectoryEntry entry) {
-        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+        DirectoryService ds = Framework.getService(DirectoryService.class);
         Directory directory;
         try {
             directory = ds.getDirectory(entry.getDirectoryName());

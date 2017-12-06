@@ -35,7 +35,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestServerKeyService {
 
     @Inject
-    OAuthServerKeyManager skm = Framework.getLocalService(OAuthServerKeyManager.class);
+    OAuthServerKeyManager skm = Framework.getService(OAuthServerKeyManager.class);
 
     @Test
     public void testServiceLookup() throws Exception {

@@ -401,7 +401,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         }
         eventContext.setProperties(properties);
         Event event = eventContext.newEvent(eventId);
-        Framework.getLocalService(EventProducer.class)
+        Framework.getService(EventProducer.class)
                 .fireEvent(event);
     }
 

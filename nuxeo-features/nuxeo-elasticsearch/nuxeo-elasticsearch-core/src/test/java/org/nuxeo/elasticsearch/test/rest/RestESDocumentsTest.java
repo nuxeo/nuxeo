@@ -111,8 +111,8 @@ public class RestESDocumentsTest extends BaseTest {
     @Test
     public void iCanPerformESQLPageProviderOnRepository() throws IOException, InterruptedException {
         // wait for async jobs
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+        WorkManager wm = Framework.getService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
         Assert.assertEquals(0, esa.getPendingWorkerCount());
         esa.refresh();
@@ -194,8 +194,8 @@ public class RestESDocumentsTest extends BaseTest {
         TransactionHelper.startTransaction();
 
         // wait for async jobs
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+        WorkManager wm = Framework.getService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
         Assert.assertEquals(0, esa.getPendingWorkerCount());
         esa.refresh();

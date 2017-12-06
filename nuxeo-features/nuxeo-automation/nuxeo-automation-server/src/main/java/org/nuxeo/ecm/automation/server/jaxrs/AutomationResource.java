@@ -64,7 +64,7 @@ public class AutomationResource extends ModuleRoot {
     protected AutomationService service;
 
     public AutomationResource() {
-        service = Framework.getLocalService(AutomationService.class);
+        service = Framework.getService(AutomationService.class);
     }
 
     @Path("/doc")

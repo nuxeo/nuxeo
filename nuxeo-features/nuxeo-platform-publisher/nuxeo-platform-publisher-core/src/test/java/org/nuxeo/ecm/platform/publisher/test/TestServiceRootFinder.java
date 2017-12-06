@@ -138,7 +138,7 @@ public class TestServiceRootFinder extends PublisherTestCase {
     }
 
     private void changeUser(String userName) throws Exception {
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
         Session userdir = directoryService.open("userDirectory");
         DocumentModel userModel = userdir.getEntry(userName);
         // set it on session
@@ -203,7 +203,7 @@ public class TestServiceRootFinder extends PublisherTestCase {
 
         finder = service.getRootSectionFinder(session);
 
-        PublisherService ps = Framework.getLocalService(PublisherService.class);
+        PublisherService ps = Framework.getService(PublisherService.class);
         String treeName = ps.getAvailablePublicationTree().get(0);
         PublicationTree tree = ps.getPublicationTree(treeName, session, null);
         assertNotNull(tree);

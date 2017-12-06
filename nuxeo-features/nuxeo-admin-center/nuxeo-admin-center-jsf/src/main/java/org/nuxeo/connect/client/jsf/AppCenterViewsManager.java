@@ -217,7 +217,7 @@ public class AppCenterViewsManager implements Serializable {
     }
 
     public void flushCache() {
-        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        PackageManager pm = Framework.getService(PackageManager.class);
         pm.flushCache();
     }
 
@@ -237,7 +237,7 @@ public class AppCenterViewsManager implements Serializable {
         if (isStudioSnapshopUpdateInProgress) {
             return;
         }
-        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        PackageManager pm = Framework.getService(PackageManager.class);
         // TODO NXP-16228: should directly request the SNAPSHOT package (if only we knew its name!)
         List<DownloadablePackage> pkgs = pm.listRemoteAssociatedStudioPackages();
         DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
@@ -301,7 +301,7 @@ public class AppCenterViewsManager implements Serializable {
         if (lastUpdate == null) {
             DownloadablePackage snapshotPkg = getStudioProjectSnapshot();
             if (snapshotPkg != null) {
-                PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+                PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
                 try {
                     LocalPackage pkg = pus.getPackage(snapshotPkg.getId());
                     if (pkg != null) {
@@ -327,7 +327,7 @@ public class AppCenterViewsManager implements Serializable {
      */
     public DownloadablePackage getStudioProjectSnapshot() {
         if (!studioSnapshotPackageCached) {
-            PackageManager pm = Framework.getLocalService(PackageManager.class);
+            PackageManager pm = Framework.getService(PackageManager.class);
             // TODO NXP-16228: should directly request the SNAPSHOT package (if only we knew its name!)
             List<DownloadablePackage> pkgs = pm.listRemoteAssociatedStudioPackages();
             studioSnapshotPackage = StudioSnapshotHelper.getSnapshot(pkgs);
@@ -354,7 +354,7 @@ public class AppCenterViewsManager implements Serializable {
             DownloadablePackage snapshotPkg = getStudioProjectSnapshot();
             if (snapshotPkg != null) {
                 try {
-                    PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+                    PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
                     pkg = pus.getPackage(snapshotPkg.getId());
                 } catch (PackageException e) {
                     log.error(e);
@@ -482,7 +482,7 @@ public class AppCenterViewsManager implements Serializable {
             Watch watch = new Watch().start();
             boolean useCompatReload = Framework.isBooleanPropertyTrue(ReloadService.USE_COMPAT_HOT_RELOAD);
 
-            PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+            PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
             try {
                 if (!useCompatReload) {
                     try {

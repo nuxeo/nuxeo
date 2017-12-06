@@ -45,13 +45,13 @@ public class FavoritesManagerImpl extends DefaultComponent implements FavoritesM
 
     @Override
     public void addToFavorites(DocumentModel document, CoreSession session) {
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
         collectionManager.addToCollection(getFavorites(document, session), document, session);
     }
 
     @Override
     public boolean canAddToFavorites(DocumentModel document) {
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
         return collectionManager.isCollectable(document);
     }
 
@@ -83,7 +83,7 @@ public class FavoritesManagerImpl extends DefaultComponent implements FavoritesM
 
     @Override
     public DocumentModel getFavorites(final DocumentModel context, final CoreSession session) {
-        final UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
+        final UserWorkspaceService userWorkspaceService = Framework.getService(UserWorkspaceService.class);
         final DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, context);
         if (userWorkspace == null) {
             // no user workspace => no favorites (transient user for instance)
@@ -95,7 +95,7 @@ public class FavoritesManagerImpl extends DefaultComponent implements FavoritesM
 
     protected Locale getLocale(final CoreSession session) {
         Locale locale = null;
-        locale = Framework.getLocalService(LocaleProvider.class).getLocale(session);
+        locale = Framework.getService(LocaleProvider.class).getLocale(session);
         if (locale == null) {
             locale = Locale.getDefault();
         }
@@ -104,13 +104,13 @@ public class FavoritesManagerImpl extends DefaultComponent implements FavoritesM
 
     @Override
     public boolean isFavorite(DocumentModel document, CoreSession session) {
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
         return collectionManager.isInCollection(getFavorites(document, session), document, session);
     }
 
     @Override
     public void removeFromFavorites(DocumentModel document, CoreSession session) {
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
         collectionManager.removeFromCollection(getFavorites(document, session), document, session);
     }
 

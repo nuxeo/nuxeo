@@ -82,7 +82,7 @@ public class NuxeoRequestControllerFilter implements Filter {
     private static void doInitIfNeeded() {
         if (rcm == null) {
             if (Framework.getRuntime() != null) {
-                rcm = Framework.getLocalService(RequestControllerManager.class);
+                rcm = Framework.getService(RequestControllerManager.class);
 
                 if (rcm == null) {
                     log.error("Unable to get RequestControllerManager service");

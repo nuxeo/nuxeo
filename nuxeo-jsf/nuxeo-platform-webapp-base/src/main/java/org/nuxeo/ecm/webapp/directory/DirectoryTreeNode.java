@@ -244,7 +244,7 @@ public class DirectoryTreeNode {
         try (Session session = getDirectorySession()) {
             if (level == 0) {
                 String schemaName = getDirectorySchema();
-                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+                SchemaManager schemaManager = Framework.getService(SchemaManager.class);
                 Schema schema = schemaManager.getSchema(schemaName);
                 if (schema.hasField(PARENT_FIELD_ID)) {
                     // filter on empty parent

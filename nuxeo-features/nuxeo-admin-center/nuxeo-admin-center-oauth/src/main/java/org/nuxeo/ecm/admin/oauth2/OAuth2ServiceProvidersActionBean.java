@@ -56,7 +56,7 @@ public class OAuth2ServiceProvidersActionBean extends DirectoryBasedEditor {
     }
 
     public String getAuthorizationURL(String provider) {
-        OAuth2ServiceProviderRegistry oauth2ProviderRegistry = Framework.getLocalService(OAuth2ServiceProviderRegistry.class);
+        OAuth2ServiceProviderRegistry oauth2ProviderRegistry = Framework.getService(OAuth2ServiceProviderRegistry.class);
         OAuth2ServiceProvider serviceProvider = oauth2ProviderRegistry.getProvider(provider);
 
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();

@@ -76,7 +76,7 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
     @Override
     public void initialize(Object... args) {
         try {
-            service = Framework.getLocalService(AutomationService.class);
+            service = Framework.getService(AutomationService.class);
             ops = service.getDocumentation();
         } catch (OperationException e) {
             log.error("Failed to get automation service", e);
@@ -153,7 +153,7 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
     }
 
     public boolean isTraceEnabled() {
-        TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
+        TracerFactory tracerFactory = Framework.getService(TracerFactory.class);
         return tracerFactory.getRecordingState();
     }
 
@@ -163,7 +163,7 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
         if (!canManageTraces()) {
             return "You can not manage traces";
         }
-        TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
+        TracerFactory tracerFactory = Framework.getService(TracerFactory.class);
         tracerFactory.toggleRecording();
         HttpServletRequest request = RequestContext.getActiveContext().getRequest();
         String url = request.getHeader("Referer");
@@ -181,7 +181,7 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
         if (!canManageTraces()) {
             return "You can not manage json exception stack display";
         }
-        JsonFactoryManager jsonFactoryManager = Framework.getLocalService(JsonFactoryManager.class);
+        JsonFactoryManager jsonFactoryManager = Framework.getService(JsonFactoryManager.class);
         return String.valueOf(jsonFactoryManager.toggleStackDisplay());
     }
 
@@ -192,7 +192,7 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
         if (!canManageTraces()) {
             return "You can not manage traces";
         }
-        TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
+        TracerFactory tracerFactory = Framework.getService(TracerFactory.class);
         Trace trace = tracerFactory.getTrace(opId);
         if (trace == null) {
             return "no trace";

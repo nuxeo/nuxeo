@@ -41,7 +41,7 @@ public class TestContainerLocalConfig extends AbstractUserRegistration {
 
         assertTrue(rules.allowUserCreation());
         session.save();
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
 
         DocumentModel root = ((UserInvitationComponent) userRegistrationService).getOrCreateRootDocument(session,
                 DEFAULT_CONFIGURATION_NAME);

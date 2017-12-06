@@ -327,7 +327,7 @@ public final class Framework {
      * @since 5.4.2
      */
     public static LoginContext loginAsUser(String username) throws LoginException {
-        return getLocalService(LoginAs.class).loginAs(username);
+        return getService(LoginAs.class).loginAs(username);
     }
 
     /**

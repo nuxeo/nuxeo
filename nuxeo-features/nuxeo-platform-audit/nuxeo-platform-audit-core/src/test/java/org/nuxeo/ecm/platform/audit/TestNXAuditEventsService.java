@@ -119,7 +119,7 @@ public class TestNXAuditEventsService {
 
     @Before
     public void setUp() throws Exception {
-        mbeanServer = Framework.getLocalService(ServerLocator.class).lookupServer();
+        mbeanServer = Framework.getService(ServerLocator.class).lookupServer();
     }
 
     public void waitForAsyncCompletion() throws InterruptedException {

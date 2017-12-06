@@ -129,7 +129,7 @@ public class BOAdapter extends DefaultAdapter {
     }
 
     private BusinessAdapter getAdapter(String adapterName, DocumentModel doc) {
-        ObjectCodecService cs = Framework.getLocalService(ObjectCodecService.class);
+        ObjectCodecService cs = Framework.getService(ObjectCodecService.class);
         ObjectCodec<?> codec = cs.getCodec(adapterName);
         if (codec != null) {
             return (BusinessAdapter) doc.getAdapter(codec.getJavaType());

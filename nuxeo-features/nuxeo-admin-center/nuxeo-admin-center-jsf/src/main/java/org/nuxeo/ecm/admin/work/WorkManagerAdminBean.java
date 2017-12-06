@@ -48,7 +48,7 @@ public class WorkManagerAdminBean implements Serializable {
     protected String queueId;
 
     protected WorkManager getWorkManager() {
-        return Framework.getLocalService(WorkManager.class);
+        return Framework.getService(WorkManager.class);
     }
 
     public List<Map<String, Object>> getWorkQueuesInfo() {
