@@ -297,7 +297,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
     /*------------- Protected ---------------*/
     protected FileSystemItemAdapterService getFileSystemItemAdapterService() {
-        return Framework.getLocalService(FileSystemItemAdapterService.class);
+        return Framework.getService(FileSystemItemAdapterService.class);
     }
 
     protected FileItem updateFile(FileSystemItem fsItem, Blob blob) {

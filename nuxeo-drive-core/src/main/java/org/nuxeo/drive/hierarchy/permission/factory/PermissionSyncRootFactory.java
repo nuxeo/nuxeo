@@ -148,7 +148,7 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
     }
 
     protected FileSystemItemAdapterService getFileSystemAdapterService() {
-        return Framework.getLocalService(FileSystemItemAdapterService.class);
+        return Framework.getService(FileSystemItemAdapterService.class);
     }
 
 }

@@ -129,7 +129,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                     log.debug(String.format("Detected sync root change for user '%s' in audit log:"
                             + " invalidating the root cache and refetching the changes.", principalName));
                 }
-                NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+                NuxeoDriveManager driveManager = Framework.getService(NuxeoDriveManager.class);
                 driveManager.invalidateSynchronizationRootsCache(principalName);
                 driveManager.invalidateCollectionSyncRootMemberCache(principalName);
                 Map<String, SynchronizationRoots> synchronizationRoots = driveManager.getSynchronizationRoots(
@@ -352,7 +352,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     protected List<LogEntry> queryAuditEntries(CoreSession session, SynchronizationRoots activeRoots,
             Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds,
             int limit) {
-        AuditReader auditService = Framework.getLocalService(AuditReader.class);
+        AuditReader auditService = Framework.getService(AuditReader.class);
         // Set fixed query parameters
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("repositoryId", session.getRepositoryName());
@@ -476,7 +476,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         FileSystemItem fsItem = null;
         try {
             // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
-            fsItem = Framework.getLocalService(FileSystemItemAdapterService.class).getFileSystemItem(doc, false, false,
+            fsItem = Framework.getService(FileSystemItemAdapterService.class).getFileSystemItem(doc, false, false,
                     false);
         } catch (RootlessItemException e) {
             // Can happen for an unregistered synchronization root that cannot

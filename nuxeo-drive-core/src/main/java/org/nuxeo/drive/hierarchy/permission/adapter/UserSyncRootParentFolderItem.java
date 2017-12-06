@@ -99,7 +99,7 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
             return super.getChildren();
         } else {
             List<FileSystemItem> children = new ArrayList<FileSystemItem>();
-            Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getLocalService(NuxeoDriveManager.class)
+            Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getService(NuxeoDriveManager.class)
                                                                          .getSynchronizationRoots(principal);
             for (String repositoryName : syncRootsByRepo.keySet()) {
                 try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
@@ -159,7 +159,7 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
     }
 
     private boolean isUserWorkspaceSyncRoot(DocumentModel doc) {
-        NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        NuxeoDriveManager nuxeoDriveManager = Framework.getService(NuxeoDriveManager.class);
         return nuxeoDriveManager.isSynchronizationRoot(principal, doc);
     }
 

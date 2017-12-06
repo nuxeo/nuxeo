@@ -124,10 +124,10 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
     /*------------------- VirtualFolderItemFactory ------------------- */
     @Override
     public FolderItem getVirtualFolderItem(Principal principal) {
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         // TODO: handle multiple repositories
         try (CoreSession session = CoreInstance.openCoreSession(repositoryManager.getDefaultRepositoryName(), principal)) {
-            UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
+            UserWorkspaceService userWorkspaceService = Framework.getService(UserWorkspaceService.class);
             DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
             if (userWorkspace == null) {
                 throw new NuxeoException(String.format("No personal workspace found for user %s.", principal.getName()));
@@ -148,7 +148,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
 
     /*------------------- Protected ------------------- */
     protected FolderItem getTopLevelFolderItem(Principal principal) {
-        FolderItem topLevelFolder = Framework.getLocalService(FileSystemItemManager.class).getTopLevelFolder(principal);
+        FolderItem topLevelFolder = Framework.getService(FileSystemItemManager.class).getTopLevelFolder(principal);
         if (topLevelFolder == null) {
             throw new NuxeoException("Found no top level folder item. Please check your "
                     + "contribution to the following extension point:"

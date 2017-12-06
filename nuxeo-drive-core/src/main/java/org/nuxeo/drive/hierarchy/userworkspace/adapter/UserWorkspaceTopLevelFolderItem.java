@@ -149,6 +149,6 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
     }
 
     protected NuxeoDriveManager getNuxeoDriveManager() {
-        return Framework.getLocalService(NuxeoDriveManager.class);
+        return Framework.getService(NuxeoDriveManager.class);
     }
 }

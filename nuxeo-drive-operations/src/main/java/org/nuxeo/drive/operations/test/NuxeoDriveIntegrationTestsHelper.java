@@ -62,7 +62,7 @@ public final class NuxeoDriveIntegrationTestsHelper {
     public static void cleanUp(CoreSession session) {
 
         // Delete test users and their personal workspace if exist
-        UserManager userManager = Framework.getLocalService(UserManager.class);
+        UserManager userManager = Framework.getService(UserManager.class);
         DocumentModelList testUsers = userManager.searchUsers(TEST_USER_NAME_PREFIX);
         for (DocumentModel testUser : testUsers) {
             String testUserName = (String) testUser.getPropertyValue(userManager.getUserSchemaName() + ":"
@@ -90,7 +90,7 @@ public final class NuxeoDriveIntegrationTestsHelper {
         }
 
         // Invalidate user profile cache
-        Framework.getLocalService(UserProfileService.class).clearCache();
+        Framework.getService(UserProfileService.class).clearCache();
     }
 
     public static String getDefaultDomainPath(CoreSession session) {

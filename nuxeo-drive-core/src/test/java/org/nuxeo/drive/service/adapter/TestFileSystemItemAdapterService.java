@@ -108,7 +108,7 @@ public class TestFileSystemItemAdapterService {
         syncRootFolder = session.createDocument(syncRootFolder);
 
         // Register the root folder as sync root
-        NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        NuxeoDriveManager driveManager = Framework.getService(NuxeoDriveManager.class);
         driveManager.registerSynchronizationRoot(session.getPrincipal(), syncRootFolder, session);
 
         syncRootItem = (FolderItem) fileSystemItemAdapterService.getFileSystemItem(syncRootFolder);

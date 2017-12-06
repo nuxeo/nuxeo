@@ -117,7 +117,7 @@ public abstract class AbstractSyncRootFolderItemFactory extends AbstractFileSyst
         }
         if (!relaxSyncRootConstraint) {
             // Check synchronization root registered for the current user
-            NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
+            NuxeoDriveManager nuxeoDriveManager = Framework.getService(NuxeoDriveManager.class);
             Principal principal = doc.getCoreSession().getPrincipal();
             boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(principal, doc);
             if (!isSyncRoot) {

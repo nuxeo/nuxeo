@@ -30,7 +30,7 @@ public class NuxeoDriveSetSynchronizationOperation {
 
     @OperationMethod
     public void run(DocumentModel doc) {
-        NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        NuxeoDriveManager driveManager = Framework.getService(NuxeoDriveManager.class);
         if (enable) {
             driveManager.registerSynchronizationRoot(session.getPrincipal(), doc, session);
         } else {

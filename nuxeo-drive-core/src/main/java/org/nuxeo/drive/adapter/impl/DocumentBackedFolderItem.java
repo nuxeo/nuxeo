@@ -140,7 +140,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     @SuppressWarnings("unchecked")
     public List<FileSystemItem> getChildren() {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-            PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
+            PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
             Map<String, Serializable> props = new HashMap<String, Serializable>();
             props.put(CORE_SESSION_PROPERTY, (Serializable) session);
             PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
@@ -530,7 +530,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     protected FileManager getFileManager() {
-        return Framework.getLocalService(FileManager.class);
+        return Framework.getService(FileManager.class);
     }
 
     /*---------- Needed for JSON deserialization ----------*/

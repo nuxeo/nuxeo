@@ -203,7 +203,7 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
     protected FileSystemItem getFileSystemItem(DocumentModel doc, String eventName) {
         try {
             // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
-            return Framework.getLocalService(FileSystemItemAdapterService.class).getFileSystemItem(doc, true, true,
+            return Framework.getService(FileSystemItemAdapterService.class).getFileSystemItem(doc, true, true,
                     false);
         } catch (RootlessItemException e) {
             // can happen when deleting a folder under and unregistered root:

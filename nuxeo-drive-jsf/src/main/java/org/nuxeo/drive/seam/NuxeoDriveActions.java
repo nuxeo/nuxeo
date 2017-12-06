@@ -141,7 +141,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         Context cache = Contexts.getEventContext();
         Boolean isUnderSync = (Boolean) cache.get(IS_UNDER_SYNCHRONIZATION_ROOT);
         if (isUnderSync == null) {
-            NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+            NuxeoDriveManager driveManager = Framework.getService(NuxeoDriveManager.class);
             Set<IdRef> references = driveManager.getSynchronizationRootReferences(documentManager);
             DocumentModelList path = navigationContext.getCurrentPath();
             DocumentModel root = null;
@@ -318,7 +318,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     }
 
     public String synchronizeCurrentDocument() throws UnsupportedEncodingException {
-        NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        NuxeoDriveManager driveManager = Framework.getService(NuxeoDriveManager.class);
         Principal principal = documentManager.getPrincipal();
         DocumentModel newSyncRoot = navigationContext.getCurrentDocument();
         driveManager.registerSynchronizationRoot(principal, newSyncRoot, documentManager);
@@ -332,7 +332,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     }
 
     public void unsynchronizeCurrentDocument() {
-        NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        NuxeoDriveManager driveManager = Framework.getService(NuxeoDriveManager.class);
         Principal principal = documentManager.getPrincipal();
         DocumentModel syncRoot = navigationContext.getCurrentDocument();
         driveManager.unregisterSynchronizationRoot(principal, syncRoot, documentManager);
@@ -348,7 +348,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     public DocumentModelList getSynchronizationRoots() {
         DocumentModelList syncRoots = new DocumentModelListImpl();
-        NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        NuxeoDriveManager driveManager = Framework.getService(NuxeoDriveManager.class);
         Set<IdRef> syncRootRefs = driveManager.getSynchronizationRootReferences(documentManager);
         for (IdRef syncRootRef : syncRootRefs) {
             syncRoots.add(documentManager.getDocument(syncRootRef));
@@ -357,7 +357,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     }
 
     public void unsynchronizeRoot(DocumentModel syncRoot) {
-        NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        NuxeoDriveManager driveManager = Framework.getService(NuxeoDriveManager.class);
         Principal principal = documentManager.getPrincipal();
         driveManager.unregisterSynchronizationRoot(principal, syncRoot, documentManager);
     }
@@ -428,7 +428,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     protected FileSystemItem getFileSystemItem(DocumentModel doc) {
         // Force parentItem to null to avoid computing ancestors
         // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
-        FileSystemItem fileSystemItem = Framework.getLocalService(FileSystemItemAdapterService.class)
+        FileSystemItem fileSystemItem = Framework.getService(FileSystemItemAdapterService.class)
                                                  .getFileSystemItem(doc, null, false, false, false);
         if (fileSystemItem == null) {
             if (log.isDebugEnabled()) {

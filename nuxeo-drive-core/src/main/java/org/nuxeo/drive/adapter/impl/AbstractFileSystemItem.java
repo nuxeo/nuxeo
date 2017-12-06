@@ -215,7 +215,7 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     /*--------------------- Protected ---------------------*/
     protected FileSystemItemAdapterService getFileSystemItemAdapterService() {
-        return Framework.getLocalService(FileSystemItemAdapterService.class);
+        return Framework.getService(FileSystemItemAdapterService.class);
     }
 
     /*---------- Needed for JSON deserialization ----------*/
@@ -269,6 +269,6 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     protected void setUserName(String userName) {
         this.userName = userName;
-        this.principal = Framework.getLocalService(UserManager.class).getPrincipal(userName);
+        this.principal = Framework.getService(UserManager.class).getPrincipal(userName);
     }
 }

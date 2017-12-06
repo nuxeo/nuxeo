@@ -302,7 +302,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     }
 
     protected NuxeoDriveManager getNuxeoDriveManager() {
-        return Framework.getLocalService(NuxeoDriveManager.class);
+        return Framework.getService(NuxeoDriveManager.class);
     }
 
     /*---------- Needed for JSON deserialization ----------*/

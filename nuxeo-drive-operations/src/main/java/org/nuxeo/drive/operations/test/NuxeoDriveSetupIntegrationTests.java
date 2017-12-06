@@ -96,8 +96,8 @@ public class NuxeoDriveSetupIntegrationTests {
 
         StringBuilder testUserCredentials = new StringBuilder();
 
-        UserManager userManager = Framework.getLocalService(UserManager.class);
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        UserManager userManager = Framework.getService(UserManager.class);
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
         String userSchemaName = userManager.getUserSchemaName();
         String userNameField = directoryService.getDirectoryIdField(userManager.getUserDirectoryName());
         String passwordField = directoryService.getDirectoryPasswordField(userManager.getUserDirectoryName());

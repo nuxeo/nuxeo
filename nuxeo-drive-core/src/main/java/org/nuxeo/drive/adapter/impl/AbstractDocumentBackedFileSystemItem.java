@@ -339,7 +339,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
     }
 
     protected TrashService getTrashService() {
-        return Framework.getLocalService(TrashService.class);
+        return Framework.getService(TrashService.class);
     }
 
     protected String[] parseFileSystemId(String id) {

@@ -1196,7 +1196,7 @@ public class DefaultFileSystemItemFactoryFixture {
     void reload() throws InterruptedException {
         Properties lastProps = Framework.getProperties();
         try {
-            Framework.getLocalService(ReloadService.class).reload();
+            Framework.getService(ReloadService.class).reload();
         } finally {
             Framework.getProperties().putAll(lastProps);
         }

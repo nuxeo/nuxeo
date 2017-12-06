@@ -60,7 +60,7 @@ public class NuxeoDriveUpdateFile {
     @OperationMethod
     public Blob run(Blob blob) throws ParseException, IOException {
 
-        FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
+        FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
         NuxeoDriveOperationHelper.normalizeMimeTypeAndEncoding(blob);
         FileItem fileItem;
         if (parentId == null) {

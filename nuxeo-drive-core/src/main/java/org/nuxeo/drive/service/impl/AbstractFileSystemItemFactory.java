@@ -222,7 +222,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         String[] idFragments = parseFileSystemId(id);
         String repositoryName = idFragments[1];
         String docId = idFragments[2];
-        CoreSession session = Framework.getLocalService(FileSystemItemManager.class).getSession(repositoryName,
+        CoreSession session = Framework.getService(FileSystemItemManager.class).getSession(repositoryName,
                 principal);
         return getDocumentById(docId, session);
     }
