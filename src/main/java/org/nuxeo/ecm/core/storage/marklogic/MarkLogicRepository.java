@@ -67,7 +67,6 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
-import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
@@ -110,7 +109,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     protected final List<MarkLogicRangeElementIndexDescriptor> rangeElementIndexes;
 
-    protected final CursorService<ResultSequence, ResultItem> cursorService = new CursorService<>();
+    protected final CursorService<ResultSequence, ResultItem, String> cursorService;
 
     public MarkLogicRepository(ConnectionManager cm, MarkLogicRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
@@ -118,6 +117,10 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         rangeElementIndexes = descriptor.rangeElementIndexes.stream()
                                                             .map(MarkLogicRangeElementIndexDescriptor::new)
                                                             .collect(Collectors.toList());
+        cursorService = new CursorService<>(item -> {
+            State state = MarkLogicStateDeserializer.deserialize(item.asInputStream());
+            return state.get(KEY_ID).toString();
+        });
         initRepository();
     }
 
@@ -430,7 +433,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveInSecond) {
+    public ScrollResult<String> scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveInSecond) {
         cursorService.checkForTimedOutScroll();
         MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(evaluator, null, false, rangeElementIndexes);
         String query = builder.buildQuery().getSearchQuery();
@@ -452,11 +455,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public ScrollResult scroll(String scrollId) {
-        return cursorService.scroll(scrollId, item -> {
-            State state = MarkLogicStateDeserializer.deserialize(item.asInputStream());
-            return state.get(KEY_ID).toString();
-        });
+    public ScrollResult<String> scroll(String scrollId) {
+        return cursorService.scroll(scrollId);
     }
 
     @Override
