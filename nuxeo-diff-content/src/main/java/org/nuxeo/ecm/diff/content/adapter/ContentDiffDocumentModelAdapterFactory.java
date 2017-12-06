@@ -35,7 +35,7 @@ public class ContentDiffDocumentModelAdapterFactory implements DocumentAdapterFa
 
     protected ContentDiffAdapterManager getContentDiffAdapterManager() {
         if (contentDiffAdapterManager == null) {
-            contentDiffAdapterManager = Framework.getLocalService(ContentDiffAdapterManager.class);
+            contentDiffAdapterManager = Framework.getService(ContentDiffAdapterManager.class);
         }
         return contentDiffAdapterManager;
     }

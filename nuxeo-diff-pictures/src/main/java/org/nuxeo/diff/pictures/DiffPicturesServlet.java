@@ -96,7 +96,7 @@ public class DiffPicturesServlet extends HttpServlet {
             String altExtension = req.getParameter("altExtension");
 
             if (StringUtils.isBlank(repo)) {
-                repo = Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName();
+                repo = Framework.getService(RepositoryManager.class).getDefaultRepository().getName();
             }
 
             // This try-with-resources does an implicit close() at the end

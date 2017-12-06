@@ -62,7 +62,7 @@ public class ContentDiffHtmlConverter extends AbstractContentDiffConverter {
 
         // Get HTML converter name from blob mime type
         String mimeType = blob.getMimeType();
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConversionService cs = Framework.getService(ConversionService.class);
         converterName = cs.getConverterName(mimeType, HTML_MIME_TYPE);
         // We don't want to use the "any2html" converter contributed for the
         // preview in the case of non pdf blobs since it uses the following
