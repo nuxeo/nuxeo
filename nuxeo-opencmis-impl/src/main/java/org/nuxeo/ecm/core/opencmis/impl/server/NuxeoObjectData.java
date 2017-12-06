@@ -444,7 +444,7 @@ public class NuxeoObjectData implements ObjectData {
 
     protected static List<RenditionData> getRenditionServiceRenditions(DocumentModel doc, CallContext callContext)
             throws IOException {
-        RenditionService renditionService = Framework.getLocalService(RenditionService.class);
+        RenditionService renditionService = Framework.getService(RenditionService.class);
         List<RenditionDefinition> defs = renditionService.getAvailableRenditionDefinitions(doc);
         List<RenditionData> list = new ArrayList<>(defs.size());
         for (RenditionDefinition def : defs) {
