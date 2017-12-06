@@ -46,8 +46,8 @@ import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -239,7 +239,7 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertEquals("testName", defaultTopLevelFolderItemFactory.getName());
         defaultTopLevelFolderItemFactory.setName("org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory");
         // #isFileSystemItem(DocumentModel doc)
-        DocumentModel fakeDoc = new DocumentModelImpl("File");
+        DocumentModel fakeDoc = DocumentModelFactory.createDocumentModel("File");
         assertFalse(defaultTopLevelFolderItemFactory.isFileSystemItem(fakeDoc));
         // #getFileSystemItem(DocumentModel doc)
         assertNull(defaultTopLevelFolderItemFactory.getFileSystemItem(fakeDoc));
