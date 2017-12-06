@@ -113,11 +113,11 @@ public class Helper {
 
         Map<String, String> info = new HashMap<String, String>();
 
-        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1", "Folder");
+        DocumentModel folder1 = session.createDocumentModel("/", "testfolder1", "Folder");
         folder1.setPropertyValue("dc:title", "testfolder1_Title");
         folder1 = createDocument(session, folder1);
 
-        DocumentModel file1 = new DocumentModelImpl("/testfolder1", "testfile1", "File");
+        DocumentModel file1 = session.createDocumentModel("/testfolder1", "testfile1", "File");
         file1.setPropertyValue("dc:title", "testfile1_Title");
         file1.setPropertyValue("dc:description", "testfile1_description");
         String content = FILE1_CONTENT;
@@ -157,7 +157,7 @@ public class Helper {
         acp.addACL(acl);
         file1.setACP(acp, true);
 
-        DocumentModel file2 = new DocumentModelImpl("/testfolder1", "testfile2", "File");
+        DocumentModel file2 = session.createDocumentModel("/testfolder1", "testfile2", "File");
         file2.setPropertyValue("dc:title", "testfile2_Title");
         file2.setPropertyValue("dc:description", "something");
         Calendar cal2 = getCalendar(2007, 4, 1, 12, 0, 0);
@@ -174,7 +174,7 @@ public class Helper {
         acp.addACL(acl);
         file2.setACP(acp, true);
 
-        DocumentModel file3 = new DocumentModelImpl("/testfolder1", "testfile3", "Note");
+        DocumentModel file3 = session.createDocumentModel("/testfolder1", "testfile3", "Note");
         file3.setPropertyValue("note", "this is a note");
         file3.setPropertyValue("dc:title", "testfile3_Title");
         file3.setPropertyValue("dc:description", "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
@@ -182,31 +182,31 @@ public class Helper {
         file3.setPropertyValue("dc:lastContributor", "john");
         file3 = createDocument(session, file3);
 
-        DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2", "Folder");
+        DocumentModel folder2 = session.createDocumentModel("/", "testfolder2", "Folder");
         folder2.setPropertyValue("dc:title", "testfolder2_Title");
         folder2 = createDocument(session, folder2);
 
-        DocumentModel folder3 = new DocumentModelImpl("/testfolder2", "testfolder3", "Folder");
+        DocumentModel folder3 = session.createDocumentModel("/testfolder2", "testfolder3", "Folder");
         folder3.setPropertyValue("dc:title", "testfolder3_Title");
         folder3 = createDocument(session, folder3);
 
-        DocumentModel folder4 = new DocumentModelImpl("/testfolder2", "testfolder4", "Folder");
+        DocumentModel folder4 = session.createDocumentModel("/testfolder2", "testfolder4", "Folder");
         folder4.setPropertyValue("dc:title", "testfolder4_Title");
         folder4 = createDocument(session, folder4);
 
-        DocumentModel file4 = new DocumentModelImpl("/testfolder2/testfolder3", "testfile4", "File");
+        DocumentModel file4 = session.createDocumentModel("/testfolder2/testfolder3", "testfile4", "File");
         file4.setPropertyValue("dc:title", "testfile4_Title");
         file4.setPropertyValue("dc:description", "something");
         file4 = createDocument(session, file4);
 
-        DocumentModel file5 = new DocumentModelImpl("/testfolder1", "testfile5", "File");
+        DocumentModel file5 = session.createDocumentModel("/testfolder1", "testfile5", "File");
         file5.setPropertyValue("dc:title", "title5");
         file5 = createDocument(session, file5);
         file5.followTransition(DELETE_TRANSITION);
         file5 = saveDocument(session, file5);
         info.put("file5id", file5.getId());
 
-        DocumentModel file6 = new DocumentModelImpl("/testfolder2/testfolder3", "testfile6", "Note");
+        DocumentModel file6 = session.createDocumentModel("/testfolder2/testfolder3", "testfile6", "Note");
         file6.setPropertyValue("dc:title", "title6");
         file6 = createDocument(session, file6);
 
@@ -249,7 +249,7 @@ public class Helper {
 
     public static String createUserWorkspace(CoreSession repo, String username) {
 
-        DocumentModel container = new DocumentModelImpl("/", "UserWorkspaceRoot", "UserWorkspaceRoot");
+        DocumentModel container = repo.createDocumentModel("/", "UserWorkspaceRoot", "UserWorkspaceRoot");
         container = repo.createDocument(container);
         {
             ACP acp = new ACPImpl();
