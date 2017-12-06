@@ -251,6 +251,12 @@
   <category name="org.jboss.serial" additivity="true">
     <priority value="INFO" />
   </category>
+  <category name="javax.enterprise.resource.webcontainer.jsf.application">
+    <priority value="WARN" />
+  </category>
+  <category name="org.richfaces.log.Config">
+    <priority value="ERROR" />
+  </category>
 
   <!-- Limit the org.apache category to INFO as its DEBUG is verbose -->
   <category name="org.apache" additivity="true">
