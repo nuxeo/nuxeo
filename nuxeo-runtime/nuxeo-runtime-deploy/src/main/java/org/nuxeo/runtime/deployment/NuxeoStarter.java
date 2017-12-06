@@ -127,7 +127,7 @@ public class NuxeoStarter implements ServletContextListener {
             Driver driver = drivers.nextElement();
             try {
                 DriverManager.deregisterDriver(driver);
-                log.warn(String.format("Deregister JDBC driver: %s", driver));
+                log.info(String.format("Deregister JDBC driver: %s", driver));
             } catch (SQLException e) {
                 log.error(String.format("Error deregistering JDBC driver %s", driver), e);
             }
