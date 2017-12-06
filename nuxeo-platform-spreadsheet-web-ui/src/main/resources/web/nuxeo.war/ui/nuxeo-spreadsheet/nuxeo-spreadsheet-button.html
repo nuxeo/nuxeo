@@ -98,12 +98,16 @@ Contributors:
 
         // convert provider.params and provider.aggregations to properties
         var properties = {};
-        Object.keys(provider.params).forEach(function(key) {
-          properties[key] = provider.params[key];
-        });
-        Object.keys(provider.aggregations).forEach(function(key) {
-          properties[key] = provider.aggregations[key].selection;
-        });
+        if (provider.params) {
+          Object.keys(provider.params).forEach(function(key) {
+            properties[key] = provider.params[key];
+          });
+        }
+        if (provider.aggregations) {
+          Object.keys(provider.aggregations).forEach(function(key) {
+            properties[key] = provider.aggregations[key].selection;
+          });
+        }
 
         // convert datatable.columns to columns
         var columns = [];
