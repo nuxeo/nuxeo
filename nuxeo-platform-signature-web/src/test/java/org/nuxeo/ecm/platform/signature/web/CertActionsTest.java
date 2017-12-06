@@ -83,7 +83,7 @@ public class CertActionsTest {
     }
 
     protected static UserManager getUserManager() {
-        UserManager userManager = Framework.getLocalService(UserManager.class);
+        UserManager userManager = Framework.getService(UserManager.class);
         assertNotNull(userManager);
         return userManager;
     }
