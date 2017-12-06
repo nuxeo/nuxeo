@@ -177,7 +177,7 @@ public class AbstractTestSnapshot {
     protected DocumentModel createStandardProxy(DocumentModel targetDocument, DocumentModel parentForProxy)
             throws Exception {
         DocumentModel proxy = session.publishDocument(targetDocument, parentForProxy);
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
         session.save();
         return proxy;
     }

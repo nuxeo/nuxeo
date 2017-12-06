@@ -101,7 +101,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
                 targetDoc.getCoreSession().getPrincipal(), targetDoc);
         ctx.setProperty(ROOT_DOCUMENT_PROPERTY, doc);
 
-        Framework.getLocalService(EventService.class).fireEvent(ctx.newEvent(ABOUT_TO_CREATE_LEAF_VERSION_EVENT));
+        Framework.getService(EventService.class).fireEvent(ctx.newEvent(ABOUT_TO_CREATE_LEAF_VERSION_EVENT));
         // Save only if needed
         if (targetDoc.isDirty()) {
             targetDoc.getCoreSession().saveDocument(targetDoc);
