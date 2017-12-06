@@ -21,13 +21,10 @@ package org.nuxeo.lib.stream.tools.command;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.io.input.Tailer;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogTailer;
-
-import java.io.Externalizable;
 
 /**
  * @since 9.3

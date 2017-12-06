@@ -109,6 +109,7 @@ public class TestLibKafka {
         zkUtils.close();
     }
 
+    @SuppressWarnings("FutureReturnValueIgnored")
     @Test
     public void testSendMessage() {
         String topic = "test-message-topic";

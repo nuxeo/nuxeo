@@ -70,7 +70,7 @@ public class StreamAuditWriter implements StreamProcessorTopology {
                        .build();
     }
 
-    public class AuditLogWriterComputation extends AbstractComputation {
+    public static class AuditLogWriterComputation extends AbstractComputation {
         protected final int batchSize;
 
         protected final int batchThresholdMs;

@@ -44,7 +44,7 @@ public class MyStreamProcessor implements StreamProcessorTopology {
     }
 
     // Simple computation that forward a record
-    protected class ComputationNoop extends AbstractComputation {
+    protected static class ComputationNoop extends AbstractComputation {
         public ComputationNoop(String name) {
             super(name, 1, 1);
         }

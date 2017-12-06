@@ -66,6 +66,7 @@ public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaCon
         log.debug("Activating service");
     }
 
+    @Override
     public Set<String> listConfigNames() {
         return configs.keySet();
     }

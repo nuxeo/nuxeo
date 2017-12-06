@@ -134,6 +134,7 @@ public class TestLogChronicle extends TestLog {
         assertEquals(4, Files.list(queuePath).count());
     }
 
+    @SuppressWarnings("FutureReturnValueIgnored")
     @Test
     public void testConcurrentFileRetentions() throws Exception {
         final int NB_APPENDERS = 5;

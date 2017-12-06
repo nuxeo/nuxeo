@@ -68,6 +68,7 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         // we can not get a list of work id with the stream impl
     }
 
+    @Override
     @Ignore()
     @Test
     public void testWorkManagerConfigDisableOneAfterStart() throws Exception {
@@ -75,6 +76,7 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         super.testWorkManagerConfigDisableOneAfterStart();
     }
 
+    @Override
     @Ignore()
     @Test
     public void testWorkManagerConfigDisableAllAfterStart() throws Exception {
@@ -120,7 +122,7 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         tracker.assertDiff(0, 0, 6, 1);
     }
 
-
+    @Override
     @Ignore()
     @Test
     public void testNoConcurrentJobsWithSameId() throws Exception {
@@ -129,6 +131,7 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         super.testNoConcurrentJobsWithSameId();
     }
 
+    @Override
     @Ignore
     @Test
     public void testWorkManagerCancelScheduling() throws Exception {

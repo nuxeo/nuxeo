@@ -29,9 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -706,6 +704,7 @@ public abstract class TestLog {
         // listConsumerLags();
     }
 
+    @SuppressWarnings("FutureReturnValueIgnored")
     @Test
     public void testConcurrentAppenders() throws Exception {
         final int NB_APPENDERS = 4;
@@ -715,11 +714,11 @@ public abstract class TestLog {
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
         ExecutorService executor = Executors.newFixedThreadPool(NB_APPENDERS);
         Runnable writer = () -> {
-            for(int i=0; i<NB_MSG; i++) {
+            for (int i = 0; i < NB_MSG; i++) {
                 appender.append(0, KeyValueMessage.of("msg" + i));
             }
         };
-        for (int i=0; i<NB_APPENDERS; i++) {
+        for (int i = 0; i < NB_APPENDERS; i++) {
             executor.submit(writer);
         }
         executor.shutdown();

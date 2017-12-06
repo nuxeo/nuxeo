@@ -44,8 +44,8 @@ import org.apache.kafka.common.Cluster;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.nuxeo.lib.stream.log.LogPartition;
-import kafka.admin.AdminClient;
 
+import kafka.admin.AdminClient;
 import kafka.admin.AdminUtils;
 import kafka.cluster.Broker;
 import kafka.cluster.EndPoint;
@@ -160,7 +160,8 @@ public class KafkaUtils implements AutoCloseable {
             log.error(msg);
             throw new IllegalArgumentException(msg);
         }
-        try (org.apache.kafka.clients.admin.AdminClient client = org.apache.kafka.clients.admin.AdminClient.create(properties)) {
+        try (org.apache.kafka.clients.admin.AdminClient client = org.apache.kafka.clients.admin.AdminClient.create(
+                properties)) {
             client.createTopics(Collections.singletonList(new NewTopic(topic, partitions, replicationFactor)));
         }
     }
@@ -214,7 +215,8 @@ public class KafkaUtils implements AutoCloseable {
     }
 
     public int getNumberOfPartitions(Properties properties, String topic) {
-        try (org.apache.kafka.clients.admin.AdminClient client = org.apache.kafka.clients.admin.AdminClient.create(properties)) {
+        try (org.apache.kafka.clients.admin.AdminClient client = org.apache.kafka.clients.admin.AdminClient.create(
+                properties)) {
             DescribeTopicsResult descriptions = client.describeTopics(Collections.singletonList(topic));
             try {
                 return descriptions.values().get(topic).get().partitions().size();

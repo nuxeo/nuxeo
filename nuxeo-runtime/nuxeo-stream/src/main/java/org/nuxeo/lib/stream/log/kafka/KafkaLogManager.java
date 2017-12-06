@@ -33,7 +33,6 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.utils.Bytes;
-import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogTailer;
@@ -106,7 +105,8 @@ public class KafkaLogManager extends AbstractLogManager {
     }
 
     @Override
-    protected <M extends Externalizable> LogTailer<M> doCreateTailer(Collection<LogPartition> partitions, String group) {
+    protected <M extends Externalizable> LogTailer<M> doCreateTailer(Collection<LogPartition> partitions,
+            String group) {
         partitions.forEach(this::checkValidPartition);
         return KafkaLogTailer.createAndAssign(prefix, partitions, group, (Properties) consumerProperties.clone());
     }
@@ -184,7 +184,7 @@ public class KafkaLogManager extends AbstractLogManager {
         Properties ret = new Properties();
         ret.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
                 producerProperties.getOrDefault(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                            consumerProperties.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG)));
+                        consumerProperties.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG)));
         return ret;
     }
 

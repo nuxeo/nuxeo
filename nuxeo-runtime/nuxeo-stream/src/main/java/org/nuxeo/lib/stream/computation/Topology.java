@@ -272,7 +272,7 @@ public class Topology {
         }
     }
 
-    public class Vertex {
+    public static class Vertex {
         protected final String name;
 
         protected final VertexType type;
