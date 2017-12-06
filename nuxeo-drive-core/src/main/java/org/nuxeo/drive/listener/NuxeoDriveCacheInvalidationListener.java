@@ -48,7 +48,7 @@ public class NuxeoDriveCacheInvalidationListener implements EventListener {
             // document deletion
             return;
         }
-        NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        NuxeoDriveManager driveManager = Framework.getService(NuxeoDriveManager.class);
         if (CollectionConstants.ADDED_TO_COLLECTION.equals(event.getName())
                 || CollectionConstants.REMOVED_FROM_COLLECTION.equals(event.getName())) {
             driveManager.invalidateCollectionSyncRootMemberCache();

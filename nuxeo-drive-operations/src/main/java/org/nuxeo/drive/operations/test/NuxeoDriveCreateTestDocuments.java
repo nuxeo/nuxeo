@@ -61,7 +61,7 @@ public class NuxeoDriveCreateTestDocuments {
     @OperationMethod
     public Blob run(DocumentModel parent) throws Exception {
         NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
-        FileManager fileManager = Framework.getLocalService(FileManager.class);
+        FileManager fileManager = Framework.getService(FileManager.class);
         for (int i = 0; i < number; i++) {
             String name = String.format(namePattern, i);
             Blob content = new StringBlob(String.format(contentPattern, i));

@@ -55,7 +55,7 @@ public class NuxeoDriveRename {
     @OperationMethod
     public Blob run() throws InvalidOperationException, IOException {
 
-        FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
+        FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
         FileSystemItem fsItem;
         try {
             fsItem = fileSystemItemManager.rename(id, name, ctx.getPrincipal());

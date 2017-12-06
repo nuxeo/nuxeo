@@ -66,7 +66,7 @@ public class NuxeoDriveGetRootsOperation {
                 allRepositories = false;
             }
         }
-        NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        NuxeoDriveManager driveManager = Framework.getService(NuxeoDriveManager.class);
         Map<String, SynchronizationRoots> roots = driveManager.getSynchronizationRoots(ctx.getPrincipal());
         DocumentModelList rootDocumentModels = new DocumentModelListImpl();
         for (Map.Entry<String, SynchronizationRoots> rootsEntry : roots.entrySet()) {

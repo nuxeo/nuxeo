@@ -60,7 +60,7 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem {
     public void delete() {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel doc = getDocument(session);
-            Framework.getLocalService(NuxeoDriveManager.class).unregisterSynchronizationRoot(principal, doc, session);
+            Framework.getService(NuxeoDriveManager.class).unregisterSynchronizationRoot(principal, doc, session);
         }
     }
 

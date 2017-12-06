@@ -72,7 +72,7 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem {
     @SuppressWarnings("unchecked")
     public List<FileSystemItem> getChildren() {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-            PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
+            PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
             Map<String, Serializable> props = new HashMap<String, Serializable>();
             props.put(CORE_SESSION_PROPERTY, (Serializable) session);
             PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(

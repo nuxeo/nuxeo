@@ -44,7 +44,7 @@ public class FileSystemItemAdapterFactory implements DocumentAdapterFactory {
     }
 
     protected FileSystemItemAdapterService getService() {
-        return Framework.getLocalService(FileSystemItemAdapterService.class);
+        return Framework.getService(FileSystemItemAdapterService.class);
     }
 
 }

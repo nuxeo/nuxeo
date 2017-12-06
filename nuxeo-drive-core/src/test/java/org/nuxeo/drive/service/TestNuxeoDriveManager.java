@@ -350,7 +350,7 @@ public class TestNuxeoDriveManager {
         folder_2_1 = session.saveDocument(folder_2_1);
 
         // Check that the user1 has no longer access to folder_2_1
-        assertFalse(session.hasPermission(Framework.getLocalService(UserManager.class).getPrincipal("user1"),
+        assertFalse(session.hasPermission(Framework.getService(UserManager.class).getPrincipal("user1"),
                 folder_2_1_1.getRef(), SecurityConstants.READ_WRITE));
         // Give permission READ_WRITE to user1 on folder_2_1_1 and make it sync
         // root
@@ -360,7 +360,7 @@ public class TestNuxeoDriveManager {
         localACL.add(new ACE("user1", SecurityConstants.READ_WRITE, true));
         folder_2_1_1.setACP(acp, true);
         folder_2_1_1 = session.saveDocument(folder_2_1_1);
-        assertTrue(session.hasPermission(Framework.getLocalService(UserManager.class).getPrincipal("user1"),
+        assertTrue(session.hasPermission(Framework.getService(UserManager.class).getPrincipal("user1"),
                 folder_2_1_1.getRef(), SecurityConstants.READ_WRITE));
         nuxeoDriveManager.registerSynchronizationRoot(user1Session.getPrincipal(), folder_2_1_1, user1Session);
 

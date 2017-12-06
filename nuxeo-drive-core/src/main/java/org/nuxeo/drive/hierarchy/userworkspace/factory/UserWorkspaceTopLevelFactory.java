@@ -120,10 +120,10 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory 
     /*----------------------- TopLevelFolderItemFactory ---------------------*/
     @Override
     public FolderItem getTopLevelFolderItem(Principal principal) {
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         // TODO: handle multiple repositories
         try (CoreSession session = CoreInstance.openCoreSession(repositoryManager.getDefaultRepositoryName(), principal)) {
-            UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
+            UserWorkspaceService userWorkspaceService = Framework.getService(UserWorkspaceService.class);
             DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
             if (userWorkspace == null) {
                 throw new NuxeoException(String.format("No personal workspace found for user %s.", principal.getName()));

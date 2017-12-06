@@ -51,7 +51,7 @@ public class NuxeoDriveGetTopLevelChildren {
     @OperationMethod
     public Blob run() throws IOException {
 
-        FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
+        FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
         List<FileSystemItem> children = fileSystemItemManager.getTopLevelChildren(ctx.getPrincipal());
         return Blobs.createJSONBlobFromValueJackson1(children);
     }

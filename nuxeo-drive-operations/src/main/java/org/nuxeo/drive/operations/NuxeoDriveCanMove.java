@@ -61,7 +61,7 @@ public class NuxeoDriveCanMove {
     public Blob run() throws IOException {
         boolean canMove = false;
         try {
-            FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
+            FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
             canMove = fileSystemItemManager.canMove(srcId, destId, ctx.getPrincipal());
         } catch (RootlessItemException e) {
             // can happen if srcId or destId no longer match a document under an

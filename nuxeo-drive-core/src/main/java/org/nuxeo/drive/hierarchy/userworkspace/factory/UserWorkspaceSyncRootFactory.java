@@ -77,7 +77,7 @@ public class UserWorkspaceSyncRootFactory extends AbstractSyncRootFolderItemFact
     }
 
     protected FileSystemItemAdapterService getFileSystemAdapterService() {
-        return Framework.getLocalService(FileSystemItemAdapterService.class);
+        return Framework.getService(FileSystemItemAdapterService.class);
     }
 
 }

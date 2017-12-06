@@ -50,7 +50,7 @@ public class NuxeoDriveFileSystemItemExists {
 
     @OperationMethod
     public Blob run() throws IOException {
-        FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
+        FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
         boolean exists = fileSystemItemManager.exists(id, ctx.getPrincipal());
         return Blobs.createJSONBlobFromValue(exists);
     }

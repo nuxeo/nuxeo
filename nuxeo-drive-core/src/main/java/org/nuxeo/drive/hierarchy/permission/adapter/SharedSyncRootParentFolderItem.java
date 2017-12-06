@@ -64,7 +64,7 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
     public List<FileSystemItem> getChildren() {
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>();
-        Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getLocalService(NuxeoDriveManager.class)
+        Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getService(NuxeoDriveManager.class)
                                                                      .getSynchronizationRoots(principal);
         for (String repositoryName : syncRootsByRepo.keySet()) {
             try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {

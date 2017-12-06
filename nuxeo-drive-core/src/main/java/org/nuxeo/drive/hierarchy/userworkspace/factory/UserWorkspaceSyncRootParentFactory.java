@@ -38,7 +38,7 @@ public class UserWorkspaceSyncRootParentFactory extends AbstractVirtualFolderIte
 
     @Override
     public FolderItem getVirtualFolderItem(Principal principal) {
-        FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
+        FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
         FolderItem topLevelFolder = fileSystemItemManager.getTopLevelFolder(principal);
         if (topLevelFolder == null) {
             throw new NuxeoException(

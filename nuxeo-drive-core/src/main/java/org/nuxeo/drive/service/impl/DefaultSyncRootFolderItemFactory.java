@@ -45,7 +45,7 @@ public class DefaultSyncRootFolderItemFactory extends AbstractSyncRootFolderItem
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/
     @Override
     protected FolderItem getParentItem(DocumentModel doc) {
-        FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
+        FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
         Principal principal = doc.getCoreSession().getPrincipal();
         return fileSystemItemManager.getTopLevelFolder(principal);
     }

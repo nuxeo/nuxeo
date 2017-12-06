@@ -935,7 +935,7 @@ public class TestFileSystemItemOperations {
         // commit directory changes
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        UserManager userManager = Framework.getLocalService(UserManager.class);
+        UserManager userManager = Framework.getService(UserManager.class);
         return userManager.getPrincipal(userName);
     }
 

@@ -316,7 +316,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
 
     protected void fireEvent(DocumentModel sourceDocument, CoreSession session, String eventName,
             String impactedUserName) {
-        EventService eventService = Framework.getLocalService(EventService.class);
+        EventService eventService = Framework.getService(EventService.class);
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), sourceDocument);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
         ctx.setProperty(CoreEventConstants.SESSION_ID, session.getSessionId());
@@ -471,7 +471,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
 
     protected Map<String, SynchronizationRoots> computeSynchronizationRoots(String query, Principal principal) {
         Map<String, SynchronizationRoots> syncRoots = new HashMap<String, SynchronizationRoots>();
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
             try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
                 syncRoots.putAll(queryAndFetchSynchronizationRoots(session, query));
@@ -513,8 +513,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     @SuppressWarnings("unchecked")
     protected Map<String, Set<String>> computeCollectionSyncRootMemberIds(Principal principal) {
         Map<String, Set<String>> collectionSyncRootMemberIds = new HashMap<String, Set<String>>();
-        PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
             Set<String> collectionMemberIds = new HashSet<String>();
             try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
