@@ -21,12 +21,11 @@
 package org.nuxeo.ecm.platform.audit;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
@@ -34,8 +33,9 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Predicates;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @since 9.3
@@ -64,13 +64,13 @@ public class TestAuditStorage extends TestNXAuditEventsService {
         List<LogEntry> logs = backend.queryLogs(builder);
         assertEquals(42, logs.size());
 
-        ScrollResult scrollResult = backend.scroll(builder, 5, 10);
+        ScrollResult<LogEntry> scrollResult = backend.scroll(builder, 5, 10);
         int total = 0;
         while (scrollResult.hasResults()) {
-            assertTrue(scrollResult.getResultIds().size() <= 5);
-            List<String> ids = scrollResult.getResultIds();
-            ids.forEach(id -> assertFalse(id.isEmpty()));
-            total += ids.size();
+            assertTrue(scrollResult.getResults().size() <= 5);
+            List<LogEntry> entries = scrollResult.getResults();
+            entries.forEach(entry -> assertEquals("idForAuditStorage", entry.getEventId()));
+            total += entries.size();
             scrollResult = backend.scroll(scrollResult.getScrollId());
         }
         assertEquals(42, total);

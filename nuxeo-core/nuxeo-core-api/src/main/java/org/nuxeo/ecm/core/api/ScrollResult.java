@@ -23,9 +23,10 @@ import java.util.List;
 /**
  * The result of a {@link CoreSession#scroll} call, giving access to result and the scroll id.
  *
+ * @param <T> the result type.
  * @since 8.4
  */
-public interface ScrollResult {
+public interface ScrollResult<T> {
 
     /**
      * Returns the scroll identifier, which can be passed to CoreSession.scroll(String scrollId) to get more results.
@@ -34,8 +35,13 @@ public interface ScrollResult {
 
     /**
      * Returns the list of document ids
+     *
+     * @deprecated since 9.10 use {@link #getResults()} instead.
      */
-    List<String> getResultIds();
+    @Deprecated
+    default List<String> getResultIds() {
+        throw new UnsupportedOperationException("Use getResults instead.");
+    }
 
     /**
      * Returns {@code true} when this {@code ScrollResult} contains results.
@@ -47,6 +53,6 @@ public interface ScrollResult {
      *
      * @since 9.3
      */
-    <T> List<T> getResults();
+    List<T> getResults();
 
 }

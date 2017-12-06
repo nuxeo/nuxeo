@@ -78,12 +78,12 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
         }
         openSystemSession();
         int bucketSize = getBucketSize();
-        ScrollResult ret = session.scroll(nxql, bucketSize, 60);
+        ScrollResult<String> ret = session.scroll(nxql, bucketSize, 60);
         int bucketCount = 0;
         try {
             while (ret.hasResults()) {
-                documentCount += ret.getResultIds().size();
-                scheduleBucketWorker(ret.getResultIds(), false);
+                documentCount += ret.getResults().size();
+                scheduleBucketWorker(ret.getResults(), false);
                 bucketCount += 1;
                 ret = session.scroll(ret.getScrollId());
                 TransactionHelper.commitOrRollbackTransaction();

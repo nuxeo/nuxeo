@@ -38,19 +38,20 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 public interface Mapper extends RowMapper, XAResource {
 
     /**
-     * Executes the given query and returns the first batch of results, next batch must be requested within the
-     * {@code keepAliveSeconds} delay.
+     * Executes the given query and returns the first batch of results containing id of documents, next batch must be
+     * requested within the {@code keepAliveSeconds} delay.
      *
      * @since 8.4
      */
-    ScrollResult scroll(String query, int batchSize, int keepAliveSeconds);
+    ScrollResult<String> scroll(String query, int batchSize, int keepAliveSeconds);
 
     /**
-     * Get the next batch of result, the {@code scrollId} is part of the previous {@link ScrollResult} response.
+     * Get the next batch of results containing id of documents, the {@code scrollId} is part of the previous
+     * {@link ScrollResult} response.
      *
      * @since 8.4
      */
-    ScrollResult scroll(String scrollId);
+    ScrollResult<String> scroll(String scrollId);
 
     /**
      * Identifiers assigned by a server to identify a client mapper and its repository.

@@ -1307,7 +1307,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public ScrollResult scroll(String query, int batchSize, int keepAliveSeconds) {
+    public ScrollResult<String> scroll(String query, int batchSize, int keepAliveSeconds) {
         if (!isAdministrator()) {
             throw new NuxeoException("Only Administrators can scroll");
         }
@@ -1315,7 +1315,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public ScrollResult scroll(String scrollId) {
+    public ScrollResult<String> scroll(String scrollId) {
         if (!isAdministrator()) {
             throw new NuxeoException("Only Administrators can scroll");
         }

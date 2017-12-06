@@ -118,7 +118,6 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
-import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
@@ -1740,7 +1739,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public ScrollResult scroll(String query, int batchSize, int keepAliveSeconds) {
+    public ScrollResult<String> scroll(String query, int batchSize, int keepAliveSeconds) {
         SQLQuery sqlQuery = SQLQueryParser.parse(query);
         SelectClause selectClause = sqlQuery.select;
         selectClause.add(new Reference(NXQL.ECM_UUID));
@@ -1750,7 +1749,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public ScrollResult scroll(String scrollId) {
+    public ScrollResult<String> scroll(String scrollId) {
         return repository.scroll(scrollId);
     }
 

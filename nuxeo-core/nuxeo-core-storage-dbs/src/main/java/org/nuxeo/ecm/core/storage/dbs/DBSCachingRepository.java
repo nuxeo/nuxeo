@@ -379,12 +379,12 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     @Override
-    public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
+    public ScrollResult<String> scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
         return repository.scroll(evaluator, batchSize, keepAliveSeconds);
     }
 
     @Override
-    public ScrollResult scroll(String scrollId) {
+    public ScrollResult<String> scroll(String scrollId) {
         return repository.scroll(scrollId);
     }
 

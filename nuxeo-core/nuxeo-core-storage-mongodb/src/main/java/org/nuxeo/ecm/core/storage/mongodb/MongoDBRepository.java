@@ -169,7 +169,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected final MongoDBConverter converter;
 
-    protected final CursorService<MongoCursor<Document>, Document> cursorService = new CursorService<>();
+    protected final CursorService<MongoCursor<Document>, Document, String> cursorService;
 
     public MongoDBRepository(ConnectionManager cm, MongoDBRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
@@ -190,6 +190,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             sequenceLeft = 0;
         }
         converter = new MongoDBConverter(idKey);
+        cursorService = new CursorService<>(ob -> (String) ob.get(converter.keyToBson(KEY_ID)));
         initRepository();
     }
 
@@ -615,7 +616,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
+    public ScrollResult<String> scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
         cursorService.checkForTimedOutScroll();
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder(this, evaluator.getExpression(),
                 evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
@@ -635,8 +636,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public ScrollResult scroll(String scrollId) {
-        return cursorService.scroll(scrollId, ob -> (String) ob.get(converter.keyToBson(KEY_ID)));
+    public ScrollResult<String> scroll(String scrollId) {
+        return cursorService.scroll(scrollId);
     }
 
     protected void addPrincipals(Document query, Set<String> principals) {
