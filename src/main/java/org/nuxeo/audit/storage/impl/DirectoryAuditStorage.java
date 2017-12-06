@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -78,7 +79,8 @@ public class DirectoryAuditStorage implements AuditStorage {
         OBJECT_MAPPER.getDeserializationConfig().addMixInAnnotations(LogEntryImpl.class, LogEntryImplMixIn.class);
     }
 
-    protected CursorService<Iterator<LogEntry>, LogEntry> cursorService = new CursorService<>();
+    protected CursorService<Iterator<LogEntry>, LogEntry, LogEntry> cursorService = new CursorService<>(
+            Function.identity());
 
     protected Directory getAuditDirectory() {
         return Framework.getService(DirectoryService.class).getDirectory(DIRECTORY_NAME);
@@ -100,15 +102,15 @@ public class DirectoryAuditStorage implements AuditStorage {
      * Scroll log entries in the Audit directory, given a scroll Id.
      */
     @Override
-    public ScrollResult scroll(String scrollId) {
-        return cursorService.scroll(scrollId, true, logEntry -> String.valueOf(logEntry.getId()));
+    public ScrollResult<LogEntry> scroll(String scrollId) {
+        return cursorService.scroll(scrollId);
     }
 
     /**
      * Scroll log entries in the Audit directory, given an audit query builder.
      */
     @Override
-    public ScrollResult scroll(AuditQueryBuilder queryBuilder, int batchSize, int keepAlive) {
+    public ScrollResult<LogEntry> scroll(AuditQueryBuilder queryBuilder, int batchSize, int keepAlive) {
         cursorService.checkForTimedOutScroll();
         List<LogEntry> logEntries = queryLogs(queryBuilder);
         String scrollId = cursorService.registerCursor(logEntries.iterator(), batchSize, keepAlive);
@@ -117,8 +119,7 @@ public class DirectoryAuditStorage implements AuditStorage {
 
     /**
      * Query log entries in the Audit directory, given an audit query builder. Does not support literals other than
-     * StringLiteral: see {@link Session.query(Map<String, Serializable>, Set<String>, Map<String, String>, boolean,
-     * int, int)};
+     * StringLiteral: see {@link Session#query(Map, Set, Map, boolean, int, int)}.
      */
     protected List<LogEntry> queryLogs(AuditQueryBuilder queryBuilder) {
         List<LogEntry> logEntries = new ArrayList<>();
@@ -188,7 +189,7 @@ public class DirectoryAuditStorage implements AuditStorage {
     /**
      * Deserialization MixIn for {@link LogEntryImpl}, in order to use:
      * {@link org.codehaus.jackson.annotate.JsonProperty} and not {@link com.fasterxml.jackson.annotation.JsonProperty},
-     * {@link LogEntryImpl.setDocUUID(String)} and not {@link LogEntryImpl.setDocUUID(DocumentRef)}.
+     * {@link LogEntryImpl#setDocUUID} and not {@link LogEntryImpl#setDocUUID}.
      */
     abstract static class LogEntryImplMixIn {
         @JsonIgnore
