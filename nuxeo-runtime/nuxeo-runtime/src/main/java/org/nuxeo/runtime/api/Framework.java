@@ -231,7 +231,10 @@ public final class Framework {
 
     /**
      * Gets a service given its class.
+     *
+     * @deprecated since 9.10, use {@link #getService} instead
      */
+    @Deprecated
     public static <T> T getLocalService(Class<T> serviceClass) {
         return getService(serviceClass);
     }
