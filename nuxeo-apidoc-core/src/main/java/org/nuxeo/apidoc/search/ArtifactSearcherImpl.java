@@ -82,7 +82,7 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
     public List<NuxeoArtifact> searchArtifact(CoreSession session, String distribId, String fulltext) {
         List<NuxeoArtifact> result = new ArrayList<>();
 
-        DistributionSnapshot snap = Framework.getLocalService(SnapshotManager.class).getSnapshot(distribId, session);
+        DistributionSnapshot snap = Framework.getService(SnapshotManager.class).getSnapshot(distribId, session);
         if (!(snap instanceof RepositoryDistributionSnapshot)) {
             return Collections.emptyList();
         }
@@ -95,7 +95,7 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
             query += " AND " + NXQL.ECM_FULLTEXT + " = " + NXQL.escapeString(fulltext);
         }
 
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(query).limit(MAX_RESULTS));
         for (DocumentModel doc : docs) {
             NuxeoArtifact artifact = mapDoc2Artifact(doc);
@@ -109,14 +109,14 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
     @Override
     public List<DocumentationItem> searchDocumentation(CoreSession session, String distribId, String fulltext,
             String targetType) {
-        DistributionSnapshot snap = Framework.getLocalService(SnapshotManager.class).getSnapshot(distribId, session);
+        DistributionSnapshot snap = Framework.getService(SnapshotManager.class).getSnapshot(distribId, session);
         DocumentModel dist = ((RepositoryDistributionSnapshot) snap).getDoc();
         String query = QueryHelper.select(DocumentationItem.TYPE_NAME, dist, NXQL.ECM_FULLTEXT, fulltext);
         if (targetType != null) {
             query += " AND " + DocumentationItem.PROP_TARGET_TYPE + " = " + NXQL.escapeString(targetType);
         }
 
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(query).limit(MAX_RESULTS));
         List<DocumentationItem> result = new ArrayList<>();
         for (DocumentModel doc : docs) {
@@ -196,7 +196,7 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
 
     protected NuxeoArtifact resolveInTree(CoreSession session, String distribId,
             DocumentationItem matchingDocumentationItem, String searchedType) {
-        DistributionSnapshot snap = Framework.getLocalService(SnapshotManager.class).getSnapshot(distribId, session);
+        DistributionSnapshot snap = Framework.getService(SnapshotManager.class).getSnapshot(distribId, session);
         String targetId = matchingDocumentationItem.getTarget();
         String targetType = matchingDocumentationItem.getTargetType();
         NuxeoArtifact artifact;

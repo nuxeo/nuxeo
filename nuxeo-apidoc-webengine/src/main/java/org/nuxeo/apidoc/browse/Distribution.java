@@ -107,7 +107,7 @@ public class Distribution extends ModuleRoot {
     }
 
     protected SnapshotManager getSnapshotManager() {
-        return Framework.getLocalService(SnapshotManager.class);
+        return Framework.getService(SnapshotManager.class);
     }
 
     public String getNavigationPoint() {
@@ -536,7 +536,7 @@ public class Distribution extends ModuleRoot {
             for (Map<String, Serializable> map : it) {
                 String id = (String) map.get(NXQL.ECM_UUID);
                 Work work = new ExtractXmlAttributesWorker(coreSession.getRepositoryName(), nxPrincipal.getName(), id);
-                Framework.getLocalService(WorkManager.class).schedule(work);
+                Framework.getService(WorkManager.class).schedule(work);
             }
         }
 

@@ -246,7 +246,7 @@ public class SnapshotPersister {
 
     protected void persistLiveDoc(Map<String, ResourceDocumentationItem> liveDoc, NuxeoArtifact item,
             CoreSession session) {
-        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        DocumentationService ds = Framework.getService(DocumentationService.class);
         List<DocumentationItem> existingDocs = ds.findDocumentItems(session, item);
         for (String cat : liveDoc.keySet()) {
             ResourceDocumentationItem docItem = liveDoc.get(cat);
