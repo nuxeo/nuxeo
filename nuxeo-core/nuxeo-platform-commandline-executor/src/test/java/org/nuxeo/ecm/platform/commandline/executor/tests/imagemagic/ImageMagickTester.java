@@ -52,7 +52,7 @@ public class ImageMagickTester {
 
     @Test
     public void testIdentifyExec() throws Exception {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
         CommandAvailability ca = cles.getCommandAvailability("identify");

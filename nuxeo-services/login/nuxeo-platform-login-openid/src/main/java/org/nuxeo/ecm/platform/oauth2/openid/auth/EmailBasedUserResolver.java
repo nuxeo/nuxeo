@@ -52,7 +52,7 @@ public class EmailBasedUserResolver extends UserResolver {
     public String findNuxeoUser(OpenIDUserInfo userInfo) {
 
         try {
-            UserManager userManager = Framework.getLocalService(UserManager.class);
+            UserManager userManager = Framework.getService(UserManager.class);
             Map<String, Serializable> query = new HashMap<String, Serializable>();
             query.put(userManager.getUserEmailField(), userInfo.getEmail());
 
@@ -74,7 +74,7 @@ public class EmailBasedUserResolver extends UserResolver {
     @Override
     public DocumentModel updateUserInfo(DocumentModel user, OpenIDUserInfo userInfo) {
         try {
-            UserManager userManager = Framework.getLocalService(UserManager.class);
+            UserManager userManager = Framework.getService(UserManager.class);
             user.setPropertyValue(userManager.getUserEmailField(), userInfo.getEmail());
             userManager.updateUser(user);
         } catch (NuxeoException e) {

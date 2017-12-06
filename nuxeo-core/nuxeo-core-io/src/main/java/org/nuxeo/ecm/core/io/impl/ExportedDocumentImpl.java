@@ -251,7 +251,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
     }
 
     protected void readDocumentSchemas(Element element, DocumentModel doc, boolean inlineBlobs) throws IOException {
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         String[] schemaNames = doc.getSchemas();
         for (String schemaName : schemaNames) {
             Element schemaElement = element.addElement(ExportConstants.SCHEMA_TAG).addAttribute("name", schemaName);

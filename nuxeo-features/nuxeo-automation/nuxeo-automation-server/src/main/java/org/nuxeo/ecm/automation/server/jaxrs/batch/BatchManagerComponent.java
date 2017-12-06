@@ -296,7 +296,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
             ctx.putAll(contextParams);
 
             Object result = null;
-            AutomationService as = Framework.getLocalService(AutomationService.class);
+            AutomationService as = Framework.getService(AutomationService.class);
             // Drag and Drop action category is accessible from the chain sub context as chain parameters
             result = as.run(ctx, chainOrOperationId, operationParams);
             return result;

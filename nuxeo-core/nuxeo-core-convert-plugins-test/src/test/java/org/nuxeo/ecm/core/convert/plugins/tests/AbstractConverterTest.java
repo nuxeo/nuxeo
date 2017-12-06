@@ -56,7 +56,7 @@ public abstract class AbstractConverterTest {
     }
 
     protected String doTestTextConverter(String srcMT, String converter, String fileName) throws Exception {
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConversionService cs = Framework.getService(ConversionService.class);
         String converterName = cs.getConverterName(srcMT, "text/plain");
         assertEquals(converter, converterName);
 
@@ -78,7 +78,7 @@ public abstract class AbstractConverterTest {
     }
 
     protected String doTestAny2TextConverter(String srcMT, String converterName, String fileName) throws Exception {
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConversionService cs = Framework.getService(ConversionService.class);
 
         BlobHolder hg;
         if (SystemUtils.IS_OS_WINDOWS) {
@@ -98,7 +98,7 @@ public abstract class AbstractConverterTest {
     }
 
     protected String doTestArabicTextConverter(String srcMT, String converter, String fileName) throws Exception {
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConversionService cs = Framework.getService(ConversionService.class);
         assertTrue(cs.isConverterAvailable(converter).isAvailable());
 
         String converterName = cs.getConverterName(srcMT, "text/plain");

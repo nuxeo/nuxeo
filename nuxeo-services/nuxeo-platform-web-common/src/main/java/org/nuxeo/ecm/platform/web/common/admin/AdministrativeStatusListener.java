@@ -44,7 +44,7 @@ public class AdministrativeStatusListener implements EventListener {
 
     protected static String getLocalInstanceId() {
         if (localInstanceId == null) {
-            GlobalAdministrativeStatusManager gasm = Framework.getLocalService(GlobalAdministrativeStatusManager.class);
+            GlobalAdministrativeStatusManager gasm = Framework.getService(GlobalAdministrativeStatusManager.class);
             localInstanceId = gasm.getLocalNuxeoInstanceIdentifier();
         }
         return localInstanceId;
@@ -60,7 +60,7 @@ public class AdministrativeStatusListener implements EventListener {
             return;
         }
 
-        AdministrativeStatusManager asm = Framework.getLocalService(AdministrativeStatusManager.class);
+        AdministrativeStatusManager asm = Framework.getService(AdministrativeStatusManager.class);
 
         if (serviceId.equals(GLOBAL_INSTANCE_AVAILABILITY)) {
             if (eventId.equals(ACTIVATED_EVENT)) {

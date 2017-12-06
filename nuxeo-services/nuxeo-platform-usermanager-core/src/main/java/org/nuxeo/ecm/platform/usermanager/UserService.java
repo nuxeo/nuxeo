@@ -53,7 +53,7 @@ public class UserService extends DefaultComponent {
     public UserManager getUserManager() {
         if (userManager == null) {
             recomputeUserManager(false);
-            EventService eventService = Framework.getLocalService(EventService.class);
+            EventService eventService = Framework.getService(EventService.class);
             eventService.addListener(UserManagerImpl.USERMANAGER_TOPIC, userManager);
         }
         return userManager;
@@ -124,7 +124,7 @@ public class UserService extends DefaultComponent {
     public void deactivate(ComponentContext context) {
         log.info("UserService deactivated");
         if (userManager != null) {
-            EventService eventService = Framework.getLocalService(EventService.class);
+            EventService eventService = Framework.getService(EventService.class);
             if (eventService != null) {
                 eventService.removeListener(UserManagerImpl.USERMANAGER_TOPIC, userManager);
             }

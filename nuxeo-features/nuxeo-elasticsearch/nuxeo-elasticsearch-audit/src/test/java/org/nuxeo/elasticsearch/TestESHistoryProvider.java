@@ -96,12 +96,12 @@ public class TestESHistoryProvider {
     protected void waitForAsyncCompletion() throws InterruptedException {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        assertTrue(Framework.getLocalService(AuditLogger.class).await(10, TimeUnit.SECONDS));
+        assertTrue(Framework.getService(AuditLogger.class).await(10, TimeUnit.SECONDS));
     }
 
     protected void createTestEntries() throws Exception {
 
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
 
         DocumentModel section = session.createDocumentModel("/", "section", "Folder");
         section = session.createDocument(section);
@@ -201,7 +201,7 @@ public class TestESHistoryProvider {
 
         List<LogEntry> entries = new ArrayList<>();
         entries.add(createdEntry);
-        Framework.getLocalService(AuditLogger.class).addLogEntries(entries);
+        Framework.getService(AuditLogger.class).addLogEntries(entries);
 
         LogEntryGen.flushAndSync();
         List<LogEntry> logs = reader.getLogEntriesFor(doc.getId(), doc.getRepositoryName());

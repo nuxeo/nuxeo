@@ -45,7 +45,7 @@ public class ImageResizer extends MagickExecutor {
         if (targetDepth == -1) {
             targetDepth = ImageIdentifier.getInfo(inputFile).getDepth();
         }
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         CmdParameters params = cles.getDefaultCmdParameters();
         params.addNamedParameter("targetWidth", String.valueOf(targetWidth));
         params.addNamedParameter("targetHeight", String.valueOf(targetHeight));

@@ -51,7 +51,7 @@ public class JsonStackToggleDisplayOperation {
 
     @OperationMethod
     public boolean run() {
-        JsonFactoryManager jsonFactoryManager = Framework.getLocalService(JsonFactoryManager.class);
+        JsonFactoryManager jsonFactoryManager = Framework.getService(JsonFactoryManager.class);
         if (canManageStackDisplay()) {
             if (displayStack == null) {
                 jsonFactoryManager.toggleStackDisplay();

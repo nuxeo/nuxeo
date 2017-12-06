@@ -56,7 +56,7 @@ public class NuxeoCorsFilter extends CORSFilter {
         if (!(request instanceof HttpServletRequest)) {
             return null;
         }
-        return Framework.getLocalService(RequestControllerManager.class).getCorsConfigForRequest(
+        return Framework.getService(RequestControllerManager.class).getCorsConfigForRequest(
                 (HttpServletRequest) request);
     }
 }

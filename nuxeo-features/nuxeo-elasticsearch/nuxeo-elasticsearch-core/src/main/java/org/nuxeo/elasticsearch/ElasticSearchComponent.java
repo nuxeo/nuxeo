@@ -288,7 +288,7 @@ public class ElasticSearchComponent extends DefaultComponent
     @SuppressWarnings("deprecation")
     @Override
     public long getPendingWorkerCount() {
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        WorkManager wm = Framework.getService(WorkManager.class);
         // api is deprecated for completed work
         return wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.SCHEDULED);
     }
@@ -296,7 +296,7 @@ public class ElasticSearchComponent extends DefaultComponent
     @SuppressWarnings("deprecation")
     @Override
     public long getRunningWorkerCount() {
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        WorkManager wm = Framework.getService(WorkManager.class);
         // api is deprecated for completed work
         return runIndexingWorkerCount.get() + wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.RUNNING);
     }
@@ -324,7 +324,7 @@ public class ElasticSearchComponent extends DefaultComponent
     @Override
     public ListenableFuture<Boolean> prepareWaitForIndexing() {
         return waiterExecutorService.submit(() -> {
-            WorkManager wm = Framework.getLocalService(WorkManager.class);
+            WorkManager wm = Framework.getService(WorkManager.class);
             boolean completed;
             do {
                 completed = wm.awaitCompletion(INDEXING_QUEUE_ID, 300, TimeUnit.SECONDS);
@@ -453,7 +453,7 @@ public class ElasticSearchComponent extends DefaultComponent
         if (asyncCommands.isEmpty()) {
             return;
         }
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        WorkManager wm = Framework.getService(WorkManager.class);
         for (String repositoryName : asyncCommands.keySet()) {
             IndexingWorker idxWork = new IndexingWorker(repositoryName, asyncCommands.get(repositoryName));
             // we are in afterCompletion don't wait for a commit
@@ -485,7 +485,7 @@ public class ElasticSearchComponent extends DefaultComponent
             throw new IllegalArgumentException("Expecting an NXQL query");
         }
         ScrollingIndexingWorker worker = new ScrollingIndexingWorker(repositoryName, nxql, syncAlias);
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        WorkManager wm = Framework.getService(WorkManager.class);
         wm.schedule(worker);
     }
 

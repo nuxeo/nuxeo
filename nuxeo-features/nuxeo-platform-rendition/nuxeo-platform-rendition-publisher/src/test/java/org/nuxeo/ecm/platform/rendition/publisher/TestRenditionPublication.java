@@ -141,7 +141,7 @@ public class TestRenditionPublication {
         assertNotNull(renditionBlob);
         assertEquals("application/pdf", renditionBlob.getMimeType());
 
-        RenditionService renditionService = Framework.getLocalService(RenditionService.class);
+        RenditionService renditionService = Framework.getService(RenditionService.class);
         Rendition rendition = renditionService.getRendition(file, "pdf");
         assertNotNull(rendition);
 

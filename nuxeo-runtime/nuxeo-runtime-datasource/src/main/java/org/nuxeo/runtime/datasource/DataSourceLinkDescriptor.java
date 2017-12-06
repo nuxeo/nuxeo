@@ -47,7 +47,7 @@ public class DataSourceLinkDescriptor {
     public void bindSelf(Context namingContext) throws NamingException {
         namingContext.bind(name, new LinkRef(global));
         PooledDataSource pool = DataSourceHelper.getDataSource(global, PooledDataSource.class);
-        Framework.getLocalService(PooledDataSourceRegistry.class).createAlias(DataSourceHelper.relativize(name), pool);
+        Framework.getService(PooledDataSourceRegistry.class).createAlias(DataSourceHelper.relativize(name), pool);
     }
 
     public void unbindSelf(Context namingContext) throws NamingException {

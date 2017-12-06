@@ -44,7 +44,7 @@ public abstract class AbstractUMRootObject<T> extends PaginableObject<T> {
     @Override
     protected void initialize(Object... args) {
         super.initialize(args);
-        um = Framework.getLocalService(UserManager.class);
+        um = Framework.getService(UserManager.class);
 
         final HttpServletRequest request = ctx.getRequest();
         query = request.getParameter("q");

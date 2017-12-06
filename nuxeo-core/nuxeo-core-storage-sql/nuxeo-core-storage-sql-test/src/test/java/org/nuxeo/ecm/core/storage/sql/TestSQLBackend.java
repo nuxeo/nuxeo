@@ -2977,7 +2977,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     protected void waitForIndexing() {
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
         DatabaseHelper.DATABASE.sleepForFulltext();
     }
 

@@ -216,7 +216,7 @@ public class VocabularyTreeNode {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
 
             String directorySchema = getDirectorySchema();
-            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
             Schema schema = schemaManager.getSchema(directorySchema);
             if (schema == null) {
                 throw new DirectoryException(directorySchema + " is not a registered directory");

@@ -128,7 +128,7 @@ public class ConnectStatusActionBean implements Serializable {
     }
 
     protected ConnectRegistrationService getService() {
-        return Framework.getLocalService(ConnectRegistrationService.class);
+        return Framework.getService(ConnectRegistrationService.class);
     }
 
     /**
@@ -243,7 +243,7 @@ public class ConnectStatusActionBean implements Serializable {
             facesMessages.add(StatusMessage.Severity.WARN, "label.connect.nofile");
             return;
         }
-        PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+        PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
         try (CloseableFile cfile = packageToUpload.getCloseableFile()) {
             pus.addPackage(cfile.getFile());
         } catch (PackageException e) {

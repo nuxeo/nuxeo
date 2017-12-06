@@ -134,7 +134,7 @@ public class SAMLConfiguration {
         spDescriptor.getNameIDFormats().addAll(buildNameIDFormats(nameID));
 
         // Generate key info
-        KeyManager keyManager = Framework.getLocalService(KeyManager.class);
+        KeyManager keyManager = Framework.getService(KeyManager.class);
         if (keyManager.getSigningCredential() != null) {
             spDescriptor.getKeyDescriptors().add(
                 buildKeyDescriptor(UsageType.SIGNING,

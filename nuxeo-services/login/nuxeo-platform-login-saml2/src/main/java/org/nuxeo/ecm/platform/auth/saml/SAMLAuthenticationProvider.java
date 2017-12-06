@@ -510,7 +510,7 @@ public class SAMLAuthenticationProvider
         context.setMetadataProvider(metadataProvider);
 
         // Set the signing key
-        keyManager = Framework.getLocalService(KeyManager.class);
+        keyManager = Framework.getService(KeyManager.class);
         if (getKeyManager().getSigningCredential() != null) {
             context.setOutboundSAMLMessageSigningCredential(getKeyManager().getSigningCredential());
         }
@@ -618,7 +618,7 @@ public class SAMLAuthenticationProvider
 
     private KeyManager getKeyManager() {
         if (keyManager == null) {
-            keyManager = Framework.getLocalService(KeyManager.class);
+            keyManager = Framework.getService(KeyManager.class);
         }
         return keyManager;
     }

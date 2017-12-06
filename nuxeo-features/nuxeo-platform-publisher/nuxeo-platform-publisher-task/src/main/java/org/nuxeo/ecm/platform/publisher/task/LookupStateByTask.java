@@ -31,7 +31,7 @@ class LookupStateByTask implements LookupState {
 
     @Override
     public boolean isPublished(DocumentModel doc, CoreSession session) {
-        List<Task> tasks = Framework.getLocalService(TaskService.class).getTaskInstances(doc, (NuxeoPrincipal) null,
+        List<Task> tasks = Framework.getService(TaskService.class).getTaskInstances(doc, (NuxeoPrincipal) null,
                 session);
         for (Task task : tasks) {
             if (task.getName().equals(CoreProxyWithWorkflowFactory.TASK_NAME)) {

@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 public class WorksMonitoring implements WorksMonitoringMBean {
 
     protected WorkManager manager() {
-        return Framework.getLocalService(WorkManager.class);
+        return Framework.getService(WorkManager.class);
     }
 
     @Override

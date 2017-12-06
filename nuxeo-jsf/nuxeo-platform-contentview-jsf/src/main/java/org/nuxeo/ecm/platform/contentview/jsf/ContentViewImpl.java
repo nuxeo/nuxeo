@@ -371,7 +371,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         // be lost.
         if (pageProvider == null || pageProvider.hasChangedParameters(params)) {
             // make the service build the provider
-            ContentViewService service = Framework.getLocalService(ContentViewService.class);
+            ContentViewService service = Framework.getService(ContentViewService.class);
             pageProvider = service.getPageProvider(getName(), sortInfos, pageSize, currentPage, finalSearchDocument,
                     params);
         } else {

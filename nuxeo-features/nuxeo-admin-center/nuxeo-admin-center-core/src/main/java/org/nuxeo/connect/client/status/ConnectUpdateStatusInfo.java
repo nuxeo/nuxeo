@@ -151,7 +151,7 @@ public class ConnectUpdateStatusInfo {
         if (ConnectStatusHolder.instance().getStatus().isConnectServerUnreachable()) {
             return 0;
         }
-        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        PackageManager pm = Framework.getService(PackageManager.class);
         String targetPlatform = PlatformVersionHelper.getPlatformFilter();
 
         List<DownloadablePackage> pkgs = pm.listUpdatePackages(PackageType.HOT_FIX, targetPlatform);

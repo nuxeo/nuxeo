@@ -62,7 +62,7 @@ public class TestSchemaLoaderRestriction extends NXRuntimeTestCase {
 
     @Override
     protected void postSetUp() throws Exception {
-        SchemaManager typeMgr = Framework.getLocalService(SchemaManager.class);
+        SchemaManager typeMgr = Framework.getService(SchemaManager.class);
         XSDLoader reader = new XSDLoader((SchemaManagerImpl) typeMgr);
         URL url = getResource("schema/testrestriction.xsd");
         schema = reader.loadSchema("testrestriction", "", url);

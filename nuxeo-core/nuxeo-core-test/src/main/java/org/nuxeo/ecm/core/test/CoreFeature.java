@@ -349,7 +349,7 @@ public class CoreFeature extends SimpleFeature {
     protected void initializeSession(FeaturesRunner runner) {
         if (cleaned) {
             // reinitialize repositories content
-            RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
+            RepositoryService repositoryService = Framework.getService(RepositoryService.class);
             repositoryService.initRepositories();
             cleaned = false;
         }

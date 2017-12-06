@@ -51,7 +51,7 @@ public class ConnectStatusHolder {
     }
 
     protected ConnectRegistrationService getService() {
-        return Framework.getLocalService(ConnectRegistrationService.class);
+        return Framework.getService(ConnectRegistrationService.class);
     }
 
     /**

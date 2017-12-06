@@ -45,7 +45,7 @@ public class NuxeoPrincipalsPageProvider extends AbstractUsersPageProvider<Nuxeo
         if (pagePrincipals == null) {
             List<DocumentModel> users = computeCurrentPage();
             pagePrincipals = new ArrayList<>();
-            UserManager userManager = Framework.getLocalService(UserManager.class);
+            UserManager userManager = Framework.getService(UserManager.class);
             for (DocumentModel user : users) {
                 NuxeoPrincipal principal = userManager.getPrincipal(
                         user.getProperty(userManager.getUserIdField()).getValue(String.class));

@@ -42,7 +42,7 @@ public class ResourceServiceTest extends NXRuntimeTestCase {
 
     @Test
     public void testContributions() throws Exception {
-        ResourceService rs = Framework.getLocalService(ResourceService.class);
+        ResourceService rs = Framework.getService(ResourceService.class);
         URL url = rs.getResource("myres");
         try (InputStream in = url.openStream()) {
             assertEquals("test resource", IOUtils.toString(in, Charsets.UTF_8).trim());

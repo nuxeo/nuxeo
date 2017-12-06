@@ -85,9 +85,9 @@ public class VocabularyTreeActions implements Serializable {
             // return cached model
             return treeModel;
         }
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try {
-            Directory directory = Framework.getLocalService(DirectoryService.class).getDirectory(vocabularyName);
+            Directory directory = Framework.getService(DirectoryService.class).getDirectory(vocabularyName);
             if (directory == null) {
                 throw new DirectoryException(vocabularyName + " is not a registered directory");
             }
@@ -111,7 +111,7 @@ public class VocabularyTreeActions implements Serializable {
         Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
         String schemaName = null;
         List<String> labels = new ArrayList<String>();
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try (Session session = directoryService.open(vocabularyName)) {
             schemaName = directoryService.getDirectorySchema(vocabularyName);
             for (String id : StringUtils.split(path, keySeparator)) {

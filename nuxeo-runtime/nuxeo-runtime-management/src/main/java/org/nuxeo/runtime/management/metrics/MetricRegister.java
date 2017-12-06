@@ -35,7 +35,7 @@ public class MetricRegister {
 
     protected static final Log log = LogFactory.getLog(MetricRegister.class);
 
-    protected final MBeanServer server = Framework.getLocalService(ServerLocator.class).lookupServer();
+    protected final MBeanServer server = Framework.getService(ServerLocator.class).lookupServer();
 
     protected final HashMap<String, String> cnames = new HashMap<String, String>();
 
@@ -44,7 +44,7 @@ public class MetricRegister {
     }
 
     public void registerMXBean(Object mbean, String name, Class<?> itf, String type) {
-        ResourcePublisher srv = Framework.getLocalService(ResourcePublisher.class);
+        ResourcePublisher srv = Framework.getService(ResourcePublisher.class);
         String cname = canonicalName(name, type);
         srv.registerResource(name, cname, itf, mbean);
         cnames.put(name, cname);
@@ -55,7 +55,7 @@ public class MetricRegister {
     }
 
     public void unregisterMXBean(String name) {
-        ResourcePublisher srv = Framework.getLocalService(ResourcePublisher.class);
+        ResourcePublisher srv = Framework.getService(ResourcePublisher.class);
         if (srv == null) {
             return;
         }

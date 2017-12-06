@@ -40,7 +40,7 @@ public class ChildrenAdapter extends DocumentModelListPaginableAdapter {
 
     @Override
     protected PageProviderDefinition getPageProviderDefinition() {
-        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
         return ppService.getPageProviderDefinition("CURRENT_DOC_CHILDREN");
     }
 

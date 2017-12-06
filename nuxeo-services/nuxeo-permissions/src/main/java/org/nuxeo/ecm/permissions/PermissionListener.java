@@ -83,7 +83,7 @@ public class PermissionListener implements EventListener {
         Framework.doPrivileged(() -> {
             DocumentModel doc = docCtx.getSourceDocument();
             List<ACLDiff> aclDiffs = extractACLDiffs(oldACP, newACP);
-            DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+            DirectoryService directoryService = Framework.getService(DirectoryService.class);
             for (ACLDiff diff : aclDiffs) {
                 try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
                     for (ACE ace : diff.removedACEs) {
@@ -126,7 +126,7 @@ public class PermissionListener implements EventListener {
         Framework.doPrivileged(() -> {
             DocumentModel doc = docCtx.getSourceDocument();
 
-            DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+            DirectoryService directoryService = Framework.getService(DirectoryService.class);
             try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
                 Boolean notify = (Boolean) newACE.getContextData(NOTIFY_KEY);
                 String comment = (String) newACE.getContextData(COMMENT_KEY);

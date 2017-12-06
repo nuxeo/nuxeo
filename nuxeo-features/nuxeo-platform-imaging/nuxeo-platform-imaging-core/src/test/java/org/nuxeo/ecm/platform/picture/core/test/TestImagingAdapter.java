@@ -137,7 +137,7 @@ public class TestImagingAdapter {
     }
 
     protected String getConversionFormat() {
-        return Framework.getLocalService(ImagingService.class).getConfigurationValue("conversionFormat", "jpg");
+        return Framework.getService(ImagingService.class).getConfigurationValue("conversionFormat", "jpg");
     }
 
     @Test

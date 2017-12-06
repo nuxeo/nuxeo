@@ -169,7 +169,7 @@ public class SubscriptionAdapter {
 
         Set<String> notificationNames = new HashSet<String>();
 
-        NotificationManager ns = Framework.getLocalService(NotificationManager.class);
+        NotificationManager ns = Framework.getService(NotificationManager.class);
 
         for (Notification notif : ns.getNotificationsForSubscriptions(doc.getType())) {
             notificationNames.add(notif.getName());

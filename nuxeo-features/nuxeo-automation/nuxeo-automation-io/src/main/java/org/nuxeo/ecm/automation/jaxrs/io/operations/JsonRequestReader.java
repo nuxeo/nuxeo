@@ -150,7 +150,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
             CoreSession session) throws IOException {
         ExecutionRequest req = new ExecutionRequest();
 
-        ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
+        ObjectCodecService codecService = Framework.getService(ObjectCodecService.class);
         jp.nextToken(); // skip {
         JsonToken tok = jp.nextToken();
         while (tok != null && tok != JsonToken.END_OBJECT) {
@@ -187,7 +187,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
     }
 
     private static void readParams(JsonParser jp, ExecutionRequest req, CoreSession session) throws IOException {
-        ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
+        ObjectCodecService codecService = Framework.getService(ObjectCodecService.class);
         JsonToken tok = jp.nextToken(); // move to first entry
         while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
@@ -201,7 +201,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
     }
 
     private static void readContext(JsonParser jp, ExecutionRequest req, CoreSession session) throws IOException {
-        ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
+        ObjectCodecService codecService = Framework.getService(ObjectCodecService.class);
         JsonToken tok = jp.nextToken(); // move to first entry
         while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();

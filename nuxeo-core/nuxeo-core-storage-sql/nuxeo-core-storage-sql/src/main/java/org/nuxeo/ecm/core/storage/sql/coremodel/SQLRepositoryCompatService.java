@@ -59,13 +59,13 @@ public class SQLRepositoryCompatService extends DefaultComponent {
                 + " for repository \"" + cdesc.name
                 + "\", use org.nuxeo.ecm.core.storage.sql.RepositoryService instead");
         RepositoryDescriptor descriptor = getRepositoryDescriptor(cdesc);
-        SQLRepositoryService sqlRepositoryService = Framework.getLocalService(SQLRepositoryService.class);
+        SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         sqlRepositoryService.addContribution(descriptor);
     }
 
     protected void removeContribution(RepositoryDescriptor cdesc) {
         RepositoryDescriptor descriptor = getRepositoryDescriptor(cdesc);
-        SQLRepositoryService sqlRepositoryService = Framework.getLocalService(SQLRepositoryService.class);
+        SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         sqlRepositoryService.removeContribution(descriptor);
     }
 

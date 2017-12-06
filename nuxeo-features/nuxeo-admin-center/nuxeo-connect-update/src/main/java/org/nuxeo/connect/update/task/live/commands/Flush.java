@@ -46,7 +46,7 @@ public class Flush extends FlushPlaceholder {
     public static void flush() throws PackageException {
         try {
             Framework.getRuntime().reloadProperties();
-            ReloadService deployer = Framework.getLocalService(ReloadService.class);
+            ReloadService deployer = Framework.getService(ReloadService.class);
             deployer.flush();
         } catch (IOException e) {
             throw new PackageException("Failed to reload repository", e);

@@ -132,7 +132,7 @@ public class LayoutResource {
         if (StringUtils.isBlank(conversionCategory)) {
             conversionCategory = DEFAULT_CONVERSION_CATEGORY;
         }
-        TypeManager tm = Framework.getLocalService(TypeManager.class);
+        TypeManager tm = Framework.getService(TypeManager.class);
         String[] layoutNames = tm.getType(docType).getLayouts(mode);
 
         JSONArray jsonLayouts = new JSONArray();

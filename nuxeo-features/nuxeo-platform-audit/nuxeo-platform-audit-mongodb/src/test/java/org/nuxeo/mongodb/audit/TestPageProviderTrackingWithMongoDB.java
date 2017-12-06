@@ -67,7 +67,7 @@ public class TestPageProviderTrackingWithMongoDB {
                 session.getRootDocument().getId());
         assertNotNull(pp);
 
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> trail = reader.queryLogs(new String[] { "search" }, null);
 
         assertEquals(0, trail.size());

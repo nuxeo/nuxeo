@@ -60,7 +60,7 @@ public class CheckBlobUpdateListener implements EventListener {
 
             if (content.getValue() != null) {
                 doc.addFacet(ThumbnailConstants.THUMBNAIL_FACET);
-                Framework.getLocalService(EventService.class).fireEvent(
+                Framework.getService(EventService.class).fireEvent(
                         ThumbnailConstants.EventNames.scheduleThumbnailUpdate.name(), context);
             }
         }

@@ -158,7 +158,7 @@ public class TestMailService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.mail");
         applyInlineDeployments();
 
-        MailService mailService = Framework.getLocalService(MailService.class);
+        MailService mailService = Framework.getService(MailService.class);
         assertNotNull(mailService);
         MessageActionPipe pipe = mailService.getPipe("nxmail");
         assertNotNull(pipe);
@@ -170,7 +170,7 @@ public class TestMailService extends NXRuntimeTestCase {
         // assertEquals(pipe.get(4).getClass().getSimpleName(), "EndAction");
         // test contribution merge
         pushInlineDeployments("org.nuxeo.ecm.platform.mail.test:OSGI-INF/mailService-test-contrib.xml");
-        mailService = Framework.getLocalService(MailService.class);
+        mailService = Framework.getService(MailService.class);
 
         pipe = mailService.getPipe("nxmail");
         assertNotNull(pipe);
@@ -182,7 +182,7 @@ public class TestMailService extends NXRuntimeTestCase {
         // assertEquals(pipe.get(4).getClass().getSimpleName(), "EndAction");
         // test contribution override
         pushInlineDeployments("org.nuxeo.ecm.platform.mail.test:OSGI-INF/mailService-override-test-contrib.xml");
-        mailService = Framework.getLocalService(MailService.class);
+        mailService = Framework.getService(MailService.class);
 
         pipe = mailService.getPipe("nxmail");
         assertNotNull(pipe);

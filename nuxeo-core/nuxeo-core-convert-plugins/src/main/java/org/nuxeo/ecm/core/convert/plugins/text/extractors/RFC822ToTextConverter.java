@@ -162,7 +162,7 @@ public class RFC822ToTextConverter implements Converter {
                 return null;
             }
         }
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConversionService cs = Framework.getService(ConversionService.class);
 
         String converterName = cs.getConverterName(baseType, TXT_MT);
         if (converterName == null) {

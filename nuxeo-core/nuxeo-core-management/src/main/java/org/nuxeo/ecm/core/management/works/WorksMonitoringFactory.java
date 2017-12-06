@@ -23,7 +23,7 @@ import org.nuxeo.runtime.management.ObjectNameFactory;
 public class WorksMonitoringFactory extends AbstractResourceFactory {
 
     protected WorkManager manager() {
-        return Framework.getLocalService(WorkManager.class);
+        return Framework.getService(WorkManager.class);
     }
 
     @Override

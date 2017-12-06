@@ -40,7 +40,7 @@ public class TestCounters {
     @Test
     public void verifyServiceBinding() {
 
-        CounterManager cm = Framework.getLocalService(CounterManager.class);
+        CounterManager cm = Framework.getService(CounterManager.class);
         assertNotNull(cm);
     }
 
@@ -48,7 +48,7 @@ public class TestCounters {
         @Override
         public void run() {
             int idx = new Random(System.currentTimeMillis()).nextInt(9);
-            CounterManager cm = Framework.getLocalService(CounterManager.class);
+            CounterManager cm = Framework.getService(CounterManager.class);
             if (idx % 2 == 0) {
                 cm.increaseCounter("org.nuxeo.counter" + idx);
             } else {
@@ -69,7 +69,7 @@ public class TestCounters {
 
     protected String getCountersSnapshot() {
         StringBuffer sb = new StringBuffer();
-        CounterManager cm = Framework.getLocalService(CounterManager.class);
+        CounterManager cm = Framework.getService(CounterManager.class);
         for (int i = 0; i < 9; i++) {
             String snapshot = cm.getCounterHistory("org.nuxeo.counter" + i).toString();
             sb.append(snapshot);
@@ -80,7 +80,7 @@ public class TestCounters {
     @Test
     public void verifyConcurrency() throws InterruptedException {
 
-        CounterManager cm = Framework.getLocalService(CounterManager.class);
+        CounterManager cm = Framework.getService(CounterManager.class);
 
         doRandomCounters();
 
@@ -111,7 +111,7 @@ public class TestCounters {
     @Test
     public void verifyHistory() throws InterruptedException {
 
-        CounterManager cm = Framework.getLocalService(CounterManager.class);
+        CounterManager cm = Framework.getService(CounterManager.class);
 
         String myCounter = "org.nuxeo.testMe";
 

@@ -137,7 +137,7 @@ public class TestSecurityPolicy {
     }
 
     protected CoreSession getRestrictedSession(String userName) {
-        RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
+        RepositoryManager rm = Framework.getService(RepositoryManager.class);
         Map<String, Serializable> ctx = new HashMap<>();
         ctx.put("principal", new UserPrincipal(userName, null, false, false));
         return CoreInstance.openCoreSession(rm.getDefaultRepositoryName(), ctx);

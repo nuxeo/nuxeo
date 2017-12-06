@@ -79,7 +79,7 @@ public class SimpleDocumentModel implements DocumentModel {
     public SimpleDocumentModel(List<String> schemas) {
         this.schemas = new HashSet<>();
         anySchema = false;
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         for (String schema : schemas) {
             Schema s = schemaManager.getSchema(schema);
             DocumentPart part = new DocumentPartImpl(s);
@@ -100,7 +100,7 @@ public class SimpleDocumentModel implements DocumentModel {
     protected DataModel getDataModelInternal(String schema) {
         DataModel dm = dataModels.get(schema);
         if (dm == null && anySchema) {
-            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
             Schema s = schemaManager.getSchema(schema);
             DocumentPart part = new DocumentPartImpl(s);
             dm = new DataModelImpl(part);

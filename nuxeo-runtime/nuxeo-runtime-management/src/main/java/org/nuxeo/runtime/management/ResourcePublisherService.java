@@ -369,7 +369,7 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
 
     @Override
     public void activate(ComponentContext context) {
-        serverLocatorService = (ServerLocatorService) Framework.getLocalService(ServerLocator.class);
+        serverLocatorService = (ServerLocatorService) Framework.getService(ServerLocator.class);
     }
 
     @Override

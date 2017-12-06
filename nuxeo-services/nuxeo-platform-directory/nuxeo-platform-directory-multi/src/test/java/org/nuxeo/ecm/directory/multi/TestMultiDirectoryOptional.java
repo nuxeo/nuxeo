@@ -83,7 +83,7 @@ public class TestMultiDirectoryOptional {
 
     @Before
     public void setUp() throws Exception {
-        directoryService = Framework.getLocalService(DirectoryService.class);
+        directoryService = Framework.getService(DirectoryService.class);
 
         // create and register mem directories
         Map<String, Object> e;
@@ -163,7 +163,7 @@ public class TestMultiDirectoryOptional {
         if (dir != null) {
             dir.close();
         }
-        directoryService = Framework.getLocalService(DirectoryService.class);
+        directoryService = Framework.getService(DirectoryService.class);
         directoryService.unregisterDirectoryDescriptor(desc1);
         directoryService.unregisterDirectoryDescriptor(desc2);
         directoryService.unregisterDirectoryDescriptor(desc3);

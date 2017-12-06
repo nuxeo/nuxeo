@@ -1119,7 +1119,7 @@ public class Model {
      * Creates all the models.
      */
     private void initModels() {
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         log.debug("Schemas fields from descriptor: " + repositoryDescriptor.schemaFields);
         // document types
         for (DocumentType docType : schemaManager.getDocumentTypes()) {

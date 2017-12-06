@@ -152,7 +152,7 @@ public class ElasticSearchManager implements Serializable {
 
         ppStatuses = new ArrayList<>();
 
-        PageProviderService pps = Framework.getLocalService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         for (String ppName : pps.getPageProviderDefinitionNames()) {
             PageProviderDefinition def = pps.getPageProviderDefinition(ppName);
             // Create an instance so class replacer is taken in account

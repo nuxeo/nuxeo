@@ -52,7 +52,7 @@ public class ScimServerInit implements RepositoryInit {
     @Override
     public void populate(CoreSession session) throws ClientException {
 
-        UserManager um = Framework.getLocalService(UserManager.class);
+        UserManager um = Framework.getService(UserManager.class);
         // Create some users
         if (um != null) {
             Framework.doPrivileged(() -> createUsersAndGroups(um));
@@ -112,7 +112,7 @@ public class ScimServerInit implements RepositoryInit {
     }
 
     public static NuxeoPrincipal getPowerUser() throws ClientException {
-        UserManager um = Framework.getLocalService(UserManager.class);
+        UserManager um = Framework.getService(UserManager.class);
         return um.getPrincipal(POWER_USER_LOGIN);
     }
 

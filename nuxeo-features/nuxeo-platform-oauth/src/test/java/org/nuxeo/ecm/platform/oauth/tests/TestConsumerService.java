@@ -40,7 +40,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestConsumerService {
 
     @Inject
-    OAuthConsumerRegistry consumerRegistry = Framework.getLocalService(OAuthConsumerRegistry.class);
+    OAuthConsumerRegistry consumerRegistry = Framework.getService(OAuthConsumerRegistry.class);
 
     @Test
     public void testServiceRW() throws Exception {

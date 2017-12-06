@@ -63,7 +63,7 @@ public class NuxeoEncodingFilter implements Filter {
                 }
             }
 
-            RequestControllerManager rcm = Framework.getLocalService(RequestControllerManager.class);
+            RequestControllerManager rcm = Framework.getService(RequestControllerManager.class);
             for (String headerName : rcm.getResponseHeaders().keySet()) {
                 if (response instanceof HttpServletResponse
                         && !((HttpServletResponse) response).containsHeader(headerName)) {

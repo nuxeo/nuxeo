@@ -73,7 +73,7 @@ public class DuplicatedCollectionListener implements EventListener {
             return;
         }
 
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
 
         if (collectionManager.isCollection(doc)) {
 
@@ -132,7 +132,7 @@ public class DuplicatedCollectionListener implements EventListener {
      * @since 8.4
      */
     private void processCopiedMember(DocumentModel doc, CoreSession session) {
-        if (!Framework.getLocalService(CollectionManager.class).isCollected(doc)) {
+        if (!Framework.getService(CollectionManager.class).isCollected(doc)) {
             // should never happen but we may have dirty members which have no longer the CollectionMember facet but
             // sill collectionMember:collectionIds valued
             doc.setPropertyValue(CollectionConstants.DOCUMENT_COLLECTION_IDS_PROPERTY_NAME, null);

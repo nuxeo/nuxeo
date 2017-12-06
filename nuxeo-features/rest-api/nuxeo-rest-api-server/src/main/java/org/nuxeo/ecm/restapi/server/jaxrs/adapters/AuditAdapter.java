@@ -60,7 +60,7 @@ public class AuditAdapter extends PaginableAdapter<LogEntry> {
 
     @Override
     protected PageProviderDefinition getPageProviderDefinition() {
-        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
         return ppService.getPageProviderDefinition(PAGE_PROVIDER_NAME);
     }
 

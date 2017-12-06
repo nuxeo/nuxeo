@@ -78,7 +78,7 @@ public abstract class PaginableObject<T> extends DefaultObject {
             throw new NuxeoException("Page provider given not found");
         }
 
-        PageProviderService pps = Framework.getLocalService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
 

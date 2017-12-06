@@ -344,7 +344,7 @@ public class DirectoryTest extends BaseTest {
     public void userDirectoryAreNotEditable() throws Exception {
 
         // Given a user directory entry
-        UserManager um = Framework.getLocalService(UserManager.class);
+        UserManager um = Framework.getService(UserManager.class);
         DocumentModel model = um.getUserModel("user1");
         String userDirectoryName = um.getUserDirectoryName();
         String jsonEntry = getDirectoryEntryAsJson(userDirectoryName, model);
@@ -360,7 +360,7 @@ public class DirectoryTest extends BaseTest {
     @Test
     public void itShouldNotWritePasswordFieldInResponse() throws Exception {
         // Given a user directory entry
-        UserManager um = Framework.getLocalService(UserManager.class);
+        UserManager um = Framework.getService(UserManager.class);
         String userDirectoryName = um.getUserDirectoryName();
 
         // When i do an update request on it
@@ -373,7 +373,7 @@ public class DirectoryTest extends BaseTest {
     public void groupDirectoryAreNotEditable() throws Exception {
 
         // Given a user directory entry
-        UserManager um = Framework.getLocalService(UserManager.class);
+        UserManager um = Framework.getService(UserManager.class);
         DocumentModel model = um.getGroupModel("group1");
         String groupDirectoryName = um.getGroupDirectoryName();
         String jsonEntry = getDirectoryEntryAsJson(groupDirectoryName, model);

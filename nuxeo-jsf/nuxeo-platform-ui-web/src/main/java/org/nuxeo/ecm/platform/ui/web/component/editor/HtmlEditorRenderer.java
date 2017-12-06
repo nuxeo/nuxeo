@@ -63,12 +63,12 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         Locale locale = context.getViewRoot().getLocale();
 
         if (pluginsOptions == null) {
-            final HtmlEditorPluginService pluginService = Framework.getLocalService(HtmlEditorPluginService.class);
+            final HtmlEditorPluginService pluginService = Framework.getService(HtmlEditorPluginService.class);
             pluginsOptions = new HashMap<String, String>();
             pluginsOptions.put("plugins", pluginService.getFormattedPluginsNames());
         }
         if (toolbarPluginsOptions == null) {
-            final HtmlEditorPluginService pluginService = Framework.getLocalService(HtmlEditorPluginService.class);
+            final HtmlEditorPluginService pluginService = Framework.getService(HtmlEditorPluginService.class);
             toolbarPluginsOptions = new HashMap<String, String>();
             toolbarPluginsOptions.put("toolbar", pluginService.getFormattedToolbarsButtonsNames());
         }

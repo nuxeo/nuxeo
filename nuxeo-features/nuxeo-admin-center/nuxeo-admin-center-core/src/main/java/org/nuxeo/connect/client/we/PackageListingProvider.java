@@ -60,7 +60,7 @@ public class PackageListingProvider extends DefaultObject {
     @Produces("text/html")
     @Path(value = "list")
     public Object doList(@QueryParam("type") String pkgType, @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
-        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        PackageManager pm = Framework.getService(PackageManager.class);
         String targetPlatform = getTargetPlatform(filterOnPlatform);
         List<DownloadablePackage> pkgs;
         if (StringUtils.isBlank(pkgType)) {
@@ -79,7 +79,7 @@ public class PackageListingProvider extends DefaultObject {
     @Path(value = "updates")
     public Object getUpdates(@QueryParam("type") String pkgType,
             @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
-        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        PackageManager pm = Framework.getService(PackageManager.class);
         if (pkgType == null) {
             pkgType = SharedPackageListingsSettings.instance().get("updates").getPackageTypeFilter();
         }
@@ -104,7 +104,7 @@ public class PackageListingProvider extends DefaultObject {
     @Path(value = "private")
     public Object getPrivate(@QueryParam("type") String pkgType,
             @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
-        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        PackageManager pm = Framework.getService(PackageManager.class);
         if (pkgType == null) {
             pkgType = SharedPackageListingsSettings.instance().get("private").getPackageTypeFilter();
         }
@@ -128,7 +128,7 @@ public class PackageListingProvider extends DefaultObject {
     @Produces("text/html")
     @Path(value = "local")
     public Object getLocal(@QueryParam("type") String pkgType) {
-        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        PackageManager pm = Framework.getService(PackageManager.class);
         if (pkgType == null) {
             pkgType = SharedPackageListingsSettings.instance().get("local").getPackageTypeFilter();
         }
@@ -147,7 +147,7 @@ public class PackageListingProvider extends DefaultObject {
     @Path(value = "remote")
     public Object getRemote(@QueryParam("type") String pkgType, @QueryParam("onlyRemote") Boolean onlyRemote,
             @QueryParam("searchString") String searchString, @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
-        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        PackageManager pm = Framework.getService(PackageManager.class);
         if (pkgType == null) {
             pkgType = SharedPackageListingsSettings.instance().get("remote").getPackageTypeFilter();
         }
@@ -197,7 +197,7 @@ public class PackageListingProvider extends DefaultObject {
     @Produces("text/html")
     @Path(value = "studio")
     public Object getStudio() {
-        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        PackageManager pm = Framework.getService(PackageManager.class);
         List<DownloadablePackage> pkgs = pm.listAllStudioRemoteOrLocalPackages();
         List<DownloadablePackage> pkgsWithoutSnapshot = StudioSnapshotHelper.removeSnapshot(pkgs);
         return getView("simpleListing").arg("pkgs", pm.sort(pkgsWithoutSnapshot))
@@ -271,7 +271,7 @@ public class PackageListingProvider extends DefaultObject {
     @Produces("text/html")
     @Path(value = "details/{pkgId}")
     public Object getDetails(@PathParam("pkgId") String pkgId) {
-        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        PackageManager pm = Framework.getService(PackageManager.class);
         DownloadablePackage pkg = pm.getPackage(pkgId);
         if (pkg != null) {
             return getView("pkgDetails").arg("pkg", pkg);

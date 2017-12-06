@@ -117,7 +117,7 @@ public class DigestLoginPlugin extends BaseLoginModule {
     protected String getStoredHA1(String username) throws DirectoryException {
         UserManager userManager = Framework.getService(UserManager.class);
         String dirName = userManager.getDigestAuthDirectory();
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
         Directory directory = directoryService.getDirectory(dirName);
         if (directory == null) {
             throw new IllegalArgumentException("Digest Auth directory not found: " + dirName);

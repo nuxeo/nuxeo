@@ -131,7 +131,7 @@ public class PictureViewsGenerationWork extends AbstractWork {
      * @since 5.8
      */
     protected void firePictureViewsGenerationDoneEvent(DocumentModel doc) {
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        WorkManager workManager = Framework.getService(WorkManager.class);
         List<String> workIds = workManager.listWorkIds(CATEGORY_PICTURE_GENERATION, null);
         int worksCount = 0;
         for (String workId : workIds) {
@@ -144,7 +144,7 @@ public class PictureViewsGenerationWork extends AbstractWork {
         }
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         Event event = ctx.newEvent(PICTURE_VIEWS_GENERATION_DONE_EVENT);
-        Framework.getLocalService(EventService.class).fireEvent(event);
+        Framework.getService(EventService.class).fireEvent(event);
     }
 
 }

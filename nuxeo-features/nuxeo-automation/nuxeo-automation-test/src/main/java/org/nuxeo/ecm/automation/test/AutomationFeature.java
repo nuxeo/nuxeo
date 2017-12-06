@@ -103,7 +103,7 @@ public class AutomationFeature extends SimpleFeature {
         binder.bind(OperationContext.class).toProvider(contextProvider).in(AutomationScope.INSTANCE);
         binder.bind(OperationCallback.class).toProvider(tracerProvider).in(AutomationScope.INSTANCE);
         coreFeature = runner.getFeature(CoreFeature.class);
-        tracerFactory = Framework.getLocalService(TracerFactory.class);
+        tracerFactory = Framework.getService(TracerFactory.class);
     }
 
     @Override

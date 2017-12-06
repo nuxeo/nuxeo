@@ -39,7 +39,7 @@ public class IOComponent extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) {
-        jsonFactoryManager = Framework.getLocalService(JsonFactoryManager.class);
+        jsonFactoryManager = Framework.getService(JsonFactoryManager.class);
         codecs = new ObjectCodecService(jsonFactoryManager.getJsonFactory());
     }
 

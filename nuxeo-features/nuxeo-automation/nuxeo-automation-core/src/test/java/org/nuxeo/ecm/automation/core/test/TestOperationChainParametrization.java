@@ -78,7 +78,7 @@ public class TestOperationChainParametrization {
 
     @After
     public void clearRepo() throws Exception {
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
         session.removeChildren(session.getRootDocument().getRef());
     }
 

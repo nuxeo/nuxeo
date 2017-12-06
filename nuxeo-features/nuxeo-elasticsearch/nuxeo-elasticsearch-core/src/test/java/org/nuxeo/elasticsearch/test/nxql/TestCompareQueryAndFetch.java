@@ -129,7 +129,7 @@ public class TestCompareQueryAndFetch {
         TransactionHelper.commitOrRollbackTransaction();
 
         // wait for async jobs
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        WorkManager wm = Framework.getService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
         Assert.assertEquals(0, esa.getPendingWorkerCount());
 

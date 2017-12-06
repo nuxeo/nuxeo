@@ -42,7 +42,7 @@ public class JsonWebengineWriter {
     static JsonFactoryManager jsonFactoryManager;
 
     private static JsonFactory getFactory() {
-        jsonFactoryManager = Framework.getLocalService(JsonFactoryManager.class);
+        jsonFactoryManager = Framework.getService(JsonFactoryManager.class);
         return jsonFactoryManager.getJsonFactory();
     }
 

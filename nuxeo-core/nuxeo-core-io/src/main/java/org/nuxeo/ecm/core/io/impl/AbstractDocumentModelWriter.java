@@ -291,7 +291,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
 
     @SuppressWarnings("unchecked")
     protected void loadSchemas(ExportedDocument xdoc, DocumentModel docModel, Document doc) {
-        SchemaManager schemaMgr = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaMgr = Framework.getService(SchemaManager.class);
         Iterator<Element> it = doc.getRootElement().elementIterator(ExportConstants.SCHEMA_TAG);
         while (it.hasNext()) {
             Element element = it.next();

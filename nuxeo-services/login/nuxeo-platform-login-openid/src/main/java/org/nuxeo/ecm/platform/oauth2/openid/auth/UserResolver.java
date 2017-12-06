@@ -50,7 +50,7 @@ public abstract class UserResolver {
         DocumentModel userDoc;
 
         try {
-            UserManager userManager = Framework.getLocalService(UserManager.class);
+            UserManager userManager = Framework.getService(UserManager.class);
 
             userDoc = userManager.getBareUserModel();
             userDoc.setPropertyValue(userManager.getUserIdField(), nuxeoLogin);
@@ -81,7 +81,7 @@ public abstract class UserResolver {
         String userId = null;
 
         try {
-            UserManager userManager = Framework.getLocalService(UserManager.class);
+            UserManager userManager = Framework.getService(UserManager.class);
             List<String> userIds = userManager.getUserIds();
 
             while (userId == null || userIds.contains(userId)) {

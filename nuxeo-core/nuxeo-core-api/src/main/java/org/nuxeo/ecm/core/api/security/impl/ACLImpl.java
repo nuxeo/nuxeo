@@ -152,7 +152,7 @@ public class ACLImpl extends ArrayList<ACE>implements ACL {
 
     protected List<ACE> getAdminEverythingACES() {
         List<ACE> aces = new ArrayList<>();
-        AdministratorGroupsProvider provider = Framework.getLocalService(AdministratorGroupsProvider.class);
+        AdministratorGroupsProvider provider = Framework.getService(AdministratorGroupsProvider.class);
         List<String> administratorsGroups = provider.getAdministratorsGroups();
         for (String adminGroup : administratorsGroups) {
             aces.add(new ACE(adminGroup, SecurityConstants.EVERYTHING, true));

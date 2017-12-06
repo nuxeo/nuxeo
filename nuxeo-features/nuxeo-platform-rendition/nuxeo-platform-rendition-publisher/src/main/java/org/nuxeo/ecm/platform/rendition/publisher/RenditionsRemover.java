@@ -101,7 +101,7 @@ public class RenditionsRemover extends UnrestrictedSessionRunner {
     }
 
     protected EventService getEventService() {
-        return Framework.getLocalService(EventService.class);
+        return Framework.getService(EventService.class);
     }
 
 }

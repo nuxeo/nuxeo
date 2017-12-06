@@ -268,7 +268,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions, Serializable {
     @SuppressWarnings("unchecked")
     public List<DocumentModel> getUserDomains() {
         if (userDomains == null) {
-            PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
+            PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
             Map<String, Serializable> properties = new HashMap<>();
             properties.put("coreSession", (Serializable) documentManager);
             userDomains = ((PageProvider<DocumentModel>) pageProviderService.getPageProvider(

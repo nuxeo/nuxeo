@@ -76,7 +76,7 @@ public class TestFileManagerService {
 
     @Before
     public void setUp() throws Exception {
-        service = Framework.getLocalService(FileManager.class);
+        service = Framework.getService(FileManager.class);
         root = coreSession.getRootDocument();
         createWorkspaces();
     }

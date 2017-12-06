@@ -33,7 +33,7 @@ public class ReloadListener implements EventListener {
     public void handleEvent(Event event) {
         final String id = event.getId();
         if ("flushCompiledChains".equals(id) || ReloadService.FLUSH_EVENT_ID.equals(id)) {
-            AutomationAdmin svc = Framework.getLocalService(AutomationAdmin.class);
+            AutomationAdmin svc = Framework.getService(AutomationAdmin.class);
             svc.flushCompiledChains();
         }
     }

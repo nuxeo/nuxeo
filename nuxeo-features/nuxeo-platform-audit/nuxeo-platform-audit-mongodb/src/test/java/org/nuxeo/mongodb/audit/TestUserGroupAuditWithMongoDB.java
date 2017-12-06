@@ -68,7 +68,7 @@ public class TestUserGroupAuditWithMongoDB {
 
     @Test
     public void testAuditEntriesForUserCUD() throws Exception {
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> entries;
 
         String userName = "testUser";
@@ -103,7 +103,7 @@ public class TestUserGroupAuditWithMongoDB {
 
     @Test
     public void testAuditEntriesForGroupCUD() throws Exception {
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> entries;
 
         String groupName = "testGroup";

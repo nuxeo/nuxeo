@@ -64,7 +64,7 @@ public class AnyToThumbnailConverter implements Converter {
             return null;
         }
 
-        ConversionService conversionService = Framework.getLocalService(ConversionService.class);
+        ConversionService conversionService = Framework.getService(ConversionService.class);
 
         String converterName = null;
         if ((mimeType.startsWith("image/") || PDF_MIME_TYPE_PATTERN.matcher(mimeType).matches())

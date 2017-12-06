@@ -50,7 +50,7 @@ public final class JsonHelper {
      * @throws IOException
      */
     public static JsonGenerator createJsonGenerator(OutputStream out) throws IOException {
-        JsonFactory jsonFactory = Framework.getLocalService(JsonFactoryManager.class).getJsonFactory();
+        JsonFactory jsonFactory = Framework.getService(JsonFactoryManager.class).getJsonFactory();
         return createJsonGenerator(jsonFactory, out);
     }
 

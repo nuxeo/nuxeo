@@ -38,7 +38,7 @@ public class BusinessAdapterListWriter extends EntityListWriter<BusinessAdapter>
 
     @Override
     protected void writeItem(JsonGenerator jg, BusinessAdapter item) throws IOException {
-        ObjectCodecService service = Framework.getLocalService(ObjectCodecService.class);
+        ObjectCodecService service = Framework.getService(ObjectCodecService.class);
         service.write(jg, item);
     }
 

@@ -102,7 +102,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
 
     @Override
     public void initialize(Object... args) {
-        pageProviderService = Framework.getLocalService(PageProviderService.class);
+        pageProviderService = Framework.getService(PageProviderService.class);
         // Query Enum Parameters Map
         queryParametersMap = new EnumMap<>(QueryParams.class);
         queryParametersMap.put(QueryParams.PAGE_SIZE, PAGE_SIZE);

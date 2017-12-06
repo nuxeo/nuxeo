@@ -79,14 +79,14 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
     }
 
     static boolean isAPowerUserEditableGroup(NuxeoGroup group) {
-        UserManager um = Framework.getLocalService(UserManager.class);
+        UserManager um = Framework.getService(UserManager.class);
         return !um.getAdministratorsGroups().contains(group.getName());
 
     }
 
     @Override
     protected PageProviderDefinition getPageProviderDefinition() {
-        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
         return ppService.getPageProviderDefinition(PAGE_PROVIDER_NAME);
     }
 

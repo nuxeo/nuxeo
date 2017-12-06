@@ -241,7 +241,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory, R
      * are configured.
      */
     protected static RepositoryDescriptor getRepositoryDescriptor(String name) {
-        SQLRepositoryService sqlRepositoryService = Framework.getLocalService(SQLRepositoryService.class);
+        SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         return sqlRepositoryService.getRepositoryDescriptor(name);
     }
 

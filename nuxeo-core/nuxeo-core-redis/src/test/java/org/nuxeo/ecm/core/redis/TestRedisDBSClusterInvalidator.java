@@ -62,7 +62,7 @@ public class TestRedisDBSClusterInvalidator {
 
     @Test
     public void testSendReceiveInvalidations() throws Exception {
-        RedisExecutor redisExecutor = Framework.getLocalService(RedisExecutor.class);
+        RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
         redisExecutor.startMonitor();
         int delayMs = 10000;
         RedisDBSClusterInvalidator rci2 = createRedisDBSClusterInvalidator("node2");
@@ -96,7 +96,7 @@ public class TestRedisDBSClusterInvalidator {
     @Test
     public void testSendReceiveMultiInvalidations() throws Exception {
         int delayMs = 10000;
-        RedisExecutor redisExecutor = Framework.getLocalService(RedisExecutor.class);
+        RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
         redisExecutor.startMonitor();
         RedisDBSClusterInvalidator rci2 = createRedisDBSClusterInvalidator("node2");
         RedisDBSClusterInvalidator rci1 = createRedisDBSClusterInvalidator("node1");

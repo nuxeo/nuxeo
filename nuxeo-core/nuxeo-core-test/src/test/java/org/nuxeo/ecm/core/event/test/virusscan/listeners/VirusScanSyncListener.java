@@ -81,7 +81,7 @@ public class VirusScanSyncListener implements EventListener {
             if (propertiesPath != null && propertiesPath.size() > 0) {
                 VirusScanEventContext virusScanCtx = new VirusScanEventContext(docCtx, propertiesPath);
 
-                EventService eventService = Framework.getLocalService(EventService.class);
+                EventService eventService = Framework.getService(EventService.class);
                 eventService.fireEvent(virusScanCtx.newVirusScanEvent());
             }
         }

@@ -72,7 +72,7 @@ public abstract class AbstractUsersPageProvider<T> extends AbstractPageProvider<
 
             List<DocumentModel> users = new ArrayList<DocumentModel>();
             try {
-                UserManager userManager = Framework.getLocalService(UserManager.class);
+                UserManager userManager = Framework.getService(UserManager.class);
                 String userListingMode = getUserListingMode();
                 if (ALL_MODE.equals(userListingMode)) {
                     users = searchAllUsers(userManager);

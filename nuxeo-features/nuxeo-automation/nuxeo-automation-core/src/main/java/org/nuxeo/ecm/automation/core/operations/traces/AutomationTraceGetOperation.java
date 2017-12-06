@@ -62,7 +62,7 @@ public class AutomationTraceGetOperation {
             return null;
         }
 
-        TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
+        TracerFactory tracerFactory = Framework.getService(TracerFactory.class);
 
         if (traceKey == null) {
             Trace trace = tracerFactory.getLastErrorTrace();

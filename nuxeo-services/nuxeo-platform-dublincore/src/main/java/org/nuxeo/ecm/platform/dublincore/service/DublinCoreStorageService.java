@@ -90,7 +90,7 @@ public class DublinCoreStorageService extends DefaultComponent {
             contributorsList = new ArrayList<String>(contributorsList);
         } else {
             // initialize creator too
-            SchemaManager schemaMgr = Framework.getLocalService(SchemaManager.class);
+            SchemaManager schemaMgr = Framework.getService(SchemaManager.class);
             if (schemaMgr.getSchema("dublincore").getField("creator") != null) {
                 // First time only => creator
                 doc.setProperty("dublincore", "creator", principalName);

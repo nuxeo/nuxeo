@@ -34,14 +34,14 @@ public class FacetEndPoint extends DefaultObject {
 
     @GET
     public Facets getAll() {
-        SchemaManager sm = Framework.getLocalService(SchemaManager.class);
+        SchemaManager sm = Framework.getService(SchemaManager.class);
         return new Facets(sm.getFacets());
     }
 
     @GET
     @Path("{name}")
     public CompositeType getSchema(@PathParam("name") String name) {
-        SchemaManager sm = Framework.getLocalService(SchemaManager.class);
+        SchemaManager sm = Framework.getService(SchemaManager.class);
         return sm.getFacet(name);
     }
 

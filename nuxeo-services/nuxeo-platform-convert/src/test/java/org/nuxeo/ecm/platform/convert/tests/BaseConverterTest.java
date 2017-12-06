@@ -75,7 +75,7 @@ public abstract class BaseConverterTest {
     }
 
     protected void checkCommandAvailability(String command) {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
         CommandAvailability ca = cles.getCommandAvailability(command);

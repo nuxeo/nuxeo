@@ -39,7 +39,7 @@ public class TestOpenIDProviders {
     @Test
     public void verifyServiceRegistration() {
 
-        OpenIDConnectProviderRegistry registry = Framework.getLocalService(OpenIDConnectProviderRegistry.class);
+        OpenIDConnectProviderRegistry registry = Framework.getService(OpenIDConnectProviderRegistry.class);
         Assert.assertNotNull(registry);
 
         OpenIDConnectProvider provider = registry.getProvider("TestingGoogleOpenIDConnect");

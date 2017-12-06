@@ -34,7 +34,7 @@ public class OperationEventListener implements EventListener {
     @Override
     public void handleEvent(Event event) {
         if (registry == null) {
-            registry = Framework.getLocalService(EventHandlerRegistry.class);
+            registry = Framework.getService(EventHandlerRegistry.class);
         }
         List<EventHandler> handlers = registry.getEventHandlers(event.getName());
         registry.handleEvent(event, handlers, false);

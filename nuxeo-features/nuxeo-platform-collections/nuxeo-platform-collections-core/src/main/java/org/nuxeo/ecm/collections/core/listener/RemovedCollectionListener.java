@@ -62,7 +62,7 @@ public class RemovedCollectionListener implements PostCommitEventListener {
 
         final DocumentModel doc = docCxt.getSourceDocument();
 
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
 
         final boolean isCollectionRemoved = collectionManager.isCollection(doc);
         final boolean isCollectionMemberRemoved = collectionManager.isCollected(doc);

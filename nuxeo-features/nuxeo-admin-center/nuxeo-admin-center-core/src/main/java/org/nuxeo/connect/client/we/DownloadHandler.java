@@ -65,7 +65,7 @@ public class DownloadHandler extends DefaultObject {
     @Produces("application/json")
     @Path(value = "progressAsJSON")
     public String getDownloadsProgress() {
-        ConnectDownloadManager cdm = Framework.getLocalService(ConnectDownloadManager.class);
+        ConnectDownloadManager cdm = Framework.getService(ConnectDownloadManager.class);
         List<DownloadingPackage> pkgs = cdm.listDownloadingPackages();
         StringBuffer sb = new StringBuffer();
         sb.append("[");
@@ -99,7 +99,7 @@ public class DownloadHandler extends DefaultObject {
             depCheck = true;
         }
         if (pkg == null) {
-            PackageManager pm = Framework.getLocalService(PackageManager.class);
+            PackageManager pm = Framework.getService(PackageManager.class);
             pkg = pm.getPackage(pkgId);
             if (pkg.getPackageState() != PackageState.DOWNLOADING) {
                 downloadOver = true;
@@ -111,7 +111,7 @@ public class DownloadHandler extends DefaultObject {
     }
 
     protected DownloadingPackage getDownloadingPackage(String pkgId) {
-        ConnectDownloadManager cdm = Framework.getLocalService(ConnectDownloadManager.class);
+        ConnectDownloadManager cdm = Framework.getService(ConnectDownloadManager.class);
         List<DownloadingPackage> pkgs = cdm.listDownloadingPackages();
         for (DownloadingPackage pkg : pkgs) {
             if (pkg.getId().equals(pkgId)) {
@@ -128,7 +128,7 @@ public class DownloadHandler extends DefaultObject {
             @QueryParam("install") Boolean install, @QueryParam("depCheck") Boolean depCheck,
             @QueryParam("type") String pkgType, @QueryParam("onlyRemote") Boolean onlyRemote,
             @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
-        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        PackageManager pm = Framework.getService(PackageManager.class);
         // flag to start install after download
         if (install == null) {
             install = false;
@@ -157,7 +157,7 @@ public class DownloadHandler extends DefaultObject {
         if (RequestHelper.isInternalLink(getContext())) {
             if (pkgList != null) {
                 String[] pkgs = pkgList.split("/");
-                PackageManager pm = Framework.getLocalService(PackageManager.class);
+                PackageManager pm = Framework.getService(PackageManager.class);
                 try {
                     log.info("Starting download for packages " + Arrays.toString(pkgs));
                     pm.download(Arrays.asList(pkgs));
@@ -190,7 +190,7 @@ public class DownloadHandler extends DefaultObject {
     @GET
     @Path(value = "cancel/{pkgId}")
     public Object cancelDownload(@PathParam("pkgId") String pkgId, @QueryParam("source") String source) {
-        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        PackageManager pm = Framework.getService(PackageManager.class);
         pm.cancelDownload(pkgId);
         return redirect(getPrevious().getPath() + "/packages/" + source);
     }

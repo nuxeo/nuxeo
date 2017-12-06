@@ -49,8 +49,8 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
 
     @Override
     protected void postSetUp() throws Exception {
-        locatorService = (ServerLocatorService) Framework.getLocalService(ServerLocator.class);
-        publisherService = (ResourcePublisherService) Framework.getLocalService(ResourcePublisher.class);
+        locatorService = (ServerLocatorService) Framework.getService(ServerLocator.class);
+        publisherService = (ResourcePublisherService) Framework.getService(ResourcePublisher.class);
     }
 
     protected void doBindResources() throws InstanceNotFoundException, ReflectionException, MBeanException {

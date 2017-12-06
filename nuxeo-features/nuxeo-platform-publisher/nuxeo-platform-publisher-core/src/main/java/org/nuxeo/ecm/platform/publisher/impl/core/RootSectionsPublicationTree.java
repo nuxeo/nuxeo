@@ -46,7 +46,7 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
     public void initTree(CoreSession coreSession, Map<String, String> parameters, PublishedDocumentFactory factory,
             String configName, String title) {
         super.initTree(coreSession, parameters, factory, configName, title);
-        rootFinder = Framework.getLocalService(PublisherService.class).getRootSectionFinder(coreSession);
+        rootFinder = Framework.getService(PublisherService.class).getRootSectionFinder(coreSession);
     }
 
     @Override

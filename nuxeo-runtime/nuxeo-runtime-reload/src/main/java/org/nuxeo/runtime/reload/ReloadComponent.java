@@ -160,14 +160,14 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Override
     public void reloadSeamComponents() {
         log.info("Reload Seam components");
-        Framework.getLocalService(EventService.class)
+        Framework.getService(EventService.class)
                  .sendEvent(new Event(RELOAD_TOPIC, RELOAD_SEAM_EVENT_ID, this, null));
     }
 
     @Override
     public void flush() {
         log.info("Before flush caches");
-        Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, FLUSH_EVENT_ID, this, null));
+        Framework.getService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, FLUSH_EVENT_ID, this, null));
         flushJaasCache();
         setFlushedNow();
         log.info("After flush caches");
@@ -176,7 +176,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Override
     public void flushJaasCache() {
         log.info("Before flush the JAAS cache");
-        Framework.getLocalService(EventService.class)
+        Framework.getService(EventService.class)
                  .sendEvent(new Event("usermanager", "user_changed", this, "Deployer"));
         setFlushedNow();
         log.info("After flush the JAAS cache");
@@ -185,7 +185,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Override
     public void flushSeamComponents() {
         log.info("Flush Seam components");
-        Framework.getLocalService(EventService.class)
+        Framework.getService(EventService.class)
                  .sendEvent(new Event(RELOAD_TOPIC, FLUSH_SEAM_EVENT_ID, this, null));
         setFlushedNow();
     }
@@ -651,12 +651,12 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Deprecated
     protected void triggerReload(String eventId) {
         log.info("About to send reload event for id: " + eventId);
-        Framework.getLocalService(EventService.class)
+        Framework.getService(EventService.class)
                  .sendEvent(new Event(RELOAD_TOPIC, BEFORE_RELOAD_EVENT_ID, this, null));
         try {
-            Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, eventId, this, null));
+            Framework.getService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, eventId, this, null));
         } finally {
-            Framework.getLocalService(EventService.class)
+            Framework.getService(EventService.class)
                      .sendEvent(new Event(RELOAD_TOPIC, AFTER_RELOAD_EVENT_ID, this, null));
             log.info("Returning from reload for event id: " + eventId);
         }

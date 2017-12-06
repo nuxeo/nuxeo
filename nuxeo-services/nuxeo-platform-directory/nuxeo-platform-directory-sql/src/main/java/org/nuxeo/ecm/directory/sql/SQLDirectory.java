@@ -169,7 +169,7 @@ public class SQLDirectory extends AbstractDirectory {
             // setup table and fields maps
             String tableName = descriptor.tableName == null ? descriptor.name : descriptor.tableName;
             table = SQLHelper.addTable(tableName, dialect, useNativeCase());
-            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
             schema = schemaManager.getSchema(getSchema());
             if (schema == null) {
                 throw new DirectoryException("schema not found: " + getSchema());

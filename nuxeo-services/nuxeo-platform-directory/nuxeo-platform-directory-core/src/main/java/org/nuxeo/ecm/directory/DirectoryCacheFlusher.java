@@ -47,7 +47,7 @@ public class DirectoryCacheFlusher implements EventListener {
             return;
         }
         try {
-            DirectoryService service = Framework.getLocalService(DirectoryService.class);
+            DirectoryService service = Framework.getService(DirectoryService.class);
             List<Directory> directories = service.getDirectories();
             if (directories != null) {
                 for (Directory directory : directories) {

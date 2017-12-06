@@ -404,7 +404,7 @@ public abstract class AbstractTestTagService {
     protected DocumentRef checkIn(DocumentRef ref) {
         DocumentRef versionRef = session.checkIn(ref, null, null);
         TransactionHelper.commitOrRollbackTransaction();
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
         TransactionHelper.startTransaction();
         return versionRef;
     }
@@ -412,7 +412,7 @@ public abstract class AbstractTestTagService {
     protected DocumentModel publishDocument(DocumentModel doc) {
         DocumentModel proxy = session.publishDocument(doc, session.getRootDocument());
         TransactionHelper.commitOrRollbackTransaction();
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
         TransactionHelper.startTransaction();
         return proxy;
     }
@@ -420,7 +420,7 @@ public abstract class AbstractTestTagService {
     protected DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef) {
         DocumentModel docModel = session.restoreToVersion(docRef, versionRef);
         TransactionHelper.commitOrRollbackTransaction();
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
         TransactionHelper.startTransaction();
         return docModel;
     }

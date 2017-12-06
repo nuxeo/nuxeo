@@ -83,7 +83,7 @@ public class AdministrationPublishActions extends AbstractPublishActions impleme
 
     protected RootSectionFinder getRootFinder() {
         if (rootFinder == null) {
-            PublisherService ps = Framework.getLocalService(PublisherService.class);
+            PublisherService ps = Framework.getService(PublisherService.class);
             rootFinder = ps.getRootSectionFinder(documentManager);
         }
         return rootFinder;
@@ -120,7 +120,7 @@ public class AdministrationPublishActions extends AbstractPublishActions impleme
             @Override
             public void run() {
                 DocumentModel parent = session.getParentDocument(sectionRoot.getRef());
-                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+                SchemaManager schemaManager = Framework.getService(SchemaManager.class);
                 while (parent != null && !"/".equals(parent.getPathAsString())) {
                     if (schemaManager.hasSuperType(parent.getType(), "Domain")) {
                         domainName.add(parent.getTitle());

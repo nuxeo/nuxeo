@@ -104,7 +104,7 @@ public class Deploy extends DeployPlaceholder {
             log.warn("Can't deploy file " + file + ". File is missing.");
             return null;
         }
-        ReloadService srv = Framework.getLocalService(ReloadService.class);
+        ReloadService srv = Framework.getService(ReloadService.class);
         boolean useCompatReload = Framework.isBooleanPropertyTrue(ReloadService.USE_COMPAT_HOT_RELOAD);
         if (useCompatReload) {
             return doCompatRun(srv);

@@ -63,7 +63,7 @@ public abstract class ExecutableResource extends DefaultObject {
     @POST
     public Object doPost(ExecutionRequest xreq) {
         try {
-            AutomationServer srv = Framework.getLocalService(AutomationServer.class);
+            AutomationServer srv = Framework.getService(AutomationServer.class);
             if (!srv.accept(getId(), isChain(), request)) {
                 return ResponseHelper.notFound();
             }

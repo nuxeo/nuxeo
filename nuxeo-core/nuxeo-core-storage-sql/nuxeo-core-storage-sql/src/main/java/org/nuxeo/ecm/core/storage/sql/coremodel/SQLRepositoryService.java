@@ -130,7 +130,7 @@ public class SQLRepositoryService extends DefaultComponent {
      * Update repository registration in high-level repository service.
      */
     protected void updateRegistration(String repositoryName) {
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         RepositoryDescriptor descriptor = registry.getRepositoryDescriptor(repositoryName);
         if (descriptor == null) {
             // last contribution removed
@@ -173,7 +173,7 @@ public class SQLRepositoryService extends DefaultComponent {
      * @since 5.9.5
      */
     public RepositoryManagement getRepository(String repositoryName) {
-        RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
         org.nuxeo.ecm.core.model.Repository repository = repositoryService.getRepository(repositoryName);
         if (repository == null) {
             RepositoryImpl repo = testRepositories.get(repositoryName);

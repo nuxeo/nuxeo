@@ -155,7 +155,7 @@ public class RepositoryService extends DefaultComponent {
     }
 
     protected RepositoryFactory getFactory(String repositoryName) {
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         if (repositoryManager == null) {
             // tests with no high-level repository manager
             return null;
@@ -172,7 +172,7 @@ public class RepositoryService extends DefaultComponent {
     }
 
     public List<String> getRepositoryNames() {
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         return repositoryManager.getRepositoryNames();
     }
 

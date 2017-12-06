@@ -112,7 +112,7 @@ public abstract class AbstractWebContext implements WebContext {
     private String repoName;
 
     protected AbstractWebContext(HttpServletRequest request, HttpServletResponse response) {
-        engine = Framework.getLocalService(WebEngine.class);
+        engine = Framework.getService(WebEngine.class);
         scriptExecutionStack = new LinkedList<File>();
         this.request = request;
         this.response = response;
@@ -287,7 +287,7 @@ public abstract class AbstractWebContext implements WebContext {
 
     @Override
     public Locale getLocale() {
-        LocaleProvider localeProvider = Framework.getLocalService(LocaleProvider.class);
+        LocaleProvider localeProvider = Framework.getService(LocaleProvider.class);
         if (localeProvider != null && request.getUserPrincipal() != null) {
             Locale userPrefLocale = localeProvider.getLocale(getCoreSession());
             if (userPrefLocale != null) {
@@ -773,7 +773,7 @@ public abstract class AbstractWebContext implements WebContext {
 
     @Override
     public void setRepositoryName(String repoName) {
-        RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
+        RepositoryManager rm = Framework.getService(RepositoryManager.class);
         if (rm.getRepository(repoName) != null) {
             this.repoName = repoName;
         } else {

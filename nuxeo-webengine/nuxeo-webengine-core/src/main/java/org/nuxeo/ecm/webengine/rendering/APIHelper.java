@@ -50,7 +50,7 @@ public class APIHelper implements RenderingExtensionFactory {
     }
 
     public static DocumentType[] getSortedDocumentTypes() {
-        DocumentType[] doctypes = Framework.getLocalService(SchemaManager.class).getDocumentTypes();
+        DocumentType[] doctypes = Framework.getService(SchemaManager.class).getDocumentTypes();
         Arrays.sort(doctypes, DOCTYPE_COMPARATOR);
         return doctypes;
     }

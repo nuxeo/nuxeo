@@ -102,7 +102,7 @@ public class TestServiceWithCore extends PublisherTestCase {
     public void testCorePublishing() throws Exception {
 
         // check service config
-        PublisherService service = Framework.getLocalService(PublisherService.class);
+        PublisherService service = Framework.getService(PublisherService.class);
         List<String> treeNames = service.getAvailablePublicationTree();
         assertEquals(1, treeNames.size());
 
@@ -213,7 +213,7 @@ public class TestServiceWithCore extends PublisherTestCase {
         String[] sectionIdsArray = (String[]) ws1.getPropertyValue(RootSectionsManager.SECTIONS_PROPERTY_NAME);
         assertEquals(1, sectionIdsArray.length);
 
-        PublisherService service = Framework.getLocalService(PublisherService.class);
+        PublisherService service = Framework.getService(PublisherService.class);
 
         PublicationTree tree = service.getPublicationTree(service.getAvailablePublicationTree().get(0), session, null,
                 Populate.self.doc2Publish);
@@ -250,7 +250,7 @@ public class TestServiceWithCore extends PublisherTestCase {
         DocumentModel section = session.getDocument(new PathRef("/default-domain/sections/section1"));
         DocumentModel workspace = session.getDocument(new PathRef("/default-domain/workspaces/ws1"));
         rootSectionsManager.addSection(section.getId(), workspace);
-        PublisherService srv = Framework.getLocalService(PublisherService.class);
+        PublisherService srv = Framework.getService(PublisherService.class);
         PublicationTree tree = srv.getPublicationTreeFor(Populate.self.doc2Publish, session);
         PublicationNode target = tree.getNodeByPath("/default-domain/sections/section1");
         srv.publish(Populate.self.doc2Publish, target);
@@ -265,7 +265,7 @@ public class TestServiceWithCore extends PublisherTestCase {
         PathRef sectionRef = new PathRef("/default-domain/sections/section1");
         PathRef proxyRef = new PathRef("/default-domain/sections/section1/file");
         assertTrue(session.exists(proxyRef));
-        PublisherService srv = Framework.getLocalService(PublisherService.class);
+        PublisherService srv = Framework.getService(PublisherService.class);
         PublicationTree tree = srv.getPublicationTreeFor(Populate.self.doc2Publish, session);
         PublicationNode target = tree.getNodeByPath(sectionRef.value);
         // Unpublish check-in version (SUPNXP-3013)

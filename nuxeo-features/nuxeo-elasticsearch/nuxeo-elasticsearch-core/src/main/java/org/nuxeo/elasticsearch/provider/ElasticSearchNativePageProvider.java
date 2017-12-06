@@ -93,7 +93,7 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
             sortArray = sortInfos.toArray(new SortInfo[sortInfos.size()]);
         }
         // Execute the ES query
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
         try {
             NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession()).esQuery(query)
                                                                          .offset((int) getCurrentPageOffset())

@@ -83,7 +83,7 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
     @Override
     public void doInitializeRepository(CoreSession session) {
         if (defaultRepositoryName == null) {
-            RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
+            RepositoryManager mgr = Framework.getService(RepositoryManager.class);
             defaultRepositoryName = mgr.getDefaultRepositoryName();
             if (DocumentStoreSessionRunner.repositoryName == null) {
                 DocumentStoreSessionRunner.repositoryName = defaultRepositoryName;

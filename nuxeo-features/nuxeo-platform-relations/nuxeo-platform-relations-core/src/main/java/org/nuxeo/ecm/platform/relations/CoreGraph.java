@@ -164,7 +164,7 @@ public class CoreGraph implements Graph {
             String key = option.getKey();
             String type = option.getValue();
             if (key.equals(OPTION_DOCTYPE)) {
-                SchemaManager sm = Framework.getLocalService(SchemaManager.class);
+                SchemaManager sm = Framework.getService(SchemaManager.class);
                 DocumentType documentType = sm.getDocumentType(type);
                 if (documentType == null) {
                     throw new IllegalArgumentException("Unknown type: " + type + " for graph: " + name);

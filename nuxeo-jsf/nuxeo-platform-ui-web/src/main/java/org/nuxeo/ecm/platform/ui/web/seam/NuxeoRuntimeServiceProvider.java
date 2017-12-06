@@ -75,7 +75,7 @@ public class NuxeoRuntimeServiceProvider implements ServiceProvider {
 
         // service loopkup
         if (type != null) {
-            result = Framework.getLocalService(type);
+            result = Framework.getService(type);
         }
 
         // fallback on component lookup
@@ -130,7 +130,7 @@ public class NuxeoRuntimeServiceProvider implements ServiceProvider {
         Class serviceClass = name2ServiceClassCache.get(name);
         Object result = null;
         if (serviceClass != null) {
-            result = Framework.getLocalService(serviceClass);
+            result = Framework.getService(serviceClass);
             if (result != null && Contexts.isEventContextActive()) {
                 // cache in Event scope
                 Contexts.getEventContext().set(name, result);

@@ -88,7 +88,7 @@ public class TestUserGroupAudit {
 
     @Test
     public void testAuditEntriesForUserCUD() throws Exception {
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> entries = null;
 
         String userName = "testUser";
@@ -123,7 +123,7 @@ public class TestUserGroupAudit {
 
     @Test
     public void testAuditEntriesForGroupCUD() throws Exception {
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> entries = null;
 
         String groupName = "testGroup";

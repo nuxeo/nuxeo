@@ -76,7 +76,7 @@ public class EventJob implements Job {
         String eventCategory = dataMap.getString("eventCategory");
         String username = dataMap.getString("username");
 
-        SchedulerService scheduler = Framework.getLocalService(SchedulerService.class);
+        SchedulerService scheduler = Framework.getService(SchedulerService.class);
         if (scheduler == null || !scheduler.hasApplicationStarted()) {
             // too early
             return;
@@ -94,7 +94,7 @@ public class EventJob implements Job {
             if (username == null) {
                 loginContext = Framework.login();
             } else {
-                if (Framework.getLocalService(LoginAs.class) != null) {
+                if (Framework.getService(LoginAs.class) != null) {
                     loginContext = Framework.loginAsUser(username);
                 } else if (!Framework.isTestModeSet()) {
                     log.error("LoginAs service not available");

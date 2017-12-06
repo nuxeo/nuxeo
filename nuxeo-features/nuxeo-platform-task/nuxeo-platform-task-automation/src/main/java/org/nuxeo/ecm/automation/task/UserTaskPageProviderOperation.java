@@ -74,7 +74,7 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
     public Blob run() {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(UserTaskPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-        PageProviderService pps = Framework.getLocalService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
 
         Long targetPage = null;
         if (page != null) {

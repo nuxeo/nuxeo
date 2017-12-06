@@ -132,7 +132,7 @@ public class SCIMGroupWebObject extends BaseUMObject {
         try {
             String directoryName = um.getGroupDirectoryName();
 
-            DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+            DirectoryService ds = Framework.getService(DirectoryService.class);
 
             Session dSession = null;
             DocumentModelList groupModels = null;

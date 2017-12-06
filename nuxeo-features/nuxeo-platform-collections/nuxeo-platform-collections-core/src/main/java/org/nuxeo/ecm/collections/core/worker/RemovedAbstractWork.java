@@ -76,7 +76,7 @@ public abstract class RemovedAbstractWork extends AbstractWork {
                     throw new RuntimeException(e);
                 }
                 nextWork.setDocument(repositoryName, docId);
-                WorkManager workManager = Framework.getLocalService(WorkManager.class);
+                WorkManager workManager = Framework.getService(WorkManager.class);
                 workManager.schedule(nextWork, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
                 setStatus("Rescheduling Done");
             }

@@ -95,7 +95,7 @@ public class DocumentListTest extends BaseTest {
 
         // Waiting for all async events work for indexing content before
         // executing fulltext search
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
         coreFeature.getStorageConfiguration().sleepForFulltext();
 
         // When I search for "nuxeo"

@@ -46,13 +46,13 @@ public class TestNavTreeService {
 
     @Test
     public void testServiceLookup() {
-        NavTreeService service = Framework.getLocalService(NavTreeService.class);
+        NavTreeService service = Framework.getService(NavTreeService.class);
         assertNotNull(service);
     }
 
     @Test
     public void testNavTrees() throws Exception {
-        NavTreeService service = Framework.getLocalService(NavTreeService.class);
+        NavTreeService service = Framework.getService(NavTreeService.class);
         assertNotNull(service);
 
         List<NavTreeDescriptor> descs = service.getTreeDescriptors();

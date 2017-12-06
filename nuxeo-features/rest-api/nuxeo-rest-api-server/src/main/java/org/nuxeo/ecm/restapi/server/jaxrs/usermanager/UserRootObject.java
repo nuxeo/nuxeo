@@ -85,7 +85,7 @@ public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
     }
 
     static boolean isAPowerUserEditableUser(NuxeoPrincipal user) {
-        UserManager um = Framework.getLocalService(UserManager.class);
+        UserManager um = Framework.getService(UserManager.class);
         List<String> adminGroups = um.getAdministratorsGroups();
         for (String adminGroup : adminGroups) {
             if (user.getAllGroups().contains(adminGroup)) {
@@ -97,7 +97,7 @@ public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
 
     @Override
     protected PageProviderDefinition getPageProviderDefinition() {
-        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
         return ppService.getPageProviderDefinition(PAGE_PROVIDER_NAME);
     }
 

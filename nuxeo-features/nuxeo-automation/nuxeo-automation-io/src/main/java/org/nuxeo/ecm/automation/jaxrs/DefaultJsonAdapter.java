@@ -37,7 +37,7 @@ public class DefaultJsonAdapter implements JsonAdapter {
 
     @Override
     public void toJSON(OutputStream out) throws IOException {
-        ObjectCodecService service = Framework.getLocalService(ObjectCodecService.class);
+        ObjectCodecService service = Framework.getService(ObjectCodecService.class);
         service.write(out, object);
     }
 

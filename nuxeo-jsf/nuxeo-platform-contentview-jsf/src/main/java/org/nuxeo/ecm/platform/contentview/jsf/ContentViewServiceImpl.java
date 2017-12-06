@@ -105,7 +105,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         ReferencePageProviderDescriptor refDesc = desc.getReferencePageProvider();
         String[] refQueryParams = null;
         if (refDesc != null && refDesc.isEnabled()) {
-            PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+            PageProviderService ppService = Framework.getService(PageProviderService.class);
             PageProviderDefinition def = ppService.getPageProviderDefinition(refDesc.getName());
             if (def == null) {
                 log.error("Could not resolve page provider with name " + refDesc.getName());
@@ -213,7 +213,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         if (contentViewDesc == null) {
             return null;
         }
-        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
         String ppName = contentViewDesc.getPageProviderName();
         PageProvider<?> provider = ppService.getPageProvider(ppName, searchDocument, sortInfos, pageSize, currentPage,
                 resolvePageProviderProperties(contentViewDesc.getPageProviderProperties()), parameters);
@@ -263,7 +263,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
             // we use an already registered pp
             return;
         }
-        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
         String name = desc.getName();
         PageProviderDefinition coreDef = getPageProviderDefWithName(name, desc.getCoreQueryPageProvider());
         PageProviderDefinition genDef = getPageProviderDefWithName(name, desc.getGenericPageProvider());
@@ -301,7 +301,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
     }
 
     protected void unregisterPageProvider(ContentViewDescriptor desc) {
-        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
         if (ppService == null) {
             log.info("PageProviderServer is not available, failed to unregister pp of the cv");
             return;

@@ -74,7 +74,7 @@ public class TestMultiDirectorySecurity2 {
     @Before
     public void setUp() throws Exception {
         // mem dir factory
-        directoryService = Framework.getLocalService(DirectoryService.class);
+        directoryService = Framework.getService(DirectoryService.class);
 
         // create and register mem directories
         Map<String, Object> e;

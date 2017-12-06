@@ -143,7 +143,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
             }
             isXA = cacheManager.getConfiguration().getCacheConfigurations().get(CACHE_NAME).isXaTransactional();
             // Exposes cache to JMX
-            MBeanServer mBeanServer = Framework.getLocalService(ServerLocator.class).lookupServer();
+            MBeanServer mBeanServer = Framework.getService(ServerLocator.class).lookupServer();
             ManagementService.registerMBeans(cacheManager, mBeanServer, true, true, true, true);
         }
         rowMapperCount.incrementAndGet();

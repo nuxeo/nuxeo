@@ -66,7 +66,7 @@ public class DataModelImpl implements DataModel {
      */
     public DataModelImpl(String schemaName, Map<String, Object> data) {
         assert data != null;
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         Schema schema = schemaManager.getSchema(schemaName);
         dp = new DocumentPartImpl(schema);
         if (!data.isEmpty()) {

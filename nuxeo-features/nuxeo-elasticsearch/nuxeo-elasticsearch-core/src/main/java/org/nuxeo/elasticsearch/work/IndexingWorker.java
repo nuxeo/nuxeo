@@ -71,7 +71,7 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
             cmd.setOrder(now);
         }
         esi.indexNonRecursive(cmds);
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        WorkManager wm = Framework.getService(WorkManager.class);
         for (IndexingCommand cmd : cmds) {
             if (needRecurse(cmd)) {
                 wm.schedule(getWorker(cmd));

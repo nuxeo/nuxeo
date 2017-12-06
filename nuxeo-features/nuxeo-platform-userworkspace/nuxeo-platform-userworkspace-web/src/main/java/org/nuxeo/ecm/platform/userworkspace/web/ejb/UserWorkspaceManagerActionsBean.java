@@ -114,7 +114,7 @@ public class UserWorkspaceManagerActionsBean implements UserWorkspaceManagerActi
         if (userWorkspaceService != null) {
             return userWorkspaceService;
         }
-        userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
+        userWorkspaceService = Framework.getService(UserWorkspaceService.class);
         return userWorkspaceService;
     }
 

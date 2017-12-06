@@ -78,10 +78,10 @@ public class TestService {
     @Test
     public void verifyNodeStartedWithConfig() throws Exception {
 
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
         Assert.assertNotNull(ess);
 
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
 
         Assert.assertTrue(esa.getClient().waitForYellowStatus(null, 10));

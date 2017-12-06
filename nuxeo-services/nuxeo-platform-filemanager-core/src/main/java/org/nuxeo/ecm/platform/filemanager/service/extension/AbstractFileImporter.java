@@ -218,7 +218,7 @@ public abstract class AbstractFileImporter implements FileImporter {
             doc = session.createDocumentModel(docType);
             createDocument(doc, content, title);
             // set path
-            PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
+            PathSegmentService pss = Framework.getService(PathSegmentService.class);
             doc.setPathInfo(path, pss.generatePathSegment(doc));
             // update data
             updateDocument(doc, content);

@@ -61,7 +61,7 @@ public class DocumentRelationService implements DocumentRelationManager {
 
     protected RelationManager getRelationManager() {
         if (relationManager == null) {
-            relationManager = Framework.getLocalService(RelationManager.class);
+            relationManager = Framework.getService(RelationManager.class);
         }
         return relationManager;
     }

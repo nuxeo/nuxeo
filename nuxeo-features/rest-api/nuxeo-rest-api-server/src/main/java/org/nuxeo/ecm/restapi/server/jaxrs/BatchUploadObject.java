@@ -285,7 +285,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     @DELETE
     @Path("{batchId}")
     public Response cancel(@PathParam(REQUEST_BATCH_ID) String batchId) {
-        BatchManager bm = Framework.getLocalService(BatchManager.class);
+        BatchManager bm = Framework.getService(BatchManager.class);
         if (!bm.hasBatch(batchId)) {
             return buildEmptyResponse(Status.NOT_FOUND);
         }
@@ -300,7 +300,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     @Path("{batchId}/{fileIdx}")
     public Response removeFile(@PathParam(REQUEST_BATCH_ID) String batchId,
             @PathParam(REQUEST_FILE_IDX) String fileIdx) {
-        BatchManager bm = Framework.getLocalService(BatchManager.class);
+        BatchManager bm = Framework.getService(BatchManager.class);
         if (!bm.removeFileEntry(batchId, fileIdx)) {
             return buildEmptyResponse(Status.NOT_FOUND);
         }
@@ -348,7 +348,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
             CoreSession session = ctx.getCoreSession();
             OperationContext ctx = xreq.createContext(request, response, session);
             Map<String, Object> params = xreq.getParams();
-            BatchManager bm = Framework.getLocalService(BatchManager.class);
+            BatchManager bm = Framework.getService(BatchManager.class);
             Object result;
             if (StringUtils.isBlank(fileIdx)) {
                 result = bm.execute(batchId, operationId, session, ctx, params);

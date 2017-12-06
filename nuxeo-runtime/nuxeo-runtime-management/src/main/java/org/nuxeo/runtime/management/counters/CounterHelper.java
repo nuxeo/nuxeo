@@ -29,7 +29,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class CounterHelper {
 
-    protected static CounterManager cm = Framework.getLocalService(CounterManager.class);
+    protected static CounterManager cm = Framework.getService(CounterManager.class);
 
     public static void increaseCounter(String counterName) {
         if (cm != null) {

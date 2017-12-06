@@ -46,7 +46,7 @@ public class RenderableDocument implements Renderable {
     @Override
     public List<RenditionDefinition> getAvailableRenditionDefinitions() {
         if (defs == null) {
-            defs = Framework.getLocalService(RenditionService.class).getAvailableRenditionDefinitions(doc);
+            defs = Framework.getService(RenditionService.class).getAvailableRenditionDefinitions(doc);
         }
         return defs;
     }
@@ -72,7 +72,7 @@ public class RenderableDocument implements Renderable {
     }
 
     protected Rendition getRendition(RenditionDefinition def) {
-        return Framework.getLocalService(RenditionService.class).getRendition(doc, def.getName());
+        return Framework.getService(RenditionService.class).getRendition(doc, def.getName());
 
     }
 

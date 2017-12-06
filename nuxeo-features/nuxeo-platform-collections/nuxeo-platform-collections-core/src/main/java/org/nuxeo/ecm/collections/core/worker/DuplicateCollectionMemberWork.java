@@ -82,7 +82,7 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
     public void work() {
         setStatus("Duplicating");
         if (collectionMemberIds != null) {
-            CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+            CollectionManager collectionManager = Framework.getService(CollectionManager.class);
             setProgress(new Progress(0, collectionMemberIds.size()));
             openSystemSession();
             for (int i = 0; i < collectionMemberIds.size(); i++) {

@@ -89,7 +89,7 @@ public class ImagingRecomputeActions implements Serializable {
     }
 
     public void launchPictureViewsRecomputation() {
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        WorkManager workManager = Framework.getService(WorkManager.class);
         if (workManager == null) {
             throw new RuntimeException("No WorkManager available");
         }

@@ -65,7 +65,7 @@ public class RemovedCollectionWork extends RemovedAbstractWork {
     protected void updateDocument(final DocumentModel collectionMember) {
         log.trace(String.format("Worker %s, updating CollectionMember %s", getId(), collectionMember.getTitle()));
 
-        Framework.getLocalService(CollectionManager.class).doRemoveFromCollection(collectionMember, docId, session);
+        Framework.getService(CollectionManager.class).doRemoveFromCollection(collectionMember, docId, session);
     }
 
 }

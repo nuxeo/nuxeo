@@ -88,7 +88,7 @@ public class CollectionActionsBean implements Serializable {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
-            final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+            final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
             final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
             if (isCreateNewCollection()) {
                 collectionManager.addToNewCollection(getNewTitle(), getNewDescription(), currentDocument, session);
@@ -121,7 +121,7 @@ public class CollectionActionsBean implements Serializable {
             documentListToBeAdded.add(session.getDocument(new IdRef(uid)));
         }
 
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
         collectionManager.addToCollection(currentDocument, documentListToBeAdded, session);
 
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED);
@@ -131,7 +131,7 @@ public class CollectionActionsBean implements Serializable {
 
     public void addToSelectedCollection(final List<DocumentModel> documentListToBeAdded) {
         if (documentListToBeAdded != null && !documentListToBeAdded.isEmpty()) {
-            final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+            final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
             final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
             if (isCreateNewCollection()) {
                 collectionManager.addToNewCollection(getNewTitle(), getNewDescription(), documentListToBeAdded, session);
@@ -152,7 +152,7 @@ public class CollectionActionsBean implements Serializable {
         if (documents == null || documents.isEmpty()) {
             return false;
         }
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
         for (DocumentModel doc : documents) {
             if (!collectionManager.isCollectable(doc)) {
                 return false;
@@ -162,7 +162,7 @@ public class CollectionActionsBean implements Serializable {
     }
 
     public boolean canAddToCollection(DocumentModel collection) {
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
         final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
         final boolean result = collection != null && collectionManager.isCollection(collection)
                 && collectionManager.canAddToCollection(collection, session);
@@ -175,7 +175,7 @@ public class CollectionActionsBean implements Serializable {
         if (currentDocument == null) {
             return false;
         }
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
         final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
         return collectionManager.canAddToCollection(currentDocument, session);
     }
@@ -198,12 +198,12 @@ public class CollectionActionsBean implements Serializable {
         if (currentDocument == null) {
             return false;
         }
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
         return collectionManager.isCollectable(currentDocument);
     }
 
     public boolean canManage(final DocumentModel collection) {
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
         final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
         return collectionManager.canManage(collection, session);
     }
@@ -275,7 +275,7 @@ public class CollectionActionsBean implements Serializable {
     }
 
     public boolean hasVisibleCollection(DocumentModel doc) {
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
         if (doc == null || !collectionManager.isCollectable(doc)) {
             return false;
         }
@@ -296,7 +296,7 @@ public class CollectionActionsBean implements Serializable {
         if (currentDocument == null) {
             return false;
         }
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
         return collectionManager.isCollection(currentDocument);
     }
 
@@ -306,7 +306,7 @@ public class CollectionActionsBean implements Serializable {
         String collectionId = eContext.getRequestParameterMap().get("collectionId");
         if (StringUtils.isNotBlank(collectionId)) {
             final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
-            final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+            final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
             final DocumentRef collectionRef = new IdRef(collectionId);
             if (session.exists(collectionRef)) {
                 final DocumentModel collection = session.getDocument(collectionRef);
@@ -336,7 +336,7 @@ public class CollectionActionsBean implements Serializable {
 
     public void removeFromCollection(DocumentModel collection, List<DocumentModel> documentListToBeRemoved)
             {
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
         final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
         collectionManager.removeAllFromCollection(collection, documentListToBeRemoved, session);
 

@@ -267,7 +267,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
 
         List<DocumentProperty> props = new ArrayList<DocumentProperty>();
         if (doc != null) {
-            DocumentLoader loader = Framework.getLocalService(DocumentLoader.class);
+            DocumentLoader loader = Framework.getService(DocumentLoader.class);
             loader.fillProperties(doc, props, rs);
         }
         return props.toArray(new DocumentProperty[props.size()]);

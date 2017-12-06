@@ -98,7 +98,7 @@ public class BusinessAdapterReader implements MessageBodyReader<BusinessAdapter>
     }
 
     public BusinessAdapter readRequest0(String content, MultivaluedMap<String, String> headers) throws IOException {
-        ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
+        ObjectCodecService codecService = Framework.getService(ObjectCodecService.class);
 
         JsonParser jp = factory.createJsonParser(content);
         JsonNode inputNode = jp.readValueAsTree();

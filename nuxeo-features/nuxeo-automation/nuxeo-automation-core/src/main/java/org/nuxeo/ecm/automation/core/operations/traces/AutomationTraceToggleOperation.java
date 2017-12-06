@@ -57,7 +57,7 @@ public class AutomationTraceToggleOperation {
 
     @OperationMethod
     public boolean run() {
-        TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
+        TracerFactory tracerFactory = Framework.getService(TracerFactory.class);
         if (canManageTraces() && !readOnly) {
             if (enableTrace == null) {
                 tracerFactory.toggleRecording();

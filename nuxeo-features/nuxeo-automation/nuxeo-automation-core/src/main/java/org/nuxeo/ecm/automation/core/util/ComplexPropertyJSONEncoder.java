@@ -35,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
 public class ComplexPropertyJSONEncoder {
 
     private static JsonFactory getFactory() {
-        JsonFactoryManager jsonFactoryManager = Framework.getLocalService(JsonFactoryManager.class);
+        JsonFactoryManager jsonFactoryManager = Framework.getService(JsonFactoryManager.class);
         return jsonFactoryManager.getJsonFactory();
     }
 

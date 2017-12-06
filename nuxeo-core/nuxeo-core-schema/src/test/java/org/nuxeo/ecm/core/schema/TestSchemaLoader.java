@@ -61,7 +61,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
     @Override
     protected void postSetUp() throws Exception {
-        typeMgr = Framework.getLocalService(SchemaManager.class);
+        typeMgr = Framework.getService(SchemaManager.class);
         reader = new XSDLoader((SchemaManagerImpl) typeMgr);
     }
 

@@ -56,7 +56,7 @@ public class BrowseRestlet extends BaseStatelessNuxeoRestlet implements Serializ
                 Element serversNode = result.createElement("avalaibleServers");
                 result.setRootElement((org.dom4j.Element) serversNode);
 
-                RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+                RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
                 for (String repositoryName : repositoryManager.getRepositoryNames()) {
                     Element server = result.createElement("server");
                     server.setAttribute("title", repositoryName);

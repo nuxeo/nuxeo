@@ -54,7 +54,7 @@ public class IMImageUtils implements ImageUtils {
         protected File targetFile;
 
         public Blob call(Blob blob, String targetExt, String commandName) {
-            CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+            CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
             CommandAvailability availability = cles.getCommandAvailability(commandName);
             if (!availability.isAvailable()) {
                 return null;
@@ -168,7 +168,7 @@ public class IMImageUtils implements ImageUtils {
 
     @Override
     public boolean isAvailable() {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         CommandAvailability commandAvailability = cles.getCommandAvailability("identify");
         return commandAvailability.isAvailable();
     }

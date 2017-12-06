@@ -70,7 +70,7 @@ public class SearchAdapter extends DocumentModelListPaginableAdapter {
     protected PageProviderDefinition getPageProviderDefinition() {
 
         String query = extractQueryFromRequest(ctx.getRequest());
-        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
         PageProviderDefinition ppdefinition = ppService.getPageProviderDefinition(pageProviderName);
         ppdefinition.setPattern(query);
 

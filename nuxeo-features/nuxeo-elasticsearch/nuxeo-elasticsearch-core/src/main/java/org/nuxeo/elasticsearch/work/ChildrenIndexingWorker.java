@@ -67,7 +67,7 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Wo
             esi.indexNonRecursive(childCommand);
             if (child.isFolder()) {
                 ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(childCommand);
-                WorkManager wm = Framework.getLocalService(WorkManager.class);
+                WorkManager wm = Framework.getService(WorkManager.class);
                 wm.schedule(subWorker);
             }
         }
