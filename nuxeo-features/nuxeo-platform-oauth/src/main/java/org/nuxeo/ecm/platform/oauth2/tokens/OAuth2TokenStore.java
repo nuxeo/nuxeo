@@ -104,6 +104,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         return null;
     }
 
+    @Override
     public final String getId() {
         return this.serviceName;
     }
@@ -186,10 +187,11 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         return Framework.doPrivileged(() -> {
             try (Session session = ds.open(DIRECTORY_NAME)) {
-                entry.setProperty("oauth2Token", "accessToken", token.getAccessToken());
-                entry.setProperty("oauth2Token", "refreshToken", token.getRefreshToken());
-                entry.setProperty("oauth2Token", "creationDate", token.getCreationDate());
-                entry.setProperty("oauth2Token", "expirationTimeMilliseconds", token.getExpirationTimeMilliseconds());
+                entry.setProperty(NuxeoOAuth2Token.SCHEMA, "accessToken", token.getAccessToken());
+                entry.setProperty(NuxeoOAuth2Token.SCHEMA, "refreshToken", token.getRefreshToken());
+                entry.setProperty(NuxeoOAuth2Token.SCHEMA, "creationDate", token.getCreationDate());
+                entry.setProperty(NuxeoOAuth2Token.SCHEMA, "expirationTimeMilliseconds",
+                        token.getExpirationTimeMilliseconds());
                 session.updateEntry(entry);
                 return getTokenFromDirectoryEntry(entry);
             }
@@ -214,7 +216,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
     }
 
     /**
-     * Retrieve an entry by it's accessToken
+     * Retrieves an entry by its {@code accessToken}.
      */
     public NuxeoOAuth2Token getToken(String token) {
         Map<String, Serializable> filter = new HashMap<>();
@@ -253,7 +255,6 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         return Framework.doPrivileged(() -> {
             try (Session session = ds.open(DIRECTORY_NAME)) {
                 DocumentModel entry = session.createEntry(aToken.toMap());
-                session.updateEntry(entry);
                 return getTokenFromDirectoryEntry(entry);
             }
         });
