@@ -79,7 +79,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
 
     public ExifToolProcessor() {
         jacksonMapper = new ObjectMapper();
-        commandLineService = Framework.getLocalService(CommandLineExecutorService.class);
+        commandLineService = Framework.getService(CommandLineExecutorService.class);
     }
 
     @Override

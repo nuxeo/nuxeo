@@ -60,7 +60,7 @@ public class BinaryMetadataWorkListener implements EventListener {
                 doc.putContextData(BinaryMetadataConstants.ASYNC_MAPPING_RESULT, null);
                 BinaryMetadataWork work = new BinaryMetadataWork(doc.getRepositoryName(), doc.getId(),
                         mappingDescriptors);
-                WorkManager workManager = Framework.getLocalService(WorkManager.class);
+                WorkManager workManager = Framework.getService(WorkManager.class);
                 workManager.schedule(work, true);
             }
         }

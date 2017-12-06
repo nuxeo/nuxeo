@@ -47,7 +47,7 @@ public class BinaryMetadataSyncListener implements EventListener {
         if (!(ctx instanceof DocumentEventContext)) {
             return;
         }
-        BinaryMetadataService binaryMetadataService = Framework.getLocalService(BinaryMetadataService.class);
+        BinaryMetadataService binaryMetadataService = Framework.getService(BinaryMetadataService.class);
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
         Boolean disable = (Boolean) event.getContext().getProperty(
