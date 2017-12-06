@@ -134,6 +134,9 @@ public class MemRepository extends DBSRepositoryBase {
 
     @Override
     public State readPartialState(String id, Collection<String> keys) {
+        if (id == null) {
+            return null;
+        }
         State state = states.get(id);
         if (state != null) {
             if (keys != null && !keys.isEmpty()) {
