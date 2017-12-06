@@ -27,10 +27,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.nuxeo.ecm.core.test.JettyTransactionalFeature;
 import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.JettyFeature;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
@@ -39,8 +39,9 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 /**
  * @since 9.2
  */
-@Features(JettyFeature.class)
-@LocalDeploy("org.nuxeo.ecm.platform.oauth:OSGI-INF/jetty-test-config.xml")
+@Features(JettyTransactionalFeature.class)
+@LocalDeploy({ "org.nuxeo.ecm.platform.oauth:OSGI-INF/jetty-test-config.xml", //
+        "org.nuxeo.ecm.platform.oauth:OSGI-INF/test-oauth2-authentication-contrib.xml" })
 public class OAuth2JettyFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
 
     @Override

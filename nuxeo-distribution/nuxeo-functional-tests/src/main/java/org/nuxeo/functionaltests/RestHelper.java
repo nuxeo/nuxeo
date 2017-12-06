@@ -165,6 +165,13 @@ public class RestHelper {
         directoryEntryIdsToDelete.computeIfAbsent(directoryName, k -> new HashSet<>()).add(entryId);
     }
 
+    /**
+     * @since 9.10
+     */
+    public static void removeDirectoryEntryToDelete(String directoryName, String entryId) {
+        directoryEntryIdsToDelete.getOrDefault(directoryName, Collections.emptySet()).remove(entryId);
+    }
+
     public static void clearDirectoryEntryIdsToDelete() {
         directoryEntryIdsToDelete.clear();
     }
@@ -423,6 +430,16 @@ public class RestHelper {
      */
     public static void deleteDirectoryEntry(String directoryName, String entryId) {
         CLIENT.directoryManager().directory(directoryName).deleteEntry(entryId);
+    }
+
+    /**
+     * @since 9.10
+     */
+    public static void deleteDirectoryEntries(String directoryName) {
+        CLIENT.directoryManager().directory(directoryName).fetchEntries().getDirectoryEntries().forEach(entry -> {
+            entry.delete();
+            removeDirectoryEntryToDelete(directoryName, entry.getId());
+        });
     }
 
     // ------------------
