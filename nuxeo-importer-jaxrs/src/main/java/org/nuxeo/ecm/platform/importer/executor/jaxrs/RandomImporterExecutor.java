@@ -82,7 +82,7 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
                             .nbThreads(nbThreads)
                             .build();
         GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(configuration);
-        runner.setEnablePerfLogging(Framework.getLocalService(
+        runner.setEnablePerfLogging(Framework.getService(
                 DefaultImporterService.class).getEnablePerfLogging());
 
         ImporterFilter filter = new EventServiceConfiguratorFilter(blockSyncPostCommitProcessing, blockAsyncProcessing,

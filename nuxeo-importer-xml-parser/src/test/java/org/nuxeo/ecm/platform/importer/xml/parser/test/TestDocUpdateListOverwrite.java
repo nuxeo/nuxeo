@@ -59,7 +59,7 @@ public class TestDocUpdateListOverwrite {
 
         DocumentModel root = session.getRootDocument();
 
-        XMLImporterService importer = Framework.getLocalService(XMLImporterService.class);
+        XMLImporterService importer = Framework.getService(XMLImporterService.class);
         Assert.assertNotNull(importer);
         importer.importDocuments(root, xml);
         session.save();

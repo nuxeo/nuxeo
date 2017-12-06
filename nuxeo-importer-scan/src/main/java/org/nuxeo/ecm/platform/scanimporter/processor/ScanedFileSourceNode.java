@@ -83,7 +83,7 @@ public class ScanedFileSourceNode extends FileSourceNode {
     public List<SourceNode> getChildren() throws IOException {
         List<SourceNode> children = new ArrayList<SourceNode>();
 
-        ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
+        ScannedFileMapperService sfms = Framework.getService(ScannedFileMapperService.class);
         for (File child : file.listFiles()) {
             if (child.getName().endsWith(".xml") && useXMLMapping) {
                 try {

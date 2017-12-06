@@ -46,7 +46,7 @@ public class TestDeployment {
 
     @Test
     public void testImport() throws Exception {
-        DefaultImporterService service = Framework.getLocalService(DefaultImporterService.class);
+        DefaultImporterService service = Framework.getService(DefaultImporterService.class);
         assertNotNull(service);
 
         assertEquals("org.nuxeo.ecm.platform.importer.xml.parser.AdvancedScannedFileFactory",

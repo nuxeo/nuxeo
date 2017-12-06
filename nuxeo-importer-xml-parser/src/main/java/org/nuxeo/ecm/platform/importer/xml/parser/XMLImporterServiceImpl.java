@@ -581,7 +581,7 @@ public class XMLImporterServiceImpl {
 
     private AutomationService getAutomationService() {
         if (automationService == null) {
-            automationService = Framework.getLocalService(AutomationService.class);
+            automationService = Framework.getService(AutomationService.class);
         }
         return automationService;
 

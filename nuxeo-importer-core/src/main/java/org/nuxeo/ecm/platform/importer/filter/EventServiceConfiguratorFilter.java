@@ -66,7 +66,7 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
     }
 
     public void handleBeforeImport() {
-        EventServiceAdmin eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
+        EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
         if (eventAdmin == null) {
             log.error("EventServiceAdmin service was not found ... Possible that the import process will not proceed ok");
             return;
@@ -86,7 +86,7 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
     }
 
     public void handleAfterImport(Exception e) {
-        EventServiceAdmin eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
+        EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
         if (eventAdmin != null) {
             log.info("Restoring default event listeners and bulk mode");
             eventAdmin.setBulkModeEnabled(false);

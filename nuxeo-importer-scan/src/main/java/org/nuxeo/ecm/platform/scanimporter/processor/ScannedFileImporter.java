@@ -73,7 +73,7 @@ public class ScannedFileImporter {
 
     protected static void doCleanUp() {
 
-        ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
+        ScannedFileMapperService sfms = Framework.getService(ScannedFileMapperService.class);
         ImporterConfig config = sfms.getImporterConfig();
         File outDir = null;
 
@@ -107,7 +107,7 @@ public class ScannedFileImporter {
 
     public void doImport() {
 
-        ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
+        ScannedFileMapperService sfms = Framework.getService(ScannedFileMapperService.class);
 
         ImporterConfig config = sfms.getImporterConfig();
         if (config == null) {
@@ -158,7 +158,7 @@ public class ScannedFileImporter {
      * @since 5.7.3
      */
     private ImporterDocumentModelFactory initDocumentModelFactory(ImporterConfig config) {
-        Class<? extends ImporterDocumentModelFactory> factoryClass = Framework.getLocalService(
+        Class<? extends ImporterDocumentModelFactory> factoryClass = Framework.getService(
                 DefaultImporterService.class).getDocModelFactoryClass();
         // Class<? extends DefaultDocumentModelFactory> factoryClass = ScanedFileFactory.class;
         Constructor<? extends ImporterDocumentModelFactory> cst = null;
@@ -180,7 +180,7 @@ public class ScannedFileImporter {
      * @since 5.7.3
      */
     private SourceNode initSourceNode(File file) {
-        Class<? extends SourceNode> srcClass = Framework.getLocalService(DefaultImporterService.class).getSourceNodeClass();
+        Class<? extends SourceNode> srcClass = Framework.getService(DefaultImporterService.class).getSourceNodeClass();
         // Class<? extends SourceNode> srcClass = ScanedFileSourceNode.class;
         if (!FileSourceNode.class.isAssignableFrom(srcClass)) {
             throw new NuxeoException("Waiting source node extending FileSourceNode for Scan Importer");

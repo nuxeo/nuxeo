@@ -76,7 +76,7 @@ public class DocumentConsumerPool<M extends Message> extends ConsumerPool<M> {
     public DocumentConsumerPool(String logName, LogManager manager, ConsumerFactory<M> factory,
             ConsumerPolicy consumerPolicy) {
         super(logName, manager, factory, consumerPolicy);
-        EventServiceAdmin eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
+        EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
         policy = (DocumentConsumerPolicy) consumerPolicy;
         if (eventAdmin == null) {
             log.info("Can not apply document policy there is no event service available");
@@ -125,7 +125,7 @@ public class DocumentConsumerPool<M extends Message> extends ConsumerPool<M> {
     public void close() throws Exception {
         super.close();
 
-        EventServiceAdmin eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
+        EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
         if (eventAdmin == null) {
             return;
         }

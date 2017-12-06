@@ -67,7 +67,7 @@ public class TestMapperServiceMultiValue {
 
         DocumentModel root = session.getRootDocument();
 
-        XMLImporterService importer = Framework.getLocalService(XMLImporterService.class);
+        XMLImporterService importer = Framework.getService(XMLImporterService.class);
         Assert.assertNotNull(importer);
         importer.importDocuments(root, xml);
 
