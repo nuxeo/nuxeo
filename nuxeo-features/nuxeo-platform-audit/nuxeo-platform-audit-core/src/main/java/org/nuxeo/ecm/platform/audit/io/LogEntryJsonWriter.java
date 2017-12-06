@@ -21,6 +21,19 @@ package org.nuxeo.ecm.platform.audit.io;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_CATEGORY;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_COMMENT;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_LIFE_CYCLE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_PATH;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_TYPE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EXTENDED;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_LOG_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_PRINCIPAL_NAME;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -85,25 +98,25 @@ public class LogEntryJsonWriter extends ExtensibleEntityJsonWriter<LogEntry> {
 
     @Override
     protected void writeEntityBody(LogEntry logEntry, JsonGenerator jg) throws IOException {
-        jg.writeNumberField("id", logEntry.getId());
-        jg.writeStringField("category", logEntry.getCategory());
-        jg.writeStringField("principalName", logEntry.getPrincipalName());
-        jg.writeStringField("comment", logEntry.getComment());
-        jg.writeStringField("docLifeCycle", logEntry.getDocLifeCycle());
-        jg.writeStringField("docPath", logEntry.getDocPath());
-        jg.writeStringField("docType", logEntry.getDocType());
-        jg.writeStringField("docUUID", logEntry.getDocUUID());
-        jg.writeStringField("eventId", logEntry.getEventId());
-        jg.writeStringField("repositoryId", logEntry.getRepositoryId());
+        jg.writeNumberField(LOG_ID, logEntry.getId());
+        jg.writeStringField(LOG_CATEGORY, logEntry.getCategory());
+        jg.writeStringField(LOG_PRINCIPAL_NAME, logEntry.getPrincipalName());
+        jg.writeStringField(LOG_COMMENT, logEntry.getComment());
+        jg.writeStringField(LOG_DOC_LIFE_CYCLE, logEntry.getDocLifeCycle());
+        jg.writeStringField(LOG_DOC_PATH, logEntry.getDocPath());
+        jg.writeStringField(LOG_DOC_TYPE, logEntry.getDocType());
+        jg.writeStringField(LOG_DOC_UUID, logEntry.getDocUUID());
+        jg.writeStringField(LOG_EVENT_ID, logEntry.getEventId());
+        jg.writeStringField(LOG_REPOSITORY_ID, logEntry.getRepositoryId());
         DateTimeFormatter dateTime = ISODateTimeFormat.dateTime();
-        jg.writeStringField("eventDate", dateTime.print(new DateTime(logEntry.getEventDate())));
-        jg.writeStringField("logDate", dateTime.print(new DateTime(logEntry.getLogDate())));
+        jg.writeStringField(LOG_EVENT_DATE, dateTime.print(new DateTime(logEntry.getEventDate())));
+        jg.writeStringField(LOG_LOG_DATE, dateTime.print(new DateTime(logEntry.getLogDate())));
         writeExtendedInfos(jg, logEntry);
     }
 
     protected void writeExtendedInfos(JsonGenerator jg, LogEntry logEntry) throws IOException {
         Map<String, ExtendedInfo> extended = logEntry.getExtendedInfos();
-        jg.writeObjectFieldStart("extended");
+        jg.writeObjectFieldStart(LOG_EXTENDED);
         for (String key : extended.keySet()) {
             ExtendedInfo ei = extended.get(key);
             if (ei != null && ei.getSerializableValue() != null) {
