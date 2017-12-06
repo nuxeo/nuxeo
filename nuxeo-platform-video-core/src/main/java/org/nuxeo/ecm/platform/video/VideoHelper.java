@@ -239,7 +239,7 @@ public class VideoHelper {
         try {
             ExecResult result;
             try (CloseableFile cf = video.getCloseableFile("." + FilenameUtils.getExtension(video.getFilename()))) {
-                CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+                CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
                 CmdParameters params = cles.getDefaultCmdParameters();
                 params.addNamedParameter("inFilePath", cf.getFile().getAbsolutePath());
 

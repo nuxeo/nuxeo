@@ -86,7 +86,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public void deactivate(ComponentContext context) {
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        WorkManager workManager = Framework.getService(WorkManager.class);
         if (workManager != null && workManager.isStarted()) {
             try {
                 workManager.shutdownQueue(
@@ -139,7 +139,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public void launchConversion(DocumentModel doc, String conversionName) {
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        WorkManager workManager = Framework.getService(WorkManager.class);
         if (workManager == null) {
             throw new RuntimeException("No WorkManager available");
         }
@@ -166,7 +166,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
         Map<String, Serializable> parameters = new HashMap<>();
         parameters.put("height", conversion.getHeight());
         parameters.put("videoInfo", originalVideo.getVideoInfo());
-        ConversionService conversionService = Framework.getLocalService(ConversionService.class);
+        ConversionService conversionService = Framework.getService(ConversionService.class);
         BlobHolder result = conversionService.convert(conversion.getConverter(), blobHolder, parameters);
         VideoInfo videoInfo = VideoHelper.getVideoInfo(result.getBlob());
         return TranscodedVideo.fromBlobAndInfo(conversionName, result.getBlob(), videoInfo);
@@ -174,7 +174,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public VideoConversionStatus getProgressStatus(String repositoryName, String docId, String conversionName) {
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        WorkManager workManager = Framework.getService(WorkManager.class);
         Work work = new VideoConversionWork(repositoryName, docId, conversionName);
         State state = workManager.getWorkState(work.getId());
         if (state == null) { // DONE

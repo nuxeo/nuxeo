@@ -87,7 +87,7 @@ public class VideoConvertersTest {
 
     @Test
     public void testStoryboardConverter() throws Exception {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         assertNotNull(cles);
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot-resize");
         Assume.assumeTrue("ffmpeg-screenshot-resize is not available, skipping test", ca.isAvailable());
@@ -101,7 +101,7 @@ public class VideoConvertersTest {
 
     @Test
     public void testScreenshotConverter() throws Exception {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         assertNotNull(cles);
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
         Assume.assumeTrue("ffmpeg-screenshot is not available, skipping test", ca.isAvailable());

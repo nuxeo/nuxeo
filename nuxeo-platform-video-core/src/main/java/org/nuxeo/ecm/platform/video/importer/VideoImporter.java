@@ -53,7 +53,7 @@ public class VideoImporter extends AbstractFileImporter {
     public void updateDocument(DocumentModel doc, Blob content) {
         super.updateDocument(doc, content);
         // update the icon
-        Type type = Framework.getLocalService(TypeManager.class).getType(doc.getType());
+        Type type = Framework.getService(TypeManager.class).getType(doc.getType());
         if (type != null) {
             doc.setProperty("common", "icon", type.getIcon());
         }

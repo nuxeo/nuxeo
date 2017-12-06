@@ -57,7 +57,7 @@ public class VideoAutomaticConversionListener implements PostCommitFilteringEven
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
 
-        VideoService videoService = Framework.getLocalService(VideoService.class);
+        VideoService videoService = Framework.getService(VideoService.class);
         videoService.launchAutomaticConversions(doc);
     }
 
