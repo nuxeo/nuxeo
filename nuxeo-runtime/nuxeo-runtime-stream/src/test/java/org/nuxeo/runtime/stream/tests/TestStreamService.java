@@ -82,7 +82,7 @@ public class TestStreamService {
         String value = "a value";
 
         LogAppender<Record> appender = manager.getAppender(logName);
-        appender.append(key, Record.of(key, value.getBytes()));
+        appender.append(key, Record.of(key, value.getBytes("UTF-8")));
 
         try (LogTailer<Record> tailer = manager.createTailer("myGroup", logName)) {
             LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));
@@ -103,7 +103,7 @@ public class TestStreamService {
         // add an input message
         String key = "a key";
         String value = "a value";
-        appender.append(key, Record.of(key, value.getBytes()));
+        appender.append(key, Record.of(key, value.getBytes("UTF-8")));
 
         // the computation should forward this message to the output
         LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));

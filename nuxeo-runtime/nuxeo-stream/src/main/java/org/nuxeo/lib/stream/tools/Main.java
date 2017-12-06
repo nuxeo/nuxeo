@@ -77,7 +77,7 @@ public class Main {
         if (commandMap.isEmpty()) {
             new CommandRegistry().commands().forEach(cmd -> commandMap.put(cmd.name(), cmd));
         }
-        if (! commandMap.containsKey(command)) {
+        if (!commandMap.containsKey(command)) {
             helpAndExit("Unknown command: " + command);
         }
         return commandMap.get(command);
@@ -86,7 +86,7 @@ public class Main {
     protected void helpAndExit(String message) {
         System.err.println(message);
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp(command != null ? command :  "tools", options );
+        formatter.printHelp(command != null ? command : "tools", options);
         System.exit(-1);
     }
 

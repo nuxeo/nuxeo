@@ -296,7 +296,6 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         toLastCommitted();
     }
 
-    @SuppressWarnings("SuspiciousMethodCalls")
     @Override
     public void reset(LogPartition partition) {
         log.info("Reset committed offset for partition: " + partition + " tailer: " + id);
@@ -306,7 +305,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         beginningOffsets.forEach((tp, offset) -> offsetToCommit.put(tp, new OffsetAndMetadata(offset)));
         consumer.commitSync(offsetToCommit);
         lastCommittedOffsets.remove(topicPartition);
-        seek(new LogOffsetImpl(partition, beginningOffsets.get(0)));
+        seek(new LogOffsetImpl(partition, beginningOffsets.get(topicPartition)));
     }
 
     @Override

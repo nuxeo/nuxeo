@@ -58,7 +58,7 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
 
         if (params.containsKey("batchSize")) {
             try {
-                batchSize = Integer.parseInt(params.get(batchSize));
+                batchSize = Integer.parseInt(params.get("batchSize"));
             } catch (NumberFormatException e) {
                 log.error("Unable to read batchSize parameter", e);
             }

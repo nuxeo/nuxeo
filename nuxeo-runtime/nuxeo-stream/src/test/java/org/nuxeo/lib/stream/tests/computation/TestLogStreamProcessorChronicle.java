@@ -18,6 +18,8 @@
  */
 package org.nuxeo.lib.stream.tests.computation;
 
+import static org.nuxeo.lib.stream.tests.TestLibChronicle.IS_WIN;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -28,8 +30,6 @@ import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
-
-import static org.nuxeo.lib.stream.tests.TestLibChronicle.IS_WIN;
 
 /**
  * @since 9.3
@@ -46,11 +46,13 @@ public class TestLogStreamProcessorChronicle extends TestStreamProcessor {
         org.junit.Assume.assumeFalse(IS_WIN);
     }
 
+    @Override
     public LogManager getLogManager() throws Exception {
         this.basePath = folder.newFolder();
         return new ChronicleLogManager(basePath.toPath());
     }
 
+    @Override
     public LogManager getSameLogManager() throws IOException {
         return new ChronicleLogManager(basePath.toPath());
     }

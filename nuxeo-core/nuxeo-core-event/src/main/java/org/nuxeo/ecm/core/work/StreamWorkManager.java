@@ -95,8 +95,7 @@ public class StreamWorkManager extends WorkManagerImpl {
     protected int getOverProvisioningFactor() {
         // Enable over provisioning only if the log can be distributed
         if (getLogManager().supportSubscribe()) {
-            return Integer.parseInt(
-                    Framework.getProperty(WORK_OVER_PROVISIONING_PROP, DEFAULT_WORK_OVER_PROVISIONING));
+            return Integer.parseInt(Framework.getProperty(WORK_OVER_PROVISIONING_PROP, DEFAULT_WORK_OVER_PROVISIONING));
         }
         return 1;
     }
@@ -150,6 +149,7 @@ public class StreamWorkManager extends WorkManagerImpl {
         init();
     }
 
+    @Override
     public void init() {
         if (started) {
             return;
@@ -278,9 +278,11 @@ public class StreamWorkManager extends WorkManagerImpl {
             this.scheduling = scheduling;
         }
 
+        @Override
         public void beforeCompletion() {
         }
 
+        @Override
         public void afterCompletion(int status) {
             if (status == Status.STATUS_COMMITTED) {
                 StreamWorkManager.this.schedule(this.work, this.scheduling, false);
@@ -361,8 +363,9 @@ public class StreamWorkManager extends WorkManagerImpl {
             return getMetrics(queueId).getScheduled().intValue();
         case RUNNING:
             return getMetrics(queueId).getRunning().intValue();
+        default:
+            return 0;
         }
-        return 0;
     }
 
     protected WorkQueueMetrics getMetricsWithNuxeoClassLoader(String queueId) {

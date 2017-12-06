@@ -216,7 +216,8 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
             }
             return 0;
         }
-        // System.out.println("partition: " + partition + ", count from " + lowerOffset + " to " + upperOffset + " = " + ret);
+        // System.out.println("partition: " + partition + ", count from " + lowerOffset + " to " + upperOffset + " = " +
+        // ret);
         return ret;
     }
 
