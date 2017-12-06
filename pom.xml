@@ -58,7 +58,6 @@
     <nuxeo.javaagent.version>9.10-SNAPSHOT</nuxeo.javaagent.version>
     <nuxeo.pdfutils.version>9.10-SNAPSHOT</nuxeo.pdfutils.version>
     <nuxeo.threed.version>9.10-SNAPSHOT</nuxeo.threed.version>
-    <nuxeo.mqueues.version>9.10-SNAPSHOT</nuxeo.mqueues.version>
     <nuxeo.mongodb.ext.version>9.10-SNAPSHOT</nuxeo.mongodb.ext.version>
     <nuxeo.target.platforms.version>9.10-SNAPSHOT</nuxeo.target.platforms.version>
     <nuxeo.web.ui.version>9.10-SNAPSHOT</nuxeo.web.ui.version>
@@ -125,7 +124,6 @@
     <module>nuxeo-connect-tools</module>
     <module>nuxeo-platform-pdf-utils</module>
     <module>nuxeo-platform-3d</module>
-    <module>nuxeo-mqueues</module>
     <module>nuxeo-agenda</module>
     <module>nuxeo-target-platforms</module>
     <module>nuxeo-web-ui</module>
@@ -1057,18 +1055,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-3d-web-ui</artifactId>
         <version>${nuxeo.threed.version}</version>
-      </dependency>
-
-      <!-- MQueues -->
-      <dependency>
-        <groupId>org.nuxeo.lib.core</groupId>
-        <artifactId>nuxeo-mqueues-core</artifactId>
-        <version>${nuxeo.mqueues.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-mqueues-contribs</artifactId>
-        <version>${nuxeo.mqueues.version}</version>
       </dependency>
 
       <!-- Target platforms -->
