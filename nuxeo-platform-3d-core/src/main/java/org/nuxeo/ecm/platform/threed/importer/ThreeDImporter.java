@@ -62,7 +62,7 @@ public class ThreeDImporter extends AbstractFileImporter {
         }
         DocumentModel doc = session.createDocumentModel(docType);
         doc.setPropertyValue("dc:title", title);
-        PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
         doc.setPathInfo(path, pss.generatePathSegment(doc));
         updateDocument(doc, content);
         doc = session.createDocument(doc);
