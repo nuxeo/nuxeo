@@ -97,7 +97,7 @@ public class VideoConversionWork extends AbstractWork {
         }
 
         // Perform the actual conversion
-        VideoService service = Framework.getLocalService(VideoService.class);
+        VideoService service = Framework.getService(VideoService.class);
         setStatus("Transcoding");
         TranscodedVideo transcodedVideo = service.convert(originalVideo, conversionName);
 
@@ -142,7 +142,7 @@ public class VideoConversionWork extends AbstractWork {
      * @since 5.8
      */
     protected void fireVideoConversionsDoneEvent(DocumentModel doc) {
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        WorkManager workManager = Framework.getService(WorkManager.class);
         List<String> workIds = workManager.listWorkIds(CATEGORY_VIDEO_CONVERSION, null);
         String idPrefix = computeIdPrefix(repositoryName, docId);
         int worksCount = 0;
@@ -157,7 +157,7 @@ public class VideoConversionWork extends AbstractWork {
 
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         Event event = ctx.newEvent(VIDEO_CONVERSIONS_DONE_EVENT);
-        Framework.getLocalService(EventService.class).fireEvent(event);
+        Framework.getService(EventService.class).fireEvent(event);
     }
 
 }

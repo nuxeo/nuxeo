@@ -66,7 +66,7 @@ public class ScreenshotConverter implements Converter {
         try (CloseableFile source = blob.getCloseableFile("." + FilenameUtils.getExtension(blob.getFilename()))) {
             Blob outBlob = Blobs.createBlobWithExtension(".jpeg");
 
-            CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+            CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
             CmdParameters params = cles.getDefaultCmdParameters();
             params.addNamedParameter("inFilePath", source.getFile().getAbsolutePath());
             params.addNamedParameter("outFilePath", outBlob.getFile().getAbsolutePath());

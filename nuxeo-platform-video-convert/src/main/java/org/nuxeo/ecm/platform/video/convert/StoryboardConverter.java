@@ -98,7 +98,7 @@ public class StoryboardConverter implements Converter {
         Blob blob = blobHolder.getBlob();
         try (CloseableFile source = blob.getCloseableFile("." + FilenameUtils.getExtension(blob.getFilename()))) {
 
-            CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+            CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
             CmdParameters params = cles.getDefaultCmdParameters();
             params.addNamedParameter(INPUT_FILE_PATH_PARAMETER, source.getFile().getAbsolutePath());
 
