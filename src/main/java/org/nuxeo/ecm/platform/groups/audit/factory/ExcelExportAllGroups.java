@@ -36,7 +36,7 @@ public class ExcelExportAllGroups implements ExcelExportFactory {
 
     @Override
     public Map<String, Object> getDataToInject() {
-        UserManager userManager = Framework.getLocalService(UserManager.class);
+        UserManager userManager = Framework.getService(UserManager.class);
         List<String> groupsId = new ArrayList<String>();
         List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>();
         groupsId = userManager.getGroupIds();

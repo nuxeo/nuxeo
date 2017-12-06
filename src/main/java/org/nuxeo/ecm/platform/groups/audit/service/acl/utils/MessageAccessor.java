@@ -30,7 +30,7 @@ public class MessageAccessor {
 
     public static String get(CoreSession session, String key) {
         Locale locale = null;
-        LocaleProvider localeProvider = Framework.getLocalService(LocaleProvider.class);
+        LocaleProvider localeProvider = Framework.getService(LocaleProvider.class);
         if (localeProvider != null) {
             locale = localeProvider.getLocale(session);
         }

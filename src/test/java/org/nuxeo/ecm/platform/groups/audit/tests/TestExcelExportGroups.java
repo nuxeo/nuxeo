@@ -85,7 +85,7 @@ public class TestExcelExportGroups {
         userManager.createUser(u1);
         userManager.createGroup(g1);
         userManager.createGroup(g2);
-        ExcelExportService exportService = Framework.getLocalService(ExcelExportService.class);
+        ExcelExportService exportService = Framework.getService(ExcelExportService.class);
         Assert.assertTrue(exportService.getExcelReport("exportAllGroupsAudit").length() > 0);
     }
 

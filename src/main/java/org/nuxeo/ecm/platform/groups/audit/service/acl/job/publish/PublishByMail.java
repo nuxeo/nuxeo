@@ -89,7 +89,7 @@ public class PublishByMail implements IResultPublisher {
         String title = MessageAccessor.get(session, PROPERTY_MAIL_SUBJECT);
         String body = MessageAccessor.get(session, PROPERTY_MAIL_BODY);
         String from = Framework.getProperty(PROPERTY_MAILFROM, defaultFrom);
-        AutomationService automation = Framework.getLocalService(AutomationService.class);
+        AutomationService automation = Framework.getService(AutomationService.class);
 
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(docToSend);

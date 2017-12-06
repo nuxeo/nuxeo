@@ -116,17 +116,17 @@ public class ExportGroupManagementActions implements Serializable {
     }
 
     protected File excelExportAllGroupsDefinition() {
-        ExcelExportService exportService = Framework.getLocalService(ExcelExportService.class);
+        ExcelExportService exportService = Framework.getService(ExcelExportService.class);
         return exportService.getExcelReport("exportAllGroupsAudit");
     }
 
     protected File excelExportListedGroupsDefinition() {
-        ExcelExportService exportService = Framework.getLocalService(ExcelExportService.class);
+        ExcelExportService exportService = Framework.getService(ExcelExportService.class);
         return exportService.getExcelReport("exportListedGroupsAudit", getDataInject());
     }
 
     private Map<String, Object> getDataInject() {
-        UserManager userManager = Framework.getLocalService(UserManager.class);
+        UserManager userManager = Framework.getService(UserManager.class);
         List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>();
         PageProvider currentPP = contentViewActions.getCurrentContentView().getCurrentPageProvider();
         List<DocumentModel> groupModels = (ArrayList<DocumentModel>) currentPP.getCurrentPage();

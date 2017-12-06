@@ -116,7 +116,7 @@ public class ExcelExportRightsActionBean implements Serializable {
         final String to = currentNuxeoPrincipal.getEmail();
         final String defaultFrom = "noreply@nuxeo.com";
         final String workName = WORK_NAME + auditRoot.getPathAsString();
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        WorkManager wm = Framework.getService(WorkManager.class);
 
         if (StringUtils.isBlank(to)) {
             facesMessages.add(StatusMessage.Severity.ERROR, "Your email is missing from your profile.");

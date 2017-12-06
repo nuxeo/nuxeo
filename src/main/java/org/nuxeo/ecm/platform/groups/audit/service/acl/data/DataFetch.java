@@ -62,7 +62,7 @@ public class DataFetch {
             boolean orderByPath) {
         String request = getChildrenDocQuery(doc, orderByPath);
         log.debug("will initialize a paginated query:" + request);
-        PageProviderService pps = Framework.getLocalService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
         desc.setPattern(request);
 

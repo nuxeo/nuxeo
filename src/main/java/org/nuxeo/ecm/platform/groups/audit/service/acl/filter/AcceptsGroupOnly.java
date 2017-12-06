@@ -35,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
 public class AcceptsGroupOnly extends AbstractContentFilter implements IContentFilter {
     protected static Log log = LogFactory.getLog(AcceptsGroupOnly.class);
 
-    protected UserManager um = Framework.getLocalService(UserManager.class);
+    protected UserManager um = Framework.getService(UserManager.class);
 
     protected Collection<String> groups = null;
 
