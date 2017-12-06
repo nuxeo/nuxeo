@@ -178,7 +178,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
         if (StringUtils.isEmpty(email)) {
             return SIGNED_OTHER;
         }
-        CertService certService = Framework.getLocalService(CertService.class);
+        CertService certService = Framework.getService(CertService.class);
         for (X509Certificate certificate : certificates) {
             String certEmail;
             try {
@@ -253,7 +253,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
             pdfBlob = originalBlob;
         } else {
             // convert to PDF or PDF/A first
-            ConversionService conversionService = Framework.getLocalService(ConversionService.class);
+            ConversionService conversionService = Framework.getService(ConversionService.class);
             Map<String, Serializable> parameters = new HashMap<>();
             if (pdfa) {
                 parameters.put(PDFA1_PARAM, Boolean.TRUE);
@@ -303,8 +303,8 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
 
     @Override
     public Blob signPDF(Blob pdfBlob, DocumentModel doc, DocumentModel user, String keyPassword, String reason) {
-        CertService certService = Framework.getLocalService(CertService.class);
-        CUserService cUserService = Framework.getLocalService(CUserService.class);
+        CertService certService = Framework.getService(CertService.class);
+        CUserService cUserService = Framework.getService(CUserService.class);
         try {
             File outputFile = Framework.createTempFile("signed-", ".pdf");
             Blob blob = Blobs.createBlob(outputFile, MIME_TYPE_PDF);

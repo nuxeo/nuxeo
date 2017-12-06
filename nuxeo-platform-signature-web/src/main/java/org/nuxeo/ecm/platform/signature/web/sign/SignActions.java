@@ -263,7 +263,7 @@ public class SignActions implements Serializable {
 
         eventContext.setProperties(properties);
 
-        Framework.getLocalService(EventProducer.class).fireEvent(eventContext.newEvent(eventId));
+        Framework.getService(EventProducer.class).fireEvent(eventContext.newEvent(eventId));
     }
 
 }
