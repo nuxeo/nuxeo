@@ -21,17 +21,28 @@ package org.nuxeo.audit.storage.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_CATEGORY;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_COMMENT;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_LIFE_CYCLE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_PATH;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_TYPE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EXTENDED;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_LOG_DATE;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_PRINCIPAL_NAME;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +70,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * @since 9.10
  */
@@ -72,52 +85,52 @@ public class TestDirectoryAuditStorage {
 
     protected static List<String> jsonEntries;
 
+    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     @BeforeClass
-    public static void before() throws JsonGenerationException, JsonMappingException, IOException {
+    public static void before() throws IOException {
         NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
                                                                      .getComponent(NXAuditEventsService.NAME);
         storage = (DirectoryAuditStorage) audit.getAuditStorage(DirectoryAuditStorage.NAME);
 
         Map<String, Object> jsonEntryMap1 = new HashMap<>();
         jsonEntryMap1.put("entity-type", "logEntry");
-        jsonEntryMap1.put("category", "Document");
-        jsonEntryMap1.put("principalName", "Administrator");
-        jsonEntryMap1.put("comment", null);
-        jsonEntryMap1.put("docLifeCycle", "Draft");
-        jsonEntryMap1.put("docPath", "/My doc 1");
-        jsonEntryMap1.put("docType", "File");
-        jsonEntryMap1.put("eventId", "documentCreated");
-        jsonEntryMap1.put("repositoryId", "default");
-        jsonEntryMap1.put("eventDate", "2017-10-10T10:35:13.102Z");
-        jsonEntryMap1.put("docUUID", "3f86a83f-1523-432a-92c5-8ec5f68a6451");
-        jsonEntryMap1.put("logDate", "2017-10-10T10:35:13.138Z");
-        jsonEntryMap1.put("extended", Collections.emptyMap());
+        jsonEntryMap1.put(LOG_CATEGORY, "Document");
+        jsonEntryMap1.put(LOG_PRINCIPAL_NAME, "Administrator");
+        jsonEntryMap1.put(LOG_COMMENT, null);
+        jsonEntryMap1.put(LOG_DOC_LIFE_CYCLE, "Draft");
+        jsonEntryMap1.put(LOG_DOC_PATH, "/My doc 1");
+        jsonEntryMap1.put(LOG_DOC_TYPE, "File");
+        jsonEntryMap1.put(LOG_EVENT_ID, "documentCreated");
+        jsonEntryMap1.put(LOG_REPOSITORY_ID, "default");
+        jsonEntryMap1.put(LOG_EVENT_DATE, "2017-10-10T10:35:13.102Z");
+        jsonEntryMap1.put(LOG_DOC_UUID, "3f86a83f-1523-432a-92c5-8ec5f68a6451");
+        jsonEntryMap1.put(LOG_LOG_DATE, "2017-10-10T10:35:13.138Z");
+        jsonEntryMap1.put(LOG_EXTENDED, Collections.emptyMap());
 
         Map<String, Object> jsonEntryMap2 = new HashMap<>();
         jsonEntryMap2.put("entity-type", "logEntry");
-        jsonEntryMap2.put("category", "Document");
-        jsonEntryMap2.put("principalName", "Administrator");
-        jsonEntryMap2.put("comment", null);
-        jsonEntryMap2.put("docLifeCycle", "Approved");
-        jsonEntryMap2.put("docPath", "/My doc 2");
-        jsonEntryMap2.put("docType", "File");
-        jsonEntryMap2.put("eventId", "documentModified");
-        jsonEntryMap2.put("repositoryId", "default");
-        jsonEntryMap2.put("eventDate", "2017-11-13T09:15:13.102Z");
-        jsonEntryMap2.put("docUUID", "4f86a82f-3521-132b-92c3-6ac5f65c6422");
-        jsonEntryMap2.put("logDate", "2017-11-13T09:15:13.138ZZ");
-        jsonEntryMap2.put("extended", Collections.emptyMap());
+        jsonEntryMap2.put(LOG_CATEGORY, "Document");
+        jsonEntryMap2.put(LOG_PRINCIPAL_NAME, "Administrator");
+        jsonEntryMap2.put(LOG_COMMENT, null);
+        jsonEntryMap2.put(LOG_DOC_LIFE_CYCLE, "Approved");
+        jsonEntryMap2.put(LOG_DOC_PATH, "/My doc 2");
+        jsonEntryMap2.put(LOG_DOC_TYPE, "File");
+        jsonEntryMap2.put(LOG_EVENT_ID, "documentModified");
+        jsonEntryMap2.put(LOG_REPOSITORY_ID, "default");
+        jsonEntryMap2.put(LOG_EVENT_DATE, "2017-11-13T09:15:13.102Z");
+        jsonEntryMap2.put(LOG_DOC_UUID, "4f86a82f-3521-132b-92c3-6ac5f65c6422");
+        jsonEntryMap2.put(LOG_LOG_DATE, "2017-11-13T09:15:13.138ZZ");
+        jsonEntryMap2.put(LOG_EXTENDED, Collections.emptyMap());
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonEntry1 = objectMapper.writeValueAsString(jsonEntryMap1);
-        String jsonEntry2 = objectMapper.writeValueAsString(jsonEntryMap2);
+        String jsonEntry1 = OBJECT_MAPPER.writeValueAsString(jsonEntryMap1);
+        String jsonEntry2 = OBJECT_MAPPER.writeValueAsString(jsonEntryMap2);
         jsonEntries = Arrays.asList(jsonEntry1, jsonEntry2);
     }
 
     @Test
     public void testStorage() {
         assertNotNull(storage);
-        assertTrue(storage instanceof DirectoryAuditStorage);
     }
 
     @SuppressWarnings("deprecation")
@@ -146,55 +159,41 @@ public class TestDirectoryAuditStorage {
     }
 
     @Test
-    public void testGetLogEntryFromJson() {
-        LogEntry logEntry = storage.getLogEntryFromJson(jsonEntries.get(0));
-        assertNotNull(logEntry);
-        assertEquals("Document", logEntry.getCategory());
-        assertEquals("Administrator", logEntry.getPrincipalName());
-        assertEquals("Draft", logEntry.getDocLifeCycle());
-        assertEquals("/My doc 1", logEntry.getDocPath());
-        assertEquals("File", logEntry.getDocType());
-        assertEquals("documentCreated", logEntry.getEventId());
-        assertEquals("default", logEntry.getRepositoryId());
-        assertTrue(logEntry.getExtendedInfos().isEmpty());
-    }
-
-    @Test
     public void testQueryLogs() {
         storage.append(jsonEntries);
 
         // Empty query builder.
         AuditQueryBuilder queryBuilder = new AuditQueryBuilder();
-        List<LogEntry> logEntries = storage.queryLogs(queryBuilder);
-        assertEquals(2, storage.queryLogs(queryBuilder).size());
+        List<LogEntry> logEntries = queryLogs(queryBuilder);
+        assertEquals(2, logEntries.size());
 
         // Query builder with an orderBy DESC.
         queryBuilder.order(new OrderByExpr(new Reference(DirectoryAuditStorage.ID_COLUMN), true));
-        logEntries = storage.queryLogs(queryBuilder);
+        logEntries = queryLogs(queryBuilder);
         assertEquals(2, logEntries.size());
         assertEquals("/My doc 2", logEntries.get(0).getDocPath());
 
         // Query builder with an orderBy ASC.
         queryBuilder = new AuditQueryBuilder();
         queryBuilder.order(new OrderByExpr(new Reference(DirectoryAuditStorage.ID_COLUMN), false));
-        logEntries = storage.queryLogs(queryBuilder);
+        logEntries = queryLogs(queryBuilder);
         assertEquals(2, logEntries.size());
         assertEquals("/My doc 1", logEntries.get(0).getDocPath());
 
         // Query builder with a limit and an offset.
         queryBuilder.limit(1);
-        logEntries = storage.queryLogs(queryBuilder);
+        logEntries = queryLogs(queryBuilder);
         assertEquals(1, logEntries.size());
         assertEquals("/My doc 1", logEntries.get(0).getDocPath());
         queryBuilder.offset(1);
-        logEntries = storage.queryLogs(queryBuilder);
+        logEntries = queryLogs(queryBuilder);
         assertEquals(1, logEntries.size());
         assertEquals("/My doc 2", logEntries.get(0).getDocPath());
 
         // Query builder with a 'AND entry = ' condition.
         queryBuilder = new AuditQueryBuilder();
         queryBuilder.addAndPredicate(Predicates.eq(DirectoryAuditStorage.JSON_COLUMN, jsonEntries.get(1)));
-        logEntries = storage.queryLogs(queryBuilder);
+        logEntries = queryLogs(queryBuilder);
         assertEquals(1, logEntries.size());
         assertEquals("/My doc 2", logEntries.get(0).getDocPath());
 
@@ -202,7 +201,7 @@ public class TestDirectoryAuditStorage {
         queryBuilder = new AuditQueryBuilder();
         queryBuilder.addAndPredicate(new Predicate(new Reference(DirectoryAuditStorage.JSON_COLUMN), Operator.LIKE,
                 Literals.toLiteral("My doc 2")));
-        logEntries = storage.queryLogs(queryBuilder);
+        logEntries = queryLogs(queryBuilder);
         assertEquals(1, logEntries.size());
         assertEquals("/My doc 2", logEntries.get(0).getDocPath());
 
@@ -214,10 +213,27 @@ public class TestDirectoryAuditStorage {
     public void testScroll() {
         storage.append(jsonEntries);
         AuditQueryBuilder queryBuilder = new AuditQueryBuilder();
-        ScrollResult scrollResult = storage.scroll(queryBuilder, 10, 1);
+        ScrollResult<String> scrollResult = storage.scroll(queryBuilder, 10, 1);
         assertNotNull(scrollResult.getScrollId());
-        List<Object> results = scrollResult.getResults();
+        List<String> results = scrollResult.getResults();
         assertEquals(2, scrollResult.getResults().size());
-        results.forEach(result -> assertTrue(result instanceof LogEntryImpl));
+        // check that we can deserialize them
+        results.forEach(this::getLogEntryFromJson);
     }
+
+    protected List<LogEntry> queryLogs(AuditQueryBuilder builder) {
+        return storage.queryLogs(builder).stream().map(this::getLogEntryFromJson).collect(Collectors.toList());
+    }
+
+    /**
+     * Convert a Json entry to a LogEntry.
+     */
+    protected LogEntry getLogEntryFromJson(String jsonEntry) {
+        try {
+            return OBJECT_MAPPER.readValue(jsonEntry, LogEntryImpl.class);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
 }

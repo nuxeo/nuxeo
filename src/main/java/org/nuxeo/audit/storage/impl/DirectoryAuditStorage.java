@@ -19,9 +19,7 @@
 
 package org.nuxeo.audit.storage.impl;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,13 +32,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.core.api.CursorService;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
@@ -51,9 +44,6 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditStorage;
-import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
-import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -73,14 +63,7 @@ public class DirectoryAuditStorage implements AuditStorage {
 
     public static final String JSON_COLUMN = "entry";
 
-    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    static {
-        OBJECT_MAPPER.getDeserializationConfig().addMixInAnnotations(LogEntryImpl.class, LogEntryImplMixIn.class);
-    }
-
-    protected CursorService<Iterator<LogEntry>, LogEntry, LogEntry> cursorService = new CursorService<>(
-            Function.identity());
+    protected CursorService<Iterator<String>, String, String> cursorService = new CursorService<>(Function.identity());
 
     protected Directory getAuditDirectory() {
         return Framework.getService(DirectoryService.class).getDirectory(DIRECTORY_NAME);
@@ -102,7 +85,7 @@ public class DirectoryAuditStorage implements AuditStorage {
      * Scroll log entries in the Audit directory, given a scroll Id.
      */
     @Override
-    public ScrollResult<LogEntry> scroll(String scrollId) {
+    public ScrollResult<String> scroll(String scrollId) {
         return cursorService.scroll(scrollId);
     }
 
@@ -110,9 +93,9 @@ public class DirectoryAuditStorage implements AuditStorage {
      * Scroll log entries in the Audit directory, given an audit query builder.
      */
     @Override
-    public ScrollResult<LogEntry> scroll(AuditQueryBuilder queryBuilder, int batchSize, int keepAlive) {
+    public ScrollResult<String> scroll(AuditQueryBuilder queryBuilder, int batchSize, int keepAlive) {
         cursorService.checkForTimedOutScroll();
-        List<LogEntry> logEntries = queryLogs(queryBuilder);
+        List<String> logEntries = queryLogs(queryBuilder);
         String scrollId = cursorService.registerCursor(logEntries.iterator(), batchSize, keepAlive);
         return scroll(scrollId);
     }
@@ -121,9 +104,7 @@ public class DirectoryAuditStorage implements AuditStorage {
      * Query log entries in the Audit directory, given an audit query builder. Does not support literals other than
      * StringLiteral: see {@link Session#query(Map, Set, Map, boolean, int, int)}.
      */
-    protected List<LogEntry> queryLogs(AuditQueryBuilder queryBuilder) {
-        List<LogEntry> logEntries = new ArrayList<>();
-
+    protected List<String> queryLogs(AuditQueryBuilder queryBuilder) {
         // Get the predicates filter map from the query builder.
         Map<String, Serializable> filter = new HashMap<>();
         Set<String> fulltext = null;
@@ -160,46 +141,13 @@ public class DirectoryAuditStorage implements AuditStorage {
         try (Session session = directory.getSession()) {
             DocumentModelList jsonEntriesDocs = session.query(filter, fulltext, orderBy, false, limit, offset);
 
-            // Build a list of Log Entries from the Json Entries.
+            // Build a list of Json Entries from the document model list.
             String auditPropertyName = directory.getSchema() + ":" + JSON_COLUMN;
-            for (DocumentModel jsonEntryDoc : jsonEntriesDocs) {
-                String jsonEntry = String.valueOf(jsonEntryDoc.getPropertyValue(auditPropertyName));
-                LogEntry logEntry = getLogEntryFromJson(jsonEntry);
-                if (logEntry != null) {
-                    logEntries.add(logEntry);
-                }
-            }
+            return jsonEntriesDocs.stream()
+                                  .map(doc -> doc.getPropertyValue(auditPropertyName))
+                                  .map(String::valueOf)
+                                  .collect(Collectors.toList());
         }
-
-        return logEntries;
-    }
-
-    /**
-     * Convert a Json entry to a LogEntry.
-     */
-    protected LogEntry getLogEntryFromJson(String jsonEntry) {
-        try {
-            return OBJECT_MAPPER.readValue(jsonEntry, LogEntryImpl.class);
-        } catch (IOException e) {
-            log.warn("Invalid Json for a LogEntry: " + jsonEntry, e);
-            return null;
-        }
-    }
-
-    /**
-     * Deserialization MixIn for {@link LogEntryImpl}, in order to use:
-     * {@link org.codehaus.jackson.annotate.JsonProperty} and not {@link com.fasterxml.jackson.annotation.JsonProperty},
-     * {@link LogEntryImpl#setDocUUID} and not {@link LogEntryImpl#setDocUUID}.
-     */
-    abstract static class LogEntryImplMixIn {
-        @JsonIgnore
-        public abstract void setDocUUID(DocumentRef docRef);
-
-        @JsonProperty("entity-type")
-        protected String entityType;
-
-        @JsonProperty("extended")
-        public abstract Map<String, ExtendedInfo> getExtendedInfos();
     }
 
 }
