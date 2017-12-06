@@ -100,7 +100,7 @@ public class QuotaStatsActions implements Serializable {
     }
 
     public List<QuotaStatsUpdater> getQuotaStatsUpdaters() {
-        QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
+        QuotaStatsService quotaStatsService = Framework.getService(QuotaStatsService.class);
         return quotaStatsService.getQuotaStatsUpdaters();
     }
 
@@ -109,12 +109,12 @@ public class QuotaStatsActions implements Serializable {
     }
 
     public void launchInitialComputation(String updaterName, String repositoryName) {
-        QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
+        QuotaStatsService quotaStatsService = Framework.getService(QuotaStatsService.class);
         quotaStatsService.launchInitialStatisticsComputation(updaterName, repositoryName);
     }
 
     public String getStatus(String updaterName) {
-        QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
+        QuotaStatsService quotaStatsService = Framework.getService(QuotaStatsService.class);
         return quotaStatsService.getProgressStatus(updaterName, documentManager.getRepositoryName());
     }
 
@@ -253,14 +253,14 @@ public class QuotaStatsActions implements Serializable {
 
     QuotaStatsService getQuotaStatsService() {
         if (quotaStatsService == null) {
-            quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
+            quotaStatsService = Framework.getService(QuotaStatsService.class);
         }
         return quotaStatsService;
     }
 
     protected WorkManager getWorkManager() {
         if (workManager == null) {
-            workManager = Framework.getLocalService(WorkManager.class);
+            workManager = Framework.getService(WorkManager.class);
         }
         return workManager;
     }
