@@ -66,7 +66,7 @@ public class DocumentRoutingSuggestionActionsBean extends DocumentContextBoundAc
     }
 
     public List<DocumentModel> getDocumentSuggestions(Object input) {
-        PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
+        PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(MAX_RESULTS_PROPERTY, PAGE_SIZE_RESULTS_KEY);
         props.put(CORE_SESSION_PROPERTY, (Serializable) documentManager);
@@ -77,7 +77,7 @@ public class DocumentRoutingSuggestionActionsBean extends DocumentContextBoundAc
     }
 
     public List<DocumentModel> getRouteModelSuggestions(Object input) {
-        DocumentRoutingService documentRoutingService = Framework.getLocalService(DocumentRoutingService.class);
+        DocumentRoutingService documentRoutingService = Framework.getService(DocumentRoutingService.class);
         return documentRoutingService.searchRouteModels(documentManager, (String) input);
     }
 

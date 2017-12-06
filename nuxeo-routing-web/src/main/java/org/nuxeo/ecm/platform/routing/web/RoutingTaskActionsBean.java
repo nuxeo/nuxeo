@@ -225,7 +225,7 @@ public class RoutingTaskActionsBean implements Serializable {
         }
         // add the button name that was clicked
         try {
-            DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+            DocumentRoutingService routing = Framework.getService(DocumentRoutingService.class);
             routing.endTask(documentManager, task, data, button);
             facesMessages.add(StatusMessage.Severity.INFO, messages.get("workflow.feedback.info.taskEnded"));
         } catch (DocumentRouteException e) {
@@ -533,7 +533,7 @@ public class RoutingTaskActionsBean implements Serializable {
 
         // get task documents
         boolean hasErrors = false;
-        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+        DocumentRoutingService routing = Framework.getService(DocumentRoutingService.class);
         List<DocumentModel> docs = documentsListsManager.getWorkingList(selectionListName);
         if (docs != null && !docs.isEmpty()) {
             for (DocumentModel doc : docs) {
@@ -564,7 +564,7 @@ public class RoutingTaskActionsBean implements Serializable {
 
     private ActionManager getActionService() {
         if (actionService == null) {
-            actionService = Framework.getLocalService(ActionManager.class);
+            actionService = Framework.getService(ActionManager.class);
         }
         return actionService;
     }
@@ -589,7 +589,7 @@ public class RoutingTaskActionsBean implements Serializable {
      */
     public String reassignTask(TaskInfo taskInfo) {
         try {
-            Framework.getLocalService(DocumentRoutingService.class).reassignTask(documentManager, taskInfo.getTaskId(),
+            Framework.getService(DocumentRoutingService.class).reassignTask(documentManager, taskInfo.getTaskId(),
                     taskInfo.getActors(), taskInfo.getComment());
             Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_REASSIGNED);
         } catch (DocumentRouteException e) {
@@ -619,7 +619,7 @@ public class RoutingTaskActionsBean implements Serializable {
      */
     public String delegateTask(TaskInfo taskInfo) {
         try {
-            Framework.getLocalService(DocumentRoutingService.class).delegateTask(documentManager, taskInfo.getTaskId(),
+            Framework.getService(DocumentRoutingService.class).delegateTask(documentManager, taskInfo.getTaskId(),
                     taskInfo.getActors(), taskInfo.getComment());
             Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_DELEGATED);
         } catch (DocumentRouteException e) {

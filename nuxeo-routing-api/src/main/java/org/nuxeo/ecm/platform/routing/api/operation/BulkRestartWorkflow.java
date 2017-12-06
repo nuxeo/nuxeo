@@ -113,7 +113,7 @@ public class BulkRestartWorkflow {
                 routeIds.add(result.get(key).toString());
             }
             results.close();
-            DocumentRoutingService routingService = Framework.getLocalService(DocumentRoutingService.class);
+            DocumentRoutingService routingService = Framework.getService(DocumentRoutingService.class);
             // Batching initialization
             if (batchSize == null) {
                 batchSize = DEFAULT_BATCH_SIZE;

@@ -35,7 +35,7 @@ public class RouteModelsInitializator extends RepositoryInitializationHandler {
     public void doInitializeRepository(CoreSession session) {
         // This method gets called as a system user
         // so we have all needed rights to do the check and the creation
-        DocumentRoutingService service = Framework.getLocalService(DocumentRoutingService.class);
+        DocumentRoutingService service = Framework.getService(DocumentRoutingService.class);
         service.importAllRouteModels(session);
         session.save();
     }

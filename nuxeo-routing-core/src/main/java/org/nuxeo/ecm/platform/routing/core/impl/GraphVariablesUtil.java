@@ -54,11 +54,11 @@ public class GraphVariablesUtil {
     }
 
     protected static SchemaManager getSchemaManager() {
-        return Framework.getLocalService(SchemaManager.class);
+        return Framework.getService(SchemaManager.class);
     }
 
     private static JsonFactory getFactory() {
-        JsonFactoryManager jsonFactoryManager = Framework.getLocalService(JsonFactoryManager.class);
+        JsonFactoryManager jsonFactoryManager = Framework.getService(JsonFactoryManager.class);
         return jsonFactoryManager.getJsonFactory();
     }
 

@@ -56,7 +56,7 @@ public class TaskAdapter extends DefaultAdapter {
             TaskCompletionRequest taskCompletionRequest) {
         Map<String, Object> data = taskCompletionRequest.getDataMap();
         CoreSession session = getContext().getCoreSession();
-        Framework.getLocalService(DocumentRoutingService.class).endTask(session,
+        Framework.getService(DocumentRoutingService.class).endTask(session,
                 session.getDocument(new IdRef(taskId)).getAdapter(Task.class), data, action);
         Task completedTask = session.getDocument(new IdRef(taskId)).getAdapter(Task.class);
         return Response.ok(completedTask).status(Status.OK).build();
@@ -67,7 +67,7 @@ public class TaskAdapter extends DefaultAdapter {
             @QueryParam("workflowInstanceId") String workflowInstanceId,
             @QueryParam("workflowModelName") String workflowModelName) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-        return Framework.getLocalService(DocumentRoutingService.class).getTasks(doc, userId, workflowInstanceId,
+        return Framework.getService(DocumentRoutingService.class).getTasks(doc, userId, workflowInstanceId,
                 workflowModelName, getContext().getCoreSession());
     }
 

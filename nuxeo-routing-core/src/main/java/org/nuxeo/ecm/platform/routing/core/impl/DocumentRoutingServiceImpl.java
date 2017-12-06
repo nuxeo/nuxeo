@@ -196,7 +196,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(),
                 route.getDocument());
         envContext.setProperties(eventProperties);
-        EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
+        EventProducer eventProducer = Framework.getService(EventProducer.class);
         eventProducer.fireEvent(envContext.newEvent(eventName));
     }
 
@@ -225,7 +225,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 route.save(session);
                 if (startInstance) {
                     fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<>());
-                    DocumentRoutingEngineService routingEngine = Framework.getLocalService(
+                    DocumentRoutingEngineService routingEngine = Framework.getService(
                             DocumentRoutingEngineService.class);
                     routingEngine.start(route, map, session);
                     fireEventAfterWorkflowStarted(route, session);
@@ -287,7 +287,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     route.save(session);
                 }
                 fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<>(), route, session);
-                DocumentRoutingEngineService routingEngine = Framework.getLocalService(
+                DocumentRoutingEngineService routingEngine = Framework.getService(
                         DocumentRoutingEngineService.class);
                 routingEngine.start(route, map, session);
                 fireEventAfterWorkflowStarted(route, session);
@@ -362,7 +362,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
         @Override
         public void run() {
-            DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
+            DocumentRoutingEngineService routingEngine = Framework.getService(DocumentRoutingEngineService.class);
             DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
             DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
             routingEngine.resume(routeInstance, nodeId, task != null ? task.getId() : null, data, status, session);
@@ -749,7 +749,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public List<DocumentModel> searchRouteModels(CoreSession session, String searchString) {
         List<DocumentModel> allRouteModels = new ArrayList<>();
-        PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
+        PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<>();
         props.put(MAX_RESULTS_PROPERTY, PAGE_SIZE_RESULTS_KEY);
         props.put(CORE_SESSION_PROPERTY, (Serializable) session);
@@ -857,7 +857,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public void endTask(CoreSession session, Task task, Map<String, Object> data, String status) {
         String comment = (String) data.get(GraphNode.NODE_VARIABLE_COMMENT);
-        TaskService taskService = Framework.getLocalService(TaskService.class);
+        TaskService taskService = Framework.getService(TaskService.class);
         taskService.endTask(session, (NuxeoPrincipal) session.getPrincipal(), task, comment, null, false);
 
         Map<String, String> taskVariables = task.getVariables();
@@ -1171,7 +1171,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     // remove permissions on the document following the
                     // workflow for the current assignees
                     removePermissionFromTaskAssignees(session, docs, task);
-                    Framework.getLocalService(TaskService.class).reassignTask(session, taskId, actors, comment);
+                    Framework.getService(TaskService.class).reassignTask(session, taskId, actors, comment);
                     // refresh task
                     task.getDocument().refresh();
                     // grant permission to the new assignees
@@ -1202,7 +1202,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(),
                             task.getDocument());
                     envContext.setProperties(eventProperties);
-                    EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
+                    EventProducer eventProducer = Framework.getService(EventProducer.class);
                     eventProducer.fireEvent(
                             envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskReassigned.name()));
                 }
@@ -1236,7 +1236,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                                 "Invalid node " + routeId + " referenced by the task " + taskId);
                     }
                     DocumentModelList docs = routeInstance.getAttachedDocumentModels();
-                    Framework.getLocalService(TaskService.class).delegateTask(session, taskId, delegatedActors,
+                    Framework.getService(TaskService.class).delegateTask(session, taskId, delegatedActors,
                             comment);
                     // refresh task
                     task.getDocument().refresh();
@@ -1270,7 +1270,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(),
                             task.getDocument());
                     envContext.setProperties(eventProperties);
-                    EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
+                    EventProducer eventProducer = Framework.getService(EventProducer.class);
                     eventProducer.fireEvent(
                             envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskDelegated.name()));
                 }

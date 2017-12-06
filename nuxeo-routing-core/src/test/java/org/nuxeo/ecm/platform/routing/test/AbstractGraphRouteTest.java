@@ -116,7 +116,7 @@ public class AbstractGraphRouteTest {
 
     protected DocumentRoute instantiateAndRun(CoreSession session, Map<String, Serializable> map)
             {
-        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+        DocumentRoutingService routing = Framework.getService(DocumentRoutingService.class);
         // route model
         DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
         // draft -> validated
@@ -132,10 +132,10 @@ public class AbstractGraphRouteTest {
 
     protected DocumentRoute instantiateAndRun(CoreSession session, List<String> docIds, Map<String, Serializable> map)
             {
-        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+        DocumentRoutingService routing = Framework.getService(DocumentRoutingService.class);
         DocumentRoute route = validate(routeDoc, session);
         // create instance and start
-        String id = Framework.getLocalService(DocumentRoutingService.class).createNewInstance(
+        String id = Framework.getService(DocumentRoutingService.class).createNewInstance(
                 route.getDocument().getName(), docIds, map, session, true);
         return session.getDocument(new IdRef(id)).getAdapter(DocumentRoute.class);
     }
@@ -145,7 +145,7 @@ public class AbstractGraphRouteTest {
         DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
         // draft -> validated
         if (!route.isValidated()) {
-            route = Framework.getLocalService(DocumentRoutingService.class).validateRouteModel(route, session);
+            route = Framework.getService(DocumentRoutingService.class).validateRouteModel(route, session);
         }
         return route;
     }
