@@ -42,7 +42,7 @@ public abstract class AbstractContentDiffConverter implements Converter {
     protected final BlobHolder convert(String converterName, BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
 
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConversionService cs = Framework.getService(ConversionService.class);
 
         return cs.convert(converterName, blobHolder, parameters);
     }

@@ -83,7 +83,7 @@ public final class ContentDiffHelper {
         DocumentLocation docLocation = new DocumentLocationImpl(currentDoc.getRepositoryName(), currentDoc.getRef());
         DocumentView docView = new DocumentViewImpl(docLocation, CONTENT_DIFF_FANCYBOX_VIEW);
         docView.setPatternName("id");
-        URLPolicyService urlPolicyService = Framework.getLocalService(URLPolicyService.class);
+        URLPolicyService urlPolicyService = Framework.getService(URLPolicyService.class);
         String docUrl = urlPolicyService.getUrlFromDocumentView(docView, VirtualHostHelper.getContextPathProperty());
         if (docUrl == null) {
             throw new NuxeoException(
@@ -208,7 +208,7 @@ public final class ContentDiffHelper {
         Blob blob = (Blob) property;
         String mimeType = blob.getMimeType();
 
-        ContentDiffAdapterManager contentDiffAdapterManager = Framework.getLocalService(ContentDiffAdapterManager.class);
+        ContentDiffAdapterManager contentDiffAdapterManager = Framework.getService(ContentDiffAdapterManager.class);
         MimeTypeContentDiffer mimeTypeContentDiffer = contentDiffAdapterManager.getContentDiffer(mimeType);
 
         if (mimeTypeContentDiffer != null) {
