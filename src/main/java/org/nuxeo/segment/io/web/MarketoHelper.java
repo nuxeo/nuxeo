@@ -44,7 +44,7 @@ public class MarketoHelper {
     }
 
     protected static String getSecret() {
-        SegmentIO service = Framework.getLocalService(SegmentIO.class);
+        SegmentIO service = Framework.getService(SegmentIO.class);
         return service.getGlobalParameters().get(SECRET_KEY_NAME);
     }
 
