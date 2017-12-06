@@ -44,7 +44,7 @@ public class DocumentationWO extends DefaultObject {
     @GET
     @Produces("text/html")
     public Object viewAll() {
-        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        DocumentationService ds = Framework.getService(DocumentationService.class);
         Map<String, List<DocumentationItem>> docs = ds.listDocumentationItems(getContext().getCoreSession(), null, null);
         return getView("index").arg("distId", ctx.getProperty("distId")).arg("docsByCat", docs);
     }
@@ -54,9 +54,9 @@ public class DocumentationWO extends DefaultObject {
     @Path("filter")
     public Object filterAll() {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
-        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        DocumentationService ds = Framework.getService(DocumentationService.class);
 
-        ArtifactSearcher searcher = Framework.getLocalService(ArtifactSearcher.class);
+        ArtifactSearcher searcher = Framework.getService(ArtifactSearcher.class);
         List<DocumentationItem> items = searcher.searchDocumentation(getContext().getCoreSession(),
                 (String) ctx.getProperty("distId"), fulltext, null);
         Map<String, String> categories = ds.getCategories();

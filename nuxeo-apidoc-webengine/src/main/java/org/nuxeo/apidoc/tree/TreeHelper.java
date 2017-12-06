@@ -63,7 +63,7 @@ public class TreeHelper {
 
         DistributionSnapshot ds = (DistributionSnapshot) ctx.getRequest().getAttribute(id);
         if (ds == null) {
-            SnapshotManager sm = Framework.getLocalService(SnapshotManager.class);
+            SnapshotManager sm = Framework.getService(SnapshotManager.class);
             ds = sm.getSnapshot((String) ctx.getProperty("distId"), ctx.getCoreSession());
             ctx.getRequest().setAttribute(id, ds);
         }

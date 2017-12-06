@@ -55,7 +55,7 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
 
     @Override
     public Map<String, List<DocumentationItem>> getDocumentationItems(CoreSession session) {
-        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        DocumentationService ds = Framework.getService(DocumentationService.class);
         List<DocumentationItem> docItems = ds.findDocumentItems(session, item);
         Map<String, String> categories = getCategories();
         Map<String, List<DocumentationItem>> result = new LinkedHashMap<>();
@@ -93,19 +93,19 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
 
     @Override
     public Map<String, String> getCategories() {
-        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        DocumentationService ds = Framework.getService(DocumentationService.class);
         return ds.getCategories();
     }
 
     @Override
     public List<String> getCategoryKeys() {
-        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        DocumentationService ds = Framework.getService(DocumentationService.class);
         return ds.getCategoryKeys();
     }
 
     @Override
     public DocumentationItem getDescription(CoreSession session) {
-        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        DocumentationService ds = Framework.getService(DocumentationService.class);
         List<DocumentationItem> docItems = ds.findDocumentItems(session, item);
         for (DocumentationItem docItem : docItems) {
             String cat = docItem.getType();

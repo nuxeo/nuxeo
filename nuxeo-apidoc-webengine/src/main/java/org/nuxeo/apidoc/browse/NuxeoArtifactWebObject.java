@@ -68,7 +68,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     }
 
     protected SnapshotManager getSnapshotManager() {
-        return Framework.getLocalService(SnapshotManager.class);
+        return Framework.getService(SnapshotManager.class);
     }
 
     @Override
@@ -97,7 +97,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
             throw new WebSecurityException("You are not allowed to do this operation");
         }
 
-        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        DocumentationService ds = Framework.getService(DocumentationService.class);
 
         ds.updateDocumentationItem(ctx.getCoreSession(), docItem);
         return redirect(getDocUrl());
@@ -127,7 +127,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
             throw new WebSecurityException("You are not allowed to do this operation");
         }
 
-        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        DocumentationService ds = Framework.getService(DocumentationService.class);
         ds.createDocumentationItem(ctx.getCoreSession(), getNxArtifact(), docItem.getTitle(), docItem.getContent(),
                 docItem.getType(), docItem.getApplicableVersion(), docItem.isApproved(), docItem.getRenderingType());
         return redirect(getDocUrl());
@@ -140,7 +140,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         if (!SecurityHelper.canEditDocumentation(getContext())) {
             throw new WebSecurityException("You are not allowed to do this operation");
         }
-        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        DocumentationService ds = Framework.getService(DocumentationService.class);
         ds.deleteDocumentationItem(ctx.getCoreSession(), uuid);
         return redirect(getDocUrl());
     }
@@ -233,7 +233,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         List<String> applicableVersions = new ArrayList<String>();
         applicableVersions.add(getSnapshotManager().getSnapshot(getDistributionId(), getContext().getCoreSession()).getVersion()); // XXX
                                                                                                                                    // !!!
-        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        DocumentationService ds = Framework.getService(DocumentationService.class);
         if (editId == null || editId.startsWith("placeholder_")) {
             ds.createDocumentationItem(getContext().getCoreSession(), getNxArtifact(), title, content, type,
                     applicableVersions, false, renderingType);
@@ -250,7 +250,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     }
 
     public Map<String, String> getCategories() {
-        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        DocumentationService ds = Framework.getService(DocumentationService.class);
         return ds.getCategories();
     }
 

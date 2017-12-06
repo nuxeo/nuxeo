@@ -79,11 +79,11 @@ public class ApiBrowser extends DefaultObject {
     protected boolean embeddedMode = false;
 
     protected SnapshotManager getSnapshotManager() {
-        return Framework.getLocalService(SnapshotManager.class);
+        return Framework.getService(SnapshotManager.class);
     }
 
     protected ArtifactSearcher getSearcher() {
-        return Framework.getLocalService(ArtifactSearcher.class);
+        return Framework.getService(ArtifactSearcher.class);
     }
 
     @Override
@@ -140,7 +140,7 @@ public class ApiBrowser extends DefaultObject {
     }
 
     public Map<String, DocumentationItem> getDescriptions(String targetType) {
-        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        DocumentationService ds = Framework.getService(DocumentationService.class);
         return ds.getAvailableDescriptions(getContext().getCoreSession(), targetType);
     }
 

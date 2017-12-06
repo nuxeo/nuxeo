@@ -42,7 +42,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestBrowse {
 
     protected SnapshotManager getSnapshotManager() {
-        return Framework.getLocalService(SnapshotManager.class);
+        return Framework.getService(SnapshotManager.class);
     }
 
     @Inject

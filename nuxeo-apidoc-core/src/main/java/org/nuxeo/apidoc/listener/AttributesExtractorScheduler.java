@@ -59,6 +59,6 @@ public class AttributesExtractorScheduler implements EventListener {
         }
 
         Work worker = new ExtractXmlAttributesWorker(ctx.getRepositoryName(), ctx.getPrincipal().getName(), doc.getId());
-        Framework.getLocalService(WorkManager.class).schedule(worker, true);
+        Framework.getService(WorkManager.class).schedule(worker, true);
     }
 }
