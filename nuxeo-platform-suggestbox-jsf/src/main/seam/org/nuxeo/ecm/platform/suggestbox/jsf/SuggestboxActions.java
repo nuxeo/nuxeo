@@ -121,7 +121,7 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
      */
     public List<Suggestion> getSuggestions(Object input) {
         if (cachedSuggestions.hasExpired(input, locale)) {
-            SuggestionService service = Framework.getLocalService(SuggestionService.class);
+            SuggestionService service = Framework.getService(SuggestionService.class);
             SuggestionContext ctx = getSuggestionContext();
             try {
                 List<Suggestion> suggestions = service.suggest(input.toString(), ctx);
