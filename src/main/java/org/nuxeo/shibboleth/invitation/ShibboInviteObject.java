@@ -118,7 +118,7 @@ public class ShibboInviteObject extends ModuleRoot {
     }
 
     protected UserInvitationService fetchService() {
-        return Framework.getLocalService(UserRegistrationService.class);
+        return Framework.getService(UserRegistrationService.class);
     }
 
     @GET

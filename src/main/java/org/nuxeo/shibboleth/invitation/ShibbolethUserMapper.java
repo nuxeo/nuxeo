@@ -70,7 +70,7 @@ public class ShibbolethUserMapper implements UserMapper {
     }
 
     protected UserInvitationService fetchService() {
-        return Framework.getLocalService(UserRegistrationService.class);
+        return Framework.getService(UserRegistrationService.class);
     }
 
     @Override
@@ -127,7 +127,7 @@ public class ShibbolethUserMapper implements UserMapper {
                 userDoc.setPropertyValue("user:groups", groups);
                 userManager.createUser(userDoc);
                 // Fetching the registrations
-                UserInvitationService userInvitationService = Framework.getLocalService(UserRegistrationService.class);
+                UserInvitationService userInvitationService = Framework.getService(UserRegistrationService.class);
                 DocumentModelList registrationDocuments = new DocumentModelListImpl();
                 String query = "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'validated' AND "
                         + "ecm:mixinType = '"
@@ -180,7 +180,7 @@ public class ShibbolethUserMapper implements UserMapper {
 
     @Override
     public void init(Map<String, String> params) throws Exception {
-        userManager = Framework.getLocalService(UserManager.class);
+        userManager = Framework.getService(UserManager.class);
         userSchemaName = userManager.getUserSchemaName();
         groupSchemaName = userManager.getGroupSchemaName();
     }
