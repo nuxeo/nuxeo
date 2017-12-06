@@ -74,9 +74,9 @@ public abstract class BatchFinderWork extends AbstractWork {
 
         long batchCount = 0;
         long documentCount = 0;
-        ScrollResult scroll = session.scroll(nxql, batchSize, SCROLL_KEEPALIVE_SECONDS);
+        ScrollResult<String> scroll = session.scroll(nxql, batchSize, SCROLL_KEEPALIVE_SECONDS);
         while (scroll.hasResults()) {
-            List<String> docIds = scroll.getResultIds();
+            List<String> docIds = scroll.getResults();
             // schedule the batch
             if (!docIds.isEmpty()) {
                 Framework.getService(WorkManager.class).schedule(getBatchProcessorWork(docIds));

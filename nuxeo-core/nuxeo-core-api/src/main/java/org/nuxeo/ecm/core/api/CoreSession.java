@@ -1123,8 +1123,8 @@ public interface CoreSession extends AutoCloseable {
             long limit, long offset, long countUpTo, Object... params);
 
     /**
-     * Executes the given query and returns the first batch of results, next batch must be requested within the
-     * {@code keepAliveSeconds} delay.
+     * Executes the given query and returns the first batch of results containing id of documents, next batch must be
+     * requested within the {@code keepAliveSeconds} delay.
      *
      * @param query The NXQL query to execute
      * @param batchSize The expected result batch size, note that more results can be returned when the backend don't
@@ -1134,15 +1134,16 @@ public interface CoreSession extends AutoCloseable {
      *         to {@link #scroll(String)}
      * @since 8.4
      */
-    ScrollResult scroll(String query, int batchSize, int keepAliveSeconds);
+    ScrollResult<String> scroll(String query, int batchSize, int keepAliveSeconds);
 
     /**
-     * Get the next batch of result, the {@code scrollId} is part of the previous {@link ScrollResult} response.
+     * Get the next batch of results containing id of documents, the {@code scrollId} is part of the previous
+     * {@link ScrollResult} response.
      *
      * @throws NuxeoException when the {@code scrollId} is unknown or when the scroll operation has timed out
      * @since 8.4
      */
-    ScrollResult scroll(String scrollId);
+    ScrollResult<String> scroll(String scrollId);
 
     /** -------------------------- Security API --------------------------- * */
 

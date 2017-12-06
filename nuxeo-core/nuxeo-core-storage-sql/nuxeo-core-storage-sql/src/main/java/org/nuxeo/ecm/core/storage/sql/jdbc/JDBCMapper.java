@@ -910,7 +910,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public ScrollResult scroll(String query, int batchSize, int keepAliveSeconds) {
+    public ScrollResult<String> scroll(String query, int batchSize, int keepAliveSeconds) {
         if (!dialect.supportsScroll()) {
             return defaultScroll(query);
         }
@@ -922,7 +922,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         cursorResults.forEach((id, cursor) -> cursor.timedOut(id));
     }
 
-    protected ScrollResult scrollSearch(String query, int batchSize, int keepAliveSeconds) {
+    protected ScrollResult<String> scrollSearch(String query, int batchSize, int keepAliveSeconds) {
         QueryMaker queryMaker = findQueryMaker("NXQL");
         QueryFilter queryFilter = new QueryFilter(null, null, null, null, Collections.emptyList(), 0, 0);
         QueryMaker.Query q = queryMaker.buildQuery(sqlInfo, model, pathResolver, query, queryFilter);
@@ -1018,7 +1018,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         return false;
     }
 
-    protected ScrollResult defaultScroll(String query) {
+    protected ScrollResult<String> defaultScroll(String query) {
         // the database has no proper support for cursor just return everything in one batch
         QueryMaker queryMaker = findQueryMaker("NXQL");
         List<String> ids;
@@ -1031,11 +1031,11 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         } catch (SQLException e) {
             throw new NuxeoException("Invalid scroll query: " + query, e);
         }
-        return new ScrollResultImpl(NOSCROLL_ID, ids);
+        return new ScrollResultImpl<>(NOSCROLL_ID, ids);
     }
 
     @Override
-    public ScrollResult scroll(String scrollId) {
+    public ScrollResult<String> scroll(String scrollId) {
         if (NOSCROLL_ID.equals(scrollId) || !dialect.supportsScroll()) {
             // there is only one batch in this case
             return emptyResult();
@@ -1069,7 +1069,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 throw new NuxeoException("Error during scroll", e);
             }
         }
-        return new ScrollResultImpl(scrollId, ids);
+        return new ScrollResultImpl<>(scrollId, ids);
     }
 
     @Override

@@ -380,7 +380,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
+    public ScrollResult<String> scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
         if (log.isTraceEnabled()) {
             log.trace("Mem: QUERY " + evaluator);
         }
@@ -393,11 +393,11 @@ public class MemRepository extends DBSRepositoryBase {
                 ids.add(id);
             }
         }
-        return new ScrollResultImpl(NOSCROLL_ID, ids);
+        return new ScrollResultImpl<>(NOSCROLL_ID, ids);
     }
 
     @Override
-    public ScrollResult scroll(String scrollId) {
+    public ScrollResult<String> scroll(String scrollId) {
         if (NOSCROLL_ID.equals(scrollId)) {
             // Id are already in memory, they are returned as a single batch
             return ScrollResultImpl.emptyResult();

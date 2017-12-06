@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.el.ELException;
@@ -109,7 +110,8 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
 
     protected final AuditBackendDescriptor config;
 
-    protected final CursorService<Iterator<LogEntry>, LogEntry> cursorService = new CursorService<>();
+    protected final CursorService<Iterator<LogEntry>, LogEntry, LogEntry> cursorService = new CursorService<>(
+            Function.identity());
 
     protected AbstractAuditBackend(NXAuditEventsService component, AuditBackendDescriptor config) {
         this.component = component;
@@ -532,7 +534,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
     }
 
     @Override
-    public ScrollResult scroll(AuditQueryBuilder queryBuilder, int batchSize, int keepAlive) {
+    public ScrollResult<LogEntry> scroll(AuditQueryBuilder queryBuilder, int batchSize, int keepAlive) {
 
         cursorService.checkForTimedOutScroll();
         List<LogEntry> logEntries = queryLogs(queryBuilder);
@@ -541,15 +543,15 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
     }
 
     @Override
-    public ScrollResult scroll(String scrollId) {
-        return cursorService.scroll(scrollId, true, logEntry -> String.valueOf(logEntry.getId()));
+    public ScrollResult<LogEntry> scroll(String scrollId) {
+        return cursorService.scroll(scrollId);
     }
 
     @Override
     public void restore(AuditStorage auditStorage, int batchSize, int keepAlive) {
 
         AuditQueryBuilder builder = new AuditQueryBuilder();
-        ScrollResult scrollResult = auditStorage.scroll(builder, batchSize, keepAlive);
+        ScrollResult<LogEntry> scrollResult = auditStorage.scroll(builder, batchSize, keepAlive);
         long t0 = System.currentTimeMillis();
         int total = 0;
         ObjectMapper mapper = new ObjectMapper();
