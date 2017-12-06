@@ -55,7 +55,7 @@ public class SegmentIOUserFilter {
 
     public String getAnonymousUserId() {
         if (anonymousUserId == null) {
-            UserManager um = Framework.getLocalService(UserManager.class);
+            UserManager um = Framework.getService(UserManager.class);
             if (um==null && Framework.isTestModeSet()) {
                 return "Guest";
             }

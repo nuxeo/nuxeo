@@ -43,7 +43,7 @@ public class SegmentIOBean implements Serializable {
     protected static final String SEGMENTIO_FLAG = "segment.io.identify.flag";
 
     public String getWriteKey() {
-        return Framework.getLocalService(SegmentIO.class).getWriteKey();
+        return Framework.getService(SegmentIO.class).getWriteKey();
     }
 
     public boolean needsIdentify() {

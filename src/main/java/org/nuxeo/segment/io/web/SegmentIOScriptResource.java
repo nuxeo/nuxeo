@@ -58,7 +58,7 @@ public class SegmentIOScriptResource extends ModuleRoot {
     }
 
     protected String buildJsonBlackListedLogins() {
-        SegmentIO segmentIO = Framework.getLocalService(SegmentIO.class);
+        SegmentIO segmentIO = Framework.getService(SegmentIO.class);
 
         SegmentIOUserFilter filters = segmentIO.getUserFilters();
         StringBuffer json = new StringBuffer("[");
@@ -83,7 +83,7 @@ public class SegmentIOScriptResource extends ModuleRoot {
 
     protected Object buildScript(String login) {
 
-        SegmentIO segmentIO = Framework.getLocalService(SegmentIO.class);
+        SegmentIO segmentIO = Framework.getService(SegmentIO.class);
 
         Map<String, Object> ctx = new HashMap<String, Object>();
         ctx.put("writeKey", segmentIO.getWriteKey());
