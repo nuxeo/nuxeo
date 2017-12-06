@@ -365,7 +365,7 @@ public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<Goo
         if (credentialFactory instanceof OAuth2CredentialFactory) {
             return getOAuth2Provider().getServiceUser(username);
         } else {
-            UserManager userManager = Framework.getLocalService(UserManager.class);
+            UserManager userManager = Framework.getService(UserManager.class);
             DocumentModel user = userManager.getUserModel(username);
             if (user == null) {
                 return null;

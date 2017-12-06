@@ -149,8 +149,8 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
 
     @Override
     public void processDocumentsUpdate() {
-        final RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-        final WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        final RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
+        final WorkManager workManager = Framework.getService(WorkManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
             try (CoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
 
@@ -198,7 +198,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
     @Override
     @SuppressWarnings("unchecked")
     public O getOAuth2Provider() {
-        return (O) Framework.getLocalService(OAuth2ServiceProviderRegistry.class).getProvider(blobProviderId);
+        return (O) Framework.getService(OAuth2ServiceProviderRegistry.class).getProvider(blobProviderId);
     }
 
     @Override
