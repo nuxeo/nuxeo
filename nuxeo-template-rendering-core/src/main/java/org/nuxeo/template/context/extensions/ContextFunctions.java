@@ -81,7 +81,7 @@ public class ContextFunctions {
 
     public String getVocabularyLabel(String voc_name, String key) {
 
-        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+        DirectoryService ds = Framework.getService(DirectoryService.class);
         if (ds == null) {
             return key;
         }
@@ -165,7 +165,7 @@ public class ContextFunctions {
     }
 
     public NuxeoPrincipal getNuxeoPrincipal(String username) {
-        UserManager userManager = Framework.getLocalService(UserManager.class);
+        UserManager userManager = Framework.getService(UserManager.class);
         if (userManager == null) {
             return null;
         }

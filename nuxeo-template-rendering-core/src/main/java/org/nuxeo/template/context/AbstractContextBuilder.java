@@ -57,7 +57,7 @@ public abstract class AbstractContextBuilder {
         ctx.put("templateName", templateName);
 
         // fetch extensions
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
         tps.addContextExtensions(doc, nuxeoWrapper, ctx);
 
         return ctx;

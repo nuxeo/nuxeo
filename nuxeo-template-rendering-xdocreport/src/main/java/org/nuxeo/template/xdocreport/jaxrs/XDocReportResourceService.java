@@ -89,7 +89,7 @@ public class XDocReportResourceService extends AbstractResourceService implement
     @GET
     @Path("model/list")
     public String listModels() throws IOException {
-        SchemaManager sm = Framework.getLocalService(SchemaManager.class);
+        SchemaManager sm = Framework.getService(SchemaManager.class);
         DocumentType[] docTypes = sm.getDocumentTypes();
         List<String> names = new ArrayList<String>();
 

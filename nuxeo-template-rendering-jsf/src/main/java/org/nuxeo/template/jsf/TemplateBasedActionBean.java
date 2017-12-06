@@ -239,7 +239,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
     public String detachTemplate(String templateName) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
         DocumentModel detachedDocument = tps.detachTemplateBasedDocument(currentDocument, templateName, true);
         webActions.resetTabList();
         // because of cacheKey issue
@@ -262,7 +262,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         }
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentModel sourceTemplate = documentManager.getDocument(new IdRef(templateIdToAssociate));
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
         try {
             currentDocument = tps.makeTemplateBasedDocument(currentDocument, sourceTemplate, true);
         } catch (NuxeoException e) {
@@ -305,7 +305,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
     public List<TemplateSourceDocument> getBindableTemplatesForDocument() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String targetType = currentDocument.getType();
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
         List<DocumentModel> templates = tps.getAvailableTemplateDocs(documentManager, targetType);
 
         List<TemplateSourceDocument> result = new ArrayList<>();

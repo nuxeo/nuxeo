@@ -58,7 +58,7 @@ public class TemplateTypeBindingListener implements PostCommitFilteringEventList
     public void handleEvent(EventBundle eventBundle) {
         if (eventBundle.containsEventName(DOCUMENT_CREATED) || eventBundle.containsEventName(DOCUMENT_UPDATED)) {
 
-            TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+            TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
 
             for (Event event : eventBundle) {
                 if (DOCUMENT_CREATED.equals(event.getName()) || DOCUMENT_UPDATED.equals(event.getName())) {

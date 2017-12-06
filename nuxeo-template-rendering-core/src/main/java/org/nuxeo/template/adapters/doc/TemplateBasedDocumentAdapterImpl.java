@@ -260,7 +260,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         OutputFormatDescriptor outFormat = getOutputFormatDescriptor(outputFormat);
         String chainId = outFormat.getChainId();
         String mimeType = outFormat.getMimeType();
-        AutomationService automationService = Framework.getLocalService(AutomationService.class);
+        AutomationService automationService = Framework.getService(AutomationService.class);
         try (OperationContext ctx = initOperationContext(blob, templateName)) {
             Object result = null;
             if (chainId != null) {
@@ -368,12 +368,12 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
     }
 
     protected TemplateProcessor getTemplateProcessor(String templateName) {
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
         return tps.getProcessor(getTemplateType(templateName));
     }
 
     protected OutputFormatDescriptor getOutputFormatDescriptor(String outputFormat) {
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
         return tps.getOutputFormatDescriptor(outputFormat);
     }
 

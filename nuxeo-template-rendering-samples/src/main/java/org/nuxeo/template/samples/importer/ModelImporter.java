@@ -200,7 +200,7 @@ public class ModelImporter {
             return;
         }
 
-        AuditLogger writer = Framework.getLocalService(AuditLogger.class);
+        AuditLogger writer = Framework.getService(AuditLogger.class);
 
         LogEntry entry = writer.newLogEntry();
         entry.setEventId(TEMPLATE_SAMPLE_INIT_EVENT);
