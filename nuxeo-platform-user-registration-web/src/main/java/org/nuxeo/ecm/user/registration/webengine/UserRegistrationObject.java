@@ -34,7 +34,7 @@ public class UserRegistrationObject extends UserInvitationObject {
 
     @Override
     protected UserInvitationService fetchService() {
-        return Framework.getLocalService(UserRegistrationService.class);
+        return Framework.getService(UserRegistrationService.class);
     }
 
 }

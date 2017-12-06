@@ -175,7 +175,7 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
         creator.runUnrestricted();
         String registrationUuid = creator.getRegistrationUuid();
 
-        boolean userAlreadyExists = null != Framework.getLocalService(UserManager.class)
+        boolean userAlreadyExists = null != Framework.getService(UserManager.class)
                                                      .getPrincipal(userInfo.getLogin());
         // Directly accept registration if the configuration allow it and the
         // user already exists
