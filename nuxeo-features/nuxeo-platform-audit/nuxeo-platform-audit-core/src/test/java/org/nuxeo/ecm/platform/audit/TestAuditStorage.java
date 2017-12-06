@@ -64,12 +64,12 @@ public class TestAuditStorage extends TestNXAuditEventsService {
         List<LogEntry> logs = backend.queryLogs(builder);
         assertEquals(42, logs.size());
 
-        ScrollResult<LogEntry> scrollResult = backend.scroll(builder, 5, 10);
+        ScrollResult<String> scrollResult = backend.scroll(builder, 5, 10);
         int total = 0;
         while (scrollResult.hasResults()) {
             assertTrue(scrollResult.getResults().size() <= 5);
-            List<LogEntry> entries = scrollResult.getResults();
-            entries.forEach(entry -> assertEquals("idForAuditStorage", entry.getEventId()));
+            List<String> entries = scrollResult.getResults();
+            entries.forEach(entry -> assertTrue(entry.contains("\"eventId\":\"idForAuditStorage\"")));
             total += entries.size();
             scrollResult = backend.scroll(scrollResult.getScrollId());
         }
