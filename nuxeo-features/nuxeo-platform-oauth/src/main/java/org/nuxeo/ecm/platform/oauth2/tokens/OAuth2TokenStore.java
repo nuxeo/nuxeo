@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -198,6 +199,24 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         });
     }
 
+    /**
+     * @since 9.10
+     */
+    public boolean update(NuxeoOAuth2Token token) {
+        DirectoryService ds = Framework.getService(DirectoryService.class);
+        return Framework.doPrivileged(() -> {
+            try (Session session = ds.open(DIRECTORY_NAME)) {
+                DocumentModel entry = session.getEntry(String.valueOf(token.getId()));
+                if (entry == null) {
+                    return false;
+                }
+                entry.setProperties(NuxeoOAuth2Token.SCHEMA, token.toMap());
+                session.updateEntry(entry);
+                return true;
+            }
+        });
+    }
+
     public void delete(String token, String clientId) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Framework.doPrivileged(() -> {
@@ -232,16 +251,41 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         return getTokenFromDirectoryEntry(entries.get(0));
     }
 
+    /**
+     * Retrieves an entry by its {@code clientId} and {@code nuxeoLogin}.
+     *
+     * @since 9.10
+     */
+    public NuxeoOAuth2Token getToken(String clientId, String userId) {
+        Map<String, Serializable> filter = new HashMap<>();
+        filter.put("clientId", clientId);
+        filter.put("nuxeoLogin", userId);
+        Map<String, String> orderBy = Collections.singletonMap("creationDate", "desc");
+        DocumentModelList entries = query(filter, null, orderBy);
+        if (entries.isEmpty()) {
+            return null;
+        }
+        return getTokenFromDirectoryEntry(entries.get(0));
+    }
+
     public DocumentModelList query() {
         return query(new HashMap<>());
     }
 
     public DocumentModelList query(Map<String, Serializable> filter) {
+        return query(filter, null, null);
+    }
+
+    /**
+     * @since 9.10
+     */
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext,
+            Map<String, String> orderBy) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         return Framework.doPrivileged(() -> {
             try (Session session = ds.open(DIRECTORY_NAME)) {
                 filter.put("serviceName", serviceName);
-                return session.query(filter);
+                return session.query(filter, fulltext, orderBy);
             }
         });
     }
