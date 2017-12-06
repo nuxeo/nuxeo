@@ -255,7 +255,7 @@ public class CSVImporterWork extends TransientStoreWork {
     static final Serializable EMPTY_LOGS = new ArrayList<CSVImportLog>();
 
     String launch() {
-        WorkManager works = Framework.getLocalService(WorkManager.class);
+        WorkManager works = Framework.getService(WorkManager.class);
 
         TransientStore store = getStore();
         store.putParameter(id, "logs", EMPTY_LOGS);
@@ -390,7 +390,7 @@ public class CSVImporterWork extends TransientStoreWork {
             }
         }
 
-        DocumentType docType = Framework.getLocalService(SchemaManager.class).getDocumentType(type);
+        DocumentType docType = Framework.getService(SchemaManager.class).getDocumentType(type);
         if (docType == null) {
             logError(getLineNumber(record), "The type '%s' does not exist", LABEL_CSV_IMPORTER_NOT_EXISTING_TYPE,
                     type);
@@ -625,7 +625,7 @@ public class CSVImporterWork extends TransientStoreWork {
             if (session.exists(parentRef)) {
                 DocumentModel parent = session.getDocument(parentRef);
 
-                TypeManager typeManager = Framework.getLocalService(TypeManager.class);
+                TypeManager typeManager = Framework.getService(TypeManager.class);
                 if (options.checkAllowedSubTypes() && !typeManager.isAllowedSubType(type, parent.getType())) {
                     logError(lineNumber, "'%s' type is not allowed in '%s'", LABEL_CSV_IMPORTER_NOT_ALLOWED_SUB_TYPE,
                             type, parent.getType());
@@ -680,7 +680,7 @@ public class CSVImporterWork extends TransientStoreWork {
     }
 
     protected void sendMail() {
-        UserManager userManager = Framework.getLocalService(UserManager.class);
+        UserManager userManager = Framework.getService(UserManager.class);
         NuxeoPrincipal principal = userManager.getPrincipal(username);
         String email = principal.getEmail();
         if (email == null) {
@@ -691,7 +691,7 @@ public class CSVImporterWork extends TransientStoreWork {
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput(session.getRootDocument());
 
-            CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
+            CSVImporter csvImporter = Framework.getService(CSVImporter.class);
             List<CSVImportLog> importerLogs = csvImporter.getImportLogs(getId());
             CSVImportResult importResult = CSVImportResult.fromImportLogs(importerLogs);
             List<CSVImportLog> skippedAndErrorImportLogs = csvImporter.getImportLogs(getId(), Status.SKIPPED,
@@ -720,7 +720,7 @@ public class CSVImporterWork extends TransientStoreWork {
                  .set("HTML", true)
                  .set("subject", subject)
                  .set("message", message);
-            Framework.getLocalService(AutomationService.class).run(ctx, chain);
+            Framework.getService(AutomationService.class).run(ctx, chain);
         } catch (Exception e) {
             ExceptionUtils.checkInterrupt(e);
             log.error(String.format("Unable to notify user '%s' for import result of '%s': %s", username,

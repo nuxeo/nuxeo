@@ -128,7 +128,7 @@ public class CSVImportActions implements Serializable {
         if (csvImportId == null) {
             return null;
         }
-        CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
+        CSVImporter csvImporter = Framework.getService(CSVImporter.class);
         return csvImporter.getImportStatus(csvImportId);
     }
 
@@ -136,7 +136,7 @@ public class CSVImportActions implements Serializable {
         if (csvImportId == null) {
             return Collections.emptyList();
         }
-        CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
+        CSVImporter csvImporter = Framework.getService(CSVImporter.class);
         return csvImporter.getLastImportLogs(csvImportId, maxLogs);
     }
 
@@ -144,7 +144,7 @@ public class CSVImportActions implements Serializable {
         if (csvImportId == null) {
             return Collections.emptyList();
         }
-        CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
+        CSVImporter csvImporter = Framework.getService(CSVImporter.class);
         return csvImporter.getImportLogs(csvImportId, CSVImportLog.Status.SKIPPED, CSVImportLog.Status.ERROR);
     }
 
