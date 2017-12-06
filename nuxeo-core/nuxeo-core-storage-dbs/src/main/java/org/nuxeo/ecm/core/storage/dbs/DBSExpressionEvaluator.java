@@ -29,6 +29,8 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_READ_ACL;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.PROP_MAJOR_VERSION;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.PROP_MINOR_VERSION;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -621,8 +623,12 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
             } else if (!part.startsWith("*")) {
                 // complex sub-property
                 step = part;
-                if (!firstPart) {
+                if (firstPart) {
+                    if (PROP_MAJOR_VERSION.equals(part) || PROP_MINOR_VERSION.equals(part)) {
+                        step = DBSSession.convToInternal(part);
+                    }
                     // we already computed the type of the first part
+                } else {
                     Field field = ((ComplexType) type).getField(part);
                     if (field == null) {
                         throw new QueryParseException("No such property: " + name);
