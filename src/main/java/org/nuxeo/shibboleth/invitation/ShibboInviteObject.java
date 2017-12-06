@@ -104,11 +104,9 @@ public class ShibboInviteObject extends ModuleRoot {
         }
         // User redirected to the logout page after validating the password
         String webappName = VirtualHostHelper.getWebAppName(getContext().getRequest());
-        String redirectUrl = "/" + webappName + "/logout";
-        if (isShibbo) {
-            return getView("UserCreated").arg("data", registrationData)
-                                         .arg("redirectUrl", "/nuxeo/site/shibboleth?requestedUrl=")
-                                         .arg("isShibbo", isShibbo);
+        String redirectUrl = "/" + webappName + "/";
+        if (!isShibbo) {
+            redirectUrl += "logout";
         }
         return getView("UserCreated").arg("redirectUrl", redirectUrl)
                                      .arg("data", registrationData)
