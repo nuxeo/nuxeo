@@ -54,7 +54,7 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements Im
 
     protected String getTargetContainerType() {
         if (targetContainerType == null) {
-            ScannedFileMapperService service = Framework.getLocalService(ScannedFileMapperService.class);
+            ScannedFileMapperService service = Framework.getService(ScannedFileMapperService.class);
             targetContainerType = service.getTargetContainerType();
         }
         return targetContainerType;

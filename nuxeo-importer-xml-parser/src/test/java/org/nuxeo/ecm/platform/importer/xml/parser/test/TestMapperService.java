@@ -75,7 +75,7 @@ public class TestMapperService {
 
         DocumentModel root = session.getRootDocument();
 
-        XMLImporterService importer = Framework.getLocalService(XMLImporterService.class);
+        XMLImporterService importer = Framework.getService(XMLImporterService.class);
         Assert.assertNotNull(importer);
         importer.importDocuments(root, xml);
 
@@ -131,7 +131,7 @@ public class TestMapperService {
 
         DocumentModel root = session.getRootDocument();
 
-        XMLImporterService importer = Framework.getLocalService(XMLImporterService.class);
+        XMLImporterService importer = Framework.getService(XMLImporterService.class);
         Assert.assertNotNull(importer);
         try {
             importer.importDocuments(root, xml);
@@ -149,7 +149,7 @@ public class TestMapperService {
 
         DocumentModel root = session.getRootDocument();
 
-        XMLImporterService importer = Framework.getLocalService(XMLImporterService.class);
+        XMLImporterService importer = Framework.getService(XMLImporterService.class);
         Assert.assertNotNull(importer);
         importer.importDocuments(root, zipXml);
 

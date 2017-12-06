@@ -111,7 +111,7 @@ public abstract class AbstractDocumentModelFactory implements ImporterDocumentMo
         @Override
         public String normalize(String name) {
             DocumentModel fake = new DocumentModelImpl("/", name, "File");
-            return Framework.getLocalService(PathSegmentService.class).generatePathSegment(fake);
+            return Framework.getService(PathSegmentService.class).generatePathSegment(fake);
         }
     }
 

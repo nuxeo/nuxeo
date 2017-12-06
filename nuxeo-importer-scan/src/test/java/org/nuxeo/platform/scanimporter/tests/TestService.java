@@ -39,20 +39,20 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testServiceLookup() {
-        ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
+        ScannedFileMapperService sfms = Framework.getService(ScannedFileMapperService.class);
         assertNotNull(sfms);
     }
 
     @Test
     public void testServiceContrib() throws Exception {
 
-        ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
+        ScannedFileMapperService sfms = Framework.getService(ScannedFileMapperService.class);
         ScanFileMappingDescriptor desc = ((ScannedFileMapperComponent) sfms).getMappingDesc();
 
         assertNull(desc);
         pushInlineDeployments("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib0.xml");
 
-        sfms = Framework.getLocalService(ScannedFileMapperService.class);
+        sfms = Framework.getService(ScannedFileMapperService.class);
         desc = ((ScannedFileMapperComponent) sfms).getMappingDesc();
         assertNotNull(desc);
 
@@ -75,7 +75,7 @@ public class TestService extends NXRuntimeTestCase {
     public void testServiceConfig() throws Exception {
         pushInlineDeployments("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-config0.xml");
 
-        ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
+        ScannedFileMapperService sfms = Framework.getService(ScannedFileMapperService.class);
         ImporterConfig config = sfms.getImporterConfig();
 
         assertNotNull(config);

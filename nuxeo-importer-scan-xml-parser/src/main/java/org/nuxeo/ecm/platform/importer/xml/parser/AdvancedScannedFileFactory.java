@@ -53,7 +53,7 @@ public class AdvancedScannedFileFactory extends ScanedFileFactory implements Imp
     @Override
     public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws IOException {
 
-        XMLImporterService importer = Framework.getLocalService(XMLImporterService.class);
+        XMLImporterService importer = Framework.getService(XMLImporterService.class);
         if (!(node instanceof FileSourceNode)) {
             throw new NuxeoException("Waiting a FileSourceNode object not: " + node.getClass().getName());
         }
