@@ -38,7 +38,7 @@ public class MagickExecutor {
      */
     @Deprecated
     protected static ExecResult execCommand(String commandName, CmdParameters params) throws CommandNotAvailable {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         return cles.execCommand(commandName, params);
     }
 

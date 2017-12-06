@@ -719,7 +719,7 @@ public class JSONLayoutExporter {
         if (!rows.isEmpty()) {
             json.element("rows", rows);
         }
-        LayoutStore webLayoutManager = Framework.getLocalService(LayoutStore.class);
+        LayoutStore webLayoutManager = Framework.getService(LayoutStore.class);
         JSONArray widgets = new JSONArray();
         for (WidgetReference widgetRef : widgetsToExport) {
             WidgetDefinition widgetDef = exportWidgetReference(widgetRef, category, layoutDef, ctx, webLayoutManager,

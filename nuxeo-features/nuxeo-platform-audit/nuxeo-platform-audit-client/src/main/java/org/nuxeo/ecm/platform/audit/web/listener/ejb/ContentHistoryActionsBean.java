@@ -153,7 +153,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         if (document == null) {
             return null;
         } else {
-            Logs service = Framework.getLocalService(Logs.class);
+            Logs service = Framework.getService(Logs.class);
             Logs logsBean = service;
             /*
              * In case the document is a proxy,meaning is the result of a publishing,to have the history of the document

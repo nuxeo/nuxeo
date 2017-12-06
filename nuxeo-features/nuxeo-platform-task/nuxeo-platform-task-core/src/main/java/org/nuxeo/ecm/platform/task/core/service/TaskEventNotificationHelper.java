@@ -149,6 +149,6 @@ public final class TaskEventNotificationHelper {
     }
 
     public static EventProducer getEventProducer() {
-        return Framework.getLocalService(EventProducer.class);
+        return Framework.getService(EventProducer.class);
     }
 }

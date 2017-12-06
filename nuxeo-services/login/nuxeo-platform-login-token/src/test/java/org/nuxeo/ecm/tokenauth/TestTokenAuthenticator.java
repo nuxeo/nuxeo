@@ -101,7 +101,7 @@ public class TestTokenAuthenticator {
         assertEquals("Administrator", clientSession.getLogin().getUsername());
 
         // Revoke token
-        TokenAuthenticationService tokenAuthenticationService = Framework.getLocalService(
+        TokenAuthenticationService tokenAuthenticationService = Framework.getService(
                 TokenAuthenticationService.class);
         tokenAuthenticationService.revokeToken(token);
         // commit transaction

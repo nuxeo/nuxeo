@@ -42,11 +42,11 @@ public class StatusesManagementFactory extends AbstractResourceFactory {
     @Override
     public void registerResources() {
 
-        AdministrativeStatusManagerImpl adminStatus = Framework.getLocalService(AdministrativeStatusManagerImpl.class);
+        AdministrativeStatusManagerImpl adminStatus = Framework.getService(AdministrativeStatusManagerImpl.class);
         service.registerResource("adminStatus", ObjectNameFactory.formatQualifiedName(CoreManagementComponent.NAME)
                 + ",status=administrative", AdministrativeStatusManagerImpl.class, adminStatus);
 
-        ProbeManager runner = Framework.getLocalService(ProbeManager.class);
+        ProbeManager runner = Framework.getService(ProbeManager.class);
         service.registerResource("probeStatus", ObjectNameFactory.formatQualifiedName(CoreManagementComponent.NAME)
                 + ",status=probes", ProbeManagerImpl.class, runner);
         for (ProbeInfo info : runner.getAllProbeInfos()) {

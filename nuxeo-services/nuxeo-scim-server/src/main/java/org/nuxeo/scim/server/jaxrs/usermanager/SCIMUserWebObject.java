@@ -131,7 +131,7 @@ public class SCIMUserWebObject extends BaseUMObject {
         try {
             String directoryName = um.getUserDirectoryName();
 
-            DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+            DirectoryService ds = Framework.getService(DirectoryService.class);
 
             Session dSession = null;
             DocumentModelList userModels = null;

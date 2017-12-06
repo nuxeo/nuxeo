@@ -386,7 +386,7 @@ public class MetricsDescriptor implements Serializable {
             registry.register("jvm.threads", new ThreadStatesGaugeSet());
             registry.register("jvm.files", new FileDescriptorRatioGauge());
             registry.register("jvm.buffers", new BufferPoolMetricSet(
-                    Framework.getLocalService(ServerLocator.class).lookupServer()));
+                    Framework.getService(ServerLocator.class).lookupServer()));
         }
 
         public void disable(MetricRegistry registry) {

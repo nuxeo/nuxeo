@@ -189,7 +189,7 @@ public class ACLJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
     protected Map<String, Serializable> computeAdditionalFields(DocumentModel doc, String aclName, String aceId) {
         Map<String, Serializable> m = new HashMap<>();
 
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
         Framework.doPrivileged(() -> {
             try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
                 String id = computeDirectoryId(doc, aclName, aceId);

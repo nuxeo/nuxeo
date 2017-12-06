@@ -35,7 +35,7 @@ public class ImageConverter extends MagickExecutor {
 
     public static void convert(String inputFilePath, String outputFilePath) throws CommandNotAvailable,
             CommandException {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         CmdParameters params = cles.getDefaultCmdParameters();
         params.addNamedParameter("inputFilePath", inputFilePath);
         params.addNamedParameter("outputFilePath", outputFilePath);

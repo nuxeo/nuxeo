@@ -68,7 +68,7 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
 
     @Override
     protected void doWork() {
-        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
+        ElasticSearchIndexing esi = Framework.getService(ElasticSearchIndexing.class);
         openSystemSession();
         int bucketSize = Math.min(documentCount, getBucketSize());
         List<String> ids = new ArrayList<>(bucketSize);

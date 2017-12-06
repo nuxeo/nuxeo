@@ -912,7 +912,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     protected boolean isSchemaForProxy(String schema) {
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         return schemaManager.isProxySchema(schema, getType().getName());
     }
 
@@ -1059,7 +1059,7 @@ public class DBSDocument extends BaseDocument<State> {
         docState.put(KEY_MIXIN_TYPES, mixins);
         // remove the fields belonging to the facet
         // except for schemas still present due to the primary type or another facet
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         CompositeType ft = schemaManager.getFacet(facet);
         Set<String> otherSchemas = getSchemas(getType(), list);
         for (Schema schema : ft.getSchemas()) {

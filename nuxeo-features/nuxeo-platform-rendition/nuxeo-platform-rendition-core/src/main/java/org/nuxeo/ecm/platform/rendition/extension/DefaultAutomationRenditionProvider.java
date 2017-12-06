@@ -43,7 +43,7 @@ public class DefaultAutomationRenditionProvider implements RenditionProvider {
             log.error("Can not run Automation rendition if chain is not defined");
             return false;
         }
-        AutomationService as = Framework.getLocalService(AutomationService.class);
+        AutomationService as = Framework.getService(AutomationService.class);
 
         try {
             if (as.getOperation(chain) == null) {

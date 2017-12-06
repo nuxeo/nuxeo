@@ -194,7 +194,7 @@ public class ModuleManager {
 
     protected ModuleConfiguration loadConfiguration(File file) {
         if (engine == null) {
-            engine = Framework.getLocalService(WebEngine.class);
+            engine = Framework.getService(WebEngine.class);
         }
         try {
             ModuleConfiguration mc = readConfiguration(engine, file);

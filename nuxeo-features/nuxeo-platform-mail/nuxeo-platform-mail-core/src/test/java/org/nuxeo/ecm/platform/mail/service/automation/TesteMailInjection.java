@@ -127,7 +127,7 @@ public class TesteMailInjection {
         // 5.8 setup
         initialExecutionContext.put(MailCoreConstants.CORE_SESSION_KEY, session);
         initialExecutionContext.put(MailCoreConstants.MIMETYPE_SERVICE_KEY,
-                Framework.getLocalService(MimetypeRegistry.class));
+                Framework.getService(MimetypeRegistry.class));
         initialExecutionContext.put(PARENT_PATH_KEY, parentPath);
 
         Message[] messages = { getSampleMessage(filePath) };

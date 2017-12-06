@@ -59,7 +59,7 @@ public class TestService {
 
     @Test
     public void testService() {
-        PreviewAdapterManager pam = Framework.getLocalService(PreviewAdapterManager.class);
+        PreviewAdapterManager pam = Framework.getService(PreviewAdapterManager.class);
         assertNotNull(pam);
         MimeTypePreviewer previewer = pam.getPreviewer("text/html");
         assertNotNull(previewer);

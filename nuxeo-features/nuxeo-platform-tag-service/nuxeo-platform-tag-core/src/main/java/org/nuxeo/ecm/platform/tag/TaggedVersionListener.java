@@ -65,7 +65,7 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
                 return;
             }
             String docId = doc.getId();
-            TagService tagService = Framework.getLocalService(TagService.class);
+            TagService tagService = Framework.getService(TagService.class);
             if (doc instanceof DeletedDocumentModel) {
                 if (!tagService.hasFeature(TAGS_BELONG_TO_DOCUMENT)) {
                     tagService.removeTags(session, docId);

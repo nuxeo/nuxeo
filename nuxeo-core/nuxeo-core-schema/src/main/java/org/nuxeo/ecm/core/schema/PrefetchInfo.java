@@ -74,7 +74,7 @@ public class PrefetchInfo implements Serializable {
         if (fields != null || expr == null) {
             return;
         }
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         List<String> fields = new ArrayList<String>();
         List<String> schemas = new ArrayList<String>();
 

@@ -74,7 +74,7 @@ public class ExceptionRestTest extends BaseTest {
 
     @Test
     public void testExtendedException() throws IOException {
-        JsonFactoryManager jsonFactoryManager = Framework.getLocalService(JsonFactoryManager.class);
+        JsonFactoryManager jsonFactoryManager = Framework.getService(JsonFactoryManager.class);
         if (!jsonFactoryManager.isStackDisplay()) {
             jsonFactoryManager.toggleStackDisplay();
         }

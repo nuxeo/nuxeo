@@ -117,7 +117,7 @@ public final class NxqlQueryConverter {
             @Override
             public void visitFromClause(FromClause node) {
                 FromList elements = node.elements;
-                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+                SchemaManager schemaManager = Framework.getService(SchemaManager.class);
 
                 for (String type : elements.values()) {
                     if (NXQLQueryMaker.TYPE_DOCUMENT.equalsIgnoreCase(type)) {
@@ -650,7 +650,7 @@ public final class NxqlQueryConverter {
 
             @Override
             public void visitSelectClause(SelectClause selectClause) {
-                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+                SchemaManager schemaManager = Framework.getService(SchemaManager.class);
                 for (int i = 0; i < selectClause.getSelectList().size(); i++) {
                     Operand op = selectClause.get(i);
                     if (!(op instanceof Reference)) {

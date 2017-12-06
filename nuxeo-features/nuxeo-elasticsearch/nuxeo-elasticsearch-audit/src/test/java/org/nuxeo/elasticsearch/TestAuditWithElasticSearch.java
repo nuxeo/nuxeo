@@ -103,7 +103,7 @@ public class TestAuditWithElasticSearch {
         LogEntryGen.flushAndSync();
 
         // test audit trail
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> trail = reader.getLogEntriesFor(doc.getId(), doc.getRepositoryName());
 
         Assert.assertNotNull(trail);
@@ -139,7 +139,7 @@ public class TestAuditWithElasticSearch {
 
         LogEntryGen.generate("mydoc", "evt", "cat", 9);
 
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
 
         // simple Query
         String[] evts = { "evt1", "evt2" };
@@ -180,7 +180,7 @@ public class TestAuditWithElasticSearch {
 
         LogEntryGen.generate("dummy", "entry", "category", 9);
 
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
 
         String jsonQuery = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("filtredQuery.json"),
                 "UTF-8");
@@ -202,7 +202,7 @@ public class TestAuditWithElasticSearch {
     @Test
     public void testGetLatestLogId() throws Exception {
         String repositoryId = "test";
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
 
         LogEntryGen.generate("mydoc", "documentModified", "cat", 1);
         long id1 = reader.getLatestLogId(repositoryId, "documentModified0");
@@ -223,7 +223,7 @@ public class TestAuditWithElasticSearch {
     @Test
     public void testGetLogEntriesAfter() throws Exception {
         String repositoryId = "test";
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
 
         LogEntryGen.generate("mydoc", "documentModified", "cat", 1);
         long id1 = reader.getLatestLogId(repositoryId, "documentModified0");

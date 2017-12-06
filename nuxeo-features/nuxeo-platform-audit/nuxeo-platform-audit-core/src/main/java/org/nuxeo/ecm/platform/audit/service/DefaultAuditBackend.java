@@ -97,7 +97,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
         ClassLoader last = thread.getContextClassLoader();
         try {
             thread.setContextClassLoader(PersistenceProvider.class.getClassLoader());
-            PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(
+            PersistenceProviderFactory persistenceProviderFactory = Framework.getService(
                     PersistenceProviderFactory.class);
             persistenceProvider = persistenceProviderFactory.newProvider("nxaudit-logs");
             persistenceProvider.openPersistenceUnit();

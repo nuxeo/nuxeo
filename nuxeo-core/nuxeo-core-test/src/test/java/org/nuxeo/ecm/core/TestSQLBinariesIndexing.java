@@ -130,7 +130,7 @@ public class TestSQLBinariesIndexing {
         startLatch = new CountDownLatch(1);
         readyLatch = new CountDownLatch(1);
         blockingWork = new BlockingWork();
-        Framework.getLocalService(WorkManager.class).schedule(blockingWork);
+        Framework.getService(WorkManager.class).schedule(blockingWork);
         try {
             readyLatch.await(1, TimeUnit.MINUTES);
         } finally {

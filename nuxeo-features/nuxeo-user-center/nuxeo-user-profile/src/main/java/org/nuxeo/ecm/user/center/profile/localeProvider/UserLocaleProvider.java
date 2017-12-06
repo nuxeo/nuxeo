@@ -43,7 +43,7 @@ public class UserLocaleProvider extends DefaultLocaleProvider {
     @Override
     public Locale getLocale(CoreSession repo) {
         try {
-            UserProfileService userProfileService = Framework.getLocalService(UserProfileService.class);
+            UserProfileService userProfileService = Framework.getService(UserProfileService.class);
             DocumentModel userProfileDoc = userProfileService.getUserProfileDocument(repo);
             return getLocale(userProfileDoc);
         } catch (Exception ex) {

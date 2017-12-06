@@ -49,7 +49,7 @@ public class TestNavTreeService {
     @Test
     public void testNavTreesWithDirectories() throws Exception {
 
-        NavTreeService service = Framework.getLocalService(NavTreeService.class);
+        NavTreeService service = Framework.getService(NavTreeService.class);
         assertNotNull(service);
 
         List<NavTreeDescriptor> descs = service.getTreeDescriptors();

@@ -121,7 +121,7 @@ public class TokenAuthenticationServlet extends HttpServlet {
         // Write response
         String response = null;
         int statusCode;
-        TokenAuthenticationService tokenAuthService = Framework.getLocalService(TokenAuthenticationService.class);
+        TokenAuthenticationService tokenAuthService = Framework.getService(TokenAuthenticationService.class);
         try {
             // Token acquisition: acquire token and write it to the response
             // body

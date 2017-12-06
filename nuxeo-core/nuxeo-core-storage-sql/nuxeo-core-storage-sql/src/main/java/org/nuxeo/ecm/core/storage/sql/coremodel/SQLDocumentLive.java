@@ -76,7 +76,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
         this.type = type;
         this.session = session;
         if (node != null && node.isProxy()) {
-            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
             proxySchemas = schemaManager.getProxySchemas(type.getName());
         } else {
             proxySchemas = null;

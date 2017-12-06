@@ -219,7 +219,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public DocumentModel getUserDefaultCollections(final DocumentModel context, final CoreSession session) {
-        final UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
+        final UserWorkspaceService userWorkspaceService = Framework.getService(UserWorkspaceService.class);
         final DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, context);
 
         DocumentModel defaultCollectionsRoot = createDefaultCollectionsRoot(session, userWorkspace);
@@ -301,7 +301,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
                     : (i + CollectionAsynchrnonousQuery.MAX_RESULT));
             DuplicateCollectionMemberWork work = new DuplicateCollectionMemberWork(collection.getRepositoryName(),
                     collection.getId(), documentIds.subList(i, limit), i);
-            WorkManager workManager = Framework.getLocalService(WorkManager.class);
+            WorkManager workManager = Framework.getService(WorkManager.class);
             workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
 
             i = limit;
@@ -310,7 +310,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public void processRemovedCollection(final DocumentModel collection) {
-        final WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        final WorkManager workManager = Framework.getService(WorkManager.class);
         final RemovedAbstractWork work = new RemovedCollectionWork();
         work.setDocument(collection.getRepositoryName(), collection.getId());
         workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
@@ -318,7 +318,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public void processRemovedCollectionMember(final DocumentModel collectionMember) {
-        final WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        final WorkManager workManager = Framework.getService(WorkManager.class);
         final RemovedAbstractWork work = new RemovedCollectionMemberWork();
         work.setDocument(collectionMember.getRepositoryName(), collectionMember.getId());
         workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
@@ -340,7 +340,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
                     ? collectionMemberIdsToBeRemoved.size() : (i + CollectionAsynchrnonousQuery.MAX_RESULT));
             RemoveFromCollectionWork work = new RemoveFromCollectionWork(collection.getRepositoryName(),
                     collection.getId(), new ArrayList<String>(collectionMemberIdsToBeRemoved).subList(i, limit), i);
-            WorkManager workManager = Framework.getLocalService(WorkManager.class);
+            WorkManager workManager = Framework.getService(WorkManager.class);
             workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
 
             i = limit;
@@ -351,7 +351,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
                     ? collectionMemberIdsToBeAdded.size() : (i + CollectionAsynchrnonousQuery.MAX_RESULT));
             DuplicateCollectionMemberWork work = new DuplicateCollectionMemberWork(collection.getRepositoryName(),
                     collection.getId(), new ArrayList<String>(collectionMemberIdsToBeAdded).subList(i, limit), i);
-            WorkManager workManager = Framework.getLocalService(WorkManager.class);
+            WorkManager workManager = Framework.getService(WorkManager.class);
             workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
 
             i = limit;
@@ -425,7 +425,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     protected Locale getLocale(final CoreSession session) {
         Locale locale = null;
-        locale = Framework.getLocalService(LocaleProvider.class).getLocale(session);
+        locale = Framework.getService(LocaleProvider.class).getLocale(session);
         if (locale == null) {
             locale = Locale.getDefault();
         }

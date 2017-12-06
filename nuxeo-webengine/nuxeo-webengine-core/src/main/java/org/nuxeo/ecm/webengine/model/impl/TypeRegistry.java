@@ -208,7 +208,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
         // If a web document type is not resolved then use a default web document type
         // This avoid defining web types for every document type in the system.
         // The web document type use by default the same type hierarchy as document types
-        SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
+        SchemaManager mgr = Framework.getService(SchemaManager.class);
         if (mgr != null) {
             DocumentType doctype = mgr.getDocumentType(typeName);
             if (doctype != null) { // this is a document type - register a default web type
@@ -285,7 +285,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             assert type.superType != null; // must never be null since the object is resolved
         }
         // import document facets if this type wraps a document type
-        SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
+        SchemaManager mgr = Framework.getService(SchemaManager.class);
         if (mgr != null) {
             DocumentType doctype = mgr.getDocumentType(type.getName());
             if (doctype != null) {

@@ -72,7 +72,7 @@ public abstract class AbstractType implements Type {
 
     @Override
     public Schema getSchema() {
-        return Framework.getLocalService(SchemaManager.class).getSchema(schema);
+        return Framework.getService(SchemaManager.class).getSchema(schema);
     }
 
     @Override

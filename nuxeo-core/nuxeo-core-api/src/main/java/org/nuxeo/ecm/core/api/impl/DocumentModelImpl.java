@@ -1589,7 +1589,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * @since 9.3
      */
     protected static SchemaManager getSchemaManager() {
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         if (schemaManager == null) {
             throw new NullPointerException("No registered SchemaManager");
         }

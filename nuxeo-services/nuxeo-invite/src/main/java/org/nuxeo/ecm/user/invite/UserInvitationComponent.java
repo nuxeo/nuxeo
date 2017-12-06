@@ -116,7 +116,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     }
 
     protected boolean userAlreadyExists(UserRegistrationInfo userRegistrationInfo) {
-        DocumentModel user = Framework.getLocalService(UserManager.class).getUserModel(userRegistrationInfo.getLogin());
+        DocumentModel user = Framework.getService(UserManager.class).getUserModel(userRegistrationInfo.getLogin());
         return user != null;
     }
 
@@ -221,7 +221,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
                     + userRegistrationModel.getPropertyValue(configuration.getUserInfoUsernameField()) + " ("
                     + userRegistrationModel.getPropertyValue(configuration.getUserInfoEmailField()) + " "
                     + userRegistrationModel.getPropertyValue(configuration.getUserInfoCompanyField()) + ") ";
-            PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
+            PathSegmentService pss = Framework.getService(PathSegmentService.class);
             String name = pss.generatePathSegment(title + "-" + System.currentTimeMillis());
 
             String targetPath = getOrCreateRootDocument(session, configuration.getName()).getPathAsString();
@@ -266,7 +266,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             super(getTargetRepositoryName());
             uuid = registrationUuid;
             this.additionnalInfo = additionnalInfo;
-            this.userManager = Framework.getLocalService(UserManager.class);
+            this.userManager = Framework.getService(UserManager.class);
         }
 
         @Override
@@ -520,7 +520,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     protected boolean checkUserFromRegistrationExistence(DocumentModel registrationDoc) {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
-        return null != Framework.getLocalService(UserManager.class).getPrincipal(
+        return null != Framework.getService(UserManager.class).getPrincipal(
                 (String) registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField()));
     }
 
@@ -579,7 +579,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         Map<String, Serializable> filter = new HashMap<>(1);
         filter.put(UserConfig.EMAIL_COLUMN, email);
 
-        DocumentModelList users = Framework.getLocalService(UserManager.class).searchUsers(filter, null);
+        DocumentModelList users = Framework.getService(UserManager.class).searchUsers(filter, null);
         return !users.isEmpty();
     }
 
@@ -592,7 +592,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         String registrationUuid = creator.getRegistrationUuid();
 
         UserRegistrationConfiguration currentConfig = getConfiguration(configurationName);
-        boolean userAlreadyExists = null != Framework.getLocalService(UserManager.class).getPrincipal(
+        boolean userAlreadyExists = null != Framework.getService(UserManager.class).getPrincipal(
                 (String) userRegistrationModel.getPropertyValue(currentConfig.getUserInfoUsernameField()));
 
         if (!userAlreadyExists && isEmailExist(currentConfig, userRegistrationModel)) {

@@ -147,7 +147,7 @@ public class PreviewActionBean implements Serializable {
         DocumentLocation docLocation = new DocumentLocationImpl(doc.getRepositoryName(), doc.getRef());
         DocumentView docView = new DocumentViewImpl(docLocation, PREVIEW_POPUP_VIEW);
         docView.setPatternName("id");
-        URLPolicyService urlPolicyService = Framework.getLocalService(URLPolicyService.class);
+        URLPolicyService urlPolicyService = Framework.getService(URLPolicyService.class);
         String url = urlPolicyService.getUrlFromDocumentView(docView, null);
         if (!newConversation) {
             url = RestHelper.addCurrentConversationParameters(url);

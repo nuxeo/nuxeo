@@ -124,7 +124,7 @@ public class LocalSession extends AbstractSession implements Synchronization {
      * Creates the session. It will be destroyed by calling {@link #destroy}.
      */
     protected SessionInfo createSession() {
-        RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
         Repository repository = repositoryService.getRepository(repositoryName);
         if (repository == null) {
             throw new LocalException("No such repository: " + repositoryName);

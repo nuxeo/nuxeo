@@ -88,13 +88,13 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
     protected OAuthConsumerRegistry getOAuthConsumerRegistry() {
         if (consumerRegistry == null) {
-            consumerRegistry = Framework.getLocalService(OAuthConsumerRegistry.class);
+            consumerRegistry = Framework.getService(OAuthConsumerRegistry.class);
         }
         return consumerRegistry;
     }
 
     protected OAuthTokenStore getOAuthTokenStore() {
-        return Framework.getLocalService(OAuthTokenStore.class);
+        return Framework.getService(OAuthTokenStore.class);
     }
 
     protected boolean isOAuthSignedRequest(HttpServletRequest httpRequest) {
@@ -412,7 +412,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey, signatureMethod);
 
         if (consumer == null && consumerKey != null) {
-            OAuthServerKeyManager okm = Framework.getLocalService(OAuthServerKeyManager.class);
+            OAuthServerKeyManager okm = Framework.getService(OAuthServerKeyManager.class);
             if (consumerKey.equals(okm.getInternalKey())) {
                 consumer = okm.getInternalConsumer();
             }

@@ -114,9 +114,9 @@ public class NuxeoSeamHotReloader implements Serializable {
         if (Framework.isDevModeSet()) {
             FacesContext faces = FacesContext.getCurrentInstance();
             String viewId = faces.getViewRoot().getViewId();
-            URLPolicyService service = Framework.getLocalService(URLPolicyService.class);
+            URLPolicyService service = Framework.getService(URLPolicyService.class);
             String outcome = service.getOutcomeFromViewId(viewId, null);
-            ReloadService srv = Framework.getLocalService(ReloadService.class);
+            ReloadService srv = Framework.getService(ReloadService.class);
             srv.flush();
             Events.instance().raiseEvent(EventNames.FLUSH_EVENT);
             // return the current view id otherwise an error appears in logs

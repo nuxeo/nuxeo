@@ -58,14 +58,14 @@ public class UserPreferencesServiceImpl extends DefaultComponent implements User
 
     protected UserWorkspaceService getUserWorkspaceService() {
         if (userWorkspaceService == null) {
-            userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
+            userWorkspaceService = Framework.getService(UserWorkspaceService.class);
         }
         return userWorkspaceService;
     }
 
     protected LocalConfigurationService getLocalConfigurationService() {
         if (localConfigurationService == null) {
-            localConfigurationService = Framework.getLocalService(LocalConfigurationService.class);
+            localConfigurationService = Framework.getService(LocalConfigurationService.class);
         }
         return localConfigurationService;
     }

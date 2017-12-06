@@ -176,7 +176,7 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
     }
 
     public NotificationService getService() {
-        return (NotificationService) Framework.getLocalService(NotificationManager.class);
+        return (NotificationService) Framework.getService(NotificationManager.class);
     }
 
 }

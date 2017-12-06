@@ -212,7 +212,7 @@ public class ImportActions implements Serializable {
 
     public boolean hasUploadedFiles() {
         if (currentBatchId != null) {
-            BatchManager batchManager = Framework.getLocalService(BatchManager.class);
+            BatchManager batchManager = Framework.getService(BatchManager.class);
             return batchManager.hasBatch(currentBatchId);
         }
         return false;
@@ -291,7 +291,7 @@ public class ImportActions implements Serializable {
     @SuppressWarnings("unchecked")
     protected List<DocumentModel> importDocumentsThroughBatchManager(String chainOrOperationId,
             Map<String, Object> contextParams) {
-        BatchManager bm = Framework.getLocalService(BatchManager.class);
+        BatchManager bm = Framework.getService(BatchManager.class);
         return (List<DocumentModel>) bm.execute(currentBatchId, chainOrOperationId, documentManager, contextParams,
                 null);
     }
@@ -314,7 +314,7 @@ public class ImportActions implements Serializable {
             ctx.setInput(new BlobList(blobs));
             ctx.putAll(contextParams);
 
-            AutomationService as = Framework.getLocalService(AutomationService.class);
+            AutomationService as = Framework.getService(AutomationService.class);
             if (chainOrOperationId.startsWith("Chain.")) {
                 return (List<DocumentModel>) as.run(ctx, chainOrOperationId.substring(6));
             } else {
@@ -342,7 +342,7 @@ public class ImportActions implements Serializable {
 
     public void cancel() {
         if (currentBatchId != null) {
-            BatchManager bm = Framework.getLocalService(BatchManager.class);
+            BatchManager bm = Framework.getService(BatchManager.class);
             bm.clean(currentBatchId);
         }
         importDocumentModel = null;

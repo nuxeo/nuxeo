@@ -62,7 +62,7 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
 
     @Override
     protected void postSetUp() throws Exception {
-        service = Framework.getLocalService(WorkManager.class);
+        service = Framework.getService(WorkManager.class);
         assertNotNull(service);
         assertMetrics(0, 0, 0, 0);
         TransactionHelper.startTransaction();

@@ -113,7 +113,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         // schema
         String[] directories = config.getDirectories();
         DirectoryService directoryService = DirectoryHelper.getDirectoryService();
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         try {
             boolean isFirst = true;
             for (String directoryName : directories) {

@@ -114,7 +114,7 @@ public class IOLogEntryBase {
     protected static List<LogEntry> readDocument(Document doc) {
         List<LogEntry> logEntries = new ArrayList<LogEntry>();
 
-        AuditLogger audit = Framework.getLocalService(AuditLogger.class);
+        AuditLogger audit = Framework.getService(AuditLogger.class);
 
         Element rootElement = doc.getRootElement();
         Iterator<Element> it = rootElement.elementIterator();

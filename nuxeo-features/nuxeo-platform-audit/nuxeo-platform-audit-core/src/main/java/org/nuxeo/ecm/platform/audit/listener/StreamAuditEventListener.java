@@ -67,7 +67,7 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
 
     @Override
     public void handleEvent(Event event) {
-        AuditLogger logger = Framework.getLocalService(AuditLogger.class);
+        AuditLogger logger = Framework.getService(AuditLogger.class);
         if (logger == null) {
             return;
         }

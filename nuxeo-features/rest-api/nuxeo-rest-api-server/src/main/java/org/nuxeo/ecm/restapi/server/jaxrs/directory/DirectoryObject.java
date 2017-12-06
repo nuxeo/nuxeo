@@ -64,7 +64,7 @@ public class DirectoryObject extends DefaultObject {
             throw new IllegalArgumentException("Directory Object takes one parameter");
         }
         String dirName = (String) args[0];
-        directory = Framework.getLocalService(DirectoryService.class).getDirectory(dirName);
+        directory = Framework.getService(DirectoryService.class).getDirectory(dirName);
         if (directory == null) {
             throw new WebResourceNotFoundException("Directory " + dirName + " was not found");
         }
@@ -108,7 +108,7 @@ public class DirectoryObject extends DefaultObject {
             throw new WebSecurityException("Not allowed to edit directory");
         }
 
-        UserManager um = Framework.getLocalService(UserManager.class);
+        UserManager um = Framework.getService(UserManager.class);
         if (directory.getName().equals(um.getUserDirectoryName())
                 || directory.getName().equals(um.getGroupDirectoryName())) {
             throw new NuxeoException("Not allowed to edit user/group directories, please use user/group endpoints",

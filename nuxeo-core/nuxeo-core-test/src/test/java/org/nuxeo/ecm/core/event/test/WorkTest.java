@@ -81,7 +81,7 @@ public class WorkTest {
 
         waitForAsyncCompletion();
 
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        WorkManager workManager = Framework.getService(WorkManager.class);
 
         monitor = new Monitor();
         try {

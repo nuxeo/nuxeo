@@ -116,7 +116,7 @@ public class ScriptGuard implements Guard {
 
     private CompiledScript compile(String type, String content) throws ScriptException {
         if (engine == null) {
-            engine = Framework.getLocalService(WebEngine.class).getScripting().getEngineManager().getEngineByName(type);
+            engine = Framework.getService(WebEngine.class).getScripting().getEngineManager().getEngineByName(type);
         }
         if (engine != null) {
             if (engine instanceof Compilable) {

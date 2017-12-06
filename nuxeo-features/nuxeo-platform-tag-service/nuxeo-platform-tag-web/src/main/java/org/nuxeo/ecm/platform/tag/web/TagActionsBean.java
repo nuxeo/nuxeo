@@ -327,7 +327,7 @@ public class TagActionsBean implements Serializable {
     public void addTagsOnEvent(List<DocumentModel> documents, DocumentModel docModel) {
         List<String> tags = (List<String>) docModel.getContextData("bulk_tags");
         if (tags != null && !tags.isEmpty()) {
-            TagService tagService = Framework.getLocalService(TagService.class);
+            TagService tagService = Framework.getService(TagService.class);
             for (DocumentModel doc : documents) {
                 for (String tag : tags) {
                     tagService.tag(documentManager, doc.getId(), tag);

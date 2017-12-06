@@ -73,7 +73,7 @@ public class RemoveFromCollectionWork extends AbstractWork {
             if (session == null) {
                 openSystemSession();
             }
-            final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+            final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
             for (int i = 0; i < collectionMemberIds.size(); i++) {
                 log.trace(String.format("Worker %s, deleting from Collection %s, processing CollectionMember %s",
                         getId(), collectionId, collectionMemberIds.get(i)));

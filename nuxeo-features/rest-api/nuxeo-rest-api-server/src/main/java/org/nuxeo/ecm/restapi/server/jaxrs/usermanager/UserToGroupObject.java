@@ -54,7 +54,7 @@ public class UserToGroupObject extends DefaultObject {
 
     @POST
     public Response doAddUserToGroup() {
-        UserManager um = Framework.getLocalService(UserManager.class);
+        UserManager um = Framework.getService(UserManager.class);
         checkPrincipalCanAdministerGroupAndUser(um);
 
         List<String> groups = principal.getGroups();
@@ -77,7 +77,7 @@ public class UserToGroupObject extends DefaultObject {
 
     @DELETE
     public Response doRemoveUserFromGroup() {
-        UserManager um = Framework.getLocalService(UserManager.class);
+        UserManager um = Framework.getService(UserManager.class);
         checkPrincipalCanAdministerGroupAndUser(um);
         List<String> groups = principal.getGroups();
         groups.remove(group.getName());

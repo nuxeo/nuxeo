@@ -141,8 +141,8 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
 
     @BeforeClass
     public static void setupCodecs() throws Exception {
-        Framework.getLocalService(ObjectCodecService.class).addCodec(new MyObjectCodec());
-        Framework.getLocalService(AutomationService.class).putOperation(MyObjectOperation.class);
+        Framework.getService(ObjectCodecService.class).addCodec(new MyObjectCodec());
+        Framework.getService(AutomationService.class).putOperation(MyObjectOperation.class);
         // Fire application start on AutomationServer component forcing to load
         // correctly Document Adapter Codec in Test scope (to take into account
         // of document adapters contributed into test) -> see execution order
@@ -190,7 +190,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
 
     @BeforeClass
     public static void addDataCapsuleOperation() throws OperationException {
-        Framework.getLocalService(AutomationService.class).putOperation(TestDataCapsule.class);
+        Framework.getService(AutomationService.class).putOperation(TestDataCapsule.class);
     }
 
     @Test

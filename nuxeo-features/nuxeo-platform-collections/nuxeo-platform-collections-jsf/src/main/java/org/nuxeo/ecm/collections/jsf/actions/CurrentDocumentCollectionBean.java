@@ -50,7 +50,7 @@ public class CurrentDocumentCollectionBean implements Serializable {
     public List<DocumentModel> getCurrentDocumentCollections() {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
         if (!collectionManager.isCollectable(currentDocument)) {
             return null;
         }

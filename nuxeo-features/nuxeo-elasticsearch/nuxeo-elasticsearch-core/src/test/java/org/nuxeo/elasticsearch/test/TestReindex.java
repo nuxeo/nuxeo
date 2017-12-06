@@ -149,7 +149,7 @@ public class TestReindex {
         startTransaction();
 
         String nxql = "SELECT * FROM Document, Relation order by ecm:uuid";
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
         DocumentModelList coreDocs = session.query(nxql);
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(nxql).limit(100));
 

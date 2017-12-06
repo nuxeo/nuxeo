@@ -58,7 +58,7 @@ public class PictureViewsGenerationListener implements EventListener {
         if (doc.hasFacet(PICTURE_FACET) && !doc.isProxy()) {
             PictureViewsGenerationWork work = new PictureViewsGenerationWork(doc.getRepositoryName(), doc.getId(),
                     "file:content");
-            WorkManager workManager = Framework.getLocalService(WorkManager.class);
+            WorkManager workManager = Framework.getService(WorkManager.class);
             workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
         }
     }

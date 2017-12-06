@@ -182,7 +182,7 @@ public abstract class TypeConvertor<T> {
     };
 
     public static Class<?> loadClass(String name) throws ReflectiveOperationException {
-        return Framework.getLocalService(WebEngine.class).loadClass(name);
+        return Framework.getService(WebEngine.class).loadClass(name);
     }
 
     private static final Pattern PATTERN = Pattern.compile("(\\d{4})(?:-(\\d{2}))?(?:-(\\d{2}))?(?:[Tt](?:(\\d{2}))?(?::(\\d{2}))?(?::(\\d{2}))?(?:\\.(\\d{3}))?)?([Zz])?(?:([+-])(\\d{2}):(\\d{2}))?");

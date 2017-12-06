@@ -157,7 +157,7 @@ public class CoreInstance {
      */
     public static CoreSession openCoreSession(String repositoryName, NuxeoPrincipal principal) {
         if (repositoryName == null) {
-            RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+            RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
             repositoryName = repositoryManager.getDefaultRepository().getName();
         }
         return Framework.getService(CoreSessionService.class).createCoreSession(repositoryName, principal);

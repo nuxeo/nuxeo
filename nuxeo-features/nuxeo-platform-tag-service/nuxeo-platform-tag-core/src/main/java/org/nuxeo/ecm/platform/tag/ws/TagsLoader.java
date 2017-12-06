@@ -38,7 +38,7 @@ public class TagsLoader implements DocumentLoader {
     public void fillProperties(DocumentModel doc, List<DocumentProperty> props, WSRemotingSession rs)
             {
         CoreSession session = rs.getDocumentManager();
-        TagService srv = Framework.getLocalService(TagService.class);
+        TagService srv = Framework.getService(TagService.class);
         if (srv == null) {
             return;
         }

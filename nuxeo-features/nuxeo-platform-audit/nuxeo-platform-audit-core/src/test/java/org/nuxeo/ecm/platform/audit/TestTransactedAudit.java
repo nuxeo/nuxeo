@@ -81,7 +81,7 @@ public class TestTransactedAudit {
         waitForAsyncCompletion();
 
         // test audit trail
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> trail = reader.getLogEntriesFor(doc.getId(), repo.getRepositoryName());
 
         assertThat(trail, notNullValue());
@@ -131,7 +131,7 @@ public class TestTransactedAudit {
         waitForAsyncCompletion();
 
         // test audit trail
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> trail = reader.getLogEntriesFor(doc.getId());
 
         assertThat(trail, notNullValue());

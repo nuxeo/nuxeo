@@ -69,8 +69,8 @@ public class AnnotationsActions implements Serializable {
     protected transient Principal currentUser;
 
     public long getAnnotationsCount(DocumentModel doc) {
-        DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
-        AnnotationsService annotationsService = Framework.getLocalService(AnnotationsService.class);
+        DocumentViewCodecManager documentViewCodecManager = Framework.getService(DocumentViewCodecManager.class);
+        AnnotationsService annotationsService = Framework.getService(AnnotationsService.class);
         DocumentView docView = new DocumentViewImpl(doc);
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();

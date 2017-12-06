@@ -61,7 +61,7 @@ public class GetCounters {
     @OperationMethod
     public Blob run() {
 
-        CounterManager cm = Framework.getLocalService(CounterManager.class);
+        CounterManager cm = Framework.getService(CounterManager.class);
 
         JSONObject collection = new JSONObject();
 

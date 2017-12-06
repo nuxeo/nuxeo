@@ -54,7 +54,7 @@ public class AutomationModule extends WebEngineModule {
 
         Set<Object> result = new HashSet<Object>();
 
-        AutomationServer as = Framework.getLocalService(AutomationServer.class);
+        AutomationServer as = Framework.getService(AutomationServer.class);
 
         for (Class<? extends MessageBodyReader<?>> readerKlass : as.getReaders()) {
             try {

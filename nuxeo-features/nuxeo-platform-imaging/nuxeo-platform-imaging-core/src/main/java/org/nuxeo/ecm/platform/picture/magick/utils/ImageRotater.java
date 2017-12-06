@@ -37,7 +37,7 @@ public class ImageRotater extends MagickExecutor {
 
     public static void rotate(String inputFile, String outputFile, int angle) throws CommandNotAvailable,
             CommandException {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         CmdParameters params = cles.getDefaultCmdParameters();
         params.addNamedParameter("angle", String.valueOf(angle));
         params.addNamedParameter("inputFilePath", inputFile);

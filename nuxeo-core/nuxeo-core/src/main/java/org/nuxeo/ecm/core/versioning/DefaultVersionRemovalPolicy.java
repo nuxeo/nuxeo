@@ -84,7 +84,7 @@ public class DefaultVersionRemovalPolicy implements VersionRemovalPolicy {
                 EventContext evtctx = new EventContextImpl(coreSession, coreSession.getPrincipal(),
                         new ShallowDocumentModel(docModel), versionsIds);
                 Event evt = evtctx.newEvent(ORPHAN_VERSION_REMOVE);
-                Framework.getLocalService(EventService.class).fireEvent(evt);
+                Framework.getService(EventService.class).fireEvent(evt);
             }
         }
     }

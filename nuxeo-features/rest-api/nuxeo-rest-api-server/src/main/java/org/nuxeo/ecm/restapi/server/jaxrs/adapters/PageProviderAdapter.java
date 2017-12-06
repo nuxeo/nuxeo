@@ -46,7 +46,7 @@ public class PageProviderAdapter extends DocumentModelListPaginableAdapter {
 
     @Override
     protected PageProviderDefinition getPageProviderDefinition() {
-        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
         return ppService.getPageProviderDefinition(pageProviderName);
     }
 

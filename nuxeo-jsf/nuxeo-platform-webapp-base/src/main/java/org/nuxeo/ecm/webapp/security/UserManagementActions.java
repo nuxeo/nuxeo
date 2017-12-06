@@ -234,7 +234,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
                 }
                 fireSeamEvent(USERS_LISTING_CHANGED);
             } else {
-                UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
+                UserInvitationService userRegistrationService = Framework.getService(UserInvitationService.class);
                 Map<String, Serializable> additionalInfos = new HashMap<String, Serializable>();
                 // Wrap the form as an invitation to the user
                 UserAdapter newUserAdapter = new UserAdapterImpl(newUser, userManager);
@@ -487,7 +487,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     }
 
     private DocumentModel wrapToUserRegistration(UserAdapter newUserAdapter) {
-        UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
+        UserInvitationService userRegistrationService = Framework.getService(UserInvitationService.class);
         DocumentModel newUserRegistration = userRegistrationService.getUserRegistrationModel(null);
 
         // Map the values from the object filled in the form

@@ -302,7 +302,7 @@ public class Select2ActionsBean implements Serializable {
             }
         }
 
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try {
             Directory directory = directoryService.getDirectory(directoryName);
             if (directory == null) {
@@ -312,7 +312,7 @@ public class Select2ActionsBean implements Serializable {
 
             try (Session session = directory.getSession()) {
                 String schemaName = directory.getSchema();
-                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+                SchemaManager schemaManager = Framework.getService(SchemaManager.class);
                 Schema schema = schemaManager.getSchema(schemaName);
                 final Locale locale = org.jboss.seam.core.Locale.instance();
                 final String label = SuggestConstants.getLabelFieldName(schema, dbl10n, labelFieldName,
@@ -366,7 +366,7 @@ public class Select2ActionsBean implements Serializable {
     protected CoreSession getRepositorySession(String repoName) {
 
         if (repoName == null || repoName.isEmpty()) {
-            RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
+            RepositoryManager rm = Framework.getService(RepositoryManager.class);
             repoName = rm.getDefaultRepositoryName();
         }
 
@@ -385,7 +385,7 @@ public class Select2ActionsBean implements Serializable {
             return null;
         }
 
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try {
             Directory directory = directoryService.getDirectory(directoryName);
             if (directory == null) {
@@ -395,7 +395,7 @@ public class Select2ActionsBean implements Serializable {
 
             try (Session session = directory.getSession()) {
                 String schemaName = directory.getSchema();
-                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+                SchemaManager schemaManager = Framework.getService(SchemaManager.class);
                 Schema schema = schemaManager.getSchema(schemaName);
 
                 final Locale locale = org.jboss.seam.core.Locale.instance();
@@ -417,9 +417,9 @@ public class Select2ActionsBean implements Serializable {
             final String firstLabelField, final String secondLabelField, final String thirdLabelField,
             final boolean hideFirstLabel, final boolean hideSecondLabel, final boolean hideThirdLabel,
             final boolean displayEmailInSuggestion, final boolean hideIcon) {
-        UserManager userManager = Framework.getLocalService(UserManager.class);
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-        DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
+        UserManager userManager = Framework.getService(UserManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        DirectoryService dirService = Framework.getService(DirectoryService.class);
         JSONObject obj = new JSONObject();
         if (storedReference == null || storedReference.isEmpty()) {
             return null;
@@ -769,7 +769,7 @@ public class Select2ActionsBean implements Serializable {
             if (operationName == null || operationName.isEmpty()) {
                 doc = Select2Common.resolveReference(idProperty, storedReference, session);
             } else {
-                AutomationService as = Framework.getLocalService(AutomationService.class);
+                AutomationService as = Framework.getService(AutomationService.class);
                 try (OperationContext ctx = new OperationContext(session)) {
                     Map<String, Object> params = new HashMap<String, Object>();
 

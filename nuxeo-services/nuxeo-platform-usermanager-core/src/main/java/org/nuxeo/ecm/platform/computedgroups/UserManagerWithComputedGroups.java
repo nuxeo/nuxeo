@@ -54,7 +54,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
 
     protected ComputedGroupsService getService() {
         if (cgs == null) {
-            cgs = Framework.getLocalService(ComputedGroupsService.class);
+            cgs = Framework.getService(ComputedGroupsService.class);
         }
         return cgs;
     }

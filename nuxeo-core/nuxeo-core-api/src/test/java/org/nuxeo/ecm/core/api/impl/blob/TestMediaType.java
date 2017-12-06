@@ -42,7 +42,7 @@ public class TestMediaType extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-media-types-contrib.xml");
-        typeMgr = Framework.getLocalService(SchemaManager.class);
+        typeMgr = Framework.getService(SchemaManager.class);
     }
 
     // shema name != prefix name

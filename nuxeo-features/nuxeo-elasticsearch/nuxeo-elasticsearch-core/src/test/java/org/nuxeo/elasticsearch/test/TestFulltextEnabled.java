@@ -154,7 +154,7 @@ public class TestFulltextEnabled {
 
         TransactionHelper.commitOrRollbackTransaction();
         // we need to wait for the async fulltext indexing
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        WorkManager wm = Framework.getService(WorkManager.class);
         waitForCompletion();
         startTransaction();
 
@@ -176,7 +176,7 @@ public class TestFulltextEnabled {
 
         TransactionHelper.commitOrRollbackTransaction();
         // we need to wait for the async fulltext indexing
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        WorkManager wm = Framework.getService(WorkManager.class);
         waitForCompletion();
         startTransaction();
 

@@ -302,7 +302,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         Event event = ctx.newEvent(eventId);
         event.setInline(false);
         event.setImmediate(true);
-        EventService eventService = Framework.getLocalService(EventService.class);
+        EventService eventService = Framework.getService(EventService.class);
         eventService.fireEvent(event);
     }
 

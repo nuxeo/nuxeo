@@ -34,7 +34,7 @@ public class PreviewDocumentModelAdapterFactory implements DocumentAdapterFactor
 
     protected PreviewAdapterManager getPreviewAdapterManager() {
         if (paManager == null) {
-            paManager = Framework.getLocalService(PreviewAdapterManager.class);
+            paManager = Framework.getService(PreviewAdapterManager.class);
         }
         return paManager;
     }

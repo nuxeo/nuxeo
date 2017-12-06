@@ -119,7 +119,7 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
     }
 
     protected void closeRepository() throws Exception {
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
         BlobManagerComponent blobManager = (BlobManagerComponent) Framework.getService(BlobManager.class);
         for (BlobProviderDescriptor blobProviderDescriptor : blobProviderDescriptors.values()) {
             blobManager.unregisterBlobProvider(blobProviderDescriptor);

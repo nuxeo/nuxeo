@@ -159,7 +159,7 @@ public class DBSTransactionState {
     public DBSTransactionState(DBSRepository repository, DBSSession session) {
         this.repository = repository;
         this.session = session;
-        SecurityService securityService = Framework.getLocalService(SecurityService.class);
+        SecurityService securityService = Framework.getService(SecurityService.class);
         browsePermissions = new HashSet<>(Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
     }
 
@@ -1295,9 +1295,9 @@ public class DBSTransactionState {
 
     protected void scheduleWork(List<Work> works) {
         // do async fulltext indexing only if high-level sessions are available
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         if (repositoryManager != null && !works.isEmpty()) {
-            WorkManager workManager = Framework.getLocalService(WorkManager.class);
+            WorkManager workManager = Framework.getService(WorkManager.class);
             for (Work work : works) {
                 // schedule work post-commit
                 // in non-tx mode, this may execute it nearly immediately

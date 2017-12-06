@@ -51,7 +51,7 @@ public class JSONBatchBlobDecoder implements JSONBlobDecoder {
             fileId = jsonObject.get("upload-fileId").getTextValue();
         }
         if (fileId != null) {
-            BatchManager bm = Framework.getLocalService(BatchManager.class);
+            BatchManager bm = Framework.getService(BatchManager.class);
             blob = bm.getBlob(batchId, fileId);
 
             if (RequestContext.getActiveContext() != null) {
@@ -61,7 +61,7 @@ public class JSONBatchBlobDecoder implements JSONBlobDecoder {
                     RequestContext.getActiveContext().addRequestCleanupHandler(new RequestCleanupHandler() {
                         @Override
                         public void cleanup(HttpServletRequest request) {
-                            BatchManager bm = Framework.getLocalService(BatchManager.class);
+                            BatchManager bm = Framework.getService(BatchManager.class);
                             bm.clean(batchId);
                         }
                     });

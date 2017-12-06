@@ -40,7 +40,7 @@ public class LDAPDirectoryFactory extends DefaultDirectoryFactory {
     }
 
     protected static DirectoryServiceImpl getDirectoryService() {
-        return (DirectoryServiceImpl) Framework.getLocalService(DirectoryService.class);
+        return (DirectoryServiceImpl) Framework.getService(DirectoryService.class);
     }
 
     @Override

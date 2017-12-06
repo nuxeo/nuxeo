@@ -239,7 +239,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
     }
 
     protected Set<String> getTypeNamesForFacet(String facetName) {
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         Set<String> publishRoots = schemaManager.getDocumentTypeNamesForFacet(facetName);
         if (publishRoots == null || publishRoots.isEmpty()) {
             return null;

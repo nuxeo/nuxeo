@@ -97,7 +97,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
             throw new NuxeoException(String.format("Cannot perform null query: check provider '%s'", getName()));
         }
         // Build and execute the ES query
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
         try {
             NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession()).nxql(query)
                                                                          .offset((int) getCurrentPageOffset())

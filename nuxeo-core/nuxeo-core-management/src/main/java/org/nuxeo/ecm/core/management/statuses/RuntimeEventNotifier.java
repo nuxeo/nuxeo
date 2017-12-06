@@ -31,7 +31,7 @@ public class RuntimeEventNotifier implements Notifier {
     public void notifyEvent(String eventName, String instanceIdentifier, String serviceIdentifier) {
 
         Event evnt = new Event(RUNTIME_EVENT_TOPIC, eventName, instanceIdentifier, serviceIdentifier);
-        EventService evtService = Framework.getLocalService(EventService.class);
+        EventService evtService = Framework.getService(EventService.class);
         evtService.sendEvent(evnt);
 
     }

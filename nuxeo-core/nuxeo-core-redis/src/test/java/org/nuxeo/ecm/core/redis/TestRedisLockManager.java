@@ -45,7 +45,7 @@ public class TestRedisLockManager {
 
     @Test
     public void testRedisLockManager() throws Exception {
-        LockManager lockManager = Framework.getLocalService(LockManagerService.class).getLockManager("default");
+        LockManager lockManager = Framework.getService(LockManagerService.class).getLockManager("default");
         String id = "1234";
 
         // no lock initially present

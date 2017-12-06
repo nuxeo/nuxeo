@@ -71,7 +71,7 @@ public class TestPersistenceProvider {
             // needs context classloader for Hibernate to find the
             // META-INF/persistence.xml file
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-            PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
+            PersistenceProviderFactory persistenceProviderFactory = Framework.getService(PersistenceProviderFactory.class);
             persistenceProvider = persistenceProviderFactory.newProvider("nxtest");
             persistenceProvider.openPersistenceUnit();
         } finally {

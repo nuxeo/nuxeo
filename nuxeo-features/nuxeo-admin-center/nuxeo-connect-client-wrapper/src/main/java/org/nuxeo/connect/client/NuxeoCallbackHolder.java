@@ -48,7 +48,7 @@ public class NuxeoCallbackHolder implements CallbackHolder {
 
     @Override
     public PackageUpdateService getUpdateService() {
-        return Framework.getLocalService(PackageUpdateService.class);
+        return Framework.getService(PackageUpdateService.class);
     }
 
 }

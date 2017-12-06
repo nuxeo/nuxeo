@@ -51,7 +51,7 @@ public class DefaultCreationContainerListProvider extends AbstractCreationContai
 
     protected PageProviderService getPageProviderService() {
         if (ppService == null) {
-            ppService = Framework.getLocalService(PageProviderService.class);
+            ppService = Framework.getService(PageProviderService.class);
         }
         return ppService;
     }

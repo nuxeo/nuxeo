@@ -61,7 +61,7 @@ public class LogEntryGen {
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        Assert.assertTrue(Framework.getLocalService(AuditLogger.class).await(10,TimeUnit.SECONDS));
+        Assert.assertTrue(Framework.getService(AuditLogger.class).await(10,TimeUnit.SECONDS));
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
 
         esa.getClient().flush(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE));
@@ -72,7 +72,7 @@ public class LogEntryGen {
     public static void generate(String docName, String eventPrefix, String categoryPrefix, int max) throws Exception {
         List<LogEntry> entries = new ArrayList<>();
 
-        AuditLogger logger = Framework.getLocalService(AuditLogger.class);
+        AuditLogger logger = Framework.getService(AuditLogger.class);
         Assert.assertNotNull(logger);
 
         for (int i = 0; i < max; i++) {

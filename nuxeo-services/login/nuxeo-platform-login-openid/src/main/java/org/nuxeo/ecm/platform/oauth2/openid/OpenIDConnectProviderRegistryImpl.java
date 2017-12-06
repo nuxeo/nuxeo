@@ -51,7 +51,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
     protected OpenIDProviderFragmentRegistry pendingProviders = new OpenIDProviderFragmentRegistry();
 
     protected OAuth2ServiceProviderRegistry getOAuth2ServiceProviderRegistry() {
-        return Framework.getLocalService(OAuth2ServiceProviderRegistry.class);
+        return Framework.getService(OAuth2ServiceProviderRegistry.class);
     }
 
     @Override

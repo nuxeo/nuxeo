@@ -160,7 +160,7 @@ public class Prefetch implements Serializable {
             return null;
         } else {
             String prefix = prop.substring(0, p);
-            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
             Schema schema = schemaManager.getSchemaFromPrefix(prefix);
             if (schema == null) {
                 schema = schemaManager.getSchema(prefix);

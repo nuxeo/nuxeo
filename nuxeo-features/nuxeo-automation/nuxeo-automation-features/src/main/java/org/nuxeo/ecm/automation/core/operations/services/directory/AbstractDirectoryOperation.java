@@ -42,7 +42,7 @@ public class AbstractDirectoryOperation {
     }
 
     protected boolean canManageDirectories(OperationContext ctx) {
-        ActionManager actionManager = Framework.getLocalService(ActionManager.class);
+        ActionManager actionManager = Framework.getService(ActionManager.class);
         return actionManager.checkFilter("directoriesManagementAccess", createActionContext(ctx));
     }
 

@@ -276,7 +276,7 @@ public abstract class AbstractTagService implements TagService {
             DocumentModel documentModel = session.getDocument(documentRef);
             DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), documentModel);
             Event event = ctx.newEvent(DocumentEventTypes.DOCUMENT_TAG_UPDATED);
-            Framework.getLocalService(EventService.class).fireEvent(event);
+            Framework.getService(EventService.class).fireEvent(event);
         }
     }
 

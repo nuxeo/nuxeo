@@ -131,7 +131,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     @Override
     public String getImageMimeType(File file) {
         try {
-            MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
+            MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
             if (file.getName() != null) {
                 return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(file.getName(),
                         Blobs.createBlob(file), "image/jpeg");
@@ -147,7 +147,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     @Override
     public String getImageMimeType(Blob blob) {
         try {
-            MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
+            MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
             if (blob.getFilename() != null) {
                 return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob,
                         "image/jpeg");
@@ -342,7 +342,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         // always convert to jpeg
         options.put(CONVERSION_FORMAT, JPEG_CONVERSATION_FORMAT);
         BlobHolder bh = new SimpleBlobHolder(blob);
-        ConversionService conversionService = Framework.getLocalService(ConversionService.class);
+        ConversionService conversionService = Framework.getService(ConversionService.class);
         bh = conversionService.convert(OPERATION_RESIZE, bh, options);
 
         Blob originalJpegBlob = bh.getBlob();

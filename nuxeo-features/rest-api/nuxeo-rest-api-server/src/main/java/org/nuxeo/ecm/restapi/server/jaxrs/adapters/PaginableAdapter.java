@@ -119,7 +119,7 @@ public abstract class PaginableAdapter<T> extends DefaultAdapter {
             throw new NuxeoException("Page provider given not found");
         }
 
-        PageProviderService pps = Framework.getLocalService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
         PageProvider<T> pp = (PageProvider<T>) pps.getPageProvider("", ppDefinition, getSearchDocument(), null,

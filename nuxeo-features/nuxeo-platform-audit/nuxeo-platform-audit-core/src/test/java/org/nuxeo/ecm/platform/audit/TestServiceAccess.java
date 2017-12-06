@@ -38,19 +38,19 @@ public class TestServiceAccess {
 
     @Test
     public void testFullAccess() {
-        Logs fullService = Framework.getLocalService(Logs.class);
+        Logs fullService = Framework.getService(Logs.class);
         assertNotNull(fullService);
     }
 
     @Test
     public void testReadAccess() {
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
         assertNotNull(reader);
     }
 
     @Test
     public void testWriteAccess() {
-        AuditLogger writer = Framework.getLocalService(AuditLogger.class);
+        AuditLogger writer = Framework.getService(AuditLogger.class);
         assertNotNull(writer);
     }
 

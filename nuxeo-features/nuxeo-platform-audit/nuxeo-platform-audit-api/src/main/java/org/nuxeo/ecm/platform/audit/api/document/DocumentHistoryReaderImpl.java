@@ -49,7 +49,7 @@ public class DocumentHistoryReaderImpl implements DocumentHistoryReader {
     @SuppressWarnings("unchecked")
     public PageProvider<LogEntry> getPageProvider(DocumentModel doc, long pageIndex, long pageSize) {
 
-        PageProviderService pps = Framework.getLocalService(PageProviderService.class);
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         PageProvider<LogEntry> pp = (PageProvider<LogEntry>) pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
                 Long.valueOf(pageSize), Long.valueOf(pageIndex), new HashMap<String, Serializable>(), doc);
         return pp;

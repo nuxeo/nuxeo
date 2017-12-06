@@ -59,12 +59,12 @@ public class OperationAdapter extends DefaultAdapter {
     public Response doPost(@PathParam("operationName") String oid, @Context HttpServletRequest request,
             @Context HttpServletResponse response, ExecutionRequest xreq) {
         try {
-            AutomationServer srv = Framework.getLocalService(AutomationServer.class);
+            AutomationServer srv = Framework.getService(AutomationServer.class);
             if (!srv.accept(oid, false, request)) {
                 return ResponseHelper.notFound();
             }
 
-            AutomationService service = Framework.getLocalService(AutomationService.class);
+            AutomationService service = Framework.getService(AutomationService.class);
 
             OperationType operationType = service.getOperation(oid);
 

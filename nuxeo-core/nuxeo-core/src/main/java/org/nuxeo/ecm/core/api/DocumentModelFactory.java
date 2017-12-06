@@ -141,7 +141,7 @@ public class DocumentModelFactory {
                 }
             }
         }
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         for (String schemaName : loadSchemas) {
             Schema schema = schemaManager.getSchema(schemaName);
             docModel.addDataModel(createDataModel(doc, schema));
@@ -177,7 +177,7 @@ public class DocumentModelFactory {
      * @since 5.4.2
      */
     public static DocumentModelImpl createDocumentModel(String docType) {
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         DocumentType type = schemaManager.getDocumentType(docType);
         return createDocumentModel(null, type);
     }
@@ -302,7 +302,7 @@ public class DocumentModelFactory {
             if (schemas == null) {
                 schemas = docSchemas.toArray(new String[0]);
             }
-            TypeProvider typeProvider = Framework.getLocalService(SchemaManager.class);
+            TypeProvider typeProvider = Framework.getService(SchemaManager.class);
             DocumentPart[] parts = new DocumentPart[schemas.length];
             for (int i = 0; i < schemas.length; i++) {
                 DocumentPart part = new DocumentPartImpl(typeProvider.getSchema(schemas[i]));
@@ -319,7 +319,7 @@ public class DocumentModelFactory {
      * Prefetches from a document.
      */
     protected static Prefetch getPrefetch(Document doc, PrefetchInfo prefetchInfo, Set<String> docSchemas) {
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
 
         // individual fields
         Set<String> xpaths = new HashSet<String>();
@@ -401,7 +401,7 @@ public class DocumentModelFactory {
      * @since 5.7.2
      */
     public static DocumentModel createDocumentModel(String type, String id) {
-        SchemaManager sm = Framework.getLocalService(SchemaManager.class);
+        SchemaManager sm = Framework.getService(SchemaManager.class);
         DocumentType docType = sm.getDocumentType(type);
         DocumentModel doc = new DocumentModelImpl(null, docType.getName(), id, null, null, new IdRef(id), null, null,
                 null, null, null);

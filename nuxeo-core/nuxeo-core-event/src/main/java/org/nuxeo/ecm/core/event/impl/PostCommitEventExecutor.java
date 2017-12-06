@@ -229,7 +229,7 @@ public class PostCommitEventExecutor {
             }
             SequenceTracer.startFrom(callerThread, "Postcommit", "#ff410f");
             long t0 = System.currentTimeMillis();
-            EventStats stats = Framework.getLocalService(EventStats.class);
+            EventStats stats = Framework.getService(EventStats.class);
 
             for (EventListenerDescriptor listener : listeners) {
                 EventBundle filtered = listener.filterBundle(bundle);

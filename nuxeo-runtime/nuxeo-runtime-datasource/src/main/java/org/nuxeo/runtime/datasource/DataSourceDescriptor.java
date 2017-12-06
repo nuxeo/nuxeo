@@ -185,7 +185,7 @@ public class DataSourceDescriptor {
 
     public void unbindSelf(Context naming) throws NamingException {
         try {
-            final PooledDataSourceRegistry registry = Framework.getLocalService(PooledDataSourceRegistry.class);
+            final PooledDataSourceRegistry registry = Framework.getService(PooledDataSourceRegistry.class);
             if (registry != null) {
                 registry.clearPool(getName());
             }

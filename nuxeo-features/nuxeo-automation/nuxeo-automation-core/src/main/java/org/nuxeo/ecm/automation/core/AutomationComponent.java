@@ -107,14 +107,14 @@ public class AutomationComponent extends DefaultComponent {
 
     protected void bindManagement() throws JMException {
         ObjectName objectName = new ObjectName("org.nuxeo.automation:name=tracerfactory");
-        MBeanServer mBeanServer = Framework.getLocalService(ServerLocator.class).lookupServer();
+        MBeanServer mBeanServer = Framework.getService(ServerLocator.class).lookupServer();
         mBeanServer.registerMBean(tracerFactory, objectName);
     }
 
     protected void unBindManagement() throws MalformedObjectNameException, NotCompliantMBeanException,
             InstanceAlreadyExistsException, MBeanRegistrationException, InstanceNotFoundException {
         final ObjectName on = new ObjectName("org.nuxeo.automation:name=tracerfactory");
-        final ServerLocator locator = Framework.getLocalService(ServerLocator.class);
+        final ServerLocator locator = Framework.getService(ServerLocator.class);
         if (locator != null) {
             MBeanServer mBeanServer = locator.lookupServer();
             mBeanServer.unregisterMBean(on);

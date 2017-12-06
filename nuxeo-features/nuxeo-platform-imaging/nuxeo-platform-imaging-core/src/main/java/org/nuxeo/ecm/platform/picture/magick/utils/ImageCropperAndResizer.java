@@ -51,7 +51,7 @@ public class ImageCropperAndResizer extends MagickExecutor {
             mapComponents = DEFAULT_MAP_COMPONENTS;
         }
 
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         CmdParameters params = cles.getDefaultCmdParameters();
         params.addNamedParameter("tileWidth", String.valueOf(tileWidth));
         params.addNamedParameter("tileHeight", String.valueOf(tileHeight));

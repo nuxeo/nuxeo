@@ -66,7 +66,7 @@ public class RenditionActionBean implements Serializable {
     @Factory(value = "currentDocumentRenditions", scope = ScopeType.EVENT)
     public List<Rendition> getCurrentDocumentRenditions() throws Exception {
         DocumentModel doc = navigationContext.getCurrentDocument();
-        RenditionService rs = Framework.getLocalService(RenditionService.class);
+        RenditionService rs = Framework.getService(RenditionService.class);
         return rs.getAvailableRenditions(doc);
     }
 
@@ -75,7 +75,7 @@ public class RenditionActionBean implements Serializable {
 
         List<RenditionDefinition> result = new ArrayList<>();
         DocumentModel doc = navigationContext.getCurrentDocument();
-        RenditionService rs = Framework.getLocalService(RenditionService.class);
+        RenditionService rs = Framework.getService(RenditionService.class);
         for (RenditionDefinition rd : rs.getAvailableRenditionDefinitions(doc)) {
             if (rd.isVisible()) {
                 result.add(rd);
@@ -92,7 +92,7 @@ public class RenditionActionBean implements Serializable {
         if (doc == null) {
             return Collections.emptyList();
         }
-        RenditionService rs = Framework.getLocalService(RenditionService.class);
+        RenditionService rs = Framework.getService(RenditionService.class);
         List<Rendition> availableRenditions = rs.getAvailableRenditions(doc, true);
 
         List<Rendition> filteredRenditions = availableRenditions;

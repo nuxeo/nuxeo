@@ -65,7 +65,7 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter implem
                 if (index == -1) {
                     // BBB for when repository name was not included in the
                     // local name
-                    RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
+                    RepositoryManager mgr = Framework.getService(RepositoryManager.class);
                     repoName = mgr.getDefaultRepositoryName();
                     uid = localName;
                 } else {

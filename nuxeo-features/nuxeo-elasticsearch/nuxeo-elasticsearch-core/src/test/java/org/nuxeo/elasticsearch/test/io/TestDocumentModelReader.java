@@ -124,12 +124,12 @@ public class TestDocumentModelReader {
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        WorkManager wm = Framework.getService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
         esa.refresh();
 
         // search and retrieve from ES
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
         DocumentModelList docs = ess.query(
                 new NxQueryBuilder(session).nxql("SELECT * FROM File").fetchFromElasticsearch());
         Assert.assertEquals(1, docs.totalSize());

@@ -54,7 +54,7 @@ public class ImageIdentifier extends MagickExecutor {
     }
 
     public static ExecResult getIdentifyResult(String inputFilePath) throws CommandNotAvailable {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         CmdParameters params = cles.getDefaultCmdParameters();
         params.addNamedParameter("inputFilePath", inputFilePath);
         return cles.execCommand("identify", params);

@@ -66,7 +66,7 @@ public class RestServerInit implements RepositoryInit {
 
     @Override
     public void populate(CoreSession session) {
-        JsonFactoryManager jsonFactoryManager = Framework.getLocalService(JsonFactoryManager.class);
+        JsonFactoryManager jsonFactoryManager = Framework.getService(JsonFactoryManager.class);
         if (!jsonFactoryManager.isStackDisplay()) {
             jsonFactoryManager.toggleStackDisplay();
         }
@@ -122,7 +122,7 @@ public class RestServerInit implements RepositoryInit {
             Thread.currentThread().interrupt();
         }
 
-        UserManager um = Framework.getLocalService(UserManager.class);
+        UserManager um = Framework.getService(UserManager.class);
         // Create some users
         if (um != null) {
             Framework.doPrivileged(() -> createUsersAndGroups(um));
@@ -205,7 +205,7 @@ public class RestServerInit implements RepositoryInit {
     }
 
     public static NuxeoPrincipal getPowerUser() {
-        UserManager um = Framework.getLocalService(UserManager.class);
+        UserManager um = Framework.getService(UserManager.class);
         return um.getPrincipal(POWER_USER_LOGIN);
     }
 

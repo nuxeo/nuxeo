@@ -115,7 +115,7 @@ public class BulkEditActions implements Serializable {
     public String bulkEditSelection() {
         if (fictiveDocumentModel != null) {
             List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
-            Framework.getLocalService(BulkEditService.class).updateDocuments(documentManager, fictiveDocumentModel,
+            Framework.getService(BulkEditService.class).updateDocuments(documentManager, fictiveDocumentModel,
                     selectedDocuments);
 
             for (DocumentModel doc : selectedDocuments) {

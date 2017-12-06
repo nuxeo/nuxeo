@@ -58,7 +58,7 @@ public class WebEngineFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        engine = Framework.getLocalService(WebEngine.class);
+        engine = Framework.getService(WebEngine.class);
     }
 
     @Override

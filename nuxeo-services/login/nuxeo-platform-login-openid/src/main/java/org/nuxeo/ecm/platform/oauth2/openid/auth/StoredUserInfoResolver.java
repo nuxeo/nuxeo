@@ -50,7 +50,7 @@ public class StoredUserInfoResolver extends UserResolver {
         String nuxeoLogin = getUserInfoStore().getNuxeoLogin(userInfo);
         // Check if the user exists
         try {
-            UserManager userManager = Framework.getLocalService(UserManager.class);
+            UserManager userManager = Framework.getService(UserManager.class);
             if (userManager.getUserModel(nuxeoLogin) == null) {
                 nuxeoLogin = null;
             }
@@ -65,7 +65,7 @@ public class StoredUserInfoResolver extends UserResolver {
     @Override
     public DocumentModel updateUserInfo(DocumentModel user, OpenIDUserInfo userInfo) {
         try {
-            UserManager userManager = Framework.getLocalService(UserManager.class);
+            UserManager userManager = Framework.getService(UserManager.class);
             String userId = (String) user.getPropertyValue(userManager.getUserIdField());
             getUserInfoStore().storeUserInfo(userId, userInfo);
         } catch (NuxeoException e) {

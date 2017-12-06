@@ -48,7 +48,7 @@ public abstract class AbstractUMObject<T> extends DefaultObject {
         if (args.length < 1) {
             throw new IllegalArgumentException("UserObject takes at least one parameter");
         }
-        um = Framework.getLocalService(UserManager.class);
+        um = Framework.getService(UserManager.class);
         currentArtifact = (T) args[0];
     }
 

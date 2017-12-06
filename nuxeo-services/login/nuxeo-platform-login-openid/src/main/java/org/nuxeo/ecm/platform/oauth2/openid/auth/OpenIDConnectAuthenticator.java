@@ -97,7 +97,7 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
         }
 
         try {
-            OpenIDConnectProviderRegistry registry = Framework.getLocalService(OpenIDConnectProviderRegistry.class);
+            OpenIDConnectProviderRegistry registry = Framework.getService(OpenIDConnectProviderRegistry.class);
             OpenIDConnectProvider provider = registry.getProvider(serviceProviderName);
 
             if (provider == null) {

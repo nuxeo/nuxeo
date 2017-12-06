@@ -59,7 +59,7 @@ public class AspellTester {
 
     @Test
     public void testAspellExec() throws Exception {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
         CommandAvailability ca = cles.getCommandAvailability("aspell");

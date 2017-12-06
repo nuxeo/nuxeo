@@ -70,7 +70,7 @@ public class DocumentAuditHelper {
         AuditQueryBuilder builder = new AuditQueryBuilder().addAndPredicate(Predicates.eq(LOG_DOC_UUID, uuid))
                                                            .addAndPredicate(Predicates.eq(LOG_EVENT_ID,
                                                                    DocumentEventTypes.DOCUMENT_CREATED));
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> entries = reader.queryLogs(builder);
         AdditionalDocumentAuditParams result;
         if (entries != null && entries.size() > 0) {

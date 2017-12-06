@@ -40,7 +40,7 @@ public class AuditEventLogger implements PostCommitFilteringEventListener {
 
     @Override
     public boolean acceptEvent(Event event) {
-        AuditLogger logger = Framework.getLocalService(AuditLogger.class);
+        AuditLogger logger = Framework.getService(AuditLogger.class);
         if (logger == null) {
             return false;
         }
@@ -49,7 +49,7 @@ public class AuditEventLogger implements PostCommitFilteringEventListener {
 
     @Override
     public void handleEvent(EventBundle events) {
-        AuditLogger logger = Framework.getLocalService(AuditLogger.class);
+        AuditLogger logger = Framework.getService(AuditLogger.class);
         if (logger != null) {
             logger.logEvents(events);
         } else {

@@ -62,7 +62,7 @@ public class TestGetDefaultThumbnail {
         session.save();
 
         // Then, the thumbnail service returns the big icon as default thumbnail
-        ThumbnailService service = Framework.getLocalService(ThumbnailService.class);
+        ThumbnailService service = Framework.getService(ThumbnailService.class);
         newDoc = session.getDocument(newDoc.getRef());
         Blob thumbnail = service.getThumbnail(newDoc, session);
 

@@ -50,7 +50,7 @@ public class RestoredCollectionListener implements EventListener {
         final String eventId = event.getName();
 
         final DocumentEventContext docCxt = (DocumentEventContext) event.getContext();
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
 
         DocumentModel doc = null;
         DocumentModel version = null;

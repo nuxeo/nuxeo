@@ -50,7 +50,7 @@ public class GroupMemberGroupsAdapter extends PaginableAdapter<NuxeoGroup> {
 
     @Override
     protected PageProviderDefinition getPageProviderDefinition() {
-        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
         return ppService.getPageProviderDefinition(PAGE_PROVIDER_NAME);
     }
 

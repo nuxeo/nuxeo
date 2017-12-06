@@ -34,14 +34,14 @@ public class SchemaEndPoint extends DefaultObject {
 
     @GET
     public Schemas getAll() {
-        SchemaManager sm = Framework.getLocalService(SchemaManager.class);
+        SchemaManager sm = Framework.getService(SchemaManager.class);
         return new Schemas(sm.getSchemas());
     }
 
     @GET
     @Path("{name}")
     public Schema getSchema(@PathParam("name") String name) {
-        SchemaManager sm = Framework.getLocalService(SchemaManager.class);
+        SchemaManager sm = Framework.getService(SchemaManager.class);
         return sm.getSchema(name);
     }
 

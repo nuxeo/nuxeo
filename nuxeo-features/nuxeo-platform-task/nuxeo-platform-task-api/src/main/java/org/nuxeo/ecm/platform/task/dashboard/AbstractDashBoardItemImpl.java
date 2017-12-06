@@ -132,7 +132,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
 
     public String getDocumentLink(boolean includeWorkflowTab) {
         DocumentModel doc = getDocument();
-        DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
+        DocumentViewCodecManager documentViewCodecManager = Framework.getService(DocumentViewCodecManager.class);
         if (documentViewCodecManager != null) {
             String viewId = getDefaultViewFor(doc);
             Map<String, String> parameters = new HashMap<String, String>();
