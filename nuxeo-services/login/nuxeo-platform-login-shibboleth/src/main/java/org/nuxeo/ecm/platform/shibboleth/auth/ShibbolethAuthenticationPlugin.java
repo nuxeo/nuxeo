@@ -128,13 +128,15 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
             externalMapper.getOrCreateAndUpdateNuxeoPrincipal(nativeObject);
         } else {
             try (Session userDir = Framework.getService(DirectoryService.class).open(userManager.getUserDirectoryName())) {
-                DocumentModel entry = userDir.getEntry(userId);
-                if (entry == null) {
-                    userDir.createEntry(fieldMap);
-                } else {
-                    entry.setProperties(userManager.getUserSchemaName(), fieldMap);
-                    userDir.updateEntry(entry);
-                }
+                Framework.doPrivileged(() -> {
+                    DocumentModel entry = userDir.getEntry(userId);
+                    if (entry == null) {
+                        userDir.createEntry(fieldMap);
+                    } else {
+                        entry.setProperties(userManager.getUserSchemaName(), fieldMap);
+                        userDir.updateEntry(entry);
+                    }
+                });
             } catch (DirectoryException e) {
                 log.error("Failed to get or create user entry", e);
             }
