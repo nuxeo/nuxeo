@@ -169,7 +169,7 @@ public class ShibbolethUserMapper implements UserMapper {
             userDoc = userManager.getBareUserModel();
             userDoc.setPropertyValue(userManager.getUserIdField(), userInfo.getUserName());
             userDoc.setPropertyValue(userManager.getUserEmailField(), userInfo.getUserName());
-            userManager.createUser(userDoc);
+            Framework.doPrivileged(() -> userManager.createUser(userDoc));
         } catch (NuxeoException e) {
             String message = "Error while creating user [" + userInfo.getUserName() + "] in UserManager";
             log.error(message, e);
@@ -188,7 +188,7 @@ public class ShibbolethUserMapper implements UserMapper {
     private DocumentModel findUser(String field, String userName) {
         Map<String, Serializable> query = new HashMap<>();
         query.put(field, userName);
-        DocumentModelList users = userManager.searchUsers(query, null);
+        DocumentModelList users = Framework.doPrivileged(() -> userManager.searchUsers(query, null));
 
         if (users.isEmpty()) {
             return null;
@@ -202,7 +202,7 @@ public class ShibbolethUserMapper implements UserMapper {
         userDoc.setProperty(userSchemaName, "lastName", userInfo.getLastName());
         userDoc.setProperty(userSchemaName, "password", userInfo.getPassword());
         userDoc.setProperty(userSchemaName, "company", userInfo.getCompany());
-        userManager.updateUser(userDoc);
+        Framework.doPrivileged(() -> userManager.updateUser(userDoc));
         return userDoc;
     }
 
