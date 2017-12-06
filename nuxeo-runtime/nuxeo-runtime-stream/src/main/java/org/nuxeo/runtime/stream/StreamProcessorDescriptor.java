@@ -19,6 +19,7 @@
  */
 package org.nuxeo.runtime.stream;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,10 +74,12 @@ public class StreamProcessorDescriptor {
 
     public Topology getTopology() {
         try {
-            return klass.newInstance().getTopology(options);
-        } catch (InstantiationException | IllegalAccessException e) {
+            return klass.getDeclaredConstructor().newInstance().getTopology(options);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException
+                | NoSuchMethodException e) {
             throw new RuntimeException("Can not create topology for processor: " + name, e);
         }
+
     }
 
     @SuppressWarnings("CanBeFinal")

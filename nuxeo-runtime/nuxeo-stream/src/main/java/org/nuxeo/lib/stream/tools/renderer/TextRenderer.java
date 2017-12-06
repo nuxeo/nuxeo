@@ -20,7 +20,6 @@ package org.nuxeo.lib.stream.tools.renderer;
 
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogRecord;
-import org.nuxeo.lib.stream.tools.renderer.Renderer;
 
 /**
  * @since 9.3

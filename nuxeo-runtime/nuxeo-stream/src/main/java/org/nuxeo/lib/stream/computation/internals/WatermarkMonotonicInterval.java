@@ -52,7 +52,7 @@ public class WatermarkMonotonicInterval {
      * Not thread safe.
      */
     public long mark(Watermark watermark) {
-        if (low == Watermark.LOWEST) {
+        if (Watermark.LOWEST.equals(low)) {
             low = high = watermark;
         } else if (watermark.compareTo(low) < 0) {
             if (watermark.compareTo(lowest) < 0) {

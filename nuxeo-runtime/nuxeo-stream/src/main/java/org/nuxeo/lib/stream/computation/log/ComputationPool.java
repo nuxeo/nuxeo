@@ -75,6 +75,7 @@ public class ComputationPool {
         return metadata.name();
     }
 
+    @SuppressWarnings("FutureReturnValueIgnored")
     public void start() {
         log.info(metadata.name() + ": Starting pool");
         threadPool = newFixedThreadPool(threads, new NamedThreadFactory(metadata.name() + "Pool"));

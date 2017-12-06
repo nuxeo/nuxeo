@@ -57,7 +57,7 @@ public class TestTools {
             for (int i = 0; i < NB_RECORD; i++) {
                 String key = "key" + i;
                 String value = "Some value for " + i;
-                appender.append(key, Record.of(key, value.getBytes()));
+                appender.append(key, Record.of(key, value.getBytes("UTF-8")));
             }
             LogTailer<Record> tailer = manager.createTailer("aGroup", LOG_NAME);
             tailer.read(Duration.ofMillis(10));

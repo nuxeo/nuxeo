@@ -63,7 +63,7 @@ public class TestComputation {
         assertEquals(0, context.getTimers().size());
 
         // ask to process a record
-        comp.processRecord(context, "i1", Record.of("foo", "bar".getBytes()));
+        comp.processRecord(context, "i1", Record.of("foo", "bar".getBytes("UTF-8")));
 
         // the record is forwarded to one output stream
         assertEquals(1, context.getRecords("o1").size());
@@ -75,7 +75,7 @@ public class TestComputation {
         assertEquals("bar", new String(context.getRecords("o1").get(0).data, StandardCharsets.UTF_8));
 
         // ask to process another record
-        comp.processRecord(context, "i1", Record.of("foo", "bar".getBytes()));
+        comp.processRecord(context, "i1", Record.of("foo", "bar".getBytes("UTF-8")));
         // the record is forwarded to the second output stream
         assertEquals(1, context.getRecords("o2").size());
         assertEquals(0, context.getRecords("o3").size());
@@ -135,7 +135,7 @@ public class TestComputation {
         assertEquals(1, context.getTimers().size());
 
         for (int i = 0; i < 42; i++) {
-            comp.processRecord(context, "i1", Record.of("foo", "bar".getBytes()));
+            comp.processRecord(context, "i1", Record.of("foo", "bar".getBytes("UTF-8")));
         }
         // nothing on output because the output is done by the timer
         assertEquals(0, context.getRecords("o1").size());
