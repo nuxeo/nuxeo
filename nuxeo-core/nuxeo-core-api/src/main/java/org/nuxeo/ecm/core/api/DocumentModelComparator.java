@@ -106,7 +106,7 @@ public class DocumentModelComparator implements Sorter {
             DataModel d2 = doc2.getDataModel(schemaName);
             for (Entry<String, String> e : orderBy.entrySet()) {
                 final String fieldName = e.getKey();
-                final boolean asc = ORDER_ASC.equals(e.getValue());
+                final boolean asc = ORDER_ASC.equalsIgnoreCase(e.getValue());
                 Object v1 = d1.getData(fieldName);
                 Object v2 = d2.getData(fieldName);
                 cmp = compare(v1, v2, asc);
@@ -117,7 +117,7 @@ public class DocumentModelComparator implements Sorter {
         } else {
             for (Entry<String, String> e : orderBy.entrySet()) {
                 final String propertyName = e.getKey();
-                final boolean asc = ORDER_ASC.equals(e.getValue());
+                final boolean asc = ORDER_ASC.equalsIgnoreCase(e.getValue());
                 Object v1 = null;
                 try {
                     v1 = doc1.getPropertyValue(propertyName);
