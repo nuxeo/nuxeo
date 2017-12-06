@@ -80,7 +80,6 @@ import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -3457,11 +3456,11 @@ public class TestSQLRepositoryQuery {
         dml = session.query("SELECT * FROM Document");
         assertEquals(nbDocs, dml.size());
 
-        ScrollResult ret = session.scroll("SELECT * FROM Document", batchSize, 10);
+        ScrollResult<String> ret = session.scroll("SELECT * FROM Document", batchSize, 10);
         int total = 0;
         while (ret.hasResults()) {
-            List<String> ids = ret.getResultIds();
-            ids.stream().forEach(id -> assertFalse(id.isEmpty()));
+            List<String> ids = ret.getResults();
+            ids.forEach(id -> assertFalse(id.isEmpty()));
             total += ids.size();
             ret = session.scroll(ret.getScrollId());
         }
@@ -3514,9 +3513,9 @@ public class TestSQLRepositoryQuery {
         session.createDocument(doc2);
         session.save();
 
-        ScrollResult ret = session.scroll("SELECT * FROM Document", 1, 10);
+        ScrollResult<String> ret = session.scroll("SELECT * FROM Document", 1, 10);
         assertTrue(ret.hasResults());
-        assertEquals(1, ret.getResultIds().size());
+        assertEquals(1, ret.getResults().size());
 
         try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
             exception.expect(NuxeoException.class);
@@ -3537,9 +3536,9 @@ public class TestSQLRepositoryQuery {
         session.createDocument(doc2);
         session.save();
 
-        ScrollResult ret = session.scroll("SELECT * FROM Document", 1, 1);
+        ScrollResult<String> ret = session.scroll("SELECT * FROM Document", 1, 1);
         assertTrue(ret.hasResults());
-        assertEquals(1, ret.getResultIds().size());
+        assertEquals(1, ret.getResults().size());
         // wait for scroll timeout
         Thread.sleep(1100);
 
@@ -3567,11 +3566,11 @@ public class TestSQLRepositoryQuery {
         session.createDocument(doc2);
         session.save();
 
-        ScrollResult ret1 = session.scroll("SELECT * FROM Document", 1, 1);
-        ScrollResult ret2 = session.scroll("SELECT * FROM Document", 1, 1);
-        ScrollResult ret3 = session.scroll("SELECT * FROM Document", 1, 1);
+        ScrollResult<String> ret1 = session.scroll("SELECT * FROM Document", 1, 1);
+        ScrollResult<String> ret2 = session.scroll("SELECT * FROM Document", 1, 1);
+        ScrollResult<String> ret3 = session.scroll("SELECT * FROM Document", 1, 1);
         assertTrue(ret1.hasResults());
-        assertEquals(1, ret1.getResultIds().size());
+        assertEquals(1, ret1.getResults().size());
 
         Thread.sleep(1100);
         // normal timeout on ret1
@@ -3607,8 +3606,8 @@ public class TestSQLRepositoryQuery {
         dml = session.query("SELECT * FROM Document");
         assertEquals(nbDocs, dml.size());
 
-        ScrollResult ret = session.scroll("SELECT * FROM Document", batchSize, 10);
-        List<String> ids = ret.getResultIds();
+        ScrollResult<String> ret = session.scroll("SELECT * FROM Document", batchSize, 10);
+        List<String> ids = ret.getResults();
         int total = ids.size();
         String scrollId = ret.getScrollId();
         // System.out.println("first call: " + total);
@@ -3626,7 +3625,7 @@ public class TestSQLRepositoryQuery {
                     } catch (InterruptedException e) {
                         ExceptionUtils.checkInterrupt(e);
                     }
-                    int nb = session.scroll(scrollId).getResultIds().size();
+                    int nb = session.scroll(scrollId).getResults().size();
                     // System.out.println(Thread.currentThread().getName() + ": return: " + nb);
                     return nb;
                 } finally {
@@ -3675,7 +3674,7 @@ public class TestSQLRepositoryQuery {
                     } catch (InterruptedException e) {
                         ExceptionUtils.checkInterrupt(e);
                     }
-                    session.scroll("SELECT * FROM Document", 1, 1).getResultIds().size();
+                    session.scroll("SELECT * FROM Document", 1, 1).getResults().size();
                     return 1;
                 } finally {
                     TransactionHelper.commitOrRollbackTransaction();

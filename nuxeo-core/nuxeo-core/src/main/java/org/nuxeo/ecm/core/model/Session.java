@@ -70,19 +70,19 @@ public interface Session {
             boolean distinctDocuments, long countUpTo, Object[] params);
 
     /**
-     * Executes the given query and returns the first batch of results of batchSize, next batch must be requested within
-     * the keepAliveSeconds delay.
+     * Executes the given query and returns the first batch of results containing id of documents, next batch must be
+     * requested within the keepAliveSeconds delay.
      *
      * @since 8.4
      */
-    ScrollResult scroll(String query, int batchSize, int keepAliveSeconds);
+    ScrollResult<String> scroll(String query, int batchSize, int keepAliveSeconds);
 
     /**
-     * Get the next batch of result.
+     * Get the next batch of result containing id of documents.
      * 
      * @since 8.4
      */
-    ScrollResult scroll(String scrollId);
+    ScrollResult<String> scroll(String scrollId);
 
     /**
      * Gets the lock manager for this session.

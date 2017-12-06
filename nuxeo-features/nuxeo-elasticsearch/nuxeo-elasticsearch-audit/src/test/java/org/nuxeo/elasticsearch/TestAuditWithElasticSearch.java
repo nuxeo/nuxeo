@@ -20,7 +20,6 @@
 package org.nuxeo.elasticsearch;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -33,8 +32,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,6 +53,9 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit",
         "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.core", "org.nuxeo.elasticsearch.seqgen",
@@ -284,13 +284,13 @@ public class TestAuditWithElasticSearch {
         List<LogEntry> logs = esBackend.queryLogs(builder);
         assertEquals(42, logs.size());
 
-        ScrollResult scrollResult = esBackend.scroll(builder, 5, 10);
+        ScrollResult<LogEntry> scrollResult = esBackend.scroll(builder, 5, 10);
         int total = 0;
         while (scrollResult.hasResults()) {
             assertTrue(scrollResult.getResults().size() <= 5);
-            List<String> ids = scrollResult.getResultIds();
-            ids.forEach(id -> assertFalse(id.isEmpty()));
-            total += ids.size();
+            List<LogEntry> entries = scrollResult.getResults();
+            entries.forEach(entry -> assertEquals("idForAuditStorage", entry.getEventId()));
+            total += entries.size();
             scrollResult = esBackend.scroll(scrollResult.getScrollId());
         }
         assertEquals(42, total);

@@ -36,16 +36,23 @@ import org.apache.commons.logging.LogFactory;
  *
  * @param <C> The cursor type.
  * @param <O> The cursor item type.
+ * @param <R> The result type.
  * @since 9.1
  */
-public class CursorService<C, O> {
+public class CursorService<C, O, R> {
 
     private static final Log log = LogFactory.getLog(CursorService.class);
 
-    protected Map<String, CursorResult<C, O>> cursorResults = new ConcurrentHashMap<>();
+    protected final Map<String, CursorResult<C, O>> cursorResults = new ConcurrentHashMap<>();
+
+    protected final Function<O, R> extractor;
+
+    public CursorService(Function<O, R> extractor) {
+        this.extractor = extractor;
+    }
 
     public void checkForTimedOutScroll() {
-        cursorResults.entrySet().stream().forEach(e -> isScrollTimedOut(e.getKey(), e.getValue()));
+        cursorResults.forEach(this::isScrollTimedOut);
     }
 
     protected boolean isScrollTimedOut(String scrollId, CursorResult<C, O> cursorResult) {
@@ -114,14 +121,7 @@ public class CursorService<C, O> {
     /**
      * @return the next batch of cursor associated to the input <code>scrollId</code>
      */
-    public ScrollResult scroll(String scrollId, Function<O, String> idExtractor) {
-        return scroll(scrollId, false, idExtractor);
-    }
-
-    /**
-     * @since 9.3
-     */
-    public ScrollResult scroll(String scrollId, boolean fetchResults, Function<O, String> idExtractor) {
+    public ScrollResult<R> scroll(String scrollId) {
         CursorResult<C, O> cursorResult = cursorResults.get(scrollId);
         if (cursorResult == null) {
             throw new NuxeoException("Unknown or timed out scrollId");
@@ -129,14 +129,13 @@ public class CursorService<C, O> {
             throw new NuxeoException("Timed out scrollId");
         }
         cursorResult.touch();
-        List<String> ids = new ArrayList<>(cursorResult.getBatchSize());
-        List<O> results = new ArrayList<>(cursorResult.getBatchSize());
+        List<R> results = new ArrayList<>(cursorResult.getBatchSize());
         synchronized (cursorResult) {
             if (!cursorResult.hasNext()) {
                 unregisterCursor(scrollId);
                 return emptyResult();
             }
-            while (ids.size() < cursorResult.getBatchSize()) {
+            while (results.size() < cursorResult.getBatchSize()) {
                 if (!cursorResult.hasNext()) {
                     // Don't unregister cursor here because we don't want scroll API to throw an exception during next
                     // call as it's a legitimate case - but close cursor
@@ -144,19 +143,16 @@ public class CursorService<C, O> {
                     break;
                 } else {
                     O obj = cursorResult.next();
-                    if (fetchResults) {
-                        results.add(obj);
-                    }
-                    String id = idExtractor.apply(obj);
-                    if (id == null) {
-                        log.error("Got a document without id: " + obj);
+                    R result = extractor.apply(obj);
+                    if (result == null) {
+                        log.error("Got a document without result: " + obj);
                     } else {
-                        ids.add(id);
+                        results.add(result);
                     }
                 }
             }
         }
-        return new ScrollResultImpl<>(scrollId, ids, results);
+        return new ScrollResultImpl<>(scrollId, results);
     }
 
     /**
