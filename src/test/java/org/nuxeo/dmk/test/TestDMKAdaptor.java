@@ -41,7 +41,7 @@ public class TestDMKAdaptor {
 
     @Test
     public void shouldDeploy() throws InstanceNotFoundException, MalformedObjectNameException {
-        MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
+        MBeanServer mbs = Framework.getService(ServerLocator.class).lookupServer();
         ObjectInstance htmlAdaptor = mbs.getObjectInstance(new ObjectName("org.nuxeo:type=jmx-adaptor,format=html"));
         Assert.assertThat(htmlAdaptor, org.hamcrest.Matchers.notNullValue());
         ObjectInstance httpConnector = mbs.getObjectInstance(new ObjectName(
