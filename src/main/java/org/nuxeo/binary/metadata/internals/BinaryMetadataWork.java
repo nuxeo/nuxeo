@@ -69,7 +69,7 @@ public class BinaryMetadataWork extends AbstractWork {
             setStatus("Nothing to process");
             return;
         }
-        BinaryMetadataService binaryMetadataService = Framework.getLocalService(BinaryMetadataService.class);
+        BinaryMetadataService binaryMetadataService = Framework.getService(BinaryMetadataService.class);
         DocumentModel workingDocument = session.getDocument(new IdRef(docId));
         binaryMetadataService.handleUpdate(mappingDescriptors, workingDocument);
         session.saveDocument(workingDocument);

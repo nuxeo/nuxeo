@@ -278,7 +278,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
      * @return the list of metadata which should be processed sorted by rules order. (high to low priority)
      */
     protected Set<MetadataRuleDescriptor> checkFilter(final ActionContext actionContext) {
-        final ActionManager actionService = Framework.getLocalService(ActionManager.class);
+        final ActionManager actionService = Framework.getService(ActionManager.class);
         return binaryMetadataComponent.ruleRegistry.contribs.stream().filter(ruleDescriptor -> {
             if (!ruleDescriptor.getEnabled()) {
                 return false;
