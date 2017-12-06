@@ -114,12 +114,12 @@ public class BaseTemplateAction implements Serializable {
     }
 
     public List<RenditionDefinition> getRenditions() {
-        RenditionService rs = Framework.getLocalService(RenditionService.class);
+        RenditionService rs = Framework.getService(RenditionService.class);
         return rs.getDeclaredRenditionDefinitionsForProviderType(TemplateBasedRenditionProvider.class.getSimpleName());
     }
 
     public List<TemplateSourceDocument> getAvailableOfficeTemplates(String targetType) {
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
         return tps.getAvailableOfficeTemplates(documentManager, targetType);
     }
 

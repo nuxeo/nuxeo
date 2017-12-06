@@ -129,7 +129,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument 
     }
 
     protected TemplateProcessor getTemplateProcessor() {
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
         return tps.getProcessor(getTemplateType());
     }
 
@@ -192,7 +192,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument 
             Blob blob = getTemplateBlob();
             if (blob != null) {
                 if (getTemplateType() == null) {
-                    TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+                    TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
                     String templateType = tps.findProcessorName(blob);
                     if (templateType != null) {
                         getAdaptedDoc().setPropertyValue(TEMPLATE_TYPE_PROP, templateType);
@@ -321,7 +321,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument 
 
     @Override
     public List<TemplateBasedDocument> getTemplateBasedDocuments() {
-        return Framework.getLocalService(TemplateProcessorService.class).getLinkedTemplateBasedDocuments(adaptedDoc);
+        return Framework.getService(TemplateProcessorService.class).getLinkedTemplateBasedDocuments(adaptedDoc);
     }
 
     @Override

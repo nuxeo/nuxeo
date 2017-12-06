@@ -91,7 +91,7 @@ public class FreeMarkerProcessor extends AbstractTemplateProcessor implements Te
 
         // try to guess mimetype and extension of the resulting Blob
 
-        MimetypeRegistry mreg = Framework.getLocalService(MimetypeRegistry.class);
+        MimetypeRegistry mreg = Framework.getService(MimetypeRegistry.class);
 
         String mimetype = "text/html";
         String extension = ".html";

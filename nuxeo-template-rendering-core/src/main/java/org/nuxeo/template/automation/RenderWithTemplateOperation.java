@@ -71,7 +71,7 @@ public class RenderWithTemplateOperation {
     public Blob run(DocumentModel targetDocument) {
         TemplateBasedDocument renderable = targetDocument.getAdapter(TemplateBasedDocument.class);
         if (attach && (renderable == null || !renderable.getTemplateNames().contains(templateName))) {
-            TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+            TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
             DocumentModel template = tps.getTemplateDoc(ctx.getCoreSession(), templateName);
             renderable = (template == null) ? null :
                 tps.makeTemplateBasedDocument(targetDocument, template, true)

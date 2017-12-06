@@ -46,7 +46,7 @@ public class DeckJSPDFConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
         CommandAvailability commandAvailability = cles.getCommandAvailability(DeckJSConverterConstants.PHANTOM_JS_COMMAND_NAME);
         if (!commandAvailability.isAvailable()) {
             return null;

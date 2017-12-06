@@ -45,7 +45,7 @@ public class AuditExtensionFactory implements ContextExtensionFactory {
     @Override
     public Object getExtension(DocumentModel currentDocument, DocumentWrapper wrapper, Map<String, Object> ctx) {
         // add audit context info
-        DocumentHistoryReader historyReader = Framework.getLocalService(DocumentHistoryReader.class);
+        DocumentHistoryReader historyReader = Framework.getService(DocumentHistoryReader.class);
         List<LogEntry> auditEntries = null;
         if (historyReader != null) {
             auditEntries = historyReader.getDocumentHistory(currentDocument, 0, 1000);

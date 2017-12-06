@@ -209,11 +209,11 @@ public class TemplatesActionBean extends BaseTemplateAction {
     }
 
     public Collection<TemplateProcessorDescriptor> getRegistredTemplateProcessors() {
-        return Framework.getLocalService(TemplateProcessorService.class).getRegisteredTemplateProcessors();
+        return Framework.getService(TemplateProcessorService.class).getRegisteredTemplateProcessors();
     }
 
     public Collection<OutputFormatDescriptor> getOutputFormatDescriptors() {
-        return Framework.getLocalService(TemplateProcessorService.class).getOutputFormats();
+        return Framework.getService(TemplateProcessorService.class).getOutputFormats();
     }
 
     public List<String> getTemplateAndVersionsUUIDs() {

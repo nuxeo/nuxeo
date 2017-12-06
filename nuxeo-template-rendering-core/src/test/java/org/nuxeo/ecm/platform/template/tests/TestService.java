@@ -52,7 +52,7 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testServiceLookup() {
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
         assertNotNull(tps);
     }
 
@@ -62,7 +62,7 @@ public class TestService extends NXRuntimeTestCase {
         // test simple registration
         pushInlineDeployments("org.nuxeo.template.manager:OSGI-INF/templateprocessor-contrib1.xml");
 
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
 
         assertNotNull(tps.getProcessor("TestProcessor"));
 
@@ -95,7 +95,7 @@ public class TestService extends NXRuntimeTestCase {
 
         // test merge registration
         pushInlineDeployments("org.nuxeo.template.manager.test:OSGI-INF/templateprocessor-contrib2.xml");
-        tps = Framework.getLocalService(TemplateProcessorService.class);
+        tps = Framework.getService(TemplateProcessorService.class);
 
         assertNotNull(tps.getProcessor("TestProcessor"));
         desc = ((TemplateProcessorComponent) tps).getDescriptor("TestProcessor");
@@ -116,7 +116,7 @@ public class TestService extends NXRuntimeTestCase {
 
         // check undeploy
         popInlineDeployments();
-        tps = Framework.getLocalService(TemplateProcessorService.class);
+        tps = Framework.getService(TemplateProcessorService.class);
 
         fakeBlob.setFilename("bidon.bidon");
         assertNull(tps.findProcessor(fakeBlob));
@@ -129,7 +129,7 @@ public class TestService extends NXRuntimeTestCase {
     @Test
     public void testDefaultContrib() throws Exception {
 
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
 
         // check that the 2 default processors are registered
         assertNotNull(tps.getProcessor("Freemarker"));

@@ -53,7 +53,7 @@ public class ResourceService extends AbstractResourceService {
 
     public String getRoot() {
         CoreSession session = getCoreSession();
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
         List<TemplateSourceDocument> templates = tps.getAvailableTemplates(session, null);
         StringBuffer sb = new StringBuffer();
 

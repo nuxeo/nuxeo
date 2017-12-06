@@ -78,7 +78,7 @@ public class TemplateResource extends DefaultObject {
 
     protected String getList() {
 
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
         List<TemplateSourceDocument> sources = tps.getAvailableTemplates(getContext().getCoreSession(), null);
 
         StringBuffer sb = new StringBuffer();

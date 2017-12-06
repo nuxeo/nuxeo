@@ -41,7 +41,7 @@ public class TestOOoConvert extends BaseConverterTest {
 
     @Test
     public void testOfficeConverter() throws Exception {
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConversionService cs = Framework.getService(ConversionService.class);
 
         BlobHolder bh = getBlobFromPath("data/testMe.html", "text/html");
         String converterName = cs.getConverterName(bh.getBlob().getMimeType(), ODT_MT);
@@ -57,7 +57,7 @@ public class TestOOoConvert extends BaseConverterTest {
 
     @Test
     public void testOfficeConverter2() throws Exception {
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConversionService cs = Framework.getService(ConversionService.class);
 
         BlobHolder bh = getBlobFromPath("data/testMe.md", "text/x-web-markdown");
         String converterName = cs.getConverterName(bh.getBlob().getMimeType(), ODT_MT);
@@ -76,7 +76,7 @@ public class TestOOoConvert extends BaseConverterTest {
 
         BlobHolder bh = getBlobFromPath("data/Spec_ModelNux.odt", "application/vnd.oasis.opendocument.text");
 
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConversionService cs = Framework.getService(ConversionService.class);
 
         String converterName = cs.getConverterName(bh.getBlob().getMimeType(), "application/pdf");
         assertEquals("any2pdf", converterName);
@@ -97,7 +97,7 @@ public class TestOOoConvert extends BaseConverterTest {
 
     @Test
     public void testOfficeConverter4() throws Exception {
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConversionService cs = Framework.getService(ConversionService.class);
 
         BlobHolder bh = getBlobFromPath("data/testMe.html", "text/html");
         String converterName = cs.getConverterName(bh.getBlob().getMimeType(),
@@ -123,7 +123,7 @@ public class TestOOoConvert extends BaseConverterTest {
 
     @Test
     public void testOfficeConverter5() throws Exception {
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        ConversionService cs = Framework.getService(ConversionService.class);
 
         BlobHolder bh = getBlobFromPath("data/testMe.html", "text/html");
         String converterName = cs.getConverterName(bh.getBlob().getMimeType(),

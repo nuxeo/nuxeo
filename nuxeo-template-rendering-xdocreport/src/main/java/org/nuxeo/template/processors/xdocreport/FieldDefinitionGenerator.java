@@ -39,7 +39,7 @@ import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
 public class FieldDefinitionGenerator {
 
     public static String generate(String type) {
-        SchemaManager sm = Framework.getLocalService(SchemaManager.class);
+        SchemaManager sm = Framework.getService(SchemaManager.class);
         DocumentType docType = sm.getDocumentType(type);
 
         return generate(docType.getSchemaNames());
@@ -54,7 +54,7 @@ public class FieldDefinitionGenerator {
         FieldsMetadata fieldsMetadata = new FieldsMetadata(TemplateEngineKind.Freemarker.name());
 
         for (String schemaName : schemaNames) {
-            SchemaManager sm = Framework.getLocalService(SchemaManager.class);
+            SchemaManager sm = Framework.getService(SchemaManager.class);
 
             Schema schema = sm.getSchema(schemaName);
             for (Field field : schema.getFields()) {

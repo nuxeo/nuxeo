@@ -90,7 +90,7 @@ public class TemplateInitListener implements EventListener {
                         // if not templateBased see if we must add the facet
                         // because of the type binding
                         // or template selection as main file
-                        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+                        TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
 
                         String targetTemplateUid = (String) targetDoc.getContextData("templateId");
                         if ("none".equals(targetTemplateUid)) {

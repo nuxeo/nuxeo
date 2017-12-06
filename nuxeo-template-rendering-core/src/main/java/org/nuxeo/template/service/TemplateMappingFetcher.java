@@ -41,7 +41,7 @@ public class TemplateMappingFetcher extends UnrestrictedSessionRunner {
 
     protected static String getRepoName() {
         if (repoName == null) {
-            RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
+            RepositoryManager rm = Framework.getService(RepositoryManager.class);
             repoName = rm.getDefaultRepositoryName();
         }
         return repoName;

@@ -47,7 +47,7 @@ public abstract class AbstractResourceService extends DefaultObject {
 
     protected List<TemplateSourceDocument> getTemplates() {
         CoreSession session = getCoreSession();
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
         return tps.getAvailableTemplates(session, null);
     }
 
