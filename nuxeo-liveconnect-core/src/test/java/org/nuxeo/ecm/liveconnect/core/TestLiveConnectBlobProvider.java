@@ -46,7 +46,6 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
@@ -162,12 +161,12 @@ public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
 
     @Test
     public void testCheckChangesAndUpdateBlobWithUpdate() {
-        DocumentModel doc = new DocumentModelImpl("parent", "file-1", "File");
+        DocumentModel doc = session.createDocumentModel("parent", "file-1", "File");
         doc.setPropertyValue("content", createBlob(FILE_1_ID, ""));
         List<DocumentModel> docs = blobProvider.checkChangesAndUpdateBlob(Collections.singletonList(doc));
         assertFalse(docs.isEmpty());
 
-        doc = new DocumentModelImpl("parent", "file-1", "File");
+        doc = session.createDocumentModel("parent", "file-1", "File");
         doc.setPropertyValue("content", createBlob(FILE_1_ID));
         docs = blobProvider.checkChangesAndUpdateBlob(Collections.singletonList(doc));
         assertFalse(docs.isEmpty());
@@ -175,16 +174,16 @@ public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
 
     @Test
     public void testCheckChangesAndUpdateBlobWithoutUpdate() {
-        DocumentModel doc = new DocumentModelImpl("parent", "file-1", "File");
+        DocumentModel doc = session.createDocumentModel("parent", "file-1", "File");
         List<DocumentModel> docs = blobProvider.checkChangesAndUpdateBlob(Collections.singletonList(doc));
         assertTrue(docs.isEmpty());
 
-        doc = new DocumentModelImpl("parent", "file-1", "File");
+        doc = session.createDocumentModel("parent", "file-1", "File");
         doc.setPropertyValue("content", createBlob(FILE_1_ID, FILE_1_DIGEST));
         docs = blobProvider.checkChangesAndUpdateBlob(Collections.singletonList(doc));
         assertTrue(docs.isEmpty());
 
-        doc = new DocumentModelImpl("parent", "file-1", "File");
+        doc = session.createDocumentModel("parent", "file-1", "File");
         doc.setPropertyValue("content", createBlob(FILE_1_ID, FILE_1_DIGEST, UUID.randomUUID().toString()));
         docs = blobProvider.checkChangesAndUpdateBlob(Collections.singletonList(doc));
         assertTrue(docs.isEmpty());
