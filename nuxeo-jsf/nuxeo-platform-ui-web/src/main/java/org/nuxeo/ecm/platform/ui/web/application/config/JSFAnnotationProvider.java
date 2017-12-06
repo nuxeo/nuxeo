@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sun.faces.spi.AnnotationProvider;
@@ -35,6 +36,8 @@ import com.sun.faces.spi.AnnotationProvider;
  */
 public class JSFAnnotationProvider extends AnnotationProvider {
 
+    private static final Log log = LogFactory.getLog(JSFAnnotationProvider.class);
+
     protected final AnnotationProvider base;
 
     public JSFAnnotationProvider(ServletContext sc, AnnotationProvider aProvider) {
@@ -45,8 +48,7 @@ public class JSFAnnotationProvider extends AnnotationProvider {
     @Override
     public Map<Class<? extends Annotation>, Set<Class<?>>> getAnnotatedClasses(Set<URI> urls) {
         if (JSFContainerInitializer.self == null) {
-            LogFactory.getLog(JSFAnnotationProvider.class).warn(
-                    "container scanned classes unavailable, applying default scanning");
+            log.info("Container scanned classes unavailable, applying default scanning");
             return base.getAnnotatedClasses(urls);
         }
         return JSFContainerInitializer.self.index;

@@ -22,7 +22,9 @@
      Documentation at /docs/config/server.html
  -->
 <Server address="${nuxeo.server.tomcat_admin.host}" port="${nuxeo.server.tomcat_admin.port}" shutdown="SHUTDOWN">
+  <!-- Uncomment to get Tomcat info logged at startup
   <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
+  -->
   <!-- Security listener. Documentation at /docs/config/listeners.html
   <Listener className="org.apache.catalina.security.SecurityListener" />
   -->
@@ -208,7 +210,7 @@
              Documentation at: /docs/config/valve.html -->
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="log"
                prefix="access.log" fileDateFormat=".yyyy-MM-dd" suffix=""
-               pattern="combined" resolveHosts="false"
+               pattern="combined"
                rotatable="true" renameOnRotate="true" buffered="true" />
 
         <!-- Customize the ErrorReportValve -->

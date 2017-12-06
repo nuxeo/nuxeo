@@ -239,7 +239,7 @@ public class ComponentManagerImpl implements ComponentManager {
     public synchronized void register(RegistrationInfo ri) {
         ComponentName name = ri.getName();
         if (blacklist.contains(name.getName())) {
-            log.warn("Component " + name.getName() + " was blacklisted. Ignoring.");
+            log.info("Component " + name.getName() + " was blacklisted. Ignoring.");
             return;
         }
 

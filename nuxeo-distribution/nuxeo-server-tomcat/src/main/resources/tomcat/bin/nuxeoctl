@@ -170,6 +170,9 @@ if [ $cygwin = false ]; then
   fi
 fi
 
+## java.util.logging configuration
+JUL_CONFIG="-Djava.util.logging.config.file=$NUXEO_HOME/conf/logging.properties"
+JAVA_OPTS="$JAVA_OPTS $JUL_CONFIG"
 
 ## nuxeo.log.dir
 LOG_DIR=$(grep "^nuxeo.log.dir=" "$NUXEO_CONF" | cut -d= -f2-)
@@ -216,8 +219,8 @@ while true; do
     fi
   done
   cp "$NUXEO_LAUNCHER" "$TMPLAUNCHER"
-  echo [`date`] "Launcher command: $JAVA  \"-Xbootclasspath/a:$JAVA_TOOLS\" $LAUNCHER_DEBUG \"-Dlauncher.java.opts=$JAVA_OPTS\" \"-Dnuxeo.home=$NUXEO_HOME\" \"-Dnuxeo.conf=$NUXEO_CONF\" \"-Dnuxeo.log.dir=$LOG_DIR\" -jar \"$TMPLAUNCHER\" $@" >> "$LOG_DIR"/nuxeoctl.log
-  "$JAVA" "-Xbootclasspath/a:$JAVA_TOOLS" $LAUNCHER_DEBUG "-Dlauncher.java.opts=$JAVA_OPTS" "-Dnuxeo.home=$NUXEO_HOME" "-Dnuxeo.conf=$NUXEO_CONF" "-Dnuxeo.log.dir=$LOG_DIR" -jar "$TMPLAUNCHER" "$@"
+  echo [`date`] "Launcher command: $JAVA  \"-Xbootclasspath/a:$JAVA_TOOLS\" $LAUNCHER_DEBUG $JUL_CONFIG \"-Dlauncher.java.opts=$JAVA_OPTS\" \"-Dnuxeo.home=$NUXEO_HOME\" \"-Dnuxeo.conf=$NUXEO_CONF\" \"-Dnuxeo.log.dir=$LOG_DIR\" -jar \"$TMPLAUNCHER\" $@" >> "$LOG_DIR"/nuxeoctl.log
+  "$JAVA" "-Xbootclasspath/a:$JAVA_TOOLS" $LAUNCHER_DEBUG "$JUL_CONFIG" "-Dlauncher.java.opts=$JAVA_OPTS" "-Dnuxeo.home=$NUXEO_HOME" "-Dnuxeo.conf=$NUXEO_CONF" "-Dnuxeo.log.dir=$LOG_DIR" -jar "$TMPLAUNCHER" "$@"
   exitcode=$?
   rm -f "$TMPLAUNCHER"
   if [ "$exitcode" != "128" ]; then

@@ -80,7 +80,7 @@
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
     <param name="Target" value="System.out" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n" />
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c{1}] %m%n" />
     </layout>
     <filter class="org.apache.log4j.varia.LevelRangeFilter">
       <param name="levelMin" value="INFO" />
@@ -234,6 +234,9 @@
   <category name="org.jboss.seam.contexts.Lifecycle">
     <priority value="WARN" />
   </category>
+  <category name="org.jboss.seam.security.permission.PersistentPermissionResolver">
+    <priority value="ERROR" />
+  </category>
   <category name="org.jboss.mx.loading">
     <priority value="INFO" />
   </category>
@@ -305,23 +308,23 @@
   </category>
 
   <category name="org.nuxeo.ecm.core.storage.dbs.DBSCachingRepository">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
 
   <category name="org.nuxeo.elasticsearch.ElasticSearchComponent">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
 
   <category name="org.nuxeo.elasticsearch.audit.ESAuditBackend">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
 
   <category name="org.nuxeo.elasticsearch.audit.ESAuditMigrationWork">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
 
   <category name="org.nuxeo.ecm.platform.query.core.PageProviderClassReplacerRegistry">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
 
   <category name="org.elasticsearch.bootstrap">
@@ -377,7 +380,7 @@
   <!-- Display INFO logs for automation traces when activated -->
   <!-- Add <appender-ref ref="AUTOMATION" /> if using AUTOMATION appender-->
   <category name="org.nuxeo.ecm.automation.core">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
   <!-- Display by default WARN logs for Automation Scripting -->
   <category name="org.nuxeo.ecm.automation.scripting">
