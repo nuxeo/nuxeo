@@ -49,7 +49,7 @@ public class TenantAdministratorsListener implements EventListener {
             Property property = doc.getProperty(Constants.TENANT_ADMINISTRATORS_PROPERTY);
             if (property.isDirty()) {
                 // flush the principals cache
-                EventService eventService = Framework.getLocalService(EventService.class);
+                EventService eventService = Framework.getService(EventService.class);
                 eventService.sendEvent(new org.nuxeo.runtime.services.event.Event(UserManagerImpl.USERMANAGER_TOPIC,
                         "invalidateAllPrincipals", null, null));
             }

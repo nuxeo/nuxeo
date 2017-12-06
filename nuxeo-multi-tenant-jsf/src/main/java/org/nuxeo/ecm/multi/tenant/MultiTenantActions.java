@@ -68,30 +68,30 @@ public class MultiTenantActions implements Serializable {
     protected DirectoryUIActionsBean directoryUIActions;
 
     public List<DocumentModel> getTenants() {
-        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+        MultiTenantService multiTenantService = Framework.getService(MultiTenantService.class);
         return multiTenantService.getTenants();
     }
 
     public boolean isTenantIsolationEnabled() {
-        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+        MultiTenantService multiTenantService = Framework.getService(MultiTenantService.class);
         return multiTenantService.isTenantIsolationEnabled(documentManager);
     }
 
     public void enableTenantIsolation() {
-        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+        MultiTenantService multiTenantService = Framework.getService(MultiTenantService.class);
         multiTenantService.enableTenantIsolation(documentManager);
     }
 
     public void disableTenantIsolation() {
-        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+        MultiTenantService multiTenantService = Framework.getService(MultiTenantService.class);
         multiTenantService.disableTenantIsolation(documentManager);
     }
 
     public boolean isReadOnlyDirectory(String directoryName) {
-        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+        MultiTenantService multiTenantService = Framework.getService(MultiTenantService.class);
         if (multiTenantService.isTenantIsolationEnabled(documentManager)) {
             if (multiTenantService.isTenantAdministrator(documentManager.getPrincipal())) {
-                DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+                DirectoryService directoryService = Framework.getService(DirectoryService.class);
                 return !directoryService.getDirectory(directoryName).isMultiTenant();
             }
         }

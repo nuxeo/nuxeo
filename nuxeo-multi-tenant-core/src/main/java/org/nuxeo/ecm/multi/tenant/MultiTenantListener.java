@@ -48,7 +48,7 @@ public class MultiTenantListener implements EventListener {
             return;
         }
 
-        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+        MultiTenantService multiTenantService = Framework.getService(MultiTenantService.class);
         String tenantDocumentType = multiTenantService.getTenantDocumentType();
         DocumentModel doc = ((DocumentEventContext) ctx).getSourceDocument();
         if (!doc.getType().equals(tenantDocumentType)) {

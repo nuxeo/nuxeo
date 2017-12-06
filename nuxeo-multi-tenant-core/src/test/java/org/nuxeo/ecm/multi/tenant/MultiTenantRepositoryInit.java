@@ -33,7 +33,7 @@ public class MultiTenantRepositoryInit implements RepositoryInit {
 
     @Override
     public void populate(CoreSession session) {
-        MultiTenantService mts = Framework.getLocalService(MultiTenantService.class);
+        MultiTenantService mts = Framework.getService(MultiTenantService.class);
         mts.enableTenantIsolation(session);
 
         DocumentModel domain = null;
@@ -57,7 +57,7 @@ public class MultiTenantRepositoryInit implements RepositoryInit {
      * @param name
      */
     protected NuxeoPrincipal createUser(String username, String tenant, CoreSession session) {
-        UserManager userManager = Framework.getLocalService(UserManager.class);
+        UserManager userManager = Framework.getService(UserManager.class);
         DocumentModel user = userManager.getBareUserModel();
         user.setPropertyValue("user:username", username);
         user.setPropertyValue("user:password", username);

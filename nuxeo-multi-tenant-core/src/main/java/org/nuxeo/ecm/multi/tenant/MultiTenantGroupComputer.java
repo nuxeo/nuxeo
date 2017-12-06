@@ -47,7 +47,7 @@ public class MultiTenantGroupComputer extends AbstractGroupComputer {
         final List<String> groups = new ArrayList<String>();
         final String tenantId = (String) nuxeoPrincipal.getModel().getPropertyValue("user:tenantId");
         if (!StringUtils.isBlank(tenantId)) {
-            String defaultRepositoryName = Framework.getLocalService(RepositoryManager.class)
+            String defaultRepositoryName = Framework.getService(RepositoryManager.class)
                                                     .getDefaultRepositoryName();
             TransactionHelper.runInTransaction(() -> {
                 new UnrestrictedSessionRunner(defaultRepositoryName) {
