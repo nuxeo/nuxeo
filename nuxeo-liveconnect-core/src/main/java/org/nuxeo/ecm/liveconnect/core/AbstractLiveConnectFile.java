@@ -55,7 +55,7 @@ public abstract class AbstractLiveConnectFile implements LiveConnectFile {
     @Override
     public String getMimeType() {
         if (mimeType == null) {
-            MimetypeRegistryService service = (MimetypeRegistryService) Framework.getLocalService(MimetypeRegistry.class);
+            MimetypeRegistryService service = (MimetypeRegistryService) Framework.getService(MimetypeRegistry.class);
             mimeType = service.getMimetypeFromFilename(getFilename());
         }
         return mimeType;
