@@ -137,7 +137,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
         // check cleanup
         session.removeDocument(testWorkspace.getRef());
         session.save();
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
 
         assertEquals(0, session.query(searchUserRegistration).size());
     }
