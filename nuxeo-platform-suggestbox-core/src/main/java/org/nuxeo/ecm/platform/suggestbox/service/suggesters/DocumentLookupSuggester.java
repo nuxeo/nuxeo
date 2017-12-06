@@ -74,7 +74,7 @@ public class DocumentLookupSuggester implements Suggester {
     @Override
     @SuppressWarnings("unchecked")
     public List<Suggestion> suggest(String userInput, SuggestionContext context) throws SuggestionException {
-        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) context.session);
         userInput = NXQLQueryBuilder.sanitizeFulltextInput(userInput);
