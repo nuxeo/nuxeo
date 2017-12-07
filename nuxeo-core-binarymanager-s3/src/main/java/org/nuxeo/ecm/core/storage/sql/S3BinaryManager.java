@@ -331,13 +331,11 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         // Try to create bucket if it doesn't exist
         if (!isEncrypted) {
             s3Builder = AmazonS3ClientBuilder.standard()
-                            .withRegion(bucketRegion)
                             .withCredentials(awsCredentialsProvider)
                             .withClientConfiguration(clientConfiguration);
 
         } else {
             s3Builder = AmazonS3EncryptionClientBuilder.standard()
-                            .withRegion(bucketRegion)
                             .withClientConfiguration(clientConfiguration)
                             .withCryptoConfiguration(cryptoConfiguration)
                             .withCredentials(awsCredentialsProvider)
@@ -345,6 +343,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         }
         if (isNotBlank(endpoint)) {
             s3Builder = s3Builder.withEndpointConfiguration(new EndpointConfiguration(endpoint, bucketRegion));
+        } else {
+            s3Builder = s3Builder.withRegion(bucketRegion);
         }
 
         amazonS3 = (AmazonS3) s3Builder.build();
