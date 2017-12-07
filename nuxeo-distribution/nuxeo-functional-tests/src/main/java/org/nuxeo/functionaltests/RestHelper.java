@@ -412,7 +412,6 @@ public class RestHelper {
         DirectoryEntry entry = new DirectoryEntry();
         entry.setProperties(properties);
         entry = CLIENT.directoryManager().directory(directoryName).createEntry(entry);
-
         String entryId = entry.getId();
         addDirectoryEntryToDelete(directoryName, entryId);
         return entryId;
@@ -423,6 +422,16 @@ public class RestHelper {
      */
     public static Map<String, Object> fetchDirectoryEntryProperties(String directoryName, String entryId) {
         return CLIENT.directoryManager().directory(directoryName).fetchEntry(entryId).getProperties();
+    }
+
+    /**
+     * @since 9.10
+     */
+    public static void updateDirectoryEntry(String directoryName, String entryId, Map<String, String> properties) {
+        DirectoryEntry entry = new DirectoryEntry();
+        entry.setProperties(properties);
+        entry.putIdProperty(entryId);
+        CLIENT.directoryManager().directory(directoryName).updateEntry(entry);
     }
 
     /**

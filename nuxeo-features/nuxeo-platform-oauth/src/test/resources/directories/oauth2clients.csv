@@ -1,10 +1,11 @@
-name,clientId,clientSecret,redirectURIs,enabled
-"No redirect URI","no-redirect-uri",,,
-"Not HTTPS","not-https",,"http://redirect.uri",
-"Localhost as domain name","localhost-domain-name",,"http://localhost.somecompany.com",
-"Dummy","testClient","testSecret","https://redirect.uri,http://localhost:8080/nuxeo,nuxeo://authorize",
-"Enabled","enabled","testSecret","https://redirect.uri",
-"NotEnabled","notEnabled","testSecret","https://redirect.uri","false"
-"NoSecret","noSecret",,"https://redirect.uri",
-"Existing 1","existing",,"https://redirect.uri1",
-"Existing 2","existing",,"https://redirect.uri2",
+name,clientId,clientSecret,redirectURIs,autoGrant,enabled
+"No redirect URI","no-redirect-uri",,,,
+"Not HTTPS","not-https",,"http://redirect.uri",,
+"Localhost as domain name","localhost-domain-name",,"http://localhost.somecompany.com",,
+"Dummy","testClient","testSecret","https://redirect.uri,http://localhost:8080/nuxeo,nuxeo://authorize",,
+"AutoGrant","autoGrant",,"https://redirect.uri",true,
+"Enabled","enabled","testSecret","https://redirect.uri",,
+"NotEnabled","notEnabled","testSecret","https://redirect.uri",,false
+"NoSecret","noSecret",,"https://redirect.uri",,
+"Existing 1","existing",,"https://redirect.uri1",,
+"Existing 2","existing",,"https://redirect.uri2",,

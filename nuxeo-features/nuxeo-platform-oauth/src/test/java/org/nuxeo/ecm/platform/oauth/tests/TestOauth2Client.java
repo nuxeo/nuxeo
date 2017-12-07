@@ -81,8 +81,15 @@ public class TestOauth2Client {
         assertTrue(client.isEnabled());
         assertEquals(Arrays.asList("https://redirect.uri", "http://localhost:8080/nuxeo", "nuxeo://authorize"),
                 client.getRedirectURIs());
+        assertFalse(client.isAutoGrant());
 
         assertTrue(clientService.isValidClient("testClient", "testSecret"));
+    }
+
+    @Test
+    public void testAutoGrant() {
+        assertFalse(clientService.getClient("testClient").isAutoGrant());
+        assertTrue(clientService.getClient("autoGrant").isAutoGrant());
     }
 
     @Test
