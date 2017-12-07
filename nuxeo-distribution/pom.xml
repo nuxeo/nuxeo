@@ -37,8 +37,7 @@
     <module>nuxeo-server-tests</module>
     <module>nuxeo-server-hotreload-tests</module>
     <module>nuxeo-war-tests</module>
-    <!-- NXP-23449 -->
-    <!--<module>nuxeo-wizard-tests</module>-->
+    <module>nuxeo-wizard-tests</module>
     <module>nuxeo-jsf-ui-hotreload-tests</module>
     <module>nuxeo-jsf-ui-webdriver-tests</module>
     <module>nuxeo-jsf-ui-funkload-tests</module>
