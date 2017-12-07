@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,6 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 
-import com.thoughtworks.xstream.io.json.JsonWriter;
-
 /**
  * Convert {@link LogEntry} to Json.
  * <p>
@@ -47,7 +45,7 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
  * </p>
  * <p>
  * This marshaller is also extensible: extend it and simply override
- * {@link ExtensibleEntityJsonWriter#extend(LogEntry, JsonWriter)}.
+ * {@link ExtensibleEntityJsonWriter#extend(Object, JsonGenerator)}.
  * </p>
  * <p>
  * Format is:

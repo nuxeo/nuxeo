@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -225,7 +225,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
                     continue;
                 } catch (DocumentNotFoundException e) {
                     if (! DocumentEventTypes.DOCUMENT_REMOVED.equals(entry.getEventId())) {
-                        log.error(String.format("Not found: %s, entry: %s", e.getMessage(), entry, e));
+                        log.error(String.format("Not found: %s, entry: %s", e.getMessage(), entry), e);
                     }
                     continue;
                 } catch (ELException e) {
@@ -264,21 +264,19 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
             }
 
             Boolean disabled = (Boolean) docCtx.getProperty(NXAuditEventsService.DISABLE_AUDIT_LOGGER);
-            if (disabled != null && disabled) {
+            if (disabled != null && disabled.booleanValue()) {
                 // don't log events with this flag
                 return null;
             }
             Principal principal = docCtx.getPrincipal();
             Map<String, Serializable> properties = docCtx.getProperties();
 
-            if (document != null) {
-                entry.setDocUUID(document.getId());
-                entry.setDocPath(document.getPathAsString());
-                entry.setDocType(document.getType());
-                entry.setRepositoryId(document.getRepositoryName());
-            }
+            entry.setDocUUID(document.getId());
+            entry.setDocPath(document.getPathAsString());
+            entry.setDocType(document.getType());
+            entry.setRepositoryId(document.getRepositoryName());
             if (principal != null) {
-                String principalName = null;
+                String principalName;
                 if (principal instanceof NuxeoPrincipal) {
                     principalName = ((NuxeoPrincipal) principal).getActingUser();
                 } else {
@@ -362,7 +360,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
         long nbSyncedEntries = 1;
 
         Principal principal = session.getPrincipal();
-        List<DocumentModel> folderishChildren = new ArrayList<DocumentModel>();
+        List<DocumentModel> folderishChildren = new ArrayList<>();
 
         provider.addLogEntry(doCreateAndFillEntryFromDocument(node, session.getPrincipal()));
 
@@ -506,7 +504,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
                                                            .addAndPredicate(Predicates.in(LOG_EVENT_ID, eventIds))
                                                            .order(OrderByExprs.desc(LOG_ID))
                                                            .limit(1);
-        return queryLogs(builder).stream().map(LogEntry::getId).findFirst().orElse(0L).longValue();
+        return queryLogs(builder).stream().mapToLong(LogEntry::getId).findFirst().orElse(0L);
     }
 
     @Override
