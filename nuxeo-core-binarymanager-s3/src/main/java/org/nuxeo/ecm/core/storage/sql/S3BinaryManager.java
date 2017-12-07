@@ -346,7 +346,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         } else {
             s3Builder = s3Builder.withRegion(bucketRegion);
         }
-        
+
         amazonS3 = (AmazonS3) s3Builder.build();
 
         try {
@@ -405,7 +405,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     public static boolean isMD5(String digest) {
         return MD5_RE.matcher(digest).matches();
     }
-    
+
     /**
      * Used in the healthCheck; the transferManager should be initialized and the bucket accessible
      *
