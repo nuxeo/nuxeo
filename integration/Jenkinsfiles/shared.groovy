@@ -99,3 +99,5 @@ def failOnServerError(String path, String pattern= '^[0-9]{4}-[0-9]{2}-[0-9]{2}.
           ! grep -E '$pattern' $path
     """
 }
+
+return this
