@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1475,8 +1475,8 @@ public class TestSQLRepositoryQuery {
     }
 
     private static void assertIdSet(DocumentModelList dml, String... ids) {
-        Collection<String> expected = new HashSet<String>(Arrays.asList(ids));
-        Collection<String> actual = new HashSet<String>();
+        Collection<String> expected = new HashSet<>(Arrays.asList(ids));
+        Collection<String> actual = new HashSet<>();
         for (DocumentModel d : dml) {
             actual.add(d.getId());
         }
@@ -2140,7 +2140,7 @@ public class TestSQLRepositoryQuery {
         createDocs();
 
         IterableQueryResult res = session.queryAndFetch("SELECT * FROM File", "NXQL");
-        List<Map<String, Serializable>> l = new LinkedList<Map<String, Serializable>>();
+        List<Map<String, Serializable>> l = new LinkedList<>();
         for (Map<String, Serializable> x : res) {
             l.add(x);
         }
@@ -2625,7 +2625,7 @@ public class TestSQLRepositoryQuery {
         // AND p.firstname = 'Bruce'
         clause = "tst:owner/firstname = 'Bruce'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
         it = session.queryAndFetch("SELECT tst:title, tst:owner/lastname" + FROM_WHERE + clause, "NXQL");
         assertEquals(1, it.size());
         assertEquals("Willis", it.iterator().next().get("tst:owner/lastname"));
@@ -2635,15 +2635,15 @@ public class TestSQLRepositoryQuery {
 
         clause = "tst:owner/firstname LIKE 'B%'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
 
         clause = "tst:owner/firstname IS NOT NULL";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
 
         clause = "tst:owner/firstname IN ('Bruce', 'Bilbo')";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
 
         // hierarchy h
         // JOIN hierarchy h2 ON h2.parentid = h.id
@@ -2654,7 +2654,7 @@ public class TestSQLRepositoryQuery {
         // AND p.firstname = 'Steve'
         clause = "tst:couple/first/firstname = 'Steve'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
         it = session.queryAndFetch("SELECT tst:title, tst:couple/first/lastname" + FROM_WHERE + clause, "NXQL");
         assertEquals(1, it.size());
         assertEquals("Jobs", it.iterator().next().get("tst:couple/first/lastname"));
@@ -2667,7 +2667,7 @@ public class TestSQLRepositoryQuery {
         // AND p.firstname = 'John'
         clause = "tst:friends/0/firstname = 'John'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
         it = session.queryAndFetch("SELECT tst:title, tst:friends/0/lastname" + FROM_WHERE + clause, "NXQL");
         assertEquals(1, it.size());
         assertEquals("Lennon", it.iterator().next().get("tst:friends/0/lastname"));
@@ -2676,7 +2676,7 @@ public class TestSQLRepositoryQuery {
         // alternate xpath syntax
         clause = "tst:friends/item[0]/firstname = 'John'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
 
         // hierarchy h
         // JOIN hierarchy h2 ON h2.parentid = h.id
@@ -2685,7 +2685,7 @@ public class TestSQLRepositoryQuery {
         // AND p.firstname = 'John'
         clause = "tst:friends/*/firstname = 'John'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
         it = session.queryAndFetch(SELECT_TITLE_WHERE + clause, "NXQL");
         // MongoDB query projecting on a non-wildcard values doesn't repeat matches
         // as this would entail re-evaluating the projection from the full state
@@ -2696,7 +2696,7 @@ public class TestSQLRepositoryQuery {
         // alternate xpath syntax
         clause = "tst:friends/item[*]/firstname = 'John'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
 
         // hierarchy h
         // JOIN hierarchy h2 ON h2.parentid = h.id
@@ -2706,7 +2706,7 @@ public class TestSQLRepositoryQuery {
         // AND p.lastname = 'Smith'
         clause = "tst:friends/*1/firstname = 'John'" + " AND tst:friends/*1/lastname = 'Smith'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
         it = session.queryAndFetch("SELECT tst:title, tst:friends/*1/lastname" + FROM_WHERE + clause, "NXQL");
         assertEquals(1, it.size()); // correlated stars
         assertEquals("Smith", it.iterator().next().get("tst:friends/*1/lastname"));
@@ -2715,7 +2715,7 @@ public class TestSQLRepositoryQuery {
         // alternate xpath syntax
         clause = "tst:friends/item[*1]/firstname = 'John'" + " AND tst:friends/item[*1]/lastname = 'Smith'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
     }
 
     @Test
@@ -2786,7 +2786,7 @@ public class TestSQLRepositoryQuery {
         // schema with a prefix
         clause = "tst:owner/firstname = 'Bruce'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
 
         // use of prefix is mandatory if defined
         try {
@@ -2802,12 +2802,12 @@ public class TestSQLRepositoryQuery {
         // schema without a prefix
         clause = "animal/race = 'dog'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
 
         // allow use with schema-name-as-prefix
         clause = "testschema3:animal/race = 'dog'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
     }
 
     @Test
@@ -2827,7 +2827,7 @@ public class TestSQLRepositoryQuery {
         // WHERE h2.name = 'tst:friends'
         clause = "tst:title = 'hello world'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
         it = session.queryAndFetch("SELECT tst:friends/*/lastname" + FROM_WHERE + clause, "NXQL");
         assertEquals(2, it.size());
         set = new HashSet<>();
@@ -2844,7 +2844,7 @@ public class TestSQLRepositoryQuery {
         // WHERE h2.name = 'tst:friends'
         clause = "tst:title = 'hello world'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
         it = session.queryAndFetch("SELECT tst:friends/*1/firstname, tst:friends/*1/lastname" + FROM_WHERE + clause,
                 "NXQL");
         assertEquals(2, it.size());
@@ -2876,7 +2876,7 @@ public class TestSQLRepositoryQuery {
         // AND s.item = 'foo'
         clause = "tst:subjects/0 = 'foo'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
         clause = "tst:subjects/0 = 'bar'";
         res = session.query(SELECT_WHERE + clause);
         assertEquals(0, res.size());
@@ -2900,7 +2900,7 @@ public class TestSQLRepositoryQuery {
         // AND s0.item LIKE 'foo%'
         clause = "tst:subjects/0 LIKE 'foo%'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
         it = session.queryAndFetch("SELECT tst:subjects/1" + FROM_WHERE + clause, "NXQL");
         assertEquals(1, it.size());
         assertEquals("bar", it.iterator().next().get("tst:subjects/1"));
@@ -2912,7 +2912,7 @@ public class TestSQLRepositoryQuery {
         // WHERE s.item LIKE '%oo'
         clause = "tst:subjects/*1 LIKE '%oo'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
         it = session.queryAndFetch("SELECT tst:subjects/*1" + FROM_WHERE + clause, "NXQL");
         assertEquals(2, it.size());
         set = new HashSet<>();
@@ -2925,7 +2925,7 @@ public class TestSQLRepositoryQuery {
         // projection only
         clause = "tst:title = 'hello world'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
         it = session.queryAndFetch("SELECT tst:subjects/*1" + FROM_WHERE + clause, "NXQL");
         assertEquals(3, it.size());
         set = new HashSet<>();
@@ -2946,7 +2946,7 @@ public class TestSQLRepositoryQuery {
         // projection on uncorrelated wildcard
         clause = "tst:subjects/* LIKE '%oo'";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
         it = session.queryAndFetch("SELECT tst:subjects/*" + FROM_WHERE + clause, "NXQL");
         // two uncorrelated stars, resulting in a cross join
         assertEquals(6, it.size());
@@ -2980,32 +2980,32 @@ public class TestSQLRepositoryQuery {
 
         clause = "tst:title LIKE '%' ORDER BY tst:owner/firstname";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
 
         clause = "tst:owner/firstname = 'Bruce' ORDER BY tst:title";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
 
         clause = "tst:owner/firstname = 'Bruce' ORDER BY tst:owner/firstname";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
 
         // this produces a DISTINCT and adds tst:title to the select list
         clause = "tst:subjects/* = 'foo' ORDER BY tst:title";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
 
         clause = "tst:friends/*/firstname = 'John' ORDER BY tst:title";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
 
         // no wildcard index so no DISTINCT needed
         clause = "tst:title LIKE '%' ORDER BY tst:friends/0/lastname";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
         clause = "tst:title LIKE '%' ORDER BY tst:subjects/0";
         res = session.query(SELECT_WHERE + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
 
         // SELECT * statement cannot ORDER BY array or complex list element
         clause = "tst:subjects/*1 = 'foo' ORDER BY tst:subjects/*1";
@@ -3048,7 +3048,7 @@ public class TestSQLRepositoryQuery {
 
         String query = "SELECT * FROM File2 WHERE ecm:isProxy = 0 AND tst2:notifs/*/subscribers/* = 'sub1'";
         DocumentModelList res = session.query(query);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
     }
 
     @Test
@@ -3066,7 +3066,7 @@ public class TestSQLRepositoryQuery {
 
         String query = "SELECT * FROM File2 WHERE ecm:isProxy = 0 AND tst2:notifs/*/enabled = 1";
         DocumentModelList res = session.query(query);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
     }
 
     @Test
@@ -3124,7 +3124,7 @@ public class TestSQLRepositoryQuery {
 
         clause = "tst:friends/*/firstname = 'John' ORDER BY tst:title";
         res = session.query("SELECT * FROM TestDoc WHERE " + clause);
-        assertEquals(Arrays.asList(docId), getIds(res));
+        assertEquals(Collections.singletonList(docId), getIds(res));
     }
 
     @Test
@@ -3142,7 +3142,7 @@ public class TestSQLRepositoryQuery {
         // doc3 tst:friends/0/firstname = 'John'
         DocumentModel doc3 = session.createDocumentModel("/", "doc3", "TestDoc");
         doc3.setPropertyValue("tst:friends",
-                (Serializable) Arrays.asList(Collections.singletonMap("firstname", "John")));
+                (Serializable) Collections.singletonList(Collections.singletonMap("firstname", "John")));
         doc3 = session.createDocument(doc3);
 
         // doc4 tst:subjects/0 = 'foo'
@@ -3162,16 +3162,16 @@ public class TestSQLRepositoryQuery {
         DocumentModelList res;
 
         res = session.query(s1 + c1 + s2);
-        assertEquals(Arrays.asList(doc1.getId()), getIds(res));
+        assertEquals(Collections.singletonList(doc1.getId()), getIds(res));
 
         res = session.query(s1 + c2 + s2);
-        assertEquals(Arrays.asList(doc2.getId()), getIds(res));
+        assertEquals(Collections.singletonList(doc2.getId()), getIds(res));
 
         res = session.query(s1 + c3 + s2);
-        assertEquals(Arrays.asList(doc3.getId()), getIds(res));
+        assertEquals(Collections.singletonList(doc3.getId()), getIds(res));
 
         res = session.query(s1 + c4 + s2);
-        assertEquals(Arrays.asList(doc4.getId()), getIds(res));
+        assertEquals(Collections.singletonList(doc4.getId()), getIds(res));
 
         res = session.query(s1 + c1 + o + c2 + s2);
         assertEquals(2, res.size());
@@ -3549,7 +3549,7 @@ public class TestSQLRepositoryQuery {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(nbThread);
         final CountDownLatch latch = new CountDownLatch(nbThread);
         for (int n = 0; n < nbThread; n++) {
-            CompletableFuture completableFuture = CompletableFuture.supplyAsync(() -> {
+            CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(() -> {
                 TransactionHelper.startTransaction();
                 try {
                     // make sure all threads ask to scroll at the same time
@@ -3598,8 +3598,7 @@ public class TestSQLRepositoryQuery {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NB_TRHEADS);
         final CountDownLatch latch = new CountDownLatch(NB_TRHEADS);
         for (int n = 0; n < NB_TRHEADS; n++) {
-
-            CompletableFuture completableFuture = CompletableFuture.supplyAsync(() -> {
+            CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(() -> {
                 TransactionHelper.startTransaction();
                 try {
                     // make sure all threads ask to scroll at the same time
