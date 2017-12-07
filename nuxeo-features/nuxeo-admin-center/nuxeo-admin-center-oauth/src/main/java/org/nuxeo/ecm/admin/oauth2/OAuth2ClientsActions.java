@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 
@@ -83,8 +84,15 @@ public class OAuth2ClientsActions extends DirectoryBasedEditor {
     }
 
     public void validateClientId(FacesContext context, UIComponent component, Object value) {
+        if (!(component instanceof UIInput && value instanceof String)) {
+            return;
+        }
+        Object currentValue = ((UIInput) component).getValue();
+        if (currentValue != null && currentValue.equals(value)) {
+            return;
+        }
         OAuth2ClientService clientService = Framework.getService(OAuth2ClientService.class);
-        if (value instanceof String && clientService.hasClient((String) value)) {
+        if (clientService.hasClient((String) value)) {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     ComponentUtils.translate(context, "label.oauth2.existing.clientId"), null);
             throw new ValidatorException(message);
