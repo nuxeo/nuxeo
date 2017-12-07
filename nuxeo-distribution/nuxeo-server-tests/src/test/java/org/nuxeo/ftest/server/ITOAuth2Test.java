@@ -35,6 +35,7 @@ import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ENDPOINT_TOKEN;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_DESCRIPTION_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet.ERROR_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.OAuth2Error.ACCESS_DENIED;
+import static org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService.OAUTH2CLIENT_DIRECTORY_NAME;
 import static org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest.MISSING_REQUIRED_FIELD_MESSAGE;
 import static org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore.DIRECTORY_NAME;
 
@@ -54,7 +55,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet;
-import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.LoginPage;
@@ -93,6 +93,8 @@ public class ITOAuth2Test extends AbstractTest {
 
     public static final String ATOM_CMIS10_PATH = "/atom/cmis10";
 
+    protected static String oauth2ClientDirectoryEntryId;
+
     protected Client client;
 
     @BeforeClass
@@ -103,7 +105,7 @@ public class ITOAuth2Test extends AbstractTest {
         properties.put("name", "Test Client");
         properties.put("clientId", "test-client");
         properties.put("redirectURIs", "http://localhost:8080/nuxeo/home.html");
-        RestHelper.createDirectoryEntry(OAuth2ClientService.OAUTH2CLIENT_DIRECTORY_NAME, properties);
+        oauth2ClientDirectoryEntryId = RestHelper.createDirectoryEntry(OAUTH2CLIENT_DIRECTORY_NAME, properties);
     }
 
     @AfterClass
@@ -376,6 +378,33 @@ public class ITOAuth2Test extends AbstractTest {
         params.put("code", code);
         OAuth2Token token = getOAuth2Token(params);
         assertEquals(initialToken.accessToken, token.accessToken);
+    }
+
+    @Test
+    public void testAuthorizationWithAutoGrant() throws IOException {
+        // Set auto-grant on the client
+        setAutoGrant(true);
+
+        // Ask for authorization
+        String url = NUXEO_URL + "/oauth2/authorize?client_id=test-client&response_type=code";
+        LoginPage loginPage = get(url, LoginPage.class);
+        loginPage.login(TEST_USERNAME, TEST_PASSWORD);
+
+        // Expecting to be redirected to the client's redirect_uri with a code parameter, bypassing the grant page
+        String currentURL = driver.getCurrentUrl();
+        assertEquals("http://localhost:8080/nuxeo/home.html", URIUtils.getURIPath(currentURL));
+        Map<String, String> queryParameters = URIUtils.getRequestParameters(currentURL);
+        assertEquals(1, queryParameters.size());
+        String code = queryParameters.get("code");
+        assertNotNull(code);
+
+        // Reset auto-grant on the client
+        setAutoGrant(false);
+    }
+
+    protected void setAutoGrant(boolean autoGrant) {
+        RestHelper.updateDirectoryEntry(OAUTH2CLIENT_DIRECTORY_NAME, oauth2ClientDirectoryEntryId,
+                Collections.singletonMap("autoGrant", String.valueOf(autoGrant)));
     }
 
     protected OAuth2Token getOAuth2Token(String username, String password) throws IOException {

@@ -24,6 +24,9 @@
           <widget>redirectURIs</widget>
         </row>
         <row>
+          <widget>autoGrant</widget>
+        </row>
+        <row>
           <widget>enabled</widget>
         </row>
 
@@ -95,6 +98,20 @@
           <property name="required">true</property>
           <property name="validator">#{oauth2ClientsActions.validateRedirectURIs}</property>
           <property name="placeholder">#{messages['label.oauth2.redirectURIs.placeholder']}</property>
+        </properties>
+      </widget>
+      <widget name="autoGrant" type="checkbox">
+        <labels>
+          <label mode="any">label.oauth2.autoGrant</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Client.autoGrant</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+            label.oauth2.help.autoGrant
+          </property>
         </properties>
       </widget>
       <widget name="enabled" type="checkbox">

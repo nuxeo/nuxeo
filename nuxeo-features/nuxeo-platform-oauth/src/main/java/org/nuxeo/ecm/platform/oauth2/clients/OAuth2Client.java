@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService.OAUTH2CL
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -47,16 +48,23 @@ public class OAuth2Client {
      */
     protected List<String> redirectURIs;
 
+    /**
+     * @since 9.10
+     */
+    protected boolean autoGrant;
+
     protected boolean enabled;
 
     /**
-     * @since 9.2
+     * @since 9.10
      */
-    protected OAuth2Client(String name, String id, String secret, List<String> redirectURIs, boolean enabled) {
+    protected OAuth2Client(String name, String id, String secret, List<String> redirectURIs, boolean autoGrant,
+            boolean enabled) {
         this.name = name;
         this.id = id;
         this.secret = secret;
         this.redirectURIs = redirectURIs;
+        this.autoGrant = autoGrant;
         this.enabled = enabled;
     }
 
@@ -75,6 +83,13 @@ public class OAuth2Client {
         return redirectURIs;
     }
 
+    /**
+     * @since 9.10
+     */
+    public boolean isAutoGrant() {
+        return autoGrant;
+    }
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -90,9 +105,11 @@ public class OAuth2Client {
         } else {
             redirectURIs = Arrays.asList(redirectURIsProperty.split(","));
         }
+        boolean autoGrant = (Boolean) Optional.ofNullable(doc.getPropertyValue(OAUTH2CLIENT_SCHEMA + ":autoGrant"))
+                                              .orElse(false);
         boolean enabled = (Boolean) doc.getPropertyValue(OAUTH2CLIENT_SCHEMA + ":enabled");
 
-        return new OAuth2Client(name, id, secret, redirectURIs, enabled);
+        return new OAuth2Client(name, id, secret, redirectURIs, autoGrant, enabled);
     }
 
     /**
@@ -123,7 +140,7 @@ public class OAuth2Client {
      */
     @Override
     public String toString() {
-        return String.format("%s(name=%s, id=%s, redirectURIs=%s, enabled=%b)", getClass().getSimpleName(), name, id,
-                redirectURIs, enabled);
+        return String.format("%s(name=%s, id=%s, redirectURIs=%s, autoGrant=%b, enabled=%b)",
+                getClass().getSimpleName(), name, id, redirectURIs, autoGrant, enabled);
     }
 }
