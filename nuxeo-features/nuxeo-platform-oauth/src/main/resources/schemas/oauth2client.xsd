@@ -8,6 +8,7 @@
   <xs:element name="clientId" type="xs:string"/>
   <xs:element name="clientSecret" type="xs:string"/>
   <xs:element name="redirectURIs" type="xs:string"/>
+  <xs:element name="autoGrant" type="xs:boolean"/>
 
   <xs:element name="enabled" type="xs:boolean" default="true"/>
 </xs:schema>

@@ -122,6 +122,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
 
     protected void doGetAuthorize(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
+        OAuth2ClientService clientService = Framework.getService(OAuth2ClientService.class);
         AuthorizationRequest authRequest = AuthorizationRequest.fromRequest(request);
         OAuth2Error error = authRequest.checkError();
         if (error != null) {
@@ -129,11 +130,12 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             return;
         }
 
-        // If a token exists for the client id and username passed in the authorization request,
-        // bypass the grant page and redirect directly to the redirect_uri with an authorization code parameter
+        // If auto-grant is checked on the client or a token exists for the (client, username) passed in the
+        // authorization request, bypass the grant page and redirect to the redirect_uri
+        // with an authorization code parameter
         String clientId = authRequest.getClientId();
-        NuxeoOAuth2Token token = tokenStore.getToken(clientId, authRequest.getUsername());
-        if (token != null) {
+        OAuth2Client client = clientService.getClient(clientId);
+        if (client.isAutoGrant() || tokenStore.getToken(clientId, authRequest.getUsername()) != null) {
             String redirectURI = getRedirectURI(authRequest);
             String authorizationCode = storeAuthorizationRequest(authRequest);
             String state = request.getParameter(STATE_PARAM);
@@ -168,8 +170,7 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             request.setAttribute(CODE_CHALLENGE_PARAM, codeChallenge);
             request.setAttribute(CODE_CHALLENGE_METHOD_PARAM, codeChallengeMethod);
         }
-        request.setAttribute(CLIENT_NAME,
-                Framework.getService(OAuth2ClientService.class).getClient(clientId).getName());
+        request.setAttribute(CLIENT_NAME, client.getName());
 
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(GRANT_JSP_PAGE_PATH);
         requestDispatcher.forward(request, response);

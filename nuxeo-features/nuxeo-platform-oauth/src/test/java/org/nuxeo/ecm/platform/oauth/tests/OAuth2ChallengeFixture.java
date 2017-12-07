@@ -347,6 +347,20 @@ public class OAuth2ChallengeFixture {
     }
 
     @Test
+    public void authorizeWithAutoGrantShouldBypassGrant() {
+        // get authorization, should redirect to the redirect_uri with a code parameter
+        Map<String, String> params = getAuthorizationRequestParams();
+        params.put(CLIENT_ID_PARAM, "autoGrant");
+        try (CloseableClientResponse cr = responseFromGetAuthorizeWith(params)) {
+            assertEquals(302, cr.getStatus());
+            String redirect = cr.getHeaders().get("Location").get(0);
+            assertTrue(redirect.startsWith(REDIRECT_URI));
+            String code = extractParameter(redirect, AUTHORIZATION_CODE_PARAM);
+            assertNotNull(code);
+        }
+    }
+
+    @Test
     public void getAuthorizeSubmitShouldReturn500() {
         try (CloseableClientResponse response = CloseableClientResponse.of(
                 client.resource(BASE_URL).path("oauth2").path(ENDPOINT_AUTH_SUBMIT).get(ClientResponse.class))) {
