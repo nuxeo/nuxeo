@@ -159,18 +159,16 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     protected boolean isMigrationDone() {
         AuditReader reader = Framework.getService(AuditReader.class);
-        List<LogEntry> entries = reader.queryLogs(new String[]{MIGRATION_DONE_EVENT}, null);
+        List<LogEntry> entries = reader.queryLogs(new String[] { MIGRATION_DONE_EVENT }, null);
         return !entries.isEmpty();
     }
 
     @Override
     public int getApplicationStartedOrder() {
-        int elasticOrder = ((DefaultComponent) Framework.getRuntime()
-                .getComponent("org.nuxeo.elasticsearch.ElasticSearchComponent"))
-                .getApplicationStartedOrder();
-        int uidgenOrder = ((DefaultComponent) Framework.getRuntime()
-                .getComponent("org.nuxeo.ecm.core.uidgen.UIDGeneratorService"))
-                .getApplicationStartedOrder();
+        int elasticOrder = ((DefaultComponent) Framework.getRuntime().getComponent(
+                "org.nuxeo.elasticsearch.ElasticSearchComponent")).getApplicationStartedOrder();
+        int uidgenOrder = ((DefaultComponent) Framework.getRuntime().getComponent(
+                "org.nuxeo.ecm.core.uidgen.UIDGeneratorService")).getApplicationStartedOrder();
         return Integer.max(elasticOrder, uidgenOrder) + 1;
     }
 
@@ -257,9 +255,9 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             logEntries = buildLogEntries(searchResponse);
             // Scroll on next results
             for (; //
-                 searchResponse.getHits().getHits().length > 0
-                         && logEntries.size() < searchResponse.getHits().getTotalHits(); //
-                 searchResponse = runNextScroll(searchResponse.getScrollId(), keepAlive)) {
+            searchResponse.getHits().getHits().length > 0
+                    && logEntries.size() < searchResponse.getHits().getTotalHits(); //
+                    searchResponse = runNextScroll(searchResponse.getScrollId(), keepAlive)) {
                 // Build log entries
                 logEntries.addAll(buildLogEntries(searchResponse));
             }
@@ -339,7 +337,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     protected SearchRequest createSearchRequest() {
         return new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE)
-                .searchType(SearchType.DFS_QUERY_THEN_FETCH);
+                                                  .searchType(SearchType.DFS_QUERY_THEN_FETCH);
     }
 
     @Override
@@ -369,8 +367,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         SearchModule searchModule = new SearchModule(Settings.EMPTY, false, Collections.emptyList());
         try {
-            try (XContentParser parser = XContentFactory.xContent(XContentType.JSON)
-                    .createParser(new NamedXContentRegistry(searchModule.getNamedXContents()), query)) {
+            try (XContentParser parser = XContentFactory.xContent(XContentType.JSON).createParser(
+                    new NamedXContentRegistry(searchModule.getNamedXContents()), query)) {
                 searchSourceBuilder.parseXContent(new QueryParseContext(parser));
             }
         } catch (IOException | ParsingException e) {
@@ -379,7 +377,6 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         }
         return searchSourceBuilder;
     }
-
 
     public String expandQueryVariables(String query, Object[] params) {
         Map<String, Object> qParams = new HashMap<>();
@@ -427,7 +424,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String[] categories, String path, int pageNb,
-                                          int pageSize) {
+            int pageSize) {
         SearchRequest request = createSearchRequest();
         BoolQueryBuilder filterBuilder = QueryBuilders.boolQuery();
         if (eventIds != null && eventIds.length > 0) {
@@ -513,9 +510,9 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     public Long getEventsCount(String eventId) {
         SearchResponse res = esClient.search(
                 new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE).source(
-                        new SearchSourceBuilder().query(QueryBuilders.constantScoreQuery(
-                                QueryBuilders.termQuery("eventId", eventId))).size(0)
-                ));
+                        new SearchSourceBuilder().query(
+                                QueryBuilders.constantScoreQuery(QueryBuilders.termQuery("eventId", eventId)))
+                                                 .size(0)));
         return res.getHits().getTotalHits();
     }
 
@@ -618,12 +615,12 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     }
 
     public SearchRequest buildSearchQuery(String fixedPart, PredicateDefinition[] predicates,
-                                          DocumentModel searchDocumentModel) {
+            DocumentModel searchDocumentModel) {
         SearchRequest request = createSearchRequest();
         QueryBuilder queryBuilder = QueryBuilders.wrapperQuery(fixedPart);
         QueryBuilder filterBuilder = buildFilter(predicates, searchDocumentModel);
-        request.source(new SearchSourceBuilder().query(
-                QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder)));
+        request.source(
+                new SearchSourceBuilder().query(QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder)));
         return request;
     }
 
@@ -689,7 +686,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
         // Get max log entry id
         SearchRequest request = createSearchRequest();
-        request.source(new SearchSourceBuilder().query(QueryBuilders.matchAllQuery()).aggregation(AggregationBuilders.max("maxAgg").field("id")));
+        request.source(new SearchSourceBuilder().query(QueryBuilders.matchAllQuery())
+                                                .aggregation(AggregationBuilders.max("maxAgg").field("id")));
         SearchResponse searchResponse = esClient.search(request);
         Max agg = searchResponse.getAggregations().get("maxAgg");
         long maxLogEntryId = (long) agg.getValue();

@@ -18,23 +18,23 @@
  */
 package org.nuxeo.ecm.platform.audit.service;
 
+import static org.nuxeo.ecm.platform.audit.service.LogEntryProvider.createProvider;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.EntityManager;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
-import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
-import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
+import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.runtime.api.Framework;
@@ -64,10 +64,9 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
 
     @Override
     public int getApplicationStartedOrder() {
-        return ((DefaultComponent) Framework.getRuntime()
-                                            .getComponent("org.nuxeo.ecm.core.persistence.PersistenceComponent"))
-                                                                                                                 .getApplicationStartedOrder()
-                + 1;
+        DefaultComponent component = (DefaultComponent) Framework.getRuntime().getComponent(
+                "org.nuxeo.ecm.core.persistence.PersistenceComponent");
+        return component.getApplicationStartedOrder() + 1;
     }
 
     @Override
@@ -106,225 +105,91 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
         }
     }
 
+    protected <T> T apply(boolean needActivateSession, Function<LogEntryProvider, T> function) {
+        return getOrCreatePersistenceProvider().run(Boolean.valueOf(needActivateSession), em -> {
+            return function.apply(createProvider(em));
+        });
+    }
+
+    protected void accept(boolean needActivateSession, Consumer<LogEntryProvider> consumer) {
+        getOrCreatePersistenceProvider().run(Boolean.valueOf(needActivateSession), em -> {
+            consumer.accept(createProvider(em));
+        });
+    }
+
     @Override
     public void addLogEntries(final List<LogEntry> entries) {
         if (entries.isEmpty()) {
             return;
         }
-        if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.startTransaction();
-            try {
-                getOrCreatePersistenceProvider().run(true, new RunVoid() {
-                    @Override
-                    public void runWith(EntityManager em) {
-                        addLogEntries(em, entries);
-                    }
-                });
-            } finally {
-                TransactionHelper.commitOrRollbackTransaction();
-            }
-            return;
-        }
-        getOrCreatePersistenceProvider().run(true, new RunVoid() {
-            @Override
-            public void runWith(EntityManager em) {
-                addLogEntries(em, entries);
-            }
-        });
-    }
-
-    protected void addLogEntries(EntityManager em, List<LogEntry> entries) {
-        LogEntryProvider.createProvider(em).addLogEntries(entries);
+        TransactionHelper.runInTransaction(() -> accept(true, provider -> provider.addLogEntries(entries)));
     }
 
     @Override
     public List<LogEntry> getLogEntriesFor(final String uuid, final String repositoryId) {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
-            @Override
-            public List<LogEntry> runWith(EntityManager em) {
-                return getLogEntriesFor(em, uuid, repositoryId);
-            }
-        });
-    }
-
-    protected List<LogEntry> getLogEntriesFor(EntityManager em, String uuid, String repositoryId) {
-        return LogEntryProvider.createProvider(em).getLogEntriesFor(uuid, repositoryId);
+        return apply(false, provider -> provider.getLogEntriesFor(uuid, repositoryId));
     }
 
     @Override
     public List<LogEntry> getLogEntriesFor(final String uuid) {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
-            @Override
-            public List<LogEntry> runWith(EntityManager em) {
-                return getLogEntriesFor(em, uuid);
-            }
-        });
-    }
-
-    protected List<LogEntry> getLogEntriesFor(EntityManager em, String uuid) {
-        return LogEntryProvider.createProvider(em).getLogEntriesFor(uuid);
+        return apply(false, provider -> provider.getLogEntriesFor(uuid));
     }
 
     @Override
     public List<LogEntry> getLogEntriesFor(final String uuid, final Map<String, FilterMapEntry> filterMap,
             final boolean doDefaultSort) {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
-            @Override
-            public List<LogEntry> runWith(EntityManager em) {
-                return getLogEntriesFor(em, uuid, filterMap, doDefaultSort);
-            }
-        });
-    }
-
-    protected List<LogEntry> getLogEntriesFor(EntityManager em, String uuid, Map<String, FilterMapEntry> filterMap,
-            boolean doDefaultSort) {
-        return LogEntryProvider.createProvider(em).getLogEntriesFor(uuid, filterMap, doDefaultSort);
+        return apply(false, provider -> provider.getLogEntriesFor(uuid, filterMap, doDefaultSort));
     }
 
     @Override
     public LogEntry getLogEntryByID(final long id) {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<LogEntry>() {
-            @Override
-            public LogEntry runWith(EntityManager em) {
-                return getLogEntryByID(em, id);
-            }
-        });
-    }
-
-    protected LogEntry getLogEntryByID(EntityManager em, long id) {
-        return LogEntryProvider.createProvider(em).getLogEntryByID(id);
+        return apply(false, provider -> provider.getLogEntryByID(id));
     }
 
     @Override
     public List<LogEntry> nativeQueryLogs(final String whereClause, final int pageNb, final int pageSize) {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
-            @Override
-            public List<LogEntry> runWith(EntityManager em) {
-                return nativeQueryLogs(em, whereClause, pageNb, pageSize);
-            }
-        });
-    }
-
-    protected List<LogEntry> nativeQueryLogs(EntityManager em, String whereClause, int pageNb, int pageSize) {
-        return LogEntryProvider.createProvider(em).nativeQueryLogs(whereClause, pageNb, pageSize);
+        return apply(false, provider -> provider.nativeQueryLogs(whereClause, pageNb, pageSize));
     }
 
     @Override
     public List<?> nativeQuery(final String query, final int pageNb, final int pageSize) {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<?>>() {
-            @Override
-            public List<?> runWith(EntityManager em) {
-                return nativeQuery(em, query, pageNb, pageSize);
-            }
-        });
-    }
-
-    protected List<?> nativeQuery(EntityManager em, String query, int pageNb, int pageSize) {
-        return LogEntryProvider.createProvider(em).nativeQuery(query, pageNb, pageSize);
+        return apply(false, provider -> provider.nativeQuery(query, pageNb, pageSize));
     }
 
     @Override
     public List<?> nativeQuery(final String query, final Map<String, Object> params, final int pageNb,
             final int pageSize) {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<?>>() {
-            @Override
-            public List<?> runWith(EntityManager em) {
-                return nativeQuery(em, query, params, pageNb, pageSize);
-            }
-        });
-    }
-
-    protected List<?> nativeQuery(EntityManager em, String query, Map<String, Object> params, int pageNb,
-            int pageSize) {
-        return LogEntryProvider.createProvider(em).nativeQuery(query, params, pageNb, pageSize);
+        return apply(false, provider -> provider.nativeQuery(query, params, pageNb, pageSize));
     }
 
     @Override
     public List<LogEntry> queryLogs(AuditQueryBuilder builder) {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
-            @Override
-            public List<LogEntry> runWith(EntityManager em) {
-                return queryLogs(em, builder);
-            }
-        });
-    }
-
-    protected List<LogEntry> queryLogs(EntityManager em, AuditQueryBuilder builder) {
-        return LogEntryProvider.createProvider(em).queryLogs(builder);
+        return apply(false, provider -> provider.queryLogs(builder));
     }
 
     @Override
     public List<LogEntry> queryLogs(final String[] eventIds, final String dateRange) {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
-            @Override
-            public List<LogEntry> runWith(EntityManager em) {
-                return queryLogs(em, eventIds, dateRange);
-            }
-        });
-    }
-
-    protected List<LogEntry> queryLogs(EntityManager em, String[] eventIds, String dateRange) {
-        return LogEntryProvider.createProvider(em).queryLogs(eventIds, dateRange);
+        return apply(false, provider -> provider.queryLogs(eventIds, dateRange));
     }
 
     @Override
     public List<LogEntry> queryLogsByPage(final String[] eventIds, final Date limit, final String[] category,
             final String path, final int pageNb, final int pageSize) {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
-            @Override
-            public List<LogEntry> runWith(EntityManager em) {
-                return queryLogsByPage(em, eventIds, limit, category, path, pageNb, pageSize);
-            }
-        });
-    }
-
-    protected List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds, Date limit, String[] category,
-            String path, int pageNb, int pageSize) {
-        return LogEntryProvider.createProvider(em).queryLogsByPage(eventIds, limit, category, path, pageNb, pageSize);
+        return apply(false, provider -> provider.queryLogsByPage(eventIds, limit, category, path, pageNb, pageSize));
     }
 
     @Override
     public long syncLogCreationEntries(final String repoId, final String path, final Boolean recurs) {
-        return getOrCreatePersistenceProvider().run(true, new RunCallback<Long>() {
-            @Override
-            public Long runWith(EntityManager em) {
-                return syncLogCreationEntries(em, repoId, path, recurs);
-            }
-        });
-    }
-
-    protected long syncLogCreationEntries(EntityManager em, String repoId, String path, Boolean recurs) {
-        LogEntryProvider provider = LogEntryProvider.createProvider(em);
-        return syncLogCreationEntries(provider, repoId, path, recurs);
+        return apply(false, provider -> syncLogCreationEntries(provider, repoId, path, recurs));
     }
 
     @Override
     public Long getEventsCount(final String eventId) {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<Long>() {
-            @Override
-            public Long runWith(EntityManager em) {
-                return getEventsCount(em, eventId);
-            }
-
-        });
-    }
-
-    public Long getEventsCount(EntityManager em, String eventId) {
-        return LogEntryProvider.createProvider(em).countEventsById(eventId);
+        return apply(false, provider -> provider.countEventsById(eventId));
     }
 
     public List<String> getLoggedEventIds() {
-        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<String>>() {
-            @Override
-            public List<String> runWith(EntityManager em) {
-                return getLoggedEventIds(em);
-            }
-
-        });
-    }
-
-    protected List<String> getLoggedEventIds(EntityManager em) {
-        return LogEntryProvider.createProvider(em).findEventIds();
+        return apply(false, LogEntryProvider::findEventIds);
     }
 
     @Override
@@ -343,16 +208,16 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
                 + " ORDER BY log.id DESC", paramNames);
         @SuppressWarnings("unchecked")
         List<LogEntry> entries = (List<LogEntry>) nativeQuery(query, params, 1, 1);
-        long id = entries.isEmpty() ? 0 : entries.get(0).getId();
-        return id;
+        return entries.isEmpty() ? 0 : entries.get(0).getId();
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<LogEntry> getLogEntriesAfter(long logIdOffset, int limit, String repositoryId, String... eventIds) {
         Map<String, Object> params = getParams(eventIds);
         String paramNames = getParamNames(eventIds);
         params.put("repoId", repositoryId);
-        params.put("minId", logIdOffset);
+        params.put("minId", Long.valueOf(logIdOffset));
         String query = String.format("FROM LogEntry log" //
                 + " WHERE log.id >= :minId" //
                 + "   AND log.eventId IN (%s)" //
@@ -363,7 +228,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
 
     protected String getParamNames(String[] eventId) {
         List<String> ret = new ArrayList<>(eventId.length);
-        for (String event: eventId) {
+        for (String event : eventId) {
             ret.add(":ev" + event);
         }
         return String.join(",", ret);
@@ -371,7 +236,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
 
     protected Map<String, Object> getParams(String[] eventId) {
         HashMap<String, Object> ret = new HashMap<>(eventId.length);
-        for (String event: eventId) {
+        for (String event : eventId) {
             ret.put("ev" + event, event);
         }
         return ret;

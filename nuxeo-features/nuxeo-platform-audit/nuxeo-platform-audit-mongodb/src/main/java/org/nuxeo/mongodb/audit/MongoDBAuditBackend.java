@@ -171,10 +171,7 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
         Bson mgOrder = Sorts.orderBy(orderList);
 
         logRequest(mgFilter, mgOrder);
-        FindIterable<Document> iterable = collection.find(mgFilter)
-                                                    .sort(mgOrder)
-                                                    .skip((int) offset)
-                                                    .limit((int) limit);
+        FindIterable<Document> iterable = collection.find(mgFilter).sort(mgOrder).skip((int) offset).limit((int) limit);
         return buildLogEntries(iterable);
     }
 

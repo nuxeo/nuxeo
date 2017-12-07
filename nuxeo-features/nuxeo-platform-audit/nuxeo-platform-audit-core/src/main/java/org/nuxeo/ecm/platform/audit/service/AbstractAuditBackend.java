@@ -216,7 +216,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
             Map<String, ExtendedInfo> extendedInfos = entry.getExtendedInfos();
             for (ExtendedInfoDescriptor descriptor : extInfos) {
                 String exp = descriptor.getExpression();
-                Serializable value = null;
+                Serializable value;
                 try {
                     value = expressionEvaluator.evaluateExpression(context, exp, Serializable.class);
                 } catch (PropertyException | UnsupportedOperationException e) {
@@ -225,7 +225,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
                     }
                     continue;
                 } catch (DocumentNotFoundException e) {
-                    if (! DocumentEventTypes.DOCUMENT_REMOVED.equals(entry.getEventId())) {
+                    if (!DocumentEventTypes.DOCUMENT_REMOVED.equals(entry.getEventId())) {
                         log.error(String.format("Not found: %s, entry: %s", e.getMessage(), entry), e);
                     }
                     continue;
@@ -440,10 +440,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
         AuditQueryBuilder builder = new AuditQueryBuilder();
         // create predicates
         builder.addAndPredicate(Predicates.eq(LOG_DOC_UUID, uuid));
-        filterMap.values()
-                 .stream()
-                 .map(this::convert)
-                 .forEach(builder::addAndPredicate);
+        filterMap.values().stream().map(this::convert).forEach(builder::addAndPredicate);
         if (doDefaultSort) {
             builder.defaultOrder();
         }
