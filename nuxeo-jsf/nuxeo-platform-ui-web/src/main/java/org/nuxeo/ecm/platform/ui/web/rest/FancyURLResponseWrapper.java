@@ -92,7 +92,7 @@ public class FancyURLResponseWrapper extends HttpServletResponseWrapper {
 
     @Override
     public void sendRedirect(String url) throws IOException {
-        if (request != null) {
+        if (request != null && "POST".equals(request.getMethod())) {
             try {
                 URLPolicyService pservice = Framework.getService(URLPolicyService.class);
                 if (pservice.isCandidateForEncoding(request)) {
