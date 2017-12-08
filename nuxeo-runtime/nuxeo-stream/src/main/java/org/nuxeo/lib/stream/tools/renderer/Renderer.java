@@ -56,8 +56,7 @@ public abstract class Renderer implements Consumer<LogRecord<Record>> {
             } catch (UnsupportedEncodingException e) {
                 overview = "unsupported encoding";
             }
-            overview = overview.replace('\r', ' ');
-            overview = overview.replace('\n', ' ');
+            overview = overview.replaceAll("[^\\x20-\\x7e]", ".");
         }
         return overview;
     }

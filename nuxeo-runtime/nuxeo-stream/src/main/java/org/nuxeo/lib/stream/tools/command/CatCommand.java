@@ -45,21 +45,28 @@ public class CatCommand extends Command {
     public void updateOptions(Options options) {
         options.addOption(
                 Option.builder("n").longOpt("lines").desc("Render the first N records").hasArg().argName("N").build());
+        options.addOption(Option.builder("l")
+                                .longOpt("log-name")
+                                .desc("Log name")
+                                .required()
+                                .hasArg()
+                                .argName("LOG_NAME")
+                                .build());
         options.addOption(
-                Option.builder().longOpt("name").desc("Log name").required().hasArg().argName("LOG_NAME").build());
-        options.addOption(Option.builder().longOpt("group").desc("Consumer group").hasArg().argName("GROUP").build());
+                Option.builder("g").longOpt("group").desc("Consumer group").hasArg().argName("GROUP").build());
         options.addOption(
                 Option.builder().longOpt("render").desc("Output rendering").hasArg().argName("FORMAT").build());
 
     }
 
     @Override
-    public void run(LogManager manager, CommandLine cmd) throws InterruptedException {
-        int limit = Integer.parseInt(cmd.getOptionValue("lines", "10"));
-        String name = cmd.getOptionValue("name");
+    public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
+        int limit = Integer.parseInt(cmd.getOptionValue("lines", "-1"));
+        String name = cmd.getOptionValue("log-name");
         String render = cmd.getOptionValue("render", "default");
         String group = cmd.getOptionValue("group", "tools");
         cat(manager, name, group, limit, getRecordRenderer(render));
+        return true;
     }
 
     protected void cat(LogManager manager, String name, String group, int limit, Renderer render)
@@ -74,7 +81,7 @@ public class CatCommand extends Command {
                 }
                 count++;
                 render.accept(record);
-            } while (count < limit);
+            } while (limit < 0 || (count < limit));
         }
         render.footer();
     }

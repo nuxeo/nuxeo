@@ -33,7 +33,7 @@ public abstract class Command {
 
     public abstract void updateOptions(Options options);
 
-    public abstract void run(LogManager manager, CommandLine cmd) throws InterruptedException;
+    public abstract boolean run(LogManager manager, CommandLine cmd) throws InterruptedException;
 
     protected Renderer getRecordRenderer(String render) {
         switch (render) {
