@@ -50,7 +50,7 @@
     <header name="X-XSS-Protection">1; mode=block</header>
     <header name="X-Frame-Options">${nuxeo.frame.options:=SAMEORIGIN}</header>
     <!-- this is a permissive Content-Security-Policy, which should be overridden for more security -->
-    <header name="Content-Security-Policy">img-src 'self' data:; default-src * blob:; script-src 'unsafe-inline' 'unsafe-eval' data: *; style-src 'unsafe-inline' *; font-src data: *</header>
+    <header name="Content-Security-Policy">img-src data: blob: *; default-src blob: *; script-src 'unsafe-inline' 'unsafe-eval' data: *; style-src 'unsafe-inline' *; font-src data: *</header>
   </extension>
 
 </component>
