@@ -129,8 +129,7 @@
   }
 
   function checkImplies() {
-    $("input[type='checkbox']:disabled").attr('disabled', false);
-    $("input[type='checkbox']:checked").each(function (i, elt) {
+    function enableImplies(i, elt) {
       var $elt = $(elt);
       var implies = $elt.attr('implies');
       if (!implies) {
@@ -138,13 +137,18 @@
       }
 
       implies.split(',').forEach(function (imply) {
-        $("input[type='checkbox'][name='" + imply + "']").each(function (i, implied) {
+        $("input[type='checkbox'][name='" + imply + "']").each(function (j, implied) {
           var $implied = $(implied);
           $implied.attr('checked', true);
           $implied.attr('disabled', true);
+
+          enableImplies(undefined, implied);
         });
       });
-    });
+    }
+
+    $("input[type='checkbox']:disabled").attr('disabled', false);
+    $("input[type='checkbox']:checked").each(enableImplies);
   }
 
   function usePreset(optionArray) {
