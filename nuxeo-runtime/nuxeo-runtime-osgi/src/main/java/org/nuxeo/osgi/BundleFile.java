@@ -135,6 +135,6 @@ public interface BundleFile {
      *
      * @since 5.6
      */
-    void close(OSGiAdapter osgi) throws IOException;
+    void close() throws IOException;
 
 }
