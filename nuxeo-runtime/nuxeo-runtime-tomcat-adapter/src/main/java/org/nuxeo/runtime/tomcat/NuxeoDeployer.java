@@ -31,8 +31,6 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.ContainerBase;
 import org.nuxeo.osgi.application.FrameworkBootstrap;
 
-import sun.misc.ClassLoaderUtil;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -93,20 +91,13 @@ public class NuxeoDeployer implements LifecycleListener {
                 }
                 urls.add(homeDir.toURI().toURL());
                 urls.add(new File(homeDir, "config").toURI().toURL());
-                URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), parentCl);
-                // URLClassLoader cl = new URLClassLoader(new URL[]
-                // {deployerJar.toURI().toURL(),
-                // commonJar.toURI().toURL(),
-                // xercesJar.toURI().toURL(),
-                // new File(homeDir, "config").toURI().toURL() // for log4j
-                // config
-                // }, parentCl);
-                System.out.println("# Running Nuxeo Preprocessor ...");
-                Class<?> klass = cl.loadClass("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
-                Method main = klass.getMethod("main", String[].class);
-                main.invoke(null, new Object[] { new String[] { homeDir.getAbsolutePath() } });
-                System.out.println("# Preprocessing done.");
-                ClassLoaderUtil.releaseLoader(cl);
+                try (URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), parentCl)) {
+                    System.out.println("# Running Nuxeo Preprocessor ...");
+                    Class<?> klass = cl.loadClass("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
+                    Method main = klass.getMethod("main", String[].class);
+                    main.invoke(null, new Object[] { new String[] { homeDir.getAbsolutePath() } });
+                    System.out.println("# Preprocessing done.");
+                }
             }
         } catch (IOException | ReflectiveOperationException e) {
             throw new RuntimeException("Failed to handle event", e);

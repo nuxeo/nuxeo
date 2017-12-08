@@ -452,6 +452,25 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     }
 
     @Test
+    public void testParseJVMVersion() throws Exception {
+        checkParsed("7.10", "1.7.0_10");
+        checkParsed("8.45", "1.8.0_45");
+        checkParsed("8.72", "1.8.0_72-internal");
+        checkParsed("9.0", "9");
+        checkParsed("9.0", "9.0");
+        checkParsed("9.0", "9.0.1");
+        checkParsed("9.0", "9.0.1.15");
+        checkParsed("9.4", "9.4.5.6");
+        checkParsed("10.0", "10.0.1");
+        checkParsed("15.0", "15");
+    }
+
+    protected void checkParsed(String expected, String version) throws Exception {
+        JVMVersion v = JVMVersion.parse(version);
+        assertEquals(expected, v.toString());
+    }
+
+    @Test
     public void testCheckJavaVersionCompliant() throws Exception {
         final LogCaptureAppender logCaptureAppender = new LogCaptureAppender(Level.WARN);
         Logger.getRootLogger().addAppender(logCaptureAppender);
