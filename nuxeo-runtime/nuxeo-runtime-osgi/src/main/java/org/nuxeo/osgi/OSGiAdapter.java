@@ -31,9 +31,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.osgi.services.PackageAdminImpl;
-import org.nuxeo.osgi.util.jar.JarFileCloser;
-import org.nuxeo.osgi.util.jar.URLJarFileIntrospector;
-import org.nuxeo.osgi.util.jar.URLJarFileIntrospectionError;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
@@ -74,8 +71,6 @@ public class OSGiAdapter {
     protected Properties properties;
 
     protected SystemBundle systemBundle;
-
-    protected JarFileCloser uRLJarFileCloser;
 
     public OSGiAdapter(File workingDir) {
         this(workingDir,
@@ -158,7 +153,6 @@ public class OSGiAdapter {
         bundleListeners = null;
         serviceListeners = null;
         properties = null;
-        uRLJarFileCloser = null;
     }
 
     public long getBundleId(String symbolicName) {
@@ -222,9 +216,6 @@ public class OSGiAdapter {
 
     public void fireFrameworkEvent(FrameworkEvent event) {
         log.debug("Firing FrameworkEvent on " + frameworkListeners.size() + " listeners");
-        if (event.getType() == FrameworkEvent.STARTED) {
-            uRLJarFileCloser = newJarFileCloser();
-        }
         Object[] listeners = frameworkListeners.getListeners();
         for (Object listener : listeners) {
             log.debug("Start execution of " + listener.getClass() + " listener");
@@ -234,16 +225,6 @@ public class OSGiAdapter {
             } catch (RuntimeException e) {
                 log.error("Error during Framework Listener execution : " + listener.getClass(), e);
             }
-        }
-    }
-
-    protected JarFileCloser newJarFileCloser() {
-        try {
-            URLJarFileIntrospector introspector = new URLJarFileIntrospector();
-            return introspector.newJarFileCloser(systemBundle.loader);
-        } catch (URLJarFileIntrospectionError cause) {
-            log.warn("Cannot put URL jar file closer in place", cause);
-            return JarFileCloser.NOOP;
         }
     }
 
@@ -265,15 +246,4 @@ public class OSGiAdapter {
         return systemBundle;
     }
 
-    /**
-     * helper for closing jar files during bundle uninstall
-     *
-     * @since 5.6
-     */
-    public JarFileCloser getURLJarFileCloser() {
-        if (uRLJarFileCloser == null) {
-            uRLJarFileCloser = newJarFileCloser();
-        }
-        return uRLJarFileCloser;
-    }
 }
