@@ -13,27 +13,27 @@
       shortlabel="NOUI" virtual="true"
       desc="Install Nuxeo as a headless hyperscale content repository and start building your own UIs or integrations using the REST API and our Clients SDKs (Java, JavaScript, C#, Python, PHP, DART, Objective-C)." />
     <!-- Addon list -->
-    <package id="nuxeo-dam" label="Digital Asset Management" color="#ffeb6d" textcolor="#333" shortlabel="DAM"
+    <package id="nuxeo-dam" label="Digital Asset Management" color="#ffeb6d" textcolor="#333" shortlabel="DAM" implies="nuxeo-web-ui"
       desc="The Nuxeo DAM addon adds robust, extensible, Digital Asset Management capabilities for building solutions that help marketing and brand managers catalog, process, store, retrieve, and distribute rich media content, including images, audio and video." />
-    <package id="nuxeo-drive" label="Drive" color="#5AC456" textcolor="#FFF" shortlabel="DRIVE"
+    <package id="nuxeo-drive" label="Drive" color="#5AC456" textcolor="#FFF" shortlabel="DRIVE" implies="nuxeo-web-ui"
       desc="Nuxeo Drive enables bidirectional synchronization of content between the local desktop and the Nuxeo content repository. It handles offline modification of files and deals with concurrent updates." />
     <package id="nuxeo-showcase-content" label="Showcase Content" color="#DB97FF" textcolor="#FFF"
       shortlabel="DOCS" implies="nuxeo-dam"
       desc="The Nuxeo Showcase Content addon imports a set of showcase content so that the repository is not empty for your first steps: office documents, images, videos." />
     <package id="nuxeo-template-rendering" label="Template Rendering" color="#c3c7c9" textcolor="#FFF"
-       shortlabel="TMPL"
+       shortlabel="TMPL" implies="nuxeo-web-ui"
        desc="The Nuxeo Template Rendering addon provides a way to associate a Nuxeo Document with a template that can be a Word document, an Excel sheet, a Powerpoint presentation or an HTLM website and merge document properties with the template so as to produce the final document as a rendition of the initial one." />
     <package id="nuxeo-template-rendering-samples" label="Template Rendering (with samples)" color="#c3c7c9" textcolor="#FFF"
       shortlabel="TMPLS" implies="nuxeo-template-rendering"
       desc="Discover through an inspiring demo how the Template Rendering addon can improve your everyday business processes. This demo showcases the BigCorp company, generating financial reports for internal use, and case studies demonstrating their expertise for potential new customers. All being achieved by extracting their relevant content into office templates on the fly." />
-    <package id="nuxeo-liveconnect" label="Live Connect" color="#ff452a" textcolor="#FFF" shortlabel="LIVE"
+    <package id="nuxeo-liveconnect" label="Live Connect" color="#ff452a" textcolor="#FFF" shortlabel="LIVE" implies="nuxeo-web-ui"
       desc="The Nuxeo Live Connect addon allows users to reference their files stored on most common EFSS systems (Dropbox, Box, Google Drive, One Drive). User can then apply business workflows to those external ressources, benefit from full text search and edit metadata as if they were stored in the Nuxeo repository." />
     <package id="nuxeo-web-ui" label="Nuxeo Web UI" color="#00adff" textcolor="#FFF"
       shortlabel="WEBUI"
       desc="Thanks to its great flexibility, it is the ideal start for any Digital Asset Management, Case Managent and Document Management project. Web UI is made with great client side web technology and adopts most recent standards of the Web." />
-    <package id="nuxeo-spreadsheet" label="Nuxeo Spreadsheet" shortlabel="SSHEET"
+    <package id="nuxeo-spreadsheet" label="Nuxeo Spreadsheet" shortlabel="SSHEET" implies="nuxeo-web-ui"
       desc="The Nuxeo Spreadsheet addon allows bulk editing documents metadata starting from a content view result set, providing a spreadsheet-like user experience." />
-    <package id="nuxeo-vision" label="Nuxeo Vision" shortlabel="VISION"
+    <package id="nuxeo-vision" label="Nuxeo Vision" shortlabel="VISION" implies="nuxeo-dam"
       desc="The Nuxeo Vision addon provides a wrapper for Computer Vision Services. Currently it supports the Google Vision API and allows to retrieve relevant tags on images and videos. It also provides automation operations for customised re-use. The usages can easily be extended to a wide range of features including share recognition, auto-classification, OCR and more." />
     <!-- keep this formatting for assembly.xml replacement -->
   </packageDefinitions>
