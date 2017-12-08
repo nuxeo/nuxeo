@@ -18,101 +18,127 @@
  */
 package org.nuxeo.lib.stream.tests.tools;
 
-import java.nio.file.Path;
-import java.time.Duration;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.nuxeo.lib.stream.computation.Record;
-import org.nuxeo.lib.stream.log.LogAppender;
-import org.nuxeo.lib.stream.log.LogManager;
-import org.nuxeo.lib.stream.log.LogTailer;
-import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 import org.nuxeo.lib.stream.tools.Main;
 
 /**
  * @since 9.3
  */
-public class TestTools {
+public abstract class TestTools {
     protected static final int NB_RECORD = 50;
 
     protected static final String LOG_NAME = "myLog";
 
-    protected Path basePath;
+    protected boolean initialized;
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public abstract String getManagerOptions();
+
+    public abstract void createContent() throws Exception;
 
     @Before
-    public void createContent() throws Exception {
-        if (basePath != null) {
-            return;
+    public void initContent() throws Exception {
+        if (!initialized) {
+            createContent();
+            initialized = true;
         }
-        basePath = folder.newFolder().toPath();
-        try (LogManager manager = new ChronicleLogManager(basePath, "1m")) {
-            manager.createIfNotExists(LOG_NAME, 1);
-            LogAppender<Record> appender = manager.getAppender(LOG_NAME);
-            for (int i = 0; i < NB_RECORD; i++) {
-                String key = "key" + i;
-                String value = "Some value for " + i;
-                appender.append(key, Record.of(key, value.getBytes("UTF-8")));
-            }
-            LogTailer<Record> tailer = manager.createTailer("aGroup", LOG_NAME);
-            tailer.read(Duration.ofMillis(10));
-            tailer.read(Duration.ofMillis(10));
-            tailer.commit();
-            tailer = manager.createTailer("anotherGroup", LOG_NAME);
-            tailer.read(Duration.ofMillis(10));
-            tailer.commit();
-        }
-
     }
 
     @Test
-    public void testCat() throws Exception {
-        run(String.format("%s cat --name %s --lines 4", basePath, LOG_NAME));
+    public void testCat() {
+        run(String.format("cat %s --log-name %s --lines 4", getManagerOptions(), LOG_NAME));
     }
 
     @Test
-    public void testCatWithGroup() throws Exception {
-        run(String.format("%s cat --name %s -n 1 --group aGroup", basePath, LOG_NAME));
+    public void testCatWithGroup() {
+        run(String.format("cat %s -l %s -n 1 --group aGroup", getManagerOptions(), LOG_NAME));
     }
 
     @Test
-    public void testCatMd() throws Exception {
-        run(String.format("%s cat --name %s -n 4 --render markdown", basePath, LOG_NAME));
+    public void testCatMd() {
+        run(String.format("cat %s -l %s -n 4 --render markdown", getManagerOptions(), LOG_NAME));
     }
 
     @Test
-    public void testTail() throws Exception {
-        run(String.format("%s tail --name %s -n 5 --render text", basePath, LOG_NAME));
+    public void testTail() {
+        run(String.format("tail %s -l %s -n 5 --render text", getManagerOptions(), LOG_NAME));
     }
 
     @Test
-    public void testTailAndFollow() throws Exception {
-        run(String.format("%s tail -f --name %s -n 2 --render text --timeout 1", basePath, LOG_NAME));
+    public void testTailAndFollow() {
+        run(String.format("tail %s -f -l %s -n 2 --render text --timeout 1", getManagerOptions(), LOG_NAME));
     }
 
     @Test
-    public void testLag() throws Exception {
-        run(String.format("%s lag", basePath));
+    public void testLag() {
+        run(String.format("lag %s", getManagerOptions()));
     }
 
     @Test
-    public void testLagForLog() throws Exception {
-        run(String.format("%s lag --name %s", basePath, LOG_NAME));
+    public void testLagForLog() {
+        run(String.format("lag %s --log-name %s", getManagerOptions(), LOG_NAME));
     }
 
     @Test
-    public void testReset() throws Exception {
-        run(String.format("%s reset --name %s --group anotherGroup", basePath, LOG_NAME));
+    public void testReset() {
+        run(String.format("reset %s --log-name %s --group anotherGroup", getManagerOptions(), LOG_NAME));
     }
+
+    @Test
+    public void testCopy() {
+        run(String.format("copy %s --src %s --dest %s", getManagerOptions(), LOG_NAME,
+                LOG_NAME + "-" + System.currentTimeMillis()));
+    }
+
+    @Test
+    public void testHelpOption() {
+        run("-h");
+    }
+
+    @Test
+    public void testHelpCommand() {
+        run("help");
+    }
+
+    @Test
+    public void testHelpOnCommand() {
+        run("help tail");
+    }
+
+    @Test
+    public void testUnknownCommand() {
+        runShouldFail("unknown-command");
+    }
+
+    @Test
+    public void testUnknownOptions() {
+        runShouldFail(
+                String.format("cat %s --invalid-option %s -n 4 --render markdown", getManagerOptions(), LOG_NAME));
+    }
+
+    @Test
+    public void testEmpty() {
+        run("");
+    }
+
 
     protected void run(String commandLine) {
+        boolean result = runCommand(commandLine);
+        assertTrue(String.format("Unexpected failure in command: \"%s\"", commandLine), result);
+    }
+
+    protected void runShouldFail(String commandLine) {
+        boolean result = runCommand(commandLine);
+        assertFalse(String.format("Expecting failure on command: \"%s\"", commandLine), result);
+    }
+
+    private boolean runCommand(String commandLine) {
+        System.out.println("# stream.sh " + commandLine);
         String[] args = commandLine.split(" ");
-        new Main().run(args);
+        return (boolean) new Main().run(args);
     }
 
 }

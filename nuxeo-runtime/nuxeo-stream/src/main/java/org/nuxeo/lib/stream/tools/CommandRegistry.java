@@ -23,6 +23,8 @@ import java.util.List;
 
 import org.nuxeo.lib.stream.tools.command.CatCommand;
 import org.nuxeo.lib.stream.tools.command.Command;
+import org.nuxeo.lib.stream.tools.command.CopyCommand;
+import org.nuxeo.lib.stream.tools.command.HelpCommand;
 import org.nuxeo.lib.stream.tools.command.LagCommand;
 import org.nuxeo.lib.stream.tools.command.ResetCommand;
 import org.nuxeo.lib.stream.tools.command.TailCommand;
@@ -34,10 +36,12 @@ public class CommandRegistry {
 
     public List<Command> commands() {
         List<Command> ret = new ArrayList<>();
+        ret.add(new HelpCommand());
         ret.add(new CatCommand());
         ret.add(new TailCommand());
         ret.add(new LagCommand());
         ret.add(new ResetCommand());
+        ret.add(new CopyCommand());
 
         return ret;
     }
