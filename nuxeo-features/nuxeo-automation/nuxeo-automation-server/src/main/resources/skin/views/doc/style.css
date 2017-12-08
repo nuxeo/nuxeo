@@ -142,9 +142,10 @@ pre {
   white-space: pre;
 }
 
-header[role="banner"] {
-  background-color: #1b5983;
-  color: #fff;
+header[role="banner"]{
+  background-color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  color: #0066FF;
   font-family: sans-serif;
   vertical-align: middle;
 }
@@ -153,23 +154,31 @@ header span {
   margin-right: .15em;
 }
 
-header .slash {
-  color: #ffde00;
-}
-
-header .slash,header .doctitle {
-  font-weight: 100;
-}
-
 header>nav {
   float: right;
   font-size: .8em;
   margin: 0 1.5em;
 }
 
+#logo{
+  background: transparent url(/nuxeo/img/login_logo.png) no-repeat;
+  background-size: cover;
+  display: inline-block;
+  height: 30px;
+  width: 160px;
+}
+
+header .doctitle {
+  color: #0066FF;
+  font-size: 100;
+  font: 1em/1.4em 'PT Sans Caption', Helvetica, Arial, sans-serif;
+  font-family: sans-serif;
+  vertical-align: top;
+  padding: 0 0 0 1em;
+}
+
 header a,header a:visited {
   border-radius: 0 0 3px 3px;
-  color: rgba(255, 255, 255, 0.4);
   display: inline-block;
   margin: 0 .1em;
   padding: 1.3em .4em .2em;
@@ -237,7 +246,6 @@ nav ol {
 }
 
 h1 {
-  font-family: helvetica;
   font-size: 1.4em;
   display: inline-block;
   letter-spacing: .03em;

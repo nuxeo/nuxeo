@@ -15,7 +15,8 @@
   <body>
     <header role="banner">
       <h1>
-        <span class="nuxeo">nuxeo</span><span class="slash">/</span><span class="doctitle">Automation Documentation</span>
+        <span id="logo"></span>
+        <span class="doctitle">Automation Documentation</span>
       </h1>
       <nav role="complementary">
         <a href="http://answers.nuxeo.com/">Answers</a>
