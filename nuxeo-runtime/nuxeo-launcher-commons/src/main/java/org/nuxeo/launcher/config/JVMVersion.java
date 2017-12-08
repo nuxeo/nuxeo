@@ -62,16 +62,30 @@ public class JVMVersion implements Comparable<JVMVersion> {
     public static JVMVersion parse(String version) throws ParseException {
         if (version.startsWith("1.")) {
             return parsePreJdk9(version);
+        } else {
+            return parseJdk9(version);
         }
-        throw new ParseException("Unknown JVM version format", -1);
     }
 
-    static final Pattern PreJDK9Pattern = Pattern.compile("1.(\\d).\\d(?:_(\\d+))?(?:-.*)?");
+    static final Pattern PreJDK9Pattern = Pattern.compile("1\\.(\\d)\\.\\d(?:_(\\d+))?(?:-.*)?");
+
+    static final Pattern JDK9_PATTERN = Pattern.compile("(\\d+)(?:\\.(\\d+)(?:\\.(\\d+)(\\..*)?)?)?");
 
     public static JVMVersion parsePreJdk9(String version) throws ParseException {
         Matcher matcher = PreJDK9Pattern.matcher(version);
         if (!matcher.matches()) {
             throw new ParseException("Cannot parse " + version + " as a pre JVM 9 version", -1);
+        }
+        final int groupCount = matcher.groupCount();
+        String major = matcher.group(1);
+        String minor = groupCount >= 2 ? matcher.group(2) : null;
+        return new JVMVersion(Integer.parseInt(major), minor == null ? 0 : Integer.parseInt(minor));
+    }
+
+    public static JVMVersion parseJdk9(String version) throws ParseException {
+        Matcher matcher = JDK9_PATTERN.matcher(version);
+        if (!matcher.matches()) {
+            throw new ParseException("Cannot parse " + version + " as a JDK 9+ version", -1);
         }
         final int groupCount = matcher.groupCount();
         String major = matcher.group(1);

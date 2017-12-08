@@ -104,7 +104,7 @@ public class ConfigurationGenerator {
      *
      * @since 5.7
      */
-    public static final String[] COMPLIANT_JAVA_VERSIONS = new String[] { "1.8.0_40" };
+    public static final String[] COMPLIANT_JAVA_VERSIONS = new String[] { "1.8.0_40", "9" };
 
     /**
      * @since 5.6

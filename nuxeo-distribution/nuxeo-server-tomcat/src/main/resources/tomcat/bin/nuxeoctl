@@ -174,6 +174,16 @@ fi
 JUL_CONFIG="-Djava.util.logging.config.file=$NUXEO_HOME/conf/logging.properties"
 JAVA_OPTS="$JAVA_OPTS $JUL_CONFIG"
 
+## Java 9 modules
+case $JAVA_VERSION in
+  1.*) # Java < 9
+     ;;
+  *) # Java 9 needs some non-default modules
+     MODULE_OPTS="--add-modules java.se.ee --illegal-access=permit" # use =warn for more diagnostics
+     JAVA_OPTS="$MODULE_OPTS $JAVA_OPTS"
+     ;;
+esac
+
 ## nuxeo.log.dir
 LOG_DIR=$(grep "^nuxeo.log.dir=" "$NUXEO_CONF" | cut -d= -f2-)
 # Defaults
@@ -219,8 +229,8 @@ while true; do
     fi
   done
   cp "$NUXEO_LAUNCHER" "$TMPLAUNCHER"
-  echo [`date`] "Launcher command: $JAVA  \"-Xbootclasspath/a:$JAVA_TOOLS\" $LAUNCHER_DEBUG \"-Dlauncher.java.opts=$JAVA_OPTS\" \"-Dnuxeo.home=$NUXEO_HOME\" \"-Dnuxeo.conf=$NUXEO_CONF\" \"-Dnuxeo.log.dir=$LOG_DIR\" -jar \"$TMPLAUNCHER\" $@" >> "$LOG_DIR"/nuxeoctl.log
-  "$JAVA" "-Xbootclasspath/a:$JAVA_TOOLS" $LAUNCHER_DEBUG "-Dlauncher.java.opts=$JAVA_OPTS" "-Dnuxeo.home=$NUXEO_HOME" "-Dnuxeo.conf=$NUXEO_CONF" "-Dnuxeo.log.dir=$LOG_DIR" -jar "$TMPLAUNCHER" "$@"
+  echo [`date`] "Launcher command: $JAVA  \"-Xbootclasspath/a:$JAVA_TOOLS\" $MODULE_OPTS $LAUNCHER_DEBUG \"-Dlauncher.java.opts=$JAVA_OPTS\" \"-Dnuxeo.home=$NUXEO_HOME\" \"-Dnuxeo.conf=$NUXEO_CONF\" \"-Dnuxeo.log.dir=$LOG_DIR\" -jar \"$TMPLAUNCHER\" $@" >> "$LOG_DIR"/nuxeoctl.log
+  "$JAVA" "-Xbootclasspath/a:$JAVA_TOOLS" $MODULE_OPTS $LAUNCHER_DEBUG "-Dlauncher.java.opts=$JAVA_OPTS" "-Dnuxeo.home=$NUXEO_HOME" "-Dnuxeo.conf=$NUXEO_CONF" "-Dnuxeo.log.dir=$LOG_DIR" -jar "$TMPLAUNCHER" "$@"
   exitcode=$?
   rm -f "$TMPLAUNCHER"
   if [ "$exitcode" != "128" ]; then
