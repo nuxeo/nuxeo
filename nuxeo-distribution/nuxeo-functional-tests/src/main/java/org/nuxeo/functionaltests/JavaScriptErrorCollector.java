@@ -126,5 +126,9 @@ public class JavaScriptErrorCollector {
         public static JavaScriptErrorIgnoreRule startsWith(String text) {
             return new JavaScriptErrorIgnoreRule(text);
         }
+
+        public static JavaScriptErrorIgnoreRule fromSource(String source) {
+            return new JavaScriptErrorIgnoreRule("").withSource(source);
+        }
     }
 }
