@@ -46,6 +46,8 @@ import javax.naming.ldap.Rdn;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.directory.shared.ldap.codec.util.LdapURL;
+import org.apache.directory.shared.ldap.codec.util.LdapURLEncodingException;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -61,8 +63,6 @@ import org.nuxeo.ecm.directory.ReferenceDescriptor;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.ldap.filter.FilterExpressionCorrector;
 import org.nuxeo.ecm.directory.ldap.filter.FilterExpressionCorrector.FilterJobs;
-
-import com.sun.jndi.ldap.LdapURL;
 
 /**
  * Implementation of the directory Reference interface that leverage two common ways of storing relationships in LDAP
@@ -581,7 +581,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                         try {
                             while (ldapUrls.hasMore()) {
                                 LdapURL ldapUrl = new LdapURL(ldapUrls.next().toString());
-                                String candidateDN = pseudoNormalizeDn(ldapUrl.getDN());
+                                String candidateDN = pseudoNormalizeDn(ldapUrl.getDn().getUpName());
                                 // check base URL
                                 if (!targetDn.endsWith(candidateDN)) {
                                     continue;
@@ -615,7 +615,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                 } finally {
                     results.close();
                 }
-            } catch (NamingException e) {
+            } catch (NamingException | LdapURLEncodingException e) {
                 throw new DirectoryException("error during reference search for " + targetId, e);
             }
         }
@@ -783,11 +783,11 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                 try {
                     while (rawldapUrls.hasMore()) {
                         LdapURL ldapUrl = new LdapURL(rawldapUrls.next().toString());
-                        String linkDn = pseudoNormalizeDn(ldapUrl.getDN());
+                        String linkDn = pseudoNormalizeDn(ldapUrl.getDn().getUpName());
                         String directoryDn = pseudoNormalizeDn(targetDirconfig.getSearchBaseDn());
                         int scope = SearchControls.ONELEVEL_SCOPE;
-                        String scopePart = ldapUrl.getScope();
-                        if (scopePart != null && scopePart.toLowerCase().startsWith("sub")) {
+                        int scopePart = ldapUrl.getScope();
+                        if (scopePart == SearchControls.SUBTREE_SCOPE) {
                             scope = SearchControls.SUBTREE_SCOPE;
                         }
                         if (!linkDn.endsWith(directoryDn) && !directoryDn.endsWith(linkDn)) {
@@ -872,7 +872,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
             }
             // return merged attributes
             return new ArrayList<String>(targetIds);
-        } catch (NamingException e) {
+        } catch (NamingException | LdapURLEncodingException e) {
             throw new DirectoryException("error computing LDAP references", e);
         }
     }
