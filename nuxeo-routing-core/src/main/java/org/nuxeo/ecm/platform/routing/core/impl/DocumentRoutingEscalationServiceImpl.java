@@ -107,6 +107,12 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
         }
 
         @Override
+        public int getRetryCount() {
+            // retry when there is concurrency
+            return 2;
+        }
+
+        @Override
         public void work() {
             openSystemSession();
             DocumentModel nodeDoc = session.getDocument(new IdRef(nodeDocId));
