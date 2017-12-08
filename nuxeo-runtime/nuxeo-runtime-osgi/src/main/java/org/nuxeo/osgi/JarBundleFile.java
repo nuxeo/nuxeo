@@ -280,12 +280,12 @@ public class JarBundleFile implements BundleFile {
     }
 
     @Override
-    public void close(OSGiAdapter osgi) throws IOException {
+    public void close() throws IOException {
         if (jarFile == null) {
             return;
         }
         try {
-            osgi.getURLJarFileCloser().close(jarFile);
+            jarFile.close();
         } finally {
             jarFile = null;
         }
