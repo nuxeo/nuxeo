@@ -647,7 +647,7 @@ body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operatio
 .model-signature .signature-nav .selected {
   color: #000 }
 
- .model-signature .signature-nav .selected {
+.model-signature .signature-nav .selected {
   text-decoration: none }
 
 .model-signature ul.signature-nav {
@@ -717,10 +717,20 @@ body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operatio
 
 /* Header */
 header[role="banner"]{
-  background-color: #1b5983;
-  color: #fff;
+  background-color: #FFFFFF;
+  color: #0066FF;
   font-family: sans-serif;
-  vertical-align: middle }
+  vertical-align: middle;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+#logo{
+  background: transparent url(/nuxeo/img/login_logo.png) no-repeat;
+  background-size: cover;
+  display: inline-block;
+  height: 30px;
+  width: 160px;
+}
 
 header span {
   margin-right: .15em }
@@ -734,12 +744,14 @@ header h1 {
   padding: .4em 1em;
   color: #fff }
 
-header .slash {
-  color: #ffde00 }
-
-header .slash,
 header .doctitle {
-  font-weight: 100 }
+  color: #0066FF;
+  font-size: 100;
+  font: 1em/1.4em 'PT Sans Caption', Helvetica, Arial, sans-serif;
+  font-family: sans-serif;
+  vertical-align: top;
+  padding: 0 0 0 1em;
+}
 
 header > nav {
   float: right;
@@ -748,7 +760,6 @@ header > nav {
 
 header a,
 header a:visited {
-  color: rgba(255, 255, 255, 0.4);
   display: inline-block;
   margin: 0 .1em;
   padding: 1.3em .4em .2em }
