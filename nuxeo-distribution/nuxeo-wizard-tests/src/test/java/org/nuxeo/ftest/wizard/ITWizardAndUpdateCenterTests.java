@@ -79,10 +79,9 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
     @Test
     public void runWizardAndRestart() throws Exception {
-        addAfterTestIgnores(JavaScriptErrorIgnoreRule.startsWith("unreachable code after return statement")
-                                                     .withSource("https://fast.wistia.com"));
-        addAfterTestIgnores(
-                JavaScriptErrorIgnoreRule.startsWith("calling a builtin").withSource("https://js.intercomcdn.com"));
+        addAfterTestIgnores(JavaScriptErrorIgnoreRule.fromSource("https://fast.wistia.com"));
+        addAfterTestIgnores(JavaScriptErrorIgnoreRule.fromSource("https://js.intercomcdn.com"));
+        addAfterTestIgnores(JavaScriptErrorIgnoreRule.fromSource("https://www.nuxeo.com/standalone-login-page"));
 
         // **********************
         // welcome
