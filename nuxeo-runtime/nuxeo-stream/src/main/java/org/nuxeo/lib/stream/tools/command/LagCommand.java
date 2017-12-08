@@ -38,17 +38,19 @@ public class LagCommand extends Command {
 
     @Override
     public void updateOptions(Options options) {
-        options.addOption(Option.builder().longOpt("name").desc("Log name").hasArg().argName("LOG_NAME").build());
+        options.addOption(
+                Option.builder("l").longOpt("log-name").desc("Log name").hasArg().argName("LOG_NAME").build());
     }
 
     @Override
-    public void run(LogManager manager, CommandLine cmd) throws InterruptedException {
-        String name = cmd.getOptionValue("name");
+    public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
+        String name = cmd.getOptionValue("log-name");
         if (name != null) {
             lag(manager, name);
         } else {
             lag(manager);
         }
+        return true;
     }
 
     protected void lag(LogManager manager) {

@@ -50,9 +50,15 @@ public class TailCommand extends Command {
                                 .argName("NUM")
                                 .build());
         options.addOption("f", "follow", false, "output appended records");
+        options.addOption(Option.builder("l")
+                                .longOpt("log-name")
+                                .desc("Log name")
+                                .required()
+                                .hasArg()
+                                .argName("LOG_NAME")
+                                .build());
         options.addOption(
-                Option.builder().longOpt("name").desc("Log name").required().hasArg().argName("LOG_NAME").build());
-        options.addOption(Option.builder().longOpt("group").desc("Consumer group").hasArg().argName("GROUP").build());
+                Option.builder("g").longOpt("group").desc("Consumer group").hasArg().argName("GROUP").build());
         options.addOption(
                 Option.builder().longOpt("render").desc("Output rendering").hasArg().argName("FORMAT").build());
         options.addOption(Option.builder("t")
@@ -64,9 +70,9 @@ public class TailCommand extends Command {
     }
 
     @Override
-    public void run(LogManager manager, CommandLine cmd) throws InterruptedException {
+    public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
         int lines = Integer.parseInt(cmd.getOptionValue("lines", "10"));
-        String name = cmd.getOptionValue("name");
+        String name = cmd.getOptionValue("log-name");
         String render = cmd.getOptionValue("render", "default");
         String group = cmd.getOptionValue("group", "tools");
         int timeout = Integer.parseInt(cmd.getOptionValue("timeout", "120"));
@@ -74,6 +80,7 @@ public class TailCommand extends Command {
         if (cmd.hasOption("follow")) {
             follow(manager, name, group, getRecordRenderer(render), timeout);
         }
+        return true;
     }
 
     @SuppressWarnings("unchecked")
@@ -92,7 +99,10 @@ public class TailCommand extends Command {
             } while (record != null);
         }
         for (int i = count; i < lines + count; i++) {
-            render.accept(records[i % lines]);
+            LogRecord<Record> record = records[i % lines];
+            if (record != null) {
+                render.accept(record);
+            }
         }
         render.footer();
     }

@@ -18,26 +18,32 @@
  */
 package org.nuxeo.lib.stream.tools;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
+import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
 import org.nuxeo.lib.stream.tools.command.Command;
+import org.nuxeo.lib.stream.tools.command.HelpCommand;
 
 /**
  * @since 9.3
  */
 public class Main {
+
+    protected static final String NUXEO_KAFKA_FILE_CONF = "nxserver/config/kafka-config.xml";
+
+    protected static final String NUXEO_KAFKA_CONF = "default";
 
     protected final Map<String, Command> commandMap = new HashMap<>();
 
@@ -47,47 +53,99 @@ public class Main {
 
     protected LogManager manager;
 
-    public static void main(final String[] args) throws InterruptedException {
-        new Main().run(args);
+    public static void main(final String[] args) {
+        boolean success = new Main().run(args);
+        if (!success) {
+            System.exit(-1);
+        }
     }
 
-    public void run(String[] args) {
-        Path path = Paths.get(args[0]);
-        this.manager = new ChronicleLogManager(path);
-        this.command = args[1];
-        runWithArgs(Arrays.copyOfRange(args, 2, args.length));
+    public boolean run(String[] args) {
+        initDefaultOptions();
+        if (args == null || args.length == 0 || args[0].trim().isEmpty()) {
+            command = "help";
+            return runWithArgs(null);
+        }
+        command = Objects.requireNonNull(args)[0];
+        return runWithArgs(Arrays.copyOfRange(args, 1, args.length));
     }
 
-    protected void runWithArgs(String[] args) {
-        Command cmd = getCommand();
-        cmd.updateOptions(options);
-        CommandLineParser parser = new DefaultParser();
+    protected boolean runWithArgs(String[] args) {
         try {
+            Command cmd = getCommand();
+            cmd.updateOptions(options);
+            CommandLineParser parser = new DefaultParser();
             CommandLine cmdLine = parser.parse(options, args);
-            cmd.run(manager, cmdLine);
+            createManager(cmd, cmdLine);
+            return cmd.run(manager, cmdLine);
         } catch (ParseException e) {
-            helpAndExit("Parse error: " + e.getMessage());
+            System.err.println("Parse error: " + e.getMessage() + ", try: help " + command);
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            helpAndExit("Interrupted: " + e.getMessage());
+            System.err.println("Interrupted: " + e.getMessage());
         }
+        return false;
+    }
+
+    protected void createManager(Command cmd, CommandLine cmdLine) {
+        if (cmd instanceof HelpCommand) {
+            return;
+        }
+        if (cmdLine.hasOption("chronicle")) {
+            createChronicleManager(cmdLine.getOptionValue("chronicle"));
+        } else if (cmdLine.hasOption("kafka") || cmdLine.hasOption("k")) {
+            String contribPath = cmdLine.getOptionValue("kafka", NUXEO_KAFKA_FILE_CONF);
+            createKafkaManager(contribPath, cmdLine.getOptionValue("kafka-config", NUXEO_KAFKA_CONF));
+        } else {
+            throw new IllegalArgumentException(
+                    "Missing required option: --chronicle or --kafka");
+        }
+    }
+
+    protected void createKafkaManager(String kafkaContribution, String kafkaConfig) {
+        KafkaConfigParser config = new KafkaConfigParser(Paths.get(kafkaContribution), kafkaConfig);
+        manager = new KafkaLogManager(config.getZkServers(), config.getPrefix(), config.getProducerProperties(),
+                config.getConsumerProperties());
+    }
+
+    protected void createChronicleManager(String basePath) {
+        manager = new ChronicleLogManager(Paths.get(basePath));
     }
 
     protected Command getCommand() {
         if (commandMap.isEmpty()) {
             new CommandRegistry().commands().forEach(cmd -> commandMap.put(cmd.name(), cmd));
         }
-        if (!commandMap.containsKey(command)) {
-            helpAndExit("Unknown command: " + command);
+        if ("-h".equals(command) || "--help".equals(command)) {
+            command = "help";
+        } else if (!commandMap.containsKey(command)) {
+            throw new IllegalArgumentException("Unknown command: " + command);
         }
         return commandMap.get(command);
     }
 
-    protected void helpAndExit(String message) {
-        System.err.println(message);
-        HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp(command != null ? command : "tools", options);
-        System.exit(-1);
+    protected void initDefaultOptions() {
+        options.addOption(Option.builder()
+                                .longOpt("chronicle")
+                                .desc("Base path of the Chronicle Queue LogManager")
+                                .hasArg()
+                                .argName("PATH")
+                                .build());
+        options.addOption(Option.builder()
+                                .longOpt("kafka")
+                                .desc("Nuxeo Kafka configuration contribution file: nxserver/config/kafka-config.xml")
+                                .hasArg()
+                                .argName("PATH")
+                                .build());
+        options.addOption(Option.builder()
+                                .longOpt("kafka-config")
+                                .desc("Config name in the Nuxeo Kafka configuration contribution")
+                                .hasArg()
+                                .argName("CONFIG")
+                                .build());
+        options.addOption("k", "nuxeo-kafka", false, "Use the default Nuxeo Kafka configuration");
     }
 
 }

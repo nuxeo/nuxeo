@@ -40,17 +40,28 @@ public class ResetCommand extends Command {
 
     @Override
     public void updateOptions(Options options) {
-        options.addOption(
-                Option.builder().longOpt("name").desc("Log name").required().hasArg().argName("LOG_NAME").build());
-        options.addOption(
-                Option.builder().longOpt("group").desc("Consumer group").required().hasArg().argName("GROUP").build());
+        options.addOption(Option.builder("l")
+                                .longOpt("log-name")
+                                .desc("Log name")
+                                .required()
+                                .hasArg()
+                                .argName("LOG_NAME")
+                                .build());
+        options.addOption(Option.builder("g")
+                                .longOpt("group")
+                                .desc("Consumer group")
+                                .required()
+                                .hasArg()
+                                .argName("GROUP")
+                                .build());
     }
 
     @Override
-    public void run(LogManager manager, CommandLine cmd) throws InterruptedException {
-        String name = cmd.getOptionValue("name");
+    public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
+        String name = cmd.getOptionValue("log-name");
         String group = cmd.getOptionValue("group");
         reset(manager, group, name);
+        return true;
     }
 
     protected void reset(LogManager manager, String group, String name) {
