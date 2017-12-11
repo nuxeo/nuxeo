@@ -77,7 +77,7 @@ def withDockerCompose(String name, String file, String command, Closure post) {
         try {
             sh """#!/bin/bash -ex
                    docker-compose -f $file pull
-                   docker-compose -f $file up --no-color --build --abort-on-container-exit tests db
+                   docker-compose -f $file up --no-color --build --abort-on-container-exit
                """
         } finally {
             try {
