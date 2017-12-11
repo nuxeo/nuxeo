@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.elasticsearch.audit.jpa.storage.test.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" point="storage">
+    <storage id="defaultAuditStorage" class="org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend" />
+  </extension>
+
+</component>

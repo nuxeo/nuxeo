@@ -63,9 +63,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-@Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit",
-        "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.core", "org.nuxeo.elasticsearch.seqgen",
-        "org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml",
+@Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.core.persistence",
+        "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.core",
+        "org.nuxeo.elasticsearch.seqgen", "org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit" })
 @RunWith(FeaturesRunner.class)
