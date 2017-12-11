@@ -39,7 +39,6 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.ChainException;
 import org.nuxeo.ecm.automation.CompiledChain;
 import org.nuxeo.ecm.automation.OperationChain;
-import org.nuxeo.ecm.automation.OperationCompoundExceptionBuilder;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationException;
@@ -438,7 +437,6 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     public List<OperationDocumentation> getDocumentation() throws OperationException {
         List<OperationDocumentation> result = new ArrayList<OperationDocumentation>();
         HashSet<OperationType> ops = new HashSet<>(operations.lookup().values());
-        OperationCompoundExceptionBuilder errorBuilder = new OperationCompoundExceptionBuilder();
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
         boolean exportAliases = configurationService.isBooleanPropertyTrue(EXPORT_ALIASES_CONFIGURATION_PARAM);
         for (OperationType ot : ops.toArray(new OperationType[ops.size()])) {
@@ -455,10 +453,9 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
                     }
                 }
             } catch (OperationNotFoundException e) {
-                errorBuilder.add(e);
+                // do nothing
             }
         }
-        errorBuilder.throwOnError();
         Collections.sort(result);
         return result;
     }

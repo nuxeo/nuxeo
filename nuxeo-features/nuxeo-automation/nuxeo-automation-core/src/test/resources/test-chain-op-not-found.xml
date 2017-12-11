@@ -1,0 +1,10 @@
+<component name="test-chain-op-not-found.xml" version="1.0">
+
+  <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <chain id="mychain">
+      <operation id="notfound" />
+    </chain>
+  </extension>
+
+</component>
