@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.web.Session;
 import org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService;
 import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
@@ -57,13 +58,15 @@ public class ShibbolethSecurityExceptionHandler extends NuxeoSecurityExceptionHa
         try {
             if (!response.isCommitted()) {
                 request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
-                Session.instance().invalidate();
                 response.sendRedirect(loginURL);
-                FacesContext fContext = FacesContext.getCurrentInstance();
-                if (fContext != null) {
-                    fContext.responseComplete();
-                } else {
-                    log.error("Cannot set response complete: faces context is null");
+                if (Contexts.isSessionContextActive()) {
+                    Session.instance().invalidate();
+                    FacesContext fContext = FacesContext.getCurrentInstance();
+                    if (fContext != null) {
+                        fContext.responseComplete();
+                    } else {
+                        log.error("Cannot set response complete: faces context is null");
+                    }
                 }
             } else {
                 log.error("Cannot redirect to login page: response is already commited");
