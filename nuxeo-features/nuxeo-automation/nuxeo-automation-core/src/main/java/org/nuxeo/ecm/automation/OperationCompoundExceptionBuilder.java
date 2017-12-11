@@ -24,7 +24,9 @@ import java.util.List;
 
 /**
  * @since 5.7.2 Operation composite exception builder throwing @{link OperationCompoundException}.
+ * @deprecated since 9.10. Not used anymore.
  */
+@Deprecated
 public class OperationCompoundExceptionBuilder {
 
     protected final List<OperationException> accumulated = new LinkedList<OperationException>();
