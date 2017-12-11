@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.usermanager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.DELETE;
@@ -25,9 +26,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -59,11 +62,7 @@ public class UserToGroupObject extends DefaultObject {
         try {
             UserManager um = Framework.getLocalService(UserManager.class);
             checkPrincipalCanAdministerGroupAndUser(um);
-
-            List<String> groups = principal.getGroups();
-            groups.add(group.getName());
-            principal.setGroups(groups);
-            um.updateUser(principal.getModel());
+            addUserToGroup(principal, group);
             return Response.status(Status.CREATED).entity(um.getPrincipal(principal.getName())).build();
         } catch (NuxeoException e) {
             throw WebException.wrap(e);
@@ -86,13 +85,71 @@ public class UserToGroupObject extends DefaultObject {
         try {
             UserManager um = Framework.getLocalService(UserManager.class);
             checkPrincipalCanAdministerGroupAndUser(um);
-            List<String> groups = principal.getGroups();
-            groups.remove(group.getName());
-            principal.setGroups(groups);
-            um.updateUser(principal.getModel());
+            removeUserFromGroup(principal, group);
             return Response.ok(principal.getName()).build();
         } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }
+
+    protected void addUserToGroup(NuxeoPrincipal principal, NuxeoGroup group) {
+        UserManager userManager = Framework.getLocalService(UserManager.class);
+        String userName = principal.getName();
+        String groupName = group.getName();
+        if (!BaseSession.isReadOnlyEntry(principal.getModel())) {
+            // we can write to the principal
+            List<String> groups = principal.getGroups();
+            if (!groups.contains(groupName)) {
+                groups.add(groupName);
+                principal.setGroups(groups);
+                userManager.updateUser(principal.getModel());
+            }
+        } else {
+            // principal is read-only, update through the group instead
+            String groupSchemaName = userManager.getGroupSchemaName();
+            String groupMembersField = userManager.getGroupMembersField();
+            DocumentModel groupModel = group.getModel();
+            @SuppressWarnings("unchecked")
+            List<String> users = (List<String>) groupModel.getProperty(groupSchemaName, groupMembersField);
+            if (users == null) {
+                users = new ArrayList<>();
+            }
+            if (!users.contains(userName)) {
+                users.add(userName);
+                groupModel.setProperty(groupSchemaName, groupMembersField, users);
+                userManager.updateGroup(groupModel);
+            }
+        }
+    }
+
+    protected void removeUserFromGroup(NuxeoPrincipal principal, NuxeoGroup group) {
+        UserManager userManager = Framework.getLocalService(UserManager.class);
+        String userName = principal.getName();
+        String groupName = group.getName();
+        if (!BaseSession.isReadOnlyEntry(principal.getModel())) {
+            // we can write to the principal
+            List<String> groups = principal.getGroups();
+            if (groups.contains(groupName)) {
+                groups.remove(groupName);
+                principal.setGroups(groups);
+                userManager.updateUser(principal.getModel());
+            }
+        } else {
+            // principal is read-only, update through the group instead
+            String groupSchemaName = userManager.getGroupSchemaName();
+            String groupMembersField = userManager.getGroupMembersField();
+            DocumentModel groupModel = group.getModel();
+            @SuppressWarnings("unchecked")
+            List<String> users = (List<String>) groupModel.getProperty(groupSchemaName, groupMembersField);
+            if (users == null) {
+                users = new ArrayList<>();
+            }
+            if (users.contains(userName)) {
+                users.remove(userName);
+                groupModel.setProperty(groupSchemaName, groupMembersField, users);
+                userManager.updateGroup(groupModel);
+            }
+        }
+    }
+
 }
