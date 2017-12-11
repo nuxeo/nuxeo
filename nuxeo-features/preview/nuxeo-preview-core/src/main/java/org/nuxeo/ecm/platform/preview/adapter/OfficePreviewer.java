@@ -19,19 +19,20 @@
 
 package org.nuxeo.ecm.platform.preview.adapter;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.runtime.api.Framework;
 
-import java.util.List;
-
 /**
  * @since 8.10
  */
 public class OfficePreviewer extends AbstractPreviewer implements MimeTypePreviewer {
 
+    @Override
     public List<Blob> getPreview(Blob blob, DocumentModel dm) {
         ConversionService conversionService = Framework.getService(ConversionService.class);
         BlobHolder result = conversionService.convert("any2pdf", dm.getAdapter(BlobHolder.class), null);
