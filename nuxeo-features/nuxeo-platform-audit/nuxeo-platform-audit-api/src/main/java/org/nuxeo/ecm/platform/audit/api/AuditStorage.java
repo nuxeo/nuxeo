@@ -34,7 +34,7 @@ public interface AuditStorage {
 
     void append(List<String> jsonEntries);
 
-    ScrollResult<String> scroll(AuditQueryBuilder queryBuilder, int batchSize, int keepAlive);
+    ScrollResult<String> scroll(AuditQueryBuilder queryBuilder, int batchSize, int keepAliveSeconds);
 
     ScrollResult<String> scroll(String scrollId);
 

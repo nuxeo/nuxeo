@@ -60,6 +60,10 @@ public class LogEntryProvider implements BaseLogEntryProvider {
         return new LogEntryProvider(em);
     }
 
+    public void append(List<LogEntry> entries) {
+        entries.forEach(em::merge);
+    }
+
     protected void doPersist(LogEntry entry) {
         // Set the log date in java right before saving to the database. We
         // cannot set a static column definition to
@@ -311,16 +315,6 @@ public class LogEntryProvider implements BaseLogEntryProvider {
             }
         }
 
-        // add limit clause
-        if (limit > 0) {
-            queryStr.append(" LIMIT ").append(limit);
-        }
-
-        // add offset clause
-        if (offset > 0) {
-            queryStr.append(" OFFSET ").append(offset);
-        }
-
         Query query = em.createQuery(queryStr.toString());
 
         for (Predicate predicate : predicates) {
@@ -331,6 +325,16 @@ public class LogEntryProvider implements BaseLogEntryProvider {
                 rightValue = "%" + rightValue + "%";
             }
             query.setParameter(leftName, rightValue);
+        }
+
+        // add offset clause
+        if (offset > 0) {
+            query.setFirstResult((int) offset);
+        }
+
+        // add limit clause
+        if (limit > 0) {
+            query.setMaxResults((int) limit);
         }
 
         return doPublish(query.getResultList());
@@ -495,5 +499,4 @@ public class LogEntryProvider implements BaseLogEntryProvider {
         Query query = em.createNamedQuery("LogEntry.findEventIds");
         return (List<String>) query.getResultList();
     }
-
 }

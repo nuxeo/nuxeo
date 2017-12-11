@@ -23,14 +23,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -46,6 +50,7 @@ import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Predicates;
+import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.runtime.api.Framework;
@@ -210,7 +215,6 @@ public class TestAuditWithMongoDB {
         Assert.assertEquals(0, id);
     }
 
-
     @Test
     public void testGetLogEntriesAfter() throws Exception {
         String repositoryId = "test";
@@ -231,7 +235,8 @@ public class TestAuditWithMongoDB {
         long id4 = reader.getLatestLogId(repositoryId, "documentModified0");
         Assert.assertTrue(id4 > id3);
 
-        List<LogEntry> entries = reader.getLogEntriesAfter(id1, 5, repositoryId, "documentCreated0", "documentModified0");
+        List<LogEntry> entries = reader.getLogEntriesAfter(id1, 5, repositoryId, "documentCreated0",
+                "documentModified0");
         Assert.assertEquals(4, entries.size());
         Assert.assertEquals(id1, entries.get(0).getId());
 
@@ -250,22 +255,25 @@ public class TestAuditWithMongoDB {
 
         MongoDBAuditBackend mongoDBBackend = (MongoDBAuditBackend) audit.getBackend();
 
-        List<String> jsonEntries = new ArrayList<>();
-
+        String idForAuditStorage = "idForAuditStorage";
         ObjectMapper mapper = new ObjectMapper();
-        for (int i = 0; i < 42; i++) {
+        List<String> jsonEntries = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+        for (int i = 1; i <= 42; i++) {
             ObjectNode logEntryJson = mapper.createObjectNode();
-            logEntryJson.put(LOG_EVENT_ID, "idForAuditStorage");
+            logEntryJson.put(LOG_ID, Integer.valueOf(i).longValue());
+            logEntryJson.put(LOG_EVENT_ID, idForAuditStorage);
             jsonEntries.add(mapper.writeValueAsString(logEntryJson));
+            ids.add(Long.valueOf(i));
         }
-
         // Save JSON entries into backend
         mongoDBBackend.append(jsonEntries);
 
         LogEntryGen.flushAndSync();
 
         // Query all logs
-        AuditQueryBuilder builder = new AuditQueryBuilder().predicates(Predicates.eq(LOG_EVENT_ID, "idForAuditStorage"));
+        AuditQueryBuilder builder = new AuditQueryBuilder().predicates(Predicates.eq(LOG_EVENT_ID, idForAuditStorage));
+        // builder.predicates()
         List<LogEntry> logs = mongoDBBackend.queryLogs(builder);
         assertEquals(42, logs.size());
 
@@ -273,12 +281,29 @@ public class TestAuditWithMongoDB {
         int total = 0;
         while (scrollResult.hasResults()) {
             assertTrue(scrollResult.getResults().size() <= 5);
-            List<String> entries = scrollResult.getResults();
-            entries.forEach(entry -> assertTrue(entry.contains("\"eventId\":\"idForAuditStorage\"")));
+            jsonEntries = scrollResult.getResults();
+            List<LogEntry> entries = jsonEntries.stream().map(json -> {
+                try {
+                    return mapper.readValue(json, LogEntryImpl.class);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            }).collect(Collectors.toList());
+            for (LogEntry entry : entries) {
+                assertTrue(ids.remove(Long.valueOf(entry.getId())));
+                assertEquals(idForAuditStorage, entry.getEventId());
+            }
             total += entries.size();
             scrollResult = mongoDBBackend.scroll(scrollResult.getScrollId());
         }
         assertEquals(42, total);
+        assertTrue(ids.isEmpty());
+
+        // assert we can get a single log entry by its id
+        LogEntry logEntry = mongoDBBackend.getLogEntryByID(4);
+        assertNotNull(logEntry);
+        assertEquals(4, logEntry.getId());
+        assertEquals(idForAuditStorage, logEntry.getEventId());
     }
 
 }
