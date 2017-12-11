@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,15 +35,20 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -50,7 +56,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.preview" })
+@Deploy({ "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.preview" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @LocalDeploy({ "org.nuxeo.ecm.platform.preview:doctype-contrib-test.xml" })
 public class TestPreviewAdapter {
@@ -102,6 +108,30 @@ public class TestPreviewAdapter {
         assertEquals(1, blobs.size());
         String preview = blobs.get(0).getString();
         assertTrue(preview, preview.contains("<pre>test</pre>"));
+    }
+
+    @Test
+    public void testFilesOfficePreviewer() throws IOException {
+        DocumentModel document = session.createDocumentModel("CustomDoc");
+        Blob officeBlob = new FileBlob(FileUtils.getResourceFileFromContext("hello.docx"));
+        document.setPropertyValue("files:files",
+                (Serializable) Collections.singletonList(Collections.singletonMap("file", officeBlob)));
+
+        HtmlPreviewAdapter adapter = document.getAdapter(HtmlPreviewAdapter.class);
+        List<Blob> previewBlobs = adapter.getFilePreviewBlobs();
+        // check that we have the same result passing the xpath explicitly
+        assertEquals(previewBlobs, adapter.getFilePreviewBlobs("files:files/0/file"));
+        // check preview blobs
+        assertEquals(2, previewBlobs.size());
+        assertEquals("text/html", previewBlobs.get(0).getMimeType());
+        Blob pdfBlob = previewBlobs.get(1);
+        assertEquals("application/pdf", pdfBlob.getMimeType());
+        // fix filename set to "pdf" by the PDFPreviewer to ensure blob equality
+        pdfBlob.setFilename("hello.pdf");
+        Blob expectedBlob = Framework.getService(ConversionService.class)
+                                     .convert("any2pdf", new SimpleBlobHolder(officeBlob), null)
+                                     .getBlob();
+        assertEquals(expectedBlob, pdfBlob);
     }
 
 }
