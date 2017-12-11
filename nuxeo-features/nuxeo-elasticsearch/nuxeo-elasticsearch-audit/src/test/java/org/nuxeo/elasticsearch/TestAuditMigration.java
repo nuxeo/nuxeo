@@ -46,7 +46,6 @@ import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
-import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
@@ -65,13 +64,17 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
         "org.nuxeo.elasticsearch.audit" })
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy({ "org.nuxeo.elasticsearch.audit:nxaudit-ds.xml", "org.nuxeo.elasticsearch.audit:nxuidsequencer-ds.xml",
+@LocalDeploy({ "org.nuxeo.elasticsearch.audit:audit-jpa-storage-test-contrib.xml",
+        "org.nuxeo.elasticsearch.audit:nxaudit-ds.xml", "org.nuxeo.elasticsearch.audit:nxuidsequencer-ds.xml",
         "org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
 @SuppressWarnings("unchecked")
 public class TestAuditMigration {
 
-    protected @Inject CoreSession session;
+    public static final String DEFAULT_AUDIT_STORAGE = "defaultAuditStorage";
+
+    @Inject
+    protected CoreSession session;
 
     @Inject
     protected ElasticSearchAdmin esa;
@@ -98,7 +101,7 @@ public class TestAuditMigration {
         Assert.assertNotNull(audit);
 
         // start with JPA based Audit
-        jpaBackend = (DefaultAuditBackend) new AuditBackendDescriptor().newInstance(audit);
+        jpaBackend = (DefaultAuditBackend) audit.getAuditStorage(DEFAULT_AUDIT_STORAGE);
 
     }
 
@@ -147,9 +150,9 @@ public class TestAuditMigration {
 
         LogEntryGen.flushAndSync();
 
-        String singleQuery = "            {\"query\": {\n" + "                \"bool\" : {\n" + "                  \"must\" : {\n"
-                + "                    \"match\" : {\n" + "                      \"docUUID\" : {\n"
-                + "                        \"query\" : \"mydoc\",\n"
+        String singleQuery = "            {\"query\": {\n" + "                \"bool\" : {\n"
+                + "                  \"must\" : {\n" + "                    \"match\" : {\n"
+                + "                      \"docUUID\" : {\n" + "                        \"query\" : \"mydoc\",\n"
                 + "                        \"type\" : \"boolean\"\n" + "                      }\n"
                 + "                    }\n" + "                  }\n" + "                }\n"
                 + "              }}          \n" + "";
@@ -199,7 +202,7 @@ public class TestAuditMigration {
         OperationContext ctx = new OperationContext(session);
         Map<String, Serializable> params = new HashMap<>();
 
-        params.put("auditStorage", "defaultAuditStorage");
+        params.put("auditStorage", DEFAULT_AUDIT_STORAGE);
 
         automationService.run(ctx, AuditRestore.ID, params);
 
