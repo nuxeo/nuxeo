@@ -191,23 +191,7 @@ public class TestDirectoryAuditStorage {
         assertEquals(1, logEntries.size());
         assertEquals("/My doc 2", logEntries.get(0).getDocPath());
 
-        // Query builder with a 'AND entry = ' condition.
-        queryBuilder = new AuditQueryBuilder();
-        queryBuilder.addAndPredicate(Predicates.eq(DirectoryAuditStorage.JSON_COLUMN, jsonEntries.get(1)));
-        logEntries = storage.queryLogs(queryBuilder);
-        assertEquals(1, logEntries.size());
-        assertEquals("/My doc 2", logEntries.get(0).getDocPath());
-
-        // Query builder with a 'AND entry LIKE ' condition.
-        queryBuilder = new AuditQueryBuilder();
-        queryBuilder.addAndPredicate(new Predicate(new Reference(DirectoryAuditStorage.JSON_COLUMN), Operator.LIKE,
-                Literals.toLiteral("My doc 2")));
-        logEntries = storage.queryLogs(queryBuilder);
-        assertEquals(1, logEntries.size());
-        assertEquals("/My doc 2", logEntries.get(0).getDocPath());
-
-        // Query builder with a 'AND entry IN ' condition.
-        // => Not supported.
+        // Queries with ' = ', 'LIKE', 'IN' operators are not supported.
     }
 
     @Test
