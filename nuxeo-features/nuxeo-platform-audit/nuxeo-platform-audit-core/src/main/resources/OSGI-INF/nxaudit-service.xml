@@ -148,10 +148,6 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" point="storage">
-    <storage id="defaultAuditStorage" class="org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend"/>
-  </extension>
-
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
 

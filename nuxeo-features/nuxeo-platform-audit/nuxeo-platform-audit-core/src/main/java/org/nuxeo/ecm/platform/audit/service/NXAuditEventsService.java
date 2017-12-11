@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -36,8 +37,11 @@ import org.nuxeo.ecm.platform.audit.service.extension.AuditBulkerDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.AuditStorageDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.ComponentManager;
+import org.nuxeo.runtime.model.ComponentManager.Listener;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -87,6 +91,8 @@ public class NXAuditEventsService extends DefaultComponent {
     protected AuditBulkerDescriptor bulkerConfig = new AuditBulkerDescriptor();
 
     protected Map<String, AuditStorageDescriptor> auditStorageDescriptors = new HashMap<>();
+    
+    protected Map<String, AuditStorage> auditStorages = new HashMap<>();
 
     @Override
     public int getApplicationStartedOrder() {
@@ -99,6 +105,26 @@ public class NXAuditEventsService extends DefaultComponent {
         backend.onApplicationStarted();
         bulker = bulkerConfig.newInstance(backend);
         bulker.onApplicationStarted();
+        // init storages after runtime was started (as we don't have started order for storages which are backends)
+        Framework.getRuntime().getComponentManager().addListener(new Listener() {
+
+            @Override
+            public void afterStart(ComponentManager mgr, boolean isResume) {
+                for (Entry<String, AuditStorageDescriptor> descriptor : auditStorageDescriptors.entrySet()) {
+                    AuditStorage storage = descriptor.getValue().newInstance();
+                    if (storage instanceof AuditBackend) {
+                        ((AuditBackend) storage).onApplicationStarted();
+                    }
+                    auditStorages.put(descriptor.getKey(), storage);
+                }
+            }
+
+            @Override
+            public void afterStop(ComponentManager mgr, boolean isStandby) {
+                uninstall();
+            }
+
+        });
     }
 
     @Override
@@ -107,6 +133,13 @@ public class NXAuditEventsService extends DefaultComponent {
             bulker.onApplicationStopped();
         } finally {
             backend.onApplicationStopped();
+            // clear storages
+            auditStorages.values().forEach(storage -> {
+                if (storage instanceof AuditBackend) {
+                    ((AuditBackend) storage).onApplicationStopped();
+                }
+            });
+            auditStorages.clear();
         }
     }
 
@@ -246,7 +279,7 @@ public class NXAuditEventsService extends DefaultComponent {
      * @since 9.3
      */
     public AuditStorage getAuditStorage(String id) {
-        return auditStorageDescriptors.get(id).newInstance();
+        return auditStorages.get(id);
     }
 
 }
