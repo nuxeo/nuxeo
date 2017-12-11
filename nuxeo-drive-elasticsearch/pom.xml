@@ -62,6 +62,10 @@
       <artifactId>nuxeo-elasticsearch-audit</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.elasticsearch</groupId>
+      <artifactId>nuxeo-elasticsearch-automation</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm</groupId>
       <artifactId>nuxeo-drive-core</artifactId>
     </dependency>

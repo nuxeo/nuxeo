@@ -18,17 +18,18 @@
  */
 package org.nuxeo.drive.elasticsearch.operations.test;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.elasticsearch.ElasticsearchException;
-import org.nuxeo.drive.operations.test.NuxeoDriveWaitForAsyncCompletion;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
-import org.nuxeo.elasticsearch.ElasticSearchConstants;
-import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.ecm.automation.elasticsearch.ElasticsearchWaitForIndexingOperation;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -37,25 +38,19 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.3
  */
 @Operation(id = NuxeoDriveWaitForElasticsearchCompletion.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Wait for Elasticsearch audit completion")
-public class NuxeoDriveWaitForElasticsearchCompletion extends NuxeoDriveWaitForAsyncCompletion {
+public class NuxeoDriveWaitForElasticsearchCompletion {
 
     public static final String ID = "NuxeoDrive.WaitForElasticsearchCompletion";
 
-    @Override
-    @OperationMethod
-    public void run() throws InterruptedException, ExecutionException, TimeoutException {
-        super.run();
-        waitForElasticIndexing();
-    }
+    @Context
+    protected OperationContext ctx;
 
-    protected void waitForElasticIndexing() throws InterruptedException, ExecutionException, TimeoutException, ElasticsearchException {
-        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-        // Wait for indexing
-        esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
-        // Explicit refresh
-        esa.refresh();
-        // Explicit refresh for the audit index until it is handled by esa.refresh
-        esa.getClient().refresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE));
+    @OperationMethod
+    public void run() throws OperationException {
+        Map<String, Serializable> params = new HashMap<>();
+        params.put("refresh", true);
+        params.put("waitForAudit", true);
+        Framework.getService(AutomationService.class).run(ctx, ElasticsearchWaitForIndexingOperation.ID, params);
     }
 
 }
