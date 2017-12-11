@@ -33,8 +33,9 @@ limitations under the License.
     </style>
 
     <nuxeo-page-provider id="provider"
-                         provider="ordered_content_collection"
+                         provider="default_content_collection"
                          schemas="dublincore,common"
+                         page-size="40"
                          enrichers="thumbnail, permissions">
     </nuxeo-page-provider>
 
@@ -44,7 +45,7 @@ limitations under the License.
                            empty-label="[[i18n('collections.noDocument')]]"
                            empty-label-when-filtered="[[i18n('collections.noDocumentWhenFiltered')]]"
                            hide-content-view-actions>
-      <div class="selectionActions">
+      <div slot="selectionActions">
         <nuxeo-slot slot="COLLECTION_ACTIONS" model="[[actionContext]]"></nuxeo-slot>
       </div>
     </nuxeo-default-results>
@@ -73,8 +74,8 @@ limitations under the License.
           this.$.results.nxProvider = this.$.provider;
           this.$.provider.params = [this.document.uid];
           this.$.provider.page = 1;
-          this.fire('collection-loaded', {collection: document, provider: this.$.provider});
-          this.$.provider.fetch();
+          this.fire('collection-loaded', {collection: this.document, provider: this.$.provider});
+          this.$.results._refreshAndFetch();
         }
       },
 
@@ -85,6 +86,7 @@ limitations under the License.
       _navigate: function(e) {
         this.fire('navigate', {
           doc: e.detail.doc,
+          index: e.detail.index,
           srcDoc: this.document,
           isFromCollection: true
         });
