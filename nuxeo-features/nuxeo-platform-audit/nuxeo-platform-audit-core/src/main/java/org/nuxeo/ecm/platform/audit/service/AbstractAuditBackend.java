@@ -31,21 +31,17 @@ import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.DEF
 import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_AUDIT_ENABLED_PROP;
 import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_NAME;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.el.ELException;
 
@@ -55,7 +51,6 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.CursorService;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -92,8 +87,6 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamService;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 /**
  * Abstract class to share code between {@link AuditBackend} implementations
  *
@@ -108,9 +101,6 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
     protected final NXAuditEventsService component;
 
     protected final AuditBackendDescriptor config;
-
-    protected final CursorService<Iterator<String>, String, String> cursorService = new CursorService<>(
-            Function.identity());
 
     protected AbstractAuditBackend(NXAuditEventsService component, AuditBackendDescriptor config) {
         this.component = component;
@@ -514,40 +504,6 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
                                                            .order(OrderByExprs.asc(LOG_ID))
                                                            .limit(limit);
         return queryLogs(builder);
-    }
-
-    @Override
-    public void append(List<String> jsonEntries) {
-        ObjectMapper mapper = new ObjectMapper();
-        List<LogEntry> logEntries = jsonEntries.stream().map(json -> {
-            try {
-                return mapper.readValue(json, LogEntryImpl.class);
-            } catch (IOException e) {
-                throw new NuxeoException("Invalid json logEntry: " + json, e);
-            }
-        }).collect(Collectors.toList());
-        addLogEntries(logEntries);
-    }
-
-    @Override
-    public ScrollResult<String> scroll(AuditQueryBuilder queryBuilder, int batchSize, int keepAlive) {
-
-        cursorService.checkForTimedOutScroll();
-        ObjectMapper mapper = new ObjectMapper();
-        Iterator<String> jsonEntries = queryLogs(queryBuilder).stream().map(entry -> {
-            try {
-                return mapper.writeValueAsString(entry);
-            } catch (IOException e) {
-                throw new NuxeoException("Invalid json logEntry: " + entry, e);
-            }
-        }).iterator();
-        String scrollId = cursorService.registerCursor(jsonEntries, batchSize, keepAlive);
-        return scroll(scrollId);
-    }
-
-    @Override
-    public ScrollResult<String> scroll(String scrollId) {
-        return cursorService.scroll(scrollId);
     }
 
     @Override

@@ -21,16 +21,23 @@
 package org.nuxeo.ecm.platform.audit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Predicates;
+import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -46,20 +53,23 @@ public class TestAuditStorage extends TestNXAuditEventsService {
     public void testSaveAndScroll() throws JsonProcessingException {
 
         DefaultAuditBackend backend = (DefaultAuditBackend) serviceUnderTest;
-        List<String> jsonEntries = new ArrayList<>();
 
+        String idForAuditStorage = "idForAuditStorage";
         ObjectMapper mapper = new ObjectMapper();
-        for (int i = 0; i < 42; i++) {
+        List<String> jsonEntries = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+        for (int i = 1; i <= 42; i++) {
             ObjectNode logEntryJson = mapper.createObjectNode();
-            logEntryJson.put("eventId", "idForAuditStorage");
+            logEntryJson.put(LOG_ID, Integer.valueOf(i).longValue());
+            logEntryJson.put(LOG_EVENT_ID, idForAuditStorage);
             jsonEntries.add(mapper.writeValueAsString(logEntryJson));
+            ids.add(Long.valueOf(i));
         }
-
         // Save JSON entries into backend
         backend.append(jsonEntries);
 
         // Query all logs
-        AuditQueryBuilder builder = new AuditQueryBuilder().predicates(Predicates.eq("eventId", "idForAuditStorage"));
+        AuditQueryBuilder builder = new AuditQueryBuilder().predicates(Predicates.eq(LOG_EVENT_ID, idForAuditStorage));
         // builder.predicates()
         List<LogEntry> logs = backend.queryLogs(builder);
         assertEquals(42, logs.size());
@@ -68,11 +78,28 @@ public class TestAuditStorage extends TestNXAuditEventsService {
         int total = 0;
         while (scrollResult.hasResults()) {
             assertTrue(scrollResult.getResults().size() <= 5);
-            List<String> entries = scrollResult.getResults();
-            entries.forEach(entry -> assertTrue(entry.contains("\"eventId\":\"idForAuditStorage\"")));
+            jsonEntries = scrollResult.getResults();
+            List<LogEntry> entries = jsonEntries.stream().map(json -> {
+                try {
+                    return mapper.readValue(json, LogEntryImpl.class);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            }).collect(Collectors.toList());
+            for (LogEntry entry : entries) {
+                assertTrue(ids.remove(Long.valueOf(entry.getId())));
+                assertEquals(idForAuditStorage, entry.getEventId());
+            }
             total += entries.size();
             scrollResult = backend.scroll(scrollResult.getScrollId());
         }
         assertEquals(42, total);
+        assertTrue(ids.isEmpty());
+
+        // assert we can get a single log entry by its id
+        LogEntry logEntry = backend.getLogEntryByID(4);
+        assertNotNull(logEntry);
+        assertEquals(4, logEntry.getId());
+        assertEquals(idForAuditStorage, logEntry.getEventId());
     }
 }

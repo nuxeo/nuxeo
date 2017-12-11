@@ -20,6 +20,7 @@
 package org.nuxeo.elasticsearch.audit;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,10 +30,12 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -41,6 +44,7 @@ import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.ClearScrollRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
@@ -64,9 +68,14 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.metrics.max.Max;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.nuxeo.common.utils.TextTemplate;
+import org.nuxeo.ecm.core.api.CursorResult;
+import org.nuxeo.ecm.core.api.CursorService;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.query.sql.model.Literals;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
@@ -117,6 +126,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     public static final String MIGRATION_DONE_EVENT = "sqlToElasticsearchMigrationDone";
 
     public static final int MIGRATION_DEFAULT_BACTH_SIZE = 1000;
+
+    protected CursorService<Iterator<SearchHit>, SearchHit, String> cursorService;
 
     public ESAuditBackend(NXAuditEventsService component, AuditBackendDescriptor config) {
         super(component, config);
@@ -197,6 +208,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         } else {
             log.debug(String.format("Property %s is false, not processing any migration", MIGRATION_FLAG_PROP));
         }
+        cursorService = new CursorService<>(SearchHit::getSourceAsString);
     }
 
     @Override
@@ -206,10 +218,12 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         }
         try {
             esClient.close();
+            cursorService.clear();
         } catch (Exception e) {
             log.warn("Fail to close esClient: " + e.getMessage(), e);
         } finally {
             esClient = null;
+            cursorService = null;
         }
     }
 
@@ -217,22 +231,12 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     @SuppressWarnings("unchecked")
     public List<LogEntry> queryLogs(AuditQueryBuilder builder) {
         // prepare parameters
-        Predicate andPredicate = builder.predicate();
+        Predicate predicate = builder.predicate();
         OrderByList orders = builder.orders();
         long offset = builder.offset();
         long limit = builder.limit();
-        // cast parameters
-        // current implementation only support a MultiExpression with AND operator
-        List<Predicate> predicates = (List<Predicate>) ((List<?>) ((MultiExpression) andPredicate).values);
 
-        // create ES query builder
-        QueryBuilder query = createQueryBuilder(predicates);
-
-        // create ES source
-        SearchSourceBuilder source = new SearchSourceBuilder().query(QueryBuilders.constantScoreQuery(query)).size(100);
-
-        // create sort
-        orders.forEach(order -> source.sort(order.reference.name, order.isDescending ? SortOrder.DESC : SortOrder.ASC));
+        SearchSourceBuilder source = createSearchRequestSource(predicate, orders);
 
         // Perform search
         List<LogEntry> logEntries;
@@ -247,9 +251,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             source.size(100);
 
             // run request
-            logSearchRequest(request);
-            SearchResponse searchResponse = esClient.search(request);
-            logSearchResponse(searchResponse);
+            SearchResponse searchResponse = runRequest(request);
 
             // Build log entries
             logEntries = buildLogEntries(searchResponse);
@@ -266,9 +268,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             source.from((int) offset).size((int) limit);
 
             // run request
-            logSearchRequest(request);
-            SearchResponse searchResponse = esClient.search(request);
-            logSearchResponse(searchResponse);
+            SearchResponse searchResponse = runRequest(request);
 
             // Build log entries
             logEntries = buildLogEntries(searchResponse);
@@ -277,7 +277,23 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         return logEntries;
     }
 
-    protected QueryBuilder createQueryBuilder(List<Predicate> predicates) {
+    protected SearchSourceBuilder createSearchRequestSource(Predicate predicate, OrderByList orders) {
+        // create ES query builder
+        QueryBuilder query = createQueryBuilder(predicate);
+
+        // create ES source
+        SearchSourceBuilder source = new SearchSourceBuilder().query(QueryBuilders.constantScoreQuery(query)).size(100);
+
+        // create sort
+        orders.forEach(order -> source.sort(order.reference.name, order.isDescending ? SortOrder.DESC : SortOrder.ASC));
+        return source;
+    }
+
+    protected QueryBuilder createQueryBuilder(Predicate andPredicate) {
+        // cast parameters
+        // current implementation only support a MultiExpression with AND operator
+        @SuppressWarnings("unchecked")
+        List<Predicate> predicates = (List<Predicate>) ((List<?>) ((MultiExpression) andPredicate).values);
         // current implementation only use Predicate/OrderByExpr with a simple Reference for left and right
         Function<Operand, String> getFieldName = operand -> ((Reference) operand).name;
 
@@ -309,17 +325,6 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             query = boolQuery;
         }
         return query;
-    }
-
-    SearchResponse runNextScroll(String scrollId, TimeValue keepAlive) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "Scroll request: -XGET 'localhost:9200/_search/scroll' -d '{\"scroll\": \"%s\", \"scroll_id\": \"%s\" }'",
-                    keepAlive, scrollId));
-        }
-        SearchResponse response = esClient.searchScroll(new SearchScrollRequest(scrollId).scroll(keepAlive));
-        logSearchResponse(response);
-        return response;
     }
 
     protected List<LogEntry> buildLogEntries(SearchResponse searchResponse) {
@@ -416,9 +421,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         if (pageSize > 0) {
             request.source().size(pageSize);
         }
-        logSearchRequest(request);
-        SearchResponse searchResponse = esClient.search(request);
-        logSearchResponse(searchResponse);
+        SearchResponse searchResponse = runRequest(request);
         return buildLogEntries(searchResponse);
     }
 
@@ -455,9 +458,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         if (pageSize > 0) {
             request.source().size(pageSize);
         }
-        logSearchRequest(request);
-        SearchResponse searchResponse = esClient.search(request);
-        logSearchResponse(searchResponse);
+        SearchResponse searchResponse = runRequest(request);
         return buildLogEntries(searchResponse);
     }
 
@@ -529,7 +530,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         if (!getESIndexName().equals(indices[0])) {
             throw new IllegalStateException("Search on audit must be on audit index: " + request);
         }
-        return esClient.search(request);
+        return runRequest(request);
     }
 
     protected QueryBuilder buildFilter(PredicateDefinition[] predicates, DocumentModel searchDocumentModel) {
@@ -662,6 +663,24 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         return "Migration work started : " + MIGRATION_WORK_ID;
     }
 
+    SearchResponse runRequest(SearchRequest request) {
+        logSearchRequest(request);
+        SearchResponse response = esClient.search(request);
+        logSearchResponse(response);
+        return response;
+    }
+
+    SearchResponse runNextScroll(String scrollId, TimeValue keepAlive) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "Scroll request: -XGET 'localhost:9200/_search/scroll' -d '{\"scroll\": \"%s\", \"scroll_id\": \"%s\" }'",
+                    keepAlive, scrollId));
+        }
+        SearchResponse response = esClient.searchScroll(new SearchScrollRequest(scrollId).scroll(keepAlive));
+        logSearchResponse(response);
+        return response;
+    }
+
     protected void logSearchResponse(SearchResponse response) {
         if (log.isDebugEnabled()) {
             log.debug("Response: " + response.toString());
@@ -714,6 +733,99 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     protected String getESIndexName() {
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
         return esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
+    }
+
+    @Override
+    public void append(List<String> jsonEntries) {
+        BulkRequest bulkRequest = new BulkRequest();
+        for (String json : jsonEntries) {
+            try {
+                String entryId = new JSONObject(json).getString(LOG_ID);
+                if (StringUtils.isBlank(entryId)) {
+                    throw new NuxeoException("A json entry has an empty id. entry=" + json);
+                }
+                IndexRequest request = new IndexRequest(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE, entryId);
+                request.source(json, XContentType.JSON);
+                bulkRequest.add(request);
+            } catch (JSONException e) {
+                throw new NuxeoException("Unable to deserialize json entry=" + json, e);
+            }
+        }
+        esClient.bulk(bulkRequest);
+    }
+
+    @Override
+    public ScrollResult<String> scroll(AuditQueryBuilder builder, int batchSize, int keepAliveSeconds) {
+        // prepare parameters
+        Predicate predicate = builder.predicate();
+        OrderByList orders = builder.orders();
+
+        // create source
+        SearchSourceBuilder source = createSearchRequestSource(predicate, orders);
+        source.size(batchSize);
+        // create request
+        SearchRequest request = createSearchRequest();
+        request.source(source).scroll(TimeValue.timeValueSeconds(keepAliveSeconds));
+        SearchResponse response = runRequest(request);
+        // register cursor
+        String scrollId = cursorService.registerCursorResult(new ESCursorResult(response, batchSize, keepAliveSeconds));
+        return scroll(scrollId);
+    }
+
+    @Override
+    public ScrollResult<String> scroll(String scrollId) {
+        return cursorService.scroll(scrollId);
+    }
+
+    public class ESCursorResult extends CursorResult<Iterator<SearchHit>, SearchHit> {
+
+        protected final String scrollId;
+
+        protected boolean end;
+
+        public ESCursorResult(SearchResponse response, int batchSize, int keepAliveSeconds) {
+            super(response.getHits().iterator(), batchSize, keepAliveSeconds);
+            this.scrollId = response.getScrollId();
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (cursor == null || end) {
+                return false;
+            } else if (cursor.hasNext()) {
+                return true;
+            } else {
+                runNextScroll();
+                return !end;
+            }
+        }
+
+        @Override
+        public SearchHit next() {
+            if (cursor != null && !cursor.hasNext() && !end) {
+                // try to run a next scroll
+                runNextScroll();
+            }
+            return super.next();
+        }
+
+        protected void runNextScroll() {
+            SearchResponse response = ESAuditBackend.this.runNextScroll(scrollId,
+                    TimeValue.timeValueSeconds(keepAliveSeconds));
+            cursor = response.getHits().iterator();
+            end = !cursor.hasNext();
+        }
+
+        @Override
+        public void close() {
+            ClearScrollRequest request = new ClearScrollRequest();
+            request.addScrollId(scrollId);
+            esClient.clearScroll(request);
+            end = true;
+            // Call super close to clear cursor
+            super.close();
+        }
+
     }
 
 }

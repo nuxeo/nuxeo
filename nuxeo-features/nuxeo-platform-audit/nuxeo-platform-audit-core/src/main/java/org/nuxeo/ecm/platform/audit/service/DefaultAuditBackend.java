@@ -18,28 +18,41 @@
  */
 package org.nuxeo.ecm.platform.audit.service;
 
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 import static org.nuxeo.ecm.platform.audit.service.LogEntryProvider.createProvider;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.nuxeo.ecm.core.api.CursorResult;
+import org.nuxeo.ecm.core.api.CursorService;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.api.OrderByExprs;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
+import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Contains the Hibernate based (legacy) implementation
@@ -48,7 +61,11 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class DefaultAuditBackend extends AbstractAuditBackend {
 
+    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     protected PersistenceProvider persistenceProvider;
+
+    protected CursorService<Iterator<LogEntry>, LogEntry, String> cursorService;
 
     public DefaultAuditBackend(NXAuditEventsService component, AuditBackendDescriptor config) {
         super(component, config);
@@ -72,6 +89,13 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
     @Override
     public void onApplicationStarted() {
         activatePersistenceProvider();
+        cursorService = new CursorService<>(entry -> {
+            try {
+                return OBJECT_MAPPER.writeValueAsString(entry);
+            } catch (IOException e) {
+                throw new NuxeoException("Unable to serialize entry");
+            }
+        });
     }
 
     @Override
@@ -240,6 +264,87 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
             ret.put("ev" + event, event);
         }
         return ret;
+    }
+
+    @Override
+    public void append(List<String> jsonEntries) {
+        List<LogEntry> entries = new ArrayList<>();
+        for (String json : jsonEntries) {
+            try {
+                LogEntryImpl entry = OBJECT_MAPPER.readValue(json, LogEntryImpl.class);
+                if (entry.getId() == 0) {
+                    throw new NuxeoException("A json entry has an empty id. entry=" + json);
+                }
+                entries.add(entry);
+            } catch (IOException e) {
+                throw new NuxeoException("Unable to deserialize json entries", e);
+            }
+        }
+        accept(false, provider -> provider.append(entries));
+    }
+
+    @Override
+    public ScrollResult<String> scroll(AuditQueryBuilder builder, int batchSize, int keepAliveSeconds) {
+        // as we're using pages to scroll audit, we need to add an order to make results across pages deterministic
+        builder.orders(OrderByExprs.asc(LOG_ID), builder.orders().toArray(new OrderByExpr[0]));
+        String scrollId = cursorService.registerCursorResult(
+                new SQLAuditCursorResult(builder, batchSize, keepAliveSeconds));
+        return scroll(scrollId);
+    }
+
+    @Override
+    public ScrollResult<String> scroll(String scrollId) {
+        return cursorService.scroll(scrollId);
+    }
+
+    public class SQLAuditCursorResult extends CursorResult<Iterator<LogEntry>, LogEntry> {
+
+        protected final AuditQueryBuilder builder;
+
+        protected long pageNb;
+
+        protected boolean end;
+
+        public SQLAuditCursorResult(AuditQueryBuilder builder, int batchSize, int keepAliveSeconds) {
+            super(Collections.emptyIterator(), batchSize, keepAliveSeconds);
+            this.builder = builder;
+            this.pageNb = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (cursor == null || end) {
+                return false;
+            } else if (cursor.hasNext()) {
+                return true;
+            } else {
+                runNextPage();
+                return !end;
+            }
+        }
+
+        @Override
+        public LogEntry next() {
+            if (cursor != null && !cursor.hasNext() && !end) {
+                // try to run a next scroll
+                runNextPage();
+            }
+            return super.next();
+        }
+
+        protected void runNextPage() {
+            builder.offset(pageNb++ * batchSize).limit(batchSize);
+            cursor = queryLogs(builder).iterator();
+            end = !cursor.hasNext();
+        }
+
+        @Override
+        public void close() {
+            end = true;
+            // Call super close to clear cursor
+            super.close();
+        }
+
     }
 
 }
