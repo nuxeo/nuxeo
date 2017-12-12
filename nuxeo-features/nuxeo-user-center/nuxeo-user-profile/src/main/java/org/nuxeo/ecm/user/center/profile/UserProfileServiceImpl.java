@@ -212,7 +212,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
     protected void scheduleImport() {
         WorkManager wm = Framework.getService(WorkManager.class);
         if (wm != null) {
-            wm.schedule(new UserProfileImporterWork(), Scheduling.IF_NOT_RUNNING_OR_SCHEDULED, true);
+            wm.schedule(new UserProfileImporterWork(), true);
         }
     }
 

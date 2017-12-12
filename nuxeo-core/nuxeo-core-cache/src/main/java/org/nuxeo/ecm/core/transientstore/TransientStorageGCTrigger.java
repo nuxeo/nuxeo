@@ -37,9 +37,8 @@ public class TransientStorageGCTrigger implements EventListener {
     @Override
     public void handleEvent(Event event) {
         if (event.getName().equals(EVENT)) {
-
             WorkManager wm = Framework.getService(WorkManager.class);
-            wm.schedule(new TransiantStorageGCWork(), WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
+            wm.schedule(new TransiantStorageGCWork());
         }
     }
 }

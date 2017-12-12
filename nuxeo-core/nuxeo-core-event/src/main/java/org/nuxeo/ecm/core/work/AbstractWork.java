@@ -576,4 +576,13 @@ public abstract class AbstractWork implements Work {
         return getId().hashCode();
     }
 
+    @Override
+    public String getPartitionKey() {
+        if (docId != null) {
+            return docId;
+        } else if (docIds != null && !docIds.isEmpty()) {
+            return docIds.get(0);
+        }
+        return getId();
+    }
 }

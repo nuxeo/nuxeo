@@ -47,7 +47,6 @@ public class ConversionWork extends TransientStoreWork {
 
     public ConversionWork(String converterName, String destinationMimeType, BlobHolder blobHolder,
             Map<String, Serializable> parameters) {
-        super();
         if (converterName == null && destinationMimeType == null) {
             throw new IllegalArgumentException("'convertName' or 'destinationMimeType' must not be null");
         }

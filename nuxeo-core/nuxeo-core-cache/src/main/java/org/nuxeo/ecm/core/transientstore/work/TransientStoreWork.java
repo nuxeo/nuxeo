@@ -96,7 +96,6 @@ public abstract class TransientStoreWork extends AbstractWork {
     }
 
     public TransientStoreWork() {
-        super();
         computeEntryKey();
     }
 
