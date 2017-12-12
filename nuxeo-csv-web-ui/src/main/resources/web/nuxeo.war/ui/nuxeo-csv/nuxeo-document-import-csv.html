@@ -24,12 +24,6 @@ limitations under the License.
   <template>
 
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
-
-      .description {
-        margin: 16px 32px;
-        color: var(--nuxeo-text-light);
-      }
-
       :host {
         display: block;
         @apply --layout-flex;
@@ -65,10 +59,6 @@ limitations under the License.
         position: relative;
       }
 
-      .typeDropdown {
-        width: 100%;
-      }
-
       paper-progress {
         width: 100%;
       }
@@ -101,72 +91,6 @@ limitations under the License.
 
       .drop-scrollable {
         overflow: auto;
-      }
-
-      #document-import {
-        margin-bottom: 2.5em;
-      }
-
-      #submitButton {
-        display: none;
-      }
-
-      #blobEditor {
-        overflow-y: auto;
-      }
-
-      #blobList .file-overview:first-of-type {
-        margin-top: 32px;
-      }
-
-      .sidePanel {
-        overflow-y: scroll;
-        background: var(--nuxeo-page-background);
-      }
-
-      .blobCheck {
-        display: block;
-        width: 16px;
-        height: 16px;
-      }
-
-      .blobCheck.checked {
-        color: var(--nuxeo-validated);
-      }
-
-      .blobCheck.unchecked {
-        color: var(--nuxeo-text-light);
-      }
-
-      .blobCheck.hidden {
-        visibility: hidden;
-      }
-
-      .file-overview {
-        border: 1px solid var(--divider-color);
-        border-radius: 1px;
-        background-color: white;
-        padding: 16px 14px 1px 14px;
-        margin: 8px;
-        font-weight: bold;
-        text-transform: none;
-        color: var(--secondary-text-color);
-      }
-
-      .file-overview:hover {
-        @apply --nuxeo-block-hover;
-      }
-
-      .file-overview.selected {
-        @apply --nuxeo-block-selected;
-      }
-
-      .file-overview iron-icon {
-        margin-top: 0.1em;
-      }
-
-      .typePicker {
-        padding: 0 32px;
       }
 
       .name {
@@ -211,20 +135,6 @@ limitations under the License.
         margin: 16px 0 48px 0;
       }
 
-      .dropzone-heading {
-        font-weight: bold;
-        margin: 4px 8px;
-        padding: 4px 8px;
-        width: 100%;
-      }
-
-      .disclaimer {
-        display: block;
-        font-weight: normal;
-        font-size: .7em;
-        color: var(--nuxeo-text-light);
-      }
-
       .clear {
         width: 3em;
         visibility: hidden;
@@ -245,37 +155,8 @@ limitations under the License.
         margin-bottom: 3em;
       }
 
-      .disclaimer.checked,
-      .disclaimer.hidden {
-        visibility: hidden;
-      }
-
-      .add-more {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        text-align: center;
-        border-top: 1px solid var(--nuxeo-border);
-        background-color: rgba(255,255,255,0.8);
-        padding: .5em;
-      }
-
       .buttons {
         @apply --buttons-bar;
-      }
-
-      .add-more .importActions {
-        margin-left: 8px;
-      }
-
-      .importActions > * {
-        margin-left: 8px;
-      }
-
-      .importActions > *:first-child,
-      .importActions > nuxeo-slot {
-        margin-left: 0;
       }
 
       @media (max-width: 1024px) {
