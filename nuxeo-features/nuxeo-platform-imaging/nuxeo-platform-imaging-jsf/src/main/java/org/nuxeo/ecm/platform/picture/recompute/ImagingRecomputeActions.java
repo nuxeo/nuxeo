@@ -96,7 +96,7 @@ public class ImagingRecomputeActions implements Serializable {
 
         if (!StringUtils.isBlank(nxqlQuery)) {
             ImagingRecomputeWork work = new ImagingRecomputeWork(documentManager.getRepositoryName(), nxqlQuery);
-            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
+            workManager.schedule(work);
 
             facesMessages.addFromResourceBundle(StatusMessage.Severity.INFO, "label.imaging.recompute.work.launched");
         }

@@ -39,7 +39,7 @@ public class SQLFulltextExtractorWork extends FulltextExtractorWork {
     private static final long serialVersionUID = 1L;
 
     public SQLFulltextExtractorWork(String repositoryName, String docId) {
-        super(repositoryName, docId, repositoryName + ':' + docId + ":sqlFulltextExtractor", true);
+        super(repositoryName, docId, true);
     }
 
     private static final Log log = LogFactory.getLog(SQLFulltextExtractorWork.class);

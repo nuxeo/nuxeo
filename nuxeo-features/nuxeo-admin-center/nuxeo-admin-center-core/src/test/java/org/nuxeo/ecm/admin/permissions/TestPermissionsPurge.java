@@ -41,8 +41,6 @@ public class TestPermissionsPurge extends AbstractPermissionsPurge {
         searchDocument.setPropertyValue("rs:ace_username", (Serializable) usernames);
 
         TransactionHelper.commitOrRollbackTransaction();
-
-        PermissionsPurgeWork work = new PermissionsPurgeWork(searchDocument);
-        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
+        workManager.schedule(new PermissionsPurgeWork(searchDocument));
     }
 }
