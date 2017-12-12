@@ -21,7 +21,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   tests:
-    image: dockerpriv.nuxeo.com:443/nuxeo/jenkins-slave
+    build:
+       context: jenkins-slave-kafka
+       dockerfile: Dockerfile
+    image: dockerpriv.nuxeo.com:443/nuxeo/jenkins-slave-kafka
     volumes:
       - $WORKSPACE:$WORKSPACE
       - /var/run/docker.sock:/var/run/docker.sock:rw
@@ -29,5 +32,7 @@ services:
       - kafka
       - zookeeper
     environment:
-      - JAVA_OPTS=-Xms512m -Xmx3g -Dkafka.zkServers=zookeeper:2181 -Dkafka.bootstrap.servers=kafka:9092
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     command: /sbin/my_init -- su - jenkins -c "$TESTS_COMMAND"

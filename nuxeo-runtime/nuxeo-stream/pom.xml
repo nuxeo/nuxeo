@@ -75,25 +75,6 @@
     </plugins>
   </build>
 
-  <profiles>
-    <profile>
-      <id>kafka</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <systemPropertyVariables>
-                <kafka>true</kafka>
-              </systemPropertyVariables>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-
   <properties>
     <it.failsafe.argLine>-Xloggc:gc.log -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps
     </it.failsafe.argLine>
