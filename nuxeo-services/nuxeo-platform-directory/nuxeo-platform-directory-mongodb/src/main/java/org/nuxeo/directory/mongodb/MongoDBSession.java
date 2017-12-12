@@ -181,10 +181,13 @@ public class MongoDBSession extends BaseSession {
                 continue;
             }
             Property prop = docModel.getPropertyObject(schemaName, fieldName);
-            if (fieldName.equals(getPasswordField()) && StringUtils.isEmpty((String) prop.getValue())) {
+            if (prop == null || !prop.isDirty()
+                    || (fieldName.equals(getPasswordField()) && StringUtils.isEmpty((String) prop.getValue()))) {
                 continue;
             }
-            if (prop != null && prop.isDirty()) {
+            if (getDirectory().isReference(fieldName)) {
+                referenceFieldList.add(fieldName);
+            } else {
                 Serializable value = prop.getValue();
                 if (fieldName.equals(getPasswordField())) {
                     value = PasswordHelper.hashPassword((String) value, passwordHashAlgorithm);
@@ -193,9 +196,6 @@ public class MongoDBSession extends BaseSession {
                     value = ((Calendar) value).getTime();
                 }
                 fieldMap.put(prop.getName(), value);
-            }
-            if (getDirectory().isReference(fieldName)) {
-                referenceFieldList.add(fieldName);
             }
         }
 
