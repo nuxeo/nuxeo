@@ -192,10 +192,10 @@ public class LDAPDirectory extends AbstractDirectory {
         if (serverConfig.isPoolingEnabled()) {
             // Enable connection pooling
             props.put("com.sun.jndi.ldap.connect.pool", "true");
-            props.put("com.sun.jndi.ldap.connect.pool.protocol", "plain ssl");
-            props.put("com.sun.jndi.ldap.connect.pool.authentication", "none simple DIGEST-MD5");
-            props.put("com.sun.jndi.ldap.connect.pool.timeout", "1800000"); // 30
-            // min
+            // the rest of the properties controlling pool configuration are system properties!
+            setSystemProperty("com.sun.jndi.ldap.connect.pool.protocol", "plain ssl");
+            setSystemProperty("com.sun.jndi.ldap.connect.pool.authentication", "none simple DIGEST-MD5");
+            setSystemProperty("com.sun.jndi.ldap.connect.pool.timeout", "1800000"); // 30 min
         }
 
         if (!serverConfig.isVerifyServerCert() && serverConfig.useSsl) {
@@ -204,6 +204,15 @@ public class LDAPDirectory extends AbstractDirectory {
         }
 
         return props;
+    }
+
+    /**
+     * Sets a System property, except if it's already set, to allow for external configuration.
+     */
+    protected void setSystemProperty(String key, String value) {
+        if (System.getProperty(key) == null) {
+            System.setProperty(key, value);
+        }
     }
 
     public Properties getContextProperties() {
