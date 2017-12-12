@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequestBuilder;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -116,14 +117,16 @@ public class ESTransportClient implements ESClient {
 
     @Override
     public boolean mappingExists(String indexName, String type) {
-        return client.admin()
-                     .indices()
-                     .prepareGetMappings(indexName)
-                     .execute()
-                     .actionGet()
-                     .getMappings()
-                     .get(indexName)
-                     .containsKey(type);
+        GetMappingsResponse mappings = client.admin()
+                                             .indices()
+                                             .prepareGetMappings(indexName)
+                                             .execute()
+                                             .actionGet();
+        if (mappings == null || mappings.getMappings().isEmpty()) {
+            return false;
+        }
+        // The real index might have another name if indexName is an alias so we check the mapping of the first item.
+        return mappings.getMappings().values().iterator().next().value.containsKey(type);
     }
 
     @Override
