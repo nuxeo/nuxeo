@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.threed.adapter;
 
-import com.google.common.collect.Iterables;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -27,6 +26,7 @@ import org.nuxeo.ecm.platform.preview.adapter.MimeTypePreviewer;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.threed.ThreeDDocument;
 import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
+import org.nuxeo.ecm.platform.threed.service.AutomaticLOD;
 import org.nuxeo.ecm.platform.threed.service.ThreeDService;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -44,9 +44,11 @@ public class ThreeDPreviewer extends AbstractPreviewer implements MimeTypePrevie
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         ThreeDDocument threeDDocument = dm.getAdapter(ThreeDDocument.class);
         ThreeDService threeDService = Framework.getService(ThreeDService.class);
-        return buildPreview(
-                threeDDocument.getTransmissionThreeD(Iterables.get(threeDService.getAutomaticLODs(), 0).getName()), dm);
-
+        if (threeDDocument.getTransmissionThreeDs().isEmpty()) {
+            return new ArrayList<>();
+        }
+        AutomaticLOD previewLOD = threeDService.getAutomaticLODs().iterator().next();
+        return buildPreview(threeDDocument.getTransmissionThreeD(previewLOD.getName()), dm);
     }
 
     protected List<Blob> buildPreview(TransmissionThreeD transmissionThreeD, DocumentModel dm) {

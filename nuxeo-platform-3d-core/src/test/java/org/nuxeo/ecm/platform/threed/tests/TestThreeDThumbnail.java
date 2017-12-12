@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.threed.BatchConverterHelper;
 import org.nuxeo.ecm.platform.threed.ThreeD;
+import org.nuxeo.ecm.platform.threed.ThreeDDocument;
 import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
 import org.nuxeo.ecm.platform.threed.service.ThreeDService;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
@@ -50,6 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -127,7 +129,8 @@ public class TestThreeDThumbnail {
             log.warn(String.format("[NXP-21450] memory free: %dMB", Runtime.getRuntime().freeMemory() / 1024 / 1024));
             log.warn(String.format("[NXP-21450] duration: %dms", timeDelta));
         }
-        Blob pictureUsualThumbnail = (Blob) threed.getPropertyValue(RENDER_VIEWS_PROPERTY + "/0/thumbnail");
+        Collection<ThreeDRenderView> renderViews = threed.getAdapter(ThreeDDocument.class).getRenderViews();
+        Blob pictureUsualThumbnail = renderViews.iterator().next().getContent();
         assertEquals(pictureUsualThumbnail.getFilename(), pictureThumbnail.getThumbnail(session).getFilename());
         runtimeHarness.undeployContrib("org.nuxeo.ecm.platform.threed.core",
             "OSGI-INF/threed-service-contrib-override.xml");
