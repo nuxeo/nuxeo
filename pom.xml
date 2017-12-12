@@ -1156,6 +1156,11 @@
         <artifactId>nuxeo-target-platforms-sample</artifactId>
         <version>${nuxeo.target.platforms.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.utils</groupId>
+        <artifactId>nuxeo-target-platforms-compat</artifactId>
+        <version>${nuxeo.target.platforms.version}</version>
+      </dependency>
 
       <!-- JSF to Web UI -->
       <dependency>
