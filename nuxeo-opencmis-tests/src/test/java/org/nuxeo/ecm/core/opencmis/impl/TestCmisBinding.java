@@ -762,6 +762,23 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
+    public void testCreateDocumentWithContentStreamAndFileName() throws Exception {
+        // use a filename that contains path separators
+        String filename = "C:\\My Documents\\foo.txt";
+        ContentStream cs = new ContentStreamImpl(filename, "text/plain", Helper.FILE1_CONTENT);
+        String id = objService.createDocument(repositoryId, createBaseDocumentProperties("bar.txt", "File"),
+                rootFolderId, cs, VersioningState.NONE, null, null, null, null);
+        ObjectData data = getObject(id);
+        assertEquals(id, data.getId());
+        assertEquals("bar.txt", getString(data, PropertyIds.NAME));
+        assertEquals("bde9eb59c76cb432a0f8d02057a19923", getString(data, NuxeoTypeHelper.NX_DIGEST));
+        cs = objService.getContentStream(repositoryId, id, null, null, null, null);
+        // check filename has been normalized
+        assertEquals("foo.txt", cs.getFileName());
+        assertEquals(Helper.FILE1_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
+    }
+
+    @Test
     public void testCreateDocumentImplicitType() throws Exception {
         List<PropertyData<?>> props = new ArrayList<>();
         props.add(factory.createPropertyStringData(PropertyIds.NAME, "doc.txt"));
@@ -956,6 +973,25 @@ public class TestCmisBinding extends TestCmisBindingBase {
         } catch (CmisConstraintException e) {
             // ok
         }
+    }
+
+    @Test
+    public void testContentStreamFileName() throws Exception {
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+
+        // given a filename that contains path separators
+        String filename = "C:\\My Documents\\foo.txt";
+
+        // set stream
+        ContentStream cs = new ContentStreamImpl(filename, "text/plain; charset=UTF-8", STREAM_CONTENT);
+        Holder<String> objectIdHolder = new Holder<>(ob.getId());
+        Holder<String> changeTokenHolder = getChangeTokenHolder(ob);
+        objService.setContentStream(repositoryId, objectIdHolder, Boolean.TRUE, changeTokenHolder, cs, null);
+        assertEquals(ob.getId(), objectIdHolder.getValue());
+
+        // check filename has been normalized
+        cs = objService.getContentStream(repositoryId, ob.getId(), null, null, null, null);
+        assertEquals("foo.txt", cs.getFileName());
     }
 
     @Test

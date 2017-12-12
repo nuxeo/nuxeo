@@ -88,6 +88,7 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.common.collect.Iterators;
@@ -355,6 +356,10 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
     public static Blob getPersistentBlob(ContentStream contentStream, String filename) throws IOException {
         if (filename == null) {
             filename = contentStream.getFileName();
+        }
+        if (filename != null) {
+            // keep only the filename, no path
+            filename = FileManagerUtils.fetchFileName(filename);
         }
         File file = Framework.createTempFile("NuxeoCMIS-", null);
         try (InputStream in = contentStream.getStream(); OutputStream out = new FileOutputStream(file)){
