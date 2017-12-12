@@ -260,7 +260,7 @@ public class CSVImporterWork extends TransientStoreWork {
         TransientStore store = getStore();
         store.putParameter(id, "logs", EMPTY_LOGS);
         store.putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.SCHEDULED));
-        works.schedule(this, WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
+        works.schedule(this);
         return id;
     }
 
