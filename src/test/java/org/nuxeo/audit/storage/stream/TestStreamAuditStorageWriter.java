@@ -46,8 +46,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features({ StreamAuditFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.audit.storage", "org.nuxeo.runtime.stream" })
-@LocalDeploy({ "org.nuxeo.audit.storage:OSGI-INF/test-stream-audit-storage-contrib.xml" })
+@Deploy({ "org.nuxeo.audit.storage.directory", "org.nuxeo.runtime.stream" })
+@LocalDeploy({ "org.nuxeo.audit.storage.directory:OSGI-INF/test-stream-audit-storage-contrib.xml" })
 public class TestStreamAuditStorageWriter {
 
     @Inject
