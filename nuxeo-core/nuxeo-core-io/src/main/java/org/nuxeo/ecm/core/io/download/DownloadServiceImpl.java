@@ -219,10 +219,20 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         if (xpath != null) {
             sb.append("/").append(xpath);
             if (filename != null) {
+                // make sure filename doesn't contain path separators
+                filename = getFilenameWithoutPath(filename);
                 sb.append("/").append(URIUtils.quoteURIPathComponent(filename, true));
             }
         }
         return sb.toString();
+    }
+
+    protected String getFilenameWithoutPath(String filename) {
+        int sep = Math.max(filename.lastIndexOf('\\'), filename.lastIndexOf('/'));
+        if (sep != -1) {
+            filename = filename.substring(sep + 1);
+        }
+        return filename;
     }
 
     @Override

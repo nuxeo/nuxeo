@@ -487,4 +487,16 @@ public class TestDownloadService {
         session.close();
     }
 
+    @Test
+    public void testDownloadUrl() throws IOException {
+        // Windows path separators
+        String filename = "C:\\My Documents\\foo.txt";
+        String url = downloadService.getDownloadUrl("default", "1234", "file:content", filename);
+        assertEquals("nxfile/default/1234/file:content/foo.txt", url);
+        // Unix path separators
+        filename = "/home/john/foo.txt";
+        url = downloadService.getDownloadUrl("default", "1234", "file:content", filename);
+        assertEquals("nxfile/default/1234/file:content/foo.txt", url);
+    }
+
 }
