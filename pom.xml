@@ -130,7 +130,6 @@
     <module>nuxeo-web-ui-itests</module>
     <module>nuxeo-api-playground</module>
     <module>nuxeo-jsf-to-web-ui</module>
-    <module>nuxeo-audit-storage</module>
   </modules>
 
   <dependencyManagement>
@@ -1120,12 +1119,6 @@
         <version>${nuxeo.jsf.to.web.ui.version}</version>
       </dependency>
 
-      <!-- Audit -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-audit-storage</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
