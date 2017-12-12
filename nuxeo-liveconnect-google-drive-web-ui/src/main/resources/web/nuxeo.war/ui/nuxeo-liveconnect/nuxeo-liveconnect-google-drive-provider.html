@@ -32,7 +32,6 @@ Contributors:
         display: none;
       }
     </style>
-    <iron-request id="xhr"></iron-request>
 
     <nuxeo-resource id="oauth2"></nuxeo-resource>
   </template>
@@ -107,9 +106,10 @@ Contributors:
 
       _handleAuthResult: function(token) {
         if (token) {
-          this.$.xhr.send({url:'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token= ' + token, handleAs: 'json'})
+          var xhr = document.createElement('iron-request');
+          xhr.send({url:'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token= ' + token, handleAs: 'json'})
               .then(function() {
-                this.userId = this.$.xhr.response.email;
+                this.userId = xhr.response.email;
                 this._showPicker(token);
               }.bind(this));
         } else {
