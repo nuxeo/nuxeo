@@ -7,7 +7,7 @@
     <version>10.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.audit.storage.directory</groupId>
+  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-audit-storage-directory</artifactId>
   <name>Nuxeo Audit Storage Directory</name>
 
