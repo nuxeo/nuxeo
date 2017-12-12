@@ -613,9 +613,9 @@ limitations under the License.
         '_observeVisible(visible)'
       ],
 
-      _i18n(label, params){
-        return !params || params.length == 0 ? this.i18n(label)
-            : (params.length == 1 ? this.i18n(label, params[0]) : this.i18n(label, params[0], params[1]));
+      _i18n: function(label, params){
+        return !params || params.length === 0 ? this.i18n(label)
+            : (params.length === 1 ? this.i18n(label, params[0]) : this.i18n(label, params[0], params[1]));
       },
 
       _filterLogs: function(items){
