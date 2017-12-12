@@ -119,7 +119,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
             throw new RuntimeException("No WorkManager available");
         }
         Work work = new QuotaStatsInitialWork(updaterName, repositoryName);
-        workManager.schedule(work, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED, true);
+        workManager.schedule(work, true);
     }
 
     @Override
