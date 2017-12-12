@@ -55,8 +55,6 @@ public class UpdateACEStatusWork extends AbstractWork {
 
     public static final int DEFAULT_BATCH_SIZE = 20;
 
-    public static final String ID = "updateACEStatus";
-
     public static final String CATEGORY = "updateACEStatus";
 
     public static final String QUERY = "SELECT ecm:uuid, ecm:acl/*1/principal, ecm:acl/*1/permission,"
@@ -67,10 +65,6 @@ public class UpdateACEStatusWork extends AbstractWork {
     public static final FastDateFormat FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
     protected int batchSize = DEFAULT_BATCH_SIZE;
-
-    public UpdateACEStatusWork() {
-        super(ID);
-    }
 
     @Override
     public void work() {
