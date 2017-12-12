@@ -24,10 +24,12 @@ import static org.junit.Assert.assertEquals;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_LIST;
 
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.versioning.VersioningService;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -140,4 +142,49 @@ public class TestFacetedTagService extends AbstractTestTagService {
         assertEquals("0.5", note.getVersionLabel());
         assertEquals(2, tagService.getTags(session, note.getId()).size());
     }
+
+    // start with a checked out doc
+    @Test
+    public void testNoVersioningFacetedTagFilterWithDifferentContributor() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        assertEquals("0.0", doc.getVersionLabel());
+        assertEquals("Administrator", doc.getPropertyValue("dc:lastContributor"));
+
+        // add a tag with a different user
+        // we don't want a versioning policy like "collaborative-save" to be triggered and version the doc
+        try (CoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "joe")) {
+            tagService.tag(joeSession, doc.getId(), "mytag");
+        }
+
+        doc.refresh();
+        assertEquals("0.0", doc.getVersionLabel()); // version unchanged
+        assertEquals("joe", doc.getPropertyValue("dc:lastContributor"));
+    }
+
+    // start with a checked in doc
+    @Test
+    public void testNoVersioningFacetedTagFilterWithDifferentContributorCheckedIn() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        session.checkIn(doc.getRef(), VersioningOption.MAJOR, null);
+        doc.refresh();
+
+        assertEquals("1.0", doc.getVersionLabel());
+        assertEquals("Administrator", doc.getPropertyValue("dc:lastContributor"));
+
+        // add a tag with a different user
+        // we don't want a versioning policy like "collaborative-save" to be triggered and version the doc
+        try (CoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "joe")) {
+            tagService.tag(joeSession, doc.getId(), "mytag");
+        }
+
+        doc.refresh();
+        assertEquals("1.0", doc.getVersionLabel()); // version unchanged
+        assertEquals("joe", doc.getPropertyValue("dc:lastContributor"));
+    }
+
 }

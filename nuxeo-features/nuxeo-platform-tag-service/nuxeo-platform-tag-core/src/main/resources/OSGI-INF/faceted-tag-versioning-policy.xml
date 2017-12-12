@@ -2,6 +2,9 @@
 <component name="org.nuxeo.ecm.tags.versioning.policy" version="1.0">
 
   <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <policy id="no-versioning-for-faceted-tag-before" increment="NONE" order="3" beforeUpdate="true">
+      <filter-id>no-versioning-faceted-tag-filter</filter-id>
+    </policy>
     <policy id="no-versioning-for-faceted-tag" increment="NONE" order="3">
       <filter-id>no-versioning-faceted-tag-filter</filter-id>
     </policy>
