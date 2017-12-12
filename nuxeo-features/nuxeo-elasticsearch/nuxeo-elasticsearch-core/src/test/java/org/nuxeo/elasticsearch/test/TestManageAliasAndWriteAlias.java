@@ -30,6 +30,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -106,7 +107,8 @@ public class TestManageAliasAndWriteAlias {
         assertEquals(searchIndex, writeIndex);
         assertTrue("Expecting an index", esa.getClient().indexExists(searchIndex));
         assertTrue(writeIndex, writeIndex.startsWith("nxutest-0"));
-
+        assertTrue(esa.getClient().mappingExists(alias, ElasticSearchConstants.DOC_TYPE));
+        assertEquals(repo, esa.getRepositoryForIndex(searchIndex));
         // recreate repo the alias are in sync
         esa.dropAndInitRepositoryIndex(repo);
 
@@ -132,11 +134,14 @@ public class TestManageAliasAndWriteAlias {
         String writeIndex = esa.getClient().getFirstIndexForAlias(writeAlias);
         String searchIndex = esa.getClient().getFirstIndexForAlias(searchAlias);
         assertNotEquals(searchIndex, writeIndex);
+        assertEquals(repo, esa.getRepositoryForIndex(searchIndex));
 
         esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
-        searchIndex = esa.getClient().getFirstIndexForAlias(searchAlias);
+        String searchIndexUpdated = esa.getClient().getFirstIndexForAlias(searchAlias);
         writeIndex = esa.getClient().getFirstIndexForAlias(writeAlias);
-        assertEquals(searchIndex, writeIndex);
+        assertNotEquals(searchIndex, searchIndexUpdated);
+        assertEquals(searchIndexUpdated, writeIndex);
+        assertEquals(repo, esa.getRepositoryForIndex(searchIndexUpdated));
     }
 
     @Test
