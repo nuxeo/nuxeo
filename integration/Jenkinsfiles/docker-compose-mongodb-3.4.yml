@@ -30,6 +30,6 @@ services:
     links:
       - db
     environment:
-      - JAVA_OPS=-Xms512m -Xmx3g
+      - JAVA_OPTS=-Xms512m -Xmx3g
       - NX_MONGODB_SERVER=db:27017
     command: /sbin/my_init -- su - jenkins -c "$TESTS_COMMAND"

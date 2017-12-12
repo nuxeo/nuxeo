@@ -15,6 +15,8 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 10
       KAFKA_OFFSETS_RETENTION_MINUTES: 20160
+    links:
+      - zookeeper
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -27,7 +29,5 @@ services:
       - kafka
       - zookeeper
     environment:
-      - JAVA_OPS=-Xms512m -Xmx3g -Dkafka.zkServers=zookeeper:2181 -Dkafka.bootstrap.servers=db:9092
-      - kafka.zkServers=zookeeper:2181
-      - kafka.bootstrap.servers=db:9092
+      - JAVA_OPTS=-Xms512m -Xmx3g -Dkafka.zkServers=zookeeper:2181 -Dkafka.bootstrap.servers=db:9092
     command: /sbin/my_init -- su - jenkins -c "$TESTS_COMMAND"
