@@ -55,6 +55,12 @@ public class FacetedTagService extends AbstractTagService {
 
     public static final String USERNAME_PROPERTY = "username";
 
+    /**
+     * Context data to disable versioning, used by NoVersioningFacetedTagFilter.
+     * @since 9.10
+     */
+    public static final String DISABLE_VERSIONING = "tag.facet.disable.versioning";
+
     @Override
     public boolean hasFeature(Feature feature) {
         switch (feature) {
@@ -70,6 +76,12 @@ public class FacetedTagService extends AbstractTagService {
         return session.getDocument(new IdRef(docId)).hasFacet(TAG_FACET);
     }
 
+    protected void saveDocument(CoreSession session, DocumentModel doc) {
+        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
+        doc.putContextData(DISABLE_VERSIONING, Boolean.TRUE);
+        session.saveDocument(doc);
+    }
+
     @Override
     public void doTag(CoreSession session, String docId, String label, String username) {
         DocumentModel docModel = session.getDocument(new IdRef(docId));
@@ -83,8 +95,7 @@ public class FacetedTagService extends AbstractTagService {
             tag.put(USERNAME_PROPERTY, username);
             tags.add(tag);
             setTags(docModel, tags);
-            docModel.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
-            session.saveDocument(docModel);
+            saveDocument(session, docModel);
         }
     }
 
@@ -99,8 +110,7 @@ public class FacetedTagService extends AbstractTagService {
             if (label == null) {
                 if (!getTags(docModel).isEmpty()) {
                     setTags(docModel, new ArrayList<>());
-                    docModel.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
-                    session.saveDocument(docModel);
+                    saveDocument(session, docModel);
                 }
             } else {
                 List<Map<String, Serializable>> tags = getTags(docModel);
@@ -111,8 +121,7 @@ public class FacetedTagService extends AbstractTagService {
                 if (tag != null) {
                     tags.remove(tag);
                     setTags(docModel, tags);
-                    docModel.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
-                    session.saveDocument(docModel);
+                    saveDocument(session, docModel);
                 }
             }
         }
@@ -162,9 +171,7 @@ public class FacetedTagService extends AbstractTagService {
                 }
             }
             setTags(dstDocModel, dstTags);
-            // Disable auto checkout of destination document model
-            dstDocModel.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
-            session.saveDocument(dstDocModel);
+            saveDocument(session, dstDocModel);
         }
     }
 

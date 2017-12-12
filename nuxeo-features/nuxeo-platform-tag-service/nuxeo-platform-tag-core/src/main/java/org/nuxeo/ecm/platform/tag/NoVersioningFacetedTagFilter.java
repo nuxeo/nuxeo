@@ -20,12 +20,9 @@
 
 package org.nuxeo.ecm.platform.tag;
 
-import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_FACET;
-import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_LIST;
+import static java.lang.Boolean.TRUE;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.versioning.VersioningPolicyFilter;
 
 /**
@@ -35,22 +32,7 @@ public class NoVersioningFacetedTagFilter implements VersioningPolicyFilter {
 
     @Override
     public boolean test(DocumentModel previousDocument, DocumentModel currentDocument) {
-        if (previousDocument == null || !currentDocument.hasFacet(TAG_FACET)) {
-            return false;
-        }
-        for (String schema : currentDocument.getSchemas()) {
-            for (Property prop : currentDocument.getPropertyObjects(schema)) {
-                try {
-                    String xpath = prop.getXPath();
-                    if (!prop.isSameAs(previousDocument.getProperty(xpath)) && !TAG_LIST.equals(xpath)) {
-                        return false;
-                    }
-                } catch (PropertyNotFoundException e) {
-                    // Property could not exist in previous document because a facet was added to it dynamically
-                    return false;
-                }
-            }
-        }
-        return true;
+        return TRUE.equals(currentDocument.getContextData(FacetedTagService.DISABLE_VERSIONING));
     }
+
 }
