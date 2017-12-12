@@ -211,6 +211,11 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     }
 
     @Override
+    public String getRepositoryForIndex(String indexName) {
+        return repoNames.get(indexName);
+    }
+
+    @Override
     public List<String> getIndexNamesForType(String type) {
         List<String> indexNames = new ArrayList<>();
         for (ElasticSearchIndexConfig conf : indexConfig.values()) {
@@ -366,7 +371,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             // create a new write index and update the alias, we don't drop anything
             if (getClient().indexExists(nextWriteIndex)) {
                 throw new IllegalStateException(
-                        String.format("New index name %s for the alias %s already exists", nextWriteIndex, writeIndex));
+                        String.format("New index name %s for the alias %s already exists", nextWriteIndex, writeAlias));
             }
             initIndex(nextWriteIndex, conf, false);
             getClient().updateAlias(writeAlias, nextWriteIndex);
@@ -380,17 +385,24 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         String writeAlias = conf.writeIndexOrAlias();
         String writeIndex = getClient().getFirstIndexForAlias(writeAlias);
         if (searchIndex == null) {
-            if (Framework.isTestModeSet()) {
-                // in test mode we drop an index that have the target alias name
-                if (getClient().indexExists(searchAlias)) {
+            if (getClient().indexExists(searchAlias)) {
+                if (Framework.isTestModeSet()) {
+                    // in test mode we drop an index that have the target alias name
                     getClient().deleteIndex(searchAlias, TIMEOUT_DELETE_SECOND);
                 }
+                searchIndex = searchAlias;
+            } else {
+                // search alias is not created, point to the write index
+                getClient().updateAlias(searchAlias, writeIndex);
+                searchIndex = writeIndex;
             }
-            // search alias is not created point to the write index
-            getClient().updateAlias(searchAlias, writeIndex);
         }
+        log.info(String.format("Managed index aliases: Alias: %s ->  index: %s, alias: %s ->  index: %s", searchAlias, searchIndex, writeAlias, writeIndex));
     }
 
+    /**
+     * Update the search index to point to the write index.
+     */
     protected void syncSearchAndWriteAlias(ElasticSearchIndexConfig conf) {
         if (!conf.manageAlias()) {
             return;
@@ -399,11 +411,14 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         String searchIndex = getClient().getFirstIndexForAlias(searchAlias);
         String writeAlias = conf.writeIndexOrAlias();
         String writeIndex = getClient().getFirstIndexForAlias(writeAlias);
-        if (searchIndex.equals(writeIndex)) {
-            return;
+        if (!writeIndex.equals(searchIndex)) {
+            log.warn(String.format("Updating search alias %s->%s (previously %s)", searchAlias, writeIndex, searchIndex));
+            getClient().updateAlias(searchAlias, writeIndex);
+            searchIndex = writeIndex;
         }
-        log.warn(String.format("Updating search alias %s->%s (previously %s)", searchAlias, writeIndex, searchIndex));
-        getClient().updateAlias(searchAlias, writeIndex);
+        if (searchIndex != null) {
+            repoNames.put(searchIndex, conf.getRepositoryName());
+        }
     }
 
     protected void initIndex(String indexName, ElasticSearchIndexConfig conf, boolean dropIfExists) {
@@ -418,6 +433,13 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             if (!dropIfExists) {
                 log.debug("Index " + indexName + " already exists");
                 mappingExists = getClient().mappingExists(indexName, conf.getType());
+                if (conf.isDocumentIndex()) {
+                    //Check if the index is actually an alias.
+                    String realIndexForAlias = getClient().getFirstIndexForAlias(conf.getName());
+                    if (realIndexForAlias != null) {
+                        repoNames.put(realIndexForAlias, conf.getRepositoryName());
+                    }
+                }
             } else {
                 if (!Framework.isTestModeSet()) {
                     log.warn(String.format(

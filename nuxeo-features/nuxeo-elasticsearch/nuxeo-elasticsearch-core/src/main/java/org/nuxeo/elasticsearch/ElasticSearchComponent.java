@@ -266,6 +266,11 @@ public class ElasticSearchComponent extends DefaultComponent
     }
 
     @Override
+    public String getRepositoryForIndex(String indexName) {
+        return esa.getRepositoryForIndex(indexName);
+    }
+
+    @Override
     public List<String> getIndexNamesForType(String type) {
         return esa.getIndexNamesForType(type);
     }

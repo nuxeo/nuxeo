@@ -93,6 +93,13 @@ public interface ElasticSearchAdmin {
     String getIndexNameForRepository(String repositoryName);
 
     /**
+     * Gets the repository name associated with the index.
+     *
+     * @since 9.10
+     */
+    String getRepositoryForIndex(String indexName);
+
+    /**
      * Get the index names with the given type.
      *
      * @since 7.10
