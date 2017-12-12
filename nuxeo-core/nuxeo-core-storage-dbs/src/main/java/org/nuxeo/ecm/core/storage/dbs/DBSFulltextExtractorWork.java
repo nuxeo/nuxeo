@@ -37,7 +37,7 @@ public class DBSFulltextExtractorWork extends FulltextExtractorWork {
     private static final long serialVersionUID = 1L;
 
     public DBSFulltextExtractorWork(String repositoryName, String docId) {
-        super(repositoryName, docId, repositoryName + ':' + docId + ":dbsFulltextExtractor", true);
+        super(repositoryName, docId, true);
     }
 
     @Override

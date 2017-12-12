@@ -149,7 +149,7 @@ public class PermissionsPurgeWork extends TransientStoreWork {
         WorkManager works = Framework.getService(WorkManager.class);
         TransientStore store = getStore();
         store.putParameter(id, "status", new PurgeWorkStatus(PurgeWorkStatus.State.SCHEDULED));
-        works.schedule(this, WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
+        works.schedule(this);
         return id;
     }
 
