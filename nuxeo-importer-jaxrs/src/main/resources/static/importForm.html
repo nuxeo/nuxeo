@@ -292,7 +292,7 @@ function startImport() {
   });
   $("#runBtn").attr("disabled", true);
   $("#killBtn").css("display", "inline");
-  formURL = formURL + "?" + decodeURIComponent($.param(params));
+  formURL = formURL + "?" + $.param(params);
   doLog("starting importer");
   $.ajax({
     url : formURL,
