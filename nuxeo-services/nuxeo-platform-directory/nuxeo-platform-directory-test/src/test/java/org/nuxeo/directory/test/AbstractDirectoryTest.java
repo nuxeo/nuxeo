@@ -367,6 +367,34 @@ public abstract class AbstractDirectoryTest {
         }
     }
 
+    /**
+     * NXP-23947
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testUpdateEntry2() throws Exception {
+        try (Session session = getSession()) {
+            DocumentModel dm = session.getEntry("user_1");
+
+            assertEquals(3L, dm.getProperty(SCHEMA, "intField"));
+            List<String> groups = (List<String>) dm.getProperty(SCHEMA, "groups");
+            assertEquals(2, groups.size());
+            assertTrue(groups.contains("group_1"));
+            assertTrue(groups.contains("members"));
+
+            dm.setProperties(SCHEMA, Collections.singletonMap("intField", 4L));
+
+            session.updateEntry(dm);
+            // Refetch references
+            dm = session.getEntry("user_1");
+            // Check that groups are not lost after update
+            assertEquals(4L, dm.getProperty(SCHEMA, "intField"));
+            groups = (List<String>) dm.getProperty(SCHEMA, "groups");
+            assertEquals(2, groups.size());
+
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testDeleteEntry() throws Exception {
