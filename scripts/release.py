@@ -641,7 +641,8 @@ class Release(object):
             return
         if dryrun:
             log("[INFO] #### DRY RUN MODE ####")
-        self.check_branch_to_release()
+        # NXP-23943
+        # self.check_branch_to_release()
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
         self.repo.clone(self.branch, with_optionals=True)
@@ -819,7 +820,8 @@ class Release(object):
             return
         if dryrun:
             log("[INFO] #### DRY RUN MODE ####")
-        self.check_branch_to_release()
+        # NXP-23943
+        # self.check_branch_to_release()
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
         self.repo.clone(self.branch, with_optionals=True)
