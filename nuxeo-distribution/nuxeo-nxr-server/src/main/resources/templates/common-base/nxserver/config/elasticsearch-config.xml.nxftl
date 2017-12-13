@@ -15,6 +15,8 @@
 <#if (elasticsearch.client)?? && "${elasticsearch.client}" == "RestClient">
     <elasticSearchClient class="org.nuxeo.elasticsearch.client.ESRestClientFactory">
       <option name="addressList">${elasticsearch.addressList}</option>
+      <option name="connection.timeout.ms">${elasticsearch.restClient.connectionTimeoutMs}</option>
+      <option name="socket.timeout.ms">${elasticsearch.restClient.socketTimeoutMs}</option>
     </elasticSearchClient>
 <#else>
   <elasticSearchClient class="org.nuxeo.elasticsearch.client.ESTransportClientFactory">
