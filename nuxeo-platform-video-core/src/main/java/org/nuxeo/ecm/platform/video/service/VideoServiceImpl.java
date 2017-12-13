@@ -144,7 +144,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
             throw new RuntimeException("No WorkManager available");
         }
         VideoConversionWork work = new VideoConversionWork(doc.getRepositoryName(), doc.getId(), conversionName);
-        workManager.schedule(work, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
+        workManager.schedule(work);
     }
 
     @Override
