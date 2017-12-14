@@ -123,7 +123,7 @@ public class TagActionsBean implements Serializable {
     @Factory(value = "currentDocumentTags", scope = EVENT)
     public List<Tag> getDocumentTags() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (currentDocument == null) {
+        if (currentDocument == null || !getTagService().supportsTag(documentManager, currentDocument.getId())) {
             return new ArrayList<Tag>(0);
         } else {
             String docId = currentDocument.getId();
