@@ -24,7 +24,6 @@ services:
     build:
        context: jenkins-slave-kafka
        dockerfile: Dockerfile
-    image: dockerpriv.nuxeo.com:443/nuxeo/jenkins-slave-kafka
     volumes:
       - $WORKSPACE:$WORKSPACE
       - /var/run/docker.sock:/var/run/docker.sock:rw
