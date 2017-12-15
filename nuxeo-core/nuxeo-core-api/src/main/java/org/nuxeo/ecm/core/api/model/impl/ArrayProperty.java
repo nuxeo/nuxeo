@@ -32,10 +32,7 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.JavaTypes;
 import org.nuxeo.ecm.core.schema.types.ListType;
-import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.schema.types.TypeException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -114,21 +111,16 @@ public class ArrayProperty extends ScalarProperty {
     }
 
     protected Serializable convert(Collection<?> value) throws PropertyConversionException {
-        try {
-            Type fieldType = getType().getFieldType();
-            Collection<Object> col = new ArrayList<>(value.size());
-            for (Object v : value) {
-                if (v == null) {
-                    col.add(null);
-                } else {
-                    col.add(fieldType.convert(v));
-                }
+        Property typedProperty = getRoot().createProperty(null, getType().getField(), NONE);
+        Collection<Object> col = new ArrayList<>(value.size());
+        for (Object v : value) {
+            if (v == null) {
+                col.add(null);
+            } else {
+                col.add(typedProperty.normalize(v));
             }
-            Class<?> klass = JavaTypes.getClass(fieldType);
-            return col.toArray((Object[]) Array.newInstance(klass, col.size()));
-        } catch (TypeException e) {
-            throw new PropertyConversionException("Unable to convert collection value to desired type.", e);
         }
+        return col.toArray((Object[]) Array.newInstance(typedProperty.newInstance().getClass(), col.size()));
     }
 
     @SuppressWarnings("unchecked")
