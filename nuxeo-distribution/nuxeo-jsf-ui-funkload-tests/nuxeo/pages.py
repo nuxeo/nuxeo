@@ -790,7 +790,7 @@ class FolderPage(BasePage):
                             url_pattern='@view_documents')
         fl.assert_(len(hrefs), "No doc found with pattern: " + pattern)
         doc_url = random.choice(hrefs)
-        fl.get(doc_url, description="View a random document")
+        fl.get(doc_url + '&conversationId=0NXMAIN', description="View a random document")
         return DocumentPage(self.fl)
 
 class DocumentPage(BasePage):
