@@ -548,8 +548,12 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             String contentDisposition = DownloadHelper.getRFC2231ContentDisposition(request, filename, inline);
             response.setHeader("Content-Disposition", contentDisposition);
             response.setContentType(blob.getMimeType());
-            if (blob.getEncoding() != null) {
-                response.setCharacterEncoding(blob.getEncoding());
+            if (StringUtils.isNotBlank(blob.getEncoding())) {
+                try {
+                    response.setCharacterEncoding(blob.getEncoding());
+                } catch (IllegalArgumentException e) {
+                    // ignore invalid encoding
+                }
             }
 
             long length = blob.getLength();
