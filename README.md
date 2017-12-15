@@ -1,5 +1,5 @@
 
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-shibboleth-invitation-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-shibboleth-invitation-master/)
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=master/addons_FT_nuxeo-shibboleth-invitation-master)](https://qa.nuxeo.org/jenkins/job/master/job/addons_FT_nuxeo-shibboleth-invitation-master/)
 
 ## About Nuxeo Shibboleth Invitation
 
