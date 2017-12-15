@@ -97,6 +97,12 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
     }
 
     @Override
+    public boolean isIdempotent() {
+        // The same rendering can be executed multiple times because the result is transient.
+        return false;
+    }
+
+    @Override
     public void work() {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Starting %s work with id %s for transient store key %s and document %s.",
