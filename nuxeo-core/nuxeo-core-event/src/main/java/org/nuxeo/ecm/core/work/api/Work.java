@@ -385,4 +385,14 @@ public interface Work extends Serializable {
         return getId();
     }
 
+    /**
+     * Returns true if a work with a given {@link #getId()} should always produce the same result.
+     * The WorkManager implementation can safely skip duplicate executions of idempotent work.
+     *
+     * @since 10.1
+     */
+    default boolean isIdempotent() {
+        return true;
+    }
+
 }

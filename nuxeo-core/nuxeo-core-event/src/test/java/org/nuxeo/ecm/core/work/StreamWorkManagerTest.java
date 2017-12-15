@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.work;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -88,9 +89,10 @@ public class StreamWorkManagerTest extends WorkManagerTest {
     public void testWorkIdempotent() throws InterruptedException {
         MetricsTracker tracker = new MetricsTracker();
         SleepWork work = new SleepWork(1000, false);
+        assertTrue(work.isIdempotent());
         service.schedule(work);
         assertTrue(service.awaitCompletion(5, TimeUnit.SECONDS));
-        assertMetrics(0, 0, 1, 0);
+        tracker.assertDiff(0, 0, 1, 0);
 
         // schedule again the exact same work 5 times
         service.schedule(work);
@@ -101,7 +103,31 @@ public class StreamWorkManagerTest extends WorkManagerTest {
 
         // works with the same id are skipped immediately and marked as completed, we don't have to wait 5s
         assertTrue(service.awaitCompletion(500, TimeUnit.MILLISECONDS));
-        tracker.assertDiff(0, 0, 6, 1);
+        tracker.assertDiff(0, 0, 6, 0);
+    }
+
+    @Test
+    public void testWorkNonIdempotent() throws InterruptedException {
+        MetricsTracker tracker = new MetricsTracker();
+        SleepWork work = new SleepWork(1000, false);
+        work.setIdempotent(false);
+        assertFalse(work.isIdempotent());
+        service.schedule(work);
+        assertTrue(service.awaitCompletion(5, TimeUnit.SECONDS));
+        tracker.assertDiff(0, 0, 1, 0);
+
+        // schedule again the exact same work 5 times
+        service.schedule(work);
+        service.schedule(work);
+        service.schedule(work);
+        service.schedule(work);
+        service.schedule(work);
+
+        // works with the same id are not skipped we need to wait more
+        assertFalse(service.awaitCompletion(500, TimeUnit.MILLISECONDS));
+
+        assertTrue(service.awaitCompletion(10, TimeUnit.SECONDS));
+        tracker.assertDiff(0, 0, 6, 0);
     }
 
     @Test
@@ -119,7 +145,7 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         // we don't know if work1 and work2 are executed on the same thread
         // but we assume that the max duration is work1 + work2 because there is only one invocation of each
         assertTrue(service.awaitCompletion(2500, TimeUnit.MILLISECONDS));
-        tracker.assertDiff(0, 0, 6, 1);
+        tracker.assertDiff(0, 0, 6, 0);
     }
 
     @Override
