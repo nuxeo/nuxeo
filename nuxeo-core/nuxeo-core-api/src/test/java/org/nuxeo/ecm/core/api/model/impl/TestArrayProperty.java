@@ -62,7 +62,7 @@ public class TestArrayProperty extends AbstractTestProperty {
     @Test
     public void testArrayOfStrings() {
         ArrayProperty property = getArrayProperty(StringType.INSTANCE);
-        String[] testStrings = new String[] {"there", null, "once","was a dog"};
+        String[] testStrings = new String[] {"there", null, "once", "was a dog"};
         property.setValue(testStrings);
         assertArrayEquals(testStrings, (String[]) property.getValue());
     }
@@ -71,14 +71,14 @@ public class TestArrayProperty extends AbstractTestProperty {
     public void testArrayOfDoubles() {
         ArrayProperty property = getArrayProperty(DoubleType.INSTANCE);
 
-        property.setValue(new String[] {"1","2","3"});
+        property.setValue(new String[] { "1", "2", "3" });
         assertArrayEquals(new Double[] { 1d, 2d, 3d }, (Double[]) property.getValue());
 
-        property.setValue(new Object[] {"1",2,"3", 9,  null});
-        assertArrayEquals(new Double[] { 1d, 2d, 3d, 9d, null}, (Double[]) property.getValue());
+        property.setValue(new Object[] { "1", 2, "3", 9, null });
+        assertArrayEquals(new Double[] { 1d, 2d, 3d, 9d, null }, (Double[]) property.getValue());
 
         property.setValue(Arrays.asList(1f, 5f, 123.4f));
-        assertArrayEquals(new Double[] { 1d, 5d, (double)123.4f}, (Double[]) property.getValue());
+        assertArrayEquals(new Double[] { 1d, 5d, (double)123.4f }, (Double[]) property.getValue());
     }
 
     @Test
@@ -93,22 +93,22 @@ public class TestArrayProperty extends AbstractTestProperty {
     }
 
     @Test
-    public void testArrayOfDates() throws ParseException {
+    public void testArrayOfDates() {
         ArrayProperty property = getArrayProperty(DateType.INSTANCE);
 
         String myTestDate = "2017-11-29T12:30-03:44";
-        //Parse with timezone
+        // Parse with timezone
         Date date = DateParser.parseW3CDateTime(myTestDate);
-        //Now use the system default timezone
+        // Now use the system default timezone
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        property.setValue(new Object[] {null, cal, date, myTestDate});
+        property.setValue(new Object[] { null, cal, date, myTestDate });
         assertArrayEquals(new Object[] { null, cal, cal, cal }, (Calendar[]) property.getValue());
 
-        //The DateProperty always stores using the system default timezone, unless you pass your own Calendar
+        // The DateProperty always stores using the system default timezone, unless you pass your own Calendar
         Calendar calWithCorrectTimezone = GregorianCalendar.from(ZonedDateTime.parse(myTestDate));
         assertNotEquals(cal, calWithCorrectTimezone);
-        property.setValue(new Object[] {null, calWithCorrectTimezone});
+        property.setValue(new Object[] { null, calWithCorrectTimezone });
         assertArrayEquals(new Object[] { null, calWithCorrectTimezone }, (Calendar[]) property.getValue());
     }
 
