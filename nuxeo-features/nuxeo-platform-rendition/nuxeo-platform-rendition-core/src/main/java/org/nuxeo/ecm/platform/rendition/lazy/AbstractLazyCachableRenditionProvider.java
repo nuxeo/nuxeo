@@ -178,7 +178,7 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
         emptyBlob.setFilename(LazyRendition.IN_PROGRESS_MARKER);
         emptyBlob.setMimeType("text/plain;" + LazyRendition.EMPTY_MARKER);
         getTransientStore().putBlobs(key, Collections.singletonList(emptyBlob));
-        Framework.getService(WorkManager.class).schedule(work, Scheduling.IF_NOT_SCHEDULED);
+        Framework.getService(WorkManager.class).schedule(work);
         return Collections.singletonList(emptyBlob);
     }
 
@@ -222,7 +222,7 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
                 getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
                         sourceDocumentModificationDate);
             }
-            Framework.getService(WorkManager.class).schedule(work, Scheduling.IF_NOT_SCHEDULED);
+            Framework.getService(WorkManager.class).schedule(work);
             blob.setMimeType(blob.getMimeType() + ";" + LazyRendition.STALE_MARKER);
             return;
         }
@@ -249,7 +249,7 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
             getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
                     sourceDocumentModificationDate);
         }
-        Framework.getService(WorkManager.class).schedule(work, Scheduling.IF_NOT_SCHEDULED);
+        Framework.getService(WorkManager.class).schedule(work);
         blob.setMimeType(blob.getMimeType() + ";" + LazyRendition.STALE_MARKER);
     }
 
@@ -290,7 +290,7 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Scheduling rendition work with id %s.", workId));
             }
-            workManager.schedule(work, Scheduling.IF_NOT_SCHEDULED);
+            workManager.schedule(work);
         }
     }
 

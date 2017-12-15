@@ -35,6 +35,8 @@ public class SleepWork extends AbstractWork {
 
     protected String partitionKey;
 
+    protected boolean idempotent = true;
+
     /**
      * Creates a work instance that does nothing but sleep.
      *
@@ -119,6 +121,15 @@ public class SleepWork extends AbstractWork {
     @Override
     public String getPartitionKey() {
         return partitionKey;
+    }
+
+    @Override
+    public boolean isIdempotent() {
+        return idempotent;
+    }
+
+    public void setIdempotent(boolean idempotent) {
+        this.idempotent = idempotent;
     }
 
     @Override
