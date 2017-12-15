@@ -27,6 +27,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -82,8 +83,9 @@ public class TestDownloadService {
     @Test
     public void testBasicDownload() throws Exception {
         // blob to download
-        String blobValue = "Hello World";
-        Blob blob = Blobs.createBlob(blobValue);
+        String blobValue = "Hello World Caf\u00e9";
+        String encoding = "ISO-8859-1";
+        Blob blob = Blobs.createBlob(blobValue, "text/plain", encoding);
         blob.setFilename("myFile.txt");
         blob.setDigest("12345");
 
@@ -107,7 +109,7 @@ public class TestDownloadService {
         downloadService.downloadBlob(request, response, null, null, blob, null, null);
 
         // check that the blob gets returned
-        assertEquals(blobValue, out.toString());
+        assertEquals(blobValue, out.toString(encoding));
     }
 
     @Test
@@ -497,6 +499,39 @@ public class TestDownloadService {
         filename = "/home/john/foo.txt";
         url = downloadService.getDownloadUrl("default", "1234", "file:content", filename);
         assertEquals("nxfile/default/1234/file:content/foo.txt", url);
+    }
+
+    @Test
+    public void testDownloadBadEncoding() throws Exception {
+        // blob to download
+        String blobValue = "Hello World Caf\u00e9";
+        String encoding = "no-such-charset"; // must not crash DownloadService
+        Blob blob = Blobs.createBlob(blobValue.getBytes(), "text/plain", encoding);
+        blob.setFilename("myFile.txt");
+
+        // prepare mocks
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("GET");
+
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        ServletOutputStream sos = new ServletOutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                out.write(b);
+            }
+        };
+        PrintWriter printWriter = new PrintWriter(sos);
+        when(response.getOutputStream()).thenReturn(sos);
+        when(response.getWriter()).thenReturn(printWriter);
+        // throw exception when setting encoding
+        doThrow(new IllegalArgumentException()).when(response).setCharacterEncoding(encoding);
+
+        // send download request
+        downloadService.downloadBlob(request, response, null, null, blob, null, null);
+
+        // check that the blob gets returned even though the encoding was illegal
+        assertEquals(blobValue, out.toString()); // decode with system default
     }
 
 }
