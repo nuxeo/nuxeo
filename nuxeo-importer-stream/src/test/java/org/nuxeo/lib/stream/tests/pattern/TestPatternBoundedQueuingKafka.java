@@ -34,7 +34,7 @@ public class TestPatternBoundedQueuingKafka extends TestPatternBoundedQueuing {
     @Override
     public LogManager createManager() throws Exception {
         prefix = KafkaHelper.getPrefix();
-        return new KafkaLogManager(KafkaUtils.DEFAULT_ZK_SERVER, prefix, KafkaHelper.getProducerProps(),
+        return new KafkaLogManager(KafkaUtils.getZkServers(), prefix, KafkaHelper.getProducerProps(),
                 KafkaHelper.getConsumerProps());
     }
 

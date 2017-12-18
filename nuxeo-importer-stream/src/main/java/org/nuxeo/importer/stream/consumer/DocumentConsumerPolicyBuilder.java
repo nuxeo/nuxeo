@@ -60,6 +60,7 @@ public class DocumentConsumerPolicyBuilder extends ConsumerPolicyBuilder {
         return this;
     }
 
+    @Override
     public DocumentConsumerPolicy build() {
         return new DocumentConsumerPolicy(this);
     }
