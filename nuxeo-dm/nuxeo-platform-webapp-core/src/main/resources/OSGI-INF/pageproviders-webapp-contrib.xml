@@ -46,5 +46,19 @@
       <pageSize>0</pageSize>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="startup_domains">
+      <property name="maxResults">PAGE_SIZE</property>
+      <pattern>
+        SELECT * FROM Domain
+        WHERE ecm:mixinType != 'HiddenInNavigation'
+        AND ecm:currentLifeCycleState != 'deleted'
+        AND ecm:isCheckedInVersion = 0
+        AND ecm:isProxy = 0
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+
+    </coreQueryPageProvider>
+
   </extension>
 </component>

@@ -25,6 +25,9 @@ import static org.jboss.seam.ScopeType.SESSION;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
@@ -39,13 +42,12 @@ import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
@@ -56,6 +58,8 @@ import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 @Scope(SESSION)
 @Install(precedence = Install.FRAMEWORK)
 public class StartupHelper implements Serializable {
+
+    public static final String STARTUP_PAGE_PROVIDER_NAME = "startup_domains";
 
     public static final String SERVERS_VIEW = "view_servers";
 
@@ -93,6 +97,9 @@ public class StartupHelper implements Serializable {
 
     @In(create = true)
     protected transient RestHelper restHelper;
+
+    @In(create = true)
+    protected transient PageProviderService pageProviderService;
 
     /**
      * Initializes the context with the principal id, and try to connect to the default server if any. If several
@@ -160,15 +167,18 @@ public class StartupHelper implements Serializable {
                 return result;
             }
 
-            String query = "SELECT * FROM Domain WHERE " + NXQL.ECM_MIXINTYPE + " <> '"
-                    + FacetNames.HIDDEN_IN_NAVIGATION + "' AND " + NXQL.ECM_LIFECYCLESTATE + " <> '"
-                    + LifeCycleConstants.DELETED_STATE + "'" + " AND ecm:isCheckedInVersion = 0 "
-                    + " AND ecm:isProxy = 0 ";
-            DocumentModelList domains = documentManager.query(query);
-            if (domains.size() == 1) {
+            Map<String, Serializable> properties = new LinkedHashMap<>();
+            properties.put(CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY, (Serializable) documentManager);
+
+            PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                    STARTUP_PAGE_PROVIDER_NAME, null, null, null, properties);
+
+            List<DocumentModel> currentPage = pageProvider.getCurrentPage();
+
+            if (currentPage != null && pageProvider.getResultsCount() == 1) {
                 // select and go to the unique domain
                 webActions.setCurrentTabIds(DOCUMENT_MANAGEMENT_TAB);
-                return navigationContext.navigateToDocument(domains.get(0), viewId);
+                return navigationContext.navigateToDocument(currentPage.get(0), viewId);
             }
 
             // zero or several domains: let the user decide what to do if he has
