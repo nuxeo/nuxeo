@@ -38,10 +38,13 @@ public class QuotaStatsInitialWork extends AbstractWork {
 
     private final String updaterName;
 
-    public QuotaStatsInitialWork(String updaterName, String repositoryName) {
+    protected final String path;
+
+    public QuotaStatsInitialWork(String updaterName, String repositoryName, String path) {
         super(repositoryName + ":quotaInitialStatistics:" + updaterName);
         setDocument(repositoryName, null);
         this.updaterName = updaterName;
+        this.path = path;
     }
 
     @Override
@@ -69,7 +72,7 @@ public class QuotaStatsInitialWork extends AbstractWork {
             @Override
             public void run() {
                 QuotaStatsService service = Framework.getService(QuotaStatsService.class);
-                service.computeInitialStatistics(updaterName, session, currentWorker);
+                service.computeInitialStatistics(updaterName, session, currentWorker, path);
             }
         }.runUnrestricted();
     }

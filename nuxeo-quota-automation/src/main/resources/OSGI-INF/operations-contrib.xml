@@ -9,7 +9,15 @@
       class="org.nuxeo.ecm.quota.automation.SetQuotaInfoOperation" />
     <operation
       class="org.nuxeo.ecm.quota.automation.GetQuotaStatisticsOperation" />
+    <operation
+      class="org.nuxeo.ecm.quota.automation.RecomputeQuotaStatistics" />
+  </extension>
 
+  <extension target="org.nuxeo.ecm.automation.server.AutomationServer"
+    point="bindings">
+    <binding name="org.nuxeo.ecm.quota.automation.RecomputeQuotaStatistics">
+      <administrator>true</administrator>
+    </binding>
   </extension>
 
 </component>

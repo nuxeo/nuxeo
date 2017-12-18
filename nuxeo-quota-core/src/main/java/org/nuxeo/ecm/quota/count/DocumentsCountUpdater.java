@@ -185,7 +185,8 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    public void computeInitialStatistics(CoreSession session, QuotaStatsInitialWork currentWorker) {
+    public void computeInitialStatistics(CoreSession session, QuotaStatsInitialWork currentWorker, String path) {
+        // TODO path != null
         Map<String, String> folders = getFolders(session);
         Map<String, Count> documentsCountByFolder = computeDocumentsCountByFolder(session, folders);
         saveDocumentsCount(session, documentsCountByFolder);
