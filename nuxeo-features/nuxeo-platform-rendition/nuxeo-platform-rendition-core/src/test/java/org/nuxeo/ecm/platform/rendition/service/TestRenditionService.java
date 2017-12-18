@@ -382,13 +382,13 @@ public class TestRenditionService {
             renditionName += "Lazily";
         }
         Rendition rendition = getRendition(folder, renditionName, true, isLazy);
-        assertTrue(rendition.isStored());
-        assertTrue(rendition.isCompleted());
+        assertTrue("Rendition should be stored", rendition.isStored());
+        assertTrue("Rendition should be completed", rendition.isCompleted());
         assertEquals(rendition.getHostDocument().getPropertyValue("dc:modified"), rendition.getModificationDate());
 
         DocumentModel renditionDocument = session.getDocument(rendition.getHostDocument().getRef());
 
-        assertTrue(renditionDocument.hasFacet(RENDITION_FACET));
+        assertTrue("Document should have rendition facet", renditionDocument.hasFacet(RENDITION_FACET));
         assertNull(renditionDocument.getPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY));
         assertEquals(folder.getId(), renditionDocument.getPropertyValue(RENDITION_SOURCE_ID_PROPERTY));
 
@@ -401,7 +401,7 @@ public class TestRenditionService {
         // now refetch the rendition
         rendition = renditionService.getRendition(folder, renditionName);
         assertNotNull(rendition);
-        assertTrue(rendition.isStored());
+        assertTrue("Rendition should be stored", rendition.isStored());
         assertEquals(renditionDocument.getRef(), rendition.getHostDocument().getRef());
         assertEquals("/icons/zip.png", renditionDocument.getPropertyValue("common:icon"));
         assertEquals(renditionBlob.getLength(), renditionDocument.getPropertyValue("common:size"));
@@ -411,7 +411,7 @@ public class TestRenditionService {
         try (CoreSession userSession = coreFeature.openCoreSession(totoPrincipal)) {
             folder = userSession.getDocument(folder.getRef());
             Rendition totoRendition = getRendition(folder, renditionName, true, isLazy);
-            assertTrue(totoRendition.isStored());
+            assertTrue("Rendition should be stored", totoRendition.isStored());
             assertNotEquals(renditionDocument.getRef(), totoRendition.getHostDocument().getRef());
 
             // verify Administrator's rendition is larger than user's rendition
@@ -435,8 +435,8 @@ public class TestRenditionService {
 
         folder = session.getDocument(folder.getRef());
         rendition = getRendition(folder, renditionName, false, isLazy);
-        assertFalse(rendition.isStored());
-        assertTrue(rendition.isCompleted());
+        assertFalse("Rendition shouldn't be stored", rendition.isStored());
+        assertTrue("Rendition should be completed", rendition.isCompleted());
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(rendition.getBlob().getFile().lastModified());
         assertEquals(cal, rendition.getModificationDate());
@@ -529,6 +529,10 @@ public class TestRenditionService {
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
         TransactionHelper.startTransaction();
+
+        // re-open CoreSession in order to clear caches and have right date values from MySQL and MSSQL
+        // note: this doesn't happen anymore since 9.10 as dates are stored with milliseconds for both DBs
+        session = coreFeature.reopenCoreSession();
         folder = session.getDocument(folder.getRef());
         return folder;
     }
