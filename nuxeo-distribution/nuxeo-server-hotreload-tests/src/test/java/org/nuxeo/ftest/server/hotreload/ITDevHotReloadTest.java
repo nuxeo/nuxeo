@@ -35,7 +35,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.nuxeo.client.NuxeoClient.Builder;
 import org.nuxeo.client.objects.Repository;
-import org.nuxeo.client.spi.NuxeoClientException;
+import org.nuxeo.client.spi.NuxeoClientRemoteException;
 import org.nuxeo.functionaltests.RestHelper;
 
 /**
@@ -183,12 +183,12 @@ public class ITDevHotReloadTest {
         try {
             repository.deleteDocument(docId);
             fail("User shouldn't be able to delete the document");
-        } catch (NuxeoClientException nce) {
+        } catch (NuxeoClientRemoteException nce) {
             assertEquals(403, nce.getStatus());
             assertEquals(
                     String.format("Failed to delete document /file, Permission denied: cannot remove document %s, "
                             + "Missing permission 'Remove' on document %s", docId, docId),
-                    nce.getThrowable().getMessage());
+                    nce.getMessage());
         }
         // there's no check on adding a permission try to delete the file
         RestHelper.addPermission("/file", "john", "HotReloadRemove");
