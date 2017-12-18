@@ -67,8 +67,8 @@ public class RedisPubSubProvider extends AbstractPubSubProvider {
     protected Thread thread;
 
     @Override
-    public void initialize(Map<String, List<BiConsumer<String, byte[]>>> subscribers) {
-        super.initialize(subscribers);
+    public void initialize(Map<String, String> options, Map<String, List<BiConsumer<String, byte[]>>> subscribers) {
+        super.initialize(options, subscribers);
         log.debug("Initializing");
         namespace = Framework.getService(RedisAdmin.class).namespace();
         dispatcher = new Dispatcher(namespace + "*");

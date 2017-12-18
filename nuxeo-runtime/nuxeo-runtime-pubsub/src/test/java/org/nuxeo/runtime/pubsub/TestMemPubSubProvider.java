@@ -18,6 +18,7 @@
  */
 package org.nuxeo.runtime.pubsub;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -59,7 +60,7 @@ public class TestMemPubSubProvider {
     @Test
     public void testNoSubscriber() throws Exception {
         // nothing to receive it but we can still send something into the void
-        pubSubService.publish("testtopic", "foo".getBytes());
+        pubSubService.publish("testtopic", "foo".getBytes(UTF_8));
     }
 
     @Test
@@ -67,22 +68,22 @@ public class TestMemPubSubProvider {
         messageReceivedLatch = new CountDownLatch(1);
         BiConsumer<String, byte[]> subscriber = this::subscriber;
         pubSubService.registerSubscriber("testtopic", subscriber);
-        pubSubService.publish("testtopic", "foo".getBytes());
+        pubSubService.publish("testtopic", "foo".getBytes(UTF_8));
         if (!messageReceivedLatch.await(5, TimeUnit.SECONDS)) {
             fail("message not received in 5s");
         }
-        assertEquals(Arrays.asList("testtopic=foo"), messages);
+        assertEquals(Collections.singletonList("testtopic=foo"), messages);
 
         // with subscriber unregistered it receives nothing anymore
         pubSubService.unregisterSubscriber("testtopic", subscriber);
         messages.clear();
-        pubSubService.publish("testtopic", "bar".getBytes());
+        pubSubService.publish("testtopic", "bar".getBytes(UTF_8));
         Thread.sleep(500);
         assertEquals(Collections.emptyList(), messages);
     }
 
     public void subscriber(String topic, byte[] message) {
-        String msg = new String(message);
+        String msg = new String(message, UTF_8);
         messages.add(topic + "=" + msg);
         messageReceivedLatch.countDown();
     }

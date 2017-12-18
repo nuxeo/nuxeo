@@ -19,7 +19,11 @@
 package org.nuxeo.runtime.pubsub;
 
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Descriptor for a {@link PubSubProvider} implementation.
@@ -32,16 +36,22 @@ public class PubSubProviderDescriptor {
     @XNode("@class")
     public Class<? extends PubSubProvider> klass;
 
+    @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
+    public Map<String, String> options = new HashMap<>();
+
     public PubSubProvider getInstance() {
         // dynamic class check, the generics aren't enough
         if (!PubSubProvider.class.isAssignableFrom(klass)) {
             throw new RuntimeException("Class does not implement PubSubServiceProvider: " + klass.getName());
         }
         try {
-            return klass.newInstance();
+            return klass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
     }
 
+    public Map<String, String> getOptions() {
+        return options;
+    }
 }

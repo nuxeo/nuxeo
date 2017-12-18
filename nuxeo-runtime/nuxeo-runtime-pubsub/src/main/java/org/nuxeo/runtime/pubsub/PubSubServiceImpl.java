@@ -18,6 +18,7 @@
  */
 package org.nuxeo.runtime.pubsub;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,6 +50,8 @@ public class PubSubServiceImpl extends DefaultComponent implements PubSubService
     /** List of subscribers for each topic. */
     protected Map<String, List<BiConsumer<String, byte[]>>> subscribers = new ConcurrentHashMap<>();
 
+    protected Map<String, String> options;
+
     @Override
     public void activate(ComponentContext context) {
         providerDescriptorChanged();
@@ -66,7 +69,7 @@ public class PubSubServiceImpl extends DefaultComponent implements PubSubService
         if (provider == null) {
             return;
         }
-        provider.initialize(subscribers);
+        provider.initialize(options, subscribers);
     }
 
     @Override
@@ -121,8 +124,10 @@ public class PubSubServiceImpl extends DefaultComponent implements PubSubService
         }
         if (providerDescriptor == null) {
             provider = new MemPubSubProvider(); // default implementation
+            options = Collections.emptyMap();
         } else {
             provider = providerDescriptor.getInstance();
+            options = providerDescriptor.getOptions();
         }
         // initialize later, in applicationStarted
         // provider.initialize(subscribers);
