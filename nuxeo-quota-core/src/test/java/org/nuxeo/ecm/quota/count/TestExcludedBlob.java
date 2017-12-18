@@ -32,10 +32,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -50,6 +50,7 @@ import org.nuxeo.ecm.quota.size.QuotaSizeService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * NXP-11558 : Test that blob can be exclude by their path
@@ -75,12 +76,10 @@ public class TestExcludedBlob {
 
     protected DocumentRef fileRef;
 
-    private IsolatedSessionRunner isr;
-
-    @Before
-    public void cleanupSessionAssociationBeforeTest() throws Exception {
-        isr = new IsolatedSessionRunner(session, eventService);
-        assertThat(sus, is(notNullValue()));
+    protected void next() {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        eventService.waitForAsyncCompletion(TimeUnit.MINUTES.toMillis(1));
     }
 
     @Test
@@ -95,54 +94,30 @@ public class TestExcludedBlob {
     public void quotaComputationDontTakeFilesSchemaIntoAccount() throws Exception {
 
         // Given a document with a blob in the file schema
-        isr.run(new RunnableWithException() {
+        DocumentModel doc = session.createDocumentModel("/", "file1", "File");
+        doc.setPropertyValue("file:content", (Serializable) getFakeBlob(100));
+        doc = session.createDocument(doc);
+        fileRef = doc.getRef();
+        next();
 
-            @Override
-            public void run() throws Exception {
-                DocumentModel doc = session.createDocumentModel("/", "file1", "File");
-                doc.setPropertyValue("file:content", (Serializable) getFakeBlob(100));
-                doc = session.createDocument(doc);
-                fileRef = doc.getRef();
-
-            }
-        });
-
-        isr.run(new RunnableWithException() {
-            @Override
-            public void run() throws Exception {
-                DocumentModel doc = getDocument();
-                assertQuota(doc, 100, 100);
-            }
-        });
+        doc = getDocument();
+        assertQuota(doc, 100, 100);
 
         // When I add some Blob in the files content
-        isr.run(new RunnableWithException() {
-            @Override
-            public void run() throws Exception {
-                DocumentModel doc = getDocument();
-                List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
-
-                for (int i = 1; i < 5; i++) {
-                    Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
-                    files_entry.put("file", (Serializable) getFakeBlob(70));
-                    files.add(files_entry);
-                }
-
-                doc.setPropertyValue("files:files", (Serializable) files);
-                doc = session.saveDocument(doc);
-
-            }
-        });
+        doc = getDocument();
+        List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+        for (int i = 1; i < 5; i++) {
+            Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
+            files_entry.put("file", (Serializable) getFakeBlob(70));
+            files.add(files_entry);
+        }
+        doc.setPropertyValue("files:files", (Serializable) files);
+        doc = session.saveDocument(doc);
+        next();
 
         // Then quota should not change
-        isr.run(new RunnableWithException() {
-            @Override
-            public void run() throws Exception {
-                DocumentModel doc = getDocument();
-                assertQuota(doc, 100, 100);
-            }
-        });
-
+        doc = getDocument();
+        assertQuota(doc, 100, 100);
     }
 
     /**
