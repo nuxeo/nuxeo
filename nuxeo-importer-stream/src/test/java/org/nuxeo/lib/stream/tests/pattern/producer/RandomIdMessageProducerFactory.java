@@ -48,8 +48,9 @@ public class RandomIdMessageProducerFactory implements ProducerFactory<KeyValueM
         switch (type) {
         case ORDERED:
             return new OrderedIdMessageProducer(producerId, nbDocuments);
+        default:
+            return new RandomIdMessageProducer(producerId, nbDocuments);
         }
-        return new RandomIdMessageProducer(producerId, nbDocuments);
     }
 
 }

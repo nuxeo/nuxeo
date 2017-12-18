@@ -51,7 +51,7 @@ public class BlobMessage implements Message {
         filename = builder.filename;
         path = builder.path;
         content = builder.content;
-        if ((path == null || path.isEmpty()) && (content == null) || content.isEmpty()) {
+        if ((path == null || path.isEmpty()) && ((content == null) || content.isEmpty())) {
             throw new IllegalArgumentException("BlobMessage must be initialized with a file path or content");
         }
     }

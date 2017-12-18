@@ -40,7 +40,7 @@ public class TestPatternQueuingKafka extends TestPatternQueuing {
         if (prefix == null) {
             prefix = KafkaHelper.getPrefix();
         }
-        return new KafkaLogManager(KafkaUtils.DEFAULT_ZK_SERVER, prefix, KafkaHelper.getProducerProps(),
+        return new KafkaLogManager(KafkaUtils.getZkServers(), prefix, KafkaHelper.getProducerProps(),
                 KafkaHelper.getConsumerProps());
     }
 

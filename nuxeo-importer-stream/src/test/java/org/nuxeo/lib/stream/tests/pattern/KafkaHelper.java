@@ -26,7 +26,6 @@ import org.junit.Assume;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
 
 public class KafkaHelper {
-    public static final String DEFAULT_BOOTSTRAP_SERVER = "localhost:9092";
 
     public static final String TOPIC_PREFIX = "nuxeo-test";
 
@@ -46,13 +45,13 @@ public class KafkaHelper {
 
     public static Properties getProducerProps() {
         Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, DEFAULT_BOOTSTRAP_SERVER);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
         return props;
     }
 
     public static Properties getConsumerProps() {
         Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, DEFAULT_BOOTSTRAP_SERVER);
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
         props.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 30000);
         // consumer are removed from a group if there more than this interval between poll
         props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 20000);
