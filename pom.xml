@@ -127,7 +127,7 @@
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
     <ant.assembly.version>2.1.0</ant.assembly.version>
-    <nuxeo.ftest.version>1.8.3</nuxeo.ftest.version>
+    <nuxeo.ftest.version>1.8.4-SNAPSHOT</nuxeo.ftest.version>
     <nuxeo.java.client.version>3.0.1</nuxeo.java.client.version>
 
     <jsf.version>2.2.6</jsf.version>
@@ -6144,7 +6144,7 @@
                   <requireReleaseDeps>
                     <!-- Exclusions are tolerated for nightly "date-based" releases only -->
                     <excludes>
-                      <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
+                      <exclude>org.nuxeo:nuxeo-ftest:1.8.4-SNAPSHOT:zip</exclude>
                       <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
                       <!-- <exclude>org.jboss.seam:*</exclude> -->
                     </excludes>
@@ -6682,6 +6682,10 @@
     </profile>
     <profile>
       <id>kafka</id>
+      <properties>
+        <kafka.bootstrap.servers>localhost:9902</kafka.bootstrap.servers>
+        <kafka.zkServers>localhost:2181</kafka.zkServers>
+      </properties>
        <build>
          <plugins>
            <plugin>
