@@ -59,4 +59,18 @@ public interface QuotaAware {
 
     void resetInfos();
 
+    /**
+     * Resets quota info but keeps the user-specified max quota size, if present.
+     *
+     * @since 10.1
+     */
+    void clearInfos();
+
+    /**
+     * Set all quota info.
+     *
+     * @since 10.1
+     */
+    void setAll(long innerSize, long totalSize, long trashSize, long versionsSize);
+
 }

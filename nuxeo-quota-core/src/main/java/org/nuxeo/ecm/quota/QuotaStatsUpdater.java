@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  * {@link org.nuxeo.ecm.quota.QuotaStatsService}.
  * <p>
  * They use an unrestricted {@link CoreSession} to do the update.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
@@ -37,17 +37,30 @@ public interface QuotaStatsUpdater {
     /**
      * Update the statistics for the given {@code docCtx} and {@code event}. Signature was changed in 5.6 to pass the
      * Event instead of the eventName to allow the implementer to rollback the transaction if needed
-     * 
+     *
      * @param session an unrestricted {@link CoreSession} to be used
      */
     void updateStatistics(CoreSession session, DocumentEventContext docCtx, Event event);
 
     /**
      * Compute the initial statistics on the whole repository for this {@code QuotaStatsUpdater}.
-     * 
+     *
      * @param session an unrestricted {@link CoreSession} to be used
+     * @deprecated since 10.1, use other signature
      */
-    void computeInitialStatistics(CoreSession session, final QuotaStatsInitialWork currentWorker);
+    @Deprecated
+    default void computeInitialStatistics(CoreSession session, final QuotaStatsInitialWork currentWorker) {
+        computeInitialStatistics(session, currentWorker, null);
+    }
+
+    /**
+     * Compute the initial statistics under the given path for this {@code QuotaStatsUpdater}.
+     *
+     * @param session an unrestricted {@link CoreSession} to be used
+     * @param path the root of the recomputation, or {@code null} for the whole repository
+     * @since 10.1
+     */
+    void computeInitialStatistics(CoreSession session, final QuotaStatsInitialWork currentWorker, String path);
 
     public void setName(String name);
 

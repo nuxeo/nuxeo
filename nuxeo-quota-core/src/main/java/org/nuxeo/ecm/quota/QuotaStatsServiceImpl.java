@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.ecm.quota.size.QuotaAwareDocumentFactory;
@@ -105,27 +104,28 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
     }
 
     @Override
-    public void computeInitialStatistics(String updaterName, CoreSession session, QuotaStatsInitialWork currentWorker) {
+    public void computeInitialStatistics(String updaterName, CoreSession session, QuotaStatsInitialWork currentWorker,
+            String path) {
         QuotaStatsUpdater updater = quotaStatsUpdaterRegistry.getQuotaStatsUpdater(updaterName);
         if (updater != null) {
-            updater.computeInitialStatistics(session, currentWorker);
+            updater.computeInitialStatistics(session, currentWorker, path);
         }
     }
 
     @Override
-    public void launchInitialStatisticsComputation(String updaterName, String repositoryName) {
+    public void launchInitialStatisticsComputation(String updaterName, String repositoryName, String path) {
         WorkManager workManager = Framework.getService(WorkManager.class);
         if (workManager == null) {
             throw new RuntimeException("No WorkManager available");
         }
-        Work work = new QuotaStatsInitialWork(updaterName, repositoryName);
+        Work work = new QuotaStatsInitialWork(updaterName, repositoryName, path);
         workManager.schedule(work, true);
     }
 
     @Override
     public String getProgressStatus(String updaterName, String repositoryName) {
         WorkManager workManager = Framework.getService(WorkManager.class);
-        Work work = new QuotaStatsInitialWork(updaterName, repositoryName);
+        Work work = new QuotaStatsInitialWork(updaterName, repositoryName, null);
         State state = workManager.getWorkState(work.getId());
         if (state == null) {
             return null;

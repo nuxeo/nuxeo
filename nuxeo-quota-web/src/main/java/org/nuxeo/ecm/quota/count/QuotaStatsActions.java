@@ -110,7 +110,7 @@ public class QuotaStatsActions implements Serializable {
 
     public void launchInitialComputation(String updaterName, String repositoryName) {
         QuotaStatsService quotaStatsService = Framework.getService(QuotaStatsService.class);
-        quotaStatsService.launchInitialStatisticsComputation(updaterName, repositoryName);
+        quotaStatsService.launchInitialStatisticsComputation(updaterName, repositoryName, null);
     }
 
     public String getStatus(String updaterName) {

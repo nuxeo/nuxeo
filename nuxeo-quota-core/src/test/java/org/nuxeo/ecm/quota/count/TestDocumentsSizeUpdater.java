@@ -678,7 +678,7 @@ public class TestDocumentsSizeUpdater {
         DocumentModel ws = session.getDocument(wsRef);
         assertFalse(ws.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET));
         String updaterName = "documentsSizeUpdater";
-        quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName());
+        quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName(), null);
         workManager.getCategoryQueueId(QuotaStatsInitialWork.CATEGORY_QUOTA_INITIAL);
         next();
 
@@ -725,7 +725,7 @@ public class TestDocumentsSizeUpdater {
         next();
 
         String updaterName = "documentsSizeUpdater";
-        quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName());
+        quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName(), null);
         next();
 
         dump();
@@ -735,6 +735,62 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstFolder(), 0L, 400L, 100L, 100L);
         assertQuota(getWorkspace(), 0L, 400L, 100L, 100L);
         next();
+    }
+
+    @Test
+    public void testRecomputeStatisticsAfterCorruption() throws Exception {
+
+        addContent();
+        doCheckIn();
+        doDeleteFileContent(secondFileRef);
+        // also add a blob on the workspace above the one for which we're recomputing
+        DocumentModel ws = getWorkspace();
+        ws.setPropertyValue("file:content", (Serializable) getFakeBlob(1000));
+        ws = session.saveDocument(ws);
+        next();
+
+        // correct quotas
+        dump();
+        assertQuota(getFirstFile(), 100L, 200L, 0L, 100L);
+        assertQuota(getSecondFile(), 200L, 200L, 200L, 0L);
+        assertQuota(getFirstSubFolder(), 0L, 400L, 200L, 100L);
+        assertQuota(getFirstFolder(), 0L, 400L, 200L, 100L);
+        assertQuota(getWorkspace(), 1000L, 1400L, 200L, 100L);
+
+        // corrupt quota info in a folder, and add a max size
+        DocumentModel firstSubFolder = getFirstSubFolder();
+        QuotaAware qa = firstSubFolder.getAdapter(QuotaAware.class);
+        qa.addInnerSize(11);
+        qa.addTotalSize(22);
+        qa.addTrashSize(33);
+        qa.addVersionsSize(44);
+        qa.setMaxQuota(12341234); // set a max size on this folder
+        qa.save();
+
+        // quotas are now corrupted
+        dump();
+        assertQuota(getFirstFile(), 100L, 200L, 0L, 100L);
+        assertQuota(getSecondFile(), 200L, 200L, 200L, 0L);
+        assertQuota(getFirstSubFolder(), 11L, 422L, 233L, 144L); // <-- corruption
+        assertQuota(getFirstFolder(), 0L, 400L, 200L, 100L);
+        assertQuota(getWorkspace(), 1000L, 1400L, 200L, 100L);
+
+        // recompute quotas from folder
+        String updaterName = "documentsSizeUpdater";
+        quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName(),
+                firstSubFolder.getPathAsString());
+        next();
+
+        // quotas are correct again
+        dump();
+        assertQuota(getFirstFile(), 100L, 200L, 0L, 100L);
+        assertQuota(getSecondFile(), 200L, 200L, 200L, 0L);
+        assertQuota(getFirstSubFolder(), 0L, 400L, 200L, 100L);
+        assertQuota(getFirstFolder(), 0L, 400L, 200L, 100L);
+        assertQuota(getWorkspace(), 1000L, 1400L, 200L, 100L);
+        qa = firstSubFolder.getAdapter(QuotaAware.class);
+        // max quota still set
+        assertEquals(12341234, qa.getMaxQuota());
     }
 
     @Test

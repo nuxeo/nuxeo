@@ -45,13 +45,38 @@ public interface QuotaStatsService {
 
     /**
      * Compute the initial statistics for the given @{code updaterName}.
+     *
+     * @deprecated since 10.1, use other signature
      */
-    void computeInitialStatistics(String updaterName, CoreSession session, QuotaStatsInitialWork currentWorker);
+    @Deprecated
+    default void computeInitialStatistics(String updaterName, CoreSession session, QuotaStatsInitialWork currentWorker) {
+        computeInitialStatistics(updaterName, session, currentWorker, null);
+    }
+
+    /**
+     * Compute the initial statistics for the given @{code updaterName} for {@code docPath}.
+     *
+     * @since 10.1
+     */
+    void computeInitialStatistics(String updaterName, CoreSession session, QuotaStatsInitialWork currentWorker, String path);
 
     /**
      * Launch an asynchronously initial computation for the given {@code updaterName} on {@code repositoryName}.
+     *
+     * @deprecated since 10.1, use other signature
      */
-    void launchInitialStatisticsComputation(String updaterName, String repositoryName);
+    @Deprecated
+    default void launchInitialStatisticsComputation(String updaterName, String repositoryName) {
+        launchInitialStatisticsComputation(updaterName, repositoryName, null);
+    }
+
+    /**
+     * Launch an asynchronously initial computation for the given {@code updaterName} on {@code repositoryName}
+     * for {@code docPath}.
+     *
+     * @since 10.1
+     */
+    void launchInitialStatisticsComputation(String updaterName, String repositoryName, String path);
 
     /**
      * Returns the progress status of {@code updaterName}.

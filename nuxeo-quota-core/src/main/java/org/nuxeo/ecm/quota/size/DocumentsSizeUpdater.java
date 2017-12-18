@@ -35,7 +35,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
@@ -56,10 +58,16 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
     public static final String USER_WORKSPACES_ROOT = "UserWorkspacesRoot";
 
     @Override
-    public void computeInitialStatistics(CoreSession session, QuotaStatsInitialWork currentWorker) {
-        log.debug("Starting initial Quota computation");
+    public void computeInitialStatistics(CoreSession session, QuotaStatsInitialWork currentWorker, String path) {
+        log.debug("Starting initial Quota computation for path: " + path);
         String query = "SELECT ecm:uuid FROM Document WHERE ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0";
-
+        DocumentModel root;
+        if (path == null) {
+            root = session.getRootDocument();
+        } else {
+            root = session.getDocument(new PathRef(path));
+            query += " AND ecm:path STARTSWITH " + NXQL.escapeString(path);
+        }
         // reset on all documents
         // this will force an update if the quota addon was installed and then removed
         long count = 0;
@@ -69,13 +77,12 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
             log.debug("Start iteration on " + count + " items");
             for (Map<String, Serializable> r : res) {
                 String uuid = (String) r.get("ecm:uuid");
-                DocumentModel doc = session.getDocument(new IdRef(uuid));
-                QuotaAwareDocumentFactory.unmake(doc);
+                clearQuotas(session, uuid);
             }
         } finally {
             res.close();
         }
-        QuotaAwareDocumentFactory.unmake(session.getRootDocument());
+        clearQuotas(session, root.getId());
         session.save();
 
         // recompute quota on each doc
@@ -98,6 +105,24 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
         } finally {
             res.close();
         }
+
+        // if recomputing only for descendants of a given path, recompute ancestors from their direct children
+        if (path != null) {
+            DocumentModel doc = root;
+            do {
+                doc = session.getDocument(doc.getParentRef());
+                initDocumentFromChildren(doc);
+            } while (!doc.getPathAsString().equals("/"));
+        }
+    }
+
+    protected void clearQuotas(CoreSession session, String docID) {
+        DocumentModel doc = session.getDocument(new IdRef(docID));
+        QuotaAware quotaDoc = doc.getAdapter(QuotaAware.class);
+        if (quotaDoc != null) {
+            quotaDoc.clearInfos();
+            quotaDoc.save();
+        }
     }
 
     protected void initDocument(CoreSession session, DocumentModel doc) {
@@ -105,6 +130,31 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
         long size = getBlobsSize(doc);
         long versionsSize = getVersionsSize(session, doc);
         updateDocumentAndAncestors(session, doc, size, size + versionsSize, isDeleted ? size : 0, versionsSize);
+    }
+
+    protected void initDocumentFromChildren(DocumentModel doc) {
+        @SuppressWarnings("resource")
+        CoreSession session = doc.getCoreSession();
+        boolean isDeleted = DELETED_STATE.equals(doc.getCurrentLifeCycleState());
+        long innerSize = getBlobsSize(doc);
+        long versionsSize = getVersionsSize(session, doc);
+        long totalSize = innerSize + versionsSize;
+        long trashSize = isDeleted ? innerSize : 0;
+        for (DocumentModel child : session.getChildren(doc.getRef())) {
+            QuotaAware quotaDoc = child.getAdapter(QuotaAware.class);
+            if (quotaDoc == null) {
+                continue;
+            }
+            totalSize += quotaDoc.getTotalSize();
+            trashSize += quotaDoc.getTrashSize();
+            versionsSize += quotaDoc.getVersionsSize();
+        }
+        QuotaAware quotaDoc = doc.getAdapter(QuotaAware.class);
+        if (quotaDoc == null) {
+            quotaDoc = QuotaAwareDocumentFactory.make(doc);
+        }
+        quotaDoc.setAll(innerSize, totalSize, trashSize, versionsSize);
+        quotaDoc.save();
     }
 
     @Override

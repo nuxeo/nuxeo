@@ -141,6 +141,14 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
+    public void setAll(long innerSize, long totalSize, long trashSize, long versionsSize) {
+        doc.setPropertyValue(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY, Long.valueOf(innerSize));
+        doc.setPropertyValue(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, Long.valueOf(totalSize));
+        doc.setPropertyValue(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY, Long.valueOf(trashSize));
+        doc.setPropertyValue(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, Long.valueOf(versionsSize));
+    }
+
+    @Override
     public void save() {
         doc.putContextData(DocumentsSizeUpdater.DISABLE_QUOTA_CHECK_LISTENER, Boolean.TRUE);
         QuotaUtils.disableListeners(doc);
@@ -187,12 +195,21 @@ public class QuotaAwareDocument implements QuotaAware {
      */
     @Override
     public void resetInfos() {
+        clearInfos();
+        clearMaxSize();
+    }
+
+    @Override
+    public void clearInfos() {
         // we reset by setting actual values and not null, because we expect to apply deltas to those
         // and col = col + delta wouldn't work if the database had col = null
         doc.setPropertyValue(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY, 0L);
         doc.setPropertyValue(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, 0L);
         doc.setPropertyValue(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY, 0L);
         doc.setPropertyValue(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, 0L);
+    }
+
+    protected void clearMaxSize() {
         doc.setPropertyValue(DOCUMENTS_SIZE_MAX_SIZE_PROPERTY, null);
     }
 
