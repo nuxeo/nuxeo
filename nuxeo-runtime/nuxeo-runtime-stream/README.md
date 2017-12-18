@@ -72,6 +72,14 @@ You can define a Log configuration with the following Nuxeo extension point:
     <logConfig name="work" type="kafka">
       <option name="kafkaConfig">default</option>
     </logConfig>
+    <!-- Kafka impl,
+         create a Log named pubSub if it does not exist. -->
+    <logConfig name="nuxeo" type="kafka">
+      <option name="kafkaConfig">default</option>
+      <log name="pubSub" size="1" />
+    </logConfig>
+
+
   </extension>
 </component>
 ```
@@ -123,7 +131,6 @@ the settings are configurable in the contribution.
   </extension>
 </component>
 ```
-
 
 ### Following Project QA Status
 

@@ -39,7 +39,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.runtime.stream")
-@LocalDeploy("org.nuxeo.runtime.stream.test:test-kafka-config-contrib.xml")
+@LocalDeploy("org.nuxeo.runtime.stream:test-kafka-config-contrib.xml")
 public class TestKafkaConfigService {
 
     @Test

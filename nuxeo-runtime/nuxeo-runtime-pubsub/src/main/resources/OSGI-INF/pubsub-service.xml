@@ -18,6 +18,14 @@
         <provider class="org.nuxeo.runtime.pubsub.MemPubSubProvider"/>
       </code>
       The class must implement org.nuxeo.runtime.pubsub.PubSubProvider.
+
+      This component comes with a Nuxeo Stream PubSubProvider implementation:
+      <code>
+        <provider class="org.nuxeo.runtime.pubsub.StreamPubSubProvider">
+          <option name="logConfig">default</option>
+          <option name="logName">pubsub</option>
+        </provider>
+      </code>
     </documentation>
 
     <object class="org.nuxeo.runtime.pubsub.PubSubProviderDescriptor" />

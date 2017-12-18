@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.pubsub.tests.stream.config">
+  <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
+    <logConfig name="default">
+      <log name="pubsub" size="1" />
+    </logConfig>
+  </extension>
+</component>
