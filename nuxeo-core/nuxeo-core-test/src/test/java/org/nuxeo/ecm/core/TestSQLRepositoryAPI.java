@@ -4075,6 +4075,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         DocumentTypeDescriptor dtd = schemaManager.getDocumentTypeDescriptor("MyDocType");
         schemaManager.unregisterDocumentType(dtd);
 
+        assertFalse(session.hasChildren(rootRef));
         assertEquals(0, session.getChildren(rootRef).size());
         try {
             session.getDocument(docRef);
