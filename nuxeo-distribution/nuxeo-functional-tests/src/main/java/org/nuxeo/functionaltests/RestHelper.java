@@ -47,7 +47,7 @@ import org.nuxeo.client.objects.user.Group;
 import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.objects.workflow.Workflow;
 import org.nuxeo.client.objects.workflow.Workflows;
-import org.nuxeo.client.spi.NuxeoClientException;
+import org.nuxeo.client.spi.NuxeoClientRemoteException;
 
 import okhttp3.Response;
 
@@ -210,8 +210,8 @@ public class RestHelper {
     public static void deleteUser(String username) {
         try {
             CLIENT.userManager().deleteUser(username);
-        } catch (NuxeoClientException e) {
-            if (HttpStatus.SC_NOT_FOUND == e.getStatus()) {
+        } catch (NuxeoClientRemoteException e) {
+            if (e.getStatus() == HttpStatus.SC_NOT_FOUND) {
                 log.warn(String.format("User %s not deleted because not found", username));
             } else {
                 throw e;
@@ -248,8 +248,8 @@ public class RestHelper {
     public static void deleteGroup(String name) {
         try {
             CLIENT.userManager().deleteGroup(name);
-        } catch (NuxeoClientException e) {
-            if (HttpStatus.SC_NOT_FOUND == e.getStatus()) {
+        } catch (NuxeoClientRemoteException e) {
+            if (e.getStatus() == HttpStatus.SC_NOT_FOUND) {
                 log.warn(String.format("Group %s not deleted because not found", name));
             } else {
                 throw e;
@@ -529,7 +529,7 @@ public class RestHelper {
     protected static <T> boolean exists(Supplier<T> fetcher) {
         try {
             return fetcher.get() != null;
-        } catch (NuxeoClientException nce) {
+        } catch (NuxeoClientRemoteException nce) {
             if (nce.getStatus() == HttpStatus.SC_NOT_FOUND) {
                 return false;
             }
