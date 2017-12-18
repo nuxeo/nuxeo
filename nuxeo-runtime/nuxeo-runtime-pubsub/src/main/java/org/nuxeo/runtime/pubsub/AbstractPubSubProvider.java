@@ -42,7 +42,7 @@ public abstract class AbstractPubSubProvider implements PubSubProvider {
     protected Map<String, List<BiConsumer<String, byte[]>>> subscribers;
 
     @Override
-    public void initialize(Map<String, List<BiConsumer<String, byte[]>>> subscribers) {
+    public void initialize(Map<String, String> options, Map<String, List<BiConsumer<String, byte[]>>> subscribers) {
         this.subscribers = subscribers;
     }
 

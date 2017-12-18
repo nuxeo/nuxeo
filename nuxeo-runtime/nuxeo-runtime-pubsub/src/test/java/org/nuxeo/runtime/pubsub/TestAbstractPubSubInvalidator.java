@@ -18,6 +18,7 @@
  */
 package org.nuxeo.runtime.pubsub;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -138,29 +139,29 @@ public class TestAbstractPubSubInvalidator {
         invalidator.initialize("topic", "di");
 
         assertEquals(-1, invalidator.scanDiscriminator(null));
-        assertEquals(-1, invalidator.scanDiscriminator("".getBytes()));
-        assertEquals(-1, invalidator.scanDiscriminator("d".getBytes()));
-        assertEquals(-1, invalidator.scanDiscriminator("di".getBytes()));
-        assertEquals(-1, invalidator.scanDiscriminator("dis".getBytes()));
-        assertEquals(-1, invalidator.scanDiscriminator("x".getBytes()));
-        assertEquals(-1, invalidator.scanDiscriminator("xy".getBytes()));
-        assertEquals(-1, invalidator.scanDiscriminator("xyz".getBytes()));
+        assertEquals(-1, invalidator.scanDiscriminator("".getBytes(UTF_8)));
+        assertEquals(-1, invalidator.scanDiscriminator("d".getBytes(UTF_8)));
+        assertEquals(-1, invalidator.scanDiscriminator("di".getBytes(UTF_8)));
+        assertEquals(-1, invalidator.scanDiscriminator("dis".getBytes(UTF_8)));
+        assertEquals(-1, invalidator.scanDiscriminator("x".getBytes(UTF_8)));
+        assertEquals(-1, invalidator.scanDiscriminator("xy".getBytes(UTF_8)));
+        assertEquals(-1, invalidator.scanDiscriminator("xyz".getBytes(UTF_8)));
 
-        assertEquals(1, invalidator.scanDiscriminator(":foo".getBytes()));
-        assertEquals(1, invalidator.scanDiscriminator(":".getBytes()));
-        assertEquals(2, invalidator.scanDiscriminator("x:foo".getBytes()));
-        assertEquals(2, invalidator.scanDiscriminator("x:".getBytes()));
-        assertEquals(3, invalidator.scanDiscriminator("xy:foo".getBytes()));
-        assertEquals(3, invalidator.scanDiscriminator("xy:".getBytes()));
-        assertEquals(4, invalidator.scanDiscriminator("xyz:foo".getBytes()));
-        assertEquals(4, invalidator.scanDiscriminator("xyz:".getBytes()));
+        assertEquals(1, invalidator.scanDiscriminator(":foo".getBytes(UTF_8)));
+        assertEquals(1, invalidator.scanDiscriminator(":".getBytes(UTF_8)));
+        assertEquals(2, invalidator.scanDiscriminator("x:foo".getBytes(UTF_8)));
+        assertEquals(2, invalidator.scanDiscriminator("x:".getBytes(UTF_8)));
+        assertEquals(3, invalidator.scanDiscriminator("xy:foo".getBytes(UTF_8)));
+        assertEquals(3, invalidator.scanDiscriminator("xy:".getBytes(UTF_8)));
+        assertEquals(4, invalidator.scanDiscriminator("xyz:foo".getBytes(UTF_8)));
+        assertEquals(4, invalidator.scanDiscriminator("xyz:".getBytes(UTF_8)));
 
-        assertEquals(2, invalidator.scanDiscriminator("d:foo".getBytes()));
-        assertEquals(2, invalidator.scanDiscriminator("d:".getBytes()));
-        assertEquals(-1, invalidator.scanDiscriminator("di:foo".getBytes()));
-        assertEquals(-1, invalidator.scanDiscriminator("di:".getBytes()));
-        assertEquals(4, invalidator.scanDiscriminator("dis:foo".getBytes()));
-        assertEquals(4, invalidator.scanDiscriminator("dis:".getBytes()));
+        assertEquals(2, invalidator.scanDiscriminator("d:foo".getBytes(UTF_8)));
+        assertEquals(2, invalidator.scanDiscriminator("d:".getBytes(UTF_8)));
+        assertEquals(-1, invalidator.scanDiscriminator("di:foo".getBytes(UTF_8)));
+        assertEquals(-1, invalidator.scanDiscriminator("di:".getBytes(UTF_8)));
+        assertEquals(4, invalidator.scanDiscriminator("dis:foo".getBytes(UTF_8)));
+        assertEquals(4, invalidator.scanDiscriminator("dis:".getBytes(UTF_8)));
 
     }
 
@@ -171,12 +172,12 @@ public class TestAbstractPubSubInvalidator {
         DummyInvalidations invals;
 
         // use different discriminator
-        invalidator.subscriber("topic", "z:foo".getBytes());
+        invalidator.subscriber("topic", "z:foo".getBytes(UTF_8));
         invals = invalidator.receiveInvalidations();
         assertFalse(invals.isEmpty());
 
         // use same discriminator
-        invalidator.subscriber("topic", "d:foo".getBytes());
+        invalidator.subscriber("topic", "d:foo".getBytes(UTF_8));
         invals = invalidator.receiveInvalidations();
         assertTrue(invals.isEmpty());
     }
