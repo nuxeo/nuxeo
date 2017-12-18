@@ -43,9 +43,9 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  * @since 9.3
  */
 @RunWith(FeaturesRunner.class)
-@Deploy("org.nuxeo.runtime.stream")
 @Features(RuntimeFeature.class)
-@LocalDeploy("org.nuxeo.runtime.stream.test:test-stream-contrib.xml")
+@Deploy("org.nuxeo.runtime.stream")
+@LocalDeploy("org.nuxeo.runtime.stream:test-stream-contrib.xml")
 public class TestStreamService {
 
     @Test

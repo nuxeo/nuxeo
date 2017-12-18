@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.pubsub.tests.stream.contrib">
+  <extension target="org.nuxeo.runtime.pubsub.PubSubService" point="configuration">
+    <provider class="org.nuxeo.runtime.pubsub.StreamPubSubProvider">
+      <option name="logConfig">default</option>
+      <option name="logName">pubsub</option>
+    </provider>
+  </extension>
+</component>
