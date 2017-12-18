@@ -32,9 +32,10 @@ public interface PubSubProvider {
     /**
      * Initializes the resources for this provider and registers the local subscribers map.
      * <p>
+     * The options taken from the {@link PubSubProviderDescriptor}
      * The subscribers map structure is thread-safe. The implementation must not modify the subscribers map in any way.
      */
-    void initialize(Map<String, List<BiConsumer<String, byte[]>>> subscribers);
+    void initialize(Map<String, String> options, Map<String, List<BiConsumer<String, byte[]>>> subscribers);
 
     /**
      * Frees the resources.
