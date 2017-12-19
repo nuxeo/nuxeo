@@ -18,6 +18,46 @@
  */
 package org.nuxeo.ecm.platform.threed.convert;
 
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.SUPPORTED_EXTENSIONS;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.BLENDER_PATH_PREFIX;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.COORDS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.DATA_PARAM;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.DIMENSIONS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.INPUT_FILE_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.LOD_IDS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.MAX_POLY_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.NAME_PARAM;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.OPERATORS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.OUT_DIR_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.PERC_POLY_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.RENDER_IDS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.SCRIPTS_DIRECTORY;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.SCRIPTS_DIR_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.SCRIPTS_PIPELINE_DIRECTORY;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.SCRIPT_FILE_PARAMETER;
+
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.io.UncheckedIOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -28,19 +68,14 @@ import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.platform.commandline.executor.api.*;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.convert.plugins.CommandLineBasedConverter;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.*;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import static org.nuxeo.ecm.platform.threed.ThreeDConstants.SUPPORTED_EXTENSIONS;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
 
 /**
  * Base converter for blender pipeline. Processes scripts for operators and input blobs
@@ -64,9 +99,16 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
         return SUPPORTED_EXTENSIONS.contains(FilenameUtils.getExtension(file.getName()));
     }
 
+    /**
+     * From a list of files, sort by file name and return a stream of file paths.
+     */
+    protected Stream<String> sortFilesToPaths(List<File> files) {
+        return files.stream().sorted(Comparator.comparing(File::getName)).map(File::getAbsolutePath);
+    }
+
     private List<String> unpackZipFile(final File file, final File directory) throws IOException {
-        /* Extract ZIP contents */
-        List<String> expandedFiles = new ArrayList<>();
+        List<File> files3d = new ArrayList<>();
+        List<File> filesOther = new ArrayList<>();
         ZipEntry zipEntry;
         ZipInputStream zipInputStream = null;
         try {
@@ -78,11 +120,11 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
                         IOUtils.copy(zipInputStream, destOutputStream);
                     }
                     zipInputStream.closeEntry();
-                    if (isThreeDFile(destFile)) {
-                        expandedFiles.add(0, destFile.getAbsolutePath());
-                    } else {
-                        expandedFiles.add(destFile.getAbsolutePath());
+                    if (destFile.isHidden()) {
+                        // ignore hidden files
+                        continue;
                     }
+                    (isThreeDFile(destFile) ? files3d : filesOther).add(destFile);
                 } else {
                     destFile.mkdirs();
                 }
@@ -93,7 +135,8 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             }
 
         }
-        return expandedFiles;
+        // return a list of the sorted 3D files paths followed by the sorted non 3D files paths
+        return Stream.concat(sortFilesToPaths(files3d), sortFilesToPaths(filesOther)).collect(Collectors.toList());
     }
 
     protected List<String> blobsToTempDir(BlobHolder blobHolder, Path directory) throws IOException {
