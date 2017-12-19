@@ -127,7 +127,7 @@
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
     <ant.assembly.version>2.1.0</ant.assembly.version>
-    <nuxeo.ftest.version>1.8.3</nuxeo.ftest.version>
+    <nuxeo.ftest.version>1.8.4-SNAPSHOT</nuxeo.ftest.version>
     <nuxeo.java.client.version>3.0.1</nuxeo.java.client.version>
 
     <jsf.version>2.2.6</jsf.version>
@@ -6144,7 +6144,7 @@
                   <requireReleaseDeps>
                     <!-- Exclusions are tolerated for nightly "date-based" releases only -->
                     <excludes>
-                      <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
+                      <exclude>org.nuxeo:nuxeo-ftest:1.8.4-SNAPSHOT:zip</exclude>
                       <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
                       <!-- <exclude>org.jboss.seam:*</exclude> -->
                     </excludes>
@@ -6679,6 +6679,49 @@
         <nuxeo.marklogic.host.default>localhost</nuxeo.marklogic.host.default>
         <nuxeo.marklogic.port.default>8010</nuxeo.marklogic.port.default>
       </properties>
+    </profile>
+    <profile>
+      <id>kafka</id>
+      <properties>
+        <kafka.bootstrap.servers>localhost:9902</kafka.bootstrap.servers>
+        <kafka.zkServers>localhost:2181</kafka.zkServers>
+      </properties>
+       <build>
+         <plugins>
+           <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>properties-maven-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>read-kafka-properties</id>
+                  <phase>initialize</phase>
+                  <goals>
+                    <goal>read-project-properties</goal>
+                  </goals>
+                  <configuration>
+                    <files>
+                      <file>/etc/kafka.properties</file>
+                      <file>${home.dir}/kafka.properties</file>
+                      <file>kafka.properties</file>
+                    </files>
+                    <quiet>true</quiet>
+                  </configuration>
+                </execution>
+             </executions>
+           </plugin>
+           <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-surefire-plugin</artifactId>
+             <configuration>
+               <systemPropertyVariables>
+                 <kafka>true</kafka>
+                 <kafka.zkServers>${kafka.zkServers}</kafka.zkServers>
+                 <kafka.bootstrap.servers>${kafka.bootstrap.servers}</kafka.bootstrap.servers>
+               </systemPropertyVariables>
+             </configuration>
+           </plugin>
+         </plugins>
+       </build>
     </profile>
 
     <!-- Used to include addons and/or nuxeo-distribution in a single run -->

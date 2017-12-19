@@ -64,20 +64,34 @@ import scala.collection.Seq;
  * @since 9.3
  */
 public class KafkaUtils implements AutoCloseable {
-    public static final String DEFAULT_ZK_SERVER = "localhost:2181";
+    private static final Log log = LogFactory.getLog(KafkaUtils.class);
+
+    public static final String ZK_SERVERS_PROP = "kafka.zkServers";
+
+    public static final String DEFAULT_ZK_SERVERS = "localhost:2181";
+
+    public static final String BOOTSTRAP_SERVERS_PROP = "kafka.bootstrap.servers";
+
+    public static final String DEFAULT_BOOTSTRAP_SERVERS = "localhost:9092";
 
     public static final int ZK_TIMEOUT_MS = 6000;
 
     public static final int ZK_CONNECTION_TIMEOUT_MS = 10000;
-
-    private static final Log log = LogFactory.getLog(KafkaUtils.class);
 
     protected final ZkClient zkClient;
 
     protected final ZkUtils zkUtils;
 
     public KafkaUtils() {
-        this(DEFAULT_ZK_SERVER);
+        this(getZkServers());
+    }
+
+    public static String getZkServers() {
+        return System.getProperty(ZK_SERVERS_PROP, DEFAULT_ZK_SERVERS);
+    }
+
+    public static String getBootstrapServers() {
+        return System.getProperty(BOOTSTRAP_SERVERS_PROP, DEFAULT_BOOTSTRAP_SERVERS);
     }
 
     public KafkaUtils(String zkServers) {
@@ -87,7 +101,7 @@ public class KafkaUtils implements AutoCloseable {
     }
 
     public static boolean kafkaDetected() {
-        return kafkaDetected(DEFAULT_ZK_SERVER);
+        return kafkaDetected(getZkServers());
     }
 
     public static boolean kafkaDetected(String zkServers) {

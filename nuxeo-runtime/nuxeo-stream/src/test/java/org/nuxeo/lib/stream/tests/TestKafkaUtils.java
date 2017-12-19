@@ -47,7 +47,7 @@ public class TestKafkaUtils {
     public static void assumeKafkaEnabled() {
         if ("true".equals(System.getProperty("kafka"))) {
             if (!KafkaUtils.kafkaDetected()) {
-                fail("Kafka profile is enable, but no Kafka server found.");
+                fail("Kafka profile is enable, but no Zookeeper found: " + KafkaUtils.getZkServers());
             }
         } else {
             Assume.assumeTrue("No kafka profile", false);
@@ -63,7 +63,7 @@ public class TestKafkaUtils {
     }
 
     @Test
-    public void testCreateTopic() throws Exception {
+    public void testCreateTopic() {
         try (KafkaUtils kutils = new KafkaUtils()) {
             createDefaultTopicIfNeeded(kutils);
             Properties props = new Properties();
@@ -73,7 +73,7 @@ public class TestKafkaUtils {
     }
 
     @Test
-    public void testResetConsumerStates() throws Exception {
+    public void testResetConsumerStates() {
         try (KafkaUtils kutils = new KafkaUtils()) {
             createDefaultTopicIfNeeded(kutils);
             kutils.resetConsumerStates(DEFAULT_TOPIC);
@@ -81,23 +81,23 @@ public class TestKafkaUtils {
     }
 
     @Test
-    public void testBrokerList() throws Exception {
+    public void testBrokerList() {
         try (KafkaUtils kutils = new KafkaUtils()) {
             assertNotNull(kutils.getBrokerEndPoints());
-            assertEquals(Collections.singleton("PLAINTEXT://localhost:9092"), kutils.getBrokerEndPoints());
+            assertEquals(Collections.singleton("PLAINTEXT://" + KafkaUtils.getBootstrapServers()),
+                    kutils.getBrokerEndPoints());
         }
     }
 
     @Test
-    public void testDefaultBootstrapServers() throws Exception {
+    public void testDefaultBootstrapServers() {
         try (KafkaUtils kutils = new KafkaUtils()) {
-            assertEquals("PLAINTEXT://localhost:9092", kutils.getDefaultBootstrapServers());
-
+            assertEquals("PLAINTEXT://" + KafkaUtils.getBootstrapServers(), kutils.getDefaultBootstrapServers());
         }
     }
 
     @Test
-    public void testAssignments() throws Exception {
+    public void testAssignments() {
         Map<String, Integer> streams = new HashMap<>();
         streams.put("s1", 16);
         streams.put("s2", 8);

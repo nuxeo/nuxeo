@@ -1,0 +1,33 @@
+version: '2'
+services:
+  zookeeper:
+    image: zookeeper:3.4.10
+
+  kafka:
+    image: wurstmeister/kafka:1.0.0
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 10
+      KAFKA_OFFSETS_RETENTION_MINUTES: 20160
+    links:
+      - zookeeper
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  tests:
+    build:
+       context: jenkins-slave-kafka
+       dockerfile: Dockerfile
+    volumes:
+      - $WORKSPACE:$WORKSPACE
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+    links:
+      - kafka
+      - zookeeper
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    command: /sbin/my_init -- su - jenkins -c "$TESTS_COMMAND"
