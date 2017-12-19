@@ -25,6 +25,7 @@ import static org.jboss.seam.ScopeType.SESSION;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -167,8 +168,8 @@ public class StartupHelper implements Serializable {
                 return result;
             }
 
-            Map<String, Serializable> properties = new LinkedHashMap<>();
-            properties.put(CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY, (Serializable) documentManager);
+            Map<String, Serializable> properties = Collections.singletonMap(
+                    CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY, (Serializable) documentManager);
 
             PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
                     STARTUP_PAGE_PROVIDER_NAME, null, null, null, properties);
