@@ -59,24 +59,24 @@ public class TestMemPubSubProvider {
     @Test
     public void testNoSubscriber() throws Exception {
         // nothing to receive it but we can still send something into the void
-        pubSubService.publish("testtopic", "foo".getBytes(UTF_8));
+        pubSubService.publish("topicVoid", "something".getBytes(UTF_8));
     }
 
     @Test
     public void testPublish() throws Exception {
         messageReceivedLatch = new CountDownLatch(1);
         BiConsumer<String, byte[]> subscriber = this::subscriber;
-        pubSubService.registerSubscriber("testtopic", subscriber);
-        pubSubService.publish("testtopic", "foo".getBytes(UTF_8));
+        pubSubService.registerSubscriber("topicTest", subscriber);
+        pubSubService.publish("topicTest", "foo".getBytes(UTF_8));
         if (!messageReceivedLatch.await(5, TimeUnit.SECONDS)) {
             fail("message not received in 5s");
         }
-        assertEquals(Collections.singletonList("testtopic=foo"), messages);
+        assertEquals(Collections.singletonList("topicTest=foo"), messages);
 
         // with subscriber unregistered it receives nothing anymore
-        pubSubService.unregisterSubscriber("testtopic", subscriber);
+        pubSubService.unregisterSubscriber("topicTest", subscriber);
         messages.clear();
-        pubSubService.publish("testtopic", "bar".getBytes(UTF_8));
+        pubSubService.publish("topicTest", "bar".getBytes(UTF_8));
         Thread.sleep(500);
         assertEquals(Collections.emptyList(), messages);
     }
