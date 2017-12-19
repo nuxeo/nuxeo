@@ -58,4 +58,25 @@
     </streamProcessor>
   </extension>
 </#if>
+<#if "${nuxeo.pubsub.provider}" == "stream">
+ <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
+  <#if "${kafka.enabled}" == "true">
+     <logConfig name="${nuxeo.stream.pubsub.log.config}" type="kafka">
+       <option name="kafkaConfig">default</option>
+       <log name="${nuxeo.stream.pubsub.log.name}" size="1" />
+     </logConfig>
+  <#else>
+     <logConfig name="${nuxeo.stream.pubsub.log.config}" type="chronicle">
+       <option name="retention">4h</option>
+       <log name="${nuxeo.stream.pubsub.log.name}" size="1" />
+     </logConfig>
+  </#if>
+  </extension>
+  <extension target="org.nuxeo.runtime.pubsub.PubSubService" point="configuration">
+    <provider class="org.nuxeo.runtime.pubsub.StreamPubSubProvider">
+      <option name="logConfig">${nuxeo.stream.pubsub.log.config}</option>
+      <option name="logName">${nuxeo.stream.pubsub.log.name}</option>
+    </provider>
+  </extension>
+</#if>
 </component>

@@ -145,3 +145,8 @@ nuxeo.stream.audit.enabled=true
 nuxeo.stream.audit.log.config=audit
 nuxeo.stream.audit.batch.size=25
 nuxeo.stream.audit.batch.threshold.ms=500
+
+# Stream PubSub
+nuxeo.stream.pubsub.log.config=pubsub
+nuxeo.stream.pubsub.log.name=pubsub
+
