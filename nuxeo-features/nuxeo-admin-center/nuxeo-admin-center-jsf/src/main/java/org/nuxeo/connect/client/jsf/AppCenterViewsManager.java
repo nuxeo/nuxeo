@@ -505,6 +505,7 @@ public class AppCenterViewsManager implements Serializable {
                             Thread.currentThread().interrupt();
                             throw e;
                         }
+                        return;
                     }
                 }
                 try {
