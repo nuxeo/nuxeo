@@ -1,22 +1,26 @@
 <span xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   id="#{widget.id}">
-  
    <nxu:set var="formatedSize" value="#{quotaStatsActions.formatQuota(field_0, field_0)}">
     <nxu:set var="maxSize" value="#{nxu:test(empty widgetProperty_maxSize, 'false', widgetProperty_maxSize)}" cache="true">
-     <c:if test="#{formatedSize.valueInUnit != 0  or (formatedSize.valueInUnit == 0 and !maxSize)}">
-       <h:outputText value="#{formatedSize.valueInUnit}">
-        <f:convertNumber maxFractionDigits="2" />
-       </h:outputText>
-       <h:outputText value=" #{messages[formatedSize.unit]} "/>
-     </c:if>
-     <c:if test="#{formatedSize.valueInUnit == 0 and maxSize}">
-      <h:outputText value="#{messages['label.quota.notset']}"/>
-     </c:if>
-    </nxu:set> 
+      <c:choose>
+        <c:when test="#{maxSize}">
+          <h:outputText value="#{formatedSize.valueInUnit}" rendered="#{formatedSize.valueInUnit != 0}">
+           <f:convertNumber maxFractionDigits="2" />
+          </h:outputText>
+          <h:outputText value=" #{messages[formatedSize.unit]}" rendered="#{formatedSize.valueInUnit != 0}"/>
+          <h:outputText value="#{messages['label.quota.notset']}" rendered="#{formatedSize.valueInUnit == 0}"/>
+        </c:when>
+        <c:otherwise>
+          <h:outputText value="#{formatedSize.valueInUnit}">
+           <f:convertNumber maxFractionDigits="2" />
+          </h:outputText>
+          <h:outputText value=" #{messages[formatedSize.unit]}"/>
+        </c:otherwise>
+      </c:choose>
+    </nxu:set>
   </nxu:set>
 
 </span>
