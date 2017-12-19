@@ -84,7 +84,7 @@ def withDockerCompose(String name, String file, String command, Closure post) {
                 post()
             } finally {
                 sh """#!/bin/bash -ex
-                   docker-compose -f $file down
+                   docker-compose -f $file down --rmi local --volumes --remove-orphans
                 """
             }
         }
