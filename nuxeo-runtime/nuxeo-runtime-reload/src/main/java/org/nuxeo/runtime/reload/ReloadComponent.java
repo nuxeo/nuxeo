@@ -37,10 +37,10 @@ import java.util.stream.Stream;
 
 import javax.transaction.Transaction;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.osgi.application.DevMutableClassLoader;
@@ -445,8 +445,12 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                                 destinationPath.resolve("hotreload-bundle-" + System.currentTimeMillis() + ".jar"),
                                 StandardCopyOption.REPLACE_EXISTING);
                     } else {
-                        bundlePath = Files.copy(bundlePath, destinationPath.resolve(bundle.getName()),
-                                StandardCopyOption.REPLACE_EXISTING);
+                        bundlePath = destinationPath.resolve(bundle.getName());
+                        // JDK nio Files will replace the existing file (if destination already exists) which is an
+                        // an issue on Windows cause you can't replace a file used by the JVM
+                        // so use commons-io instead because it will override the content by using a FileInputStream
+                        // instead of replacing the file
+                        FileUtils.copyFile(bundle, bundlePath.toFile(), false);
                     }
                 }
                 bundlesToDeploy.add(bundlePath.toFile());
@@ -566,12 +570,12 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             File war = new File(file, "web");
             war = new File(war, "nuxeo.war");
             if (war.isDirectory()) {
-                FileUtils.copyTree(war, getAppDir());
+                org.nuxeo.common.utils.FileUtils.copyTree(war, getAppDir());
             } else {
                 // compatibility mode with studio 1.5 - see NXP-6186
                 war = new File(file, "nuxeo.war");
                 if (war.isDirectory()) {
-                    FileUtils.copyTree(war, getAppDir());
+                    org.nuxeo.common.utils.FileUtils.copyTree(war, getAppDir());
                 }
             }
         } else if (file.isFile()) { // a jar
