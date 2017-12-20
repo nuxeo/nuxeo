@@ -36,6 +36,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 import javax.script.Invocable;
 import javax.script.ScriptContext;
@@ -104,6 +105,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     private static final String REDIRECT_RESOLVER = "redirectResolver";
 
     private static final String RUN_FUNCTION = "run";
+
+    private static final Pattern FILENAME_SANITIZATION_REGEX = Pattern.compile(";\\w+=.*");
 
     protected static enum Action {
         DOWNLOAD, DOWNLOAD_FROM_DOC, INFO, BLOBSTATUS
@@ -221,19 +224,20 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             sb.append("/").append(xpath);
             if (filename != null) {
                 // make sure filename doesn't contain path separators
-                filename = getFilenameWithoutPath(filename);
+                filename = getSanitizedFilenameWithoutPath(filename);
                 sb.append("/").append(URIUtils.quoteURIPathComponent(filename, true));
             }
         }
         return sb.toString();
     }
 
-    protected String getFilenameWithoutPath(String filename) {
+    protected String getSanitizedFilenameWithoutPath(String filename) {
         int sep = Math.max(filename.lastIndexOf('\\'), filename.lastIndexOf('/'));
         if (sep != -1) {
             filename = filename.substring(sep + 1);
         }
-        return filename;
+
+        return FILENAME_SANITIZATION_REGEX.matcher(filename).replaceAll("");
     }
 
     @Override
