@@ -342,4 +342,21 @@ public class TestDownloadService {
         session.close();
     }
 
+    @Test
+    public void testDownloadUrlWithURLSanitization() throws IOException {
+        String filename = "/home/john/foo.txt;jsessionid=FooBarBaz;otherparam=foobarbaz";
+        String url = downloadService.getDownloadUrl("default", "1234", "file:content", filename);
+        assertEquals("nxfile/default/1234/file:content/foo.txt", url);
+
+        filename = "/home/john/foo.txt;jsessionid=FooBarBaz";
+        url = downloadService.getDownloadUrl("default", "1234", "file:content", filename);
+        assertEquals("nxfile/default/1234/file:content/foo.txt", url);
+    }
+
+    @Test
+    public void testDownloadUrlWithSemiColonInTheFilename() throws IOException {
+        String filename = "/home/john/foo;bar.txt";
+        String url = downloadService.getDownloadUrl("default", "1234", "file:content", filename);
+        assertEquals("nxfile/default/1234/file:content/foo%3Bbar.txt", url);
+    }
 }
