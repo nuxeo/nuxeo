@@ -23,7 +23,7 @@ limitations under the License.
 -->
 <dom-module id="nuxeo-render-template-button">
   <template>
-    <style>
+    <style include="iron-flex iron-flex-alignment">
       :host {
         display: inline-block;
       }
@@ -36,8 +36,8 @@ limitations under the License.
         @apply --buttons-bar;
       }
 
-      .description {
-        word-wrap: normal;
+      label {
+        @apply --nuxeo-label;
       }
     </style>
 
@@ -58,9 +58,10 @@ limitations under the License.
               </template>
             </paper-listbox>
           </paper-dropdown-menu>
-          <span class="description" hidden="[[!selectedTemplate.properties.dc:description]]">
-            [[i18n('renderTemplateButton.dialog.template.description')]]: [[selectedTemplate.properties.dc:description]]
-          </span>
+          <div hidden$="[[!selectedTemplate.properties.dc:description]]">
+            <label>[[i18n('renderTemplateButton.dialog.template.description')]]</label>
+            <div class="multiline">[[selectedTemplate.properties.dc:description]]</div>
+          </div>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons horizontal end-justified layout">

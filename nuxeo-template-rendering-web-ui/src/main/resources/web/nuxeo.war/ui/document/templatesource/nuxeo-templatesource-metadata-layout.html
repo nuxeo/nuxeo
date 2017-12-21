@@ -21,8 +21,32 @@ limitations under the License.
 -->
 
 <dom-module id="nuxeo-templatesource-metadata-layout">
-
   <template>
+    <style>
+      *[role=widget] {
+        margin-bottom: 16px;
+      }
+
+      label {
+        @apply --nuxeo-label;
+      }
+
+      div.multiline {
+        white-space: pre-line;
+      }
+
+      div {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        -webkit-hyphens: auto;
+        -moz-hyphens: auto;
+        -ms-hyphens: auto;
+        -o-hyphens: auto;
+        hyphens: auto;
+      }
+    </style>
+
     <div role="widget">
       <label>[[i18n('label.dublincore.title')]]</label>
       <div name="title">[[document.properties.dc:title]]</div>
@@ -56,7 +80,7 @@ limitations under the License.
 
     <div role="widget" hidden$="[[!document.properties.dc:expired]]">
       <label>[[i18n('label.dublincore.expire')]]</label>
-      <div name="expireDate"><nuxeo-date datetime="[[document.properties.dc:expired]]"></nuxeo-date></div>
+      <div name="expired">[[formatDate(document.properties.dc:expired)]]</div>
     </div>
   </template>
 
