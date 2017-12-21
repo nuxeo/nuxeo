@@ -284,6 +284,22 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
+    public void testListWithNullFirst() throws Exception {
+        doc = session.createDocumentModel("/", "doc2", "MyDocType");
+        doc = session.createDocument(doc);
+        // this tests on a property that is internally a list, not an array (yes we still have those!)
+        assertEquals(ListProperty.class, doc.getProperty("participants").getClass());
+        String[] values = { null, "bar" };
+        doc.setPropertyValue("participants", (Serializable) values);
+        session.saveDocument(doc);
+        session.save();
+        nextTransaction();
+        session = coreFeature.reopenCoreSession();
+        doc = session.getDocument(doc.getRef());
+        assertTrue(Arrays.equals(values, (Object[]) doc.getPropertyValue("participants")));
+    }
+
+    @Test
     public void testComplexList() throws Exception {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:complexList") instanceof List);
