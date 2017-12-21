@@ -33,6 +33,7 @@ limitations under the License.
         @apply --buttons-bar;
         margin: 16px -16px -16px -16px;
       }
+
     </style>
 
     <nuxeo-document id="doc" doc-id="[[editedDocument.uid]]"
@@ -127,116 +128,116 @@ limitations under the License.
 
   </template>
   <script>
-      Polymer({
-        is: 'nuxeo-template-rendering-page',
-        behaviors: [Nuxeo.I18nBehavior, Nuxeo.FormatBehavior],
-        properties: {
-          document: {
-            type: Object,
-            observer: '_documentChanged'
-          },
-          docTypes: Array,
-          processors: {
-            type: Array,
-            value: ['auto', 'Freemarker', 'XSLTProcessor', 'Identity', 'JXLSProcessor', 'XDocReportProcessor']
-          },
-          outputFormats: {
-            type: Array,
-            value: ['none', 'pdf', 'odt', 'doc', 'docx']
-          },
-          editedDocument: Object,
-          configMode: {
-            type: String,
-            value: 'view'
-          },
-          paramsMode: {
-            type: String,
-            value: 'view'
-          }
+    Polymer({
+      is: 'nuxeo-template-rendering-page',
+      behaviors: [Nuxeo.I18nBehavior, Nuxeo.FormatBehavior],
+      properties: {
+        document: {
+          type: Object,
+          observer: '_documentChanged'
         },
-
-        _getProcessorLabel: function(processor) {
-          return this.i18n('templateRenderingPage.processor.' + processor);
+        docTypes: Array,
+        processors: {
+          type: Array,
+          value: ['auto', 'Freemarker', 'XSLTProcessor', 'Identity', 'JXLSProcessor', 'XDocReportProcessor']
         },
-
-        _getOutputFormatLabel: function(format) {
-          if (format === 'none') {
-            return this.i18n('templateRenderingPage.outputFormat.' + format);
-          } else {
-            return format ? format.toUpperCase() : null;
-          }
+        outputFormats: {
+          type: Array,
+          value: ['none', 'pdf', 'odt', 'doc', 'docx']
         },
-
-        _documentChanged: function() {
-          if (this.document) {
-            this.set('document.properties.tmpl:templateType', this.document.properties['tmpl:templateType'] || 'auto');
-            this.set('editedDocument' , JSON.parse(JSON.stringify(this.document)));
-          }
+        editedDocument: Object,
+        configMode: {
+          type: String,
+          value: 'view'
         },
-
-        _handleDocTypes: function(e) {
-          var docTypes = [{
-            id: 'all',
-            text: this.i18n('templateRenderingPage.label.document.type.all'),
-            displayLabel: this.i18n('templateRenderingPage.label.document.type.all')
-          }];
-          Object.keys(e.detail.response.doctypes).sort().forEach(function(docType) {
-            docTypes.push({
-              id: docType,
-              text: docType,
-              displayLabel: docType
-            });
-          });
-          this.set('docTypes', docTypes);
-        },
-
-        _resetConfig: function() {
-          this.set('editedDocument', JSON.parse(JSON.stringify(this.document)));
-        },
-
-        _save: function() {
-          delete this.editedDocument.properties['dc:contributors'];
-          return this.$.doc.put();
-        },
-
-        _editConfig: function() {
-          this.configMode = 'edit';
-        },
-
-        _cancelEditConfig: function() {
-          this.configMode = 'view';
-          this._resetConfig();
-        },
-
-        _saveEditConfig: function() {
-          return this._save().then(function() {
-            this.configMode = 'view';
-          }.bind(this));
-        },
-
-        _editParams: function() {
-          this.paramsMode = 'edit';
-        },
-
-        _cancelEditParams: function() {
-          this.paramsMode = 'view';
-          this._resetConfig();
-          this.$.paramEditor.reset();
-        },
-
-        _saveEditParams: function() {
-          this.$.paramEditor.commitChanges();
-          this.set('editedDocument.properties.tmpl:templateData', this.$.paramEditor.generateTemplateData());
-          return this._save().then(function() {
-            this.paramsMode = 'view';
-          }.bind(this));
-        },
-
-        _getTemplateData: function() {
-          return this.editedDocument.properties['tmpl:templateData'];
+        paramsMode: {
+          type: String,
+          value: 'view'
         }
+      },
 
-      });
+      _getProcessorLabel: function(processor) {
+        return this.i18n('templateRenderingPage.processor.' + processor);
+      },
+
+      _getOutputFormatLabel: function(format) {
+        if (format === 'none') {
+          return this.i18n('templateRenderingPage.outputFormat.' + format);
+        } else {
+          return format ? format.toUpperCase() : null;
+        }
+      },
+
+      _documentChanged: function() {
+        if (this.document) {
+          this.set('document.properties.tmpl:templateType', this.document.properties['tmpl:templateType'] || 'auto');
+          this.set('editedDocument' , JSON.parse(JSON.stringify(this.document)));
+        }
+      },
+
+      _handleDocTypes: function(e) {
+        var docTypes = [{
+          id: 'all',
+          text: this.i18n('templateRenderingPage.label.document.type.all'),
+          displayLabel: this.i18n('templateRenderingPage.label.document.type.all')
+        }];
+        Object.keys(e.detail.response.doctypes).sort().forEach(function(docType) {
+          docTypes.push({
+            id: docType,
+            text: docType,
+            displayLabel: docType
+          });
+        });
+        this.set('docTypes', docTypes);
+      },
+
+      _resetConfig: function() {
+        this.set('editedDocument', JSON.parse(JSON.stringify(this.document)));
+      },
+
+      _save: function() {
+        delete this.editedDocument.properties['dc:contributors'];
+        return this.$.doc.put();
+      },
+
+      _editConfig: function() {
+        this.configMode = 'edit';
+      },
+
+      _cancelEditConfig: function() {
+        this.configMode = 'view';
+        this._resetConfig();
+      },
+
+      _saveEditConfig: function() {
+        return this._save().then(function() {
+          this.configMode = 'view';
+        }.bind(this));
+      },
+
+      _editParams: function() {
+        this.paramsMode = 'edit';
+      },
+
+      _cancelEditParams: function() {
+        this.paramsMode = 'view';
+        this._resetConfig();
+        this.$.paramEditor.reset();
+      },
+
+      _saveEditParams: function() {
+        this.$.paramEditor.commitChanges();
+        this.set('editedDocument.properties.tmpl:templateData', this.$.paramEditor.generateTemplateData());
+        return this._save().then(function() {
+          this.paramsMode = 'view';
+        }.bind(this));
+      },
+
+      _getTemplateData: function() {
+        return this.editedDocument.properties['tmpl:templateData'];
+      }
+
+    });
   </script>
 
 </dom-module>
