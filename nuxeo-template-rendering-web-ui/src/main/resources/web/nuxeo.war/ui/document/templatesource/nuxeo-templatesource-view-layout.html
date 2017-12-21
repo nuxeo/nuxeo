@@ -20,9 +20,7 @@ limitations under the License.
 @element nuxeo-templatesource-view-layout
 -->
 <dom-module id="nuxeo-templatesource-view-layout">
-
   <template>
-
     <style>
       .ellipsis {
         text-overflow: ellipsis;
@@ -38,6 +36,10 @@ limitations under the License.
         border-radius: 20px;
         box-sizing: border-box;
         margin-right: 8px;
+      }
+
+      nuxeo-document-viewer {
+        @apply --paper-card;
       }
     </style>
 
