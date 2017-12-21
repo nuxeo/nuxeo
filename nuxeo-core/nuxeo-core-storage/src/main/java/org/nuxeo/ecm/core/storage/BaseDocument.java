@@ -833,13 +833,15 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                     if (value instanceof List) {
                         List<?> list = (List<?>) value;
                         Object[] array;
-                        if (list.isEmpty()) {
-                            array = new Object[0];
-                        } else {
-                            // use properly-typed array, useful for mem backend that doesn't re-convert all types
-                            Class<?> klass = list.get(0).getClass();
-                            array = (Object[]) Array.newInstance(klass, list.size());
+                        // use properly-typed array, useful for mem backend that doesn't re-convert all types
+                        Class<?> klass = Object.class;
+                        for (Object o : list) {
+                            if (o != null) {
+                                klass = o.getClass();
+                                break;
+                            }
                         }
+                        array = (Object[]) Array.newInstance(klass, list.size());
                         value = list.toArray(array);
                     } else if (value instanceof Object[]) {
                         Object[] ar = (Object[]) value;
