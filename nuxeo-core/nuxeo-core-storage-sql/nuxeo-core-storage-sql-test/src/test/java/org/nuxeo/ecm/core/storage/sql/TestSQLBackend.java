@@ -1149,7 +1149,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(2, friends.size());
     }
 
-    @Ignore("NXP-23349")
     @Test
     public void testConcurrentCollectionPosCreation() throws Exception {
         // two docs with same name (possible at this low level)
@@ -1171,13 +1170,17 @@ public class TestSQLBackend extends SQLBackendTestCase {
             // no need to test further
             return;
         }
-        // on read we get both
+        // on read we get both, but order is indeterminate
         session2.close();
         session2 = repository.getConnection();
         root2 = session2.getRootNode();
         foo2 = session2.getChildNode(root2, "foo", false);
         String[] subjects = foo2.getCollectionProperty("tst:subjects").getStrings();
-        assertArrayEquals(new String[] { "a", "b" }, subjects);
+        try {
+            assertArrayEquals(new String[] { "a", "b" }, subjects);
+        } catch (AssertionError e) {
+            assertArrayEquals(new String[] { "b", "a" }, subjects);
+        }
     }
 
     @Test
