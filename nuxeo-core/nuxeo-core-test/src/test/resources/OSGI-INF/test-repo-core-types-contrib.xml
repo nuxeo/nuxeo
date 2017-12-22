@@ -28,10 +28,6 @@
       <schema name="dublincore" />
       <schema name="testList" />
       <schema name="book" />
-      <prefetch>uid, common.icon, dc:title dc:subjects
-        testList.participants,
-        book:author/pJob, book:author/pName/FirstName
-        </prefetch>
     </doctype>
     <doctype name="MyDocType2" extends="Document">
       <schema name="complex" />
@@ -56,17 +52,10 @@
     </doctype>
     <doctype name="TestDocument" extends="Document">
       <schema name="test-properties" />
-      <prefetch></prefetch>
     </doctype>
     <doctype name="TestDocument2" extends="Document">
       <schema name="dublincore" />
       <schema name="test-properties" />
-      <prefetch></prefetch>
-    </doctype>
-    <doctype name="TestDocumentWithDefaultPrefetch" extends="Document">
-      <!-- default prefetch includes props from common and dc -->
-      <schema name="common" />
-      <schema name="dublincore" />
     </doctype>
     <!-- facet tests -->
     <facet name="Fooable" /> <!-- no content -->

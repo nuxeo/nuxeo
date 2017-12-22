@@ -306,10 +306,8 @@ public class TestSQLRepositoryAPI {
         assertEquals(String.class, strings.getClass().getComponentType());
         assertEquals(Arrays.asList("e", "f"), Arrays.asList((Serializable[]) strings));
         Object participants = child.getProperty("testList", "participants");
-        assertTrue(participants.getClass().isArray());
-        // List<> has been normalized to String[] when re-read from database
-        assertEquals(String.class, participants.getClass().getComponentType());
-        assertEquals(Arrays.asList("c", "d"), Arrays.asList((Serializable[]) participants));
+        assertTrue(participants instanceof List);
+        assertEquals(Arrays.asList("c", "d"), (List<?>) participants);
     }
 
     @Test
@@ -475,7 +473,7 @@ public class TestSQLRepositoryAPI {
         String title = (String) doc.getProperty("dublincore", "title");
         assertEquals("title2", title);
         Object participants = doc.getProperty("testList", "participants");
-        assertEquals(Arrays.asList("c", "d"), Arrays.asList((Serializable[]) participants));
+        assertEquals(Arrays.asList("c", "d"), (List<?>) participants);
     }
 
     @Test

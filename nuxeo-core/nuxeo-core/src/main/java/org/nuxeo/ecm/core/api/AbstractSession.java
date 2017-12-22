@@ -2424,8 +2424,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(ref);
 
         // permission checks
-        if ((refreshFlags & (DocumentModel.REFRESH_PREFETCH | DocumentModel.REFRESH_STATE
-                | DocumentModel.REFRESH_CONTENT)) != 0) {
+        if ((refreshFlags & (DocumentModel.REFRESH_STATE | DocumentModel.REFRESH_CONTENT)) != 0) {
             checkPermission(doc, READ);
         }
         if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {

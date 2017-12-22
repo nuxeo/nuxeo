@@ -47,6 +47,7 @@ public class DomainsFinder extends UnrestrictedSessionRunner {
     @Override
     public void run() {
         domains = getDomainsFiltered();
+        domains.forEach(domain -> domain.detach(true));
     }
 
     @SuppressWarnings("unchecked")

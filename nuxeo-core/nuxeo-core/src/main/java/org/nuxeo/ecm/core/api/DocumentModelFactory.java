@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Document.WriteContext;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.core.schema.PrefetchInfo;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeProvider;
@@ -115,23 +114,14 @@ public class DocumentModelFactory {
             docModel.setIsImmutable(true);
         }
 
-        // populate prefetch
-        PrefetchInfo prefetchInfo = type.getPrefetchInfo();
-        Prefetch prefetch;
-        String[] prefetchSchemas;
-        if (prefetchInfo != null) {
-            Set<String> docSchemas = new HashSet<String>(Arrays.asList(docModel.getSchemas()));
-            prefetch = getPrefetch(doc, prefetchInfo, docSchemas);
-            prefetchSchemas = prefetchInfo.getSchemas();
-        } else {
-            prefetch = null;
-            prefetchSchemas = null;
-        }
-
         // populate datamodels
         List<String> loadSchemas = new LinkedList<String>();
         if (schemas == null) {
-            schemas = prefetchSchemas;
+            PrefetchInfo prefetchInfo = type.getPrefetchInfo();
+            if (prefetchInfo != null) {
+                Set<String> docSchemas = new HashSet<String>(Arrays.asList(docModel.getSchemas()));
+                schemas = prefetchInfo.getSchemas();
+            }
         }
         if (schemas != null) {
             Set<String> validSchemas = new HashSet<String>(Arrays.asList(docModel.getSchemas()));
@@ -145,15 +135,6 @@ public class DocumentModelFactory {
         for (String schemaName : loadSchemas) {
             Schema schema = schemaManager.getSchema(schemaName);
             docModel.addDataModel(createDataModel(doc, schema));
-        }
-
-        if (prefetch != null) {
-            // ignore prefetches already loaded as datamodels
-            for (String schemaName : loadSchemas) {
-                prefetch.clearPrefetch(schemaName);
-            }
-            // set prefetch
-            docModel.setPrefetch(prefetch);
         }
 
         // prefetch lifecycle state
@@ -279,13 +260,6 @@ public class DocumentModelFactory {
         refresh.instanceFacets = new HashSet<String>(Arrays.asList(doc.getFacets()));
         Set<String> docSchemas = DocumentModelImpl.computeSchemas(doc.getType(), refresh.instanceFacets, doc.isProxy());
 
-        if ((flags & DocumentModel.REFRESH_PREFETCH) != 0) {
-            PrefetchInfo prefetchInfo = doc.getType().getPrefetchInfo();
-            if (prefetchInfo != null) {
-                refresh.prefetch = getPrefetch(doc, prefetchInfo, docSchemas);
-            }
-        }
-
         if ((flags & DocumentModel.REFRESH_STATE) != 0) {
             refresh.lifeCycleState = doc.getLifeCycleState();
             refresh.lifeCyclePolicy = doc.getLifeCyclePolicy();
@@ -313,82 +287,6 @@ public class DocumentModelFactory {
         }
 
         return refresh;
-    }
-
-    /**
-     * Prefetches from a document.
-     */
-    protected static Prefetch getPrefetch(Document doc, PrefetchInfo prefetchInfo, Set<String> docSchemas) {
-        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-
-        // individual fields
-        Set<String> xpaths = new HashSet<String>();
-        String[] prefetchFields = prefetchInfo.getFields();
-        if (prefetchFields != null) {
-            xpaths.addAll(Arrays.asList(prefetchFields));
-        }
-
-        // whole schemas (but NOT their complex properties)
-        String[] prefetchSchemas = prefetchInfo.getSchemas();
-        if (prefetchSchemas != null) {
-            for (String schemaName : prefetchSchemas) {
-                if (docSchemas.contains(schemaName)) {
-                    Schema schema = schemaManager.getSchema(schemaName);
-                    if (schema != null) {
-                        for (Field field : schema.getFields()) {
-                            if (isScalarField(field)) {
-                                xpaths.add(field.getName().getPrefixedName());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // do the prefetch
-        Prefetch prefetch = new Prefetch();
-        for (String schemaName : docSchemas) {
-            Schema schema = schemaManager.getSchema(schemaName);
-            // find xpaths for this schema
-            Set<String> schemaXpaths = new HashSet<String>();
-            for (String xpath : xpaths) {
-                String sn = DocumentModelImpl.getXPathSchemaName(xpath, docSchemas, null);
-                if (schemaName.equals(sn)) {
-                    schemaXpaths.add(xpath);
-                }
-            }
-            if (schemaXpaths.isEmpty()) {
-                continue;
-            }
-            Map<String, Serializable> map = doc.readPrefetch(schema, schemaXpaths);
-            for (Entry<String, Serializable> en : map.entrySet()) {
-                String xpath = en.getKey();
-                Serializable value = en.getValue();
-                String[] returnName = new String[1];
-                String sn = DocumentModelImpl.getXPathSchemaName(xpath, docSchemas, returnName);
-                String name = returnName[0];
-                prefetch.put(xpath, sn, name, value);
-            }
-        }
-
-        return prefetch;
-    }
-
-    /**
-     * Checks if a field is a primitive type or array.
-     */
-    protected static boolean isScalarField(Field field) {
-        Type type = field.getType();
-        if (type.isComplexType()) {
-            // complex type
-            return false;
-        }
-        if (!type.isListType()) {
-            // primitive type
-            return true;
-        }
-        // array or complex list?
-        return ((ListType) type).getFieldType().isSimpleType();
     }
 
     /**

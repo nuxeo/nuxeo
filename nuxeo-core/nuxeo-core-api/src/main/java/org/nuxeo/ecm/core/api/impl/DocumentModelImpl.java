@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.core.api.impl;
 
-import static org.apache.commons.lang.ObjectUtils.NULL;
 import static org.nuxeo.ecm.core.schema.types.ComplexTypeImpl.canonicalXPath;
 
 import java.io.IOException;
@@ -70,7 +69,6 @@ import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.core.schema.PropertyDeprecationHandler;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
@@ -189,9 +187,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     protected String sourceId;
 
     protected ScopedMap contextData = new ScopedMap();
-
-    // public for unit tests
-    public Prefetch prefetch;
 
     private String detachedVersionLabel;
 
@@ -591,14 +586,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public Object getProperty(String schemaName, String name) {
-        // look in prefetch
-        if (prefetch != null) {
-            Serializable value = prefetch.get(schemaName, name);
-            if (value != NULL) {
-                return value;
-            }
-        }
-        // look in datamodels
         DataModel dm = dataModels.get(schemaName);
         if (dm == null) {
             dm = getDataModel(schemaName);
@@ -761,7 +748,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         DataModel dm = getDataModel(schemaName);
         if (dm != null) {
             dm.setMap(data);
-            clearPrefetch(schemaName);
         }
     }
 
@@ -772,7 +758,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             return;
         }
         dm.setData(name, value);
-        clearPrefetch(schemaName);
     }
 
     @Override
@@ -1136,23 +1121,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public boolean isPrefetched(String xpath) {
-        return prefetch != null && prefetch.isPrefetched(xpath);
+        return false;
     }
 
     @Override
     public boolean isPrefetched(String schemaName, String name) {
-        return prefetch != null && prefetch.isPrefetched(schemaName, name);
-    }
-
-    /**
-     * Sets prefetch information.
-     * <p>
-     * INTERNAL: This method is not in the public interface.
-     *
-     * @since 5.5
-     */
-    public void setPrefetch(Prefetch prefetch) {
-        this.prefetch = prefetch;
+        return false;
     }
 
     @Override
@@ -1321,37 +1295,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public Serializable getPropertyValue(String xpath) throws PropertyException {
-        if (prefetch != null) {
-            Serializable value = prefetch.get(xpath);
-            if (value != NULL) {
-                return value;
-            }
-        }
         return getProperty(xpath).getValue();
     }
 
     @Override
     public void setPropertyValue(String xpath, Serializable value) throws PropertyException {
         getProperty(xpath).setValue(value);
-        clearPrefetchXPath(xpath);
-    }
-
-    private void clearPrefetch(String schemaName) {
-        if (prefetch != null) {
-            prefetch.clearPrefetch(schemaName);
-            if (prefetch.isEmpty()) {
-                prefetch = null;
-            }
-        }
-    }
-
-    protected void clearPrefetchXPath(String xpath) {
-        if (prefetch != null) {
-            String schemaName = prefetch.getXPathSchema(xpath, getDocumentType());
-            if (schemaName != null) {
-                clearPrefetch(schemaName);
-            }
-        }
     }
 
     @Override
@@ -1369,7 +1318,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         // dm.parentRef = parentRef;
         // dm.path = path; // path is immutable
         // dm.isACPLoaded = isACPLoaded;
-        // dm.prefetch = dm.prefetch; // prefetch can be shared
         // dm.lock = lock;
         // dm.sourceId =sourceId;
         // dm.sid = sid;
@@ -1401,7 +1349,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (dataModels != null) {
             dataModels.clear();
         }
-        prefetch = null;
         isACPLoaded = false;
         acp = null;
         currentLifeCycleState = null;
@@ -1436,9 +1383,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
         DocumentModelRefresh refresh = getSession().refreshDocument(ref, refreshFlags, schemas);
 
-        if ((refreshFlags & REFRESH_PREFETCH) != 0) {
-            prefetch = refresh.prefetch;
-        }
         if ((refreshFlags & REFRESH_STATE) != 0) {
             currentLifeCycleState = refresh.lifeCycleState;
             lifeCyclePolicy = refresh.lifeCyclePolicy;

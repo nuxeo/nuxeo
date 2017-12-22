@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.types.ComplexType;
 
 /**
  * A low-level document from a {@link Session}.
@@ -299,15 +298,6 @@ public interface Document {
      * Reading data is done by {@link DocumentPart} because of per-proxy schemas.
      */
     void readDocumentPart(DocumentPart dp) throws PropertyException;
-
-    /**
-     * Reads a set of prefetched fields.
-     * <p>
-     * Reading data is done by {@link ComplexType} because of per-proxy schemas.
-     *
-     * @since 5.9.4
-     */
-    Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths) throws PropertyException;
 
     /**
      * Context passed to write operations to optionally record things to do at {@link #flush} time.

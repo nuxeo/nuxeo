@@ -39,4 +39,10 @@ public class TestNXStreamAuditEventsService extends TestNXAuditEventsService {
     public void testLogRetentionActiveChange() throws Exception {
         super.testLogRetentionActiveChange();
     }
+
+    @Override
+    public boolean extendedInfosComputedWithFullDocumentModel() {
+        return true;
+    }
+
 }
