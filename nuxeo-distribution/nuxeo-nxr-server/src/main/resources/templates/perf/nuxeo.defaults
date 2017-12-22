@@ -19,9 +19,6 @@ nuxeo.vcs.fulltext.search.disabled=true
 nuxeo.vcs.optimizations.acl.enabled=false
 nuxeo.vcs.optimizations.path.enabled=false
 
-# When in cluster mode use Redis PubSub invalidation
-repository.clustering.invalidation=pubsub
-
 # Do not use Redis for directory cache
 nuxeo.cache.type=memory
 
