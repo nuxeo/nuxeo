@@ -61,24 +61,26 @@ public abstract class AbstractLongRunningListener implements PostCommitFiltering
         if (events instanceof ReconnectedEventBundleImpl) {
 
             boolean doContinue = false;
-            // do pre-processing and commit transaction
+
+            // do pre-processing in a transaction
+            // a new CoreSession will be open by ReconnectedEventBundleImpl
             ReconnectedEventBundleImpl preProcessBunle = new ReconnectedEventBundleImpl(events);
             try {
                 doContinue = handleEventPreprocessing(preProcessBunle, data);
             } finally {
-                TransactionHelper.commitOrRollbackTransaction();
                 preProcessBunle.disconnect();
             }
+
             if (!doContinue) {
                 return;
             }
 
             // do main-processing in a non transactional context
-            // a new CoreSession will be open by ReconnectedEventBundleImpl
+            TransactionHelper.commitOrRollbackTransaction();
             try {
                 doContinue = handleEventLongRunning(((ReconnectedEventBundleImpl) events).getEventNames(), data);
             } finally {
-                ((ReconnectedEventBundleImpl) events).disconnect();
+                TransactionHelper.startTransaction();
             }
 
             if (!doContinue) {
@@ -89,12 +91,12 @@ public abstract class AbstractLongRunningListener implements PostCommitFiltering
             // a new CoreSession will be open by ReconnectedEventBundleImpl
             ReconnectedEventBundleImpl postProcessEventBundle = new ReconnectedEventBundleImpl(events);
             try {
-                TransactionHelper.startTransaction();
                 handleEventPostprocessing(postProcessEventBundle, data);
             } finally {
-                TransactionHelper.commitOrRollbackTransaction();
                 postProcessEventBundle.disconnect();
             }
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         } else {
             log.error("Unable to execute long running listener, input EventBundle is not a ReconnectedEventBundle");
         }
