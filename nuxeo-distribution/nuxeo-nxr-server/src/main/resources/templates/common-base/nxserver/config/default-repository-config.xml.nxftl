@@ -17,11 +17,7 @@
         idleTimeoutMinutes="${nuxeo.vcs["idle-timeout-minutes"]}"
         activeTimeoutMinutes="${nuxeo.vcs["active-timeout-minutes"]}" />
       <clustering id="${repository.clustering.id}" enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
-<#if "${repository.clustering.invalidation}" == "pubsub">
       <clusterInvalidatorClass>org.nuxeo.ecm.core.storage.sql.VCSPubSubInvalidator</clusterInvalidatorClass>
-<#elseif "${repository.clustering.invalidation}" == "redis">
-      <clusterInvalidatorClass>org.nuxeo.ecm.core.redis.contribs.RedisClusterInvalidator</clusterInvalidatorClass>
-</#if>
       <noDDL>${nuxeo.vcs.noddl}</noDDL>
       <ddlMode>${nuxeo.vcs.ddlmode}</ddlMode>
       <aclOptimizations enabled="${nuxeo.vcs.optimizations.acl.enabled}"/>
