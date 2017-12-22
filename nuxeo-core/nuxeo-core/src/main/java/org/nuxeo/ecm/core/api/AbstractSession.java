@@ -2104,7 +2104,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         doc.followTransition(transition);
 
         // Construct a map holding meta information about the event.
-        Map<String, Serializable> eventOptions = new HashMap<String, Serializable>();
+        Map<String, Serializable> eventOptions = new HashMap<String, Serializable>(options);
         eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM, formerStateName);
         eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TO, doc.getLifeCycleState());
         eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION, transition);
