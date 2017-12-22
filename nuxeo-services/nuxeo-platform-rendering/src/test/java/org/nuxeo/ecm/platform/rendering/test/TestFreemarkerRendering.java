@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
-import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.FreemarkerMacro;
@@ -86,10 +85,6 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         documentPart.get("description").setValue("A descripton *with* wiki code and a WikiName");
         Blob blob = new URLBlob(TestFreemarkerRendering.class.getClassLoader().getResource("testdata/blob.wiki"));
         doc1.getPart("dublincore").get("content").setValue(blob);
-        // also add something prefetched (dm not loaded)
-        Prefetch prefetch = new Prefetch();
-        prefetch.put("filename", "file", "filename", "somefile");
-        doc1.prefetch = prefetch;
 
         DocumentModelImpl doc2 = new DocumentModelImpl("/root/folder/wiki2", "Test Doc 2", "File");
         doc2.addDataModel(new DataModelImpl("dublincore"));

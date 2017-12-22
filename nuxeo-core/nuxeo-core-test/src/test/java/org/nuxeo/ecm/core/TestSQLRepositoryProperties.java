@@ -224,14 +224,6 @@ public class TestSQLRepositoryProperties {
         }
     }
 
-    // NXP-2467
-    @Test
-    public void testCreationWithDefaultPrefetch() throws Exception {
-        DocumentModel doc = session.createDocumentModel("TestDocumentWithDefaultPrefetch");
-        doc.setPathInfo("/", "docwithDefaultPrefetch");
-        session.createDocument(doc);
-    }
-
     @Test
     public void testStringArray() throws Exception {
         assertNull(doc.getPropertyValue("tp:stringArray"));
@@ -313,7 +305,7 @@ public class TestSQLRepositoryProperties {
         nextTransaction();
         session = coreFeature.reopenCoreSession();
         doc = session.getDocument(doc.getRef());
-        assertTrue(Arrays.equals(values, (Object[]) doc.getPropertyValue("participants")));
+        assertEquals(Arrays.asList(values), (List<?>) doc.getPropertyValue("participants"));
     }
 
     @Test
@@ -970,85 +962,6 @@ public class TestSQLRepositoryProperties {
         assertEquals("foo/bar/0", canonXPath("foo/bar/gee[0]"));
         assertEquals("foo/0/bar/123/moo", canonXPath("foo/gee[0]/bar/baz[123]/moo"));
         assertEquals("foo/0/bar/*/moo", canonXPath("foo/gee[0]/bar/baz[*]/moo"));
-    }
-
-    @Test
-    public void testPrefetchDefault() throws Exception {
-        doc = session.createDocument(session.createDocumentModel("/", "doc2", "TestDocumentWithDefaultPrefetch"));
-        assertTrue(doc.isPrefetched("dc:title"));
-        assertTrue(doc.isPrefetched("dc:description"));
-        assertTrue(doc.isPrefetched("dc:created"));
-        assertTrue(doc.isPrefetched("dc:modified"));
-        assertTrue(doc.isPrefetched("dc:creator"));
-        assertTrue(doc.isPrefetched("dc:lastContributor"));
-        assertTrue(doc.isPrefetched("icon"));
-        assertTrue(doc.isPrefetched("dublincore", "title"));
-        assertTrue(doc.isPrefetched("common", "icon"));
-        assertFalse(doc.isPrefetched("dc:contributors"));
-        assertNull(doc.getPropertyValue("dc:title"));
-        assertNull(doc.getProperty("dublincore", "title"));
-
-        doc.setPropertyValue("dc:title", "foo");
-        assertFalse(doc.isPrefetched("dc:title"));
-        assertFalse(doc.isPrefetched("dublincore", "title"));
-        assertEquals("foo", doc.getPropertyValue("dc:title"));
-        assertEquals("foo", doc.getProperty("dublincore", "title"));
-
-        // set using schema + name
-        Calendar cal = Calendar.getInstance();
-        doc.setProperty("dublincore", "modified", cal);
-        assertFalse(doc.isPrefetched("dc:modified"));
-        assertFalse(doc.isPrefetched("dublincore", "modified"));
-        assertEquals(cal, doc.getPropertyValue("dc:modified"));
-        assertEquals(cal, doc.getProperty("dublincore", "modified"));
-
-        // with no schema prefix
-        doc.setPropertyValue("icon", "myicon");
-        assertFalse(doc.isPrefetched("icon"));
-        assertFalse(doc.isPrefetched("common", "icon"));
-        assertEquals("myicon", doc.getPropertyValue("icon"));
-        assertEquals("myicon", doc.getProperty("common", "icon"));
-    }
-
-    @Test
-    public void testPrefetchComplexProperty() throws Exception {
-        doc = session.createDocumentModel("/", "doc2", "MyDocType");
-
-        doc.setPropertyValue("book:author/pJob", "somejob");
-        doc.setPropertyValue("dc:subjects", new String[] { "bar" });
-        doc.setPropertyValue("participants", new String[] { "bar" });
-        Blob blob = Blobs.createBlob("foo");
-        blob.setFilename("fooname");
-        LinkedList<Object> blobs = new LinkedList<>();
-        blobs.add(blob);
-        doc.setPropertyValue("attachments", blobs);
-
-        doc = session.createDocument(doc);
-        doc = session.getDocument(doc.getRef());
-
-        assertTrue(doc.isPrefetched("dc:title"));
-        // assertTrue(doc.isPrefetched("dc:subjects"));
-        // assertTrue(doc.isPrefetched("attachments/0/name"));
-        assertTrue(doc.isPrefetched("book:author/pJob"));
-        // assertEquals("fooname", doc.getPropertyValue("attachments/0/name"));
-        assertEquals("somejob", doc.getPropertyValue("book:author/pJob"));
-
-        Serializable participants = doc.getPropertyValue("participants");
-        assertNotNull(participants);
-        assertTrue(participants.getClass().getName(), participants instanceof String[]);
-        String[] array = (String[]) participants;
-        assertEquals(Arrays.asList("bar"), Arrays.asList(array));
-        // array mutability
-        array[0] = "moo";
-        // different mutable array returned each time
-        participants = doc.getPropertyValue("participants");
-        array = (String[]) participants;
-        assertEquals(Arrays.asList("bar"), Arrays.asList(array));
-
-        // set another prop in same schema
-        doc.setPropertyValue("book:author/pAge", null);
-        // not prefetched anymore as schema was loaded
-        assertFalse(doc.isPrefetched("book:author/pJob"));
     }
 
     @Test

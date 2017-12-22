@@ -58,6 +58,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.audit.TestNXAuditEventsService.MyInit;
 import org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData;
+import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
@@ -124,6 +125,10 @@ public class TestNXAuditEventsService {
 
     public void waitForAsyncCompletion() throws InterruptedException {
         txFeature.nextTransaction(20,  TimeUnit.SECONDS);
+    }
+
+    public boolean extendedInfosComputedWithFullDocumentModel() {
+        return false;
     }
 
     @Test
@@ -292,8 +297,18 @@ public class TestNXAuditEventsService {
         filterMap.put("eventId", filterByDocRemoved);
         entries = serviceUnderTest.getLogEntriesFor(model.getId(), filterMap, true);
         assertEquals(1, entries.size());
-        assertNull(entries.get(0).getExtendedInfos().get("title"));
-        assertEquals("/", entries.get(0).getExtendedInfos().get("parentPath").getSerializableValue());
+        Map<String, ExtendedInfo> infos = entries.get(0).getExtendedInfos();
+        assertEquals("/", infos.get("parentPath").getSerializableValue());
+        // For the original audit implementation using a post-commit event listeners,
+        // we only have a DeletedDocumentModel so no title available.
+        // For the Stream-based audit implementation, extended infos are computed early with
+        // the full DocumentModel so we have actual values.
+        ExtendedInfo titleInfo = infos.get("title");
+        if (extendedInfosComputedWithFullDocumentModel()) {
+            assertEquals("huum", titleInfo.getSerializableValue());
+        } else {
+            assertNull(titleInfo);
+        }
     }
 
     protected Set<ObjectName> doQuery(String name) {

@@ -173,12 +173,6 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths)
-            throws PropertyException {
-        return readPrefetch(getNode(), complexType, xpaths);
-    }
-
-    @Override
     public boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext) throws PropertyException {
         boolean changed = writeComplexProperty(getNode(), (ComplexProperty) dp, writeContext);
         clearDirtyFlags(dp);

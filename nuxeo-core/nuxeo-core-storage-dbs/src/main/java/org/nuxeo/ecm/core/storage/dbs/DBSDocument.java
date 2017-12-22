@@ -54,7 +54,6 @@ import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -975,13 +974,6 @@ public class DBSDocument extends BaseDocument<State> {
             return KEY_MINOR_VERSION;
         }
         return name;
-    }
-
-    @Override
-    public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths)
-            throws PropertyException {
-        DBSDocumentState docState = getStateOrTarget(complexType);
-        return readPrefetch(docState.getState(), complexType, xpaths);
     }
 
     @Override

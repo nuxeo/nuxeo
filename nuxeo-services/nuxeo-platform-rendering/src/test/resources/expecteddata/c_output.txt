@@ -13,7 +13,6 @@ BEGIN
  The default content goes here [ Default Block Content2
  ]
  a2: Derived Block in c. Document: The dublincore title for doc1
- Prefetched filename: somefile
  <div class='doc'>
 <h1><a name="heading_1">Heading 1</a></h1>
 <p>Here is some wiki in the <strong>document</strong> content.<br />See <a href="http://jira.nuxeo.org/browse/NXP-1256">NXP-1256</a></p>

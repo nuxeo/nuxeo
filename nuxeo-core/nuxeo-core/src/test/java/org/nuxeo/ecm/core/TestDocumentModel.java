@@ -36,7 +36,6 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestDocumentModel extends NXRuntimeTestCase {
@@ -102,7 +101,6 @@ public class TestDocumentModel extends NXRuntimeTestCase {
     @Test
     public void testSerialization() throws IOException, ClassNotFoundException {
         DocumentModelImpl original = new DocumentModelImpl("my type");
-        original.setPrefetch(new Prefetch());
         original.attach("somesessionid");
         // check it's attached
         checkAttached(original, true);

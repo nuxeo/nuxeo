@@ -17,7 +17,6 @@
       <schema name="common" />
       <schema name="dublincore"/>
       <schema name="testquery-schema" />
-      <prefetch>common.icon</prefetch>
     </doctype>
     <doctype name="TestDoc" extends="Document">
       <schema name="testschema" />

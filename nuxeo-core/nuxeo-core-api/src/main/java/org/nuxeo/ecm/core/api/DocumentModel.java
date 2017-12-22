@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.Prefetch;
 
 /**
  * The document model is a serializable representation of a core document.
@@ -50,6 +49,8 @@ public interface DocumentModel extends Serializable {
 
     int REFRESH_STATE = 1; // "small" state (life cycle, lock, versioning)
 
+    /** @deprecated since 10.1, has no effect. */
+    @Deprecated
     int REFRESH_PREFETCH = 4;
 
     int REFRESH_ACP_IF_LOADED = 8; // refresh now only if already loaded
@@ -64,13 +65,13 @@ public interface DocumentModel extends Serializable {
 
     int REFRESH_CONTENT = 256; // refresh now
 
-    int REFRESH_IF_LOADED = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP_IF_LOADED | REFRESH_CONTENT_IF_LOADED;
+    int REFRESH_IF_LOADED = REFRESH_STATE | REFRESH_ACP_IF_LOADED | REFRESH_CONTENT_IF_LOADED;
 
-    int REFRESH_LAZY = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP_LAZY | REFRESH_CONTENT_LAZY;
+    int REFRESH_LAZY = REFRESH_STATE | REFRESH_ACP_LAZY | REFRESH_CONTENT_LAZY;
 
-    int REFRESH_ALL = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP | REFRESH_CONTENT;
+    int REFRESH_ALL = REFRESH_STATE | REFRESH_ACP | REFRESH_CONTENT;
 
-    int REFRESH_DEFAULT = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP_IF_LOADED | REFRESH_CONTENT_LAZY;
+    int REFRESH_DEFAULT = REFRESH_STATE | REFRESH_ACP_IF_LOADED | REFRESH_CONTENT_LAZY;
 
     /**
      * Gets the document type object.
@@ -739,7 +740,9 @@ public interface DocumentModel extends Serializable {
      * @param xpath the property xpath
      * @return {@code true} if it is prefetched
      * @since 5.5
+     * @deprecated since 10.1, will always return {@code false}
      */
+    @Deprecated
     boolean isPrefetched(String xpath);
 
     /**
@@ -749,7 +752,9 @@ public interface DocumentModel extends Serializable {
      * @param name the property name
      * @return {@code true} if it is prefetched
      * @since 5.5
+     * @deprecated since 10.1, will always return {@code false}
      */
+    @Deprecated
     boolean isPrefetched(String schemaName, String name);
 
     /**
@@ -853,14 +858,12 @@ public interface DocumentModel extends Serializable {
      * <ul>
      * <li>document life cycle
      * <li>document lock state, acp if required
-     * <li>document prefetch map
      * <li>acp if required - otherwise acp info will be cleared so that it will be refetched in lazy way
      * <li>document parts if required - otherwise parts data will be removed to be refreshed lazy
      * </ul>
      * The refresh flags are:
      * <ul>
      * <li>{@link DocumentModel#REFRESH_STATE}
-     * <li>{@link DocumentModel#REFRESH_PREFETCH}
      * <li>{@link DocumentModel#REFRESH_ACP_IF_LOADED}
      * <li>{@link DocumentModel#REFRESH_ACP_LAZY}
      * <li>{@link DocumentModel#REFRESH_ACP}
@@ -901,8 +904,6 @@ public interface DocumentModel extends Serializable {
         public String checkinComment;
 
         public ACP acp;
-
-        public Prefetch prefetch;
 
         public Set<String> instanceFacets;
 

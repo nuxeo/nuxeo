@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -36,7 +35,6 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
@@ -179,16 +177,6 @@ public class SQLDocumentProxy implements SQLDocument {
             proxy.readDocumentPart(dp);
         } else {
             target.readDocumentPart(dp);
-        }
-    }
-
-    @Override
-    public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths)
-            throws PropertyException {
-        if (isSchemaForProxy(complexType.getName())) {
-            return proxy.readPrefetch(complexType, xpaths);
-        } else {
-            return target.readPrefetch(complexType, xpaths);
         }
     }
 

@@ -357,7 +357,8 @@ public class TestDublinCoreStorage {
         public void run() {
             folder = session.createDocumentModel("/", "testfolder1", "Folder");
             folder = session.createDocument(folder);
-            session.saveDocument(folder);
+            folder = session.saveDocument(folder);
+            folder.detach(true);
         }
 
         public DocumentModel getFolder() {
