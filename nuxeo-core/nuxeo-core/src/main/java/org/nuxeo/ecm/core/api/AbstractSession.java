@@ -903,7 +903,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             }
         }
         if (sorter != null) {
-            Collections.sort(docs, sorter);
+            docs.sort(sorter);
         }
         return docs;
     }
@@ -991,7 +991,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             }
         }
         if (sorter != null) {
-            Collections.sort(docs, sorter);
+            docs.sort(sorter);
         }
         return docs;
     }
@@ -1023,7 +1023,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             }
         }
         if (sorter != null) {
-            Collections.sort(docs, sorter);
+            docs.sort(sorter);
         }
         return docs;
     }
@@ -1134,14 +1134,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     protected long getMaxResults() {
         if (maxResults == null) {
-            maxResults = Long.parseLong(Framework.getProperty(MAX_RESULTS_PROPERTY, DEFAULT_MAX_RESULTS));
+            maxResults = Long.valueOf(Framework.getProperty(MAX_RESULTS_PROPERTY, DEFAULT_MAX_RESULTS));
         }
         return maxResults;
     }
 
     protected boolean isLimitedResults() {
         if (limitedResults == null) {
-            limitedResults = Boolean.parseBoolean(Framework.getProperty(LIMIT_RESULTS_PROPERTY));
+            limitedResults = Boolean.valueOf(Framework.getProperty(LIMIT_RESULTS_PROPERTY));
         }
         return limitedResults;
     }
@@ -2093,12 +2093,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         // Construct a map holding meta information about the event.
         Map<String, Serializable> eventOptions = new HashMap<>();
-        eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM, formerStateName);
-        eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TO, doc.getLifeCycleState());
-        eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION, transition);
+        eventOptions.put(LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM, formerStateName);
+        eventOptions.put(LifeCycleConstants.TRANSTION_EVENT_OPTION_TO, doc.getLifeCycleState());
+        eventOptions.put(LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION, transition);
         String comment = (String) options.get("comment");
         DocumentModel docModel = readModel(doc);
-        notifyEvent(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT, docModel, eventOptions,
+        notifyEvent(LifeCycleConstants.TRANSITION_EVENT, docModel, eventOptions,
                 DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY, comment, true, false);
         if (!docModel.isImmutable()) {
             writeModel(doc, docModel);
