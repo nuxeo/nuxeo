@@ -20,11 +20,10 @@ package org.nuxeo.ecm.core.event.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -73,7 +72,7 @@ public class ShallowDocumentModel implements DocumentModel {
 
     private final boolean isImmutable;
 
-    private final ScopedMap contextData;
+    private final Map<String, Serializable> contextData;
 
     private final Set<String> facets;
 
@@ -89,7 +88,7 @@ public class ShallowDocumentModel implements DocumentModel {
         isVersion = doc.isVersion();
         isProxy = doc.isProxy();
         isImmutable = doc.isImmutable();
-        contextData = new ScopedMap(doc.getContextData());
+        contextData = new HashMap<>(doc.getContextData());
         facets = doc.getFacets();
         if (doc.isLifeCycleLoaded()) {
             lifecycleState = doc.getCurrentLifeCycleState();
@@ -110,7 +109,7 @@ public class ShallowDocumentModel implements DocumentModel {
         this.isVersion = isVersion;
         this.isProxy = isProxy;
         this.isImmutable = isImmutable;
-        this.contextData = new ScopedMap(contextData);
+        this.contextData = new HashMap<>(contextData);
         this.facets = facets;
         this.lifecycleState = lifecycleState;
     }
@@ -222,13 +221,8 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public ScopedMap getContextData() {
+    public Map<String, Serializable> getContextData() {
         return contextData;
-    }
-
-    @Override
-    public Serializable getContextData(ScopeType scope, String key) {
-        return getContextData(key);
     }
 
     @Override
@@ -446,11 +440,6 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public void putContextData(String key, Serializable value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void putContextData(ScopeType scope, String key, Serializable value) {
         throw new UnsupportedOperationException();
     }
 

@@ -42,8 +42,6 @@ import javax.transaction.Transaction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.PrimitiveArrays;
-import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -186,7 +184,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     protected String sourceId;
 
-    protected ScopedMap contextData = new ScopedMap();
+    protected Map<String, Serializable> contextData = new HashMap<>();
 
     private String detachedVersionLabel;
 
@@ -952,18 +950,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
-    public ScopedMap getContextData() {
+    public Map<String, Serializable> getContextData() {
         return contextData;
-    }
-
-    @Override
-    public Serializable getContextData(ScopeType scope, String key) {
-        return contextData.get(key);
-    }
-
-    @Override
-    public void putContextData(ScopeType scope, String key, Serializable value) {
-        contextData.put(key, value);
     }
 
     @Override
@@ -1328,7 +1316,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         // they are not
         // immutable
         // context data is keeping contextual info so it is reset
-        dm.contextData = new ScopedMap();
+        dm.contextData = new HashMap<>();
 
         // copy parts
         dm.dataModels = new HashMap<>();
