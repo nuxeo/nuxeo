@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -70,7 +68,7 @@ public class SimpleDocumentModel implements DocumentModel {
 
     protected Set<String> schemas;
 
-    protected final ScopedMap contextData = new ScopedMap();
+    protected final Map<String, Serializable> contextData = new HashMap<>();
 
     protected Path path;
 
@@ -157,18 +155,8 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public ScopedMap getContextData() {
+    public Map<String, Serializable> getContextData() {
         return contextData;
-    }
-
-    @Override
-    public Serializable getContextData(ScopeType scope, String key) {
-        return getContextData(key);
-    }
-
-    @Override
-    public void putContextData(ScopeType scope, String key, Serializable value) {
-        putContextData(key, value);
     }
 
     @Override

@@ -23,9 +23,9 @@ import static org.mockito.Mockito.when;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
-import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.NuxeoGroupImpl;
@@ -77,7 +77,7 @@ public class BaseUserGroupMock {
         when(group.getId()).thenReturn(groupName);
 
         // Just for BaseSession#isReadOnly to work
-        when(group.getContextData()).thenReturn(new ScopedMap());
+        when(group.getContextData()).thenReturn(new HashMap<>());
 
         return group;
     }
@@ -91,7 +91,7 @@ public class BaseUserGroupMock {
         when(user.getId()).thenReturn(username);
 
         // Just for BaseSession#isReadOnly to work
-        when(user.getContextData()).thenReturn(new ScopedMap());
+        when(user.getContextData()).thenReturn(new HashMap<>());
 
         return user;
     }

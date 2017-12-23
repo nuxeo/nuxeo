@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -648,32 +646,10 @@ public interface DocumentModel extends Serializable {
 
     /**
      * Gets the context data associated to this document.
-     * <p>
-     * NOTE since 9.1 the {@link ScopedMap} return type is deprecated, use {@code java.util.Map<String, Serializable>}
-     * instead
      *
      * @return a map of context data
      */
-    ScopedMap getContextData();
-
-    /**
-     * Gets the context data associated to this document for given scope and given key.
-     *
-     * @deprecated since 9.1, scope is unused, use {@link #getContextData(String)} instead
-     */
-    @Deprecated
-    Serializable getContextData(ScopeType scope, String key);
-
-    /**
-     * Adds mapping to the context data for given scope.
-     * <p>
-     * Context data is like a request map set on the document model to pass additional information to components
-     * interacting with the document model (events processing for instance).
-     *
-     * @deprecated since 9.1, scope is unused, use {@link #putContextData(String, Serializable)} instead
-     */
-    @Deprecated
-    void putContextData(ScopeType scope, String key, Serializable value);
+    Map<String, Serializable> getContextData();
 
     /**
      * Gets the context data using the default scope.
