@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,8 +116,8 @@ public class NuxeoCmisServiceFactoryManager extends DefaultComponent {
         }
         NuxeoCmisServiceFactory nuxeoCmisServiceFactory;
         try {
-            nuxeoCmisServiceFactory = factoryClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            nuxeoCmisServiceFactory = factoryClass.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Cannot instantiate nuxeoCmisServiceFactory: " + factoryClass.getName(), e);
         }
 

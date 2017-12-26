@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -41,12 +40,12 @@ public class NuxeoRepositories extends DefaultComponent {
     protected Map<String, NuxeoRepository> repositories;
 
     @Override
-    public void activate(ComponentContext context) {
-        repositories = new ConcurrentHashMap<String, NuxeoRepository>();
+    public void start(ComponentContext context) {
+        repositories = new ConcurrentHashMap<>();
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
+    public void stop(ComponentContext context) {
         repositories = null;
     }
 
@@ -57,7 +56,7 @@ public class NuxeoRepositories extends DefaultComponent {
 
     public List<NuxeoRepository> getRepositories() {
         initRepositories();
-        return new ArrayList<NuxeoRepository>(repositories.values());
+        return new ArrayList<>(repositories.values());
     }
 
     protected void initRepositories() {
