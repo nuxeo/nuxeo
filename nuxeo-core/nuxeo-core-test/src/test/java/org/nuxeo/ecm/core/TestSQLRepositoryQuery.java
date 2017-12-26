@@ -63,6 +63,8 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
+import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -467,6 +469,16 @@ public class TestSQLRepositoryQuery {
 
         dml = session.query("SELECT * FROM File WHERE dc:subjects/* NOT LIKE '%oo%'");
         assertEquals(notMatchesNull() ? 2 : 0, dml.size());
+
+        // with a scalar list defined by a xs:complexType (and not a xs:simpleType)
+        DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");
+        Property prop = doc.getProperty("my:participants");
+        assertTrue(prop instanceof ListProperty);
+        prop.setValue(Arrays.asList("foo", "bar"));
+        doc = session.createDocument(doc);
+        session.save();
+        dml = session.query("SELECT * FROM MyDocType WHERE my:participants/* = 'foo'");
+        assertEquals(1, dml.size());
     }
 
     @Test
