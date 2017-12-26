@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.hsts.config">
+
+<#if nuxeo.server.https.port != "0" && nuxeo.server.hsts.enabled == "true">
+
+  <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="responseHeaders">
+    <header name="Strict-Transport-Security">max-age=${nuxeo.server.hsts.maxage}<#if nuxeo.server.hsts.includesubdomains == "true">; includeSubDomains</#if><#if nuxeo.server.hsts.preload == "true">; preload</#if></header>
+  </extension>
+
+</#if>
+
+</component>

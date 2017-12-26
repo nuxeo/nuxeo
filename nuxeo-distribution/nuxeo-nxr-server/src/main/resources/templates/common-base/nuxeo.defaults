@@ -14,6 +14,11 @@ nuxeo.server.tomcat_error.show_report=false
 nuxeo.server.tomcat_error.show_server_info=false
 nuxeo.server.jvmRoute=nuxeo
 NuxeoContainer.autoactivation=false
+# HSTS configuration is applied when HTTPS is enabled, unless the following property is false
+nuxeo.server.hsts.enabled=true
+nuxeo.server.hsts.maxage=2592000
+nuxeo.server.hsts.includesubdomains=false
+nuxeo.server.hsts.preload=false
 
 # GlobalNamingResources datasource (not visible from webapp)
 nuxeo.db.xaMode=false
