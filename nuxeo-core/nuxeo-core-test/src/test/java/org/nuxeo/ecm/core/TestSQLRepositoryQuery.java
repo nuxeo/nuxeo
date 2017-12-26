@@ -424,6 +424,14 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
         dml = session.query("SELECT * FROM File WHERE dc:subjects/* NOT LIKE '%oo%'");
         assertEquals(0, dml.size());
+
+        // with a scalar list defined by a xs:complexType (and not a xs:simpleType)
+        DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");
+        doc.setPropertyValue("my:participants", (Serializable) Arrays.asList("foo", "bar"));
+        doc = session.createDocument(doc);
+        session.save();
+        dml = session.query("SELECT * FROM MyDocType WHERE my:participants/* = 'foo'");
+        assertEquals(1, dml.size());
     }
 
     @Test
