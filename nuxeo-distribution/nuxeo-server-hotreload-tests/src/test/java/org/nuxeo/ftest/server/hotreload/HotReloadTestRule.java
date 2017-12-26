@@ -39,6 +39,9 @@ import org.nuxeo.functionaltests.RestHelper;
 
 /**
  * This Rule gives mechanism for hot reload tests.
+ * <p />
+ * This rule will deploy the dev bundle located under src/test/resources/${YOUR_TEST_CLASS_NAME}/${YOUR_TEST_NAME} (if
+ * exists) before the test starts, and undeploy it when test finish.
  * 
  * @since 9.3
  */
