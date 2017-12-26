@@ -657,7 +657,7 @@ public class MongoDBQueryBuilder {
             split[0] = field.getName().getPrefixedName();
             // MongoDB embedded field syntax uses . separator
             Type type = field.getType();
-            boolean isArray = type instanceof ListType && ((ListType) type).isArray();
+            boolean isArray = type instanceof ListType && ((ListType) type).isScalarList();
             boolean isBoolean = type instanceof BooleanType;
             if (isArray && split[split.length - 1].startsWith("*")) {
                 split = Arrays.copyOfRange(split, 0, split.length - 1);

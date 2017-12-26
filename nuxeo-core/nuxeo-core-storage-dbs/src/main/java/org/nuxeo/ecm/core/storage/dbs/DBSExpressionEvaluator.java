@@ -152,7 +152,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
             }
             prop = field.getName().getPrefixedName();
             Type type = field.getType();
-            isArray = type instanceof ListType && ((ListType) type).isArray();
+            isArray = type instanceof ListType && ((ListType) type).isScalarList();
             isBoolean = type instanceof BooleanType;
             isTrueOrNullBoolean = false;
             if (isArray && split[split.length - 1].startsWith("*")) {
