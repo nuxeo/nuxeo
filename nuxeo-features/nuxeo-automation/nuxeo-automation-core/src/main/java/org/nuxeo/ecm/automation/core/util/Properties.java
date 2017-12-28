@@ -27,12 +27,12 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Objects;
 
 /**
@@ -94,7 +94,7 @@ public class Properties extends HashMap<String, String> {
      * @since 5.7.3
      */
     public Properties(JsonNode node) throws IOException {
-        Iterator<Entry<String, JsonNode>> fields = node.getFields();
+        Iterator<Entry<String, JsonNode>> fields = node.fields();
         ObjectMapper om = new ObjectMapper();
         while (fields.hasNext()) {
             Entry<String, JsonNode> entry = fields.next();
@@ -113,7 +113,7 @@ public class Properties extends HashMap<String, String> {
      */
     private String extractValueFromNode(JsonNode node, ObjectMapper om) throws IOException {
         if (!node.isNull()) {
-            return node.isContainerNode() ? om.writeValueAsString(node) : node.getValueAsText();
+            return node.isContainerNode() ? om.writeValueAsString(node) : node.asText();
         } else {
             return null;
         }

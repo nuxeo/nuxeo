@@ -26,13 +26,13 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint.Description;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.thoughtworks.xstream.io.json.JsonWriter;
 
 /**

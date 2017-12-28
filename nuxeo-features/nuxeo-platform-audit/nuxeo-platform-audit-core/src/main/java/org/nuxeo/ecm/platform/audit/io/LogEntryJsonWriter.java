@@ -40,7 +40,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -49,6 +48,8 @@ import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * Convert {@link LogEntry} to Json.

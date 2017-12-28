@@ -37,7 +37,6 @@ import java.util.GregorianCalendar;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.time.FastDateFormat;
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -53,6 +52,8 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.user.center.profile.UserProfileService;
 import org.nuxeo.runtime.services.config.ConfigurationService;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>

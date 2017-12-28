@@ -26,10 +26,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 8.3
@@ -60,12 +61,12 @@ public class SavedSearchRequestReader extends EntityJsonReader<SavedSearchReques
         Map<String, String> params = new HashMap<>();
         ObjectMapper mapper = new ObjectMapper();
         if (queryParamsNode != null) {
-            Iterator<Map.Entry<String, JsonNode>> fields = queryParamsNode.getFields();
+            Iterator<Map.Entry<String, JsonNode>> fields = queryParamsNode.fields();
             while (fields.hasNext()) {
                 Map.Entry<String, JsonNode> fieldEntry = fields.next();
                 params.put(
                         fieldEntry.getKey(),
-                        fieldEntry.getValue().isTextual() ? fieldEntry.getValue().getTextValue()
+                        fieldEntry.getValue().isTextual() ? fieldEntry.getValue().textValue()
                                 : mapper.writeValueAsString(fieldEntry.getValue()));
             }
         }
@@ -78,9 +79,9 @@ public class SavedSearchRequestReader extends EntityJsonReader<SavedSearchReques
         JsonNode elNode = jn.get(elName);
         if (elNode != null && !elNode.isNull()) {
             if (elNode.isNumber()) {
-                return elNode.getLongValue();
+                return elNode.longValue();
             } else if (elNode.isTextual()) {
-                return Long.valueOf(elNode.getTextValue());
+                return Long.valueOf(elNode.textValue());
             } else {
                 return null;
             }

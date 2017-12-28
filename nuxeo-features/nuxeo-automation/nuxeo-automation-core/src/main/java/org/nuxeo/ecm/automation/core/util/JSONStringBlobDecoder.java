@@ -20,9 +20,10 @@
 
 package org.nuxeo.ecm.automation.core.util;
 
-import org.codehaus.jackson.node.ObjectNode;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Very basic implementation of a Blob decoder Only usable for StringBlobs
@@ -37,30 +38,30 @@ public class JSONStringBlobDecoder implements JSONBlobDecoder {
 
         String filename = null;
         if (jsonObject.has("filename")) {
-            filename = jsonObject.get("filename").getTextValue();
+            filename = jsonObject.get("filename").textValue();
         }
         if (filename == null && jsonObject.has("name")) {
-            filename = jsonObject.get("name").getTextValue();
+            filename = jsonObject.get("name").textValue();
         }
         String encoding = "UTF-8";
         if (jsonObject.has("encoding")) {
-            encoding = jsonObject.get("encoding").getTextValue();
+            encoding = jsonObject.get("encoding").textValue();
         }
 
         String mimetype = "text/plain";
         if (jsonObject.has("mime-type")) {
-            mimetype = jsonObject.get("mime-type").getTextValue();
+            mimetype = jsonObject.get("mime-type").textValue();
         }
         String data = null;
         if (jsonObject.has("data")) {
-            data = jsonObject.get("data").getTextValue();
+            data = jsonObject.get("data").textValue();
             // try to avoid the bug NXP-18488: data contains the blob url
             // and must not be recognized as a new blob content
             if (data.startsWith("http")) {
                 data = null;
             }
         } else if (jsonObject.has("content")) {
-            data = jsonObject.get("content").getTextValue();
+            data = jsonObject.get("content").textValue();
         }
         if (data == null) {
             return null;

@@ -20,11 +20,12 @@ package org.nuxeo.ecm.automation.server.test.json;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonParser;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodec;
 import org.nuxeo.ecm.automation.server.test.json.JSONOperationWithArrays.SimplePojo;
 import org.nuxeo.ecm.core.api.CoreSession;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 
 public class SimplePojoObjectCodec extends ObjectCodec<SimplePojo> {
 

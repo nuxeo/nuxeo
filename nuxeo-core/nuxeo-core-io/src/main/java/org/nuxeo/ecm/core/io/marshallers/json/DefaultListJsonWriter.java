@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
@@ -38,6 +37,8 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.api.QuickFilter;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * Base class to convert {@link List} as json.

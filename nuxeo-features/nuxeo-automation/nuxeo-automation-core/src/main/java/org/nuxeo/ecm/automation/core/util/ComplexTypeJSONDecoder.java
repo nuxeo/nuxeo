@@ -28,11 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -40,6 +35,12 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Helper to handle Complex types decoding from a JSON encoded String entries of a property file
@@ -76,11 +77,11 @@ public class ComplexTypeJSONDecoder {
             } else if (node.isObject()) {
                 result.add(decode((ComplexType) currentObjectType, (ObjectNode) node));
             } else if (node.isTextual()) {
-                result.add(node.getTextValue());
+                result.add(node.textValue());
             } else if (node.isNumber()) {
-                result.add(node.getNumberValue());
+                result.add(node.numberValue());
             } else if (node.isBoolean()) {
-                result.add(node.getBooleanValue());
+                result.add(node.booleanValue());
             }
         }
         return result;
@@ -97,13 +98,13 @@ public class ComplexTypeJSONDecoder {
 
         String jsonType = "";
         if (jsonObject.has("type")) {
-            jsonType = jsonObject.get("type").getTextValue();
+            jsonType = jsonObject.get("type").textValue();
         }
         if (jsonType.equals("blob") || ct.getName().equals("content")) {
             return getBlobFromJSON(jsonObject);
         }
 
-        Iterator<Map.Entry<String, JsonNode>> it = jsonObject.getFields();
+        Iterator<Map.Entry<String, JsonNode>> it = jsonObject.fields();
 
         while (it.hasNext()) {
             Map.Entry<String, JsonNode> nodeEntry = it.next();
@@ -115,9 +116,9 @@ public class ComplexTypeJSONDecoder {
                     Object value;
                     if (fieldType == DateType.INSTANCE && nodeEntry.getValue().isIntegralNumber()) {
                         value = Calendar.getInstance();
-                        ((Calendar) value).setTimeInMillis(nodeEntry.getValue().getValueAsLong());
+                        ((Calendar) value).setTimeInMillis(nodeEntry.getValue().asLong());
                     } else {
-                        value = ((SimpleType) fieldType).decode(nodeEntry.getValue().getValueAsText());
+                        value = ((SimpleType) fieldType).decode(nodeEntry.getValue().asText());
                     }
                     result.put(nodeEntry.getKey(), value);
                 } else {

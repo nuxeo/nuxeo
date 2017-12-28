@@ -34,8 +34,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.api.model.impl.PropertyFactory;
@@ -54,6 +52,9 @@ import org.nuxeo.ecm.platform.query.core.BucketRange;
 import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 import org.nuxeo.elasticsearch.aggregate.SignificantTermAggregate;
 import org.nuxeo.elasticsearch.aggregate.TermAggregate;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * @since 8.4

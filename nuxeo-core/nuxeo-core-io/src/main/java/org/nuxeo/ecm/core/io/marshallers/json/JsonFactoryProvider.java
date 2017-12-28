@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Provides a {@link JsonFactory} with {@link ObjectMapper}.

@@ -23,8 +23,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -42,6 +40,9 @@ import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+
 /**
  * Helper to marshaling properties into JSON.
  *
@@ -51,35 +52,35 @@ public class JSONPropertyWriter {
 
     /**
      * The date time format.
-     * 
+     *
      * @since 9.1
      */
     protected DateTimeFormat dateTimeFormat = DateTimeFormat.W3C;
 
     /**
      * The baseUrl that can be used to locate blob content.
-     * 
+     *
      * @since 9.1
      */
     protected String filesBaseUrl;
 
     /**
      * The prefix to append to field name.
-     * 
+     *
      * @since 9.1
      */
     protected String prefix;
 
     /**
      * Whether or not this writer write null values.
-     * 
+     *
      * @since 9.1
      */
     protected boolean writeNull = true;
 
     /**
      * Whether or not this writer write empty list or object.
-     * 
+     *
      * @since 9.1
      */
     protected boolean writeEmpty = true;

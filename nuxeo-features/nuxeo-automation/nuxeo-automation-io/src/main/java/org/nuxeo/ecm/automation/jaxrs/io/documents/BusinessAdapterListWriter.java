@@ -20,11 +20,12 @@ package org.nuxeo.ecm.automation.jaxrs.io.documents;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityListWriter;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * @since 5.8

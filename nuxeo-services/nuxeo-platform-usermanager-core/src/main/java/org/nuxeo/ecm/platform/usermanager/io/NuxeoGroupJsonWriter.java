@@ -31,7 +31,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -42,7 +41,7 @@ import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
-import com.thoughtworks.xstream.io.json.JsonWriter;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * Convert {@link NuxeoGroup} to Json.

@@ -30,7 +30,6 @@ import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
-import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
@@ -55,6 +54,8 @@ import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Convert Json as {@link List<Property>}.
@@ -91,7 +92,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
     @Override
     public List<Property> read(JsonNode jn) throws IOException {
         List<Property> properties = new ArrayList<>();
-        Iterator<Entry<String, JsonNode>> propertyNodes = jn.getFields();
+        Iterator<Entry<String, JsonNode>> propertyNodes = jn.fields();
         while (propertyNodes.hasNext()) {
             Entry<String, JsonNode> propertyNode = propertyNodes.next();
             String propertyName = propertyNode.getKey();
@@ -145,7 +146,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
     private void fillScalarProperty(Property property, JsonNode jn) throws IOException {
         if ((property instanceof ArrayProperty) && jn.isArray()) {
             List<Object> values = new ArrayList<>();
-            Iterator<JsonNode> it = jn.getElements();
+            Iterator<JsonNode> it = jn.elements();
             JsonNode item;
             Type fieldType = ((ListType) property.getType()).getFieldType();
             while (it.hasNext()) {
@@ -217,17 +218,17 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
         if (jn.isNull()) {
             value = null;
         } else if (type instanceof BooleanType) {
-            value = jn.getValueAsBoolean();
+            value = jn.asBoolean();
         } else if (type instanceof LongType) {
-            value = jn.getValueAsLong();
+            value = jn.asLong();
         } else if (type instanceof DoubleType) {
-            value = jn.getValueAsDouble();
+            value = jn.asDouble();
         } else if (type instanceof IntegerType) {
-            value = jn.getValueAsInt();
+            value = jn.asInt();
         } else if (type instanceof BinaryType) {
-            value = jn.getBinaryValue();
+            value = jn.binaryValue();
         } else {
-            value = type.decode(jn.getValueAsText());
+            value = type.decode(jn.asText());
         }
         return value;
     }
@@ -238,7 +239,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
             fillScalarProperty(property, jn);
         } else {
             JsonNode elNode;
-            Iterator<JsonNode> it = jn.getElements();
+            Iterator<JsonNode> it = jn.elements();
             while (it.hasNext()) {
                 elNode = it.next();
                 Property child = readProperty(property, listType.getField(), elNode);
@@ -249,7 +250,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
 
     private void fillComplexProperty(Property property, JsonNode jn) throws IOException {
         Entry<String, JsonNode> elNode;
-        Iterator<Entry<String, JsonNode>> it = jn.getFields();
+        Iterator<Entry<String, JsonNode>> it = jn.fields();
         ComplexProperty complexProperty = (ComplexProperty) property;
         ComplexType type = complexProperty.getType();
         while (it.hasNext()) {

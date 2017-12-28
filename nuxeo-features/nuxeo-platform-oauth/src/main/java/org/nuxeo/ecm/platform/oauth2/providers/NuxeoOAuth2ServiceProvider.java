@@ -28,7 +28,7 @@ import java.util.Map;
 
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson.JacksonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import org.apache.commons.lang.StringUtils;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
