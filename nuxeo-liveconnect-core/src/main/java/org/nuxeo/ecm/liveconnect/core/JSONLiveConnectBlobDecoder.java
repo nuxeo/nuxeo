@@ -21,13 +21,14 @@ package org.nuxeo.ecm.liveconnect.core;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.node.ObjectNode;
 import org.nuxeo.ecm.automation.core.util.JSONBlobDecoder;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @since 8.4
@@ -41,14 +42,14 @@ public class JSONLiveConnectBlobDecoder implements JSONBlobDecoder {
             return null;
         }
 
-        String providerId = jsonObject.get("providerId").getTextValue();
+        String providerId = jsonObject.get("providerId").textValue();
         BlobProvider provider = Framework.getService(BlobManager.class).getBlobProvider(providerId);
         if (!(provider instanceof LiveConnectBlobProvider)) {
             return null;
         }
         try {
             return ((LiveConnectBlobProvider) provider).toBlob(new LiveConnectFileInfo(
-                    jsonObject.get("user").getTextValue(), jsonObject.get("fileId").getTextValue()));
+                    jsonObject.get("user").textValue(), jsonObject.get("fileId").textValue()));
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
