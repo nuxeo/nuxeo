@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <?xml version="1.0"?>
 
 <component name="org.nuxeo.ecm.directory.ldap.storage.users">
@@ -365,5 +366,4 @@
 </#if>
 
 </component>
-
-
+</#escape>
