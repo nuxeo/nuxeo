@@ -27,7 +27,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
@@ -39,6 +38,8 @@ import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.AuditAdapter;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * Enricher that add the latest log entries related to the document.

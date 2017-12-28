@@ -24,7 +24,6 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.validation.ConstraintViolation;
 import org.nuxeo.ecm.core.api.validation.ConstraintViolation.PathNode;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationReport;
@@ -33,6 +32,7 @@ import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.thoughtworks.xstream.io.json.JsonWriter;
 
 /**

@@ -31,14 +31,15 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Reader;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.reflect.Supports;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Base class for Json {@link Reader}.
@@ -140,7 +141,7 @@ public abstract class AbstractJsonReader<EntityType> implements Reader<EntityTyp
     protected String getStringField(JsonNode jn, String elName) {
         JsonNode elNode = jn.get(elName);
         if (elNode != null && !elNode.isNull() && elNode.isTextual()) {
-            return elNode.getTextValue();
+            return elNode.textValue();
         } else {
             return null;
         }
@@ -159,9 +160,9 @@ public abstract class AbstractJsonReader<EntityType> implements Reader<EntityTyp
         JsonNode elNode = jn.get(elName);
         if (elNode != null && !elNode.isNull()) {
             if (elNode.isBoolean()) {
-                return elNode.getBooleanValue();
+                return elNode.booleanValue();
             } else if (elNode.isTextual()) {
-                return Boolean.valueOf(elNode.getTextValue());
+                return Boolean.valueOf(elNode.textValue());
             } else {
                 return null;
             }
@@ -187,7 +188,7 @@ public abstract class AbstractJsonReader<EntityType> implements Reader<EntityTyp
                 String value;
                 for (JsonNode subNode : elNode) {
                     if (subNode != null && !subNode.isNull() && subNode.isTextual()) {
-                        value = subNode.getTextValue();
+                        value = subNode.textValue();
                     } else {
                         value = null;
                     }

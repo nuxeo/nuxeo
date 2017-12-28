@@ -20,8 +20,9 @@
 
 package org.nuxeo.ecm.automation.core.util;
 
-import org.codehaus.jackson.node.ObjectNode;
 import org.nuxeo.ecm.core.api.Blob;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Factory interface to create a {@link Blob} from a JSON Object

@@ -26,11 +26,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityListWriter;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntryList;
 import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * @since 5.7.3 - LogEntries Writer for Audit

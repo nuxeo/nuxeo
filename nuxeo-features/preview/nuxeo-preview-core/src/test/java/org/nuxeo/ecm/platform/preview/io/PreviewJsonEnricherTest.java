@@ -53,7 +53,7 @@ public class PreviewJsonEnricherTest extends AbstractJsonWriterTest.External<Doc
         json = json.has("preview").isObject();
         json.properties(1);
         json = json.has("url").isText();
-        String url = json.getNode().getTextValue();
+        String url = json.getNode().textValue();
         new URL(url); // throw a MalformedURLException if not correct
     }
 

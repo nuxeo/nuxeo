@@ -32,13 +32,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.Enriched;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.MaxDepthReachedException;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.WrappedContext;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * Base class to write Nuxeo Json entity. This class write the json object, the json "entity-type" property and enable

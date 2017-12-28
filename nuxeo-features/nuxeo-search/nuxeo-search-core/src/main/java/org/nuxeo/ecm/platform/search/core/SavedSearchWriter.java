@@ -33,7 +33,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
@@ -43,6 +42,8 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * @since 8.3

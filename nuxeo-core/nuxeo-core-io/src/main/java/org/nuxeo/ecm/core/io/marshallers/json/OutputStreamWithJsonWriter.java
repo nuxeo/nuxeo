@@ -24,7 +24,8 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 import org.apache.commons.io.output.WriterOutputStream;
-import org.codehaus.jackson.JsonGenerator;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * This {@link OutputStream} is a technical wrapper for {@link JsonGenerator}. It's used to broadcast a

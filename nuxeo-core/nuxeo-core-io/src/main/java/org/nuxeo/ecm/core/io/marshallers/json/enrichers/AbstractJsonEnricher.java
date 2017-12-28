@@ -24,9 +24,10 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MediaType;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * Base class to write {@link ExtensibleEntityJsonWriter}'s enricher.

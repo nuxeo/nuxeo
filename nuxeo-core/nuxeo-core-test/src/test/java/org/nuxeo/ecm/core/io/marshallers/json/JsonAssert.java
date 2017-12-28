@@ -29,8 +29,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.JsonNode;
 import org.junit.Assert;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Makes chained assertion on json.
@@ -274,7 +275,7 @@ public class JsonAssert {
      */
     public JsonAssert isEquals(String expected) {
         isText();
-        String value = jsonNode.getTextValue();
+        String value = jsonNode.textValue();
         Assert.assertEquals(equalsMsg(expected, value), expected, value);
         return this;
     }
@@ -288,7 +289,7 @@ public class JsonAssert {
      */
     public JsonAssert notEquals(String expected) {
         isText();
-        Assert.assertNotEquals(notEqualsMsg(expected), expected, jsonNode.getTextValue());
+        Assert.assertNotEquals(notEqualsMsg(expected), expected, jsonNode.textValue());
         return this;
     }
 
@@ -312,7 +313,7 @@ public class JsonAssert {
      */
     public JsonAssert isTrue() {
         isBool();
-        Assert.assertTrue("is not true", jsonNode.getBooleanValue());
+        Assert.assertTrue("is not true", jsonNode.booleanValue());
         return this;
     }
 
@@ -324,7 +325,7 @@ public class JsonAssert {
      */
     public JsonAssert isFalse() {
         isBool();
-        Assert.assertFalse("is not false", jsonNode.getBooleanValue());
+        Assert.assertFalse("is not false", jsonNode.booleanValue());
         return this;
     }
 
@@ -337,7 +338,7 @@ public class JsonAssert {
      */
     public JsonAssert isEquals(boolean expected) {
         isBool();
-        boolean value = jsonNode.getBooleanValue();
+        boolean value = jsonNode.booleanValue();
         Assert.assertEquals(equalsMsg(expected, value), expected, value);
         return this;
     }
@@ -351,7 +352,7 @@ public class JsonAssert {
      */
     public JsonAssert isNotEquals(boolean expected) {
         isBool();
-        boolean value = jsonNode.getBooleanValue();
+        boolean value = jsonNode.booleanValue();
         Assert.assertNotEquals(notEqualsMsg(expected), expected, value);
         return this;
     }
@@ -377,7 +378,7 @@ public class JsonAssert {
      */
     public JsonAssert isEquals(int expected) {
         isInt();
-        int value = jsonNode.getIntValue();
+        int value = jsonNode.intValue();
         Assert.assertEquals(equalsMsg(expected, value), expected, value);
         return this;
     }
@@ -391,7 +392,7 @@ public class JsonAssert {
      */
     public JsonAssert notEquals(int expected) {
         isInt();
-        Assert.assertNotEquals(notEqualsMsg(expected), expected, jsonNode.getLongValue());
+        Assert.assertNotEquals(notEqualsMsg(expected), expected, jsonNode.longValue());
         return this;
     }
 
@@ -404,7 +405,7 @@ public class JsonAssert {
      */
     public JsonAssert isEquals(long expected) {
         isInt();
-        long value = jsonNode.getLongValue();
+        long value = jsonNode.longValue();
         Assert.assertEquals(equalsMsg(expected, value), expected, value);
         return this;
     }
@@ -418,7 +419,7 @@ public class JsonAssert {
      */
     public JsonAssert notEquals(long expected) {
         isInt();
-        Assert.assertNotEquals(notEqualsMsg(expected), expected, jsonNode.getLongValue());
+        Assert.assertNotEquals(notEqualsMsg(expected), expected, jsonNode.longValue());
         return this;
     }
 
@@ -443,7 +444,7 @@ public class JsonAssert {
      */
     public JsonAssert isEquals(double expected, double delta) {
         isDouble();
-        double value = jsonNode.getDoubleValue();
+        double value = jsonNode.doubleValue();
         Assert.assertEquals(equalsMsg(expected, value + " +- " + delta), expected, value, delta);
         return this;
     }
@@ -457,7 +458,7 @@ public class JsonAssert {
      */
     public JsonAssert notEquals(double expected, double delta) {
         isDouble();
-        Assert.assertNotEquals(notEqualsMsg(expected + " +- " + delta), jsonNode.getDoubleValue(), delta);
+        Assert.assertNotEquals(notEqualsMsg(expected + " +- " + delta), jsonNode.doubleValue(), delta);
         return this;
     }
 
@@ -470,7 +471,7 @@ public class JsonAssert {
      */
     public JsonAssert isEquals(float expected, float delta) {
         isDouble();
-        double value = jsonNode.getDoubleValue();
+        double value = jsonNode.doubleValue();
         Assert.assertEquals(equalsMsg(expected, value + " +- " + delta), expected, value, delta);
         return this;
     }
@@ -484,7 +485,7 @@ public class JsonAssert {
      */
     public JsonAssert notEquals(float expected, float delta) {
         isDouble();
-        Assert.assertNotEquals(notEqualsMsg(expected + " +- " + delta), jsonNode.getDoubleValue(), delta);
+        Assert.assertNotEquals(notEqualsMsg(expected + " +- " + delta), jsonNode.doubleValue(), delta);
         return this;
     }
 
@@ -497,7 +498,7 @@ public class JsonAssert {
      */
     public JsonAssert isEquals(BigDecimal expected) {
         isDouble();
-        BigDecimal value = jsonNode.getDecimalValue();
+        BigDecimal value = jsonNode.decimalValue();
         Assert.assertEquals(equalsMsg(expected, value), expected, value);
         return this;
     }
@@ -511,7 +512,7 @@ public class JsonAssert {
      */
     public JsonAssert notEquals(BigDecimal expected) {
         isDouble();
-        Assert.assertNotEquals(notEqualsMsg(expected), jsonNode.getDecimalValue());
+        Assert.assertNotEquals(notEqualsMsg(expected), jsonNode.decimalValue());
         return this;
     }
 
@@ -536,7 +537,7 @@ public class JsonAssert {
      */
     public JsonAssert isEquals(byte[] expected) throws IOException {
         isBinary();
-        byte[] value = jsonNode.getBinaryValue();
+        byte[] value = jsonNode.binaryValue();
         Assert.assertEquals(equalsMsg(expected, value), expected, value);
         return this;
     }
@@ -550,7 +551,7 @@ public class JsonAssert {
      */
     public JsonAssert notEquals(byte[] expected) throws IOException {
         isBinary();
-        Assert.assertNotEquals(notEqualsMsg(expected), jsonNode.getBinaryValue());
+        Assert.assertNotEquals(notEqualsMsg(expected), jsonNode.binaryValue());
         return this;
     }
 
@@ -589,7 +590,7 @@ public class JsonAssert {
         isObject();
         int found = 0;
         // iterates to count properties
-        Iterator<JsonNode> it = jsonNode.getElements();
+        Iterator<JsonNode> it = jsonNode.elements();
         while (it.hasNext()) {
             found++;
             it.next();
@@ -650,7 +651,7 @@ public class JsonAssert {
     public JsonAssert contains(String... expecteds) {
         length(expecteds.length);
         JsonNode jn = null;
-        Iterator<JsonNode> it = jsonNode.getElements();
+        Iterator<JsonNode> it = jsonNode.elements();
         Map<String, Integer> expectedMap = new HashMap<String, Integer>();
         for (String value : expecteds) {
             Integer count = expectedMap.get(value);
@@ -664,7 +665,7 @@ public class JsonAssert {
         List<String> founds = new ArrayList<String>();
         while (it.hasNext()) {
             jn = it.next();
-            String value = jn.isNull() ? null : jn.getValueAsText();
+            String value = jn.isNull() ? null : jn.asText();
             founds.add(value);
             Integer count = foundMap.get(value);
             if (count == null) {
@@ -738,7 +739,7 @@ public class JsonAssert {
                 if (el.isNull()) {
                     result.add(null);
                 } else {
-                    result.add(el.getValueAsText());
+                    result.add(el.asText());
                 }
             } else {
                 String token = path.substring(0, index);
@@ -747,7 +748,7 @@ public class JsonAssert {
                 result.addAll(getAll(rest, el));
             }
         } else {
-            Iterator<JsonNode> it = node.getElements();
+            Iterator<JsonNode> it = node.elements();
             while (it.hasNext()) {
                 result.addAll(getAll(path, it.next()));
             }

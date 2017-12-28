@@ -28,7 +28,6 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
@@ -38,6 +37,8 @@ import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * Enrich {@link DocumentModel} Json.

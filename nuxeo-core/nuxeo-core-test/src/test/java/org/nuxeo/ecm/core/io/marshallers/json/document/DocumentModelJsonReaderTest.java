@@ -31,8 +31,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -45,6 +43,9 @@ import org.nuxeo.ecm.core.io.marshallers.json.JsonFactoryProvider;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/defaultvalue-docTypes.xml" })
 public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {

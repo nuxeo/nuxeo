@@ -19,11 +19,12 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json.enrichers;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 import java.io.IOException;
 import java.util.Collection;

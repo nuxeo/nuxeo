@@ -34,7 +34,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -53,6 +52,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.thoughtworks.xstream.io.json.JsonWriter;
 
 /**

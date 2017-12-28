@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.webengine;
 
-import org.codehaus.jackson.JsonFactory;
+import com.fasterxml.jackson.core.JsonFactory;
 
 /**
  * @since 6.0

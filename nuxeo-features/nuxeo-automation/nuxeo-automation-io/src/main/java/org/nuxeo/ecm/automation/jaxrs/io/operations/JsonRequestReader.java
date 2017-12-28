@@ -35,15 +35,16 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -162,7 +163,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
                     // string values are expected to be micro-parsed with
                     // the "type:value" syntax for backward compatibility
                     // reasons.
-                    req.setInput(resolveInput(inputNode.getTextValue()));
+                    req.setInput(resolveInput(inputNode.textValue()));
                 } else {
                     req.setInput(codecService.readNode(inputNode, session));
                 }

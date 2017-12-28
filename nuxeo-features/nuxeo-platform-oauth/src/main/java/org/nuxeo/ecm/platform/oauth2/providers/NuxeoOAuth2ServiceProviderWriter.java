@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.oauth2.providers;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -27,6 +26,8 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 import java.io.IOException;
 import java.io.Serializable;

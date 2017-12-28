@@ -41,7 +41,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -50,6 +49,8 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.usermanager.GroupConfig;
 import org.nuxeo.ecm.platform.usermanager.NuxeoGroupImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Convert Json as {@link NuxeoGroup}.
@@ -170,9 +171,9 @@ public class NuxeoGroupJsonReader extends EntityJsonReader<NuxeoGroup> {
     private List<String> getArrayStringValues(JsonNode node) {
         List<String> values = new ArrayList<>();
         if (node != null && !node.isNull() && node.isArray()) {
-            node.getElements().forEachRemaining(n -> {
+            node.elements().forEachRemaining(n -> {
                 if (n != null && !n.isNull() && n.isTextual()) {
-                    values.add(n.getTextValue());
+                    values.add(n.textValue());
                 }
             });
         }

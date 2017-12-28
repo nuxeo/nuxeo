@@ -26,13 +26,14 @@ import java.io.StringWriter;
 
 import javax.ws.rs.core.MediaType;
 
-import org.codehaus.jackson.JsonEncoding;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * @since 6.0

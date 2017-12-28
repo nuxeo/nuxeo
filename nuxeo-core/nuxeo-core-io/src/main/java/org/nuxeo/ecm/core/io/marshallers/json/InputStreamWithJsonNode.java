@@ -23,7 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.codehaus.jackson.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * This {@link InputStream} is a technical wrapper for {@link JsonNode}. It's used to broadcast a JsonNode between

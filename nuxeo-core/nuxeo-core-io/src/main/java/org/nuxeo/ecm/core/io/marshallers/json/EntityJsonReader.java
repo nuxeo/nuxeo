@@ -23,8 +23,9 @@ import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.ENTITY_FIELD_N
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Base class to read Nuxeo entity Json and convert it in Objects. This class checks the json is an object, the json
@@ -57,7 +58,7 @@ public abstract class EntityJsonReader<EntityType> extends AbstractJsonReader<En
         if (entityNode == null || entityNode.isNull() || !entityNode.isTextual()) {
             throw new MarshallingException("Json object does not contain an entity-type field as expected");
         }
-        String entityValue = entityNode.getTextValue();
+        String entityValue = entityNode.textValue();
         if (!entityType.equals(entityValue)) {
             throw new MarshallingException("Json object entity-type is wrong. Expected is " + entityType + " but was "
                     + entityValue);

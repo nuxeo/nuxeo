@@ -21,19 +21,20 @@ package org.nuxeo.ecm.webengine;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.JsonSerializer;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.SerializerProvider;
-import org.codehaus.jackson.map.introspect.BasicBeanDescription;
-import org.codehaus.jackson.map.module.SimpleModule;
-import org.codehaus.jackson.map.ser.BeanSerializer;
-import org.codehaus.jackson.map.ser.BeanSerializerModifier;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.BeanSerializer;
+import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 
 /**
  * @since 6.0
@@ -99,7 +100,7 @@ public class JsonFactoryManagerImpl implements JsonFactoryManager {
 
                     @Override
                     public JsonSerializer<?> modifySerializer(SerializationConfig config,
-                            BasicBeanDescription beanDesc, JsonSerializer<?> serializer) {
+                            BeanDescription beanDesc, JsonSerializer<?> serializer) {
                         if (!Throwable.class.isAssignableFrom(beanDesc.getBeanClass())) {
                             return super.modifySerializer(config, beanDesc, serializer);
                         }

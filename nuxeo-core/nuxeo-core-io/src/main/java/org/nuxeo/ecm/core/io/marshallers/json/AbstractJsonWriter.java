@@ -29,12 +29,13 @@ import java.lang.reflect.Type;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.reflect.Supports;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * Base class for Json {@link Writer}.

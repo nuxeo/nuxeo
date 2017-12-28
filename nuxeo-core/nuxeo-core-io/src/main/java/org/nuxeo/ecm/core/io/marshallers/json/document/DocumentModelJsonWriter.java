@@ -32,7 +32,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -50,6 +49,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.runtime.api.Framework;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.thoughtworks.xstream.io.json.JsonWriter;
 
 /**

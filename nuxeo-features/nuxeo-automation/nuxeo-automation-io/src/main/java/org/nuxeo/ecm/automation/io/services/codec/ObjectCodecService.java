@@ -37,13 +37,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonEncoding;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -54,6 +47,14 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterDescriptor;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterService;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -250,14 +251,14 @@ public class ObjectCodecService {
     public Object readNode(JsonNode node, ClassLoader cl, CoreSession session) throws IOException {
         // Handle simple scalar types
         if (node.isNumber()) {
-            return node.getNumberValue();
+            return node.numberValue();
         } else if (node.isBoolean()) {
-            return node.getBooleanValue();
+            return node.booleanValue();
         } else if (node.isTextual()) {
-            return node.getTextValue();
+            return node.textValue();
         } else if (node.isArray()) {
             List<Object> result = new ArrayList<>();
-            Iterator<JsonNode> elements = node.getElements();
+            Iterator<JsonNode> elements = node.elements();
             while (elements.hasNext()) {
                 result.add(readNode(elements.next(), cl, session));
             }
@@ -266,7 +267,7 @@ public class ObjectCodecService {
         JsonNode entityTypeNode = node.get("entity-type");
         JsonNode valueNode = node.get("value");
         if (entityTypeNode != null && entityTypeNode.isTextual()) {
-            String type = entityTypeNode.getTextValue();
+            String type = entityTypeNode.textValue();
             ObjectCodec<?> codec = codecsByName.get(type);
             // handle structured entity with an explicit type declaration
             JsonParser jp = jsonFactory.createJsonParser(node.toString());

@@ -25,12 +25,13 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import java.io.IOException;
 import java.util.List;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * Enrich {@link DocumentModel} Json.

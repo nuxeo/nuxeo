@@ -28,9 +28,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Reader;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Base class to convert json as {@link List}.
@@ -103,7 +104,7 @@ public abstract class DefaultListJsonReader<EntityType> extends EntityJsonReader
         JsonNode entriesNode = jn.get("entries");
         if (entriesNode != null && !entriesNode.isNull() && entriesNode.isArray()) {
             JsonNode entryNode = null;
-            Iterator<JsonNode> it = entriesNode.getElements();
+            Iterator<JsonNode> it = entriesNode.elements();
             while (it.hasNext()) {
                 entryNode = it.next();
                 InputStreamWithJsonNode in = new InputStreamWithJsonNode(entryNode);

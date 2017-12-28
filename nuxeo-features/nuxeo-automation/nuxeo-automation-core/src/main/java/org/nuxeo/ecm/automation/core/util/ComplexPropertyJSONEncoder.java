@@ -21,11 +21,12 @@ package org.nuxeo.ecm.automation.core.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * Helper to handle marshalling of complex types into a JSON-encoded string.

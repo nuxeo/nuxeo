@@ -29,7 +29,6 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -43,6 +42,7 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.thoughtworks.xstream.io.json.JsonWriter;
 
 /**

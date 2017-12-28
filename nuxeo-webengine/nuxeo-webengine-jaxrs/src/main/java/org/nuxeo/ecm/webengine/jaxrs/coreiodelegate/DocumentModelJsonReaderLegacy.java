@@ -36,7 +36,6 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonParser;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonFactoryProvider;
 import org.nuxeo.ecm.core.io.registry.Reader;
@@ -44,6 +43,8 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.io.registry.reflect.Supports;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonParser;
 
 /**
  * Delegates the {@link DocumentModel} Json reading to the old marshaller: JSONDocumentModelReader.

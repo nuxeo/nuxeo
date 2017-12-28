@@ -44,7 +44,6 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.core.util.JSONPropertyWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -61,6 +60,8 @@ import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * JSon writer that outputs a format ready to eat by elasticsearch.

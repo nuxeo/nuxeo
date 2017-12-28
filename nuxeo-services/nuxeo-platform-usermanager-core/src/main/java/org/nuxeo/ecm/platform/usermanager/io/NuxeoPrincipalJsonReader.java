@@ -32,7 +32,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -41,6 +40,8 @@ import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertiesJsonRea
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Convert Json as {@link NuxeoPrincipal}.
