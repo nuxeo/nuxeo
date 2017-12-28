@@ -21,8 +21,9 @@ package org.nuxeo.template.xdocreport.jaxrs;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 import fr.opensagres.xdocreport.remoting.resources.domain.Resource;
 
