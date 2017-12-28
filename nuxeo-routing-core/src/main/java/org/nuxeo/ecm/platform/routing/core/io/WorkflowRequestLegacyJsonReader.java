@@ -30,12 +30,13 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 8.2
@@ -59,8 +60,8 @@ public class WorkflowRequestLegacyJsonReader extends EntityJsonReader<WorkflowRe
         List<String> attachedDocumentIds = new ArrayList<String>();
         JsonNode attachedDocumentIdsNode = jn.get("attachedDocumentIds");
         if (attachedDocumentIdsNode != null) {
-            for (Iterator<JsonNode> it = attachedDocumentIdsNode.getElements(); it.hasNext();) {
-                attachedDocumentIds.add(it.next().getTextValue());
+            for (Iterator<JsonNode> it = attachedDocumentIdsNode.elements(); it.hasNext();) {
+                attachedDocumentIds.add(it.next().textValue());
             }
         }
         JsonNode variableNode = jn.get("variables");

@@ -26,10 +26,11 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import java.io.IOException;
 import java.util.Map.Entry;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.routing.core.impl.jsongraph.JsonGraphRoute;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class GraphRouteWriter extends ExtensibleEntityJsonWriter<JsonGraphRoute> {

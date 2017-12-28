@@ -36,7 +36,6 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -51,6 +50,8 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 8.2

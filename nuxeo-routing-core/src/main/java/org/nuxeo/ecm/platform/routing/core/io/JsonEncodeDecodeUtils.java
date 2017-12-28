@@ -31,10 +31,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -44,6 +40,11 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @since 7.2
@@ -112,7 +113,7 @@ public class JsonEncodeDecodeUtils {
             Map<String, Serializable> originalVariables, CoreSession session) throws ClassNotFoundException,
             IOException {
         Map<String, Serializable> variables = new HashMap<String, Serializable>();
-        Iterator<Entry<String, JsonNode>> it = jsnode.getFields();
+        Iterator<Entry<String, JsonNode>> it = jsnode.fields();
         while (it.hasNext()) {
             Entry<String, JsonNode> variable = it.next();
             String key = variable.getKey();
@@ -122,7 +123,7 @@ public class JsonEncodeDecodeUtils {
                 // org.nuxeo.ecm.platform.routing.core.impl.GraphVariablesUtil.setJSONVariables(DocumentModel, String,
                 // Map<String, String>, boolean)
                 // But we'll definitely need to convert submitted json variable to proper typed objects
-                variables.put(key, value.getNumberValue().toString());
+                variables.put(key, value.numberValue().toString());
             } else if (value.isObject()) {
                 if (value.has("upload-batch")) {
                     // Decoding of the blob will be handled in ComplexTypeJSONDecoder.decode
@@ -131,7 +132,7 @@ public class JsonEncodeDecodeUtils {
                     variables.put(key, upload.toString());
                 }
             } else {
-                variables.put(key, value.getTextValue());
+                variables.put(key, value.textValue());
             }
 
         }

@@ -28,13 +28,14 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 8.2
@@ -50,8 +51,8 @@ public class TaskCompletionRequestLegacyJsonReader extends EntityJsonReader<Task
 
     @Override
     protected TaskCompletionRequest readEntity(JsonNode jn) throws IOException {
-        String id = jn.get("id").getValueAsText();
-        String comment = jn.get("comment").getValueAsText();
+        String id = jn.get("id").asText();
+        String comment = jn.get("comment").asText();
         JsonNode variableNode = jn.get("variables");
         Map<String, Serializable> variables = null;
 

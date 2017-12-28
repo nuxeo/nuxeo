@@ -39,7 +39,6 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -52,6 +51,8 @@ import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 8.2
@@ -95,8 +96,8 @@ public class WorkflowRequestJsonReader extends EntityJsonReader<WorkflowRequest>
         List<String> attachedDocumentIds = new ArrayList<String>();
         JsonNode attachedDocumentIdsNode = jn.get("attachedDocumentIds");
         if (attachedDocumentIdsNode != null) {
-            for (Iterator<JsonNode> it = attachedDocumentIdsNode.getElements(); it.hasNext();) {
-                attachedDocumentIds.add(it.next().getTextValue());
+            for (Iterator<JsonNode> it = attachedDocumentIdsNode.elements(); it.hasNext();) {
+                attachedDocumentIds.add(it.next().textValue());
             }
         }
         Map<String, Serializable> variables = new HashMap<>();
