@@ -20,8 +20,8 @@ package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonParser;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 
 /**
  * Plugs in automation client new input/output marshalling logic.

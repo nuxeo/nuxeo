@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
@@ -33,6 +32,8 @@ import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
 import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @since 6.0

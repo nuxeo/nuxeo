@@ -28,27 +28,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.DeserializationProblemHandler;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonCachable;
-import org.codehaus.jackson.map.deser.BeanDeserializer;
-import org.codehaus.jackson.map.deser.BeanDeserializerModifier;
-import org.codehaus.jackson.map.introspect.BasicBeanDescription;
-import org.codehaus.jackson.map.module.SimpleModule;
-import org.codehaus.jackson.map.type.TypeBindings;
-import org.codehaus.jackson.map.type.TypeFactory;
-import org.codehaus.jackson.map.type.TypeModifier;
-import org.codehaus.jackson.type.JavaType;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.RemoteThrowable;
@@ -68,6 +47,28 @@ import org.nuxeo.ecm.automation.client.model.OperationInput;
 import org.nuxeo.ecm.automation.client.model.OperationRegistry;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.deser.BeanDeserializer;
+import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
+import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.type.SimpleType;
+import com.fasterxml.jackson.databind.type.TypeBindings;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.type.TypeModifier;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -84,14 +85,16 @@ public class JsonMarshalling {
         public JavaType modifyType(JavaType type, Type jdkType, TypeBindings context, TypeFactory typeFactory) {
             Class<?> raw = type.getRawClass();
             if (raw.equals(Throwable.class)) {
-                return typeFactory.constructType(RemoteThrowable.class);
+                // Use SimpleType.construct (even though deprecated) instead of typeFactory.constructType
+                // because otherwise we have an infinite recursion due to the fact that
+                // RemoteThrowable's superclass is Throwable itself, and Jackson doesn't deal with this.
+                return SimpleType.construct(RemoteThrowable.class);
             }
             return type;
         }
     }
 
-    @JsonCachable(false)
-    public static class ThrowableDeserializer extends org.codehaus.jackson.map.deser.ThrowableDeserializer {
+    public static class ThrowableDeserializer extends com.fasterxml.jackson.databind.deser.std.ThrowableDeserializer {
 
         protected Stack<Map<String, JsonNode>> unknownStack = new Stack<>();
 
@@ -131,12 +134,12 @@ public class JsonMarshalling {
         ObjectMapper oc = new ObjectMapper(jf);
         final TypeFactory typeFactoryWithModifier = oc.getTypeFactory().withModifier(new ThowrableTypeModifier());
         oc.setTypeFactory(typeFactoryWithModifier);
-        oc.getDeserializationConfig().addHandler(new DeserializationProblemHandler() {
+        oc.addHandler(new DeserializationProblemHandler() {
             @Override
-            public boolean handleUnknownProperty(DeserializationContext ctxt, JsonDeserializer<?> deserializer,
-                    Object beanOrClass, String propertyName) throws IOException, JsonProcessingException {
+            public boolean handleUnknownProperty(DeserializationContext ctxt, JsonParser jp,
+                    JsonDeserializer<?> deserializer, Object beanOrClass, String propertyName)
+                    throws IOException, JsonProcessingException {
                 if (deserializer instanceof ThrowableDeserializer) {
-                    JsonParser jp = ctxt.getParser();
                     JsonNode propertyNode = jp.readValueAsTree();
                     ((ThrowableDeserializer) deserializer).unknownStack.peek().put(propertyName, propertyNode);
                     return true;
@@ -154,7 +157,7 @@ public class JsonMarshalling {
 
                     @Override
                     public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config,
-                            BasicBeanDescription beanDesc, JsonDeserializer<?> deserializer) {
+                            BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
                         if (!Throwable.class.isAssignableFrom(beanDesc.getBeanClass())) {
                             return super.modifyDeserializer(config, beanDesc, deserializer);
                         }

@@ -28,8 +28,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -44,6 +42,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Create a Picture document into the input document
@@ -86,13 +87,13 @@ public class CreatePicture {
                 JsonNode node = mapper.readTree(templateDef);
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("tag", name);
-                Iterator<Entry<String, JsonNode>> it = node.getFields();
+                Iterator<Entry<String, JsonNode>> it = node.fields();
                 while (it.hasNext()) {
                     Entry<String, JsonNode> entry = it.next();
                     if (entry.getValue().isInt() || entry.getValue().isLong()) {
-                        map.put(entry.getKey(), entry.getValue().getLongValue());
+                        map.put(entry.getKey(), entry.getValue().longValue());
                     } else {
-                        map.put(entry.getKey(), entry.getValue().getValueAsText());
+                        map.put(entry.getKey(), entry.getValue().asText());
                     }
                 }
                 templates.add(map);

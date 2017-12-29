@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonNode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +33,8 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
@@ -49,7 +50,7 @@ public class IntrospectionTests extends BaseTest {
             Assert.assertTrue(node.size() > 0);
             boolean dcFound = false;
             for (int i = 0; i < node.size(); i++) {
-                if ("dublincore".equals(node.get(i).get("name").getValueAsText())) {
+                if ("dublincore".equals(node.get(i).get("name").asText())) {
                     dcFound = true;
                     break;
                 }
@@ -82,7 +83,7 @@ public class IntrospectionTests extends BaseTest {
 
             boolean found = false;
             for (int i = 0; i < node.size(); i++) {
-                if ("HasRelatedText".equals(node.get(i).get("name").getValueAsText())) {
+                if ("HasRelatedText".equals(node.get(i).get("name").asText())) {
                     found = true;
                     break;
                 }
@@ -97,8 +98,8 @@ public class IntrospectionTests extends BaseTest {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
 
-            Assert.assertEquals("HasRelatedText", node.get("name").getValueAsText());
-            Assert.assertEquals("relatedtext", node.get("schemas").get(0).get("name").getValueAsText());
+            Assert.assertEquals("HasRelatedText", node.get("name").asText());
+            Assert.assertEquals("relatedtext", node.get("schemas").get(0).get("name").asText());
         }
     }
 
@@ -126,12 +127,12 @@ public class IntrospectionTests extends BaseTest {
 
             // the export is done as a compound object rather than an array !
 
-            Assert.assertEquals("Document", node.get("parent").getValueAsText());
+            Assert.assertEquals("Document", node.get("parent").asText());
 
             boolean dcFound = false;
             JsonNode schemas = node.get("schemas");
             for (int i = 0; i < schemas.size(); i++) {
-                if ("dublincore".equals(schemas.get(i).get("name").getValueAsText())) {
+                if ("dublincore".equals(schemas.get(i).get("name").asText())) {
                     dcFound = true;
                     break;
                 }

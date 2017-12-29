@@ -27,9 +27,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Before;
@@ -50,6 +47,10 @@ import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 5.8
@@ -108,20 +109,20 @@ public class LogEntryWriterTest {
         // Then it contains
         ObjectMapper m = new ObjectMapper();
         JsonNode node = m.readTree(json);
-        assertEquals("Workflow", node.get("category").getTextValue());
-        Iterator<Map.Entry<String, JsonNode>> infos = node.get("extended").getFields();
+        assertEquals("Workflow", node.get("category").textValue());
+        Iterator<Map.Entry<String, JsonNode>> infos = node.get("extended").fields();
         int count = 0;
         while (infos.hasNext()) {
             Map.Entry<String, JsonNode> info = infos.next();
             count++;
             if ("extInfo1".equals(info.getKey())) {
-                assertEquals("testString", info.getValue().getTextValue());
+                assertEquals("testString", info.getValue().textValue());
             }
             if ("extInfo2".equals(info.getKey())) {
-                assertEquals(2L, info.getValue().getLongValue());
+                assertEquals(2L, info.getValue().longValue());
             }
             if ("extInfo3".equals(info.getKey())) {
-                assertEquals(testDate, ISODateTimeFormat.dateTime().parseDateTime(info.getValue().getTextValue()));
+                assertEquals(testDate, ISODateTimeFormat.dateTime().parseDateTime(info.getValue().textValue()));
             }
         }
         assertEquals(3, count);

@@ -27,7 +27,6 @@ import java.io.IOException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.io.marshallers.json.types.SchemaJsonWriter;
@@ -38,6 +37,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -70,7 +70,7 @@ public class SchemaTest extends BaseTest {
 
             JsonNode type = creator.get("type");
             assertNotNull(type);
-            assertEquals("string", type.getTextValue());
+            assertEquals("string", type.textValue());
 
             JsonNode constraints = creator.get("constraints");
             assertNotNull(constraints);
@@ -82,7 +82,7 @@ public class SchemaTest extends BaseTest {
 
             type = contributors.get("type");
             assertNotNull(type);
-            assertEquals("string[]", type.getTextValue());
+            assertEquals("string[]", type.textValue());
 
             constraints = contributors.get("constraints");
             assertNotNull(constraints);

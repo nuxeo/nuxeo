@@ -33,9 +33,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -44,6 +41,9 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.jaxrs.test.JerseyClientHelper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -243,17 +243,17 @@ public class BaseTest {
     }
 
     protected void assertNodeEqualsDoc(JsonNode node, DocumentModel note) throws Exception {
-        assertEquals("document", node.get("entity-type").getValueAsText());
-        assertEquals(note.getPathAsString(), node.get("path").getValueAsText());
-        assertEquals(note.getId(), node.get("uid").getValueAsText());
-        assertEquals(note.getTitle(), node.get("title").getValueAsText());
+        assertEquals("document", node.get("entity-type").asText());
+        assertEquals(note.getPathAsString(), node.get("path").asText());
+        assertEquals(note.getId(), node.get("uid").asText());
+        assertEquals(note.getTitle(), node.get("title").asText());
     }
 
     protected List<JsonNode> getLogEntries(JsonNode node) {
-        assertEquals("documents", node.get("entity-type").getValueAsText());
+        assertEquals("documents", node.get("entity-type").asText());
         assertTrue(node.get("entries").isArray());
         List<JsonNode> result = new ArrayList<>();
-        Iterator<JsonNode> elements = node.get("entries").getElements();
+        Iterator<JsonNode> elements = node.get("entries").elements();
         while (elements.hasNext()) {
             result.add(elements.next());
         }
@@ -264,9 +264,9 @@ public class BaseTest {
      * @since 7.1
      */
     protected String getErrorMessage(JsonNode node) {
-        assertEquals("exception", node.get("entity-type").getValueAsText());
+        assertEquals("exception", node.get("entity-type").asText());
         assertTrue(node.get("message").isTextual());
-        return node.get("message").getValueAsText();
+        return node.get("message").asText();
     }
 
     protected void assertEntityEqualsDoc(InputStream in, DocumentModel doc) throws Exception {

@@ -22,8 +22,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +37,9 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
  * @since 5.7.3
@@ -98,8 +99,8 @@ public class RestServiceTest extends BaseRestTest {
         // Then it contains the breadcrumb in contextParameters
         JsonNode node = parseJson(jsonFolder);
         JsonNode breadCrumbEntries = node.get("contextParameters").get("breadcrumb").get("entries");
-        assertEquals("/folder1", breadCrumbEntries.get(0).get("path").getValueAsText());
-        assertEquals("/folder1/doc0", breadCrumbEntries.get(1).get("path").getValueAsText());
+        assertEquals("/folder1", breadCrumbEntries.get(0).get("path").asText());
+        assertEquals("/folder1/doc0", breadCrumbEntries.get(1).get("path").asText());
     }
 
     @Test
@@ -114,8 +115,8 @@ public class RestServiceTest extends BaseRestTest {
         int i = 0;
         for (JsonNode node : nodes) {
             JsonNode breadCrumbEntries = node.get("contextParameters").get("breadcrumb").get("entries");
-            assertEquals("/folder1", breadCrumbEntries.get(0).get("path").getValueAsText());
-            assertEquals("/folder1/doc" + i, breadCrumbEntries.get(1).get("path").getValueAsText());
+            assertEquals("/folder1", breadCrumbEntries.get(0).get("path").asText());
+            assertEquals("/folder1/doc" + i, breadCrumbEntries.get(1).get("path").asText());
             i++;
         }
     }

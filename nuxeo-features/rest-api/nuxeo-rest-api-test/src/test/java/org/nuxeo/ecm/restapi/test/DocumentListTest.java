@@ -29,8 +29,6 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -50,6 +48,8 @@ import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.base.Joiner;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
@@ -464,7 +464,7 @@ public class DocumentListTest extends BaseTest {
             assertEquals(RestServerInit.MAX_NOTE, noteNodes.size());
             for (int i = 0; i < noteNodes.size(); i++) {
                 assertEquals("Note " + (RestServerInit.MAX_NOTE - (i + 1)),
-                        noteNodes.get(i).get("title").getTextValue());
+                        noteNodes.get(i).get("title").textValue());
             }
         }
     }

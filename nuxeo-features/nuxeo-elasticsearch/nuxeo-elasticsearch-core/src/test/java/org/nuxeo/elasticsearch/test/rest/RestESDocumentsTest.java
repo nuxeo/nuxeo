@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonNode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,6 +64,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Test the various ways to get elasticsearch Json output.
@@ -104,7 +105,7 @@ public class RestESDocumentsTest extends BaseTest {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             // System.err.println(node.toString());
-            assertEquals("Note 0", node.get("note:note").getTextValue());
+            assertEquals("Note 0", node.get("note:note").textValue());
         }
     }
 
@@ -127,7 +128,7 @@ public class RestESDocumentsTest extends BaseTest {
             // Verify results
             assertEquals(20, getLogEntries(node).size());
             // And verify contributed aggregates
-            assertEquals("terms", node.get("aggregations").get("coverage").get("type").getTextValue());
+            assertEquals("terms", node.get("aggregations").get("coverage").get("type").textValue());
         }
     }
 
@@ -210,25 +211,25 @@ public class RestESDocumentsTest extends BaseTest {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
 
             // And verify contributed aggregates
-            assertEquals("terms", node.get("aggregations").get("coverage").get("type").getTextValue());
+            assertEquals("terms", node.get("aggregations").get("coverage").get("type").textValue());
             JsonNode bucket = node.get("aggregations").get("coverage").get("buckets").get(0);
-            int docCount = bucket.get("docCount").getIntValue();
+            int docCount = bucket.get("docCount").intValue();
             assertEquals(RestServerInit.MAX_NOTE, docCount);
             // Check that the key of the bucket which is a l10ncoverage vocabulary entry has been fetch
-            String keyText = bucket.get("key").getTextValue();
+            String keyText = bucket.get("key").textValue();
             assertEquals("europe/France", keyText);
-            String fetchedkeyIdText = bucket.get("fetchedKey").get("properties").get("id").getTextValue();
+            String fetchedkeyIdText = bucket.get("fetchedKey").get("properties").get("id").textValue();
             assertEquals("France", fetchedkeyIdText);
 
             // And verify contributed aggregates
-            assertEquals("terms", node.get("aggregations").get("subjects").get("type").getTextValue());
+            assertEquals("terms", node.get("aggregations").get("subjects").get("type").textValue());
             JsonNode firstBucket = node.get("aggregations").get("subjects").get("buckets").get(0);
-            docCount = firstBucket.get("docCount").getIntValue();
+            docCount = firstBucket.get("docCount").intValue();
             assertEquals(RestServerInit.MAX_NOTE, docCount);
             // Check that the key of the bucket which is a l10nsubjects vocabulary entry has been fetch
-            keyText = firstBucket.get("key").getTextValue();
+            keyText = firstBucket.get("key").textValue();
             assertEquals("art/cinema", keyText);
-            fetchedkeyIdText = firstBucket.get("fetchedKey").get("properties").get("id").getTextValue();
+            fetchedkeyIdText = firstBucket.get("fetchedKey").get("properties").get("id").textValue();
             assertEquals("cinema", fetchedkeyIdText);
         }
     }

@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -32,6 +31,8 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 9.1

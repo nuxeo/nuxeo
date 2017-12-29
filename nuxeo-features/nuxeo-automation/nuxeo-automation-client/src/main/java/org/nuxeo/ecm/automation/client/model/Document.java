@@ -20,8 +20,8 @@ package org.nuxeo.ecm.automation.client.model;
 
 import java.util.Date;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A document. Documents are as they are returned by the server. To modify documents use operations. Use

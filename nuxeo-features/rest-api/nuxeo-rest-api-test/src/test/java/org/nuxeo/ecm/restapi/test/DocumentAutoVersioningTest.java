@@ -35,7 +35,6 @@ import java.util.Map;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -53,6 +52,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 9.1
@@ -104,7 +105,7 @@ public class DocumentAutoVersioningTest extends BaseTest {
             fetchInvalidations();
 
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            id = node.get("uid").getValueAsText();
+            id = node.get("uid").asText();
             assertTrue(StringUtils.isNotBlank(id));
         }
 
@@ -157,7 +158,7 @@ public class DocumentAutoVersioningTest extends BaseTest {
             fetchInvalidations();
 
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            id = node.get("uid").getValueAsText();
+            id = node.get("uid").asText();
             assertTrue(StringUtils.isNotBlank(id));
         }
 
@@ -191,7 +192,7 @@ public class DocumentAutoVersioningTest extends BaseTest {
             fetchInvalidations();
 
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            String id = node.get("uid").getValueAsText();
+            String id = node.get("uid").asText();
             assertTrue(StringUtils.isNotBlank(id));
 
             DocumentRef idRef = new IdRef(id);

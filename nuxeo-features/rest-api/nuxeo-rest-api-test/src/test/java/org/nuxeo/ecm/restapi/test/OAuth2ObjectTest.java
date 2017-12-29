@@ -27,7 +27,6 @@ import java.io.IOException;
 
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
@@ -40,6 +39,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 8.4
@@ -99,7 +100,7 @@ public class OAuth2ObjectTest extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.GET, PROVIDER_PATH)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals(OAUTH2_PROVIDERS_TYPE, node.get("entity-type").getTextValue());
+            assertEquals(OAUTH2_PROVIDERS_TYPE, node.get("entity-type").textValue());
             assertNotNull(node.get("entries"));
             assertEquals(2, node.get("entries").size());
             verifyProvider(node.get("entries").get(0), TEST_OAUTH2_PROVIDER, true);
@@ -152,9 +153,9 @@ public class OAuth2ObjectTest extends BaseTest {
     public void iCanUpdateProvider() throws IOException {
         try (CloseableClientResponse response = getResponse(RequestType.GET, getProviderPath(TEST_OAUTH2_PROVIDER_2))) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals("clientId", node.get("clientId").getTextValue());
+            assertEquals("clientId", node.get("clientId").textValue());
             assertTrue(node.get("clientSecret").isNull());
-            assertFalse(node.get("isEnabled").getBooleanValue());
+            assertFalse(node.get("isEnabled").booleanValue());
         }
 
         String data = "{\n" + "    \"authorizationServerURL\": \"https://test.oauth2.provider/authorization\",\n"
@@ -169,9 +170,9 @@ public class OAuth2ObjectTest extends BaseTest {
                 data)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals("myId", node.get("clientId").getTextValue());
-            assertEquals("123secret321", node.get("clientSecret").getTextValue());
-            assertTrue(node.get("isEnabled").getBooleanValue());
+            assertEquals("myId", node.get("clientId").textValue());
+            assertEquals("123secret321", node.get("clientSecret").textValue());
+            assertTrue(node.get("isEnabled").booleanValue());
         }
 
         service = getServiceFor("user1", "user1");
@@ -223,7 +224,7 @@ public class OAuth2ObjectTest extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.GET, getTokenPath(TEST_OAUTH2_PROVIDER))) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals(TEST_OAUTH2_ACCESS_TOKEN, node.get("token").getTextValue());
+            assertEquals(TEST_OAUTH2_ACCESS_TOKEN, node.get("token").textValue());
         }
     }
 
@@ -237,16 +238,16 @@ public class OAuth2ObjectTest extends BaseTest {
     }
 
     protected void verifyProvider(JsonNode node, String serviceName, Boolean checkToken) {
-        assertEquals(OAUTH2_PROVIDER_TYPE, node.get("entity-type").getTextValue());
-        assertEquals(serviceName, node.get("serviceName").getTextValue());
-        assertEquals(TEST_OAUTH2_CLIENTID, node.get("clientId").getTextValue());
+        assertEquals(OAUTH2_PROVIDER_TYPE, node.get("entity-type").textValue());
+        assertEquals(serviceName, node.get("serviceName").textValue());
+        assertEquals(TEST_OAUTH2_CLIENTID, node.get("clientId").textValue());
         assertEquals(
                 AUTHORIZATION_SERVER_URL + "?client_id=" + TEST_OAUTH2_CLIENTID
                         + "&redirect_uri=http://localhost:18090/site/oauth2/" + serviceName + "/callback"
                         + "&response_type=code&scope=" + getScopeUrl(0) + "%20" + getScopeUrl(1),
-                node.get("authorizationURL").getTextValue());
+                node.get("authorizationURL").textValue());
         if (checkToken) {
-            assertEquals(TEST_OAUTH2_SERVICE_USERID, node.get("userId").getTextValue());
+            assertEquals(TEST_OAUTH2_SERVICE_USERID, node.get("userId").textValue());
         }
     }
 
@@ -256,7 +257,7 @@ public class OAuth2ObjectTest extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.GET, TOKEN_PATH)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals(OAUTH2_TOKENS_TYPE, node.get("entity-type").getTextValue());
+            assertEquals(OAUTH2_TOKENS_TYPE, node.get("entity-type").textValue());
             assertNotNull(node.get("entries"));
             assertEquals(2, node.get("entries").size());
             verifyToken(node.get("entries"), TEST_OAUTH2_PROVIDER, "Administrator", "2017-05-09 11:11:11");
@@ -276,7 +277,7 @@ public class OAuth2ObjectTest extends BaseTest {
                 TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1")) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals(OAUTH2_TOKEN_TYPE, node.get("entity-type").getTextValue());
+            assertEquals(OAUTH2_TOKEN_TYPE, node.get("entity-type").textValue());
             verifyToken(node, TEST_OAUTH2_PROVIDER, "user1", "2017-05-09 11:11:11");
         }
 
@@ -297,7 +298,7 @@ public class OAuth2ObjectTest extends BaseTest {
                 TOKEN_PATH + "/" + TEST_OAUTH2_PROVIDER + "/user1", data)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals(OAUTH2_TOKEN_TYPE, node.get("entity-type").getTextValue());
+            assertEquals(OAUTH2_TOKEN_TYPE, node.get("entity-type").textValue());
             verifyToken(node, TEST_OAUTH2_PROVIDER, "user1", "2017-05-10 11:11:11");
         }
 
@@ -331,24 +332,24 @@ public class OAuth2ObjectTest extends BaseTest {
         if (node.isArray()) {
             JsonNode token = null;
             for (int i = 0; i < node.size(); i++) {
-                if (node.get(i).get("entity-type").getTextValue().equals(OAUTH2_TOKEN_TYPE)
-                        && node.get(i).get("serviceName").getTextValue().equals(serviceName) && node.get(i)
+                if (node.get(i).get("entity-type").textValue().equals(OAUTH2_TOKEN_TYPE)
+                        && node.get(i).get("serviceName").textValue().equals(serviceName) && node.get(i)
                                                                                                     .get("nuxeoLogin")
-                                                                                                    .getTextValue()
+                                                                                                    .textValue()
                                                                                                     .equals(nxuser)
                         && node.get(i)
                                .get("creationDate")
-                               .getTextValue()
+                               .textValue()
                                .equals(creationDate)) {
                     token = node.get(i);
                 }
             }
             assertNotNull(token);
         } else {
-            assertEquals(OAUTH2_TOKEN_TYPE, node.get("entity-type").getTextValue());
-            assertEquals(serviceName, node.get("serviceName").getTextValue());
-            assertEquals(nxuser, node.get("nuxeoLogin").getTextValue());
-            assertEquals(creationDate, node.get("creationDate").getTextValue());
+            assertEquals(OAUTH2_TOKEN_TYPE, node.get("entity-type").textValue());
+            assertEquals(serviceName, node.get("serviceName").textValue());
+            assertEquals(nxuser, node.get("nuxeoLogin").textValue());
+            assertEquals(creationDate, node.get("creationDate").textValue());
         }
     }
 }

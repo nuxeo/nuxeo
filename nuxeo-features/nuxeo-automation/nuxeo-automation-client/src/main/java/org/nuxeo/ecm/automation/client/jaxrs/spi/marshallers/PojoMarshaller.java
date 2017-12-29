@@ -20,10 +20,11 @@ package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonParser;
 import org.nuxeo.ecm.automation.client.annotations.EntityType;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 
 /**
  * Marshaller for the default ObjectCodec for the java Boolean class instances. Returned into entity-type primitive the

@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -36,6 +35,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDefinition;
 import org.nuxeo.ecm.platform.query.core.BucketRange;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @since 6.0

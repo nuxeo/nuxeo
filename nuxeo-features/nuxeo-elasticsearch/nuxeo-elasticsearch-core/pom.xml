@@ -192,14 +192,6 @@
       <artifactId>joda-time</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-    </dependency>
-    <dependency>
       <!-- note that this contains all of javax.ws.rs:jsr311-api -->
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-core</artifactId>

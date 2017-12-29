@@ -23,11 +23,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.automation.core.util.Properties;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class JsonNodeToProperties implements TypeAdapter {
 
@@ -37,7 +38,7 @@ public class JsonNodeToProperties implements TypeAdapter {
         JsonNode json = (JsonNode) objectToAdapt;
         Map<String, String> map = new HashMap<String, String>();
 
-        Iterator<Entry<String, JsonNode>> it = json.getFields();
+        Iterator<Entry<String, JsonNode>> it = json.fields();
         while (it.hasNext()) {
             Entry<String, JsonNode> entry = it.next();
             String key = entry.getKey();
@@ -47,18 +48,18 @@ public class JsonNodeToProperties implements TypeAdapter {
                 if (size == 0) {
                     map.put(key, null);
                 } else if (size == 1) {
-                    map.put(key, value.get(0).getValueAsText());
+                    map.put(key, value.get(0).asText());
                 } else {
                     StringBuilder buf = new StringBuilder(size * 32);
-                    buf.append(value.get(0).getValueAsText());
+                    buf.append(value.get(0).asText());
                     for (int i = 1; i < size; i++) {
-                        buf.append(',').append(value.get(i).getValueAsText());
+                        buf.append(',').append(value.get(i).asText());
                     }
                     map.put(key, buf.toString());
                 }
             } else {
                 if (value.isTextual()) {
-                    map.put(key, value.getTextValue());
+                    map.put(key, value.textValue());
                 } else {
                     map.put(key, value.toString());
                 }

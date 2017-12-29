@@ -22,12 +22,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 5.7.3
@@ -49,14 +50,14 @@ public class BaseUserTest extends BaseTest {
      * Assert that the given node represents a group which properties are given in parameters
      */
     protected void assertEqualsGroup(String groupName, String groupLabel, JsonNode node) {
-        assertEquals("group", node.get("entity-type").getValueAsText());
-        assertEquals(groupName, node.get("id").getValueAsText());
-        assertEquals(groupName, node.get("groupname").getValueAsText());
-        assertEquals(groupLabel, node.get("grouplabel").getValueAsText());
+        assertEquals("group", node.get("entity-type").asText());
+        assertEquals(groupName, node.get("id").asText());
+        assertEquals(groupName, node.get("groupname").asText());
+        assertEquals(groupLabel, node.get("grouplabel").asText());
         JsonNode properties = node.get("properties");
-        assertEquals(groupName, properties.get("groupname").getValueAsText());
-        assertEquals(groupLabel, properties.get("grouplabel").getValueAsText());
-        assertEquals("description of " + groupName, properties.get("description").getValueAsText());
+        assertEquals(groupName, properties.get("groupname").asText());
+        assertEquals(groupLabel, properties.get("grouplabel").asText());
+        assertEquals("description of " + groupName, properties.get("description").asText());
     }
 
     /**
@@ -74,13 +75,13 @@ public class BaseUserTest extends BaseTest {
     }
 
     protected void assertEqualsUser(String username, String firstname, String lastname, String email, JsonNode node) {
-        assertEquals("user", node.get("entity-type").getValueAsText());
-        assertEquals(username, node.get("id").getValueAsText());
+        assertEquals("user", node.get("entity-type").asText());
+        assertEquals(username, node.get("id").asText());
         JsonNode properties = node.get("properties");
-        assertEquals(firstname, properties.get("firstName").getValueAsText());
-        assertEquals(lastname, properties.get("lastName").getValueAsText());
+        assertEquals(firstname, properties.get("firstName").asText());
+        assertEquals(lastname, properties.get("lastName").asText());
         if (email != null) {
-            assertEquals(email, properties.get("email").getValueAsText());
+            assertEquals(email, properties.get("email").asText());
         }
     }
 

@@ -23,11 +23,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.nuxeo.ecm.automation.client.AutomationException;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
 
 /**
@@ -78,7 +78,7 @@ public class RestResponse {
         TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
         };
         try {
-            return objectMapper.readValue(responseAsJson, typeRef);
+            return objectMapper.readValue(objectMapper.treeAsTokens(responseAsJson), typeRef);
         } catch (IOException e) {
             throw new AutomationException(e);
         }

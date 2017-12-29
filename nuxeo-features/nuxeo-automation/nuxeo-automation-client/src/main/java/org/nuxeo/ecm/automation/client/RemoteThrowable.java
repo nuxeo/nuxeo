@@ -22,7 +22,7 @@ package org.nuxeo.ecm.automation.client;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 5.8

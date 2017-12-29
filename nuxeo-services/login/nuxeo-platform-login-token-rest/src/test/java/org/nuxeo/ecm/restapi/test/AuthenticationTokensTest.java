@@ -33,7 +33,6 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -45,6 +44,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -81,13 +81,13 @@ public class AuthenticationTokensTest extends BaseTest {
         // query tokens for current user
         List<JsonNode> tokens = getTokens();
         assertEquals(2, tokens.size());
-        assertEquals(token2, tokens.get(0).get("id").getTextValue());
-        assertEquals(token1, tokens.get(1).get("id").getTextValue());
+        assertEquals(token2, tokens.get(0).get("id").textValue());
+        assertEquals(token1, tokens.get(1).get("id").textValue());
 
         // filter tokens by application
         tokens = getTokens("app1");
         assertEquals(1, tokens.size());
-        assertEquals(token1, tokens.get(0).get("id").getTextValue());
+        assertEquals(token1, tokens.get(0).get("id").textValue());
     }
 
     @Test
@@ -123,11 +123,11 @@ public class AuthenticationTokensTest extends BaseTest {
         List<JsonNode> tokens = getTokens();
         assertEquals(1, tokens.size());
         JsonNode token = tokens.get(0);
-        assertEquals("app", token.get("application").getTextValue());
-        assertEquals("device", token.get("deviceId").getTextValue());
-        assertEquals("rw", token.get("permission").getTextValue());
-        assertFalse(token.get("creationDate").getTextValue().isEmpty());
-        assertFalse(token.get("username").getTextValue().isEmpty());
+        assertEquals("app", token.get("application").textValue());
+        assertEquals("device", token.get("deviceId").textValue());
+        assertEquals("rw", token.get("permission").textValue());
+        assertFalse(token.get("creationDate").textValue().isEmpty());
+        assertFalse(token.get("username").textValue().isEmpty());
     }
 
     private List<JsonNode> getTokens() throws IOException {
@@ -144,10 +144,10 @@ public class AuthenticationTokensTest extends BaseTest {
     }
 
     private List<JsonNode> getEntries(String entityType, JsonNode node) {
-        assertEquals(entityType, node.get("entity-type").getValueAsText());
+        assertEquals(entityType, node.get("entity-type").asText());
         assertTrue(node.get("entries").isArray());
         List<JsonNode> result = new ArrayList<>();
-        Iterator<JsonNode> elements = node.get("entries").getElements();
+        Iterator<JsonNode> elements = node.get("entries").elements();
         while (elements.hasNext()) {
             result.add(elements.next());
         }

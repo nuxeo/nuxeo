@@ -33,9 +33,6 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.node.ArrayNode;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Test;
@@ -56,6 +53,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -81,8 +81,8 @@ public class AuditTest extends BaseTest {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             List<JsonNode> nodes = getLogEntries(node);
             assertEquals(2, nodes.size());
-            assertEquals("documentModified", nodes.get(0).get("eventId").getValueAsText());
-            assertEquals("documentCreated", nodes.get(1).get("eventId").getValueAsText());
+            assertEquals("documentModified", nodes.get(0).get("eventId").asText());
+            assertEquals("documentCreated", nodes.get(1).get("eventId").asText());
         }
     }
 
@@ -99,7 +99,7 @@ public class AuditTest extends BaseTest {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             List<JsonNode> nodes = getLogEntries(node);
             assertEquals(1, nodes.size());
-            assertEquals("documentModified", nodes.get(0).get("eventId").getValueAsText());
+            assertEquals("documentModified", nodes.get(0).get("eventId").asText());
         }
 
         queryParams.putSingle("principalName", "bender");
@@ -388,14 +388,14 @@ public class AuditTest extends BaseTest {
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertTrue(node.get("isPaginable").getBooleanValue());
-            assertEquals(0, node.get("currentPageIndex").getIntValue());
-            assertEquals(2, node.get("pageSize").getIntValue());
-            assertEquals(3, node.get("numberOfPages").getIntValue());
+            assertTrue(node.get("isPaginable").booleanValue());
+            assertEquals(0, node.get("currentPageIndex").intValue());
+            assertEquals(2, node.get("pageSize").intValue());
+            assertEquals(3, node.get("numberOfPages").intValue());
             List<JsonNode> nodes = getLogEntries(node);
             assertEquals(2, nodes.size());
-            assertEquals("sixthEvent", nodes.get(0).get("eventId").getValueAsText());
-            assertEquals("fifthEvent", nodes.get(1).get("eventId").getValueAsText());
+            assertEquals("sixthEvent", nodes.get(0).get("eventId").asText());
+            assertEquals("fifthEvent", nodes.get(1).get("eventId").asText());
         }
 
         queryParams = new MultivaluedMapImpl();
@@ -406,15 +406,15 @@ public class AuditTest extends BaseTest {
                 "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertTrue(node.get("isPaginable").getBooleanValue());
-            assertEquals(1, node.get("currentPageIndex").getIntValue());
-            assertEquals(3, node.get("pageSize").getIntValue());
-            assertEquals(2, node.get("numberOfPages").getIntValue());
+            assertTrue(node.get("isPaginable").booleanValue());
+            assertEquals(1, node.get("currentPageIndex").intValue());
+            assertEquals(3, node.get("pageSize").intValue());
+            assertEquals(2, node.get("numberOfPages").intValue());
             List<JsonNode> nodes = getLogEntries(node);
             assertEquals(3, nodes.size());
-            assertEquals("thirdEvent", nodes.get(0).get("eventId").getValueAsText());
-            assertEquals("secondEvent", nodes.get(1).get("eventId").getValueAsText());
-            assertEquals("firstEvent", nodes.get(2).get("eventId").getValueAsText());
+            assertEquals("thirdEvent", nodes.get(0).get("eventId").asText());
+            assertEquals("secondEvent", nodes.get(1).get("eventId").asText());
+            assertEquals("firstEvent", nodes.get(2).get("eventId").asText());
         }
 
         queryParams = new MultivaluedMapImpl();
@@ -426,7 +426,7 @@ public class AuditTest extends BaseTest {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             List<JsonNode> nodes = getLogEntries(node);
-            assertTrue(node.get("isPaginable").getBooleanValue());
+            assertTrue(node.get("isPaginable").booleanValue());
             assertEquals(0, nodes.size());
         }
     }
@@ -447,17 +447,17 @@ public class AuditTest extends BaseTest {
             ArrayNode auditNodes = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
                                                    .get(AuditJsonEnricher.NAME);
             assertEquals(2, auditNodes.size());
-            assertEquals("documentModified", auditNodes.get(0).get("eventId").getValueAsText());
-            assertEquals("documentCreated", auditNodes.get(1).get("eventId").getValueAsText());
+            assertEquals("documentModified", auditNodes.get(0).get("eventId").asText());
+            assertEquals("documentCreated", auditNodes.get(1).get("eventId").asText());
         }
     }
 
     @Override
     protected List<JsonNode> getLogEntries(JsonNode node) {
-        assertEquals("logEntries", node.get("entity-type").getValueAsText());
+        assertEquals("logEntries", node.get("entity-type").asText());
         assertTrue(node.get("entries").isArray());
         List<JsonNode> result = new ArrayList<>();
-        Iterator<JsonNode> elements = node.get("entries").getElements();
+        Iterator<JsonNode> elements = node.get("entries").elements();
         while (elements.hasNext()) {
             result.add(elements.next());
         }

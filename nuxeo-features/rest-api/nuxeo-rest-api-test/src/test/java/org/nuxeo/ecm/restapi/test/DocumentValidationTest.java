@@ -27,7 +27,6 @@ import java.io.IOException;
 
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,6 +39,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.jersey.api.client.ClientResponse;
 
 /**
@@ -136,11 +136,11 @@ public class DocumentValidationTest extends BaseTest {
 
     protected void checkResponseHasNotDirtyError(CloseableClientResponse response) throws IOException {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertTrue(node.get("has_error").getValueAsBoolean());
-        assertEquals(1, node.get("number").getValueAsInt());
+        assertTrue(node.get("has_error").asBoolean());
+        assertEquals(1, node.get("number").asInt());
         JsonNode violations = node.get("violations");
-        JsonNode violation1 = violations.getElements().next();
-        assertEquals("NotNullConstraint", violation1.get("constraint").get("name").getTextValue());
+        JsonNode violation1 = violations.elements().next();
+        assertEquals("NotNullConstraint", violation1.get("constraint").get("name").textValue());
     }
 
     @Test
@@ -207,13 +207,13 @@ public class DocumentValidationTest extends BaseTest {
 
     private void checkResponseHasErrors(ClientResponse response) throws IOException {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertTrue(node.get("has_error").getValueAsBoolean());
-        assertEquals(2, node.get("number").getValueAsInt());
+        assertTrue(node.get("has_error").asBoolean());
+        assertEquals(2, node.get("number").asInt());
         JsonNode violations = node.get("violations");
-        JsonNode violation1 = violations.getElements().next();
-        assertEquals("PatternConstraint", violation1.get("constraint").get("name").getTextValue());
-        JsonNode violation2 = violations.getElements().next();
-        assertEquals("PatternConstraint", violation2.get("constraint").get("name").getTextValue());
+        JsonNode violation1 = violations.elements().next();
+        assertEquals("PatternConstraint", violation1.get("constraint").get("name").textValue());
+        JsonNode violation2 = violations.elements().next();
+        assertEquals("PatternConstraint", violation2.get("constraint").get("name").textValue());
     }
 
 }

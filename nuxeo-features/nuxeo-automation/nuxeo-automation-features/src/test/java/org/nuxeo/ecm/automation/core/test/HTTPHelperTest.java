@@ -39,7 +39,6 @@ import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,6 +63,8 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 8.4
@@ -255,7 +256,7 @@ public class HTTPHelperTest {
 
     /**
      * Create a mock server that answers http requests with a certain set of headers and a body answer.
-     * 
+     *
      * @param method the HTTP request (GET, POST, PUT, DELETE)
      * @param path the path of the requests
      * @param answer the body of the http response

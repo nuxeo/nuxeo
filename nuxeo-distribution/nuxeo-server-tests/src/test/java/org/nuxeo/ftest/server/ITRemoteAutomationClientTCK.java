@@ -30,7 +30,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonNode;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,6 +51,8 @@ import org.nuxeo.ecm.automation.test.RemoteAutomationServerFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 5.7.2 Automation TCK Tests Suite
@@ -168,7 +169,7 @@ public class ITRemoteAutomationClientTCK {
     public void testGetChildrenWithWebAdapter() throws Exception {
         JsonNode node = client.getRestClient().newRequest("/path/TestFolder1/@children").execute().asJson();
 
-        assertEquals(2, node.get("resultsCount").getIntValue());
+        assertEquals(2, node.get("resultsCount").intValue());
 
     }
 

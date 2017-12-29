@@ -37,12 +37,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.module.SimpleModule;
 import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
@@ -52,12 +46,20 @@ import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter.BinaryBlobEntrySerializer;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter.MapEntrySerializer;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
 public class AuditEntryJSONReader {
 
     public static LogEntry read(String content) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
-        SimpleModule module = new SimpleModule("esAuditJson", org.codehaus.jackson.Version.unknownVersion());
+        SimpleModule module = new SimpleModule("esAuditJson", Version.unknownVersion());
         module.addSerializer(Map.class, new MapEntrySerializer());
         module.addSerializer(AbstractBlob.class, new BinaryBlobEntrySerializer());
         objectMapper.registerModule(module);
@@ -119,7 +121,7 @@ public class AuditEntryJSONReader {
 
         JsonNode node = jp.readValueAsTree();
 
-        Iterator<String> fieldsIt = node.getFieldNames();
+        Iterator<String> fieldsIt = node.fieldNames();
 
         while (fieldsIt.hasNext()) {
             String fieldName = fieldsIt.next();
@@ -131,9 +133,9 @@ public class AuditEntryJSONReader {
                 ei = ExtendedInfoImpl.createExtendedInfo(objectMapper.writeValueAsString(field));
             } else {
                 if (field.isInt() || field.isLong()) {
-                    ei = ExtendedInfoImpl.createExtendedInfo(field.getLongValue());
+                    ei = ExtendedInfoImpl.createExtendedInfo(field.longValue());
                 } else {
-                    ei = ExtendedInfoImpl.createExtendedInfo(field.getTextValue());
+                    ei = ExtendedInfoImpl.createExtendedInfo(field.textValue());
                 }
             }
             info.put(fieldName, ei);
