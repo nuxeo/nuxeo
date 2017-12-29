@@ -18,14 +18,11 @@
  */
 package org.nuxeo.drive.operations;
 
-import java.io.IOException;
-
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
 
 /**
  * Helper for Nuxeo Drive operations.
@@ -51,14 +48,6 @@ public final class NuxeoDriveOperationHelper {
                 }
             }
         }
-    }
-
-    /**
-     * @deprecated since 9.2, use {@link Blobs#createJSONBlobFromValueJackson1} directly
-     */
-    @Deprecated
-    public static Blob asJSONBlob(Object value) throws IOException {
-        return Blobs.createJSONBlobFromValueJackson1(value);
     }
 
 }

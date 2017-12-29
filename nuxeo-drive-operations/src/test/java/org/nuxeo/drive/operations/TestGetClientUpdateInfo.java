@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNotNull;
 
 import javax.inject.Inject;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +34,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tests the {@link NuxeoDriveGetClientUpdateInfo} operation.

@@ -79,7 +79,7 @@ public class NuxeoDriveCreateFile {
         NuxeoDriveOperationHelper.normalizeMimeTypeAndEncoding(blob);
         FileItem fileItem = fileSystemItemManager.createFile(parentId, blob, ctx.getPrincipal(), overwrite);
 
-        return Blobs.createJSONBlobFromValueJackson1(fileItem);
+        return Blobs.createJSONBlobFromValue(fileItem);
     }
 
 }

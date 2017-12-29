@@ -53,7 +53,7 @@ public class NuxeoDriveGetTopLevelChildren {
 
         FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
         List<FileSystemItem> children = fileSystemItemManager.getTopLevelChildren(ctx.getPrincipal());
-        return Blobs.createJSONBlobFromValueJackson1(children);
+        return Blobs.createJSONBlobFromValue(children);
     }
 
 }

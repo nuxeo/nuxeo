@@ -63,7 +63,7 @@ public class NuxeoDriveMove {
             throw new InvalidOperationException(e);
         }
 
-        return Blobs.createJSONBlobFromValueJackson1(fsItem);
+        return Blobs.createJSONBlobFromValue(fsItem);
     }
 
 }

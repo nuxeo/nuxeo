@@ -29,7 +29,6 @@ import java.net.URISyntaxException;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
@@ -40,6 +39,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tests the {@link NuxeoDriveObject}.

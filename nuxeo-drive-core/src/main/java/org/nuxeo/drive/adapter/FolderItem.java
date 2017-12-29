@@ -21,11 +21,12 @@ package org.nuxeo.drive.adapter;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Representation of a folder.

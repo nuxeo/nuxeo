@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,10 +38,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.type.TypeReference;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,6 +74,12 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
  * Tests the user workspace based hierarchy.
@@ -318,7 +321,7 @@ public class TestUserWorkspaceHierarchy {
         // Check synchronization roots
         // ---------------------------------------------
         // My synchronized folders
-        UserWorkspaceSyncRootParentFolderItem syncRootParent = mapper.readValue(topLevelChildrenNodes[0],
+        UserWorkspaceSyncRootParentFolderItem syncRootParent = readValue(topLevelChildrenNodes[0],
                 UserWorkspaceSyncRootParentFolderItem.class);
         assertEquals(SYNC_ROOT_PARENT_ID, syncRootParent.getId());
         assertEquals(userWorkspace1ItemId, syncRootParent.getParentId());
@@ -392,11 +395,11 @@ public class TestUserWorkspaceHierarchy {
         // Check user workspace children
         // ---------------------------------------------
         // user1File2
-        DocumentBackedFileItem fileItem = mapper.readValue(topLevelChildrenNodes[1], DocumentBackedFileItem.class);
+        DocumentBackedFileItem fileItem = readValue(topLevelChildrenNodes[1], DocumentBackedFileItem.class);
         checkFileItem(fileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1File2, userWorkspace1ItemId,
                 userWorkspace1ItemPath, "user1File2.txt", "user1", "user1");
         // user1Folder1
-        DocumentBackedFolderItem folderItem = mapper.readValue(topLevelChildrenNodes[2],
+        DocumentBackedFolderItem folderItem = readValue(topLevelChildrenNodes[2],
                 DocumentBackedFolderItem.class);
         checkFolderItem(folderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1Folder1, userWorkspace1ItemId,
                 userWorkspace1ItemPath, "user1Folder1", "user1", "user1");
@@ -409,11 +412,11 @@ public class TestUserWorkspaceHierarchy {
         {
             JsonNode[] folderItemChildrenNodes = sortNodeByName(folderItemChildren);
             // user1File1
-            childFileItem = mapper.readValue(folderItemChildrenNodes[0], DocumentBackedFileItem.class);
+            childFileItem = readValue(folderItemChildrenNodes[0], DocumentBackedFileItem.class);
             checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1File1, folderItem.getId(),
                     folderItem.getPath(), "user1File1.txt", "user1", "user1");
             // user1Folder2
-            DocumentBackedFolderItem childFolderItem = mapper.readValue(folderItemChildrenNodes[1],
+            DocumentBackedFolderItem childFolderItem = readValue(folderItemChildrenNodes[1],
                     DocumentBackedFolderItem.class);
             checkFolderItem(childFolderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1Folder2, folderItem.getId(),
                     folderItem.getPath(), "user1Folder2", "user1", "user1");
@@ -443,6 +446,12 @@ public class TestUserWorkspaceHierarchy {
         }
     }
 
+    protected <T> T readValue(JsonNode node, Class<T> klass) throws IOException {
+        try (JsonParser tokens = mapper.treeAsTokens(node)) {
+            return mapper.readValue(tokens, klass);
+        }
+    }
+
     protected JsonNode[] sortNodeByName(ArrayNode array) {
         JsonNode nodes[] = new JsonNode[array.size()];
         for (int i = 0; i < array.size(); ++i) {
@@ -452,8 +461,8 @@ public class TestUserWorkspaceHierarchy {
 
             @Override
             public int compare(JsonNode o1, JsonNode o2) {
-                final String s1 = o1.get("name").getValueAsText();
-                final String s2 = o2.get("name").getValueAsText();
+                final String s1 = o1.get("name").asText();
+                final String s2 = o2.get("name").asText();
                 return s1.compareTo(s2);
             }
         });

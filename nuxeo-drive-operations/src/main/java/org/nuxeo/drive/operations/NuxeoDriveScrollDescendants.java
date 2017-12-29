@@ -21,9 +21,6 @@ package org.nuxeo.drive.operations;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.service.FileSystemItemManager;
@@ -36,6 +33,10 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Retrieves at most {@code batchSize} descendants of the {@link FolderItem} with the given {@code id} for the currently

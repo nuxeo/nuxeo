@@ -28,7 +28,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +45,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tests the {@link NuxeoDriveGetChangeSummary} operation.

@@ -22,16 +22,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.BooleanNode;
-import org.codehaus.jackson.node.TextNode;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
  * {@link JsonDeserializer} for a {@link ScrollFileSystemItemList}.
@@ -43,18 +44,25 @@ public class ScrollFileSystemItemListDeserializer extends JsonDeserializer<Scrol
     @Override
     public ScrollFileSystemItemList deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
         JsonNode rootNode = jp.readValueAsTree();
-        String scrollId = ((TextNode) rootNode.get("scrollId")).getTextValue();
+        String scrollId = ((TextNode) rootNode.get("scrollId")).textValue();
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode fileSystemItemNodes = (ArrayNode) rootNode.get("fileSystemItems");
         List<FileSystemItem> fileSystemItems = new ArrayList<>(fileSystemItemNodes.size());
         for (JsonNode fileSystemItemNode : fileSystemItemNodes) {
-            boolean folderish = ((BooleanNode) fileSystemItemNode.get("folder")).getBooleanValue();
+            boolean folderish = ((BooleanNode) fileSystemItemNode.get("folder")).booleanValue();
             if (folderish) {
-                fileSystemItems.add(mapper.readValue(fileSystemItemNode, DocumentBackedFolderItem.class));
+                fileSystemItems.add(readValue(mapper, fileSystemItemNode, DocumentBackedFolderItem.class));
             } else {
-                fileSystemItems.add(mapper.readValue(fileSystemItemNode, DocumentBackedFileItem.class));
+                fileSystemItems.add(readValue(mapper, fileSystemItemNode, DocumentBackedFileItem.class));
             }
         }
         return new ScrollFileSystemItemListImpl(scrollId, fileSystemItems);
     }
+
+    protected <T> T readValue(ObjectMapper mapper, JsonNode node, Class<T> klass) throws IOException {
+        try (JsonParser tokens = mapper.treeAsTokens(node)) {
+            return mapper.readValue(tokens, klass);
+        }
+    }
+
 }

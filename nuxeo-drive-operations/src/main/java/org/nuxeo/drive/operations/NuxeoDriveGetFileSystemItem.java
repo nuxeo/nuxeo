@@ -64,7 +64,7 @@ public class NuxeoDriveGetFileSystemItem {
         } else {
             fsItem = fileSystemItemManager.getFileSystemItemById(id, parentId, ctx.getPrincipal());
         }
-        return Blobs.createJSONBlobFromValueJackson1(fsItem);
+        return Blobs.createJSONBlobFromValue(fsItem);
     }
 
 }

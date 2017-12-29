@@ -55,7 +55,7 @@ public class NuxeoDriveGetChildren {
 
         FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
         List<FileSystemItem> children = fileSystemItemManager.getChildren(id, ctx.getPrincipal());
-        return Blobs.createJSONBlobFromValueJackson1(children);
+        return Blobs.createJSONBlobFromValue(children);
     }
 
 }

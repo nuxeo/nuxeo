@@ -69,7 +69,7 @@ public class NuxeoDriveUpdateFile {
             fileItem = fileSystemItemManager.updateFile(id, parentId, blob, ctx.getPrincipal());
         }
 
-        return Blobs.createJSONBlobFromValueJackson1(fileItem);
+        return Blobs.createJSONBlobFromValue(fileItem);
     }
 
 }

@@ -21,11 +21,12 @@ package org.nuxeo.drive.service.impl;
 import java.io.IOException;
 import java.util.List;
 
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.type.TypeReference;
 import org.nuxeo.drive.service.FileSystemItemChange;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 
 /**
  * {@link JsonDeserializer} for a {@link List<FileSystemItemChange>}.

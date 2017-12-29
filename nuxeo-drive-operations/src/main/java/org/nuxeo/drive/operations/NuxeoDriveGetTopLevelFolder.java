@@ -49,7 +49,7 @@ public class NuxeoDriveGetTopLevelFolder {
 
         FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
         FolderItem topLevelFolder = fileSystemItemManager.getTopLevelFolder(ctx.getPrincipal());
-        return Blobs.createJSONBlobFromValueJackson1(topLevelFolder);
+        return Blobs.createJSONBlobFromValue(topLevelFolder);
     }
 
 }

@@ -18,9 +18,10 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemChange;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Default implementation of a {@link FileSystemItemChange}.

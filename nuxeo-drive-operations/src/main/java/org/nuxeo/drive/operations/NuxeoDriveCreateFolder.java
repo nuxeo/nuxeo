@@ -65,7 +65,7 @@ public class NuxeoDriveCreateFolder {
         FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
         FolderItem folderItem = fileSystemItemManager.createFolder(parentId, name, ctx.getPrincipal(), overwrite);
 
-        return Blobs.createJSONBlobFromValueJackson1(folderItem);
+        return Blobs.createJSONBlobFromValue(folderItem);
     }
 
 }

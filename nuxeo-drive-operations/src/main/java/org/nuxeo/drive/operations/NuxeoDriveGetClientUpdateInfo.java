@@ -51,7 +51,7 @@ public class NuxeoDriveGetClientUpdateInfo {
         String betaUpdateSiteURL = Framework.getProperty(NuxeoDriveConstants.BETA_UPDATE_SITE_URL_PROP_KEY);
         NuxeoDriveClientUpdateInfo info = new NuxeoDriveClientUpdateInfo(serverVersion, updateSiteURL,
                 betaUpdateSiteURL);
-        return Blobs.createJSONBlobFromValueJackson1(info);
+        return Blobs.createJSONBlobFromValue(info);
     }
 
 }

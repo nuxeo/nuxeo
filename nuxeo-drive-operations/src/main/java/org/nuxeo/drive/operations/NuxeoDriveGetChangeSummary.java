@@ -71,7 +71,7 @@ public class NuxeoDriveGetChangeSummary {
             docChangeSummary = driveManager.getChangeSummaryIntegerBounds(ctx.getPrincipal(), lastActiveRootRefs,
                     lowerBound);
         }
-        return Blobs.createJSONBlobFromValueJackson1(docChangeSummary);
+        return Blobs.createJSONBlobFromValue(docChangeSummary);
     }
 
 }

@@ -21,9 +21,10 @@ package org.nuxeo.drive.adapter.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Default implementation of a {@link ScrollFileSystemItemList} based on an {@link ArrayList}.
