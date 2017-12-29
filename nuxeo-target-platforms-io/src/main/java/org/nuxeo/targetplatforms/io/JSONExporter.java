@@ -22,15 +22,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
 import org.nuxeo.targetplatforms.api.TargetPackage;
 import org.nuxeo.targetplatforms.api.TargetPackageInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatform;
 import org.nuxeo.targetplatforms.api.TargetPlatformInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatformInstance;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * JSON exporter for target platforms, packages and related info.
@@ -71,7 +72,7 @@ public class JSONExporter {
     protected static JsonFactory createFactory() {
         JsonFactory factory = new JsonFactory();
         final ObjectMapper oc = new ObjectMapper(factory);
-        oc.configure(SerializationConfig.Feature.SORT_PROPERTIES_ALPHABETICALLY, true);
+        oc.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
         factory.setCodec(oc);
         return factory;
     }

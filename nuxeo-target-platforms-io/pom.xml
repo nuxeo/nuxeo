@@ -21,15 +21,6 @@
       <artifactId>nuxeo-target-platforms-core</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-    </dependency>
-
     <!-- tests -->
     <dependency>
       <groupId>org.nuxeo.utils</groupId>
