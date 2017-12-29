@@ -31,7 +31,6 @@ import java.util.MissingResourceException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,6 +39,9 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
 
 /**

@@ -31,12 +31,12 @@ import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonProcessingException;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
@@ -48,12 +48,12 @@ public class RoutingRestBaseTest extends BaseTest {
     protected String assertActorIsAdministrator(ClientResponse response) throws JsonProcessingException, IOException {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, node.get("entries").size());
-        Iterator<JsonNode> elements = node.get("entries").getElements();
+        Iterator<JsonNode> elements = node.get("entries").elements();
         JsonNode element = elements.next();
-        String taskId = element.get("id").getTextValue();
+        String taskId = element.get("id").textValue();
         JsonNode actors = element.get("actors");
         assertEquals(1, actors.size());
-        String actor = actors.getElements().next().get("id").getTextValue();
+        String actor = actors.elements().next().get("id").textValue();
         assertEquals("Administrator", actor);
         return taskId;
     }
@@ -119,7 +119,7 @@ public class RoutingRestBaseTest extends BaseTest {
 
     protected String getCurrentTaskId(final String createdWorflowInstanceId)
             throws IOException, JsonProcessingException {
-        String taskId = getCurrentTask(createdWorflowInstanceId, null, null).get("id").getTextValue();
+        String taskId = getCurrentTask(createdWorflowInstanceId, null, null).get("id").textValue();
         return taskId;
     }
 
@@ -137,7 +137,7 @@ public class RoutingRestBaseTest extends BaseTest {
                 headers)) {
             node = mapper.readTree(response.getEntityInputStream());
             assertEquals(1, node.get("entries").size());
-            Iterator<JsonNode> elements = node.get("entries").getElements();
+            Iterator<JsonNode> elements = node.get("entries").elements();
             return elements.next();
         }
     }
