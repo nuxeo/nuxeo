@@ -71,8 +71,6 @@ import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -96,6 +94,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Suite of CMIS tests with minimal setup, checking HTTP headers.
@@ -256,7 +257,7 @@ public class CmisSuiteSession2 {
                 try (CloseableHttpResponse response = httpClient.execute(request)) {
                     if (okRequest) {
                         JsonNode root = checkOkContentStreamResponse(contentMD5Hex, mapper, response);
-                        String objectId = root.path("succinctProperties").path("cmis:objectId").getTextValue();
+                        String objectId = root.path("succinctProperties").path("cmis:objectId").textValue();
                         assertNotNull(objectId);
                         coreSession.removeDocument(new IdRef(objectId));
                         coreSession.save();
@@ -298,7 +299,7 @@ public class CmisSuiteSession2 {
                     assertEquals(HttpServletResponse.SC_CREATED, response.getStatusLine().getStatusCode());
                     InputStream is = response.getEntity().getContent();
                     JsonNode root = mapper.readTree(is);
-                    String objectId = root.path("succinctProperties").path("cmis:objectId").getTextValue();
+                    String objectId = root.path("succinctProperties").path("cmis:objectId").textValue();
                     assertNotNull(objectId);
                 }
 
@@ -367,10 +368,10 @@ public class CmisSuiteSession2 {
         JsonNode root = mapper.readTree(content);
         String expectedContentStreamHash = new ContentStreamHashImpl(
                 ContentStreamHashImpl.ALGORITHM_MD5, contentMD5Hex).toString();
-        Iterator iter = root.path("succinctProperties").path("cmis:contentStreamHash").getElements();
+        Iterator iter = root.path("succinctProperties").path("cmis:contentStreamHash").elements();
         boolean found = false;
         while (iter.hasNext()) {
-            String hash = ((JsonNode) iter.next()).getTextValue();
+            String hash = ((JsonNode) iter.next()).textValue();
             if (expectedContentStreamHash.equals(hash)) {
                 found = true;
                 break;
@@ -388,7 +389,7 @@ public class CmisSuiteSession2 {
         }
         assertEquals(content, HttpServletResponse.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
         JsonNode root = mapper.readTree(content);
-        String exception = root.path("exception").getTextValue();
+        String exception = root.path("exception").textValue();
         assertEquals("invalidArgument", exception);
         return root;
     }

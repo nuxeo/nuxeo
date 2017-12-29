@@ -43,10 +43,6 @@ import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyString;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,6 +62,11 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CmisFeature.class, CmisFeatureConfiguration.class })
@@ -402,7 +403,7 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
 
     private void assertComplexPropertyNodeEquals(Map<String, Object> propMap, JsonNode jsonNode,
             DateTimeFormat dateTimeFormat) throws IOException {
-        List<String> nodeKeys = copyIterator(jsonNode.getFieldNames());
+        List<String> nodeKeys = copyIterator(jsonNode.fieldNames());
         Set<String> propKeys = propMap.keySet();
         assertEquals(nodeKeys.size(), propKeys.size());
         nodeKeys.containsAll(propKeys);
@@ -420,7 +421,7 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
                 ArrayNode jsonArray = (ArrayNode) jsonNode.get(key);
                 for (int i = 0; i < origList.size(); i++) {
                     assertEquals("Wrong value at key [" + key + "] index [" + i + "]", origList.get(i).toString(),
-                            jsonArray.get(i).getValueAsText());
+                            jsonArray.get(i).asText());
                 }
             } else {
                 if (origVal instanceof Calendar) {
@@ -430,7 +431,7 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
                         origVal = DateParser.formatW3CDateTime(((Calendar) origVal).getTime());
                     }
                 }
-                assertEquals("Wrong value at key [" + key + "]", origVal.toString(), jsonNode.get(key).getValueAsText());
+                assertEquals("Wrong value at key [" + key + "]", origVal.toString(), jsonNode.get(key).asText());
             }
         }
     }
