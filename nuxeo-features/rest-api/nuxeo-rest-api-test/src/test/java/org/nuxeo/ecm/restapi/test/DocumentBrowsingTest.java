@@ -37,8 +37,6 @@ import java.util.Map;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.collections.api.CollectionManager;
@@ -70,6 +68,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
  * Test the CRUD rest API
@@ -126,7 +127,7 @@ public class DocumentBrowsingTest extends BaseTest {
             // Then i get the only document of the folder
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            Iterator<JsonNode> elements = node.get("entries").getElements();
+            Iterator<JsonNode> elements = node.get("entries").elements();
             node = elements.next();
 
             assertNodeEqualsDoc(node, child);
@@ -146,7 +147,7 @@ public class DocumentBrowsingTest extends BaseTest {
 
         // When i do a PUT request on the document with modified data
         // and the same change token
-        String changeToken = jsonDoc.node.get("changeToken").getTextValue();
+        String changeToken = jsonDoc.node.get("changeToken").asText();
         assertNotNull(changeToken);
         jsonDoc.setPropertyValue("dc:title", "New title");
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson())) {
@@ -267,7 +268,7 @@ public class DocumentBrowsingTest extends BaseTest {
 
             // Check if the version of the document has been returned
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals("1.0", node.get("versionLabel").getValueAsText());
+            assertEquals("1.0", node.get("versionLabel").asText());
 
             // Check if the original document is still not versioned.
             note = RestServerInit.getNote(0, session);
@@ -369,9 +370,9 @@ public class DocumentBrowsingTest extends BaseTest {
             node = mapper.readTree(response.getEntityInputStream());
 
             // Then the create document is returned
-            assertEquals("My title", node.get("title").getValueAsText());
-            assertEquals(" ", node.get("properties").get("dc:description").getTextValue());
-            String id = node.get("uid").getValueAsText();
+            assertEquals("My title", node.get("title").asText());
+            assertEquals(" ", node.get("properties").get("dc:description").textValue());
+            String id = node.get("uid").asText();
             assertTrue(StringUtils.isNotBlank(id));
 
             // Then a document is created in the database
@@ -448,7 +449,7 @@ public class DocumentBrowsingTest extends BaseTest {
             // Then i get a the ACL
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals(ACPJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+            assertEquals(ACPJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
         }
     }
 
@@ -467,7 +468,7 @@ public class DocumentBrowsingTest extends BaseTest {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals("inherited",
-                    node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("acls").get(0).get("name").getTextValue());
+                    node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("acls").get(0).get("name").textValue());
         }
     }
 
@@ -491,7 +492,7 @@ public class DocumentBrowsingTest extends BaseTest {
         // JsonNode node = mapper.readTree(response.getEntityInputStream());
         // assertEquals("specificUrl", node.get(RestConstants
         // .CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get
-        // ("thumbnailUrl").getTextValue());
+        // ("thumbnailUrl").textValue());
 
         Map<String, String> headers = new HashMap<>();
         headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", ThumbnailJsonEnricher.NAME);
@@ -508,7 +509,7 @@ public class DocumentBrowsingTest extends BaseTest {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertNotNull(
-                    node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get("url").getTextValue());
+                    node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get("url").textValue());
         }
     }
 
@@ -536,7 +537,7 @@ public class DocumentBrowsingTest extends BaseTest {
             assertFalse(node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
                             .get(FavoritesJsonEnricher.NAME)
                             .get(FavoritesJsonEnricher.IS_FAVORITE)
-                            .getBooleanValue());
+                            .booleanValue());
         }
 
         FavoritesManager favoritesManager = Framework.getService(FavoritesManager.class);
@@ -553,7 +554,7 @@ public class DocumentBrowsingTest extends BaseTest {
             assertTrue(node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
                            .get(FavoritesJsonEnricher.NAME)
                            .get(FavoritesJsonEnricher.IS_FAVORITE)
-                           .getBooleanValue());
+                           .booleanValue());
         }
     }
 
@@ -595,7 +596,7 @@ public class DocumentBrowsingTest extends BaseTest {
             JsonNode tags = node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(TagsJsonEnricher.NAME);
             if (tags.size() != 0) { // XXX NXP-17670 tags not implemented for MongoDB
                 assertEquals(1, tags.size());
-                assertEquals("pouet", tags.get(0).getTextValue());
+                assertEquals("pouet", tags.get(0).textValue());
             }
         }
     }
@@ -639,7 +640,7 @@ public class DocumentBrowsingTest extends BaseTest {
             ArrayNode collections = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
                                                     .get(CollectionsJsonEnricher.NAME);
             assertEquals(1, collections.size());
-            assertEquals("dummyCollection", collections.get(0).get("title").getTextValue());
+            assertEquals("dummyCollection", collections.get(0).get("title").textValue());
         }
     }
 
@@ -679,7 +680,7 @@ public class DocumentBrowsingTest extends BaseTest {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             JsonNode preview = node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("preview");
             assertNotNull(preview);
-            StringUtils.endsWith(preview.get("url").getTextValue(), "/default/");
+            StringUtils.endsWith(preview.get("url").textValue(), "/default/");
         }
     }
 

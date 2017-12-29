@@ -28,7 +28,6 @@ import java.io.Serializable;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -44,6 +43,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -127,13 +127,13 @@ public class ConverterTest extends BaseTest {
             assertEquals(202, response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertNotNull(node);
-            assertEquals("conversionScheduled", node.get("entity-type").getTextValue());
-            String id = node.get("conversionId").getTextValue();
+            assertEquals("conversionScheduled", node.get("entity-type").textValue());
+            String id = node.get("conversionId").textValue();
             assertNotNull(id);
-            pollingURL = node.get("pollingURL").getTextValue();
+            pollingURL = node.get("pollingURL").textValue();
             String computedPollingURL = String.format("http://localhost:18090/api/v1/conversions/%s/poll", id);
             assertEquals(computedPollingURL, pollingURL);
-            String resultURL = node.get("resultURL").getTextValue();
+            String resultURL = node.get("resultURL").textValue();
             computedResultURL = String.format("http://localhost:18090/api/v1/conversions/%s/result", id);
             assertEquals(computedResultURL, resultURL);
         }
@@ -143,12 +143,12 @@ public class ConverterTest extends BaseTest {
             assertEquals(200, response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertNotNull(node);
-            assertEquals("conversionStatus", node.get("entity-type").getTextValue());
-            String id = node.get("conversionId").getTextValue();
+            assertEquals("conversionStatus", node.get("entity-type").textValue());
+            String id = node.get("conversionId").textValue();
             assertNotNull(id);
-            String resultURL = node.get("resultURL").getTextValue();
+            String resultURL = node.get("resultURL").textValue();
             assertEquals(computedResultURL, resultURL);
-            String status = node.get("status").getTextValue();
+            String status = node.get("status").textValue();
             assertTrue(status.equals("running") || status.equals("completed"));
         }
 
@@ -161,7 +161,7 @@ public class ConverterTest extends BaseTest {
         try (CloseableClientResponse response = CloseableClientResponse.of(wr.get(ClientResponse.class))) {
             assertEquals(200, response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            resultURL = node.get("resultURL").getTextValue();
+            resultURL = node.get("resultURL").textValue();
             assertEquals(computedResultURL, resultURL);
         }
 

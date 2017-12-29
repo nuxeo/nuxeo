@@ -20,10 +20,11 @@ package org.nuxeo.ecm.automation.server.test;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * TODO must use ObjectCodec on client too.

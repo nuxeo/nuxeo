@@ -28,7 +28,6 @@ import java.util.Map;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.impl.blob.JSONBlob;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -89,13 +88,6 @@ public class TestJSONBlob {
         assertEquals("{\"str\":\"abc\"}", blob.getString());
     }
 
-    @Test
-    public void testValueJackson1() throws Exception {
-        Object value = new DummyValueJackson1("abc");
-        Blob blob = Blobs.createJSONBlobFromValueJackson1(value);
-        assertEquals("{\"str\":\"abc\"}", blob.getString());
-    }
-
     protected static class DummyValue {
 
         protected final String string;
@@ -115,30 +107,6 @@ public class TestJSONBlob {
          * This is NOT returned as JSON.
          */
         @JsonIgnore
-        public String getDebugInfo() {
-            return "debuginfo";
-        }
-    }
-
-    protected static class DummyValueJackson1 {
-
-        protected final String string;
-
-        public DummyValueJackson1(String string) {
-            this.string = string;
-        }
-
-        /**
-         * This is returned as JSON.
-         */
-        public String getStr() {
-            return string;
-        }
-
-        /**
-         * This is NOT returned as JSON (Jackson 1 annotation).
-         */
-        @org.codehaus.jackson.annotate.JsonIgnore
         public String getDebugInfo() {
             return "debuginfo";
         }

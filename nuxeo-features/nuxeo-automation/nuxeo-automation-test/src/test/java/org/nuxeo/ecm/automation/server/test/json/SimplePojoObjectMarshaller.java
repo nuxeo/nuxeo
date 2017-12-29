@@ -20,10 +20,11 @@ package org.nuxeo.ecm.automation.server.test.json;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonParser;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
 import org.nuxeo.ecm.automation.server.test.json.JSONOperationWithArrays.SimplePojo;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 
 public class SimplePojoObjectMarshaller implements JsonMarshaller<SimplePojo> {
 

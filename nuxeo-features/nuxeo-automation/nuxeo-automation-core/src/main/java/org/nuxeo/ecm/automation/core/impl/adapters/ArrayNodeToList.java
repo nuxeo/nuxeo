@@ -20,10 +20,11 @@ package org.nuxeo.ecm.automation.core.impl.adapters;
 
 import java.util.List;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Make it possible to directly JSON tree nodes parsed by the REST API (e.g. parameters or input) directly to java

@@ -35,8 +35,6 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,6 +61,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -115,10 +115,10 @@ public class DirectoryTest extends BaseTest {
         // When I call the Rest endpoint
         JsonNode node = getResponseAsJson(RequestType.GET, "/directory/" + TESTDIRNAME + "/test1");
 
-        assertEquals(DirectoryEntryJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
-        assertEquals(TESTDIRNAME, node.get("directoryName").getValueAsText());
+        assertEquals(DirectoryEntryJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
+        assertEquals(TESTDIRNAME, node.get("directoryName").asText());
         assertEquals(docEntry.getPropertyValue("vocabulary:label"),
-                node.get("properties").get("label").getValueAsText());
+                node.get("properties").get("label").asText());
 
     }
 
@@ -131,38 +131,38 @@ public class DirectoryTest extends BaseTest {
         JsonNode node = getResponseAsJson(RequestType.GET, "/directory");
 
         // It should not return system directories
-        assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+        assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
         assertEquals(3, node.get("entries").size());
-        assertEquals("continent", node.get("entries").get(0).get("name").getTextValue());
-        assertEquals("country", node.get("entries").get(1).get("name").getTextValue());
-        assertEquals("nature", node.get("entries").get(2).get("name").getTextValue());
+        assertEquals("continent", node.get("entries").get(0).get("name").textValue());
+        assertEquals("country", node.get("entries").get(1).get("name").textValue());
+        assertEquals("nature", node.get("entries").get(2).get("name").textValue());
 
         // It should not retrieve directory with unknown type
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.put("types", Collections.singletonList("notExistingType"));
         node = getResponseAsJson(RequestType.GET, "/directory", queryParams);
-        assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+        assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
         assertEquals(0, node.get("entries").size());
 
         // It should not retrieve system directories
         queryParams = new MultivaluedMapImpl();
         queryParams.put("types", Collections.singletonList(DirectoryService.SYSTEM_DIRECTORY_TYPE));
         node = getResponseAsJson(RequestType.GET, "/directory", queryParams);
-        assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+        assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
         assertEquals(0, node.get("entries").size());
 
         // It should be able to retrieve a single type
         queryParams = new MultivaluedMapImpl();
         queryParams.put("types", Collections.singletonList("toto"));
         node = getResponseAsJson(RequestType.GET, "/directory", queryParams);
-        assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+        assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
         assertEquals(1, node.get("entries").size());
 
         // It should be able to retrieve many types
         queryParams = new MultivaluedMapImpl();
         queryParams.put("types", Arrays.asList("toto", "pouet"));
         node = getResponseAsJson(RequestType.GET, "/directory", queryParams);
-        assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+        assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
         assertEquals(2, node.get("entries").size());
     }
 
@@ -180,12 +180,12 @@ public class DirectoryTest extends BaseTest {
         // When I remove all the contraints
         JsonNode node = getResponseAsJson(RequestType.GET, "/directory/country");
         ArrayNode jsonEntries = (ArrayNode) node.get("entries");
-        Iterator<JsonNode> it = jsonEntries.getElements();
+        Iterator<JsonNode> it = jsonEntries.elements();
         while (it.hasNext()) {
             JsonNode props = it.next().get("properties");
-            if ("europe".equals(props.get("parent").getTextValue())) {
+            if ("europe".equals(props.get("parent").textValue())) {
                 try (CloseableClientResponse response = getResponse(RequestType.DELETE,
-                        "/directory/country/" + props.get("id").getTextValue())) {
+                        "/directory/country/" + props.get("id").textValue())) {
                     assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
                 }
             }
@@ -205,7 +205,7 @@ public class DirectoryTest extends BaseTest {
         JsonNode node = getResponseAsJson(RequestType.GET, "/directory/" + TESTDIRNAME);
 
         // Then i receive the response as json
-        assertEquals(DirectoryEntryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+        assertEquals(DirectoryEntryListJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
         ArrayNode jsonEntries = (ArrayNode) node.get("entries");
         assertEquals(entries.size(), jsonEntries.size());
     }
@@ -366,7 +366,7 @@ public class DirectoryTest extends BaseTest {
         // When i do an update request on it
         JsonNode node = getResponseAsJson(RequestType.GET, "/directory/" + userDirectoryName + "/user1");
 
-        assertEquals("", node.get("properties").get("password").getValueAsText());
+        assertEquals("", node.get("properties").get("password").asText());
     }
 
     @Test
@@ -391,10 +391,10 @@ public class DirectoryTest extends BaseTest {
         DocumentModel docEntry = dirSession.getEntry("id/with/slash");
         JsonNode node = getResponseAsJson(RequestType.GET, "/directory/" + TESTDIRNAME + "/id/with/slash");
 
-        assertEquals(DirectoryEntryJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
-        assertEquals(TESTDIRNAME, node.get("directoryName").getValueAsText());
+        assertEquals(DirectoryEntryJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
+        assertEquals(TESTDIRNAME, node.get("directoryName").asText());
         assertEquals(docEntry.getPropertyValue("vocabulary:label"),
-                node.get("properties").get("label").getValueAsText());
+                node.get("properties").get("label").asText());
     }
 
     private String getDirectoryEntryAsJson(DocumentModel dirEntry) throws IOException {

@@ -30,9 +30,10 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)

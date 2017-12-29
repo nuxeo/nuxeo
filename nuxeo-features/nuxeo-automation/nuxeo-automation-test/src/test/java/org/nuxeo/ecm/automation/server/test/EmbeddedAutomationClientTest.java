@@ -44,8 +44,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -116,6 +114,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -914,10 +915,10 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         JsonNode node = (JsonNode) result;
 
         // System.out.println(result.toString());
-        int count = node.get("currentPageSize").getValueAsInt();
+        int count = node.get("currentPageSize").asInt();
         JsonNode entries = node.get("entries");
         for (int i = 0; i < count; i++) {
-            org.junit.Assert.assertEquals("logEntry", entries.get(i).get("entity-type").getValueAsText());
+            org.junit.Assert.assertEquals("logEntry", entries.get(i).get("entity-type").asText());
         }
 
     }
@@ -968,7 +969,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                 cause = (RemoteThrowable) cause.getCause();
             }
             assertEquals("Exception Message", cause.getMessage());
-            assertEquals(ExceptionTest.class.getCanonicalName(), cause.getOtherNodes().get("className").getTextValue());
+            assertEquals(ExceptionTest.class.getCanonicalName(), cause.getOtherNodes().get("className").textValue());
             assertEquals(HttpServletResponse.SC_METHOD_NOT_ALLOWED, e.getStatus());
         } catch (Exception e) {
             fail();

@@ -31,16 +31,17 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.CoreSessionService;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Holds information about what type of indexing operation must be processed. IndexingCommands are create "on the fly"
@@ -250,7 +251,7 @@ public class IndexingCommand implements Serializable {
 
     public static IndexingCommand fromJSON(JsonNode jsonNode) {
         IndexingCommand cmd = new IndexingCommand();
-        Iterator<Map.Entry<String, JsonNode>> fieldsIterator = jsonNode.getFields();
+        Iterator<Map.Entry<String, JsonNode>> fieldsIterator = jsonNode.fields();
         while (fieldsIterator.hasNext()) {
             Map.Entry<String, JsonNode> field = fieldsIterator.next();
             String key = field.getKey();
@@ -259,19 +260,19 @@ public class IndexingCommand implements Serializable {
                 continue;
             }
             if ("type".equals(key)) {
-                cmd.type = Type.valueOf(value.getTextValue());
+                cmd.type = Type.valueOf(value.textValue());
             } else if ("docId".equals(key)) {
-                cmd.targetDocumentId = value.getTextValue();
+                cmd.targetDocumentId = value.textValue();
             } else if ("path".equals(key)) {
-                cmd.path = value.getTextValue();
+                cmd.path = value.textValue();
             } else if ("repo".equals(key)) {
-                cmd.repositoryName = value.getTextValue();
+                cmd.repositoryName = value.textValue();
             } else if ("id".equals(key)) {
-                cmd.id = value.getTextValue();
+                cmd.id = value.textValue();
             } else if ("recurse".equals(key)) {
-                cmd.recurse = value.getBooleanValue();
+                cmd.recurse = value.booleanValue();
             } else if ("sync".equals(key)) {
-                cmd.sync = value.getBooleanValue();
+                cmd.sync = value.booleanValue();
             }
         }
         if (cmd.targetDocumentId == null) {

@@ -25,7 +25,6 @@ import java.io.IOException;
 
 import javax.ws.rs.core.MediaType;
 
-import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
@@ -36,6 +35,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 
@@ -59,7 +59,7 @@ public class MarshallingEdgeCasesTest extends BaseTest {
         try (CloseableClientResponse r = CloseableClientResponse.of(response)) {
             assertEquals(200, r.getStatus());
             JsonNode node = mapper.readTree(r.getEntityInputStream());
-            assertEquals("bar", node.get("foo").getTextValue());
+            assertEquals("bar", node.get("foo").textValue());
         }
     }
 
@@ -68,7 +68,7 @@ public class MarshallingEdgeCasesTest extends BaseTest {
         try (CloseableClientResponse r = getResponse(RequestType.GET, "foo/rollback")) {
             assertEquals(200, r.getStatus());
             JsonNode node = mapper.readTree(r.getEntityInputStream());
-            assertEquals("bar", node.get("foo").getTextValue());
+            assertEquals("bar", node.get("foo").textValue());
         }
     }
 

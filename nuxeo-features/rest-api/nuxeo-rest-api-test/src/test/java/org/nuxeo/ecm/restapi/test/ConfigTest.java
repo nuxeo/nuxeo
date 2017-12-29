@@ -27,8 +27,6 @@ import java.io.IOException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
@@ -41,6 +39,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -64,11 +64,11 @@ public class ConfigTest extends BaseTest {
         JsonNode node = getResponseAsJson(RequestType.GET, "/schema/dublincore");
 
         // Then I can retrieve schema fields type
-        assertEquals("schema", node.get("entity-type").getTextValue());
+        assertEquals("schema", node.get("entity-type").textValue());
         JsonNode fields = node.get("fields");
         assertTrue(fields.size() > 0);
         JsonNode creatorField = fields.get("creator");
-        assertEquals("string", creatorField.getTextValue());
+        assertEquals("string", creatorField.textValue());
     }
 
     /**
@@ -82,18 +82,18 @@ public class ConfigTest extends BaseTest {
         JsonNode node = getResponseAsJson(RequestType.GET, "/schema/dublincore", queryParams);
 
         // Then I can retrieve schema fields type and constraints
-        assertEquals("schema", node.get("entity-type").getTextValue());
+        assertEquals("schema", node.get("entity-type").textValue());
         JsonNode fields = node.get("fields");
         assertTrue(fields.size() > 0);
 
         // Test that nature has a constraint checking if value exists in directory
         JsonNode natureField = fields.get("nature");
-        assertEquals("string", natureField.get("type").getTextValue());
+        assertEquals("string", natureField.get("type").textValue());
         ArrayNode constraints = (ArrayNode) natureField.get("constraints");
         assertEquals(2, constraints.size());
         JsonNode natureConstraint = null;
         for (JsonNode constraint : constraints) {
-            if ("directoryResolver".equals(constraint.get("name").getTextValue())) {
+            if ("directoryResolver".equals(constraint.get("name").textValue())) {
                 natureConstraint = constraint;
                 break;
             }
@@ -101,11 +101,11 @@ public class ConfigTest extends BaseTest {
         assertNotNull(natureConstraint);
         JsonNode natureConstraintParams = natureConstraint.get("parameters");
         assertEquals(1, natureConstraintParams.size());
-        assertEquals("nature", natureConstraintParams.get("directory").getTextValue());
+        assertEquals("nature", natureConstraintParams.get("directory").textValue());
 
         // Test that creator doesn't have a constraint checking if user exists - it still has a constraint for type
         JsonNode creatorField = fields.get("creator");
-        assertEquals("string", creatorField.get("type").getTextValue());
+        assertEquals("string", creatorField.get("type").textValue());
         constraints = (ArrayNode) creatorField.get("constraints");
         assertEquals(1, constraints.size());
     }

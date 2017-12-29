@@ -28,7 +28,6 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
-import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -44,6 +43,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 @RunWith(FeaturesRunner.class)
 @Features({ LogCaptureFeature.class, RestServerFeature.class })
@@ -66,9 +67,9 @@ public class ExceptionRestTest extends BaseTest {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
 
             // Then i get an exception and parse it to check json payload
-            assertEquals("exception", node.get("entity-type").getTextValue());
-            assertEquals(404, node.get("status").getIntValue());
-            assertEquals("Type not found: wrongpath", node.get("message").getTextValue());
+            assertEquals("exception", node.get("entity-type").textValue());
+            assertEquals(404, node.get("status").intValue());
+            assertEquals("Type not found: wrongpath", node.get("message").textValue());
         }
     }
 
@@ -85,12 +86,12 @@ public class ExceptionRestTest extends BaseTest {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
 
             // Then i get an exception and parse it to check json payload
-            assertEquals("exception", node.get("entity-type").getTextValue());
-            assertEquals(404, node.get("status").getIntValue());
-            assertEquals("/wrongID", node.get("message").getTextValue());
-            assertNotNull(node.get("stacktrace").getTextValue());
+            assertEquals("exception", node.get("entity-type").textValue());
+            assertEquals(404, node.get("status").intValue());
+            assertEquals("/wrongID", node.get("message").textValue());
+            assertNotNull(node.get("stacktrace").textValue());
             assertEquals(DocumentNotFoundException.class.getCanonicalName(),
-                    node.get("exception").get("className").getTextValue());
+                    node.get("exception").get("className").textValue());
         }
     }
 
@@ -100,10 +101,10 @@ public class ExceptionRestTest extends BaseTest {
         try (CloseableClientResponse r = getResponse(RequestType.GET, "/foo/notfound")) {
             assertEquals(404, r.getStatus());
             JsonNode node = mapper.readTree(r.getEntityInputStream());
-            assertEquals(404, node.get("status").getNumberValue());
+            assertEquals(404, node.get("status").numberValue());
             assertEquals(
                     "com.sun.jersey.api.NotFoundException: null for uri: http://localhost:18090/api/v1/foo/notfound",
-                    node.get("message").getTextValue());
+                    node.get("message").textValue());
 
             List<LoggingEvent> caughtEvents = logCaptureResult.getCaughtEvents();
             assertEquals(0, caughtEvents.size());
@@ -116,8 +117,8 @@ public class ExceptionRestTest extends BaseTest {
         try (CloseableClientResponse r = getResponse(RequestType.GET, "/foo/exception")) {
             assertEquals(500, r.getStatus());
             JsonNode node = mapper.readTree(r.getEntityInputStream());
-            assertEquals(500, node.get("status").getNumberValue());
-            assertEquals("foo", node.get("message").getTextValue());
+            assertEquals(500, node.get("status").numberValue());
+            assertEquals("foo", node.get("message").textValue());
 
             List<LoggingEvent> caughtEvents = logCaptureResult.getCaughtEvents();
             assertEquals(1, caughtEvents.size());

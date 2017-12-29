@@ -32,8 +32,6 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -52,6 +50,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -207,14 +207,14 @@ public class UserGroupTest extends BaseUserTest {
             JsonNode memberUsers = node.get("memberUsers");
             assertTrue(memberUsers.isArray());
             assertEquals(2, memberUsers.size());
-            assertEquals("user1", memberUsers.get(0).getValueAsText());
-            assertEquals("user2", memberUsers.get(1).getValueAsText());
+            assertEquals("user1", memberUsers.get(0).asText());
+            assertEquals("user2", memberUsers.get(1).asText());
             JsonNode memberGroups = node.get("memberGroups");
             assertEquals(1, memberGroups.size());
-            assertEquals("group2", memberGroups.get(0).getValueAsText());
+            assertEquals("group2", memberGroups.get(0).asText());
             JsonNode parentGroups = node.get("parentGroups");
             assertEquals(1, parentGroups.size());
-            assertEquals("supergroup", parentGroups.get(0).getValueAsText());
+            assertEquals("supergroup", parentGroups.get(0).asText());
         } finally {
             um.deleteGroup(group.getModel());
         }
@@ -543,10 +543,10 @@ public class UserGroupTest extends BaseUserTest {
 
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals("null", node.get("errorMessage").getValueAsText());
+            assertEquals("null", node.get("errorMessage").asText());
             ArrayNode entries = (ArrayNode) node.get("entries");
             assertEquals(1, entries.size());
-            assertEquals("user0", entries.get(0).get("id").getValueAsText());
+            assertEquals("user0", entries.get(0).get("id").asText());
         }
     }
 
@@ -575,10 +575,10 @@ public class UserGroupTest extends BaseUserTest {
 
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals("null", node.get("errorMessage").getValueAsText());
+            assertEquals("null", node.get("errorMessage").asText());
             ArrayNode entries = (ArrayNode) node.get("entries");
             assertEquals(1, entries.size());
-            assertEquals("Lannister", entries.get(0).get("grouplabel").getValueAsText());
+            assertEquals("Lannister", entries.get(0).get("grouplabel").asText());
         }
     }
 
@@ -642,7 +642,7 @@ public class UserGroupTest extends BaseUserTest {
         ArrayNode entries = (ArrayNode) node.get("entries");
         assertEquals(users.length, entries.size());
         for (int i = 0; i < users.length; i++) {
-            assertEquals(users[i], entries.get(i).get("id").getValueAsText());
+            assertEquals(users[i], entries.get(i).get("id").asText());
         }
     }
 
@@ -657,12 +657,12 @@ public class UserGroupTest extends BaseUserTest {
      */
     private void assertPaging(int currentPageIndex, int pageSize, int numberOfPage, int resultsCount,
             int currentPageSize, JsonNode node) {
-        assertTrue(node.get("isPaginable").getBooleanValue());
-        assertEquals(currentPageIndex, node.get("currentPageIndex").getIntValue());
-        assertEquals(pageSize, node.get("pageSize").getIntValue());
-        assertEquals(numberOfPage, node.get("numberOfPages").getIntValue());
-        assertEquals(resultsCount, node.get("resultsCount").getIntValue());
-        assertEquals(currentPageSize, node.get("currentPageSize").getIntValue());
+        assertTrue(node.get("isPaginable").booleanValue());
+        assertEquals(currentPageIndex, node.get("currentPageIndex").intValue());
+        assertEquals(pageSize, node.get("pageSize").intValue());
+        assertEquals(numberOfPage, node.get("numberOfPages").intValue());
+        assertEquals(resultsCount, node.get("resultsCount").intValue());
+        assertEquals(currentPageSize, node.get("currentPageSize").intValue());
     }
 
     /**
@@ -687,7 +687,7 @@ public class UserGroupTest extends BaseUserTest {
         ArrayNode entries = (ArrayNode) node.get("entries");
         assertEquals(groups.length, entries.size());
         for (int i = 0; i < groups.length; i++) {
-            assertEquals(groups[i], entries.get(i).get("id").getValueAsText());
+            assertEquals(groups[i], entries.get(i).get("id").asText());
         }
     }
 

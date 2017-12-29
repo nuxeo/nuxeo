@@ -233,17 +233,4 @@ public class Blobs {
         return new JSONBlob(json);
     }
 
-    /**
-     * Create a {@link Blob} backed by the JSON for an arbitrary value.
-     * <p>
-     * The value's internal classes may be annotated with Jackson 1 annotations.
-     *
-     * @param value the value
-     * @since 9.2
-     */
-    public static Blob createJSONBlobFromValueJackson1(Object value) throws IOException {
-        String json = new org.codehaus.jackson.map.ObjectMapper().writeValueAsString(value);
-        return new JSONBlob(json);
-    }
-
 }

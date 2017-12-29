@@ -26,8 +26,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.adapter.BusinessBeanAdapter;
@@ -41,6 +39,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -65,8 +65,8 @@ public class AdapterBindingTest extends BaseTest {
             // Then i receive a formatted response
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals("BusinessBeanAdapter", node.get("entity-type").getValueAsText());
-            assertEquals(note.getPropertyValue("note:note"), node.get("value").get("note").getValueAsText());
+            assertEquals("BusinessBeanAdapter", node.get("entity-type").asText());
+            assertEquals(note.getPropertyValue("note:note"), node.get("value").get("note").asText());
         }
     }
 
@@ -121,14 +121,14 @@ public class AdapterBindingTest extends BaseTest {
                 "/id/" + folder.getId() + "/@children/@" + BOAdapter.NAME + "/BusinessBeanAdapter");
 
         // Then i receive a list of businessBeanAdapter
-        assertEquals("adapters", node.get("entity-type").getValueAsText());
+        assertEquals("adapters", node.get("entity-type").asText());
         ArrayNode entries = (ArrayNode) node.get("entries");
         DocumentModelList children = session.getChildren(folder.getRef());
         assertEquals(children.size(), entries.size());
 
         JsonNode jsonNote = entries.get(0);
-        assertEquals("BusinessBeanAdapter", jsonNote.get("entity-type").getValueAsText());
-        assertEquals("Note", jsonNote.get("value").get("type").getValueAsText());
+        assertEquals("BusinessBeanAdapter", jsonNote.get("entity-type").asText());
+        assertEquals("Note", jsonNote.get("value").get("type").asText());
     }
 
     @Test
@@ -147,14 +147,14 @@ public class AdapterBindingTest extends BaseTest {
                 "/id/" + folder.getId() + "/@children/@" + BOAdapter.NAME + "/BusinessBeanAdapter", queryParams);
 
         // Then i receive a list of businessBeanAdapter
-        assertEquals("adapters", node.get("entity-type").getValueAsText());
-        assertTrue(node.get("isPaginable").getBooleanValue());
+        assertEquals("adapters", node.get("entity-type").asText());
+        assertTrue(node.get("isPaginable").booleanValue());
         assertEquals(2, ((ArrayNode) node.get("entries")).size());
 
         JsonNode node1 = ((ArrayNode) node.get("entries")).get(0);
         JsonNode node2 = ((ArrayNode) node.get("entries")).get(1);
-        String title1 = node1.get("value").get("title").getValueAsText();
-        String title2 = node2.get("value").get("title").getValueAsText();
+        String title1 = node1.get("value").get("title").asText();
+        String title2 = node2.get("value").get("title").asText();
         assertTrue(title1.compareTo(title2) > 0);
 
         // same with multiple sorts
@@ -165,14 +165,14 @@ public class AdapterBindingTest extends BaseTest {
                 "/id/" + folder.getId() + "/@children/@" + BOAdapter.NAME + "/BusinessBeanAdapter", queryParams);
 
         // Then i receive a list of businessBeanAdapter
-        assertEquals("adapters", node.get("entity-type").getValueAsText());
-        assertTrue(node.get("isPaginable").getBooleanValue());
+        assertEquals("adapters", node.get("entity-type").asText());
+        assertTrue(node.get("isPaginable").booleanValue());
         assertEquals(2, ((ArrayNode) node.get("entries")).size());
 
         node1 = ((ArrayNode) node.get("entries")).get(0);
         node2 = ((ArrayNode) node.get("entries")).get(1);
-        title1 = node1.get("value").get("title").getValueAsText();
-        title2 = node2.get("value").get("title").getValueAsText();
+        title1 = node1.get("value").get("title").asText();
+        title2 = node2.get("value").get("title").asText();
         assertTrue(title1.compareTo(title2) > 0);
     }
 }

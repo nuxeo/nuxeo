@@ -31,8 +31,6 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -53,6 +51,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
@@ -161,9 +161,9 @@ public class SearchTest extends BaseTest {
             List<JsonNode> entries = getLogEntries(node);
             assertEquals(2, entries.size());
             JsonNode jsonNode = entries.get(0);
-            assertEquals("Note 2", jsonNode.get("title").getValueAsText());
+            assertEquals("Note 2", jsonNode.get("title").asText());
             jsonNode = entries.get(1);
-            assertEquals("Note 1", jsonNode.get("title").getValueAsText());
+            assertEquals("Note 1", jsonNode.get("title").asText());
         }
     }
 
@@ -198,8 +198,8 @@ public class SearchTest extends BaseTest {
                 assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
                 JsonNode node = mapper.readTree(response.getEntityInputStream());
                 assertEquals(1, getLogEntries(node).size());
-                String retrievedTitle = ((ArrayNode) node.get("entries")).get(0).get("title").getTextValue();
-                assertEquals(notes.get(i).get("title").getTextValue(), retrievedTitle);
+                String retrievedTitle = ((ArrayNode) node.get("entries")).get(0).get("title").textValue();
+                assertEquals(notes.get(i).get("title").textValue(), retrievedTitle);
             }
         }
 
@@ -214,8 +214,8 @@ public class SearchTest extends BaseTest {
                 assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
                 JsonNode node = mapper.readTree(response.getEntityInputStream());
                 assertEquals(1, getLogEntries(node).size());
-                String retrievedTitle = ((ArrayNode) node.get("entries")).get(0).get("title").getTextValue();
-                assertEquals(notes.get(i).get("title").getTextValue(), retrievedTitle);
+                String retrievedTitle = ((ArrayNode) node.get("entries")).get(0).get("title").textValue();
+                assertEquals(notes.get(i).get("title").textValue(), retrievedTitle);
             }
         }
     }
@@ -237,9 +237,9 @@ public class SearchTest extends BaseTest {
             List<JsonNode> entries = getLogEntries(node);
             assertEquals(2, entries.size());
             JsonNode jsonNode = entries.get(0);
-            assertEquals("Note 1", jsonNode.get("title").getValueAsText());
+            assertEquals("Note 1", jsonNode.get("title").asText());
             jsonNode = entries.get(1);
-            assertEquals("Note 2", jsonNode.get("title").getValueAsText());
+            assertEquals("Note 2", jsonNode.get("title").asText());
         }
     }
 
@@ -252,7 +252,7 @@ public class SearchTest extends BaseTest {
                 getSearchPageProviderExecutePath("TEST_PP_ALL_NOTE"))) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals(4444, node.get("resultsCountLimit").getIntValue());
+            assertEquals(4444, node.get("resultsCountLimit").intValue());
         }
     }
 
@@ -292,8 +292,8 @@ public class SearchTest extends BaseTest {
             assertTrue(node.get("quickFilters").isArray());
             assertEquals(3, node.get("quickFilters").size());
             for (JsonNode qf : node.get("quickFilters")) {
-                String name = qf.get("name").getTextValue();
-                boolean active = qf.get("active").getBooleanValue();
+                String name = qf.get("name").textValue();
+                boolean active = qf.get("active").booleanValue();
                 assertEquals("testQF".equals(name) || "testQF2".equals(name), active);
             }
         }
@@ -476,7 +476,7 @@ public class SearchTest extends BaseTest {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
             PageProviderDefinition def = pageProviderService.getPageProviderDefinition("namedParamProviderComplex");
-            assertEquals(def.getName(), node.get("name").getTextValue());
+            assertEquals(def.getName(), node.get("name").textValue());
         }
     }
 
@@ -490,13 +490,13 @@ public class SearchTest extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals("savedSearch", node.get("entity-type").getTextValue());
-            assertEquals("search by query", node.get("title").getTextValue());
-            assertEquals("select * from Document where dc:creator = ?", node.get("query").getTextValue());
-            assertEquals("NXQL", node.get("queryLanguage").getTextValue());
-            assertEquals("$currentUser", node.get("queryParams").getTextValue());
-            assertEquals("2", node.get("pageSize").getTextValue());
-            assertEquals("{\"viewVar\": \"value\"}", node.get("contentViewData").getTextValue());
+            assertEquals("savedSearch", node.get("entity-type").textValue());
+            assertEquals("search by query", node.get("title").textValue());
+            assertEquals("select * from Document where dc:creator = ?", node.get("query").textValue());
+            assertEquals("NXQL", node.get("queryLanguage").textValue());
+            assertEquals("$currentUser", node.get("queryParams").textValue());
+            assertEquals("2", node.get("pageSize").textValue());
+            assertEquals("{\"viewVar\": \"value\"}", node.get("contentViewData").textValue());
         }
     }
 
@@ -510,11 +510,11 @@ public class SearchTest extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals("savedSearch", node.get("entity-type").getTextValue());
-            assertEquals("search by page provider", node.get("title").getTextValue());
-            assertEquals("TEST_PP", node.get("pageProviderName").getTextValue());
-            assertEquals(folder.getId(), node.get("queryParams").getTextValue());
-            assertEquals("{\"viewVar\": \"value\"}", node.get("contentViewData").getTextValue());
+            assertEquals("savedSearch", node.get("entity-type").textValue());
+            assertEquals("search by page provider", node.get("title").textValue());
+            assertEquals("TEST_PP", node.get("pageProviderName").textValue());
+            assertEquals(folder.getId(), node.get("queryParams").textValue());
+            assertEquals("{\"viewVar\": \"value\"}", node.get("contentViewData").textValue());
         }
     }
 
@@ -529,16 +529,16 @@ public class SearchTest extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data, headers)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals("savedSearch", node.get("entity-type").getTextValue());
-            assertEquals("search by page provider 2", node.get("title").getTextValue());
-            assertEquals("default_search", node.get("pageProviderName").getTextValue());
-            assertEquals("2", node.get("pageSize").getTextValue());
-            assertEquals("{\"viewVar\": \"value\"}", node.get("contentViewData").getTextValue());
+            assertEquals("savedSearch", node.get("entity-type").textValue());
+            assertEquals("search by page provider 2", node.get("title").textValue());
+            assertEquals("default_search", node.get("pageProviderName").textValue());
+            assertEquals("2", node.get("pageSize").textValue());
+            assertEquals("{\"viewVar\": \"value\"}", node.get("contentViewData").textValue());
             assertTrue(node.has("params"));
             node = node.get("params");
-            assertEquals("Note*", node.get("defaults:ecm_fulltext").getTextValue());
+            assertEquals("Note*", node.get("defaults:ecm_fulltext").textValue());
             assertEquals(1, node.get("defaults:dc_modified_agg").size());
-            assertEquals("last24h", node.get("defaults:dc_modified_agg").get(0).getTextValue());
+            assertEquals("last24h", node.get("defaults:dc_modified_agg").get(0).textValue());
         }
     }
 
@@ -601,12 +601,12 @@ public class SearchTest extends BaseTest {
                 getSavedSearchPath(RestServerInit.getSavedSearchId(1, session)))) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals("savedSearch", node.get("entity-type").getTextValue());
-            assertEquals("my saved search 1", node.get("title").getTextValue());
-            assertEquals("select * from Document where dc:creator = ?", node.get("query").getTextValue());
-            assertEquals("NXQL", node.get("queryLanguage").getTextValue());
-            assertEquals("$currentUser", node.get("queryParams").getTextValue());
-            assertEquals("2", node.get("pageSize").getTextValue());
+            assertEquals("savedSearch", node.get("entity-type").textValue());
+            assertEquals("my saved search 1", node.get("title").textValue());
+            assertEquals("select * from Document where dc:creator = ?", node.get("query").textValue());
+            assertEquals("NXQL", node.get("queryLanguage").textValue());
+            assertEquals("$currentUser", node.get("queryParams").textValue());
+            assertEquals("2", node.get("pageSize").textValue());
         }
     }
 
@@ -616,11 +616,11 @@ public class SearchTest extends BaseTest {
                 getSavedSearchPath(RestServerInit.getSavedSearchId(2, session)))) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals("savedSearch", node.get("entity-type").getTextValue());
-            assertEquals("my saved search 2", node.get("title").getTextValue());
-            assertEquals("TEST_PP", node.get("pageProviderName").getTextValue());
+            assertEquals("savedSearch", node.get("entity-type").textValue());
+            assertEquals("my saved search 2", node.get("title").textValue());
+            assertEquals("TEST_PP", node.get("pageProviderName").textValue());
             DocumentModel folder = RestServerInit.getFolder(1, session);
-            assertEquals(folder.getId(), node.get("queryParams").getTextValue());
+            assertEquals(folder.getId(), node.get("queryParams").textValue());
         }
     }
 
@@ -645,13 +645,13 @@ public class SearchTest extends BaseTest {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
 
-            assertEquals("savedSearch", node.get("entity-type").getTextValue());
-            assertEquals("my search 1", node.get("title").getTextValue());
-            assertEquals("select * from Document where dc:creator = ?", node.get("query").getTextValue());
-            assertEquals("NXQL", node.get("queryLanguage").getTextValue());
-            assertEquals("$currentUser", node.get("queryParams").getTextValue());
-            assertEquals("1", node.get("pageSize").getTextValue());
-            assertEquals("{\"viewVar\": \"another value\"}", node.get("contentViewData").getTextValue());
+            assertEquals("savedSearch", node.get("entity-type").textValue());
+            assertEquals("my search 1", node.get("title").textValue());
+            assertEquals("select * from Document where dc:creator = ?", node.get("query").textValue());
+            assertEquals("NXQL", node.get("queryLanguage").textValue());
+            assertEquals("$currentUser", node.get("queryParams").textValue());
+            assertEquals("1", node.get("pageSize").textValue());
+            assertEquals("{\"viewVar\": \"another value\"}", node.get("contentViewData").textValue());
         }
     }
 
@@ -665,11 +665,11 @@ public class SearchTest extends BaseTest {
                 getSavedSearchPath(RestServerInit.getSavedSearchId(2, session)), data)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals("savedSearch", node.get("entity-type").getTextValue());
-            assertEquals("my search 2", node.get("title").getTextValue());
-            assertEquals("TEST_PP", node.get("pageProviderName").getTextValue());
-            assertNull(node.get("queryParams").getTextValue());
-            assertEquals("{\"viewVar\": \"another value\"}", node.get("contentViewData").getTextValue());
+            assertEquals("savedSearch", node.get("entity-type").textValue());
+            assertEquals("my search 2", node.get("title").textValue());
+            assertEquals("TEST_PP", node.get("pageProviderName").textValue());
+            assertNull(node.get("queryParams").textValue());
+            assertEquals("{\"viewVar\": \"another value\"}", node.get("contentViewData").textValue());
         }
     }
 
@@ -831,10 +831,10 @@ public class SearchTest extends BaseTest {
             assertTrue(node.get("entries").isArray());
             assertEquals(1, node.get("entries").size());
             node = node.get("entries").get(0);
-            assertEquals("my saved search 2", node.get("title").getTextValue());
-            assertEquals("TEST_PP", node.get("pageProviderName").getTextValue());
+            assertEquals("my saved search 2", node.get("title").textValue());
+            assertEquals("TEST_PP", node.get("pageProviderName").textValue());
             DocumentModel folder = RestServerInit.getFolder(1, session);
-            assertEquals(folder.getId(), node.get("queryParams").getTextValue());
+            assertEquals(folder.getId(), node.get("queryParams").textValue());
         }
     }
 

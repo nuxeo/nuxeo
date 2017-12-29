@@ -142,7 +142,7 @@ public abstract class AbstractAutomationClientTest {
             while (remoteCause.getCause() != remoteCause && remoteCause.getCause() != null) {
                 remoteCause = remoteCause.getCause();
             }
-            String className = ((RemoteThrowable) remoteCause).getOtherNodes().get("className").getTextValue();
+            String className = ((RemoteThrowable) remoteCause).getOtherNodes().get("className").textValue();
             assertThat(className, is(DocumentNotFoundException.class.getName()));
         }
     }

@@ -25,11 +25,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
@@ -40,6 +35,12 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContextImpl.RenderingCont
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 6.0
@@ -63,7 +64,6 @@ public class BaseRestTest {
      * @param json
      * @return
      * @throws java.io.IOException
-     * @throws org.codehaus.jackson.JsonProcessingException
      */
     protected JsonNode parseJson(String json) throws JsonProcessingException, IOException {
         ObjectMapper m = new ObjectMapper();

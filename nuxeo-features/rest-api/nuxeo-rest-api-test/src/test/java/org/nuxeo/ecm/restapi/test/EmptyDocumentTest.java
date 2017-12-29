@@ -32,7 +32,6 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -45,6 +44,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogFeature;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
@@ -97,8 +97,8 @@ public class EmptyDocumentTest extends BaseTest {
         assertEquals(SC_BAD_REQUEST, response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertNotNull(node);
-        assertEquals("exception", node.get("entity-type").getTextValue());
-        assertEquals("Missing type parameter", node.get("message").getTextValue());
+        assertEquals("exception", node.get("entity-type").textValue());
+        assertEquals("Missing type parameter", node.get("message").textValue());
     }
 
     @Test
@@ -131,18 +131,18 @@ public class EmptyDocumentTest extends BaseTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertNotNull(node);
-        assertEquals("document", node.get("entity-type").getTextValue());
-        assertEquals("DocDefaultValue", node.get("type").getTextValue());
-        assertEquals(expectedPath, node.get("path").getTextValue());
+        assertEquals("document", node.get("entity-type").textValue());
+        assertEquals("DocDefaultValue", node.get("type").textValue());
+        assertEquals(expectedPath, node.get("path").textValue());
 
         JsonNode properties = node.get("properties");
-        assertEquals(null, properties.get("dv:simpleWithoutDefault").getTextValue());
-        assertEquals("value", properties.get("dv:simpleWithDefault").getTextValue());
+        assertEquals(null, properties.get("dv:simpleWithoutDefault").textValue());
+        assertEquals("value", properties.get("dv:simpleWithDefault").textValue());
         JsonNode multiWithDefault = properties.get("dv:multiWithDefault");
         assertEquals(0, properties.get("dv:multiWithoutDefault").size());
-        assertEquals("value1", multiWithDefault.get(0).getTextValue());
-        assertEquals("value2", multiWithDefault.get(1).getTextValue());
-        assertEquals("dummy source", properties.get("dc:source").getTextValue());
+        assertEquals("value1", multiWithDefault.get(0).textValue());
+        assertEquals("value2", multiWithDefault.get(1).textValue());
+        assertEquals("dummy source", properties.get("dc:source").textValue());
 
         JsonNode complexWithoutDefault = properties.get("dv:complexWithoutDefault");
         assertTrue(complexWithoutDefault.get("foo").isNull());
@@ -150,6 +150,6 @@ public class EmptyDocumentTest extends BaseTest {
 
         JsonNode complexWithDefault = properties.get("dv:complexWithDefault");
         assertTrue(complexWithDefault.get("foo").isNull());
-        assertEquals("value", complexWithDefault.get("bar").getTextValue());
+        assertEquals("value", complexWithDefault.get("bar").textValue());
     }
 }
