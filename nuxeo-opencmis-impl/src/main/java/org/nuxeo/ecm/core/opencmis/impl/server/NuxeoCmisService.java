@@ -128,6 +128,7 @@ import org.elasticsearch.search.SearchHits;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -289,7 +290,7 @@ public class NuxeoCmisService extends AbstractCmisService
     @Override
     public void close() {
         if (coreSessionOwned && coreSession != null) {
-            coreSession.close();
+            ((CloseableCoreSession) coreSession).close();
             coreSession = null;
         }
         clearObjectInfos();

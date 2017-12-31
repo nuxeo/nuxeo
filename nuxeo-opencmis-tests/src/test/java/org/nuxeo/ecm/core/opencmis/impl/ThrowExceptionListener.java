@@ -34,7 +34,6 @@ public class ThrowExceptionListener implements EventListener {
 
     public static final String AFTERCRASH_NAME = "AFTERCRASH";
 
-    @SuppressWarnings("resource")
     @Override
     public void handleEvent(Event event) {
         DocumentEventContext ctx = (DocumentEventContext) event.getContext();
