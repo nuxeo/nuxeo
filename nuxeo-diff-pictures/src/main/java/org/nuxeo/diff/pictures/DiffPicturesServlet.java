@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -100,7 +101,7 @@ public class DiffPicturesServlet extends HttpServlet {
             }
 
             // This try-with-resources does an implicit close() at the end
-            try (CoreSession coreSession = CoreInstance.openCoreSession(repo)) {
+            try (CloseableCoreSession coreSession = CoreInstance.openCoreSession(repo)) {
 
                 DocumentModel leftDoc = coreSession.getDocument(new IdRef(leftDocId));
                 DocumentModel rightDoc = coreSession.getDocument(new IdRef(rightDocId));
