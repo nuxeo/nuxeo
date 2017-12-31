@@ -40,6 +40,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -284,7 +285,7 @@ public class TestRenditionPublication {
 
         session.save();
 
-        try (CoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), JOE_USERNAME)) {
+        try (CloseableCoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), JOE_USERNAME)) {
             // Check that joe user cannot access the template document
             try {
                 joeSession.getDocument(templateDoc.getRef());
