@@ -39,6 +39,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -111,7 +112,7 @@ public class LayoutDemoContext implements Serializable {
     @BypassInterceptors
     public void closeCoreSession() {
         if (demoCoreSession != null) {
-            demoCoreSession.close();
+            ((CloseableCoreSession) demoCoreSession).close();
         }
     }
 
