@@ -47,6 +47,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -278,7 +279,7 @@ public class TestMultiTenantService {
 
         NuxeoPrincipal bender = createUser("bender", false, domain.getName());
         LoginContext loginContext = Framework.loginAsUser("bender");
-        try (CoreSession benderSession = openSession()) {
+        try (CloseableCoreSession benderSession = openSession()) {
             assertTrue(benderSession.hasPermission(domain.getRef(), SecurityConstants.READ));
             assertFalse(benderSession.hasPermission(domain.getRef(), SecurityConstants.EVERYTHING));
         }
@@ -290,7 +291,7 @@ public class TestMultiTenantService {
 
         bender = userManager.getPrincipal(bender.getName());
         loginContext = Framework.loginAsUser("bender");
-        try (CoreSession benderSession = openSession()) {
+        try (CloseableCoreSession benderSession = openSession()) {
             benderSession.save();
             assertTrue(benderSession.hasPermission(domain.getRef(), SecurityConstants.READ));
             assertTrue(benderSession.hasPermission(domain.getRef(), SecurityConstants.EVERYTHING));
@@ -343,7 +344,7 @@ public class TestMultiTenantService {
         NuxeoGroup nuxeoGroup = createGroup("supermembers");
         assertEquals("tenant_" + domain.getName() + "_supermembers", nuxeoGroup.getName());
 
-        try (CoreSession frySession = openSession()) {
+        try (CloseableCoreSession frySession = openSession()) {
             // add the Read ACL
             DocumentModel doc = frySession.getDocument(domain.getRef());
             ACP acp = doc.getACP();
@@ -361,7 +362,7 @@ public class TestMultiTenantService {
         userManager.updateUser(bender.getModel());
         bender = createUser("bender", false, domain.getName());
         loginContext = Framework.loginAsUser("bender");
-        try (CoreSession benderSession = openSession()) {
+        try (CloseableCoreSession benderSession = openSession()) {
             assertTrue(benderSession.hasPermission(domain.getRef(), "Write"));
         }
         loginContext.logout();
@@ -369,7 +370,7 @@ public class TestMultiTenantService {
         // leela does not have Write permission
         NuxeoPrincipal leela = createUser("leela", false, domain.getName());
         loginContext = Framework.loginAsUser("leela");
-        try (CoreSession leelaSession = openSession()) {
+        try (CloseableCoreSession leelaSession = openSession()) {
             assertTrue(leelaSession.hasPermission(domain.getRef(), "Read"));
             assertFalse(leelaSession.hasPermission(domain.getRef(), "Write"));
         }
@@ -467,7 +468,7 @@ public class TestMultiTenantService {
         Assert.assertFalse(principals.contains("Everyone"));
     }
 
-    protected CoreSession openSession() {
+    protected CloseableCoreSession openSession() {
         return coreFeature.openCoreSession();
     }
 

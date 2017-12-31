@@ -55,7 +55,6 @@ public class MultiTenantListener implements EventListener {
             return;
         }
 
-        @SuppressWarnings("resource")
         CoreSession session = ctx.getCoreSession();
         if (!multiTenantService.isTenantIsolationEnabled(session)) {
             return;
