@@ -36,6 +36,7 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.CoreSession.CopyOption;
@@ -153,7 +154,7 @@ public class TestDublinCoreStorage {
         // create a new session
         session.save();
 
-        try (CoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), "Jacky")) {
+        try (CloseableCoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), "Jacky")) {
             DocumentModel childFile3 = session2.getDocument(childFile2.getRef());
             childFile3.setProperty("dublincore", "source", "testing");
             childFile3 = session2.saveDocument(childFile3);
@@ -191,7 +192,7 @@ public class TestDublinCoreStorage {
         session.save();
 
         // create a new session
-        try (CoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), "Jacky")) {
+        try (CloseableCoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), "Jacky")) {
             DocumentModel childFile3 = session2.getDocument(childFile2.getRef());
             childFile3.setProperty("dublincore", "source", "testing");
             childFile3 = session2.saveDocument(childFile3);
@@ -205,7 +206,7 @@ public class TestDublinCoreStorage {
         }
 
         // Test if a new contributor will be at the end of the list
-        try (CoreSession session3 = CoreInstance.openCoreSession(session.getRepositoryName(), "Fredo")) {
+        try (CloseableCoreSession session3 = CoreInstance.openCoreSession(session.getRepositoryName(), "Fredo")) {
             DocumentModel childFile3 = session3.getDocument(childFile2.getRef());
             childFile3.setProperty("dublincore", "source", "testing2"); // make a change
             childFile3 = session3.saveDocument(childFile3);
@@ -218,7 +219,7 @@ public class TestDublinCoreStorage {
         }
 
         // Test if a previously contributor will be move to the end of the list
-        try (CoreSession session4 = CoreInstance.openCoreSession(session.getRepositoryName(), "Administrator")) {
+        try (CloseableCoreSession session4 = CoreInstance.openCoreSession(session.getRepositoryName(), "Administrator")) {
             DocumentModel childFile3 = session4.getDocument(childFile2.getRef());
             childFile3.setProperty("dublincore", "source", "testing");
             childFile3 = session4.saveDocument(childFile3);
@@ -336,7 +337,7 @@ public class TestDublinCoreStorage {
 
     @Test
     public void testCreatorForUnrestrictedSessionCreatedDoc() throws Exception {
-        try (CoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), "Jacky")) {
+        try (CloseableCoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), "Jacky")) {
             CreateDocumentUnrestricted runner = new CreateDocumentUnrestricted(session2);
             runner.runUnrestricted();
             DocumentModel doc = runner.getFolder();

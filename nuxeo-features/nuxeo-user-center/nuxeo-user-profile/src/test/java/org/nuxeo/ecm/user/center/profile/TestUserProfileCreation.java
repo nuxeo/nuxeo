@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -70,7 +71,7 @@ public class TestUserProfileCreation {
             user = userDir.createEntry(user1);
         }
 
-        try (CoreSession session = coreFeature.openCoreSession(user.getId())) {
+        try (CloseableCoreSession session = coreFeature.openCoreSession(user.getId())) {
             DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
             Assert.assertEquals(user.getId(), userWorkspace.getName());
 

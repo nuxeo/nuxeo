@@ -35,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -170,7 +171,7 @@ public abstract class TestCorePublicationWithWorkflow {
     public void testRights() throws Exception {
         // myuser1 requests publishing
         DocumentRef publishedDocumentRef;
-        try (CoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
+        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
             PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
             List<PublicationNode> nodes = treeUser1.getChildrenNodes();
             PublicationNode targetNode = nodes.get(0);
@@ -181,17 +182,17 @@ public abstract class TestCorePublicationWithWorkflow {
         }
 
         // myuser3 has no rights on proxy
-        try (CoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
+        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
             assertFalse(sessionUser3.exists(publishedDocumentRef));
         }
 
         // myuser4 has no rights on proxy
-        try (CoreSession sessionUser4 = coreFeature.openCoreSession("myuser4")) {
+        try (CloseableCoreSession sessionUser4 = coreFeature.openCoreSession("myuser4")) {
             assertFalse(sessionUser4.exists(publishedDocumentRef));
         }
 
         // myuser2 can unpublish or validate
-        try (CoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
+        try (CloseableCoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
             PublishedDocument publishedDocument = new SimpleCorePublishedDocument(sessionUser2.getDocument(publishedDocumentRef));
             PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2, factoryParams);
             assertTrue(treeUser2.canUnpublish(publishedDocument));
@@ -202,7 +203,7 @@ public abstract class TestCorePublicationWithWorkflow {
     @Test
     public void testApprovePublication() throws Exception {
         // myuser1 requests publishing
-        try (CoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
+        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
             PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
             List<PublicationNode> nodes = treeUser1.getChildrenNodes();
             assertEquals(1, nodes.size());
@@ -216,13 +217,13 @@ public abstract class TestCorePublicationWithWorkflow {
         }
 
         // myuser3 can't see the document waiting for validation
-        try (CoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
+        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
             PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
             assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
         }
 
         // myuser2 can see it, it's the validator
-        try (CoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
+        try (CloseableCoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
             PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2,
                     factoryParams);
             List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
@@ -236,7 +237,7 @@ public abstract class TestCorePublicationWithWorkflow {
         }
 
         // published so myuser3 can see it
-        try (CoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
+        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
             PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
             assertEquals(1, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
             sessionUser3.save();
@@ -246,7 +247,7 @@ public abstract class TestCorePublicationWithWorkflow {
     @Test
     public void testRejectPublication() throws Exception {
         // myuser1 requests publishing
-        try (CoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
+        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
             PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
             List<PublicationNode> nodes = treeUser1.getChildrenNodes();
             assertEquals(1, nodes.size());
@@ -259,14 +260,14 @@ public abstract class TestCorePublicationWithWorkflow {
         }
 
         // myuser3 can't see the document waiting for validation
-        try (CoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
+        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
             PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
             assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
         }
 
         // myuser2 can see it, it's the validator
         DocumentRef proxyRef;
-        try (CoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
+        try (CloseableCoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
             PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2,
                     factoryParams);
             List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
@@ -285,13 +286,13 @@ public abstract class TestCorePublicationWithWorkflow {
         }
 
         // not published so myuser3 still can't see it
-        try (CoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
+        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
             PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
             assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
         }
 
         // No more document published for myuser1
-        try (CoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
+        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
             PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
             assertEquals(0, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
             assertFalse(sessionUser1.exists(proxyRef));
@@ -302,7 +303,7 @@ public abstract class TestCorePublicationWithWorkflow {
     public void testFirstPublicationByValidator() throws Exception {
         // myuser2 directly publishes a doc
         // TODO not sure it should, as it has no read access on the doc...
-        try (CoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
+        try (CloseableCoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
             PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2, factoryParams);
             List<PublicationNode> nodes = treeUser2.getChildrenNodes();
             assertEquals(1, nodes.size());
@@ -314,7 +315,7 @@ public abstract class TestCorePublicationWithWorkflow {
         }
 
         // myuser3 can see the document
-        try (CoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
+        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
             PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
             assertEquals(1, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
         }
@@ -323,7 +324,7 @@ public abstract class TestCorePublicationWithWorkflow {
     @Test
     public void testFirstPublicationByNonValidator() throws Exception {
         // myuser1 requests publishing
-        try (CoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
+        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
             PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
             List<PublicationNode> nodes = treeUser1.getChildrenNodes();
             assertEquals(1, nodes.size());
@@ -335,7 +336,7 @@ public abstract class TestCorePublicationWithWorkflow {
         }
 
         // myuser3 can't see the document
-        try (CoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
+        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
             PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
             assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
         }
@@ -344,7 +345,7 @@ public abstract class TestCorePublicationWithWorkflow {
     @Test
     public void testPublishOfAlreadyWaitingToBePublishedDocByNonValidator() throws Exception {
         // my user1 ask for publication
-        try (CoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
+        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
             PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
             List<PublicationNode> nodes = treeUser1.getChildrenNodes();
             assertEquals(1, nodes.size());
@@ -358,7 +359,7 @@ public abstract class TestCorePublicationWithWorkflow {
         }
 
         // my user3 ask for publication
-        try (CoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
+        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
             PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3,
                     factoryParams);
             List<PublicationNode> nodes = treeUser3.getChildrenNodes();
@@ -372,7 +373,7 @@ public abstract class TestCorePublicationWithWorkflow {
         }
 
         // my user1 can still see the document
-        try (CoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
+        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
             PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
             List<PublicationNode> nodes = treeUser1.getChildrenNodes();
             assertEquals(1, nodes.size());
@@ -381,7 +382,7 @@ public abstract class TestCorePublicationWithWorkflow {
         }
 
         // my user 2 publish the document
-        try (CoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
+        try (CloseableCoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
             PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2,
                     factoryParams);
             List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
@@ -398,7 +399,7 @@ public abstract class TestCorePublicationWithWorkflow {
     @Test
     public void testMultiplePublishThenPublishByValidator() throws Exception {
         // my user1 ask for publication
-        try (CoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
+        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
             PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
             List<PublicationNode> nodes = treeUser1.getChildrenNodes();
             assertEquals(1, nodes.size());
@@ -412,7 +413,7 @@ public abstract class TestCorePublicationWithWorkflow {
         }
 
         // my user3 ask for publication
-        try (CoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
+        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
             PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
             List<PublicationNode> nodes = treeUser3.getChildrenNodes();
             assertEquals(1, nodes.size());
@@ -425,7 +426,7 @@ public abstract class TestCorePublicationWithWorkflow {
         }
 
         // my user1 can still see the document
-        try (CoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
+        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
             PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
             List<PublicationNode> nodes = treeUser1.getChildrenNodes();
             assertEquals(1, nodes.size());
@@ -434,7 +435,7 @@ public abstract class TestCorePublicationWithWorkflow {
         }
 
         // my user4 don't see the document
-        try (CoreSession sessionUser4 = coreFeature.openCoreSession("myuser4")) {
+        try (CloseableCoreSession sessionUser4 = coreFeature.openCoreSession("myuser4")) {
             PublicationTree treeUser4 = publisherService.getPublicationTree(defaultTreeName, sessionUser4, factoryParams);
             List<PublicationNode> nodes = treeUser4.getChildrenNodes();
             assertEquals(1, nodes.size());
@@ -443,7 +444,7 @@ public abstract class TestCorePublicationWithWorkflow {
         }
 
         // my user 2 publish the document
-        try (CoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
+        try (CloseableCoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
             PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2, factoryParams);
             List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
                     new DocumentLocationImpl(doc2Publish));
@@ -456,7 +457,7 @@ public abstract class TestCorePublicationWithWorkflow {
         }
 
         // my user4 see the document
-        try (CoreSession sessionUser4 = coreFeature.openCoreSession("myuser4")) {
+        try (CloseableCoreSession sessionUser4 = coreFeature.openCoreSession("myuser4")) {
             PublicationTree treeUser4 = publisherService.getPublicationTree(defaultTreeName, sessionUser4, factoryParams);
             List<PublicationNode> nodes = treeUser4.getChildrenNodes();
             assertEquals(1, nodes.size());

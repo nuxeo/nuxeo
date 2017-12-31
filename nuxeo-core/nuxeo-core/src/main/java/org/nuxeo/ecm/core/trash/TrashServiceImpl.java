@@ -374,7 +374,6 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
             name = matcher.group(1);
             matcher = COLLISION_PATTERN.matcher(name);
             if (matcher.matches() && matcher.group(1).length() > 0) {
-                @SuppressWarnings("resource")
                 CoreSession session = doc.getCoreSession();
                 if (session != null) {
                     String orig = matcher.group(1);

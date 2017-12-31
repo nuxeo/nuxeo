@@ -29,6 +29,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -97,7 +98,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
     // needs a JCA connection for this to work
     @Test
     public void testTransactional() throws Exception {
-        try (CoreSession session = coreFeature.openCoreSessionSystem()) {
+        try (CloseableCoreSession session = coreFeature.openCoreSessionSystem()) {
             IterableQueryResult results = session.queryAndFetch("SELECT * from Document", "NXQL");
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
@@ -124,7 +125,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
     @Test
     public void testNested() throws Exception {
         IterableQueryResult mainResults;
-        try (CoreSession main = coreFeature.openCoreSessionSystem()) {
+        try (CloseableCoreSession main = coreFeature.openCoreSessionSystem()) {
             NestedQueryRunner runner = new NestedQueryRunner(main.getRepositoryName());
             mainResults = main.queryAndFetch("SELECT * from Document", "NXQL");
             runner.runUnrestricted();

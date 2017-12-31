@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -82,7 +83,7 @@ public class AnnotatedDocumentEventListenerImpl implements AnnotatedDocumentEven
         if (documentLocation == null) {
             return;
         }
-        try (CoreSession session = CoreInstance.openCoreSessionSystem(documentLocation.getServerName())) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(documentLocation.getServerName())) {
             DocumentModel doc = null;
             if (session.exists(documentLocation.getDocRef())) {
                 doc = session.getDocument(documentLocation.getDocRef());

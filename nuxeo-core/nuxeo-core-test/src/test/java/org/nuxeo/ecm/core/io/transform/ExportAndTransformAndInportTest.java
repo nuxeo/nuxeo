@@ -12,6 +12,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -55,7 +56,7 @@ public class ExportAndTransformAndInportTest extends BaseExport {
     public void testExportWithTransformThenImport() throws Exception {
 
         Principal principal = session.getPrincipal();
-        CoreSession importSession = null;
+        CloseableCoreSession importSession = null;
 
         DocumentModel root = createSomethingToExport(session);
 

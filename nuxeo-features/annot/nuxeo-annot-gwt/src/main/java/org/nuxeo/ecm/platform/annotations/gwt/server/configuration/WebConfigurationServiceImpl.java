@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -121,7 +122,7 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
         DocumentViewCodecManager documentViewCodecManager = getDocumentViewCodecManager();
         DocumentView docView = documentViewCodecManager.getDocumentViewFromUrl(url, true, getBaseUrl(url));
         DocumentLocation docLocation = docView.getDocumentLocation();
-        try (CoreSession coreSession = CoreInstance.openCoreSession(docLocation.getServerName())) {
+        try (CloseableCoreSession coreSession = CoreInstance.openCoreSession(docLocation.getServerName())) {
             DocumentModel docModel = coreSession.getDocument(docLocation.getDocRef());
             return webPermission.canAnnotate(docModel);
         } catch (DocumentNotFoundException e) {

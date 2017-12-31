@@ -52,6 +52,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -406,7 +407,7 @@ public class TestRenditionService {
 
         // now get a different rendition as a different user
         NuxeoPrincipal totoPrincipal = Framework.getService(UserManager.class).getPrincipal("toto");
-        try (CoreSession userSession = coreFeature.openCoreSession(totoPrincipal)) {
+        try (CloseableCoreSession userSession = coreFeature.openCoreSession(totoPrincipal)) {
             folder = userSession.getDocument(folder.getRef());
             Rendition totoRendition = getRendition(folder, renditionName, true, isLazy, false);
             assertTrue(totoRendition.isStored());
@@ -551,7 +552,7 @@ public class TestRenditionService {
 
         // get rendition as non-admin user 'toto'
         NuxeoPrincipal totoPrincipal = Framework.getService(UserManager.class).getPrincipal("toto");
-        try (CoreSession userSession = coreFeature.openCoreSession(totoPrincipal)) {
+        try (CloseableCoreSession userSession = coreFeature.openCoreSession(totoPrincipal)) {
             folder = userSession.getDocument(folder.getRef());
             totoRendition = renditionService.getRendition(folder, renditionName, true);
             assertTrue(totoRendition.isStored());
@@ -847,7 +848,7 @@ public class TestRenditionService {
         public void run() {
             TransactionHelper.startTransaction();
             try {
-                try (CoreSession session = CoreInstance.openCoreSession(repositoryName, username)) {
+                try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, username)) {
                     DocumentModel doc = session.getDocument(new IdRef(docId));
 
                     doc.putContextData("delayed", Boolean.valueOf(delayed));

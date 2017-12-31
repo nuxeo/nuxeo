@@ -36,6 +36,7 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -100,7 +101,7 @@ public class TestSQLRepositoryJTAJCA {
         session.getRootDocument(); // use the session at least once
         assertEquals(1, repo.getActiveSessionsCount());
 
-        try (CoreSession session2 = CoreInstance.openCoreSession(repositoryName, ADMINISTRATOR)) {
+        try (CloseableCoreSession session2 = CoreInstance.openCoreSession(repositoryName, ADMINISTRATOR)) {
             assertEquals(1, repo.getActiveSessionsCount());
             DocumentModel doc = session.createDocumentModel("/", "doc", "Document");
             doc = session.createDocument(doc);
@@ -128,7 +129,7 @@ public class TestSQLRepositoryJTAJCA {
             public void run() {
                 try {
                     TransactionHelper.startTransaction();
-                    try (CoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), ADMINISTRATOR)) {
+                    try (CloseableCoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), ADMINISTRATOR)) {
                         assertTrue(session2.exists(new PathRef("/doc")));
                     } finally {
                         TransactionHelper.commitOrRollbackTransaction();
@@ -222,7 +223,7 @@ public class TestSQLRepositoryJTAJCA {
             public void run() {
                 try {
                     TransactionHelper.startTransaction();
-                    try (CoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), ADMINISTRATOR)) {
+                    try (CloseableCoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), ADMINISTRATOR)) {
                         DocumentModel doc = session2.getDocument(ref);
                         doc.getProperty("dc:title").setValue("second update");
                         session2.saveDocument(doc);

@@ -57,6 +57,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -157,11 +158,11 @@ public class TestSQLRepositoryAPI {
         DummyTestListener.clear();
     }
 
-    protected CoreSession openSessionAs(String username) {
+    protected CloseableCoreSession openSessionAs(String username) {
         return CoreInstance.openCoreSession(session.getRepositoryName(), username);
     }
 
-    protected CoreSession openSessionAs(NuxeoPrincipal principal) {
+    protected CloseableCoreSession openSessionAs(NuxeoPrincipal principal) {
         return CoreInstance.openCoreSession(session.getRepositoryName(), principal);
     }
 
@@ -966,7 +967,7 @@ public class TestSQLRepositoryAPI {
         assertEquals(new HashSet<>(Arrays.asList("doc1", "doc2", "doc3")), names);
 
         // bob doesn't see doc2
-        try (CoreSession bobSession = openSessionAs("bob")) {
+        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
             names.clear();
             for (DocumentModel doc : bobSession.getChildrenIterator(new PathRef("/"))) {
                 names.add(doc.getName());
@@ -1274,7 +1275,7 @@ public class TestSQLRepositoryAPI {
 
         // relation, check as admin
 
-        try (CoreSession admSession = openSessionAs(new UserPrincipal("adm", null, false, true))) {
+        try (CloseableCoreSession admSession = openSessionAs(new UserPrincipal("adm", null, false, true))) {
             DocumentModel rel = admSession.createDocumentModel(null, "myrel", "Relation");
             rel = admSession.createDocument(rel);
             admSession.save();
@@ -1787,7 +1788,7 @@ public class TestSQLRepositoryAPI {
         assertEquals(2, dml.size());
 
         // as bob
-        try (CoreSession bobSession = openSessionAs("bob")) {
+        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
             // check bob doesn't see doc1
             dml = bobSession.query("SELECT * FROM Document WHERE ecm:path STARTSWITH '/f1'");
             assertEquals(1, dml.size());
@@ -2718,7 +2719,7 @@ public class TestSQLRepositoryAPI {
         MutableObject<RuntimeException> me = new MutableObject<>();
         Thread thread = new Thread(() -> {
             TransactionHelper.runInTransaction(() -> {
-                try (CoreSession session2 = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
+                try (CloseableCoreSession session2 = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
                     session2.move(new PathRef("/doc"), new PathRef("/folder"), null);
                     session2.save();
                 } catch (RuntimeException e) {
@@ -4184,7 +4185,7 @@ public class TestSQLRepositoryAPI {
         // set rollback-only
         TransactionHelper.setTransactionRollbackOnly();
         // then create a session
-        try (CoreSession session2 = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
+        try (CloseableCoreSession session2 = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
             fail("should not allow creation of session when marked rollback-only");
         } catch (NuxeoException e) {
             assertEquals("Cannot create a CoreSession when transaction is marked rollback-only", e.getMessage());
@@ -4347,7 +4348,7 @@ public class TestSQLRepositoryAPI {
         }
 
         // cannot remove lock as pete
-        try (CoreSession peteSession = openSessionAs("pete")) {
+        try (CloseableCoreSession peteSession = openSessionAs("pete")) {
             // try to remove lock as pete
             try {
                 peteSession.removeLock(docRef);
@@ -4369,7 +4370,7 @@ public class TestSQLRepositoryAPI {
         assertNull(lock);
 
         // as pete
-        try (CoreSession peteSession = openSessionAs("pete")) {
+        try (CloseableCoreSession peteSession = openSessionAs("pete")) {
             // set lock as pete
             lock = peteSession.setLock(docRef);
             assertNotNull(lock);
@@ -4791,7 +4792,7 @@ public class TestSQLRepositoryAPI {
         MutableObject<RuntimeException> me = new MutableObject<>();
         Thread thread = new Thread(() -> {
             TransactionHelper.runInTransaction(() -> {
-                try (CoreSession session2 = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
+                try (CloseableCoreSession session2 = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
                     DocumentModel doc2 = session2.getDocument(docRef);
                     doc2.setPropertyValue("dc:title", "bar parallel");
                     doc2.putContextData(CoreSession.USER_CHANGE, Boolean.TRUE);

@@ -69,7 +69,7 @@ public class InstanceRef implements DocumentRef {
             started = TransactionHelper.startTransaction();
         }
         try {
-            try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
                 referent = session.getDocument(ref);
                 referent.detach(true);
                 return referent;

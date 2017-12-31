@@ -48,6 +48,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -931,7 +932,7 @@ public class TestSQLRepositoryFulltextQuery {
     @Test
     public void testFulltextSecurity() throws Exception {
         createDocs();
-        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
             bobSession.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ecm:fulltext = 'world'");
             // this failed with ORA-00918 on Oracle (NXP-5410)
             bobSession.query("SELECT * FROM Document WHERE ecm:fulltext = 'world'");
@@ -1015,7 +1016,7 @@ public class TestSQLRepositoryFulltextQuery {
         session.publishDocument(session.getDocument(new PathRef("/testfolder1/testfile1")),
                 session.getDocument(new PathRef("/testfolder2")));
         waitForFulltextIndexing();
-        
+
         DocumentModelList list = session.query("SELECT * FROM File WHERE ecm:fulltext = 'Drink' and ecm:isProxy = 1");
         assertTrue(!list.isEmpty());
         Map<String, String> map = session.getBinaryFulltext(list.get(0).getRef());

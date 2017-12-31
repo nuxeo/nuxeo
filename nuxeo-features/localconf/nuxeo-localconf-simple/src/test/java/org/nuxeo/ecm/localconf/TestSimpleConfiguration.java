@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
@@ -270,7 +271,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
 
         addReadForEveryone(CHILD_WORKSPACE_REF);
 
-        try (CoreSession newSession = openSessionAs("user1")) {
+        try (CloseableCoreSession newSession = openSessionAs("user1")) {
             DocumentModel childWorkspace = newSession.getDocument(CHILD_WORKSPACE_REF);
             SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
                     SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET, childWorkspace);

@@ -24,6 +24,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -85,7 +86,7 @@ public class TestAtomicOperationsOnDocument {
         public void run() {
 
             TransactionHelper.runInTransaction(() -> {
-                try (CoreSession s = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
+                try (CloseableCoreSession s = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
                     documentModel = LockHelper.doAtomically(computeKey(s, documentModel), () -> {
                         DocumentRef ref = documentModel.getRef();
                         if (s.exists(ref)) {

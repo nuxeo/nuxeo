@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.annotations.repository;
 
 import java.net.URI;
 
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -47,7 +48,7 @@ public class DefaultNuxeoPermissionManager implements PermissionManager {
 
     public boolean check(NuxeoPrincipal user, String permission, URI uri) {
         DocumentView view = translator.getDocumentViewFromUri(uri);
-        try (CoreSession session = CoreInstance.openCoreSession(null)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(null)) {
             DocumentModel model = session.getDocument(view.getDocumentLocation().getDocRef());
             return service.check(user, permission, model);
         }

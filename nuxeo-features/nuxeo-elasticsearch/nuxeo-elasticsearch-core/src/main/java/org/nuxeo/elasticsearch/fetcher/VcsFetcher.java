@@ -29,6 +29,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -66,7 +67,7 @@ public class VcsFetcher extends Fetcher {
                 docs.addAll(fetchFromVcs(repoHits.get(repo), session));
             } finally {
                 if (closeSession) {
-                    session.close();
+                    ((CloseableCoreSession) session).close();
                 }
             }
         }

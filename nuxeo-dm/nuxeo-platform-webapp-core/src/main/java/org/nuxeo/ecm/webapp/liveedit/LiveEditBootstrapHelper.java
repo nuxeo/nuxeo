@@ -51,6 +51,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -398,10 +399,10 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             context.responseComplete();
         } finally {
             if (session != null && session != documentManager) {
-                session.close();
+                ((CloseableCoreSession) session).close();
             }
             if (templateSession != null && templateSession != documentManager) {
-                templateSession.close();
+                ((CloseableCoreSession) templateSession).close();
             }
         }
     }

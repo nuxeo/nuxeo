@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_LIST;
 
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -155,7 +156,7 @@ public class TestFacetedTagService extends AbstractTestTagService {
 
         // add a tag with a different user
         // we don't want a versioning policy like "collaborative-save" to be triggered and version the doc
-        try (CoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "joe")) {
+        try (CloseableCoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "joe")) {
             tagService.tag(joeSession, doc.getId(), "mytag");
         }
 
@@ -178,7 +179,7 @@ public class TestFacetedTagService extends AbstractTestTagService {
 
         // add a tag with a different user
         // we don't want a versioning policy like "collaborative-save" to be triggered and version the doc
-        try (CoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "joe")) {
+        try (CloseableCoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "joe")) {
             tagService.tag(joeSession, doc.getId(), "mytag");
         }
 

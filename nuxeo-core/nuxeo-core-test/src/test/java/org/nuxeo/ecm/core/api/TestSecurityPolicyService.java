@@ -68,7 +68,7 @@ public class TestSecurityPolicyService {
     protected RuntimeHarness harness;
 
     private void setTestPermissions(String user, String... perms) {
-        try (CoreSession session = coreFeature.openCoreSession(SecurityConstants.SYSTEM_USERNAME)) {
+        try (CloseableCoreSession session = coreFeature.openCoreSession(SecurityConstants.SYSTEM_USERNAME)) {
             DocumentModel doc = session.getRootDocument();
             ACP acp = doc.getACP();
             if (acp == null) {
@@ -89,7 +89,7 @@ public class TestSecurityPolicyService {
     public void testNewSecurityPolicy() throws Exception {
         // create document
         DocumentRef folderRef;
-        try (CoreSession session = coreFeature.openCoreSession(ADMINISTRATOR)) {
+        try (CloseableCoreSession session = coreFeature.openCoreSession(ADMINISTRATOR)) {
             setTestPermissions(ANONYMOUS, READ);
             DocumentModel root = session.getRootDocument();
             DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "folder#1", "Folder");
@@ -109,7 +109,7 @@ public class TestSecurityPolicyService {
         }
 
         // open session as anonymous and set access on user info
-        try (CoreSession session = coreFeature.openCoreSession(ANONYMOUS)) {
+        try (CloseableCoreSession session = coreFeature.openCoreSession(ANONYMOUS)) {
             DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
             Map<String, Object> data = new HashMap<String, Object>();
             data.put("accessLevel", Long.valueOf(3));

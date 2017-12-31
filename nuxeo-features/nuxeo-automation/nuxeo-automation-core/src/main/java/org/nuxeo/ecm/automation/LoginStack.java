@@ -24,6 +24,7 @@ import java.util.List;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -112,15 +113,10 @@ public class LoginStack {
     public static class Entry {
         public LoginContext lc;
 
-        public CoreSession session;
+        public CloseableCoreSession session;
 
         public Entry(LoginContext lc) {
-            this(lc, null);
-        }
-
-        public Entry(LoginContext lc, CoreSession session) {
             this.lc = lc;
-            this.session = session;
         }
 
         public final boolean hasSession() {

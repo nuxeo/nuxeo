@@ -55,6 +55,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -119,11 +120,11 @@ public class TestSQLRepositorySecurity {
         Framework.getProperties().remove(SQLSession.ALLOW_NEGATIVE_ACL_PROPERTY);
     }
 
-    protected CoreSession openSessionAs(String username) {
+    protected CloseableCoreSession openSessionAs(String username) {
         return CoreInstance.openCoreSession(session.getRepositoryName(), username);
     }
 
-    protected CoreSession openSessionAs(NuxeoPrincipal principal) {
+    protected CloseableCoreSession openSessionAs(NuxeoPrincipal principal) {
         return CoreInstance.openCoreSession(session.getRepositoryName(), principal);
     }
 
@@ -183,7 +184,7 @@ public class TestSQLRepositorySecurity {
         // so that we can create a folder
         setPermissionToAnonymous(EVERYTHING);
 
-        try (CoreSession anonSession = openSessionAs("anonymous")) {
+        try (CloseableCoreSession anonSession = openSessionAs("anonymous")) {
             DocumentModel root = anonSession.getRootDocument();
 
             DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "folder#1", "Folder");
@@ -366,7 +367,7 @@ public class TestSQLRepositorySecurity {
         assertTrue("list parents for" + ws2.getName() + "under " + session.getPrincipal().getName() + " is not empty:",
                 !ws2ParentsUnderAdministrator.isEmpty());
 
-        try (CoreSession testSession = openSessionAs("test")) {
+        try (CloseableCoreSession testSession = openSessionAs("test")) {
             List<DocumentModel> ws2ParentsUnderTest = testSession.getParentDocuments(ws2.getRef());
             assertTrue("list parents for" + ws2.getName() + "under " + testSession.getPrincipal().getName()
                     + " is empty:", ws2ParentsUnderTest.isEmpty());
@@ -414,7 +415,7 @@ public class TestSQLRepositorySecurity {
     public void testPermissionChecks() throws Throwable {
         DocumentRef ref = createDocumentModelWithSamplePermissions("docWithPerms");
 
-        try (CoreSession joeReaderSession = openSessionAs("joe_reader")) {
+        try (CloseableCoreSession joeReaderSession = openSessionAs("joe_reader")) {
             // reader only has the right to consult the document
             DocumentModel joeReaderDoc = joeReaderSession.getDocument(ref);
             try {
@@ -439,7 +440,7 @@ public class TestSQLRepositorySecurity {
 
         // contributor only has the right to write the properties of
         // document
-        try (CoreSession joeContributorSession = openSessionAs("joe_contributor")) {
+        try (CloseableCoreSession joeContributorSession = openSessionAs("joe_contributor")) {
             DocumentModel joeContributorDoc = joeContributorSession.getDocument(ref);
 
             joeContributorSession.saveDocument(joeContributorDoc);
@@ -468,7 +469,7 @@ public class TestSQLRepositorySecurity {
         }
 
         // local manager can read, write, create and remove
-        try (CoreSession joeLocalManagerSession = openSessionAs("joe_localmanager")) {
+        try (CloseableCoreSession joeLocalManagerSession = openSessionAs("joe_localmanager")) {
             DocumentModel joeLocalManagerDoc = joeLocalManagerSession.getDocument(ref);
 
             joeLocalManagerSession.saveDocument(joeLocalManagerDoc);
@@ -557,7 +558,7 @@ public class TestSQLRepositorySecurity {
         }
         session.save();
 
-        try (CoreSession joeSession = openSessionAs("joe")) {
+        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
             DocumentModelList list;
             list = joeSession.query("SELECT * FROM Folder");
             List<String> names = new ArrayList<String>();
@@ -608,7 +609,7 @@ public class TestSQLRepositorySecurity {
         doc.setACP(acp, true);
         session.save();
 
-        try (CoreSession joeSession = openSessionAs("joe")) {
+        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
             DocumentModelList list;
             list = joeSession.query("SELECT * FROM Folder");
             assertEquals(1, list.size());
@@ -619,7 +620,7 @@ public class TestSQLRepositorySecurity {
             assertEquals(0, list.size());
         }
 
-        try (CoreSession bobSession = openSessionAs("bob")) {
+        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
             DocumentModelList list;
             // Perform a query to init the ACLR cache
             list = bobSession.query("SELECT * FROM Folder");
@@ -644,7 +645,7 @@ public class TestSQLRepositorySecurity {
         session.save();
 
         // nothing can be seen by joe
-        try (CoreSession joeSession = openSessionAs("joe")) {
+        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
             DocumentModelList list = joeSession.query("SELECT * FROM Folder");
             assertEquals(0, list.size());
             list = joeSession.query("SELECT * FROM File");
@@ -660,7 +661,7 @@ public class TestSQLRepositorySecurity {
         session.save();
 
         // now joe sees things
-        try (CoreSession joeSession = openSessionAs("joe")) {
+        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
             DocumentModelList list = joeSession.query("SELECT * FROM Folder");
             assertEquals(1, list.size());
             assertEquals(folder.getId(), list.get(0).getId());
@@ -678,14 +679,14 @@ public class TestSQLRepositorySecurity {
 
         // folder can be seen by a member
         UserPrincipal joeMember = new UserPrincipal("joe", Arrays.asList("Everyone", "members"), false, false);
-        try (CoreSession joeSession = openSessionAs(joeMember)) {
+        try (CloseableCoreSession joeSession = openSessionAs(joeMember)) {
             DocumentModelList list = joeSession.query("SELECT * FROM Folder");
             assertEquals(1, list.size());
             assertEquals(folder.getId(), list.get(0).getId());
         }
 
         // but not as a non-member
-        try (CoreSession joeSession = openSessionAs("joe")) {
+        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
             DocumentModelList list = joeSession.query("SELECT * FROM Folder");
             assertEquals(0, list.size());
         }
@@ -699,7 +700,7 @@ public class TestSQLRepositorySecurity {
         session.save();
 
         // the folder can be seen by joe
-        try (CoreSession joeSession = openSessionAs("joe")) {
+        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
             DocumentModelList list = joeSession.query("SELECT * FROM Folder");
             assertEquals(1, list.size());
             assertEquals(folder.getId(), list.get(0).getId());
@@ -711,7 +712,7 @@ public class TestSQLRepositorySecurity {
         session.save();
 
         // the doc can be seen by joe
-        try (CoreSession joeSession = openSessionAs("joe")) {
+        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
             DocumentModelList list = joeSession.query("SELECT * FROM File");
             assertEquals(1, list.size());
             assertEquals(doc.getId(), list.get(0).getId());
@@ -736,7 +737,7 @@ public class TestSQLRepositorySecurity {
         session.save();
 
         // doc under folder1 cannot be read by joe
-        try (CoreSession joeSession = openSessionAs("joe")) {
+        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
             DocumentModelList list = joeSession.query("SELECT * FROM File");
             assertEquals(0, list.size());
         }
@@ -746,7 +747,7 @@ public class TestSQLRepositorySecurity {
         session.save();
 
         // check doc now readable by joe
-        try (CoreSession joeSession = openSessionAs("joe")) {
+        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
             DocumentModelList list = joeSession.query("SELECT * FROM File");
             assertEquals(1, list.size());
         }
@@ -770,7 +771,7 @@ public class TestSQLRepositorySecurity {
         session.save();
 
         // doc under folder1 cannot be read by joe
-        try (CoreSession joeSession = openSessionAs("joe")) {
+        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
             DocumentModelList list = joeSession.query("SELECT * FROM File");
             assertEquals(0, list.size());
         }
@@ -780,7 +781,7 @@ public class TestSQLRepositorySecurity {
         session.save();
 
         // check doc copy now readable by joe
-        try (CoreSession joeSession = openSessionAs("joe")) {
+        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
             DocumentModelList list = joeSession.query("SELECT * FROM File");
             assertEquals(1, list.size());
             assertEquals("doccopy", list.get(0).getName());
@@ -916,7 +917,7 @@ public class TestSQLRepositorySecurity {
     }
 
     protected int numberOfReadableDocuments(String username) {
-        try (CoreSession userSession = openSessionAs(username)) {
+        try (CloseableCoreSession userSession = openSessionAs(username)) {
             String nxql = "SELECT ecm:uuid FROM Document";
             PartialList<Map<String, Serializable>> pl = userSession.queryProjection(nxql, 0, 0);
             return pl.size();

@@ -61,54 +61,54 @@ public class CoreInstance {
     /**
      * Opens a {@link CoreSession} for the currently logged-in user.
      * <p>
-     * The session must be closed using {@link CoreSession#close}.
+     * The session must be closed using {@link CloseableCoreSession#close}.
      *
      * @param repositoryName the repository name, or {@code null} for the default repository
      * @return the session
      * @since 5.9.3
      */
-    public static CoreSession openCoreSession(String repositoryName) {
+    public static CloseableCoreSession openCoreSession(String repositoryName) {
         return openCoreSession(repositoryName, getPrincipal((String) null));
     }
 
     /**
      * MUST ONLY BE USED IN UNIT TESTS to open a {@link CoreSession} for the given user.
      * <p>
-     * The session must be closed using {@link CoreSession#close}.
+     * The session must be closed using {@link CloseableCoreSession#close}.
      *
      * @param repositoryName the repository name, or {@code null} for the default repository
      * @param username the user name
      * @return the session
      * @since 5.9.3
      */
-    public static CoreSession openCoreSession(String repositoryName, String username) {
+    public static CloseableCoreSession openCoreSession(String repositoryName, String username) {
         return openCoreSession(repositoryName, getPrincipal(username));
     }
 
     /**
      * Opens a {@link CoreSession} for a system user.
      * <p>
-     * The session must be closed using {@link CoreSession#close}.
+     * The session must be closed using {@link CloseableCoreSession#close}.
      *
      * @param repositoryName the repository name, or {@code null} for the default repository
      * @return the session
      * @since 5.9.3
      */
-    public static CoreSession openCoreSessionSystem(String repositoryName) {
+    public static CloseableCoreSession openCoreSessionSystem(String repositoryName) {
         return openCoreSession(repositoryName, getPrincipal((SecurityConstants.SYSTEM_USERNAME)));
     }
 
     /**
      * Opens a {@link CoreSession} for a system user with an optional originating username.
      * <p>
-     * The session must be closed using {@link CoreSession#close}.
+     * The session must be closed using {@link CloseableCoreSession#close}.
      *
      * @param repositoryName the repository name, or {@code null} for the default repository
      * @param originatingUsername the originating username to set on the SystemPrincipal
      * @return the session
      * @since 8.1
      */
-    public static CoreSession openCoreSessionSystem(String repositoryName, String originatingUsername) {
+    public static CloseableCoreSession openCoreSessionSystem(String repositoryName, String originatingUsername) {
         NuxeoPrincipal principal = getPrincipal((SecurityConstants.SYSTEM_USERNAME));
         principal.setOriginatingUser(originatingUsername);
         return openCoreSession(repositoryName, principal);
@@ -123,21 +123,21 @@ public class CoreInstance {
      * @param context the session open context
      * @return the session
      */
-    public static CoreSession openCoreSession(String repositoryName, Map<String, Serializable> context) {
+    public static CloseableCoreSession openCoreSession(String repositoryName, Map<String, Serializable> context) {
         return openCoreSession(repositoryName, getPrincipal(context));
     }
 
     /**
      * MUST ONLY BE USED IN UNIT TESTS to open a {@link CoreSession} for the given principal.
      * <p>
-     * The session must be closed using {@link CoreSession#close}.
+     * The session must be closed using {@link CloseableCoreSession#close}.
      *
      * @param repositoryName the repository name, or {@code null} for the default repository
      * @param principal the principal
      * @return the session
      * @since 5.9.3
      */
-    public static CoreSession openCoreSession(String repositoryName, Principal principal) {
+    public static CloseableCoreSession openCoreSession(String repositoryName, Principal principal) {
         if (principal instanceof NuxeoPrincipal) {
             return openCoreSession(repositoryName, (NuxeoPrincipal) principal);
         } else {
@@ -148,14 +148,14 @@ public class CoreInstance {
     /**
      * MUST ONLY BE USED IN UNIT TESTS to open a {@link CoreSession} for the given principal.
      * <p>
-     * The session must be closed using {@link CoreSession#close}.
+     * The session must be closed using {@link CloseableCoreSession#close}.
      *
      * @param repositoryName the repository name, or {@code null} for the default repository
      * @param principal the principal
      * @return the session
      * @since 5.9.3
      */
-    public static CoreSession openCoreSession(String repositoryName, NuxeoPrincipal principal) {
+    public static CloseableCoreSession openCoreSession(String repositoryName, NuxeoPrincipal principal) {
         if (repositoryName == null) {
             RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
             repositoryName = repositoryManager.getDefaultRepository().getName();
@@ -176,11 +176,11 @@ public class CoreInstance {
     }
 
     /**
-     * Use {@link CoreSession#close} instead.
+     * Use {@link CloseableCoreSession#close} instead.
      *
      * @since 5.9.3
      */
-    public static void closeCoreSession(CoreSession session) {
+    public static void closeCoreSession(CloseableCoreSession session) {
         Framework.getService(CoreSessionService.class).releaseCoreSession(session);
     }
 

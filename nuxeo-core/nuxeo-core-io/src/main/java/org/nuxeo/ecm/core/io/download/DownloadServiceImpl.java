@@ -53,6 +53,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -290,7 +291,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         String downloadPath = pair.getLeft();
         try {
             DownloadBlobInfo downloadBlobInfo = new DownloadBlobInfo(downloadPath);
-            try (CoreSession session = CoreInstance.openCoreSession(downloadBlobInfo.repository)) {
+            try (CloseableCoreSession session = CoreInstance.openCoreSession(downloadBlobInfo.repository)) {
                 DocumentRef docRef = new IdRef(downloadBlobInfo.docId);
                 if (!session.exists(docRef)) {
                     return null;
@@ -351,7 +352,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             }
             String xpath = downloadBlobInfo.xpath;
             String filename = downloadBlobInfo.filename;
-            try (CoreSession session = CoreInstance.openCoreSession(downloadBlobInfo.repository)) {
+            try (CloseableCoreSession session = CoreInstance.openCoreSession(downloadBlobInfo.repository)) {
                 DocumentRef docRef = new IdRef(downloadBlobInfo.docId);
                 if (!session.exists(docRef)) {
                     // Send a security exception to force authentication, if the current user is anonymous
@@ -779,7 +780,6 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
         EventContext ctx;
         if (doc != null) {
-            @SuppressWarnings("resource")
             CoreSession session = doc.getCoreSession();
             Principal principal = session == null ? getPrincipal() : session.getPrincipal();
             ctx = new DocumentEventContext(session, principal, doc);

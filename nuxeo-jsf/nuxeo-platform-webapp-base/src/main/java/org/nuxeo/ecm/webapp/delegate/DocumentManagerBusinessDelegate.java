@@ -41,6 +41,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.jboss.seam.contexts.Lifecycle;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.Repository;
@@ -66,7 +67,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
     /**
      * Map holding the open session for each repository location.
      */
-    protected final Map<RepositoryLocation, CoreSession> sessions = new HashMap<RepositoryLocation, CoreSession>();
+    protected final Map<RepositoryLocation, CloseableCoreSession> sessions = new HashMap<>();
 
     public void initialize() {
         log.debug("Seam component initialized...");
@@ -92,7 +93,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
             return null;
         }
 
-        CoreSession session = sessions.get(serverLocation);
+        CloseableCoreSession session = sessions.get(serverLocation);
         if (session == null) {
             if (Lifecycle.isDestroying()) {
                 /*
@@ -123,9 +124,9 @@ public class DocumentManagerBusinessDelegate implements Serializable {
                 log.error("Unable to login as System", le);
                 log.warn("...try to feed CoreSession(s) without system login ...");
             }
-            for (Entry<RepositoryLocation, CoreSession> entry : sessions.entrySet()) {
+            for (Entry<RepositoryLocation, CloseableCoreSession> entry : sessions.entrySet()) {
                 String serverName = entry.getKey().getName();
-                CoreSession session = entry.getValue();
+                CloseableCoreSession session = entry.getValue();
                 session.close();
                 log.debug("Closed session for repository " + serverName);
             }

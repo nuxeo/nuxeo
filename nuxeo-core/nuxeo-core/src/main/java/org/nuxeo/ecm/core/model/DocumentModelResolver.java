@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -152,7 +153,7 @@ public class DocumentModelResolver implements ObjectResolver {
         if (value != null && value instanceof String) {
             REF ref = REF.fromValue((String) value);
             if (ref != null) {
-                try (CoreSession session = CoreInstance.openCoreSession(ref.repo)) {
+                try (CloseableCoreSession session = CoreInstance.openCoreSession(ref.repo)) {
                     switch (mode) {
                     case ID_REF:
                         return session.exists(new IdRef(ref.ref));
@@ -173,7 +174,7 @@ public class DocumentModelResolver implements ObjectResolver {
         if (value != null && value instanceof String) {
             REF ref = REF.fromValue((String) value);
             if (ref != null) {
-                try (CoreSession session = CoreInstance.openCoreSession(ref.repo)) {
+                try (CloseableCoreSession session = CoreInstance.openCoreSession(ref.repo)) {
                     try {
                         DocumentModel doc;
                         switch (mode) {

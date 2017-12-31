@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -81,7 +82,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         if (sources == null || sources.isEmpty()) {
             return null;
         }
-        try (CoreSession session = CoreInstance.openCoreSessionSystem(repo)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(repo)) {
             Map<DocumentRef, List<LogEntry>> docLogs = new HashMap<DocumentRef, List<LogEntry>>();
 
             Logs logService = Framework.getService(Logs.class);

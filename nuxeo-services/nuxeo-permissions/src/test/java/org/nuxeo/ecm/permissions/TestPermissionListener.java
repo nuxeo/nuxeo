@@ -39,6 +39,7 @@ import javax.security.auth.login.LoginException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -137,7 +138,7 @@ public class TestPermissionListener {
         root.setACP(rootACP, true);
 
         login("joe");
-        try (CoreSession joeSession = CoreInstance.openCoreSession(repositoryName)) {
+        try (CloseableCoreSession joeSession = CoreInstance.openCoreSession(repositoryName)) {
             DocumentModel doc = joeSession.createDocumentModel("/", "file", "File");
             doc = joeSession.createDocument(doc);
             docId = doc.getId();
@@ -173,7 +174,7 @@ public class TestPermissionListener {
         }
 
         login("joe");
-        try (CoreSession joeSession = CoreInstance.openCoreSession(repositoryName)) {
+        try (CloseableCoreSession joeSession = CoreInstance.openCoreSession(repositoryName)) {
             DocumentModel doc = joeSession.getDocument(new IdRef(docId));
             ACP acp = doc.getACP();
             ACL acl = acp.getOrCreateACL();

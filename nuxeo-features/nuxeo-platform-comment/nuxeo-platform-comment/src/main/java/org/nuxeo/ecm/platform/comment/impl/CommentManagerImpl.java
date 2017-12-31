@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -133,7 +134,7 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     public DocumentModel createComment(DocumentModel docModel, String comment, String author) {
-        try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel commentDM = session.createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
             commentDM.setPropertyValue(CommentsConstants.COMMENT_TEXT, comment);
             commentDM.setPropertyValue(CommentsConstants.COMMENT_AUTHOR, author);
@@ -168,7 +169,7 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     public DocumentModel createComment(DocumentModel docModel, DocumentModel comment) {
-        try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel doc = internalCreateComment(session, docModel, comment, null);
             session.save();
             doc.detach(true);
@@ -356,7 +357,7 @@ public class CommentManagerImpl implements CommentManager {
     public void deleteComment(DocumentModel docModel, DocumentModel comment) {
         NuxeoPrincipal author = comment.getCoreSession() != null ? (NuxeoPrincipal) comment.getCoreSession().getPrincipal()
                 : getAuthor(comment);
-        try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentRef ref = comment.getRef();
             if (!session.exists(ref)) {
                 throw new NuxeoException("Comment Document does not exist: " + comment.getId());
@@ -372,7 +373,7 @@ public class CommentManagerImpl implements CommentManager {
 
     public DocumentModel createComment(DocumentModel docModel, DocumentModel parent, DocumentModel child)
             {
-        try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel parentDocModel = session.getDocument(parent.getRef());
             DocumentModel newComment = internalCreateComment(session, parentDocModel, child, null);
 
@@ -435,7 +436,7 @@ public class CommentManagerImpl implements CommentManager {
 
     public DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path)
             {
-        try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel createdComment = internalCreateComment(session, docModel, comment, path);
             session.save();
             return createdComment;

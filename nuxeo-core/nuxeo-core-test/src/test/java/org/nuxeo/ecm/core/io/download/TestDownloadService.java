@@ -54,6 +54,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -464,29 +465,29 @@ public class TestDownloadService {
     @Test
     public void testResolveBlobFromDownloadUrl() throws IOException {
         String repositoryName = "test";
-        CoreSession session = CoreInstance.openCoreSession(repositoryName);
-        Framework.getProperties().setProperty("nuxeo.url", "http://localhost:8080/nuxeo");
-        DocumentModel doc = session.createDocumentModel("/", "James-Bond", "File");
-        doc.setProperty("dublincore", "title", "Diamonds are forever");
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName)) {
+            Framework.getProperties().setProperty("nuxeo.url", "http://localhost:8080/nuxeo");
+            DocumentModel doc = session.createDocumentModel("/", "James-Bond", "File");
+            doc.setProperty("dublincore", "title", "Diamonds are forever");
 
-        FileBlob blob = new FileBlob("Synopsis");
-        String blobFilename = "synopsis.txt";
-        blob.setFilename(blobFilename);
+            FileBlob blob = new FileBlob("Synopsis");
+            String blobFilename = "synopsis.txt";
+            blob.setFilename(blobFilename);
 
-        Map<String, Object> fileMap = new HashMap<>();
-        fileMap.put("file", blob);
-        List<Map<String, Object>> docFiles = new ArrayList<>();
-        docFiles.add(fileMap);
+            Map<String, Object> fileMap = new HashMap<>();
+            fileMap.put("file", blob);
+            List<Map<String, Object>> docFiles = new ArrayList<>();
+            docFiles.add(fileMap);
 
-        doc.setProperty("files", "files", docFiles);
-        doc = session.createDocument(doc);
-        session.save();
+            doc.setProperty("files", "files", docFiles);
+            doc = session.createDocument(doc);
+            session.save();
 
-        String url = "http://localhost:8080/nuxeo/nxfile/" + repositoryName + "/" + doc.getId() + "/files:files/0/file/"
-                + blobFilename;
-        Blob resolvedBlob = downloadService.resolveBlobFromDownloadUrl(url);
-        assertEquals(blob, resolvedBlob);
-        session.close();
+            String url = "http://localhost:8080/nuxeo/nxfile/" + repositoryName + "/" + doc.getId()
+                    + "/files:files/0/file/" + blobFilename;
+            Blob resolvedBlob = downloadService.resolveBlobFromDownloadUrl(url);
+            assertEquals(blob, resolvedBlob);
+        }
     }
 
     @Test

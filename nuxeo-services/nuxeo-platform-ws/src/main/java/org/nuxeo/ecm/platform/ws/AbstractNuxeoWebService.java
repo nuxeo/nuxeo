@@ -27,6 +27,7 @@ import javax.jws.WebParam;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -115,7 +116,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
     @WebMethod
     public void disconnect(@WebParam(name = "sessionId") String sid) {
         WSRemotingSession rs = initSession(sid);
-        rs.getDocumentManager().close();
+        ((CloseableCoreSession) rs.getDocumentManager()).close();
     }
 
     /**

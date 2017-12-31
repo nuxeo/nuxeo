@@ -68,7 +68,7 @@ public class TestPermissionFilter {
 
     @Test
     public void testIncludedPermissions() {
-        try (CoreSession newSession = coreFeature.openCoreSession("foo")) {
+        try (CloseableCoreSession newSession = coreFeature.openCoreSession("foo")) {
             DocumentModel doc = newSession.createDocumentModel("/", "file", "File");
             doc = newSession.createDocument(doc);
             assertNotNull(doc);
@@ -89,7 +89,7 @@ public class TestPermissionFilter {
 
     @Test
     public void testExcludedPermissions() {
-        try (CoreSession newSession = coreFeature.openCoreSession("foo")) {
+        try (CloseableCoreSession newSession = coreFeature.openCoreSession("foo")) {
             DocumentModel doc = newSession.createDocumentModel("/", "file", "File");
             doc = newSession.createDocument(doc);
             assertNotNull(doc);
@@ -110,7 +110,7 @@ public class TestPermissionFilter {
 
     @Test
     public void testIncludedAndExcludedPermissions() {
-        try (CoreSession newSession = coreFeature.openCoreSession("foo")) {
+        try (CloseableCoreSession newSession = coreFeature.openCoreSession("foo")) {
             DocumentModel doc = newSession.createDocumentModel("/", "file", "File");
             doc = newSession.createDocument(doc);
             assertNotNull(doc);

@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.annotations.repository.service;
 
 import java.net.URI;
 
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -46,7 +47,7 @@ public class RepositoryAnnotabilityManager implements AnnotabilityManager {
         if (view == null) { // not a nuxeo uri
             return service.isAnnotable(null);
         }
-        try (CoreSession session = CoreInstance.openCoreSession(null)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(null)) {
             DocumentModel model = session.getDocument(view.getDocumentLocation().getDocRef());
             return service.isAnnotable(model);
         }

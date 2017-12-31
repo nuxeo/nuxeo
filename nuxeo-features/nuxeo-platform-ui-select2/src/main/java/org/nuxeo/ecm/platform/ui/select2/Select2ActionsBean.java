@@ -53,6 +53,7 @@ import org.nuxeo.ecm.automation.core.operations.services.directory.SuggestDirect
 import org.nuxeo.ecm.automation.core.operations.users.SuggestUserEntries;
 import org.nuxeo.ecm.automation.features.SuggestConstants;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -119,7 +120,7 @@ public class Select2ActionsBean implements Serializable {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    protected transient CoreSession dedicatedSession = null;
+    protected transient CloseableCoreSession dedicatedSession = null;
 
     @Destroy
     public void destroy() {

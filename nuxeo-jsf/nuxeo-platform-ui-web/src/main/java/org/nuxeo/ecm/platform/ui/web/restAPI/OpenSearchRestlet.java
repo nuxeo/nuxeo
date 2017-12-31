@@ -28,6 +28,7 @@ import org.dom4j.Namespace;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -78,7 +79,7 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
 
     @Override
     public void handle(Request req, Response res) {
-        try (CoreSession session = CoreInstance.openCoreSession(null, getUserPrincipal(req))) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(null, getUserPrincipal(req))) {
             // read the search term passed as the 'q' request parameter
             String keywords = getQueryParamValue(req, "q", " ");
 
