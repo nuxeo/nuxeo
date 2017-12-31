@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -169,7 +170,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         route = service.createNewInstance(route, new ArrayList<String>(), session, true);
         assertNotNull(route);
         session.save();
-        try (CoreSession managersSession = CoreInstance.openCoreSession(session.getRepositoryName(), "routeManagers")) {
+        try (CloseableCoreSession managersSession = CoreInstance.openCoreSession(session.getRepositoryName(), "routeManagers")) {
             DocumentModel step = managersSession.getChildren(route.getDocument().getRef()).get(0);
             service.lockDocumentRoute(route, managersSession);
             service.removeRouteElement(step.getAdapter(DocumentRouteElement.class), managersSession);
@@ -204,7 +205,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.saveDocument(routeModel);
         session.save();
 
-        try (CoreSession jdoeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe")) {
+        try (CloseableCoreSession jdoeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe")) {
             Exception e = null;
             try {
                 service.lockDocumentRoute(route, jdoeSession);
@@ -218,7 +219,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         service.removeRouteElement(step32.getAdapter(DocumentRouteElement.class), session);
         service.unlockDocumentRoute(route, session);
 
-        try (CoreSession jdoeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe")) {
+        try (CloseableCoreSession jdoeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe")) {
             Exception e = null;
             try {
                 service.unlockDocumentRoute(route, jdoeSession);
@@ -289,7 +290,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         route = session.getDocument(route.getRef());
         assertEquals("validated", route.getCurrentLifeCycleState());
 
-        try (CoreSession jdoeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe")) {
+        try (CloseableCoreSession jdoeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe")) {
             assertFalse(jdoeSession.hasPermission(route.getRef(), SecurityConstants.WRITE));
             assertTrue(jdoeSession.hasPermission(route.getRef(), SecurityConstants.READ));
         }
@@ -352,7 +353,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         waitForAsyncExec();
 
-        try (CoreSession managerSession = CoreInstance.openCoreSession(session.getRepositoryName(), "routeManagers")) {
+        try (CloseableCoreSession managerSession = CoreInstance.openCoreSession(session.getRepositoryName(), "routeManagers")) {
             route = managerSession.getDocument(routeRef).getAdapter(DocumentRoute.class);
             DocumentRoute routeInstance = service.createNewInstance(route, Collections.singletonList(doc1.getId()),
                     managerSession, true);

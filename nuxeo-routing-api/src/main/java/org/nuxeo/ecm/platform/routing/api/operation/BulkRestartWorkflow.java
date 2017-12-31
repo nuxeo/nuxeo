@@ -35,6 +35,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -79,7 +80,7 @@ public class BulkRestartWorkflow {
 
     @OperationMethod
     public void run() {
-        CoreSession session = null;
+        CloseableCoreSession session = null;
         boolean transactionStarted = false;
         Split split = SimonManager.getStopwatch(ID).start();
         try {

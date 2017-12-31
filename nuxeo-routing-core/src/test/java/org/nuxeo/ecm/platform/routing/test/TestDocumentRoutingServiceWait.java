@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -286,7 +287,7 @@ public class TestDocumentRoutingServiceWait extends DocumentRoutingTestCase {
 
         // bob creates the route and validates it
         DocumentRef routeInstanceRef;
-        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
             DocumentRoute route = createDocumentRoute(bobSession, ROUTE1);
             assertNotNull(route);
             bobSession.save();
@@ -309,12 +310,12 @@ public class TestDocumentRoutingServiceWait extends DocumentRoutingTestCase {
         }
 
         // jack checks he can't do anything on it
-        try (CoreSession jackSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jack")) {
+        try (CloseableCoreSession jackSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jack")) {
             assertFalse(jackSession.exists(routeInstanceRef));
         }
 
         // bob finishes the route
-        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
             DocumentRoute routeInstance = bobSession.getDocument(routeInstanceRef).getAdapter(DocumentRoute.class);
             List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
             WaitingStepRuntimePersister.resumeStep(waiting.get(0), bobSession);

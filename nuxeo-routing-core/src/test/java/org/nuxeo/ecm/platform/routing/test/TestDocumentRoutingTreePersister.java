@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -54,7 +55,7 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
         assertEquals(doc.getPathAsString(), TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT);
         session.save();
 
-        try (CoreSession membersSession = CoreInstance.openCoreSession(session.getRepositoryName(), "members")) {
+        try (CloseableCoreSession membersSession = CoreInstance.openCoreSession(session.getRepositoryName(), "members")) {
             assertFalse(membersSession.hasPermission(doc.getRef(), SecurityConstants.READ));
         }
     }
@@ -73,7 +74,7 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
         assertEquals(doc.getPathAsString(), TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT);
         session.save();
 
-        try (CoreSession membersSession = CoreInstance.openCoreSession(session.getRepositoryName(), "members")) {
+        try (CloseableCoreSession membersSession = CoreInstance.openCoreSession(session.getRepositoryName(), "members")) {
             assertFalse(membersSession.hasPermission(doc.getRef(), SecurityConstants.READ));
         }
     }
@@ -98,7 +99,7 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
         docsId = (List<String>) instance.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
         assertEquals("1", docsId.get(0));
 
-        try (CoreSession managersSession = CoreInstance.openCoreSession(session.getRepositoryName(),
+        try (CloseableCoreSession managersSession = CoreInstance.openCoreSession(session.getRepositoryName(),
                 DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME)) {
             assertEquals(3, managersSession.getChildren(instance.getRef()).size());
         }
