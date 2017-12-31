@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -152,7 +153,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
         final RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         final WorkManager workManager = Framework.getService(WorkManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
-            try (CoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
+            try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
 
                 long offset = 0;
                 List<DocumentModel> nextDocumentsToBeUpdated;
