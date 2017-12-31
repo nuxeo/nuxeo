@@ -24,6 +24,7 @@ package org.nuxeo.ecm.platform.importer.base;
 import org.javasimon.SimonManager;
 import org.javasimon.Stopwatch;
 import org.nuxeo.common.utils.ExceptionUtils;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -202,11 +203,11 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     @Override
     public void run() {
         Exception finalException = null;
-        try {
-            if (!TransactionHelper.isTransactionActive()) {
-                TransactionHelper.startTransaction();
-            }
-            session = CoreInstance.openCoreSessionSystem(repositoryName);
+        if (!TransactionHelper.isTransactionActive()) {
+            TransactionHelper.startTransaction();
+        }
+        try (CloseableCoreSession closeableCoreSession = CoreInstance.openCoreSessionSystem(repositoryName)) {
+            session = closeableCoreSession;
             for (ImporterFilter filter : filters) {
                 log.debug(String.format(
                         "Running filter with %s, on the importer with the hash code %s. The source node name is %s",
@@ -227,10 +228,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
             for (ImporterFilter filter : filters) {
                 filter.handleAfterImport(finalException);
             }
-            if (session != null) {
-                session.close();
-                session = null;
-            }
+            session = null;
         }
     }
 
