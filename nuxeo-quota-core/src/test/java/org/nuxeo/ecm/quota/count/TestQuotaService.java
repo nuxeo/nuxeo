@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -74,7 +75,7 @@ public class TestQuotaService {
         DocumentRef uwRef2;
 
         TransactionHelper.startTransaction();
-        try (CoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe")) {
+        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe")) {
             assertNotNull(uwm);
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
             assertNotNull(uw);
@@ -88,7 +89,7 @@ public class TestQuotaService {
             workManager.awaitCompletion(3, TimeUnit.SECONDS);
         }
         TransactionHelper.startTransaction();
-        try (CoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jack")) {
+        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jack")) {
             uwm = Framework.getService(UserWorkspaceService.class);
             assertNotNull(uwm);
 

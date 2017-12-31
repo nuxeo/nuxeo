@@ -133,7 +133,6 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
     }
 
     protected void initDocumentFromChildren(DocumentModel doc) {
-        @SuppressWarnings("resource")
         CoreSession session = doc.getCoreSession();
         boolean isDeleted = DELETED_STATE.equals(doc.getCurrentLifeCycleState());
         long innerSize = getBlobsSize(doc);

@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -1066,12 +1067,12 @@ public class TestDocumentsSizeUpdater {
     public void testAllowSettingMaxQuotaOnUserWorkspace() throws Exception {
         addContent();
 
-        try (CoreSession userSession = coreFeature.openCoreSession("toto")) {
+        try (CloseableCoreSession userSession = coreFeature.openCoreSession("toto")) {
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
             assertNotNull(uw);
             userSession.save();
         }
-        try (CoreSession userSession = coreFeature.openCoreSession("titi")) {
+        try (CloseableCoreSession userSession = coreFeature.openCoreSession("titi")) {
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
             assertNotNull(uw);
             userSession.save();
