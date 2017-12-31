@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -85,7 +86,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
 
     protected URI getGraphURIFromDocumentView(DocumentView view) {
         DocumentLocation docLoc = view.getDocumentLocation();
-        try (CoreSession session = CoreInstance.openCoreSession(docLoc.getServerName())) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(docLoc.getServerName())) {
             DocumentRef idRef = docLoc.getIdRef();
             if (idRef == null) {
                 DocumentModel docModel = session.getDocument(docLoc.getDocRef());

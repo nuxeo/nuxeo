@@ -30,6 +30,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -122,7 +123,7 @@ public class ElasticSearchManager implements Serializable {
 
     public void startReindexFrom() {
         String repositoryName = getRepositoryName();
-        try (CoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
             log.warn(String.format("Try to remove %s and its children from %s repository index", rootId,
                     repositoryName));
             String jsonCmd = String.format(JSON_DELETE_CMD, rootId, repositoryName);

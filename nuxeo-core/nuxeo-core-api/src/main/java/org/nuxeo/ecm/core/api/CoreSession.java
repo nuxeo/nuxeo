@@ -42,7 +42,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
-public interface CoreSession extends AutoCloseable {
+public interface CoreSession {
 
     // used to pass properties to importDocument
     String IMPORT_VERSION_VERSIONABLE_ID = "ecm:versionableId";
@@ -140,16 +140,10 @@ public interface CoreSession extends AutoCloseable {
      * Closes this session.
      *
      * @since 5.9.3
+     * @deprecated since 10.1, use {@link CloseableCoreSession#close} instead
      */
-    @Override
+    @Deprecated
     void close();
-
-    /**
-     * Destroys any system resources held by this instance.
-     * <p>
-     * Called when the instance is no more needed.
-     */
-    void destroy();
 
     /**
      * Gets the document type object given its type name.

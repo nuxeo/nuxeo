@@ -19,13 +19,10 @@
  */
 package org.nuxeo.ecm.core.api.repository;
 
-import java.io.Serializable;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
@@ -89,30 +86,6 @@ public class Repository {
 
     public Callable<Object> getRepositoryFactory() {
         return repositoryFactory;
-    }
-
-    /**
-     * @deprecated since 5.9.3, use {@link CoreInstance#openCoreSession} instead.
-     */
-    @Deprecated
-    public CoreSession open() {
-        return CoreInstance.openCoreSession(name);
-    }
-
-    /**
-     * @deprecated since 5.9.3, use {@link CoreInstance#openCoreSession} instead.
-     */
-    @Deprecated
-    public CoreSession open(Map<String, Serializable> context) {
-        return CoreInstance.openCoreSession(name, context);
-    }
-
-    /**
-     * @deprecated since 5.9.3, use {@link CoreSession#close} instead.
-     */
-    @Deprecated
-    public static void close(CoreSession session) {
-        session.close();
     }
 
     @Override

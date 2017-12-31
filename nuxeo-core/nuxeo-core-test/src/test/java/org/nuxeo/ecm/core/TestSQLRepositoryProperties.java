@@ -50,6 +50,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -136,7 +137,7 @@ public class TestSQLRepositoryProperties {
         return coreFeature.getStorageConfiguration().isDBSMarkLogic();
     }
 
-    protected CoreSession openSessionAs(String username) {
+    protected CloseableCoreSession openSessionAs(String username) {
         return CoreInstance.openCoreSession(session.getRepositoryName(), username);
     }
 
@@ -608,8 +609,8 @@ public class TestSQLRepositoryProperties {
         session.save();
         // has not created the complex properties at that point
 
-        try (CoreSession s1 = openSessionAs("Administrator"); //
-                CoreSession s2 = openSessionAs("Administrator")) {
+        try (CloseableCoreSession s1 = openSessionAs("Administrator"); //
+                CloseableCoreSession s2 = openSessionAs("Administrator")) {
             DocumentModel d1 = s1.getDocument(new IdRef(doc2.getId()));
             DocumentModel d2 = s2.getDocument(new IdRef(doc2.getId()));
             // read the complex prop to trigger documentpart fetch

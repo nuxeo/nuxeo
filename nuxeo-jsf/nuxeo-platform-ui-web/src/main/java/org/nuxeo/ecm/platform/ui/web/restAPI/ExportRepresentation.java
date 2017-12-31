@@ -26,6 +26,7 @@ import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -92,7 +93,7 @@ public abstract class ExportRepresentation extends OutputRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        CoreSession session;
+        CloseableCoreSession session;
         if (isUnrestricted) {
             session = CoreInstance.openCoreSessionSystem(repositoryName);
         } else {

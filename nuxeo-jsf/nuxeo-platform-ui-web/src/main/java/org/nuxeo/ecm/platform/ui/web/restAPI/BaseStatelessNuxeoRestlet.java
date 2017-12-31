@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -97,7 +98,7 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
 
     protected void cleanUp() {
         if (session != null) {
-            session.close();
+            ((CloseableCoreSession) session).close();
             session = null;
             targetDocRef = null;
             targetDocument = null;

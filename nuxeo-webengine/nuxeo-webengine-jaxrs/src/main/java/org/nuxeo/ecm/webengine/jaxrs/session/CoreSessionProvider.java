@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -42,7 +43,7 @@ public abstract class CoreSessionProvider<REF extends SessionRef> {
      */
     protected abstract void onRequestDone(HttpServletRequest request);
 
-    protected abstract REF createSessionRef(CoreSession session);
+    protected abstract REF createSessionRef(CloseableCoreSession session);
 
     public SessionRef[] getSessions() {
         return sessions.values().toArray(new SessionRef[sessions.size()]);
@@ -61,7 +62,7 @@ public abstract class CoreSessionProvider<REF extends SessionRef> {
         return getSessionRef(request, repoName).get();
     }
 
-    protected CoreSession createSession(HttpServletRequest request, String repoName) {
+    protected CloseableCoreSession createSession(HttpServletRequest request, String repoName) {
         if (request.getUserPrincipal() == null) {
             throw new java.lang.IllegalStateException("Not authenticated user is trying to get a core session");
         }

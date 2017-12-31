@@ -28,6 +28,7 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -60,7 +61,7 @@ public class StoreMessageAction implements MessageAction {
             log.debug("Storing message: " + message.getSubject());
         }
         Thread.currentThread().setContextClassLoader(Framework.class.getClassLoader());
-        try (CoreSession session = CoreInstance.openCoreSessionSystem(null)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(null)) {
             DocumentModel doc = session.createDocumentModel(getMailDocumentType());
             doc.setProperty("dublincore", "title", title + System.currentTimeMillis());
             doc.setPathInfo(parentPath, pss.generatePathSegment(doc));

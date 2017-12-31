@@ -39,6 +39,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -178,7 +179,7 @@ public class TestTagsRelationsToFacetsMigrator {
             for (int j = 0; j < TAGS_PER_DOC; j++) {
                 String label = "tag" + ((i + j) % 7);
                 String username = "user" + ((i + j) % 13);
-                try (CoreSession s = CoreInstance.openCoreSession(session.getRepositoryName(), username)) {
+                try (CloseableCoreSession s = CoreInstance.openCoreSession(session.getRepositoryName(), username)) {
                     relationTagService.tag(s, docId, label);
                 }
             }
@@ -186,7 +187,7 @@ public class TestTagsRelationsToFacetsMigrator {
                 // sometimes create a new-style tag as well
                 String label = "newtag" + (i % 5);
                 String username = "user" + (i % 4);
-                try (CoreSession s = CoreInstance.openCoreSession(session.getRepositoryName(), username)) {
+                try (CloseableCoreSession s = CoreInstance.openCoreSession(session.getRepositoryName(), username)) {
                     facetedTagService.tag(s, docId, label);
                 }
             }

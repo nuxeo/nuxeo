@@ -26,6 +26,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -88,7 +89,7 @@ public abstract class AbstractSimpleConfigurationTest {
         session.save();
     }
 
-    protected CoreSession openSessionAs(String username) {
+    protected CloseableCoreSession openSessionAs(String username) {
         return coreFeature.openCoreSession(username);
     }
 

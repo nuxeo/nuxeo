@@ -35,6 +35,7 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -65,7 +66,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
     protected transient LoginContext loginCtx;
 
-    protected transient CoreSession reconnectedCoreSession;
+    protected transient CloseableCoreSession reconnectedCoreSession;
 
     private static final Log log = LogFactory.getLog(ReconnectedEventBundleImpl.class);
 

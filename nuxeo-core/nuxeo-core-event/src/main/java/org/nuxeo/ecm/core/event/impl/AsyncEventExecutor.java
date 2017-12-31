@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -105,8 +106,9 @@ public class AsyncEventExecutor {
                         sessions.put(session.getRepositoryName(), session);
                     }
                 }
-
-                sessions.values().forEach(CoreSession::close);
+                for (CoreSession session : sessions.values()) {
+                    ((CloseableCoreSession) session).close();
+                }
                 scheduleListeners(listeners, connectedBundle);
             });
         }

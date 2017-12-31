@@ -30,6 +30,7 @@ import javax.transaction.Synchronization;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.AbstractSession;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -43,7 +44,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * Local Session: implementation of {@link CoreSession} beyond {@link AbstractSession}, dealing with low-level stuff.
  */
-public class LocalSession extends AbstractSession implements Synchronization {
+public class LocalSession extends AbstractSession implements CloseableCoreSession, Synchronization {
 
     private static final long serialVersionUID = 1L;
 

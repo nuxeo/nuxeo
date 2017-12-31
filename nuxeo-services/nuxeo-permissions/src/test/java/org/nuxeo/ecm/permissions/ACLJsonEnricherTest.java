@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -145,7 +146,7 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
     @Test
     public void testExtendedFetchingAsRegularUser() throws Exception {
         CoreSession systemSession = session;
-        try (CoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "joe")) {
+        try (CloseableCoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "joe")) {
             session = joeSession;
             LoginContext loginContext = Framework.login("joe", "joe");
             try {

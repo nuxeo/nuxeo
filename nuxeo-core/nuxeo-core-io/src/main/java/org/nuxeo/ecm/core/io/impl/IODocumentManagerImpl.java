@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -57,7 +58,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
     public DocumentTranslationMap importDocuments(InputStream in, String repo, DocumentRef root) {
         DocumentReader reader = null;
         DocumentModelWriter writer = null;
-        try (CoreSession coreSession = CoreInstance.openCoreSessionSystem(repo)) {
+        try (CloseableCoreSession coreSession = CoreInstance.openCoreSessionSystem(repo)) {
             final DocumentModel dst = coreSession.getDocument(root);
             reader = new NuxeoArchiveReader(in);
             writer = new DocumentModelWriter(coreSession, dst.getPathAsString());
@@ -110,7 +111,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
             boolean recurse, String format) {
         DocumentReader reader = null;
         DocumentWriter writer = null;
-        try (CoreSession coreSession = CoreInstance.openCoreSessionSystem(repo)) {
+        try (CloseableCoreSession coreSession = CoreInstance.openCoreSessionSystem(repo)) {
             DocumentPipe pipe = new DocumentPipeImpl(10);
             // XXX check format before creating writer
             writer = new NuxeoArchiveWriter(out);

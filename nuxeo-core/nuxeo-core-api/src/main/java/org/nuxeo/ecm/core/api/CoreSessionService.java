@@ -34,9 +34,9 @@ public interface CoreSessionService {
 
         private static final long serialVersionUID = 1L;
 
-        private final CoreSession session;
+        private final CloseableCoreSession session;
 
-        public CoreSessionRegistrationInfo(CoreSession session) {
+        public CoreSessionRegistrationInfo(CloseableCoreSession session) {
             super("CoreSessionDebugInfo(" + Thread.currentThread().getName() + ", " + session.getSessionId() + ")");
             this.session = session;
         }
@@ -51,16 +51,16 @@ public interface CoreSessionService {
      *
      * @param repositoryName the repository name
      * @param principal the principal
-     * @return a {@link CoreSession}
+     * @return a {@link CloseableCoreSession}
      */
-    CoreSession createCoreSession(String repositoryName, NuxeoPrincipal principal);
+    CloseableCoreSession createCoreSession(String repositoryName, NuxeoPrincipal principal);
 
     /**
-     * Releases (closes) a {@link CoreSession} acquired by {@link #createCoreSession}.
+     * Releases (closes) a {@link CloseableCoreSession} acquired by {@link #createCoreSession}.
      *
      * @param session the session to close
      */
-    void releaseCoreSession(CoreSession session);
+    void releaseCoreSession(CloseableCoreSession session);
 
     /**
      * Gets an existing open session for the given session id.

@@ -39,14 +39,14 @@ public class CoreSessionServiceImpl extends DefaultComponent implements CoreSess
     private final Map<String, CoreSessionRegistrationInfo> sessions = new ConcurrentHashMap<String, CoreSessionRegistrationInfo>();
 
     @Override
-    public CoreSession createCoreSession(String repositoryName, NuxeoPrincipal principal) {
+    public CloseableCoreSession createCoreSession(String repositoryName, NuxeoPrincipal principal) {
         LocalSession session = new LocalSession(repositoryName, principal);
         sessions.put(session.getSessionId(), new CoreSessionRegistrationInfo(session));
         return session;
     }
 
     @Override
-    public void releaseCoreSession(CoreSession session) {
+    public void releaseCoreSession(CloseableCoreSession session) {
         String sessionId = session.getSessionId();
         CoreSessionRegistrationInfo info = sessions.remove(sessionId);
         if (info == null) {

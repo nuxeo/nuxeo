@@ -131,7 +131,7 @@ public class TestDefaultPageProviders {
     @After
     public void tearDown() {
         if (session != null) {
-            session.close();
+            ((CloseableCoreSession) session).close();
         }
         if (facesContext != null) {
             facesContext.relieveCurrent();

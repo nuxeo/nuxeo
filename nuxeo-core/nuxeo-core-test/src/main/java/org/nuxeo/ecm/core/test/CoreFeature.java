@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.CoreSessionService;
@@ -240,7 +241,7 @@ public class CoreFeature extends SimpleFeature {
         AssertionError leakedErrors = new AssertionError(String.format("leaked %d sessions", leakedInfos.size()));
         for (CoreSessionRegistrationInfo info : leakedInfos) {
             try {
-                info.getCoreSession().close();
+                ((CloseableCoreSession) info.getCoreSession()).close();
                 leakedErrors.addSuppressed(info);
             } catch (RuntimeException cause) {
                 leakedErrors.addSuppressed(cause);
@@ -369,26 +370,26 @@ public class CoreFeature extends SimpleFeature {
         return getStorageConfiguration().getRepositoryName();
     }
 
-    public CoreSession openCoreSession(String username) {
+    public CloseableCoreSession openCoreSession(String username) {
         return CoreInstance.openCoreSession(getRepositoryName(), username);
     }
 
-    public CoreSession openCoreSession(NuxeoPrincipal principal) {
+    public CloseableCoreSession openCoreSession(NuxeoPrincipal principal) {
         return CoreInstance.openCoreSession(getRepositoryName(), principal);
     }
 
-    public CoreSession openCoreSession() {
+    public CloseableCoreSession openCoreSession() {
         return CoreInstance.openCoreSession(getRepositoryName());
     }
 
-    public CoreSession openCoreSessionSystem() {
+    public CloseableCoreSession openCoreSessionSystem() {
         return CoreInstance.openCoreSessionSystem(getRepositoryName());
     }
 
-    public CoreSession createCoreSession() {
+    public CloseableCoreSession createCoreSession() {
         UserPrincipal principal = new UserPrincipal("Administrator", new ArrayList<>(), false, true);
         session = CoreInstance.openCoreSession(getRepositoryName(), principal);
-        return session;
+        return (CloseableCoreSession) session;
     }
 
     public CoreSession getCoreSession() {
@@ -396,7 +397,7 @@ public class CoreFeature extends SimpleFeature {
     }
 
     public void releaseCoreSession() {
-        session.close();
+        ((CloseableCoreSession) session).close();
         session = null;
     }
 

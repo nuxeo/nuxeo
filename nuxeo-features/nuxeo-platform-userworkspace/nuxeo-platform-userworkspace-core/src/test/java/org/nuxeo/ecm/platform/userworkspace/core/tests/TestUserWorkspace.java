@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -76,7 +77,7 @@ public class TestUserWorkspace {
 
     @Test
     public void testRestrictedAccess() throws Exception {
-        try (CoreSession userSession = coreFeature.openCoreSession("toto")) {
+        try (CloseableCoreSession userSession = coreFeature.openCoreSession("toto")) {
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
             assertNotNull(uw);
 
@@ -113,7 +114,7 @@ public class TestUserWorkspace {
 
         session.save();
 
-        try (CoreSession userSession = coreFeature.openCoreSession("toto")) {
+        try (CloseableCoreSession userSession = coreFeature.openCoreSession("toto")) {
             // access from root
             DocumentModel context = userSession.getRootDocument();
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
@@ -154,7 +155,7 @@ public class TestUserWorkspace {
 
         session.save();
 
-        try (CoreSession userSession = coreFeature.openCoreSession("user2")) {
+        try (CloseableCoreSession userSession = coreFeature.openCoreSession("user2")) {
             context = userSession.getRootDocument();
             try {
                 // Assert that it throws
@@ -185,11 +186,11 @@ public class TestUserWorkspace {
 
     @Test
     public void testWorkspaceNameCollision() {
-        try (CoreSession userSession = coreFeature.openCoreSession(alongname("user1"))) {
+        try (CloseableCoreSession userSession = coreFeature.openCoreSession(alongname("user1"))) {
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, userSession.getRootDocument());
             assertNotNull(uw);
         }
-        try (CoreSession userSession = coreFeature.openCoreSession(alongname("user2"))) {
+        try (CloseableCoreSession userSession = coreFeature.openCoreSession(alongname("user2"))) {
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, userSession.getRootDocument());
             assertNotNull(uw);
         }
@@ -238,7 +239,7 @@ public class TestUserWorkspace {
 
         session.save();
 
-        try (CoreSession userSession = coreFeature.openCoreSession("user1")) {
+        try (CloseableCoreSession userSession = coreFeature.openCoreSession("user1")) {
             context = userSession.getRootDocument();
 
             uw = uwm.getCurrentUserPersonalWorkspace(userSession, context);
@@ -310,7 +311,7 @@ public class TestUserWorkspace {
         foo.setACP(acp, true);
         session.save();
 
-        try (CoreSession userSession = coreFeature.openCoreSession(username)) {
+        try (CloseableCoreSession userSession = coreFeature.openCoreSession(username)) {
             Principal principal = userSession.getPrincipal();
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, userSession.getRootDocument());
             DocumentModel bar = userSession.createDocumentModel(uw.getPathAsString(), "bar", "File");
@@ -336,7 +337,7 @@ public class TestUserWorkspace {
                                         .collect(Collectors.toList());
         session.removeDocuments(refs.toArray(new DocumentRef[refs.size()]));
         session.save();
-        try (CoreSession userSession = coreFeature.openCoreSession("toto")) {
+        try (CloseableCoreSession userSession = coreFeature.openCoreSession("toto")) {
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
             assertNull(uw);
         }

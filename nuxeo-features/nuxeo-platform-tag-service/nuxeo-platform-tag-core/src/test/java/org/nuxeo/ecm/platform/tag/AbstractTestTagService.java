@@ -39,6 +39,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -520,7 +521,7 @@ public abstract class AbstractTestTagService {
         session.save();
 
         // Test untag for user with write permission
-        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
 
             // Tag document
             tagService.tag(bobSession, file1Id, "mytag");
@@ -539,7 +540,7 @@ public abstract class AbstractTestTagService {
         }
 
         // Test untag for user which created tag
-        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bender")) {
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bender")) {
 
             // Tag document
             tagService.tag(bobSession, file1Id, "othertag");
@@ -576,7 +577,7 @@ public abstract class AbstractTestTagService {
         session.setACP(file1.getRef(), acp, false);
         session.save();
 
-        try (CoreSession benderSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bender")) {
+        try (CloseableCoreSession benderSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bender")) {
 
             // Tag document
             tagService.tag(benderSession, file1Id, "mytag");
@@ -586,7 +587,7 @@ public abstract class AbstractTestTagService {
             assertEquals(1, tags.size());
             assertEquals("mytag", tags.toArray()[0]);
 
-            try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+            try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
                 // Untag with bob user
                 tagService.untag(bobSession, file1Id, "mytag");
                 fail("bob is not allowed to untag document file1 tagged by bender");

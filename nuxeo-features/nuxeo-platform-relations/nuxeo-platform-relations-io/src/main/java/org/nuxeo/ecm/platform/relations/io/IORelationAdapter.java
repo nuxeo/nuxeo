@@ -37,6 +37,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -238,7 +239,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             log.error("Cannot extract resources, no graph supplied");
             return null;
         }
-        try (CoreSession session = CoreInstance.openCoreSessionSystem(repo)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(repo)) {
             RelationManager relManager = getRelationManager();
             Graph graph = relManager.getGraphByName(graphName);
             if (graph == null) {
@@ -388,7 +389,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
         if (!(resources instanceof IORelationResources)) {
             return resources;
         }
-        try (CoreSession session = CoreInstance.openCoreSessionSystem(repo)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(repo)) {
             IORelationResources relResources = (IORelationResources) resources;
             Map<String, String> namespaces = relResources.getNamespaces();
             IORelationGraphHelper graphHelper = new IORelationGraphHelper(namespaces, relResources.getStatements());

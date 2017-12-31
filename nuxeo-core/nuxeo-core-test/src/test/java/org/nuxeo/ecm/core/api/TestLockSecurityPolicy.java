@@ -58,7 +58,7 @@ public class TestLockSecurityPolicy {
     protected RuntimeHarness harness;
 
     private void setTestPermissions(String user, String... perms) {
-        try (CoreSession session = coreFeature.openCoreSession(SecurityConstants.SYSTEM_USERNAME)) {
+        try (CloseableCoreSession session = coreFeature.openCoreSession(SecurityConstants.SYSTEM_USERNAME)) {
             DocumentModel doc = session.getRootDocument();
             ACP acp = doc.getACP();
             if (acp == null) {
@@ -88,7 +88,7 @@ public class TestLockSecurityPolicy {
     public void testLockSecurityPolicy() throws Exception {
         // create document
         DocumentRef folderRef;
-        try (CoreSession session = coreFeature.openCoreSession(ADMINISTRATOR)) {
+        try (CloseableCoreSession session = coreFeature.openCoreSession(ADMINISTRATOR)) {
             DocumentModel root = session.getRootDocument();
             DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "folder#1", "Folder");
             folder = session.createDocument(folder);
@@ -103,7 +103,7 @@ public class TestLockSecurityPolicy {
             session.save();
         }
 
-        try (CoreSession session = coreFeature.openCoreSession(ANONYMOUS)) {
+        try (CloseableCoreSession session = coreFeature.openCoreSession(ANONYMOUS)) {
             // write granted to anonymous
             checkLockPermissions(session, folderRef, true);
 
@@ -119,7 +119,7 @@ public class TestLockSecurityPolicy {
         }
 
         // write denied to admin
-        try (CoreSession session = coreFeature.openCoreSession(ADMINISTRATOR)) {
+        try (CloseableCoreSession session = coreFeature.openCoreSession(ADMINISTRATOR)) {
             checkLockPermissions(session, folderRef, false);
             session.save();
         }

@@ -83,7 +83,6 @@ public class MongoDBAuditPageProvider extends AbstractPageProvider<LogEntry> imp
         Serializable preprocess = getProperties().get(UICOMMENTS_PROPERTY);
 
         if (preprocess != null && "true".equalsIgnoreCase(preprocess.toString())) {
-            @SuppressWarnings("resource")
             CoreSession session = getCoreSession();
             if (session != null) {
                 CommentProcessorHelper cph = new CommentProcessorHelper(session);

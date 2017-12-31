@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -61,7 +62,7 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
             return bh.getBlob();
         } finally {
             if (sessionOpened) {
-                session.close();
+                ((CloseableCoreSession) session).close();
             }
         }
 
@@ -94,7 +95,7 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
             return blobList;
         } finally {
             if (sessionOpened) {
-                session.close();
+                ((CloseableCoreSession) session).close();
             }
         }
     }

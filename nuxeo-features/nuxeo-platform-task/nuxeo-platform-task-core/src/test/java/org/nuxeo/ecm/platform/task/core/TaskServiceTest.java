@@ -36,6 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -621,7 +622,7 @@ public class TaskServiceTest {
         assertEquals(1, tasks.size());
 
         // check as user1
-        try (CoreSession session1 = coreFeature.openCoreSession(user1.getName())) {
+        try (CloseableCoreSession session1 = coreFeature.openCoreSession(user1.getName())) {
             tasks = taskService.getTaskInstances(document, user1, session1);
             assertNotNull(tasks);
             assertEquals(1, tasks.size());
@@ -637,7 +638,7 @@ public class TaskServiceTest {
         }
 
         // check that user2 sees them if requesting the given user / all
-        try (CoreSession session2 = coreFeature.openCoreSession(user2.getName())) {
+        try (CloseableCoreSession session2 = coreFeature.openCoreSession(user2.getName())) {
             tasks = taskService.getTaskInstances(document, user1, session2);
             assertNotNull(tasks);
             assertEquals(1, tasks.size());

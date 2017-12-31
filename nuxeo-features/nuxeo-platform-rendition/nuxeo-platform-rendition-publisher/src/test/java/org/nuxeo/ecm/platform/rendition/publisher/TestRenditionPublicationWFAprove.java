@@ -39,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -184,17 +185,17 @@ public class TestRenditionPublicationWFAprove {
         session.save();
     }
 
-    protected final Set<CoreSession> others = new HashSet<CoreSession>();
+    protected final Set<CloseableCoreSession> others = new HashSet<>();
 
     private void changeUser(String userName) throws Exception {
         session = coreFeature.openCoreSession(userName);
         session.save(); // synch with previous
-        others.add(session);
+        others.add((CloseableCoreSession) session);
     }
 
     @After
     public void closeOthers() {
-        for (CoreSession session : others) {
+        for (CloseableCoreSession session : others) {
             CoreInstance.closeCoreSession(session);
         }
     }

@@ -30,6 +30,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -111,7 +112,7 @@ public class BlobToFileTest {
 
     @Test
     public void testNotAllowedWhenNotAdmin() throws Exception {
-        try (CoreSession notAdminSession = CoreInstance.openCoreSession(session.getRepositoryName(), DEFAULT_USER_ID)) {
+        try (CloseableCoreSession notAdminSession = CoreInstance.openCoreSession(session.getRepositoryName(), DEFAULT_USER_ID)) {
             try (OperationContext ctx = buildCtx(notAdminSession)) {
                 targetDirectory = createAllowedTargetDirectory();
                 Map<String, Object> params = buildParams(targetDirectory);

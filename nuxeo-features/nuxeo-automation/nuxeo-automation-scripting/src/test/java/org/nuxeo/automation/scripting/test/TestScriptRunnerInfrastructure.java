@@ -57,6 +57,7 @@ import org.nuxeo.ecm.automation.core.util.DataModelProperties;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -367,7 +368,7 @@ public class TestScriptRunnerInfrastructure {
 
     @Test
     public void canHandleLoginAsCtx() throws OperationException {
-        try (CoreSession session = CoreInstance.openCoreSession(this.session.getRepositoryName(), "jdoe")) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(this.session.getRepositoryName(), "jdoe")) {
             try (OperationContext ctx = new OperationContext(session)) {
                 String username = (String) automationService.run(ctx, "my-chain-with-loginasctx");
                 assertEquals("Administrator", username);
@@ -377,7 +378,7 @@ public class TestScriptRunnerInfrastructure {
 
     @Test
     public void canHandleLoginAsOp() throws OperationException {
-        try (CoreSession session = CoreInstance.openCoreSession(this.session.getRepositoryName(), "jdoe")) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(this.session.getRepositoryName(), "jdoe")) {
             try (OperationContext ctx = new OperationContext(session)) {
                 String username = (String) automationService.run(ctx, "my-chain-with-loginasop");
                 assertEquals("Administrator", username);

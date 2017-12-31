@@ -126,15 +126,11 @@ public abstract class UnrestrictedSessionRunner {
             }
             try {
                 CoreSession baseSession = session;
-                session = CoreInstance.openCoreSession(repositoryName);
-                try {
+                try (CloseableCoreSession closeableCoreSession = CoreInstance.openCoreSession(repositoryName)) {
+                    session = closeableCoreSession;
                     run();
                 } finally {
-                    try {
-                        session.close();
-                    } finally {
-                        session = baseSession;
-                    }
+                    session = baseSession;
                 }
             } finally {
                 try {

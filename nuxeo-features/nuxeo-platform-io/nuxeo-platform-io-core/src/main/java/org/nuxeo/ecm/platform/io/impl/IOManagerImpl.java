@@ -40,6 +40,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -268,7 +269,7 @@ public class IOManagerImpl implements IOManager {
         }
 
         List<DocumentRef> roots = new ArrayList<>();
-        try (CoreSession session = CoreInstance.openCoreSession(repo)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repo)) {
             for (DocumentRef source : sources) {
                 DocumentTranslationMap map = new DocumentTranslationMapImpl(repo, repo);
                 DocumentModel sourceDoc = session.getDocument(source);
