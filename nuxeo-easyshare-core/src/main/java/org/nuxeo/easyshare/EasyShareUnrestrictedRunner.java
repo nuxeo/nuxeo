@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -46,7 +47,7 @@ public abstract class EasyShareUnrestrictedRunner {
             log.error("Unable to render page", ex);
             return null;
         }
-        CoreSession coreSession = null;
+        CloseableCoreSession coreSession = null;
         try {
             coreSession = CoreInstance.openCoreSession(null);
 
@@ -55,7 +56,7 @@ public abstract class EasyShareUnrestrictedRunner {
             return run(coreSession, docRef);
 
         } finally {
-            final CoreSession session2close = coreSession;
+            final CloseableCoreSession session2close = coreSession;
             RequestContext.getActiveContext().addRequestCleanupHandler(new RequestCleanupHandler() {
 
                 @Override
