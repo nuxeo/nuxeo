@@ -21,6 +21,7 @@ package org.nuxeo.drive.adapter.impl;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -58,7 +59,7 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem {
 
     @Override
     public void delete() {
-        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel doc = getDocument(session);
             Framework.getService(NuxeoDriveManager.class).unregisterSynchronizationRoot(principal, doc, session);
         }

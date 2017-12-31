@@ -32,6 +32,7 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -71,7 +72,7 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem {
     @Override
     @SuppressWarnings("unchecked")
     public List<FileSystemItem> getChildren() {
-        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
             Map<String, Serializable> props = new HashMap<String, Serializable>();
             props.put(CORE_SESSION_PROPERTY, (Serializable) session);

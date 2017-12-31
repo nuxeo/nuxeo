@@ -33,6 +33,7 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.CollectionSyncRootFolderItemFactory;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -236,7 +237,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void delete() {
-        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel doc = getDocument(session);
             FileSystemItemFactory parentFactory = getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
                     parentId);
@@ -276,7 +277,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
         if (!repositoryName.equals(destRepoName)) {
             sessionRepo = destRepoName;
         }
-        try (CoreSession session = CoreInstance.openCoreSession(sessionRepo, principal)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(sessionRepo, principal)) {
             if (!session.hasPermission(destDocRef, SecurityConstants.ADD_CHILDREN)) {
                 return false;
             }
@@ -293,7 +294,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
         // If source and destination repository are different, delete source and
         // create doc in destination
         if (repositoryName.equals(destRepoName)) {
-            try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
                 DocumentModel movedDoc = session.move(sourceDocRef, destDocRef, null);
                 session.save();
                 return getFileSystemItemAdapterService().getFileSystemItem(movedDoc, dest);

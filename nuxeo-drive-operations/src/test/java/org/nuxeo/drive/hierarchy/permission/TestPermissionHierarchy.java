@@ -63,6 +63,7 @@ import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -131,9 +132,9 @@ public class TestPermissionHierarchy {
     @Inject
     protected HttpAutomationClient automationClient;
 
-    protected CoreSession session1;
+    protected CloseableCoreSession session1;
 
-    protected CoreSession session2;
+    protected CloseableCoreSession session2;
 
     protected DocumentModel userWorkspace1;
 

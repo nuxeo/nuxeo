@@ -40,6 +40,7 @@ import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -121,7 +122,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) {
-        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             // Update doc properties
             DocumentModel doc = getDocument(session);
             doc.setPropertyValue("dc:title", name);
@@ -139,7 +140,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     @Override
     @SuppressWarnings("unchecked")
     public List<FileSystemItem> getChildren() {
-        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
             Map<String, Serializable> props = new HashMap<String, Serializable>();
             props.put(CORE_SESSION_PROPERTY, (Serializable) session);
@@ -218,7 +219,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
     @SuppressWarnings("unchecked")
     protected ScrollFileSystemItemList doScrollDescendants(String scrollId, int batchSize, long keepAlive) {
-        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
 
             // Limit batch size sent by the client
             checkBatchSize(batchSize);
@@ -473,7 +474,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
     @Override
     public FolderItem createFolder(String name, boolean overwrite) {
-        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel folder = getFileManager().createFolder(session, name, docPath, overwrite);
             if (folder == null) {
                 throw new NuxeoException(String.format(
@@ -493,7 +494,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     @Override
     public FileItem createFile(Blob blob, boolean overwrite) {
         String fileName = blob.getFilename();
-        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel file = getFileManager().createDocumentFromBlob(session, blob, docPath, overwrite, fileName);
             if (file == null) {
                 throw new NuxeoException(String.format(

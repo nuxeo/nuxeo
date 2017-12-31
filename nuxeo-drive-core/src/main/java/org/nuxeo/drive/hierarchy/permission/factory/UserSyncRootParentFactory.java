@@ -32,6 +32,7 @@ import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
 import org.nuxeo.drive.service.impl.AbstractFileSystemItemFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -126,7 +127,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
     public FolderItem getVirtualFolderItem(Principal principal) {
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         // TODO: handle multiple repositories
-        try (CoreSession session = CoreInstance.openCoreSession(repositoryManager.getDefaultRepositoryName(), principal)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryManager.getDefaultRepositoryName(), principal)) {
             UserWorkspaceService userWorkspaceService = Framework.getService(UserWorkspaceService.class);
             DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
             if (userWorkspace == null) {

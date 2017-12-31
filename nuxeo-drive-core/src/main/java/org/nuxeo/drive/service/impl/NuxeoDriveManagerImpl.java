@@ -47,6 +47,7 @@ import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.drive.service.TooManyChangesException;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -383,7 +384,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         int limit = Integer.parseInt(Framework.getProperty(DOCUMENT_CHANGE_LIMIT_PROPERTY, "1000"));
         if (!allRepositories.isEmpty() && lowerBound >= 0 && upperBound > lowerBound) {
             for (String repositoryName : allRepositories) {
-                try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+                try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
                     // Get document changes
                     Set<IdRef> lastRefs = lastActiveRootRefs.get(repositoryName);
                     if (lastRefs == null) {
@@ -473,7 +474,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         Map<String, SynchronizationRoots> syncRoots = new HashMap<String, SynchronizationRoots>();
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
-            try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
                 syncRoots.putAll(queryAndFetchSynchronizationRoots(session, query));
             }
         }
@@ -517,7 +518,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
             Set<String> collectionMemberIds = new HashSet<String>();
-            try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
                 Map<String, Serializable> props = new HashMap<String, Serializable>();
                 props.put(CORE_SESSION_PROPERTY, (Serializable) session);
                 PageProvider<DocumentModel> collectionPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(

@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.event.EventListener;
 public class NuxeoDriveSyncRootVersioningListener implements EventListener {
 
     @Override
-    @SuppressWarnings("resource")
     public void handleEvent(Event event) {
         EventContext context = event.getContext();
         DocumentRef checkedInVersionRef = (DocumentRef) context.getProperty("checkedInVersionRef");

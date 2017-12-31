@@ -41,6 +41,7 @@ import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -57,10 +58,10 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     private static final Log log = LogFactory.getLog(FileSystemItemManagerImpl.class);
 
     /*------------- Opened sessions against each repository ----------------*/
-    protected final ThreadLocal<Map<String, CoreSession>> openedSessions = new ThreadLocal<Map<String, CoreSession>>() {
+    protected final ThreadLocal<Map<String, CloseableCoreSession>> openedSessions = new ThreadLocal<Map<String, CloseableCoreSession>>() {
         @Override
-        protected Map<String, CoreSession> initialValue() {
-            return new HashMap<String, CoreSession>();
+        protected Map<String, CloseableCoreSession> initialValue() {
+            return new HashMap<>();
         }
     };
 
@@ -72,7 +73,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
         if (session == null) {
             Map<String, Serializable> context = new HashMap<String, Serializable>();
             context.put("principal", (Serializable) principal);
-            final CoreSession newSession = CoreInstance.openCoreSession(repositoryName, principal);
+            final CloseableCoreSession newSession = CoreInstance.openCoreSession(repositoryName, principal);
             openedSessions.get().put(sessionKey, newSession);
             try {
                 Transaction t = TransactionHelper.lookupTransactionManager().getTransaction();
@@ -94,11 +95,11 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
      */
     protected class SessionCloser implements Synchronization {
 
-        protected final CoreSession session;
+        protected final CloseableCoreSession session;
 
         protected final String sessionKey;
 
-        protected SessionCloser(CoreSession session, String sessionKey) {
+        protected SessionCloser(CloseableCoreSession session, String sessionKey) {
             this.session = session;
             this.sessionKey = sessionKey;
         }

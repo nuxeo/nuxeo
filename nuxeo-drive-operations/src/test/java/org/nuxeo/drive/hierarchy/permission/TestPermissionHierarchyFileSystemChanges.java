@@ -50,6 +50,7 @@ import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -111,9 +112,9 @@ public class TestPermissionHierarchyFileSystemChanges {
     @Inject
     protected NuxeoDriveManager nuxeoDriveManager;
 
-    protected CoreSession session1;
+    protected CloseableCoreSession session1;
 
-    protected CoreSession session2;
+    protected CloseableCoreSession session2;
 
     protected Principal principal1;
 

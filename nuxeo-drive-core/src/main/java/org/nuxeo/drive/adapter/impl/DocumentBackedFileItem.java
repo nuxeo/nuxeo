@@ -25,6 +25,7 @@ import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -148,7 +149,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) {
-        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             /* Update doc properties */
             DocumentModel doc = getDocument(session);
             BlobHolder bh = getBlobHolder(doc);
@@ -169,7 +170,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     /*--------------------- FileItem -----------------*/
     @Override
     public Blob getBlob() {
-        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel doc = getDocument(session);
             return getBlob(doc);
         }
@@ -197,7 +198,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
 
     @Override
     public void setBlob(Blob blob) {
-        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             /* Update doc properties */
             DocumentModel doc = getDocument(session);
             // If blob's filename is empty, set it to the current name

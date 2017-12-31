@@ -40,6 +40,7 @@ import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -190,7 +191,7 @@ public class TestDriveVersioning {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
             nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
 
             file = joeSession.getDocument(file.getRef());
@@ -355,7 +356,7 @@ public class TestDriveVersioning {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
             nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
 
             file = joeSession.getDocument(file.getRef());
@@ -542,7 +543,7 @@ public class TestDriveVersioning {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
             nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
 
             file = joeSession.getDocument(file.getRef());

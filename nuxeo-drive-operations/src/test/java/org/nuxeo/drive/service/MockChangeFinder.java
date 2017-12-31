@@ -32,6 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.impl.FileSystemItemChangeImpl;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -79,7 +80,7 @@ public class MockChangeFinder implements FileSystemChangeFinder {
             NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
             RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
             for (String repositoryName : repositoryManager.getRepositoryNames()) {
-                try (CoreSession repoSession = CoreInstance.openCoreSession(repositoryName, principal)) {
+                try (CloseableCoreSession repoSession = CoreInstance.openCoreSession(repositoryName, principal)) {
                     docChanges.addAll(getDocumentChanges(repoSession, query, limit));
                 }
             }

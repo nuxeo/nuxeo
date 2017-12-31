@@ -37,6 +37,7 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.FileSystemChangeSummaryImpl;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.model.Blob;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -72,7 +73,7 @@ public class TestGetChangeSummaryMultiRepo {
     @Inject
     protected Session clientSession;
 
-    protected CoreSession otherSession;
+    protected CloseableCoreSession otherSession;
 
     protected long lastSyncDate;
 

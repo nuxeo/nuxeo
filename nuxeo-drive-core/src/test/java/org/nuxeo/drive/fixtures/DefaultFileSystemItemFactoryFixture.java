@@ -55,6 +55,7 @@ import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -349,7 +350,7 @@ public class DefaultFileSystemItemFactoryFixture {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
             nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
 
             note = joeSession.getDocument(note.getRef());
@@ -370,7 +371,7 @@ public class DefaultFileSystemItemFactoryFixture {
     @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-permissions-contrib.xml")
     public void testPermissionCheckOptimized() {
         setPermission(syncRootFolder, "joe", SecurityConstants.READ, true);
-        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
             log.trace("Register the sync root for Joe's account");
             nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, joeSession);
             folder = joeSession.getDocument(folder.getRef());
@@ -411,7 +412,7 @@ public class DefaultFileSystemItemFactoryFixture {
             "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-permission-check-not-optimized-contrib.xml" })
     public void testPermissionCheckNotOptimized() {
         setPermission(syncRootFolder, "joe", SecurityConstants.READ, true);
-        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
             log.trace("Register the sync root for Joe's account");
             nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, joeSession);
             folder = joeSession.getDocument(folder.getRef());
@@ -573,7 +574,7 @@ public class DefaultFileSystemItemFactoryFixture {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
             nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
 
             file = joeSession.getDocument(file.getRef());
@@ -726,7 +727,7 @@ public class DefaultFileSystemItemFactoryFixture {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
             folder = joeSession.getDocument(folder.getRef());
 
             // By default folder is not under any sync root for Joe, hence
@@ -879,7 +880,7 @@ public class DefaultFileSystemItemFactoryFixture {
     public void testLockedDocument() {
         setPermission(syncRootFolder, "joe", SecurityConstants.READ_WRITE, true);
         setPermission(syncRootFolder, "jack", SecurityConstants.READ_WRITE, true);
-        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
             nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, joeSession);
             DocumentModel joeFile = joeSession.getDocument(file.getRef());
 
@@ -921,7 +922,7 @@ public class DefaultFileSystemItemFactoryFixture {
                 assertNull(child.getLockInfo());
             }
 
-            try (CoreSession jackSession = coreFeature.openCoreSession("jack")) {
+            try (CloseableCoreSession jackSession = coreFeature.openCoreSession("jack")) {
                 nuxeoDriveManager.registerSynchronizationRoot(jackSession.getPrincipal(), syncRootFolder, jackSession);
                 DocumentModel jackFile = jackSession.getDocument(file.getRef());
 

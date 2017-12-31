@@ -33,6 +33,7 @@ import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.SynchronizationRoots;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -102,7 +103,7 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
             Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getService(NuxeoDriveManager.class)
                                                                          .getSynchronizationRoots(principal);
             for (String repositoryName : syncRootsByRepo.keySet()) {
-                try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+                try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
                     Set<IdRef> syncRootRefs = syncRootsByRepo.get(repositoryName).getRefs();
                     Iterator<IdRef> syncRootRefsIt = syncRootRefs.iterator();
                     while (syncRootRefsIt.hasNext()) {

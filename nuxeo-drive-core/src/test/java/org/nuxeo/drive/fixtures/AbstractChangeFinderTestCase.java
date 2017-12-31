@@ -42,6 +42,7 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.drive.service.impl.RootDefinitionsHelper;
 import org.nuxeo.drive.test.NuxeoDriveFeature;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -132,7 +133,7 @@ public abstract class AbstractChangeFinderTestCase {
     public void tearDown() throws Exception {
 
         if (user1Session != null) {
-            user1Session.close();
+            ((CloseableCoreSession) user1Session).close();
         }
         try (Session usersDir = directoryService.open("userDirectory")) {
             usersDir.deleteEntry("user1");

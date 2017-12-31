@@ -29,6 +29,7 @@ import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -112,7 +113,7 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
         // Register user workspace as a synchronization root if it is not
         // already the case
         if (!getNuxeoDriveManager().isSynchronizationRoot(principal, userWorkspace)) {
-            try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
                 getNuxeoDriveManager().registerSynchronizationRoot(principal, userWorkspace, session);
             }
         }
