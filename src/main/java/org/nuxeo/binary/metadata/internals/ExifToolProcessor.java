@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -161,8 +161,8 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
 
     protected Map<String, Object> returnResultMap(ExecResult er) throws IOException {
         if (!er.isSuccessful()) {
-            throw new BinaryMetadataException("There was an error executing " + "the following command: "
-                    + er.getCommandLine(), er.getError());
+            throw new BinaryMetadataException(
+                    "There was an error executing " + "the following command: " + er.getCommandLine(), er.getError());
         }
         StringBuilder sb = new StringBuilder();
         for (String line : er.getOutput()) {
@@ -204,6 +204,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
         return metadataList.stream().map(tag -> "-" + tag).collect(Collectors.toList());
     }
 
+    @SuppressWarnings("unchecked")
     protected List<String> getCommandTags(Map<String, Object> metadataMap) {
         List<String> commandTags = new ArrayList<>();
         for (String tag : metadataMap.keySet()) {
@@ -232,9 +233,8 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
      * @since 8.3
      */
     private List<String> buildCommandTagsFromCollection(String tag, Collection<Object> values) {
-        return values.isEmpty() ? Collections.singletonList("-" + tag + "=") : values.stream().map(
-            val -> buildCommandTag(tag, val)
-        ).collect(Collectors.toList());
+        return values.isEmpty() ? Collections.singletonList("-" + tag + "=")
+                : values.stream().map(val -> buildCommandTag(tag, val)).collect(Collectors.toList());
     }
 
     /**
