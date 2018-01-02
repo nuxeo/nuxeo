@@ -19,8 +19,6 @@
 package org.nuxeo.apidoc.filter;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -32,12 +30,15 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.nuxeo.ecm.platform.ui.web.auth.plugins.AnonymousAuthenticator;
 import org.nuxeo.runtime.api.Framework;
 
 public class CacheAndAuthFilter extends BaseApiDocFilter {
 
-    public static final DateFormat HTTP_EXPIRES_DATE_FORMAT = httpExpiresDateFormat();
+    // formatted http Expires: Thu, 01 Dec 1994 16:00:00 GMT
+    public static final FastDateFormat HTTP_EXPIRES_DATE_FORMAT = FastDateFormat.getInstance(
+            "EEE, dd MMM yyyy HH:mm:ss z", TimeZone.getTimeZone("GMT"), Locale.US);
 
     protected Boolean forceAnonymous;
 
@@ -71,13 +72,6 @@ public class CacheAndAuthFilter extends BaseApiDocFilter {
 
         chain.doFilter(httpRequest, httpResponse);
 
-    }
-
-    private static DateFormat httpExpiresDateFormat() {
-        // formatted http Expires: Thu, 01 Dec 1994 16:00:00 GMT
-        DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
-        df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return df;
     }
 
     public static void addCacheHeader(HttpServletResponse httpResponse, boolean isPrivate, String cacheTime) {

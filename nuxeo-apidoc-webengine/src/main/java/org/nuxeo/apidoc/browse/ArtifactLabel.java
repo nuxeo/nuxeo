@@ -33,7 +33,7 @@ public class ArtifactLabel implements Comparable<ArtifactLabel> {
         this.id = id;
         this.label = label;
         if (simpleId == null) {
-            simpleId = label;
+            this.simpleId = label;
         } else {
             this.simpleId = simpleId;
         }
