@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,8 +75,8 @@ public class PrefetchInfo implements Serializable {
             return;
         }
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        List<String> fields = new ArrayList<String>();
-        List<String> schemas = new ArrayList<String>();
+        List<String> fields = new ArrayList<>();
+        List<String> schemas = new ArrayList<>();
 
         for (String s : expr.split("[ \t\n\r,]")) {
             if (s.isEmpty()) {
@@ -100,7 +100,7 @@ public class PrefetchInfo implements Serializable {
             List<String> complex = Arrays.asList(props).subList(1, props.length);
 
             // get the field
-            List<String> parts = new LinkedList<String>();
+            List<String> parts = new LinkedList<>();
             Field field;
             int i = prop.indexOf('.');
             if (i != -1) {

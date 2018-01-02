@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -50,9 +49,6 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
@@ -223,7 +219,6 @@ public class LDAPDirectory extends AbstractDirectory {
      * Search controls that only fetch attributes defined by the schema
      *
      * @return common search controls to use for all LDAP search queries
-     * @throws DirectoryException
      */
     protected SearchControls computeSearchControls() throws DirectoryException {
         LDAPDirectoryDescriptor ldapDirectoryDesc = getDescriptor();

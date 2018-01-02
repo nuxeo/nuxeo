@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public class Update implements Serializable {
 
     /** Alternative to {@link #setNewValues} */
     public void setUpdatedColumns(List<Column> columns) {
-        setUpdatedColumns(columns, Collections.<String> emptySet());
+        setUpdatedColumns(columns, Collections.emptySet());
     }
 
     /**
@@ -65,7 +65,7 @@ public class Update implements Serializable {
      * @param deltas which of the columns are delta updates
      */
     public void setUpdatedColumns(List<Column> columns, Set<String> deltas) {
-        List<String> updatedColumns = new LinkedList<String>();
+        List<String> updatedColumns = new LinkedList<>();
         for (Column column : columns) {
             if (column.isIdentity()) {
                 // identity column is never inserted

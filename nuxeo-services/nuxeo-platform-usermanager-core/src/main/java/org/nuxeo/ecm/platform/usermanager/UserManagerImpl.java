@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -989,7 +988,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
             if (orderBy != null && !orderBy.isEmpty()) {
                 // sort: cannot sort before virtual users are added
-                Collections.sort(entries, new DocumentModelComparator(userSchemaName, orderBy));
+                entries.sort(new DocumentModelComparator(userSchemaName, orderBy));
             }
 
             return entries;
@@ -1028,7 +1027,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             entries.addAll(uniqueEntries.values());
         }
         // sort
-        Collections.sort(entries, new DocumentModelComparator(userSchemaName, getUserSortMap()));
+        entries.sort(new DocumentModelComparator(userSchemaName, getUserSortMap()));
 
         return entries;
     }
@@ -1172,7 +1171,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             entries.addAll(uniqueEntries.values());
         }
         // sort
-        Collections.sort(entries, new DocumentModelComparator(groupSchemaName, getGroupSortMap()));
+        entries.sort(new DocumentModelComparator(groupSchemaName, getGroupSortMap()));
 
         return entries;
     }

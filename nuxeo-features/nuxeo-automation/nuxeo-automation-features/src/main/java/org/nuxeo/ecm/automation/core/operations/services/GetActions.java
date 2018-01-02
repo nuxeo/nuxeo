@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.LocaleUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -47,6 +44,9 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Queries {@link ActionManager} for available actions in the given context

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -145,8 +145,8 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
             }
 
             if (NuxeoPrincipal.isTransientUsername(username)) {
-                TokenAuthenticationService tokenAuthenticationService = Framework
-                        .getService(TokenAuthenticationService.class);
+                TokenAuthenticationService tokenAuthenticationService = Framework.getService(
+                        TokenAuthenticationService.class);
                 String token = tokenAuthenticationService.getToken(username, doc.getRepositoryName(), doc.getId());
                 if (token != null) {
                     ctx.put("token", token);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -93,7 +92,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     protected RenderingHelper rh = new RenderingHelper();
 
-    protected Map<String, UserRegistrationConfiguration> configurations = new HashMap<String, UserRegistrationConfiguration>();
+    protected Map<String, UserRegistrationConfiguration> configurations = new HashMap<>();
 
     private static final String INVITATION_SUBMITTED_EVENT = "invitationSubmitted";
 
@@ -342,7 +341,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
         protected String uuid;
 
-        protected Map<String, Serializable> registrationData = new HashMap<String, Serializable>();
+        protected Map<String, Serializable> registrationData = new HashMap<>();
 
         protected Map<String, Serializable> additionnalInfo;
 
@@ -394,7 +393,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             session.save();
             EventContext evContext = sendEvent(session, registrationDoc, getNameEventRegistrationValidated());
 
-            ((DocumentModelImpl) registrationDoc).detach(sessionIsAlreadyUnrestricted);
+            registrationDoc.detach(sessionIsAlreadyUnrestricted);
             registrationData.put(REGISTRATION_DATA_DOC, registrationDoc);
             registrationData.put(REGISTRATION_DATA_USER, evContext.getProperty("registeredUser"));
         }
@@ -456,8 +455,8 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
         String emailAdress = (String) registrationDoc.getPropertyValue(configuration.getUserInfoEmailField());
 
-        Map<String, Serializable> input = new HashMap<String, Serializable>();
-        Map<String, Serializable> userinfo = new HashMap<String, Serializable>();
+        Map<String, Serializable> input = new HashMap<>();
+        Map<String, Serializable> userinfo = new HashMap<>();
         userinfo.put("firstName", registrationDoc.getPropertyValue(configuration.getUserInfoFirstnameField()));
         userinfo.put("lastName", registrationDoc.getPropertyValue(configuration.getUserInfoLastnameField()));
         userinfo.put("login", registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField()));
@@ -658,7 +657,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
         Map<String, Serializable> registrationInfo = validateRegistration(requestId, additionnalInfo);
 
-        Map<String, Serializable> input = new HashMap<String, Serializable>();
+        Map<String, Serializable> input = new HashMap<>();
         input.putAll(registrationInfo);
         input.put("info", (Serializable) additionnalInfo);
         StringWriter writer = new StringWriter();
@@ -713,10 +712,8 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         Class<? extends InvitationUserFactory> factoryClass = configuration.getRegistrationUserFactory();
         if (factoryClass != null) {
             try {
-                factory = factoryClass.newInstance();
-            } catch (InstantiationException e) {
-                log.warn("Failed to instanciate RegistrationUserFactory", e);
-            } catch (IllegalAccessException e) {
+                factory = factoryClass.getConstructor().newInstance();
+            } catch (ReflectiveOperationException e) {
                 log.warn("Failed to instanciate RegistrationUserFactory", e);
             }
         }
@@ -747,7 +744,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         @Override
         public void run() {
             doc = getOrCreateRootDocument(session, configurationName);
-            ((DocumentModelImpl) doc).detach(true);
+            doc.detach(true);
         }
 
         public DocumentModel getDoc() {
@@ -799,7 +796,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     @Override
     public void reviveRegistrationRequests(CoreSession session, List<DocumentModel> registrationDocs) {
         for (DocumentModel registrationDoc : registrationDocs) {
-            reviveRegistrationRequest(session, registrationDoc, new HashMap<String, Serializable>());
+            reviveRegistrationRequest(session, registrationDoc, new HashMap<>());
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,7 +120,7 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
                 throw new NuxeoException(String.format("Cannot perform null query: check provider '%s'", getName()));
             }
 
-            currentPageDocuments = new ArrayList<DocumentModel>();
+            currentPageDocuments = new ArrayList<>();
 
             try {
 
@@ -352,31 +352,31 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
     }
 
     /**
-     * Fetch a page that can be selected. It loads the last page if we're targeting a page beyond the last one or
-     * the first page if there are no results to show and we're targeting anything other than the first page.
-     *
-     * Fix for NXP-8564.
+     * Fetch a page that can be selected. It loads the last page if we're targeting a page beyond the last one or the
+     * first page if there are no results to show and we're targeting anything other than the first page. Fix for
+     * NXP-8564.
      */
     protected void rewindSelectablePage() {
         long pageSize = getPageSize();
         if (pageSize != 0) {
-            if (offset != 0 && currentPageDocuments!= null && currentPageDocuments.size() == 0) {
+            if (offset != 0 && currentPageDocuments != null && currentPageDocuments.size() == 0) {
                 if (resultsCount == 0) {
                     // fetch first page directly
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                            "Current page %s is not the first one but " + "shows no result and there are "
-                                + "no results => rewind to first page",
-                            Long.valueOf(getCurrentPageIndex())));
+                        log.debug(
+                                String.format(
+                                        "Current page %s is not the first one but " + "shows no result and there are "
+                                                + "no results => rewind to first page",
+                                                Long.valueOf(getCurrentPageIndex())));
                     }
                     firstPage();
                 } else {
                     // fetch last page
                     if (log.isDebugEnabled()) {
                         log.debug(String.format(
-                            "Current page %s is not the first one but " + "shows no result and there are "
-                                + "%s results => fetch last page",
-                            Long.valueOf(getCurrentPageIndex()), Long.valueOf(resultsCount)));
+                                "Current page %s is not the first one but " + "shows no result and there are "
+                                        + "%s results => fetch last page",
+                                Long.valueOf(getCurrentPageIndex()), Long.valueOf(resultsCount)));
                     }
                     lastPage();
                 }

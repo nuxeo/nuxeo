@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -204,6 +204,7 @@ public class DBSDocument extends BaseDocument<State> {
     public static final String PROP_MAJOR_VERSION = "major_version";
 
     public static final String PROP_MINOR_VERSION = "minor_version";
+
     /**
      * @since 9.3
      */
@@ -233,7 +234,7 @@ public class DBSDocument extends BaseDocument<State> {
     protected static final Map<String, String> systemPropNameMap;
 
     static {
-        systemPropNameMap = new HashMap<String, String>();
+        systemPropNameMap = new HashMap<>();
         systemPropNameMap.put(SYSPROP_FULLTEXT_JOBID, KEY_FULLTEXT_JOBID);
     }
 
@@ -322,7 +323,7 @@ public class DBSDocument extends BaseDocument<State> {
                 return name; // placeless, no slash
             }
         }
-        LinkedList<String> list = new LinkedList<String>();
+        LinkedList<String> list = new LinkedList<>();
         list.addFirst(name);
         while (doc != null) {
             list.addFirst(doc.getName());
@@ -493,8 +494,7 @@ public class DBSDocument extends BaseDocument<State> {
             getTargetDocument().visitBlobs(blobVisitor);
             // fall through for proxy schemas
         }
-        Runnable markDirty = () -> docState.markDirty();
-        visitBlobs(docState.getState(), blobVisitor, markDirty);
+        visitBlobs(docState.getState(), blobVisitor, docState::markDirty);
     }
 
     @Override
@@ -542,7 +542,7 @@ public class DBSDocument extends BaseDocument<State> {
     @Override
     public List<Document> getVersions() {
         List<String> ids = session.getVersionsIds(getVersionSeriesId());
-        List<Document> versions = new ArrayList<Document>();
+        List<Document> versions = new ArrayList<>();
         for (String id : ids) {
             versions.add(session.getDocument(id));
         }
@@ -675,7 +675,7 @@ public class DBSDocument extends BaseDocument<State> {
     public boolean isVersionSeriesCheckedOut() {
         if (isProxy() || isVersion()) {
             Document workingCopy = getWorkingCopy();
-            return workingCopy == null ? false : workingCopy.isCheckedOut();
+            return workingCopy != null && workingCopy.isCheckedOut();
         } else {
             return isCheckedOut();
         }
@@ -988,7 +988,7 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public Set<String> getAllFacets() {
-        Set<String> facets = new HashSet<String>(getType().getFacets());
+        Set<String> facets = new HashSet<>(getType().getFacets());
         facets.addAll(Arrays.asList(getFacets()));
         return facets;
     }
@@ -1025,7 +1025,7 @@ public class DBSDocument extends BaseDocument<State> {
             if (list.contains(facet)) {
                 return false; // already present in doc
             }
-            list = new ArrayList<Object>(list);
+            list = new ArrayList<>(list);
             list.add(facet);
             mixins = list.toArray(new Object[list.size()]);
         }
@@ -1040,7 +1040,7 @@ public class DBSDocument extends BaseDocument<State> {
         if (mixins == null) {
             return false;
         }
-        List<Object> list = new ArrayList<Object>(Arrays.asList(mixins));
+        List<Object> list = new ArrayList<>(Arrays.asList(mixins));
         if (!list.remove(facet)) {
             return false; // not present in doc
         }

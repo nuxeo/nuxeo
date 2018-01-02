@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ package org.nuxeo.ecm.directory.ldap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -121,15 +120,12 @@ public class LDAPReference extends AbstractReference implements Cloneable {
         this.fieldName = fieldName;
     }
 
-    public static final List<String> EMPTY_STRING_LIST = Collections.emptyList();
-
     private LDAPFilterMatcher getFilterMatcher() {
         return new LDAPFilterMatcher();
     }
 
     /**
      * @return true if the reference should resolve statically refereed entries (identified by dn-valued attribute)
-     * @throws DirectoryException
      */
     public boolean isStatic() throws DirectoryException {
         return getStaticAttributeId() != null;
@@ -544,9 +540,11 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                     targetLdapEntry = targetSession.getLdapEntry(targetId, fetchAllAttributes);
                 }
                 if (targetLdapEntry == null) {
-                    String msg = String.format("Failed to perform inverse lookup on LDAPReference"
-                            + " resolving field '%s' of '%s' to entries of '%s'"
-                            + " using the dynamic content of attribute '%s':" + " entry '%s' cannot be found in '%s'",
+                    String msg = String.format(
+                            "Failed to perform inverse lookup on LDAPReference"
+                                    + " resolving field '%s' of '%s' to entries of '%s'"
+                                    + " using the dynamic content of attribute '%s':"
+                                    + " entry '%s' cannot be found in '%s'",
                             fieldName, ldapSourceDirectory, targetDirectoryName, dynamicAttributeId, targetId,
                             targetDirectoryName);
                     throw new DirectoryException(msg);
@@ -656,7 +654,6 @@ public class LDAPReference extends AbstractReference implements Cloneable {
      *
      * @param dn the raw unnormalized dn
      * @return lowercase version without whitespace after commas
-     * @throws InvalidNameException
      */
     protected static String pseudoNormalizeDn(String dn) throws InvalidNameException {
         LdapName ldapName = new LdapName(dn);
@@ -677,7 +674,6 @@ public class LDAPReference extends AbstractReference implements Cloneable {
      * .ecm.directory.Reference#getTargetIdsForSource(java.lang.String)
      *
      * @return target reference ids
-     * @throws DirectoryException
      */
     public List<String> getLdapTargetIds(Attributes attributes) throws DirectoryException {
 
@@ -725,7 +721,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                             continue;
                         }
                         // find the id of the referenced entry
-                        String id = null;
+                        String id;
 
                         if (targetSession.rdnMatchesIdField()) {
                             // optim: do not fetch the entry to get its true id
@@ -871,7 +867,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
 
             }
             // return merged attributes
-            return new ArrayList<String>(targetIds);
+            return new ArrayList<>(targetIds);
         } catch (NamingException | LdapURLEncodingException e) {
             throw new DirectoryException("error computing LDAP references", e);
         }
@@ -916,8 +912,6 @@ public class LDAPReference extends AbstractReference implements Cloneable {
      * @param filter Filter expression specified in the parent
      * @param scope scope for the search
      * @return The list of the referenced elements.
-     * @throws DirectoryException
-     * @throws NamingException
      */
     private Set<String> getReferencedElements(Attributes attributes, String directoryDn, String linkDn, String filter,
             int scope) throws DirectoryException, NamingException {

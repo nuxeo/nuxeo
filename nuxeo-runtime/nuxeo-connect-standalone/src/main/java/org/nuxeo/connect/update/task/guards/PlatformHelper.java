@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 package org.nuxeo.connect.update.task.guards;
 
 import org.apache.commons.lang.SystemUtils;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 

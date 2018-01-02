@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ public abstract class AbstractConstraint implements Constraint {
         // if there's none, replies to a generic message
         // the expected key is label.schema.constraint.violation
         // if there's none, replies to a hard coded message
-        List<String> pathTokens = new ArrayList<String>();
+        List<String> pathTokens = new ArrayList<>();
         pathTokens.add(MESSAGES_KEY);
         pathTokens.add(getDescription().getName());
         String keyConstraint = StringUtils.join(pathTokens, '.');

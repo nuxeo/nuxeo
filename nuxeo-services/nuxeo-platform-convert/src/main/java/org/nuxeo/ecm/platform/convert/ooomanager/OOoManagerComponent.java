@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -194,7 +194,7 @@ public class OOoManagerComponent extends DefaultComponent implements OOoManagerS
 
         // Descriptor configuration
         String pipeNamesProperty = Framework.getProperty(OFFICE_PIPES_PROPERTY_KEY);
-        String[] pipeNames = null;
+        String[] pipeNames;
         if (pipeNamesProperty != null) {
             String[] unvalidatedPipeNames = pipeNamesProperty.split(",\\s*");
             ArrayList<String> validatedPipeNames = new ArrayList<>();
@@ -213,7 +213,7 @@ public class OOoManagerComponent extends DefaultComponent implements OOoManagerS
             configuration.setPipeNames(pipeNames);
         }
         String portNumbersProperty = Framework.getProperty(OFFICE_PORTS_PROPERTY_KEY);
-        int[] portNumbers = null;
+        int[] portNumbers;
         if (portNumbersProperty != null) {
             String[] portStrings = portNumbersProperty.split(",\\s*");
             ArrayList<Integer> portList = new ArrayList<>();

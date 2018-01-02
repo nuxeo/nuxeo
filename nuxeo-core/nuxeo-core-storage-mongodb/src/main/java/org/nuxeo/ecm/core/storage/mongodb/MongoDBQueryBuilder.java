@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -220,9 +220,9 @@ public class MongoDBQueryBuilder {
             }
             FieldInfo fieldInfo = walkReference((Reference) op);
             String propertyField = fieldInfo.prop;
-            if (!propertyField.equals(NXQL.ECM_UUID) &&
-                !propertyField.equals(fieldInfo.projectionField) &&
-                !propertyField.contains("/")) {
+            if (!propertyField.equals(NXQL.ECM_UUID) //
+                    && !propertyField.equals(fieldInfo.projectionField) //
+                    && !propertyField.contains("/")) {
                 propertyKeys.put(fieldInfo.projectionField, propertyField);
             }
             projection.put(fieldInfo.projectionField, ONE);
@@ -939,11 +939,9 @@ public class MongoDBQueryBuilder {
                         // schema with prefix, do not consider as candidate
                         continue;
                     }
-                    if (schema != null) {
-                        field = schema.getField(first);
-                        if (field != null) {
-                            break;
-                        }
+                    field = schema.getField(first);
+                    if (field != null) {
+                        break;
                     }
                 }
                 if (field == null) {
@@ -952,7 +950,7 @@ public class MongoDBQueryBuilder {
             }
             Type type = field.getType();
             if (PROP_UID_MAJOR_VERSION.equals(prop) || PROP_UID_MINOR_VERSION.equals(prop)
-                 || PROP_MAJOR_VERSION.equals(prop) || PROP_MINOR_VERSION.equals(prop)) {
+                    || PROP_MAJOR_VERSION.equals(prop) || PROP_MINOR_VERSION.equals(prop)) {
                 String fieldName = DBSSession.convToInternal(prop);
                 return new FieldInfo(prop, fieldName, fieldName, type, true);
             }
@@ -1096,8 +1094,7 @@ public class MongoDBQueryBuilder {
          * MongoDB query generation.
          */
         // match on primary type
-        Document p = new Document(DBSDocument.KEY_PRIMARY_TYPE,
-                new Document(QueryOperators.IN, matchPrimaryTypes));
+        Document p = new Document(DBSDocument.KEY_PRIMARY_TYPE, new Document(QueryOperators.IN, matchPrimaryTypes));
         // match on mixin types
         // $in/$nin with an array matches if any/no element of the array matches
         String innin = include ? QueryOperators.IN : QueryOperators.NIN;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class ListTypeImpl extends AbstractType implements ListType {
 
     public ListTypeImpl(String schema, String name, Type type, String fieldName, String defaultValue, int minOccurs,
             int maxOccurs) {
-        this(schema, name, type, fieldName, defaultValue, 0, new HashSet<Constraint>(), minOccurs, maxOccurs);
+        this(schema, name, type, fieldName, defaultValue, 0, new HashSet<>(), minOccurs, maxOccurs);
     }
 
     public ListTypeImpl(String schema, String name, Type type) {
@@ -179,7 +179,7 @@ public class ListTypeImpl extends AbstractType implements ListType {
             return defaultValue;
         } else {
             // XXX AT: maybe use the type to be more specific on list elements
-            return new ArrayList<Object>();
+            return new ArrayList<>();
         }
     }
 

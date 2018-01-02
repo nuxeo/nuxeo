@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public abstract class AbstractUsersPageProvider<T> extends AbstractPageProvider<
             errorMessage = null;
             pageUsers = new ArrayList<>();
 
-            List<DocumentModel> users = new ArrayList<DocumentModel>();
+            List<DocumentModel> users = new ArrayList<>();
             try {
                 UserManager userManager = Framework.getService(UserManager.class);
                 String userListingMode = getUserListingMode();
@@ -132,7 +132,7 @@ public abstract class AbstractUsersPageProvider<T> extends AbstractPageProvider<
     }
 
     protected List<DocumentModel> searchUsers(UserManager userManager) {
-        List<DocumentModel> users = new ArrayList<DocumentModel>();
+        List<DocumentModel> users = new ArrayList<>();
         String searchString = getFirstParameter();
         if ("*".equals(searchString)) {
             users = searchAllUsers(userManager);
@@ -158,7 +158,7 @@ public abstract class AbstractUsersPageProvider<T> extends AbstractPageProvider<
 
     protected void updateUserCatalog(UserManager userManager) {
         DocumentModelList allUsers = userManager.searchUsers(null);
-        userCatalog = new HashMap<String, DocumentModelList>();
+        userCatalog = new HashMap<>();
         String userSortField = userManager.getUserSortField();
         for (DocumentModel user : allUsers) {
             // FIXME: this should use a "display name" dedicated API
@@ -184,7 +184,7 @@ public abstract class AbstractUsersPageProvider<T> extends AbstractPageProvider<
             UserManager userManager = Framework.getService(UserManager.class);
             updateUserCatalog(userManager);
         }
-        List<String> list = new ArrayList<String>(userCatalog.keySet());
+        List<String> list = new ArrayList<>(userCatalog.keySet());
         Collections.sort(list);
         return list;
     }

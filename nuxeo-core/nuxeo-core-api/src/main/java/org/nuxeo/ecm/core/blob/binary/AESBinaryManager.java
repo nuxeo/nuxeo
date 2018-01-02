@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,9 +57,9 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * A binary manager that encrypts binaries on the filesystem using AES.
  * <p>
- * The configuration holds the keystore information to retrieve the AES key, or the
- * password that is used to generate a per-file key using PBKDF2. This configuration comes from the
- * {@code <property name="key">...</property>} of the binary manager configuration.
+ * The configuration holds the keystore information to retrieve the AES key, or the password that is used to generate a
+ * per-file key using PBKDF2. This configuration comes from the {@code <property name="key">...</property>} of the
+ * binary manager configuration.
  * <p>
  * The configuration has the form {@code key1=value1,key2=value2,...} where the possible keys are, for keystore use:
  * <ul>
@@ -83,9 +83,9 @@ import org.nuxeo.runtime.api.Framework;
  * is removed as soon as possible.
  * <p>
  * Note: if the Java Cryptographic Extension (JCE) is not configured for 256-bit key length, you may get an exception
- * "java.security.InvalidKeyException: Illegal key size or default parameters". If this is the case, go to <a
- * href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" >Oracle Java SE Downloads</a> and download
- * and install the Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files for your JDK.
+ * "java.security.InvalidKeyException: Illegal key size or default parameters". If this is the case, go to
+ * <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" >Oracle Java SE Downloads</a> and
+ * download and install the Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files for your JDK.
  *
  * @since 6.0
  */
@@ -338,13 +338,9 @@ public class AESBinaryManager extends LocalBinaryManager {
         try {
             tmp = File.createTempFile("bin_", ".tmp", tmpDir);
             Framework.trackFile(tmp, tmp);
-            OutputStream out = new BufferedOutputStream(new FileOutputStream(tmp));
-            InputStream in = new BufferedInputStream(new FileInputStream(file));
-            try {
+            try (OutputStream out = new BufferedOutputStream(new FileOutputStream(tmp));
+                    InputStream in = new BufferedInputStream(new FileInputStream(file))) {
                 decrypt(in, out);
-            } finally {
-                in.close();
-                out.close();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -356,17 +352,15 @@ public class AESBinaryManager extends LocalBinaryManager {
     @Override
     protected String storeAndDigest(InputStream in) throws IOException {
         File tmp = File.createTempFile("create_", ".tmp", tmpDir);
-        OutputStream out = new BufferedOutputStream(new FileOutputStream(tmp));
         /*
          * First, write the input stream to a temporary file, while computing a digest.
          */
         try {
             String digest;
-            try {
+            try (OutputStream out = new BufferedOutputStream(new FileOutputStream(tmp))) {
                 digest = storeAndDigest(in, out);
             } finally {
                 in.close();
-                out.close();
             }
             /*
              * Move the tmp file to its destination.
@@ -399,7 +393,7 @@ public class AESBinaryManager extends LocalBinaryManager {
      * </ul>
      *
      * @param in the input stream containing the data
-     * @param file the file containing the encrypted data
+     * @param out the output stream into write
      * @return the digest of the input stream
      */
     @Override

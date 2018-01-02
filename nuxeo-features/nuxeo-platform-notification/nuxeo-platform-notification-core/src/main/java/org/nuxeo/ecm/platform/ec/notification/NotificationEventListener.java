@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,7 +123,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
     protected void handleNotifications(Event event, List<Notification> notifs) {
 
         EventContext ctx = event.getContext();
-        DocumentEventContext docCtx = null;
+        DocumentEventContext docCtx;
         if (ctx instanceof DocumentEventContext) {
             docCtx = (DocumentEventContext) ctx;
         } else {
@@ -138,7 +138,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
 
         CoreSession coreSession = event.getContext().getCoreSession();
         Map<String, Serializable> properties = event.getContext().getProperties();
-        Map<Notification, List<String>> targetUsers = new HashMap<Notification, List<String>>();
+        Map<Notification, List<String>> targetUsers = new HashMap<>();
 
         for (NotificationListenerVeto veto : notificationService.getNotificationVetos()) {
             if (!veto.accept(event)) {
@@ -171,7 +171,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
                 if (recipients == null) {
                     continue;
                 }
-                Set<String> users = new HashSet<String>();
+                Set<String> users = new HashSet<>();
                 for (String recipient : recipients) {
                     if (recipient == null) {
                         continue;
@@ -342,7 +342,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
         log.debug("mail template: " + mailTemplate);
         log.debug("subject template: " + subjectTemplate);
 
-        Map<String, Object> mail = new HashMap<String, Object>();
+        Map<String, Object> mail = new HashMap<>();
         mail.put("mail.to", email);
 
         String authorUsername = (String) eventInfo.get(NotificationConstants.AUTHOR_KEY);
@@ -425,24 +425,21 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
             } else {
                 // An automatic notification happens
                 // should be sent to interested users
-                targetUsers.put(notification, new ArrayList<String>());
+                targetUsers.put(notification, new ArrayList<>());
             }
         }
     }
 
     private static void storeUserForNotification(Notification notification, String user,
             Map<Notification, List<String>> targetUsers) {
-        List<String> subscribedUsers = targetUsers.get(notification);
-        if (subscribedUsers == null) {
-            targetUsers.put(notification, new ArrayList<String>());
-        }
-        if (!targetUsers.get(notification).contains(user)) {
-            targetUsers.get(notification).add(user);
+        List<String> subscribedUsers = targetUsers.computeIfAbsent(notification, k -> new ArrayList<>());
+        if (!subscribedUsers.contains(user)) {
+            subscribedUsers.add(user);
         }
     }
 
     private boolean isDeleteEvent(String eventId) {
-        List<String> deletionEvents = new ArrayList<String>();
+        List<String> deletionEvents = new ArrayList<>();
         deletionEvents.add("aboutToRemove");
         deletionEvents.add("documentRemoved");
         return deletionEvents.contains(eventId);

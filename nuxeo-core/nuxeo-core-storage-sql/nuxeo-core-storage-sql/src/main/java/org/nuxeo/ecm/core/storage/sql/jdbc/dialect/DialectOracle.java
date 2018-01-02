@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,9 +47,9 @@ import java.util.Set;
 import javax.transaction.xa.XAException;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -597,7 +597,7 @@ public class DialectOracle extends Dialect {
             break;
         case SEQUENCE:
             // check that it's really an integer
-            if (id != null && !org.apache.commons.lang.StringUtils.isNumeric(id)) {
+            if (id != null && !StringUtils.isNumeric(id)) {
                 return null;
             }
             idParam = "CAST(? AS NUMBER(10,0))";
@@ -974,7 +974,7 @@ public class DialectOracle extends Dialect {
                     do {
                         lines.add(rs.getString(1));
                     } while (rs.next());
-                    String body = org.apache.commons.lang.StringUtils.join(lines, ' ');
+                    String body = StringUtils.join(lines, ' ');
                     if (normalizeString(procCreate).contains(normalizeString(body))) {
                         logger.log("  -> exists, unchanged");
                         return Collections.emptyList();

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ package org.nuxeo.ecm.core.schema.types.primitives;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -86,8 +86,8 @@ public final class BinaryType extends PrimitiveType {
     @Override
     public String encode(Object object) {
         if (object instanceof InputStream) {
-            try (InputStream in = (InputStream) object){
-                return IOUtils.toString(in, Charsets.UTF_8);
+            try (InputStream in = (InputStream) object) {
+                return IOUtils.toString(in, StandardCharsets.UTF_8);
             } catch (IOException e) {
                 log.error(e, e);
                 return null;

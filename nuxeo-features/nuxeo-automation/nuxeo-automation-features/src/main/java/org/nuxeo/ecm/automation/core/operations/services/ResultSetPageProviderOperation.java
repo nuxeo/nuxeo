@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,11 +55,11 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
  */
 @Operation(id = ResultSetPageProviderOperation.ID, category = Constants.CAT_FETCH, label = "QueryAndFetch", description = "Perform "
         + "a query or a named provider query on the repository. Result is "
-        + "paginated. The result is returned as a RecordSet (QueryAndFetch) "
-        + "rather than as a List of Document"
+        + "paginated. The result is returned as a RecordSet (QueryAndFetch) " + "rather than as a List of Document"
         + "The query result will become the input for the next "
         + "operation. If no query or provider name is given, a query returning "
-        + "all the documents that the user has access to will be executed.", addToStudio = false, aliases = { "Resultset.PageProvider" })
+        + "all the documents that the user has access to will be executed.", addToStudio = false, aliases = {
+                "Resultset.PageProvider" })
 public class ResultSetPageProviderOperation {
 
     private static final Log log = LogFactory.getLog(ResultSetPageProviderOperation.class);
@@ -139,8 +139,8 @@ public class ResultSetPageProviderOperation {
     /**
      * @since 6.0
      */
-    @Param(name = "sortOrder", required = false, description = "Sort order, " + "ASC or DESC", widget = Constants.W_OPTION, values = {
-            ASC, DESC })
+    @Param(name = "sortOrder", required = false, description = "Sort order, "
+            + "ASC or DESC", widget = Constants.W_OPTION, values = { ASC, DESC })
     protected String sortOrder;
 
     @SuppressWarnings("unchecked")
@@ -149,7 +149,7 @@ public class ResultSetPageProviderOperation {
 
         List<SortInfo> sortInfos = null;
         if (sortInfoAsStringList != null) {
-            sortInfos = new ArrayList<SortInfo>();
+            sortInfos = new ArrayList<>();
             for (String sortInfoDesc : sortInfoAsStringList) {
                 SortInfo sortInfo;
                 if (sortInfoDesc.contains("|")) {
@@ -171,7 +171,8 @@ public class ResultSetPageProviderOperation {
                 }
                 for (int i = 0; i < sorts.length; i++) {
                     String sort = sorts[i];
-                    boolean sortAscending = (orders != null && orders.length > i && "asc".equals(orders[i].toLowerCase()));
+                    boolean sortAscending = (orders != null && orders.length > i
+                            && "asc".equals(orders[i].toLowerCase()));
                     sortInfos.add(new SortInfo(sort, sortAscending));
                 }
             }
@@ -192,7 +193,7 @@ public class ResultSetPageProviderOperation {
             }
         }
 
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
         if (query == null && StringUtils.isEmpty(providerName)) {
@@ -225,7 +226,7 @@ public class ResultSetPageProviderOperation {
             }
         }
 
-        PageProvider<Map<String, Serializable>> pp = null;
+        PageProvider<Map<String, Serializable>> pp;
         if (query != null) {
             QueryAndFetchProviderDescriptor desc = new QueryAndFetchProviderDescriptor();
             desc.setPattern(query);

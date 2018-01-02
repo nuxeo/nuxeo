@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ package org.nuxeo.ecm.user.center.profile;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.annotation.Experimental;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -33,8 +31,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @Experimental(comment="https://jira.nuxeo.com/browse/NXP-12200")
 @XObject("importerConfig")
 public class ImporterConfig {
-
-    private static final Log log = LogFactory.getLog(ImporterConfig.class);
 
     public static final String DEFAULT_DATE_FORMAT = "MM/dd/yyyy";
 

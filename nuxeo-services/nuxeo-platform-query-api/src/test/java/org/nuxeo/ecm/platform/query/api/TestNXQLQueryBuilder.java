@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,12 +95,12 @@ public class TestNXQLQueryBuilder {
         String query = NXQLQueryBuilder.getQuery(model, whereClause, null);
         assertEquals("SELECT * FROM Document WHERE dc:title IN ('foo', 'bar')", query);
 
-        model.setPropertyValue("dc:subjects", new String[]{"foo"});
+        model.setPropertyValue("dc:subjects", new String[] { "foo" });
         query = NXQLQueryBuilder.getQuery(model, whereClause, null);
         assertEquals("SELECT * FROM Document WHERE dc:title = 'foo'", query);
 
         // criteria with no values are removed
-        model.setPropertyValue("dc:subjects", new String[]{});
+        model.setPropertyValue("dc:subjects", new String[] {});
         query = NXQLQueryBuilder.getQuery(model, whereClause, null);
         assertEquals("SELECT * FROM Document", query);
     }
@@ -149,7 +149,8 @@ public class TestNXQLQueryBuilder {
         String pattern = "SELECT * FROM Document WHERE ecm:parentId = ? and ecm:currentLifeCycleState IN (?)";
         Object[] params = new Object[] { "docId", "" };
         String query = NXQLQueryBuilder.getQuery(pattern, params, true, true, null);
-        assertEquals("SELECT * FROM Document WHERE ecm:parentId = 'docId' and ecm:currentLifeCycleState IN ('')", query);
+        assertEquals("SELECT * FROM Document WHERE ecm:parentId = 'docId' and ecm:currentLifeCycleState IN ('')",
+                query);
         params = new Object[] { "docId", new String[] { "foo", "bar" } };
         query = NXQLQueryBuilder.getQuery(pattern, params, true, true, null);
         assertEquals(
@@ -200,7 +201,7 @@ public class TestNXQLQueryBuilder {
                 "/*+ES: ANALYZER(fr_analyzer) */ ecm:fulltext.dc:title = 'foo' AND " + //
                 "/*+ES: INDEX(dc:title.fulltext) OPERATOR(fuzzy) */ ecm:fulltext = 'foo' AND " + //
                 "ecm:fulltext.dc:title = 'foo' AND " + //
-                "ecm:fulltext.dc:description = 'foo'" , query);
+                "ecm:fulltext.dc:description = 'foo'", query);
     }
 
     @Test
@@ -215,7 +216,7 @@ public class TestNXQLQueryBuilder {
         Pattern p1 = Pattern.compile(NXQLQueryBuilder.REGEXP_NAMED_PARAMETER);
         Matcher m1 = p1.matcher(query);
 
-        List<String> matches = new ArrayList<String>();
+        List<String> matches = new ArrayList<>();
         // I have to find them
         while (m1.find()) {
             matches.add(m1.group().substring(m1.group().indexOf(":") + 1));
@@ -245,10 +246,11 @@ public class TestNXQLQueryBuilder {
         assertEquals("SELECT * FROM Document WHERE dc:title = :myTitle", replacedPattern1);
         assertEquals("SELECT * FROM Document WHERE dc:title = 'test'", replacedPattern2);
         assertEquals("SELECT * FROM Document WHERE dc:title = 'test' OR dc:title = :titleLonger", replacedPattern3);
-        assertEquals("SELECT * FROM Document WHERE dc:title = :titleLongest OR dc:title = 'test' OR dc:title = :titleLonger", replacedPattern4);
+        assertEquals(
+                "SELECT * FROM Document WHERE dc:title = :titleLongest OR dc:title = 'test' OR dc:title = :titleLonger",
+                replacedPattern4);
         assertEquals("SELECT * FROM Document WHERE dc:title = :titleLonger OR dc:title = 'test'", replacedPattern5);
 
     }
-
 
 }

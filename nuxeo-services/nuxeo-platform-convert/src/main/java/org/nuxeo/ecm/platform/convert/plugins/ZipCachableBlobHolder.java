@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -92,7 +92,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
 
     @Override
     public void load(String path) throws IOException {
-        blobs = new ArrayList<Blob>();
+        blobs = new ArrayList<>();
         File base = new File(path);
         try {
             if (base.isDirectory()) {
@@ -127,7 +127,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
             if (index.createNewFile()) {
                 Blob indexBlob = createIndexBlob();
                 blobs.add(0, indexBlob);
-                FileUtils.writeFile(index, indexBlob.getByteArray());
+                FileUtils.writeByteArrayToFile(index, indexBlob.getByteArray());
             } else {
                 log.info("Unable to create index.html file");
             }

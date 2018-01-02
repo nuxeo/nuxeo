@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,8 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
  * @since 6.0 Document query operation to perform queries on the repository.
  */
 @Operation(id = DocumentPaginatedQuery.ID, category = Constants.CAT_FETCH, label = "Query", description = "Perform a query on the repository. "
-        + "The document list returned will become the input for the next " + "operation.", since = "6.0", addToStudio = true, aliases = { "Document.Query" })
+        + "The document list returned will become the input for the next "
+        + "operation.", since = "6.0", addToStudio = true, aliases = { "Document.Query" })
 public class DocumentPaginatedQuery {
 
     public static final String ID = "Repository.Query";
@@ -74,7 +75,8 @@ public class DocumentPaginatedQuery {
     @Param(name = "query", required = true, description = "The query to " + "perform.")
     protected String query;
 
-    @Param(name = "language", required = false, description = "The query " + "language.", widget = Constants.W_OPTION, values = { NXQL.NXQL })
+    @Param(name = "language", required = false, description = "The query "
+            + "language.", widget = Constants.W_OPTION, values = { NXQL.NXQL })
     protected String lang = NXQL.NXQL;
 
     @Param(name = "currentPageIndex", required = false, description = "Target listing page.")
@@ -89,8 +91,8 @@ public class DocumentPaginatedQuery {
     @Param(name = "sortBy", required = false, description = "Sort by " + "properties (separated by comma)")
     protected String sortBy;
 
-    @Param(name = "sortOrder", required = false, description = "Sort order, " + "ASC or DESC", widget = Constants.W_OPTION, values = {
-            ASC, DESC })
+    @Param(name = "sortOrder", required = false, description = "Sort order, "
+            + "ASC or DESC", widget = Constants.W_OPTION, values = { ASC, DESC })
     protected String sortOrder;
 
     @Param(name = PageProviderService.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
@@ -147,7 +149,8 @@ public class DocumentPaginatedQuery {
         desc.setPattern(query);
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
                 (PageProvider<DocumentModel>) pageProviderService.getPageProvider(StringUtils.EMPTY, desc,
-                        searchDocumentModel, sortInfoList, targetPageSize, targetPage, props, orderedParameters), null);
+                        searchDocumentModel, sortInfoList, targetPageSize, targetPage, props, orderedParameters),
+                null);
         if (res.hasError()) {
             throw new OperationException(res.getErrorMessage());
         }

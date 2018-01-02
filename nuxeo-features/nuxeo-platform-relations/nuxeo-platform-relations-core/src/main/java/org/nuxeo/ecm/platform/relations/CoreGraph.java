@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,8 +155,8 @@ public class CoreGraph implements Graph {
         name = graphDescription.getName();
         setOptions(graphDescription.getOptions());
         namespaces = graphDescription.getNamespaces();
-        namespaceList = namespaces == null ? Collections.<String> emptyList() : new ArrayList<String>(
-                new LinkedHashSet<String>(namespaces.values()));
+        namespaceList = namespaces == null ? Collections.emptyList()
+                : new ArrayList<>(new LinkedHashSet<>(namespaces.values()));
     }
 
     protected void setOptions(Map<String, String> options) {
@@ -206,11 +206,9 @@ public class CoreGraph implements Graph {
         @Override
         public void run() {
             // TODO could use a COUNT(*) query
-            IterableQueryResult it = session.queryAndFetch("SELECT " + NXQL.ECM_UUID + " FROM " + docType, NXQL.NXQL);
-            try {
+            try (IterableQueryResult it = session.queryAndFetch("SELECT " + NXQL.ECM_UUID + " FROM " + docType,
+                    NXQL.NXQL)) {
                 size = it.size();
-            } finally {
-                it.close();
             }
         }
     }
@@ -227,8 +225,8 @@ public class CoreGraph implements Graph {
 
     @Override
     public void add(List<Statement> statements) {
-        StatementAdder statementAdder = session == null ? new StatementAdder(statements) : new StatementAdder(
-                statements, session);
+        StatementAdder statementAdder = session == null ? new StatementAdder(statements)
+                : new StatementAdder(statements, session);
         statementAdder.runUnrestricted();
     }
 
@@ -347,8 +345,8 @@ public class CoreGraph implements Graph {
 
     @Override
     public void remove(List<Statement> statements) {
-        StatementRemover statementRemover = session == null ? new StatementRemover(statements) : new StatementRemover(
-                statements, session);
+        StatementRemover statementRemover = session == null ? new StatementRemover(statements)
+                : new StatementRemover(statements, session);
         statementRemover.runUnrestricted();
     }
 
@@ -382,14 +380,11 @@ public class CoreGraph implements Graph {
             if (query == null) {
                 return;
             }
-            IterableQueryResult it = session.queryAndFetch(query, NXQL.NXQL);
-            try {
+            try (IterableQueryResult it = session.queryAndFetch(query, NXQL.NXQL)) {
                 for (Map<String, Serializable> map : it) {
                     String id = (String) map.get(NXQL.ECM_UUID);
                     session.removeDocument(new IdRef(id));
                 }
-            } finally {
-                it.close();
             }
         }
     }
@@ -420,9 +415,8 @@ public class CoreGraph implements Graph {
                 statements = EMPTY_STATEMENTS;
                 return;
             }
-            statements = new ArrayList<Statement>();
-            IterableQueryResult it = session.queryAndFetch(query, NXQL.NXQL);
-            try {
+            statements = new ArrayList<>();
+            try (IterableQueryResult it = session.queryAndFetch(query, NXQL.NXQL)) {
                 for (Map<String, Serializable> map : it) {
                     String pred = (String) map.get(REL_PREDICATE);
                     String source = (String) map.get(REL_SOURCE_ID);
@@ -457,8 +451,6 @@ public class CoreGraph implements Graph {
                     setComment(statement, comment);
                     statements.add(statement);
                 }
-            } finally {
-                it.close();
             }
         }
 
@@ -496,8 +488,8 @@ public class CoreGraph implements Graph {
 
     @Override
     public List<Statement> getStatements(Statement statement) {
-        StatementFinder statementFinder = session == null ? new StatementFinder(statement) : new StatementFinder(
-                statement, session);
+        StatementFinder statementFinder = session == null ? new StatementFinder(statement)
+                : new StatementFinder(statement, session);
         statementFinder.runUnrestricted();
         return statementFinder.statements;
     }
@@ -505,7 +497,7 @@ public class CoreGraph implements Graph {
     @Override
     public List<Node> getSubjects(Node predicate, Node object) {
         List<Statement> statements = getStatements(new StatementImpl(null, predicate, object));
-        List<Node> nodes = new ArrayList<Node>(statements.size());
+        List<Node> nodes = new ArrayList<>(statements.size());
         for (Statement statement : statements) {
             nodes.add(statement.getSubject());
         }
@@ -515,7 +507,7 @@ public class CoreGraph implements Graph {
     @Override
     public List<Node> getPredicates(Node subject, Node object) {
         List<Statement> statements = getStatements(new StatementImpl(subject, null, object));
-        List<Node> nodes = new ArrayList<Node>(statements.size());
+        List<Node> nodes = new ArrayList<>(statements.size());
         for (Statement statement : statements) {
             nodes.add(statement.getPredicate());
         }
@@ -525,7 +517,7 @@ public class CoreGraph implements Graph {
     @Override
     public List<Node> getObjects(Node subject, Node predicate) {
         List<Statement> statements = getStatements(new StatementImpl(subject, predicate, null));
-        List<Node> nodes = new ArrayList<Node>(statements.size());
+        List<Node> nodes = new ArrayList<>(statements.size());
         for (Statement statement : statements) {
             nodes.add(statement.getObject());
         }
@@ -547,8 +539,8 @@ public class CoreGraph implements Graph {
         if (resource == null) {
             return false;
         }
-        ResourceFinder resourceFinder = session == null ? new ResourceFinder(resource) : new ResourceFinder(resource,
-                session);
+        ResourceFinder resourceFinder = session == null ? new ResourceFinder(resource)
+                : new ResourceFinder(resource, session);
         resourceFinder.runUnrestricted();
         return resourceFinder.found;
     }
@@ -573,17 +565,14 @@ public class CoreGraph implements Graph {
         public void run() {
             String query = "SELECT " + NXQL.ECM_UUID + " FROM " + docType;
             query = whereAnyBuilder(query, resource);
-            IterableQueryResult it = session.queryAndFetch(query, NXQL.NXQL);
-            try {
+            try (IterableQueryResult it = session.queryAndFetch(query, NXQL.NXQL)) {
                 found = it.iterator().hasNext();
-            } finally {
-                it.close();
             }
         }
 
         protected String whereAnyBuilder(String query, Resource resource) {
-            List<Object> params = new ArrayList<Object>(3);
-            List<String> clauses = new ArrayList<String>(3);
+            List<Object> params = new ArrayList<>(3);
+            List<String> clauses = new ArrayList<>(3);
 
             NodeAsString nas = getNodeAsString(resource);
             if (nas.id != null) {
@@ -614,7 +603,8 @@ public class CoreGraph implements Graph {
         }
     }
 
-    public static final Pattern SPARQL_SPO_PO = Pattern.compile("SELECT \\?s \\?p \\?o WHERE \\{ \\?s \\?p \\?o . \\?s <(.*)> <(.*)> . \\}");
+    public static final Pattern SPARQL_SPO_PO = Pattern.compile(
+            "SELECT \\?s \\?p \\?o WHERE \\{ \\?s \\?p \\?o . \\?s <(.*)> <(.*)> . \\}");
 
     public static final Pattern SPARQL_PO_S = Pattern.compile("SELECT \\?p \\?o WHERE \\{ <(.*)> \\?p \\?o \\}");
 
@@ -747,8 +737,8 @@ public class CoreGraph implements Graph {
     }
 
     protected String whereBuilder(String query, Statement statement) {
-        List<Object> params = new ArrayList<Object>(3);
-        List<String> clauses = new ArrayList<String>(3);
+        List<Object> params = new ArrayList<>(3);
+        List<String> clauses = new ArrayList<>(3);
 
         Resource p = statement.getPredicate();
         if (p != null) {

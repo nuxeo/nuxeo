@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -218,10 +218,10 @@ public abstract class AbstractBlob implements Blob, Serializable {
     @Override
     public int hashCode() {
         return new HashCodeBuilder() //
-        .append(getFilename()) //
-        .append(getMimeType()) //
-        .append(getEncoding()) //
-        .toHashCode();
+                                     .append(getFilename()) //
+                                     .append(getMimeType()) //
+                                     .append(getEncoding()) //
+                                     .toHashCode();
     }
 
 }

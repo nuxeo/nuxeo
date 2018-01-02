@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,8 +98,10 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     @Override
     public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
             SortInfo... sortInfos) {
-        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder).limit(limit).offset(offset).addSort(
-                sortInfos);
+        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder)
+                                                          .limit(limit)
+                                                          .offset(offset)
+                                                          .addSort(sortInfos);
         return query(query);
     }
 

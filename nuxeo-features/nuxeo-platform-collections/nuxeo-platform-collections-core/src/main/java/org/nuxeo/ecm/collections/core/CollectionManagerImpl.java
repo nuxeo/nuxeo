@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -193,7 +193,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     protected DocumentModel createDefaultCollectionsRoot(final CoreSession session, DocumentModel userWorkspace) {
         DocumentModel doc = session.createDocumentModel(userWorkspace.getPath().toString(),
                 CollectionConstants.DEFAULT_COLLECTIONS_NAME, CollectionConstants.COLLECTIONS_TYPE);
-        String title = null;
+        String title;
         try {
             title = I18NUtils.getMessageString("messages", CollectionConstants.DEFAULT_COLLECTIONS_TITLE, new Object[0],
                     getLocale(session));
@@ -234,7 +234,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     @Override
     public List<DocumentModel> getVisibleCollection(final DocumentModel collectionMember, int maxResult,
             CoreSession session) {
-        List<DocumentModel> result = new ArrayList<DocumentModel>();
+        List<DocumentModel> result = new ArrayList<>();
         if (isCollected(collectionMember)) {
             CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
             List<String> collectionIds = collectionMemberAdapter.getCollectionIds();
@@ -326,11 +326,11 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public void processRestoredCollection(DocumentModel collection, DocumentModel version) {
-        final Set<String> collectionMemberIdsToBeRemoved = new TreeSet<String>(
+        final Set<String> collectionMemberIdsToBeRemoved = new TreeSet<>(
                 collection.getAdapter(Collection.class).getCollectedDocumentIds());
         collectionMemberIdsToBeRemoved.removeAll(version.getAdapter(Collection.class).getCollectedDocumentIds());
 
-        final Set<String> collectionMemberIdsToBeAdded = new TreeSet<String>(
+        final Set<String> collectionMemberIdsToBeAdded = new TreeSet<>(
                 version.getAdapter(Collection.class).getCollectedDocumentIds());
         collectionMemberIdsToBeAdded.removeAll(collection.getAdapter(Collection.class).getCollectedDocumentIds());
 
@@ -339,7 +339,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
             int limit = (int) (((i + CollectionAsynchrnonousQuery.MAX_RESULT) > collectionMemberIdsToBeRemoved.size())
                     ? collectionMemberIdsToBeRemoved.size() : (i + CollectionAsynchrnonousQuery.MAX_RESULT));
             RemoveFromCollectionWork work = new RemoveFromCollectionWork(collection.getRepositoryName(),
-                    collection.getId(), new ArrayList<String>(collectionMemberIdsToBeRemoved).subList(i, limit), i);
+                                                                         collection.getId(), new ArrayList<>(collectionMemberIdsToBeRemoved).subList(i, limit), i);
             WorkManager workManager = Framework.getService(WorkManager.class);
             workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
 
@@ -350,7 +350,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
             int limit = (int) (((i + CollectionAsynchrnonousQuery.MAX_RESULT) > collectionMemberIdsToBeAdded.size())
                     ? collectionMemberIdsToBeAdded.size() : (i + CollectionAsynchrnonousQuery.MAX_RESULT));
             DuplicateCollectionMemberWork work = new DuplicateCollectionMemberWork(collection.getRepositoryName(),
-                    collection.getId(), new ArrayList<String>(collectionMemberIdsToBeAdded).subList(i, limit), i);
+                                                                                   collection.getId(), new ArrayList<>(collectionMemberIdsToBeAdded).subList(i, limit), i);
             WorkManager workManager = Framework.getService(WorkManager.class);
             workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
 
@@ -403,7 +403,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public DocumentModel createCollection(final CoreSession session, String title, String description, String path) {
-        DocumentModel newCollection = null;
+        DocumentModel newCollection;
         // Test if the path is null or empty
         if (StringUtils.isEmpty(path)) {
             // A default collection is created with the given name
@@ -424,12 +424,12 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     }
 
     protected Locale getLocale(final CoreSession session) {
-        Locale locale = null;
+        Locale locale;
         locale = Framework.getService(LocaleProvider.class).getLocale(session);
         if (locale == null) {
             locale = Locale.getDefault();
         }
-        return new Locale(Locale.getDefault().getLanguage());
+        return new Locale(locale.getLanguage());
     }
 
     protected void fireEvent(DocumentModel doc, CoreSession session, String eventName,
@@ -448,7 +448,6 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     public boolean moveMembers(final CoreSession session, final DocumentModel collection, final DocumentModel member1,
             final DocumentModel member2) {
         checkCanCollectInCollection(collection, session);
-        ;
         Collection collectionAdapter = collection.getAdapter(Collection.class);
         boolean result = collectionAdapter.moveMembers(member1.getId(), member2 != null ? member2.getId() : null);
         if (result) {

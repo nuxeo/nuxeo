@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,13 +97,13 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     protected AutomationService automationService;
 
     /**
-     * @deprecated since 7.3.
+     * @deprecated since 7.3. RenditionDefinitions are store in {@link #renditionDefinitionRegistry}.
      */
     @Deprecated
     protected Map<String, RenditionDefinition> renditionDefinitions;
 
     /**
-     * @since 7.3. RenditionDefinitions are store in {@link #renditionDefinitionRegistry}.
+     * @since 7.3.
      */
     protected RenditionDefinitionRegistry renditionDefinitionRegistry;
 
@@ -377,7 +377,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     protected Rendition getRendition(DocumentModel doc, RenditionDefinition renditionDefinition, boolean store) {
 
-        Rendition rendition = null;
+        Rendition rendition;
         boolean isVersionable = doc.isVersionable();
         if (!isVersionable || !doc.isCheckedOut()) {
             // stored renditions are only done against a non-versionable doc

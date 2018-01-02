@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
-import com.sun.jersey.core.util.Base64;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.context.ContextHelper;
 import org.nuxeo.ecm.core.api.Blob;
@@ -46,6 +44,8 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import com.sun.jersey.core.util.Base64;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.multipart.MultiPart;
 import com.sun.jersey.multipart.impl.MultiPartWriter;
 

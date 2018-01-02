@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,8 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 @Operation(id = AuditPageProviderOperation.ID, category = Constants.CAT_FETCH, label = "Audit Query With Page Provider", description = "Perform "
         + "a query or a named provider query against Audit logs. Result is "
         + "paginated. The query result will become the input for the next "
-        + "operation. If no query or provider name is given, a query based on default Audit page provider will be executed.", addToStudio = false, aliases = { "Audit.PageProvider" })
+        + "operation. If no query or provider name is given, a query based on default Audit page provider will be executed.", addToStudio = false, aliases = {
+                "Audit.PageProvider" })
 public class AuditPageProviderOperation {
 
     public static final String ID = "Audit.QueryWithPageProvider";
@@ -130,8 +131,8 @@ public class AuditPageProviderOperation {
     /**
      * @since 6.0
      */
-    @Param(name = "sortOrder", required = false, description = "Sort order, " + "ASC or DESC", widget = Constants.W_OPTION, values = {
-            ASC, DESC })
+    @Param(name = "sortOrder", required = false, description = "Sort order, "
+            + "ASC or DESC", widget = Constants.W_OPTION, values = { ASC, DESC })
     protected String sortOrder;
 
     @SuppressWarnings("unchecked")
@@ -140,7 +141,7 @@ public class AuditPageProviderOperation {
 
         List<SortInfo> sortInfos = null;
         if (sortInfoAsStringList != null) {
-            sortInfos = new ArrayList<SortInfo>();
+            sortInfos = new ArrayList<>();
             for (String sortInfoDesc : sortInfoAsStringList) {
                 SortInfo sortInfo;
                 if (sortInfoDesc.contains(SORT_PARAMETER_SEPARATOR)) {
@@ -162,7 +163,8 @@ public class AuditPageProviderOperation {
                 }
                 for (int i = 0; i < sorts.length; i++) {
                     String sort = sorts[i];
-                    boolean sortAscending = (orders != null && orders.length > i && "asc".equals(orders[i].toLowerCase()));
+                    boolean sortAscending = (orders != null && orders.length > i
+                            && "asc".equals(orders[i].toLowerCase()));
                     sortInfos.add(new SortInfo(sort, sortAscending));
                 }
             }
@@ -186,7 +188,7 @@ public class AuditPageProviderOperation {
             parameters = new Object[0];
         }
 
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
         if (query == null && (providerName == null || providerName.length() == 0)) {

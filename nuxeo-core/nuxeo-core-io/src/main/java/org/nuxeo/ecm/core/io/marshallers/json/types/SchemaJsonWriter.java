@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.thoughtworks.xstream.io.json.JsonWriter;
 
 /**
  * Convert {@link Schema} to Json.
@@ -51,7 +50,7 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
  * </p>
  * <p>
  * This marshaller is also extensible: extend it and simply override
- * {@link ExtensibleEntityJsonWriter#extend(Schema, JsonWriter)}.
+ * {@link ExtensibleEntityJsonWriter#extend(Object, JsonGenerator)}.
  * </p>
  * <p>
  * Format is:
@@ -85,7 +84,6 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
  *             <-- additional property provided by extend() method
  * }
  * </pre>
- *
  * </p>
  *
  * @since 7.2

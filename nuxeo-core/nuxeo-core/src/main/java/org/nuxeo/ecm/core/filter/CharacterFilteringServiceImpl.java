@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,10 @@
 
 package org.nuxeo.ecm.core.filter;
 
-import com.google.common.base.CharMatcher;
+import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -34,8 +37,7 @@ import org.nuxeo.ecm.core.api.model.impl.primitives.StringProperty;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-import java.io.Serializable;
-import java.util.List;
+import com.google.common.base.CharMatcher;
 
 /**
  * @since 9.1
@@ -60,11 +62,9 @@ public class CharacterFilteringServiceImpl extends DefaultComponent implements C
             charsToRemove = charsToRemove.or(CharMatcher.INVISIBLE.and(CharMatcher.WHITESPACE.negate()));
 
             List<String> additionalChars = desc.getDisallowedChars();
-            String otherCharsToRemove = "";
             if (additionalChars != null && !additionalChars.isEmpty()) {
-                for (String c : additionalChars) {
-                    otherCharsToRemove += StringEscapeUtils.unescapeJava(c);
-                }
+                String otherCharsToRemove = additionalChars.stream().map(StringEscapeUtils::unescapeJava).collect(
+                        Collectors.joining());
                 charsToRemove = charsToRemove.or(CharMatcher.anyOf(otherCharsToRemove));
             }
         } else {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,14 @@
  */
 package org.nuxeo.elasticsearch.audit.pageprovider;
 
+import static org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider.DEFAULT_ES_MAX_RESULT_WINDOW_VALUE;
+import static org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider.ES_MAX_RESULT_WINDOW_PROPERTY;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -50,8 +52,7 @@ import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
-import static org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider.DEFAULT_ES_MAX_RESULT_WINDOW_VALUE;
-import static org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider.ES_MAX_RESULT_WINDOW_PROPERTY;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implements PageProvider<LogEntry> {
 
@@ -70,9 +71,7 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
     @Override
     public String toString() {
         buildAuditQuery(true);
-        StringBuffer sb = new StringBuffer();
-        sb.append(searchRequest.toString());
-        return sb.toString();
+        return searchRequest.toString();
     }
 
     protected CoreSession getCoreSession() {
@@ -209,8 +208,8 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
             String originalPattern = def.getPattern();
             String pattern = quickFiltersClause.isEmpty() ? originalPattern
                     : StringUtils.containsIgnoreCase(originalPattern, " WHERE ")
-                    ? NXQLQueryBuilder.appendClause(originalPattern, quickFiltersClause)
-                    : originalPattern + " WHERE " + quickFiltersClause;
+                            ? NXQLQueryBuilder.appendClause(originalPattern, quickFiltersClause)
+                            : originalPattern + " WHERE " + quickFiltersClause;
 
             String baseQuery = getESBackend().expandQueryVariables(pattern, params);
             searchRequest = getESBackend().buildQuery(baseQuery, null);
@@ -291,8 +290,8 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
                 maxResultWindow = Long.valueOf(maxResultWindowStr);
             } catch (NumberFormatException e) {
                 log.warn(String.format(
-                    "Invalid maxResultWindow property value: %s for page provider: %s, fallback to default.",
-                            maxResultWindowStr, getName()));
+                        "Invalid maxResultWindow property value: %s for page provider: %s, fallback to default.",
+                        maxResultWindowStr, getName()));
                 maxResultWindow = Long.valueOf(DEFAULT_ES_MAX_RESULT_WINDOW_VALUE);
             }
         }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,18 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
 
 package org.nuxeo.ecm.core.schema;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Document Type Descriptor.
@@ -79,7 +77,7 @@ public class DocumentTypeDescriptor {
     }
 
     public DocumentTypeDescriptor(String superTypeName, String name, SchemaDescriptor[] schemas, String[] facets,
-        String[] subtypes, String[] forbiddenSubtypes) {
+            String[] subtypes, String[] forbiddenSubtypes) {
         this(superTypeName, name, schemas, facets);
         this.subtypes = subtypes;
         this.forbiddenSubtypes = forbiddenSubtypes;
@@ -109,7 +107,7 @@ public class DocumentTypeDescriptor {
             schemas = other.schemas;
         } else {
             if (other.schemas != null) {
-                List<SchemaDescriptor> mergedSchemas = new ArrayList<SchemaDescriptor>(Arrays.asList(schemas));
+                List<SchemaDescriptor> mergedSchemas = new ArrayList<>(Arrays.asList(schemas));
                 mergedSchemas.addAll(Arrays.asList(other.schemas));
                 schemas = mergedSchemas.toArray(new SchemaDescriptor[mergedSchemas.size()]);
             }
@@ -118,7 +116,7 @@ public class DocumentTypeDescriptor {
             facets = other.facets;
         } else {
             if (other.facets != null) {
-                List<String> mergedFacets = new ArrayList<String>(Arrays.asList(facets));
+                List<String> mergedFacets = new ArrayList<>(Arrays.asList(facets));
                 mergedFacets.addAll(Arrays.asList(other.facets));
                 facets = mergedFacets.toArray(new String[mergedFacets.size()]);
             }

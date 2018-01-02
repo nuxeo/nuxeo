@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,7 +108,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     private static final Pattern FILENAME_SANITIZATION_REGEX = Pattern.compile(";\\w+=.*");
 
-    protected static enum Action {
+    protected enum Action {
         DOWNLOAD, DOWNLOAD_FROM_DOC, INFO, BLOBSTATUS
     };
 
@@ -207,8 +207,6 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         return storeKey;
     }
 
-
-
     @Override
     public String getDownloadUrl(DocumentModel doc, String xpath, String filename) {
         return getDownloadUrl(doc.getRepositoryName(), doc.getId(), xpath, filename);
@@ -248,7 +246,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     /**
      * Gets the download path and action of the URL to use to download blobs. For instance, from the path
      * "nxfile/default/3727ef6b-cf8c-4f27-ab2c-79de0171a2c8/files:files/0/file/image.png", the pair
-     * ("default/3727ef6b-cf8c-4f27-ab2c-79de0171a2c8/files:files/0/file/image.png", Action.DOWNLOAD_FROM_DOC) is returned.
+     * ("default/3727ef6b-cf8c-4f27-ab2c-79de0171a2c8/files:files/0/file/image.png", Action.DOWNLOAD_FROM_DOC) is
+     * returned.
      *
      * @param path the path of the URL to use to download blobs
      * @return the pair download path and action
@@ -364,8 +363,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                     if (principal instanceof NuxeoPrincipal) {
                         NuxeoPrincipal nuxeoPrincipal = (NuxeoPrincipal) principal;
                         if (nuxeoPrincipal.isAnonymous()) {
-                            throw new DocumentSecurityException(
-                                    "Authentication is needed for downloading the blob");
+                            throw new DocumentSecurityException("Authentication is needed for downloading the blob");
                         }
                     }
                     resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No document found");
@@ -407,7 +405,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     }
 
     @Override
-    public void downloadBlob(HttpServletRequest request, HttpServletResponse response, String key, String reason) throws IOException {
+    public void downloadBlob(HttpServletRequest request, HttpServletResponse response, String key, String reason)
+            throws IOException {
         this.downloadBlob(request, response, key, reason, false);
     }
 
@@ -467,7 +466,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline)
-            throws IOException {
+                    throws IOException {
         if (blob == null) {
             if (doc == null) {
                 throw new NuxeoException("No doc specified");
@@ -572,8 +571,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 if (byteRange == null) {
                     log.error("Invalid byte range received: " + range);
                 } else {
-                    response.setHeader("Content-Range", "bytes " + byteRange.getStart() + "-" + byteRange.getEnd()
-                            + "/" + length);
+                    response.setHeader("Content-Range",
+                            "bytes " + byteRange.getStart() + "-" + byteRange.getEnd() + "/" + length);
                     response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
                 }
             }
@@ -728,7 +727,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 continue;
             }
             if (!(result instanceof Boolean)) {
-                log.error("Failed to get boolean result from permission: " + descriptor.getName() + " (" + result + ")");
+                log.error(
+                        "Failed to get boolean result from permission: " + descriptor.getName() + " (" + result + ")");
                 continue;
             }
             boolean allow = ((Boolean) result).booleanValue();

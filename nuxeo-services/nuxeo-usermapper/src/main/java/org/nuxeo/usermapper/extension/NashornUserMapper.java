@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ package org.nuxeo.usermapper.extension;
 
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService.Session;
@@ -66,7 +66,7 @@ public class NashornUserMapper extends AbstractUserMapper {
             bindings.put("nuxeoPrincipal", principal);
             bindings.put("userObject", userObject);
             bindings.put("params", params);
-            session.run(new ByteArrayInputStream(wrapperSource.getBytes(Charsets.UTF_8)));
+            session.run(new ByteArrayInputStream(wrapperSource.getBytes(StandardCharsets.UTF_8)));
             return bindings.get("userObject");
         } catch (Exception e) {
             throw new NuxeoException("Error while executing JavaScript mapper", e);
@@ -92,7 +92,7 @@ public class NashornUserMapper extends AbstractUserMapper {
             mapper.put("profileAttributes", profileAttributes);
             mapper.put("userAttributes", userAttributes);
             mapper.put("userObject", userObject);
-            session.run(new ByteArrayInputStream(mapperSource.getBytes(Charsets.UTF_8)));
+            session.run(new ByteArrayInputStream(mapperSource.getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e) {
             throw new NuxeoException("Error while executing JavaScript mapper", e);
         }

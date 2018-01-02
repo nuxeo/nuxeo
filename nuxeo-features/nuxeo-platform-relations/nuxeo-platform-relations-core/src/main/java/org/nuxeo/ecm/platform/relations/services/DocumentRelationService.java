@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -55,8 +53,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentRelationService implements DocumentRelationManager {
 
-    private static final Log log = LogFactory.getLog(DocumentRelationService.class);
-
     private RelationManager relationManager = null;
 
     protected RelationManager getRelationManager() {
@@ -72,7 +68,7 @@ public class DocumentRelationService implements DocumentRelationManager {
     }
 
     private static void putStatements(Map<String, Serializable> options, Statement statement) {
-        List<Statement> statements = new LinkedList<Statement>();
+        List<Statement> statements = new LinkedList<>();
         statements.add(statement);
         options.put(RelationEvents.STATEMENTS_EVENT_KEY, (Serializable) statements);
     }
@@ -111,8 +107,8 @@ public class DocumentRelationService implements DocumentRelationManager {
         QNameResource fromResource = getNodeFromDocumentModel(from);
 
         Resource predicateResource = new ResourceImpl(predicate);
-        Statement stmt = null;
-        List<Statement> statements = null;
+        Statement stmt;
+        List<Statement> statements;
         if (inverse) {
             stmt = new StatementImpl(toResource, predicateResource, fromResource);
             statements = graph.getStatements(toResource, predicateResource, fromResource);
@@ -145,7 +141,7 @@ public class DocumentRelationService implements DocumentRelationManager {
 
         // notifications
 
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
         String currentLifeCycleState = from.getCurrentLifeCycleState();
         options.put(CoreEventConstants.DOC_LIFE_CYCLE, currentLifeCycleState);
         if (includeStatementsInEvents) {
@@ -214,7 +210,7 @@ public class DocumentRelationService implements DocumentRelationManager {
             {
 
         // notifications
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
 
         // Find relative document
         DocumentModel eventDocument = null;

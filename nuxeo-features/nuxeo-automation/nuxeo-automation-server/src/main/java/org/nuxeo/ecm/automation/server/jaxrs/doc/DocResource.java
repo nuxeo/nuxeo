@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,20 +89,15 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected Template getTemplateView(String name) {
-        Map<String, List<OperationDocumentation>> cats = new HashMap<String, List<OperationDocumentation>>();
+        Map<String, List<OperationDocumentation>> cats = new HashMap<>();
         for (OperationDocumentation op : ops) {
-            List<OperationDocumentation> list = cats.get(op.getCategory());
-            if (list == null) {
-                list = new ArrayList<OperationDocumentation>();
-                cats.put(op.getCategory(), list);
-            }
-            list.add(op);
+            cats.computeIfAbsent(op.getCategory(), k -> new ArrayList<>()).add(op);
         }
         // sort categories
         List<String> catNames = new ArrayList<>();
         catNames.addAll(cats.keySet());
         Collections.sort(catNames);
-        Map<String, List<OperationDocumentation>> scats = new LinkedHashMap<String, List<OperationDocumentation>>();
+        Map<String, List<OperationDocumentation>> scats = new LinkedHashMap<>();
         for (String catName : catNames) {
             scats.put(catName, cats.get(catName));
         }

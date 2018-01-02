@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -271,7 +271,7 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected Map<String, Serializable> getProperties() {
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
         return props;
     }

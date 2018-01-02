@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,6 +126,7 @@ public class SAMLAuthenticationProvider
     // Supported SAML Bindings
     // TODO: Allow registering new bindings
     static List<SAMLBinding> bindings = new ArrayList<>();
+
     static {
         bindings.add(new HTTPPostBinding());
         bindings.add(new HTTPRedirectBinding());
@@ -133,6 +134,7 @@ public class SAMLAuthenticationProvider
 
     // Decryption key resolver
     private static ChainingEncryptedKeyResolver encryptedKeyResolver = new ChainingEncryptedKeyResolver();
+
     static {
         encryptedKeyResolver.getResolverChain().add(new InlineEncryptedKeyResolver());
         encryptedKeyResolver.getResolverChain().add(new EncryptedElementTypeEncryptedKeyResolver());
@@ -174,9 +176,9 @@ public class SAMLAuthenticationProvider
 
         }
         try {
-            userResolver = userResolverClass.newInstance();
+            userResolver = userResolverClass.getConstructor().newInstance();
             userResolver.init(parameters);
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Failed to initialize user resolver " + userResolverClassname);
         }
 
@@ -333,10 +335,10 @@ public class SAMLAuthenticationProvider
         if (loginError != null) {
             try {
                 request.getRequestDispatcher(ERROR_PAGE).forward(request, response);
-                return true;
+                return Boolean.TRUE;
             } catch (ServletException | IOException e) {
                 log.error("Failed to redirect to error page", e);
-                return false;
+                return Boolean.FALSE;
             }
         }
 
@@ -346,9 +348,9 @@ public class SAMLAuthenticationProvider
         } catch (IOException e) {
             String errorMessage = String.format("Unable to send redirect on %s", loginURL);
             log.error(errorMessage, e);
-            return false;
+            return Boolean.FALSE;
         }
-        return true;
+        return Boolean.TRUE;
     }
 
     // Retrieves user identification information from the request.
@@ -518,7 +520,7 @@ public class SAMLAuthenticationProvider
 
     @Override
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
-        return true;
+        return Boolean.TRUE;
     }
 
     @Override
@@ -588,7 +590,7 @@ public class SAMLAuthenticationProvider
         String logoutURL = getSLOUrl(request, response);
 
         if (logoutURL == null) {
-            return false;
+            return Boolean.FALSE;
         }
 
         if (log.isDebugEnabled()) {
@@ -600,7 +602,7 @@ public class SAMLAuthenticationProvider
         } catch (IOException e) {
             String errorMessage = String.format("Unable to send redirect on %s", logoutURL);
             log.error(errorMessage, e);
-            return false;
+            return Boolean.FALSE;
         }
 
         Cookie cookie = getCookie(request, SAML_SESSION_KEY);
@@ -608,7 +610,7 @@ public class SAMLAuthenticationProvider
             removeCookie(response, cookie);
         }
 
-        return true;
+        return Boolean.TRUE;
     }
 
     private void sendError(HttpServletRequest req, String key) {

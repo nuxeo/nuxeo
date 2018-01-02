@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -187,7 +187,7 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
     @Override
     public List<String> getSourceIdsForTarget(String targetId) throws DirectoryException {
         Set<String> sourceIds = new TreeSet<>();
-        String targetDn = null;
+        String targetDn;
 
         // step #1: fetch the dn of the targetId entry in the target
         // directory by the static dn valued strategy
@@ -260,7 +260,7 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
     @Override
     public List<String> getTargetIdsForSource(String sourceId) throws DirectoryException {
         Set<String> targetIds = new TreeSet<>();
-        String sourceDn = null;
+        String sourceDn;
 
         // step #1: fetch the dn of the sourceId entry in the source
         // directory by the static dn valued strategy

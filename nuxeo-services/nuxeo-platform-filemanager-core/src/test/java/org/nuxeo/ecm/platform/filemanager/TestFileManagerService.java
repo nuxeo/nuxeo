@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -223,9 +223,9 @@ public class TestFileManagerService {
             expectedNoteTest = expectedNoteTest.trim();
             expectedNoteTest = expectedNoteTest.replace("\n", "");
             expectedNoteTest = expectedNoteTest.replace("\r", "");
-            noteText = expectedNoteTest.trim();
-            noteText = expectedNoteTest.replace("\n", "");
-            noteText = expectedNoteTest.replace("\r", "");
+            noteText = noteText.trim();
+            noteText = noteText.replace("\n", "");
+            noteText = noteText.replace("\r", "");
         }
         assertEquals(expectedNoteTest, noteText);
     }

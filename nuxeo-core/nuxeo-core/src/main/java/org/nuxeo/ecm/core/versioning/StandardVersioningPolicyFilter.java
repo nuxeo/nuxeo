@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,19 @@
 
 package org.nuxeo.ecm.core.versioning;
 
+import static org.nuxeo.ecm.platform.el.ELConstants.CURRENT_DOCUMENT;
+import static org.nuxeo.ecm.platform.el.ELConstants.CURRENT_USER;
+import static org.nuxeo.ecm.platform.el.ELConstants.DOCUMENT;
+import static org.nuxeo.ecm.platform.el.ELConstants.PREVIOUS_DOCUMENT;
+import static org.nuxeo.ecm.platform.el.ELConstants.PRINCIPAL;
+
+import java.util.Collection;
+
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
+import javax.el.ValueExpression;
+import javax.el.VariableMapper;
+
 import org.apache.commons.lang.StringUtils;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -29,19 +42,6 @@ import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.platform.el.ELService;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.el.ELContext;
-import javax.el.ExpressionFactory;
-import javax.el.ValueExpression;
-import javax.el.VariableMapper;
-
-import java.util.Collection;
-
-import static org.nuxeo.ecm.platform.el.ELConstants.CURRENT_DOCUMENT;
-import static org.nuxeo.ecm.platform.el.ELConstants.CURRENT_USER;
-import static org.nuxeo.ecm.platform.el.ELConstants.DOCUMENT;
-import static org.nuxeo.ecm.platform.el.ELConstants.PREVIOUS_DOCUMENT;
-import static org.nuxeo.ecm.platform.el.ELConstants.PRINCIPAL;
 
 /**
  * @since 9.1

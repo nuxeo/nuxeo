@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -257,7 +257,6 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     /**
      * Replace the image URLs of an HTML blob by absolute local paths.
      *
-     * @throws IOException
      * @since 9.1
      */
     protected static Blob replaceURLsByAbsolutePaths(Blob blob, Path tempDirectory, Function<String, Blob> blobResolver)
@@ -387,7 +386,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
             converterName = translationHelper.getConverterName(srcMimeType, MediaType.TEXT_HTML);
             if (converterName == null) {
                 throw new ConversionException(String.format("No converters available to convert from %s to %s.",
-                    srcMimeType, destinationMimeType));
+                        srcMimeType, destinationMimeType));
             }
             // Use a chain of 2 converters which will first try to go through HTML,
             // then HTML to the destination mimetype

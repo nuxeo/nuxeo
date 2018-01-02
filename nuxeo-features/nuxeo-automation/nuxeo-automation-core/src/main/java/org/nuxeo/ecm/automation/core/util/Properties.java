@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 /**
  * Inline properties file content. This class exists to have a real type for parameters accepting properties content.
@@ -65,7 +65,7 @@ public class Properties extends HashMap<String, String> {
 
     public static final String PROPERTIES_MULTILINE_ESCAPE = "nuxeo" + ".automation.properties.multiline.escape";
 
-    protected static final String multiLineEscape = Objects.firstNonNull(
+    protected static final String multiLineEscape = MoreObjects.firstNonNull(
             Framework.getProperty(PROPERTIES_MULTILINE_ESCAPE), "true");
 
     public Properties() {
@@ -81,7 +81,7 @@ public class Properties extends HashMap<String, String> {
 
     public Properties(String content) throws IOException {
         StringReader reader = new StringReader(content);
-        Map<String,String> props = new HashMap<>();
+        Map<String, String> props = new HashMap<>();
         loadProperties(reader, props);
         putAll(props);
     }
@@ -89,8 +89,6 @@ public class Properties extends HashMap<String, String> {
     /**
      * Constructs a Properties map based on a Json node.
      *
-     * @param node
-     * @throws IOException
      * @since 5.7.3
      */
     public Properties(JsonNode node) throws IOException {
@@ -105,10 +103,6 @@ public class Properties extends HashMap<String, String> {
     }
 
     /**
-     * @param om
-     * @param subNode
-     * @return
-     * @throws IOException
      * @since 5.8-HF01
      */
     private String extractValueFromNode(JsonNode node, ObjectMapper om) throws IOException {
@@ -120,7 +114,7 @@ public class Properties extends HashMap<String, String> {
     }
 
     public static Map<String, String> loadProperties(Reader reader) throws IOException {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         loadProperties(reader, map);
         return map;
     }
@@ -141,7 +135,7 @@ public class Properties extends HashMap<String, String> {
                     continue;
                 }
             }
-            if (line.endsWith("\\") && Boolean.valueOf(multiLineEscape)) {
+            if (line.endsWith("\\") && Boolean.parseBoolean(multiLineEscape)) {
                 line = line.substring(0, line.length() - 1);
                 prevLine = (prevLine != null ? prevLine + line : line) + lineSeparator;
                 line = in.readLine();

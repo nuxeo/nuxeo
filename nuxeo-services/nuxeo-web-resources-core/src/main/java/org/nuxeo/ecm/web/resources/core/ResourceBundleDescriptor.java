@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,7 +82,7 @@ public class ResourceBundleDescriptor implements ResourceBundle {
         c.name = name;
         c.append = append;
         if (resources != null) {
-            c.resources = new ArrayList<String>(resources);
+            c.resources = new ArrayList<>(resources);
         }
         return c;
     }
@@ -92,7 +92,7 @@ public class ResourceBundleDescriptor implements ResourceBundle {
         if (other instanceof ResourceBundleDescriptor) {
             boolean append = ((ResourceBundleDescriptor) other).isAppend();
             List<String> res = other.getResources();
-            List<String> merged = new ArrayList<String>();
+            List<String> merged = new ArrayList<>();
             if (append && resources != null) {
                 merged.addAll(resources);
             }

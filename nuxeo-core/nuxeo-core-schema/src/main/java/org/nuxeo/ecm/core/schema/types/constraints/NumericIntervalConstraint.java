@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,7 +117,7 @@ public class NumericIntervalConstraint extends AbstractConstraint {
      */
     @Override
     public Description getDescription() {
-        Map<String, Serializable> params = new HashMap<String, Serializable>();
+        Map<String, Serializable> params = new HashMap<>();
         if (min != null) {
             params.put(PNAME_MINIMUM, min);
             params.put(PNAME_MIN_INC, includingMin);
@@ -167,7 +167,7 @@ public class NumericIntervalConstraint extends AbstractConstraint {
         } else {
             params = new Object[] { max };
         }
-        List<String> pathTokens = new ArrayList<String>();
+        List<String> pathTokens = new ArrayList<>();
         pathTokens.add(MESSAGES_KEY);
         pathTokens.add(NumericIntervalConstraint.NAME);
         pathTokens.add(subKey);

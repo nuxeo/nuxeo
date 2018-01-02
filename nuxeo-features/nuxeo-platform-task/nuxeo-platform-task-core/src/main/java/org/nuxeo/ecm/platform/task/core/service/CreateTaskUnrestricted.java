@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
      */
     private String processName;
 
-    List<Task> tasks = new ArrayList<Task>();
+    List<Task> tasks = new ArrayList<>();
 
     /**
      * @since 5.8 A task can have many target documents
@@ -118,7 +118,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
         this.dueDate = dueDate;
         this.taskVariables = taskVariables;
         this.parentPath = parentPath;
-        this.documents = new ArrayList<DocumentModel>();
+        this.documents = new ArrayList<>();
         this.documents.add(document);
     }
 
@@ -155,9 +155,9 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
      * @since 7.4
      */
     public CreateTaskUnrestricted(CoreSession session, NuxeoPrincipal principal, List<DocumentModel> documents,
-            String taskDocumentType, String taskName, String taskType, String processId, String processName, List<String> prefixedActorIds,
-            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath) {
+            String taskDocumentType, String taskName, String taskType, String processId, String processName,
+            List<String> prefixedActorIds, boolean createOneTaskPerActor, String directive, String comment,
+            Date dueDate, Map<String, String> taskVariables, String parentPath) {
         this(session, principal, documents != null && documents.size() > 0 ? documents.get(0) : null, taskName,
                 taskType, processId, prefixedActorIds, createOneTaskPerActor, directive, comment, dueDate,
                 taskVariables, parentPath);
@@ -174,8 +174,8 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
         if (StringUtils.isEmpty(taskDocumentType)) {
             taskDocumentType = TaskConstants.TASK_TYPE_NAME;
         }
-        createTask(session, principal, documents, taskDocumentType, taskName, taskType, processId, processName, prefixedActorIds,
-                createOneTaskPerActor, directive, comment, dueDate, taskVariables, parentPath);
+        createTask(session, principal, documents, taskDocumentType, taskName, taskType, processId, processName,
+                prefixedActorIds, createOneTaskPerActor, directive, comment, dueDate, taskVariables, parentPath);
     }
 
     /**
@@ -185,7 +185,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
             String taskDocumentType, String taskName, String taskType, String processId, List<String> prefixedActorIds,
             boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
             Map<String, String> taskVariables, String parentPath) {
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+        List<DocumentModel> docs = new ArrayList<>();
         docs.add(document);
         createTask(coreSession, principal, docs, taskDocumentType, taskName, taskType, processId, prefixedActorIds,
                 createOneTaskPerActor, directive, comment, dueDate, taskVariables, parentPath);
@@ -207,9 +207,9 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
      * @since 7.4
      */
     public void createTask(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
-            String taskDocumentType, String taskName, String taskType, String processId, String processName, List<String> prefixedActorIds,
-            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath) {
+            String taskDocumentType, String taskName, String taskType, String processId, String processName,
+            List<String> prefixedActorIds, boolean createOneTaskPerActor, String directive, String comment,
+            Date dueDate, Map<String, String> taskVariables, String parentPath) {
         if (createOneTaskPerActor) {
             for (String prefixedActorId : prefixedActorIds) {
                 createTask(coreSession, principal, documents, taskDocumentType, taskName, taskType, processId,
@@ -239,7 +239,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
             task.setDueDate(dueDate);
 
             if (documents != null) {
-                List<String> docIds = new ArrayList<String>();
+                List<String> docIds = new ArrayList<>();
                 for (DocumentModel doc : documents) {
                     docIds.add(doc.getId());
                 }
@@ -252,7 +252,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
             }
 
             // add variables
-            Map<String, String> variables = new HashMap<String, String>();
+            Map<String, String> variables = new HashMap<>();
             if (document != null) {
                 variables.put(TaskService.VariableName.documentId.name(), document.getId());
                 variables.put(TaskService.VariableName.documentRepositoryName.name(), document.getRepositoryName());
@@ -271,7 +271,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
             task = taskDocument.getAdapter(Task.class);
 
             // Set rights
-            List<String> actorIds = new ArrayList<String>();
+            List<String> actorIds = new ArrayList<>();
             for (String actor : prefixedActorIds) {
                 if (actor.startsWith(NotificationConstants.GROUP_PREFIX)
                         || actor.startsWith(NotificationConstants.USER_PREFIX)) {

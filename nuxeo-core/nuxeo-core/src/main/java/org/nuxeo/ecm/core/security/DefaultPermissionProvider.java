@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.core.security;
@@ -26,9 +25,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -45,7 +44,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(DefaultPermissionProvider.class);
 
-    private final List<PermissionDescriptor> registeredPermissions = new LinkedList<PermissionDescriptor>();
+    private final List<PermissionDescriptor> registeredPermissions = new LinkedList<>();
 
     // to be recomputed each time a new PermissionDescriptor is registered -
     // null means invalidated
@@ -53,7 +52,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
 
     private Map<String, Set<String>> mergedGroups;
 
-    private final List<PermissionVisibilityDescriptor> registeredPermissionsVisibility = new LinkedList<PermissionVisibilityDescriptor>();
+    private final List<PermissionVisibilityDescriptor> registeredPermissionsVisibility = new LinkedList<>();
 
     private Map<String, PermissionVisibilityDescriptor> mergedPermissionsVisibility;
 
@@ -62,8 +61,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
     }
 
     @Override
-    public synchronized List<UserVisiblePermission> getUserVisiblePermissionDescriptors(String typeName)
-            {
+    public synchronized List<UserVisiblePermission> getUserVisiblePermissionDescriptors(String typeName) {
         if (mergedPermissionsVisibility == null) {
             computeMergedPermissionsVisibility();
         }
@@ -86,7 +84,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
 
     // called synchronized
     protected void computeMergedPermissionsVisibility() {
-        mergedPermissionsVisibility = new HashMap<String, PermissionVisibilityDescriptor>();
+        mergedPermissionsVisibility = new HashMap<>();
         for (PermissionVisibilityDescriptor pvd : registeredPermissionsVisibility) {
             PermissionVisibilityDescriptor mergedPvd = mergedPermissionsVisibility.get(pvd.getTypeName());
             if (mergedPvd == null) {
@@ -95,8 +93,8 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
                     PermissionVisibilityDescriptor defaultPerms = new PermissionVisibilityDescriptor(
                             mergedPermissionsVisibility.get(""));
                     defaultPerms.merge(mergedPvd);
-                    mergedPvd.setPermissionUIItems(defaultPerms.getPermissionUIItems().toArray(
-                            new PermissionUIItemDescriptor[] {}));
+                    mergedPvd.setPermissionUIItems(
+                            defaultPerms.getPermissionUIItems().toArray(new PermissionUIItemDescriptor[] {}));
                 }
                 mergedPermissionsVisibility.put(mergedPvd.getTypeName(), mergedPvd);
             } else {
@@ -148,14 +146,14 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         if (mergedPermissions == null) {
             computeMergedPermissions();
         }
-        mergedGroups = new HashMap<String, Set<String>>();
+        mergedGroups = new HashMap<>();
 
         // scanning sub permissions to collect direct group membership
         for (MergedPermissionDescriptor mpd : mergedPermissions.values()) {
             for (String subPermission : mpd.getSubPermissions()) {
                 Set<String> groups = mergedGroups.get(subPermission);
                 if (groups == null) {
-                    groups = new TreeSet<String>();
+                    groups = new TreeSet<>();
                     groups.add(mpd.getName());
                     mergedGroups.put(subPermission, groups);
                 } else {
@@ -168,7 +166,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
 
         // building the transitive closure on groups membership with a recursive
         // method
-        Set<String> alreadyProcessed = new HashSet<String>();
+        Set<String> alreadyProcessed = new HashSet<>();
         for (Entry<String, Set<String>> groupEntry : mergedGroups.entrySet()) {
             String permissionName = groupEntry.getKey();
             Set<String> groups = groupEntry.getValue();
@@ -181,7 +179,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
     protected Set<String> computeAllGroups(String permissionName, Set<String> alreadyProcessed) {
         Set<String> allGroups = mergedGroups.get(permissionName);
         if (allGroups == null) {
-            allGroups = new TreeSet<String>();
+            allGroups = new TreeSet<>();
         }
         if (alreadyProcessed.contains(permissionName)) {
             return allGroups;
@@ -189,7 +187,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
             // marking it processed early to avoid infinite loops in case of
             // recursive inclusion
             alreadyProcessed.add(permissionName);
-            for (String directGroupName : new TreeSet<String>(allGroups)) {
+            for (String directGroupName : new TreeSet<>(allGroups)) {
                 allGroups.addAll(computeAllGroups(directGroupName, alreadyProcessed));
             }
             return allGroups;
@@ -208,7 +206,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
 
     // called synchronized
     protected void computeMergedPermissions() {
-        mergedPermissions = new HashMap<String, MergedPermissionDescriptor>();
+        mergedPermissions = new HashMap<>();
         for (PermissionDescriptor pd : registeredPermissions) {
             MergedPermissionDescriptor mpd = mergedPermissions.get(pd.getName());
             if (mpd == null) {
@@ -223,15 +221,15 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
     @Override
     public synchronized void registerDescriptor(PermissionDescriptor descriptor) {
         // check that all included permission have previously been registered
-        Set<String> alreadyRegistered = new HashSet<String>();
+        Set<String> alreadyRegistered = new HashSet<>();
         for (PermissionDescriptor registeredPerm : registeredPermissions) {
             alreadyRegistered.add(registeredPerm.getName());
         }
         for (String includePerm : descriptor.getIncludePermissions()) {
             if (!alreadyRegistered.contains(includePerm)) {
-                throw new NuxeoException(String.format(
-                        "Permission '%s' included by '%s' is not a registered permission", includePerm,
-                        descriptor.getName()));
+                throw new NuxeoException(
+                        String.format("Permission '%s' included by '%s' is not a registered permission", includePerm,
+                                descriptor.getName()));
             }
         }
         // invalidate merged permission

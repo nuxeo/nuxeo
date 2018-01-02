@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.redis;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
@@ -167,7 +168,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         try {
             is = loc.openStream();
             builder = new StrBuilder();
-            for (String line : IOUtils.readLines(is)) {
+            for (String line : IOUtils.readLines(is, StandardCharsets.UTF_8)) {
                 builder.appendln(line);
             }
         } catch (IOException e) {

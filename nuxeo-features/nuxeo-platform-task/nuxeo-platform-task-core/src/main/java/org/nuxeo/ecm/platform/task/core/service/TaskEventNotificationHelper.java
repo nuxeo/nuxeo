@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,9 +54,8 @@ public final class TaskEventNotificationHelper {
 
     private final static Log log = LogFactory.getLog(TaskEventNotificationHelper.class);
 
-    public static void notifyEvent(CoreSession coreSession, DocumentModel document, NuxeoPrincipal principal,
-            Task task, String eventId, Map<String, Serializable> properties, String comment, String category)
-            {
+    public static void notifyEvent(CoreSession coreSession, DocumentModel document, NuxeoPrincipal principal, Task task,
+            String eventId, Map<String, Serializable> properties, String comment, String category) {
         // Default category
         if (category == null) {
             category = DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
@@ -112,12 +111,14 @@ public final class TaskEventNotificationHelper {
                     documents.add(document);
                 }
             } catch (DocumentNotFoundException e) {
-                log.error(String.format("Could not fetch document with id '%s:(%s)' for notification", docRepo, docIds), e);
+                log.error(String.format("Could not fetch document with id '%s:(%s)' for notification", docRepo, docIds),
+                        e);
             }
         } else {
-            log.error(String.format("Could not resolve document for notification: "
-                    + "document is on repository '%s' and given session is on " + "repository '%s'", docRepo,
-                    coreSession.getRepositoryName()));
+            log.error(String.format(
+                    "Could not resolve document for notification: "
+                            + "document is on repository '%s' and given session is on " + "repository '%s'",
+                    docRepo, coreSession.getRepositoryName()));
         }
 
         final Map<String, Serializable> eventProperties = new HashMap<>();
@@ -131,16 +132,9 @@ public final class TaskEventNotificationHelper {
         boolean taskEndedByDelegatedActor = task.getDelegatedActors() != null
                 && task.getDelegatedActors().contains(principal.getName());
         for (DocumentModel doc : documents) {
-            notifyEvent(coreSession, doc, principal, task, eventName, eventProperties,
-                    comment, null);
+            notifyEvent(coreSession, doc, principal, task, eventName, eventProperties, comment, null);
             if (taskEndedByDelegatedActor) {
-                notifyEvent(
-                        coreSession,
-                        doc,
-                        principal,
-                        task,
-                        eventName,
-                        eventProperties,
+                notifyEvent(coreSession, doc, principal, task, eventName, eventProperties,
                         String.format("Task ended by an delegated actor '%s' ", principal.getName())
                                 + (!StringUtils.isEmpty(comment) ? " with the following comment: " + comment : ""),
                         null);

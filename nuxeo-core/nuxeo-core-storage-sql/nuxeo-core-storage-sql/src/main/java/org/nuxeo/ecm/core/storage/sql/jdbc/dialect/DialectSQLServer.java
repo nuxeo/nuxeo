@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
@@ -510,7 +511,7 @@ public class DialectSQLServer extends Dialect {
             break;
         case SEQUENCE:
             // check that it's really an integer
-            if (id != null && !org.apache.commons.lang.StringUtils.isNumeric(id)) {
+            if (id != null && !StringUtils.isNumeric(id)) {
                 return null;
             }
             idParam = "CONVERT(BIGINT, ?)";

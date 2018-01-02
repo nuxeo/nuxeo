@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,8 @@ import org.nuxeo.ecm.platform.task.TaskService;
         + "You have to specify a variable name (the <b>key for ... </b> parameter) to resolve target users and groups to which the task will be assigned. "
         + "You can use Get Users and Groups to update a context variable with some users and groups. "
         + "If you check <b>create one task per actor</b>, each of the actors will have a task to achieve, "
-        + "versus \"the first who achieve the task makes it disappear for the others\".</p>", aliases = { "Workflow.CreateTask" })
+        + "versus \"the first who achieve the task makes it disappear for the others\".</p>", aliases = {
+                "Workflow.CreateTask" })
 public class CreateTask {
 
     public static final String ID = "Task.Create";
@@ -114,7 +115,7 @@ public class CreateTask {
             throw new OperationException("Principal is not an instance of NuxeoPrincipal");
         }
 
-        List<String> prefixedActorIds = new ArrayList<String>();
+        List<String> prefixedActorIds = new ArrayList<>();
         Object actors = ctx.get(keyForActors);
         if (actors != null) {
             boolean throwError = false;
@@ -150,7 +151,7 @@ public class CreateTask {
         }
 
         // create the task, passing operation chains in task variables
-        Map<String, String> taskVariables = new HashMap<String, String>();
+        Map<String, String> taskVariables = new HashMap<>();
         taskVariables.put(OperationTaskVariableName.createdFromCreateTaskOperation.name(), "true");
         if (!StringUtils.isEmpty(acceptOperationChain)) {
             taskVariables.put(OperationTaskVariableName.acceptOperationChain.name(), acceptOperationChain);

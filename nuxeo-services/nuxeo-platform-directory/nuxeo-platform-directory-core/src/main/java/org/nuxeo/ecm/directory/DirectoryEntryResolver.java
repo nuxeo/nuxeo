@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,14 +134,14 @@ public class DirectoryEntryResolver implements ObjectResolver {
             parentField = parentFieldParam;
             separator = separatorParam;
         }
-        this.parameters = new HashMap<String, Serializable>();
+        this.parameters = new HashMap<>();
         this.parameters.put(PARAM_DIRECTORY, directory.getName());
     }
 
     @Override
     public List<Class<?>> getManagedClasses() {
         if (managedClasses == null) {
-            managedClasses = new ArrayList<Class<?>>();
+            managedClasses = new ArrayList<>();
             managedClasses.add(DirectoryEntry.class);
         }
         return managedClasses;

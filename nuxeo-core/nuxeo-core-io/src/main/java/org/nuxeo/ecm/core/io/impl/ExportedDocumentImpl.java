@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -356,7 +356,8 @@ public class ExportedDocumentImpl implements ExportedDocument {
                 aceElement.addAttribute(ExportConstants.CREATOR_ATTR, ace.getCreator());
                 Calendar begin = ace.getBegin();
                 if (begin != null) {
-                    aceElement.addAttribute(ExportConstants.BEGIN_ATTR, DateParser.formatW3CDateTime((begin).getTime()));
+                    aceElement.addAttribute(ExportConstants.BEGIN_ATTR,
+                            DateParser.formatW3CDateTime((begin).getTime()));
                 }
                 Calendar end = ace.getEnd();
                 if (end != null) {

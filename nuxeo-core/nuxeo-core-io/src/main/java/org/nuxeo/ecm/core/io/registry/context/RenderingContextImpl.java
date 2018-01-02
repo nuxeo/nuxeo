@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -173,7 +173,7 @@ public class RenderingContextImpl implements RenderingContext {
         } else if ((EMBED_ENRICHERS + separator + ENTITY_TYPE).toLowerCase().equals(paramKey)) {
             dirty.addAll(getParameters("X-NXContext-Category"));
         }
-        Set<String> result = new TreeSet<String>();
+        Set<String> result = new TreeSet<>();
         for (Object value : dirty) {
             if (value instanceof String) {
                 result.addAll(Arrays.asList(org.nuxeo.common.utils.StringUtils.split((String) value, ',', true)));
@@ -219,7 +219,7 @@ public class RenderingContextImpl implements RenderingContext {
             return (Boolean) result;
         } else if (result instanceof String) {
             try {
-                return Boolean.valueOf((String) result);
+                return Boolean.parseBoolean((String) result);
             } catch (Exception e) {
                 return false;
             }
@@ -325,7 +325,7 @@ public class RenderingContextImpl implements RenderingContext {
         if (values == null) {
             return;
         }
-        parameters.computeIfAbsent(realName, key -> new CopyOnWriteArrayList()).addAll(values);
+        parameters.computeIfAbsent(realName, key -> new CopyOnWriteArrayList<>()).addAll(values);
     }
 
     static RenderingContextBuilder builder() {

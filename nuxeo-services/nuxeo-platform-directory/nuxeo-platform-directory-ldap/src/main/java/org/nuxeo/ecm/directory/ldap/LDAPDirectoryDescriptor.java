@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntryAdaptor;
-import org.nuxeo.ecm.directory.InverseReference;
 import org.nuxeo.ecm.directory.Reference;
 
 @XObject(value = "directory")
@@ -57,7 +56,7 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     public static final int DEFAULT_QUERY_SIZE_LIMIT = 200;
 
-    public static final int DEFAULT_QUERY_TIME_LIMIT = 0;  // default to wait indefinitely
+    public static final int DEFAULT_QUERY_TIME_LIMIT = 0; // default to wait indefinitely
 
     public static final boolean DEFAULT_FOLLOW_REFERRALS = true;
 
@@ -68,7 +67,7 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
     public String searchBaseDn;
 
     @XNodeMap(value = "fieldMapping", key = "@name", type = HashMap.class, componentType = String.class)
-    public Map<String, String> fieldMapping = new HashMap<String, String>();
+    public Map<String, String> fieldMapping = new HashMap<>();
 
     public String[] searchClasses;
 
@@ -190,7 +189,7 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
             searchClassesFilter = DEFAULT_SEARCH_CLASSES_FILTER;
             return;
         }
-        List<String> searchClassFilters = new ArrayList<String>();
+        List<String> searchClassFilters = new ArrayList<>();
         for (String searchClass : searchClasses) {
             searchClassFilters.add("(objectClass=" + searchClass + ')');
         }
@@ -262,7 +261,7 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
     }
 
     public Reference[] getLdapReferences() {
-        List<Reference> refs = new ArrayList<Reference>();
+        List<Reference> refs = new ArrayList<>();
         if (ldapReferences != null) {
             refs.addAll(Arrays.asList(ldapReferences));
         }

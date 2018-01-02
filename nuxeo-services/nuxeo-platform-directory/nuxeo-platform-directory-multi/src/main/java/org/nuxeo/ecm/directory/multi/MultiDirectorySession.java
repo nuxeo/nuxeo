@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -719,12 +718,7 @@ public class MultiDirectorySession extends BaseSession {
             }
             // intersection, ignore entries not in all subdirectories
             final int numdirs = sourceInfo.subDirectoryInfos.size();
-            for (Iterator<String> it = maps.keySet().iterator(); it.hasNext();) {
-                final String id = it.next();
-                if (counts.get(id) != numdirs) {
-                    it.remove();
-                }
-            }
+            maps.keySet().removeIf(id -> counts.get(id) != numdirs);
             // now create entries
             ((ArrayList<?>) results).ensureCapacity(results.size() + maps.size());
             for (Entry<String, Map<String, Object>> e : maps.entrySet()) {

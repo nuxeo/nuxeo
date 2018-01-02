@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ public class RepositoryImpl implements Repository {
 
     public RepositoryImpl(RepositoryDescriptor repositoryDescriptor) {
         this.repositoryDescriptor = repositoryDescriptor;
-        sessions = new CopyOnWriteArrayList<SessionImpl>();
+        sessions = new CopyOnWriteArrayList<>();
         invalidationsPropagator = new InvalidationsPropagator();
 
         String className = repositoryDescriptor.getFulltextDescriptor().getFulltextParser();

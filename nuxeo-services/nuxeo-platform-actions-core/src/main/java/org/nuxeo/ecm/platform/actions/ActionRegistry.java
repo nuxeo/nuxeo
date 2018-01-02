@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,9 +50,9 @@ public class ActionRegistry implements Serializable {
     private List<TypeCompatibility> typeCategoryRelations;
 
     public ActionRegistry() {
-        actions = new HashMap<String, Action>();
-        categories = new HashMap<String, List<String>>();
-        typeCategoryRelations = new ArrayList<TypeCompatibility>();
+        actions = new HashMap<>();
+        categories = new HashMap<>();
+        typeCategoryRelations = new ArrayList<>();
     }
 
     public synchronized void addAction(Action action) {
@@ -72,7 +72,7 @@ public class ActionRegistry implements Serializable {
         for (String category : action.getCategories()) {
             List<String> acts = categories.get(category);
             if (acts == null) {
-                acts = new ArrayList<String>();
+                acts = new ArrayList<>();
             }
             if (!acts.contains(id)) {
                 acts.add(id);
@@ -103,7 +103,7 @@ public class ActionRegistry implements Serializable {
     }
 
     public List<Action> getActions(String category) {
-        List<Action> result = new LinkedList<Action>();
+        List<Action> result = new LinkedList<>();
         Collection<String> ids;
         synchronized (this) {
             ids = categories.get(category);
@@ -169,8 +169,10 @@ public class ActionRegistry implements Serializable {
                 applied = true;
             }
             if (applied) {
-                log.warn(String.format("Applied compatibility to action '%s', its configuration "
-                        + "should be reviewed: make sure the link references an " + "absolute path", action.getId()));
+                log.warn(String.format(
+                        "Applied compatibility to action '%s', its configuration "
+                                + "should be reviewed: make sure the link references an " + "absolute path",
+                        action.getId()));
                 return true;
             }
         }
@@ -192,7 +194,7 @@ public class ActionRegistry implements Serializable {
     }
 
     protected static List<Action> sortActions(Collection<Action> actions) {
-        List<Action> sortedActions = new ArrayList<Action>();
+        List<Action> sortedActions = new ArrayList<>();
         if (actions != null) {
             sortedActions.addAll(actions);
             Collections.sort(sortedActions);

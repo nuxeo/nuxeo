@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -346,7 +346,7 @@ public class DBSSession implements Session {
         List<DBSDocumentState> docStates = transaction.getChildrenStates(parentId);
         if (isOrderable(parentId)) {
             // sort children in order
-            Collections.sort(docStates, POS_COMPARATOR);
+            docStates.sort(POS_COMPARATOR);
         }
         List<Document> children = new ArrayList<>(docStates.size());
         for (DBSDocumentState docState : docStates) {
@@ -366,7 +366,7 @@ public class DBSSession implements Session {
             // TODO get only id and pos, not full state
             // TODO state not for update
             List<DBSDocumentState> docStates = transaction.getChildrenStates(parentId);
-            Collections.sort(docStates, POS_COMPARATOR);
+            docStates.sort(POS_COMPARATOR);
             List<String> children = new ArrayList<>(docStates.size());
             for (DBSDocumentState docState : docStates) {
                 children.add(docState.getId());
@@ -492,7 +492,7 @@ public class DBSSession implements Session {
         // fetch children
         List<DBSDocumentState> docStates = transaction.getChildrenStates(parentId);
         // sort children in order
-        Collections.sort(docStates, POS_COMPARATOR);
+        docStates.sort(POS_COMPARATOR);
         // renumber
         int i = 0;
         DBSDocumentState source = null; // source if seen
@@ -589,7 +589,7 @@ public class DBSSession implements Session {
     protected void recomputeVersionSeries(String versionSeriesId) {
         List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId,
                 KEY_IS_VERSION, TRUE);
-        Collections.sort(docStates, VERSION_CREATED_COMPARATOR);
+        docStates.sort(VERSION_CREATED_COMPARATOR);
         Collections.reverse(docStates);
         boolean isLatest = true;
         boolean isLatestMajor = true;
@@ -891,8 +891,8 @@ public class DBSSession implements Session {
             String targetId = en.getKey();
             for (Object proxyId : en.getValue()) {
                 if (!removedIds.contains(proxyId)) {
-                    throw new DocumentExistsException(
-                            "Cannot remove " + rootId + ", subdocument " + targetId + " is the target of proxy " + proxyId);
+                    throw new DocumentExistsException("Cannot remove " + rootId + ", subdocument " + targetId
+                            + " is the target of proxy " + proxyId);
                 }
             }
         }
@@ -1142,7 +1142,7 @@ public class DBSSession implements Session {
         // order by creation date
         List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId,
                 KEY_IS_VERSION, TRUE);
-        Collections.sort(docStates, VERSION_CREATED_COMPARATOR);
+        docStates.sort(VERSION_CREATED_COMPARATOR);
         List<String> ids = new ArrayList<>(docStates.size());
         for (DBSDocumentState docState : docStates) {
             ids.add(docState.getId());
@@ -1566,20 +1566,6 @@ public class DBSSession implements Session {
                 proj.put(ecmTag, proj.remove(keyTag));
             }
         }
-        long totalSize = projections.totalSize();
-        if (totalSize >= 0) {
-            if (countUpTo == -1) {
-                // count full size
-            } else if (countUpTo == 0) {
-                // no count
-                totalSize = -1; // not counted
-            } else {
-                // count only if less than countUpTo
-                if (totalSize > countUpTo) {
-                    totalSize = -2; // truncated
-                }
-            }
-        }
 
         if (postFilter) {
             // ORDER BY
@@ -1641,7 +1627,7 @@ public class DBSSession implements Session {
                 projection.put(ExpressionEvaluator.NXQL_ECM_PATH, getPath(projection));
             }
         }
-        Collections.sort(projections, new OrderByComparator(orderByClause));
+        projections.sort(new OrderByComparator(orderByClause));
     }
 
     public static class OrderByComparator implements Comparator<Map<String, Serializable>> {

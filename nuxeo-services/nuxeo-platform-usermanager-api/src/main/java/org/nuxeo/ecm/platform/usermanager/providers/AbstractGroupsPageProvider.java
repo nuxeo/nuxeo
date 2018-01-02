@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,9 +65,9 @@ public abstract class AbstractGroupsPageProvider<T> extends AbstractPageProvider
         if (pageGroups == null) {
             error = null;
             errorMessage = null;
-            pageGroups = new ArrayList<DocumentModel>();
+            pageGroups = new ArrayList<>();
 
-            List<DocumentModel> groups = new ArrayList<DocumentModel>();
+            List<DocumentModel> groups = new ArrayList<>();
             try {
                 String groupListingMode = getGroupListingMode();
                 if (ALL_MODE.equals(groupListingMode)) {
@@ -103,12 +103,12 @@ public abstract class AbstractGroupsPageProvider<T> extends AbstractPageProvider
     }
 
     protected List<DocumentModel> searchAllGroups() {
-        return Framework.getService(UserManager.class).searchGroups(Collections.<String, Serializable> emptyMap(), null);
+        return Framework.getService(UserManager.class).searchGroups(Collections.emptyMap(), null);
     }
 
     protected List<DocumentModel> searchGroups() {
         UserManager userManager = Framework.getService(UserManager.class);
-        List<DocumentModel> groups = new ArrayList<DocumentModel>();
+        List<DocumentModel> groups = new ArrayList<>();
         String searchString = getFirstParameter();
         if ("*".equals(searchString)) {
             groups = searchAllGroups();

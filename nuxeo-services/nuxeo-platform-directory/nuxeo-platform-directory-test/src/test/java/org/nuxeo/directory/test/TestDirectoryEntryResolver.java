@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
-import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -140,7 +139,7 @@ public class TestDirectoryEntryResolver {
     @Test(expected = IllegalStateException.class)
     public void testLifecycleConfigurationTwice() {
         DirectoryEntryResolver derr = new DirectoryEntryResolver();
-        HashMap<String, String> parameters = new HashMap<String, String>();
+        HashMap<String, String> parameters = new HashMap<>();
         parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
         derr.configure(parameters);
         derr.configure(parameters);
@@ -166,7 +165,7 @@ public class TestDirectoryEntryResolver {
     @Test(expected = IllegalArgumentException.class)
     public void testConfigurationNonExistingDirectory() {
         DirectoryEntryResolver derr = new DirectoryEntryResolver();
-        HashMap<String, String> parameters = new HashMap<String, String>();
+        HashMap<String, String> parameters = new HashMap<>();
         parameters.put(PARAM_DIRECTORY, "aBadDirectoryName");
         derr.configure(parameters);
     }
@@ -288,10 +287,14 @@ public class TestDirectoryEntryResolver {
 
     @Test
     public void testConfigurationIsLoaded() {
-        DirectoryEntryResolver idResolver = (DirectoryEntryResolver) ((SimpleType) doc.getProperty(REF1_XPATH).getType()).getObjectResolver();
+        DirectoryEntryResolver idResolver = (DirectoryEntryResolver) doc.getProperty(REF1_XPATH)
+                                                                        .getType()
+                                                                        .getObjectResolver();
         assertEquals(REFERENCED_DIRECTORY1, idResolver.getDirectory().getName());
         assertEquals(REFERENCED_DIRECTORY1, idResolver.getParameters().get(PARAM_DIRECTORY));
-        DirectoryEntryResolver pathResolver = (DirectoryEntryResolver) ((SimpleType) doc.getProperty(REF2_XPATH).getType()).getObjectResolver();
+        DirectoryEntryResolver pathResolver = (DirectoryEntryResolver) doc.getProperty(REF2_XPATH)
+                                                                          .getType()
+                                                                          .getObjectResolver();
         assertEquals(REFERENCED_DIRECTORY2, pathResolver.getDirectory().getName());
         assertEquals(REFERENCED_DIRECTORY2, pathResolver.getParameters().get(PARAM_DIRECTORY));
     }
@@ -342,7 +345,9 @@ public class TestDirectoryEntryResolver {
     public void testDocumentHierarchicalRef() {
         // test the resolving
         doc.setPropertyValue(HIERARCHICAL_REF_XPATH, "level0/level1/level2");
-        DirectoryEntry level2Entry = (DirectoryEntry) doc.getProperty(HIERARCHICAL_REF_XPATH).getObjectResolver().fetch();
+        DirectoryEntry level2Entry = (DirectoryEntry) doc.getProperty(HIERARCHICAL_REF_XPATH)
+                                                         .getObjectResolver()
+                                                         .fetch();
         DocumentModel document = level2Entry.getDocumentModel();
         assertNotNull(document);
         assertEquals("level2", document.getPropertyValue("hd:id"));

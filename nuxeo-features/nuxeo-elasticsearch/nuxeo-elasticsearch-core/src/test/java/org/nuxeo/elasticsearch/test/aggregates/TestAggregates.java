@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +43,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
@@ -60,7 +59,6 @@ import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
 import org.nuxeo.elasticsearch.aggregate.AggregateFactory;
 import org.nuxeo.elasticsearch.aggregate.DateHistogramAggregate;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
@@ -78,10 +76,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
         "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml" })
 public class TestAggregates {
 
-    private static final String IDX_NAME = "nxutest";
-
-    private static final String TYPE_NAME = "doc";
-
     @Inject
     protected CoreSession session;
 
@@ -90,9 +84,6 @@ public class TestAggregates {
 
     @Inject
     protected ElasticSearchAdmin esa;
-
-    @Inject
-    protected ElasticSearchIndexing esi;
 
     protected void buildDocs() throws Exception {
         DateTime yesterdayNoon = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay().minusDays(1).plusHours(12);
@@ -506,7 +497,7 @@ public class TestAggregates {
         aggDef.setProperty("order", "count desc");
         aggDef.setProperty("minDocCounts", "5");
         DateHistogramAggregate agg = (DateHistogramAggregate) AggregateFactory.create(aggDef, null);
-        agg.setSelection(Arrays.asList("2016-08"));
+        agg.setSelection(Collections.singletonList("2016-08"));
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(agg);
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
@@ -845,7 +836,7 @@ public class TestAggregates {
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, (long) 0, props);
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
         Assert.assertEquals(7, pp.getAggregates().size());
         Assert.assertEquals(2, pp.getResultsCount());
@@ -893,7 +884,7 @@ public class TestAggregates {
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, (long) 0, props);
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
         Assert.assertEquals(7, pp.getAggregates().size());
         Assert.assertEquals(8, pp.getResultsCount());
@@ -928,7 +919,7 @@ public class TestAggregates {
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, (long) 0, props);
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
         Assert.assertEquals(7, pp.getAggregates().size());
         Assert.assertEquals(7, pp.getResultsCount());
@@ -963,7 +954,7 @@ public class TestAggregates {
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, (long) 0, props);
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
         Assert.assertEquals(7, pp.getAggregates().size());
         Assert.assertEquals(2, pp.getResultsCount());
@@ -992,7 +983,7 @@ public class TestAggregates {
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, (long) 0, props);
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
         Assert.assertEquals(7, pp.getAggregates().size());
         Assert.assertEquals(2, pp.getResultsCount());

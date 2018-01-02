@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,14 +38,6 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
 
-/**
- * Abstract adapter to be used when one want to contribute
- * an adapter base on PageProviders. In order to use it,
- * just override the {@link PaginableAdapter#getPageProviderDefinition()}
- * and {@link PaginableAdapter#getParams()}
- *
- * @since 5.7.2
- */
 /**
  * Abstract adapter to be used when one want to contribute an adapter base on PageProviders.
  * <p>
@@ -120,7 +112,7 @@ public abstract class PaginableAdapter<T> extends DefaultAdapter {
         }
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
         PageProvider<T> pp = (PageProvider<T>) pps.getPageProvider("", ppDefinition, getSearchDocument(), null,
                 pageSize, currentPageIndex, props, getParams());
@@ -135,8 +127,8 @@ public abstract class PaginableAdapter<T> extends DefaultAdapter {
                 pp.setSortInfos(null);
                 for (int i = 0; i < sorts.length; i++) {
                     String sort = sorts[i];
-                    boolean sortAscending = (orders != null && orders.length > i && "asc".equals(orders[i].toLowerCase())) ? true
-                            : false;
+                    boolean sortAscending = (orders != null && orders.length > i
+                            && "asc".equals(orders[i].toLowerCase())) ? true : false;
                     pp.addSortInfo(sort, sortAscending);
                 }
             }
@@ -150,7 +142,7 @@ public abstract class PaginableAdapter<T> extends DefaultAdapter {
 
     protected Long extractLongParam(HttpServletRequest request, String paramName, Long defaultValue) {
         String strParam = request.getParameter(paramName);
-        return strParam == null ? defaultValue : Long.parseLong(strParam);
+        return strParam == null ? defaultValue : Long.valueOf(strParam);
     }
 
 }

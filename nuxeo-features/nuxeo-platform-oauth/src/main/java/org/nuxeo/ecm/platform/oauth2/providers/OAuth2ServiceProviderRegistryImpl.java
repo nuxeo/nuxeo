@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
     public OAuth2ServiceProvider addProvider(String serviceName, String description, String tokenServerURL,
             String authorizationServerURL, String clientId, String clientSecret, List<String> scopes) {
         return addProvider(serviceName, description, tokenServerURL, authorizationServerURL, null, clientId,
-                clientSecret, scopes, true);
+                           clientSecret, scopes, Boolean.TRUE);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
             entry.setProperty(SCHEMA, "clientSecret", clientSecret);
             entry.setProperty(SCHEMA, "scopes", String.join(",", scopes));
             boolean enabled = (clientId != null && clientSecret != null);
-            entry.setProperty(SCHEMA, "enabled", enabled && (isEnabled == null ? false : isEnabled));
+            entry.setProperty(SCHEMA, "enabled", Boolean.valueOf(enabled && (isEnabled == null ? false : isEnabled)));
             if (!enabled) {
                 log.info("OAuth2 provider for " + serviceName
                         + " is disabled because clientId and/or clientSecret are empty");
@@ -137,7 +137,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
             entry.setProperty(SCHEMA, "clientSecret", provider.getClientSecret());
             entry.setProperty(SCHEMA, "scopes", String.join(",", provider.getScopes()));
             boolean enabled = provider.getClientId() != null && provider.getClientSecret() != null;
-            entry.setProperty(SCHEMA, "enabled", enabled && provider.isEnabled());
+            entry.setProperty(SCHEMA, "enabled", Boolean.valueOf(enabled && provider.isEnabled()));
             if (!enabled) {
                 log.info("OAuth2 provider for " + serviceName
                         + " is disabled because clientId and/or clientSecret are empty");

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -248,12 +248,13 @@ public class PlatformFunctions extends CoreFunctions {
      */
     public <T> List<T> concatenateValuesAsNewList(Object... values) {
 
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         return concatenateIntoList(result, values);
     }
 
     /**
      * Checks if a document with the supplied id (or path) exists.
+     *
      * @param session The CoreSession to obtain the document
      * @param idOrPath The document Id or path
      * @return true if the document exists, or false otherwise

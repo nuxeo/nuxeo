@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -208,9 +208,6 @@ public class UserProfileImporter {
     /**
      * Import a line from the CSV file.
      *
-     * @param userProfileService
-     * @param docType
-     * @param session
      * @return {@code true} if a document has been created or updated, {@code false} otherwise.
      */
     protected boolean importLine(CSVRecord record, final long lineNumber, Integer nameIndex, DocumentType docType,

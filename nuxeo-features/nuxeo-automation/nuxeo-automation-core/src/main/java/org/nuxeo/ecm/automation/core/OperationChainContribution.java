@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,7 +191,7 @@ public class OperationChainContribution {
                         break;
                     case 'i':
                         if (T_INTEGER.equals(type)) {
-                            val = Integer.parseInt(param.value);
+                            val = Integer.valueOf(param.value);
                         }
                         break;
                     case 'l':
@@ -300,7 +300,7 @@ public class OperationChainContribution {
         return operations.stream().map(params -> {
             Operation op = new Operation();
             op.id = params.id();
-            params.map().forEach((k,v) -> {
+            params.map().forEach((k, v) -> {
                 Param param = new Param();
                 param.name = k;
                 param.type = "unknown";

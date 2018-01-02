@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,10 @@ import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -141,7 +143,7 @@ public class ConnectBroker {
     }
 
     /**
-     * @throws NoCLID
+     * @throws NoCLID if the CLID is absent or invalid
      * @since 6.0
      */
     public void setCLID(String file) throws NoCLID {
@@ -260,12 +262,11 @@ public class ConnectBroker {
     /**
      * Looks for a remote package from its name or id
      *
-     * @param pkgNameOrId
      * @return the remote package Id; null if not found
      * @since 5.7
      */
     protected String getRemotePackageId(String pkgNameOrId) {
-        String pkgId = null;
+        String pkgId;
         if (isRemotePackageId(pkgNameOrId)) {
             pkgId = pkgNameOrId;
         } else {
@@ -278,9 +279,7 @@ public class ConnectBroker {
      * Looks for a local package from its name or id
      *
      * @since 5.7
-     * @param pkgIdOrName
      * @return the local package Id; null if not found
-     * @throws PackageException
      */
     protected LocalPackage getLocalPackage(String pkgIdOrName) throws PackageException {
         // Try as a package id
@@ -324,7 +323,7 @@ public class ConnectBroker {
      * @since 8.4
      */
     protected String getLocalPackageFileId(File pkgFile) {
-        PackageDefinition packageDefinition = null;
+        PackageDefinition packageDefinition;
         try {
             if (pkgFile.isFile()) {
                 packageDefinition = service.loadPackageFromZip(pkgFile);
@@ -546,10 +545,7 @@ public class ConnectBroker {
             }
             service.getRegistry().delete();
             FileUtils.deleteDirectory(service.getBackupDir());
-        } catch (PackageException e) {
-            log.error(e);
-            cmdInfo.exitCode = 1;
-        } catch (IOException e) {
+        } catch (PackageException | IOException e) {
             log.error(e);
             cmdInfo.exitCode = 1;
         }
@@ -710,7 +706,6 @@ public class ConnectBroker {
     /**
      * Add a list of packages into the cache, downloading them if needed and possible.
      *
-     * @param pkgsToAdd
      * @return true if command succeeded
      * @see #pkgAdd(List, boolean)
      * @see #pkgAdd(String, boolean)
@@ -725,8 +720,6 @@ public class ConnectBroker {
      * Add a list of packages into the cache, downloading them if needed and possible.
      *
      * @since 6.0
-     * @param pkgsToAdd
-     * @param ignoreMissing
      * @return true if command succeeded
      * @see #pkgAdd(String, boolean)
      */
@@ -773,7 +766,6 @@ public class ConnectBroker {
     /**
      * Add a package file into the cache
      *
-     * @param packageFileName
      * @return The added LocalPackage or null if failed
      * @see #pkgAdd(List, boolean)
      * @see #pkgAdd(String, boolean)
@@ -788,8 +780,6 @@ public class ConnectBroker {
      * Add a package file into the cache
      *
      * @since 6.0
-     * @param packageFileName
-     * @param ignoreMissing
      * @return The added LocalPackage or null if failed
      * @see #pkgAdd(List, boolean)
      */
@@ -811,7 +801,7 @@ public class ConnectBroker {
                                 + "current directory or to NUXEO_HOME) " + "package with name or ID "
                                 + packageFileName);
                     }
-                } else if (!downloadPackages(Arrays.asList(new String[] { pkgId }))) {
+                } else if (!downloadPackages(Collections.singletonList(pkgId))) {
                     throw new PackageException("Could not download package " + pkgId);
                 }
                 pkg = service.getPackage(pkgId);
@@ -962,7 +952,7 @@ public class ConnectBroker {
         List<String> pkgsToRemove = new ArrayList<>();
         List<String> lines;
         try {
-            lines = FileUtils.readLines(commandsFile);
+            lines = FileUtils.readLines(commandsFile, StandardCharsets.UTF_8);
             for (String line : lines) {
                 line = line.trim();
                 String[] split = line.split("\\s+", 2);
@@ -1085,7 +1075,7 @@ public class ConnectBroker {
     @SuppressWarnings("unused")
     protected boolean downloadPackages(List<String> packagesToDownload) {
         boolean isRegistered = LogicalInstanceIdentifier.isRegistered();
-        List<String> packagesAlreadyDownloaded = new ArrayList<String>();
+        List<String> packagesAlreadyDownloaded = new ArrayList<>();
         for (String pkg : packagesToDownload) {
             LocalPackage localPackage;
             try {
@@ -1120,7 +1110,7 @@ public class ConnectBroker {
         // Queue downloads
         log.info("Downloading " + packagesToDownload + "...");
         boolean downloadOk = true;
-        List<DownloadingPackage> pkgs = new ArrayList<DownloadingPackage>();
+        List<DownloadingPackage> pkgs = new ArrayList<>();
         for (String pkg : packagesToDownload) {
             CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_DOWNLOAD);
             cmdInfo.param = pkg;
@@ -1165,7 +1155,7 @@ public class ConnectBroker {
             } catch (InterruptedException e) {
                 stopDownload = true;
             }
-            List<DownloadingPackage> pkgsCompleted = new ArrayList<DownloadingPackage>();
+            List<DownloadingPackage> pkgsCompleted = new ArrayList<>();
             for (DownloadingPackage pkg : pkgs) {
                 if (pkg.isCompleted()) {
                     pkgsCompleted.add(pkg);
@@ -1243,7 +1233,7 @@ public class ConnectBroker {
     public boolean pkgRequest(List<String> pkgsToAdd, List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove, boolean keepExisting, boolean ignoreMissing, boolean upgradeMode) {
         try {
-            boolean cmdOk = true;
+            boolean cmdOk;
             // Add local files
             cmdOk = pkgAdd(pkgsToAdd, ignoreMissing);
             // Build solver request
@@ -1630,23 +1620,23 @@ public class ConnectBroker {
             cmdInfo.param = pkg;
             try {
                 PackageInfo packageInfo = newPackageInfo(cmdInfo, findPackage(pkg));
-                sb.append("\nPackage: " + packageInfo.id);
-                sb.append("\nState: " + packageInfo.state);
-                sb.append("\nVersion: " + packageInfo.version);
-                sb.append("\nName: " + packageInfo.name);
-                sb.append("\nType: " + packageInfo.type);
-                sb.append("\nVisibility: " + packageInfo.visibility);
+                sb.append("\nPackage: ").append(packageInfo.id);
+                sb.append("\nState: ").append(packageInfo.state);
+                sb.append("\nVersion: ").append(packageInfo.version);
+                sb.append("\nName: ").append(packageInfo.name);
+                sb.append("\nType: ").append(packageInfo.type);
+                sb.append("\nVisibility: ").append(packageInfo.visibility);
                 if (packageInfo.state == PackageState.REMOTE && packageInfo.type != PackageType.STUDIO
                         && packageInfo.visibility != PackageVisibility.PUBLIC
                         && !LogicalInstanceIdentifier.isRegistered()) {
                     sb.append(" (registration required)");
                 }
-                sb.append("\nTarget platforms: " + ArrayUtils.toString(packageInfo.targetPlatforms));
+                sb.append("\nTarget platforms: ").append(ArrayUtils.toString(packageInfo.targetPlatforms));
                 appendIfNotEmpty(sb, "\nVendor: ", packageInfo.vendor);
-                sb.append("\nSupports hot-reload: " + packageInfo.supportsHotReload);
-                sb.append("\nSupported: " + packageInfo.supported);
-                sb.append("\nProduction state: " + packageInfo.productionState);
-                sb.append("\nValidation state: " + packageInfo.validationState);
+                sb.append("\nSupports hot-reload: ").append(packageInfo.supportsHotReload);
+                sb.append("\nSupported: ").append(packageInfo.supported);
+                sb.append("\nProduction state: ").append(packageInfo.productionState);
+                sb.append("\nValidation state: ").append(packageInfo.validationState);
                 appendIfNotEmpty(sb, "\nProvides: ", packageInfo.provides);
                 appendIfNotEmpty(sb, "\nDepends: ", packageInfo.dependencies);
                 appendIfNotEmpty(sb, "\nConflicts: ", packageInfo.conflicts);
@@ -1668,13 +1658,13 @@ public class ConnectBroker {
 
     private void appendIfNotEmpty(StringBuilder sb, String label, Object[] array) {
         if (ArrayUtils.isNotEmpty(array)) {
-            sb.append(label + ArrayUtils.toString(array));
+            sb.append(label).append(ArrayUtils.toString(array));
         }
     }
 
     private void appendIfNotEmpty(StringBuilder sb, String label, String value) {
         if (StringUtils.isNotEmpty(value)) {
-            sb.append(label + value);
+            sb.append(label).append(value);
         }
     }
 

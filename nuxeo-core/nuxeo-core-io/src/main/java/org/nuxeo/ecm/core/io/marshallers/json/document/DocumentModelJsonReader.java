@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  *   "properties": ...  <-- see {@link DocumentPropertiesJsonReader}
  * }
  * </pre>
- *
  * </p>
  *
  * @since 7.2
@@ -88,7 +87,8 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
     }
 
     @Override
-    public DocumentModel read(Class<?> clazz, Type genericType, MediaType mediaType, InputStream in) throws IOException {
+    public DocumentModel read(Class<?> clazz, Type genericType, MediaType mediaType, InputStream in)
+            throws IOException {
         Reader<DocumentModel> reader = ctx.getParameter(LEGACY_MODE_READER);
         if (reader != null) {
             DocumentModel doc = reader.read(clazz, genericType, mediaType, in);
@@ -125,7 +125,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
             }
         }
 
-        DocumentModel doc = null;
+        DocumentModel doc;
 
         String uid = getStringField(jn, "uid");
         if (StringUtils.isNotBlank(uid)) {

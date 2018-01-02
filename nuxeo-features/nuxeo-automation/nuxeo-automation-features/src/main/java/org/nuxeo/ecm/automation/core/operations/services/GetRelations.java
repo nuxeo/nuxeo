@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,8 @@ import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = GetRelations.ID, category = Constants.CAT_SERVICES, label = "Get Linked Documents", description = "Get the relations for the input document. The 'outgoing' parameter ca be used to specify whether outgoing or incoming relations should be returned. Retuns a document list.", aliases = { "Relations.GetRelations" })
+@Operation(id = GetRelations.ID, category = Constants.CAT_SERVICES, label = "Get Linked Documents", description = "Get the relations for the input document. The 'outgoing' parameter ca be used to specify whether outgoing or incoming relations should be returned. Retuns a document list.", aliases = {
+        "Relations.GetRelations" })
 public class GetRelations {
 
     public static final String ID = "Document.GetLinkedDocuments";
@@ -115,8 +116,7 @@ public class GetRelations {
     protected DocumentModel getDocumentModel(Node node) {
         if (node.isQNameResource()) {
             QNameResource resource = (QNameResource) node;
-            Map<String, Object> context = Collections.<String, Object> singletonMap(
-                    ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
+            Map<String, Object> context = Collections.singletonMap(ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
             Object o = relations.getResourceRepresentation(resource.getNamespace(), resource, context);
             if (o instanceof DocumentModel) {
                 return (DocumentModel) o;

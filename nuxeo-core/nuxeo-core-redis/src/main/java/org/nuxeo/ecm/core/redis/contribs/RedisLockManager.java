@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class RedisLockManager implements LockManager {
     /**
      * Creates a lock manager for the given repository.
      * <p>
-     * {@link #close} must be called when done with the lock manager.
+     * {@link #closeLockManager()} must be called when done with the lock manager.
      */
     public RedisLockManager(String repositoryName) {
         this.repositoryName = repositoryName;
@@ -86,8 +86,8 @@ public class RedisLockManager implements LockManager {
         }
         String[] split = lockString.split(":");
         if (split.length != 2 || !StringUtils.isNumeric(split[1])) {
-            throw new IllegalArgumentException("Invalid Redis lock : " + lockString + ", should be " + redisNamespace
-                    + "<id>");
+            throw new IllegalArgumentException(
+                    "Invalid Redis lock : " + lockString + ", should be " + redisNamespace + "<id>");
         }
         Calendar created = Calendar.getInstance();
         created.setTimeInMillis(Long.parseLong(split[1]));

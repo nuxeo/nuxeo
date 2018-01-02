@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -295,11 +295,9 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
             ctx.setInput(blobInput);
             ctx.putAll(contextParams);
 
-            Object result = null;
             AutomationService as = Framework.getService(AutomationService.class);
             // Drag and Drop action category is accessible from the chain sub context as chain parameters
-            result = as.run(ctx, chainOrOperationId, operationParams);
-            return result;
+            return as.run(ctx, chainOrOperationId, operationParams);
         } catch (OperationException e) {
             log.error("Error while executing automation batch ", e);
             throw new NuxeoException(e);

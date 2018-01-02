@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,8 +73,6 @@ public class BatchFileEntry {
 
     /**
      * Returns a file entry that references the file chunks.
-     *
-     * @see BatchChunkEntry
      */
     public BatchFileEntry(String key, int chunkCount, String fileName, String mimeType, long fileSize) {
         this(key, true);
@@ -155,7 +153,8 @@ public class BatchFileEntry {
 
     public int getChunkCount() {
         if (!isChunked()) {
-            throw new NuxeoException(String.format("Cannot get chunk count of file entry %s as it is not chunked", key));
+            throw new NuxeoException(
+                    String.format("Cannot get chunk count of file entry %s as it is not chunked", key));
         }
         return Integer.parseInt((String) params.get("chunkCount"));
     }
@@ -167,7 +166,7 @@ public class BatchFileEntry {
         Map<Integer, String> chunks = new HashMap<>();
         for (String param : params.keySet()) {
             if (NumberUtils.isDigits(param)) {
-                chunks.put(Integer.parseInt(param), (String) params.get(param));
+                chunks.put(Integer.valueOf(param), (String) params.get(param));
             }
         }
         return chunks;
@@ -175,18 +174,18 @@ public class BatchFileEntry {
 
     public List<Integer> getOrderedChunkIndexes() {
         if (!isChunked()) {
-            throw new NuxeoException(String.format("Cannot get chunk indexes of file entry %s as it is not chunked",
-                    key));
+            throw new NuxeoException(
+                    String.format("Cannot get chunk indexes of file entry %s as it is not chunked", key));
         }
-        List<Integer> sortedChunkIndexes = new ArrayList<Integer>(getChunks().keySet());
+        List<Integer> sortedChunkIndexes = new ArrayList<>(getChunks().keySet());
         Collections.sort(sortedChunkIndexes);
         return sortedChunkIndexes;
     }
 
     public Collection<String> getChunkEntryKeys() {
         if (!isChunked()) {
-            throw new NuxeoException(String.format("Cannot get chunk entry keys of file entry %s as it is not chunked",
-                    key));
+            throw new NuxeoException(
+                    String.format("Cannot get chunk entry keys of file entry %s as it is not chunked", key));
         }
         return getChunks().values();
     }
@@ -274,8 +273,8 @@ public class BatchFileEntry {
                     "Cannot add chunk with index %d to file entry %s as chunk count is %d.", index, key, chunkCount));
         }
         if (getChunks().containsKey(index)) {
-            throw new NuxeoException(String.format(
-                    "Cannot add chunk with index %d to file entry %s as it already exists.", index, key));
+            throw new NuxeoException(
+                    String.format("Cannot add chunk with index %d to file entry %s as it already exists.", index, key));
         }
 
         String chunkEntryKey = key + "_" + index;

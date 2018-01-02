@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import net.htmlparser.jericho.Renderer;
-import net.htmlparser.jericho.Source;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.runtime.api.Framework;
+
+import net.htmlparser.jericho.Renderer;
+import net.htmlparser.jericho.Source;
 
 /**
  * Default fulltext parser, based on word and punctuation split, and lowercase normalization.
@@ -44,8 +44,8 @@ public class DefaultFulltextParser implements FulltextParser {
 
     public static final String WORD_SPLIT_DEF = "[\\s\\p{Punct}]+";
 
-    protected static final Pattern WORD_SPLIT_PATTERN = Pattern.compile(Framework.getProperty(WORD_SPLIT_PROP,
-            WORD_SPLIT_DEF));
+    protected static final Pattern WORD_SPLIT_PATTERN = Pattern.compile(
+            Framework.getProperty(WORD_SPLIT_PROP, WORD_SPLIT_DEF));
 
     protected static final int HTML_MAGIC_OFFSET = 8192;
 

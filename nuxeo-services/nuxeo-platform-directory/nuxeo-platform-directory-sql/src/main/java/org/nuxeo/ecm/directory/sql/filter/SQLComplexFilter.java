@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@
 
 package org.nuxeo.ecm.directory.sql.filter;
 
+import java.io.Serializable;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.directory.DirectoryException;
-
-import java.io.Serializable;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 /**
  * Simple class to provide a complex filter that handles right side part and operator to use while querying

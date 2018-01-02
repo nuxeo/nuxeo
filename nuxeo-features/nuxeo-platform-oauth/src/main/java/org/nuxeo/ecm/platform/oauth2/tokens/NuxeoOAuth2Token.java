@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.api.client.auth.oauth2.StoredCredential;
 import org.apache.commons.lang.RandomStringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
+
+import com.google.api.client.auth.oauth2.StoredCredential;
 
 public class NuxeoOAuth2Token {
 
@@ -102,7 +103,7 @@ public class NuxeoOAuth2Token {
     }
 
     public Map<String, Object> toMap() {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("serviceName", serviceName);
         map.put("nuxeoLogin", nuxeoLogin);
         map.put("accessToken", accessToken);
@@ -121,8 +122,8 @@ public class NuxeoOAuth2Token {
         m.put("access_token", accessToken);
         m.put("refresh_token", refreshToken);
         m.put("token_type", "bearer");
-        m.put("expires_in",
-                Math.floor((creationDate.getTimeInMillis() + expirationTimeMilliseconds - new Date().getTime()) / 1000));
+        m.put("expires_in", Math.floor(
+                (creationDate.getTimeInMillis() + expirationTimeMilliseconds - new Date().getTime()) / 1000));
         return m;
     }
 
@@ -145,8 +146,8 @@ public class NuxeoOAuth2Token {
     }
 
     public boolean isExpired() {
-        return creationDate != null
-                && creationDate.getTimeInMillis() + expirationTimeMilliseconds < Calendar.getInstance().getTimeInMillis();
+        return creationDate != null && creationDate.getTimeInMillis()
+                + expirationTimeMilliseconds < Calendar.getInstance().getTimeInMillis();
     }
 
     public void setServiceName(String serviceName) {

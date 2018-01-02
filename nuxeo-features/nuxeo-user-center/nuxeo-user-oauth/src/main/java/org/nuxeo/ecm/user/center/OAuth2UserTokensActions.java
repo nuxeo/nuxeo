@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,13 @@
 
 package org.nuxeo.ecm.user.center;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -30,22 +37,12 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider;
-import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
 import org.nuxeo.runtime.api.Framework;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.Arrays;
-import java.util.ArrayList;
-
 /**
- *
  * @since 7.3
  */
 @Name("oauthUserTokens")
@@ -77,7 +74,7 @@ public class OAuth2UserTokensActions extends DirectoryBasedEditor implements Ser
     public DocumentModelList getProviderAccounts(String provider, boolean includeShared) {
 
         NuxeoOAuth2ServiceProvider serviceProvider = (NuxeoOAuth2ServiceProvider) Framework.getService(
-            OAuth2ServiceProviderRegistry.class).getProvider(provider);
+                OAuth2ServiceProviderRegistry.class).getProvider(provider);
         OAuth2TokenStore tokenStore = serviceProvider.getCredentialDataStore();
 
         DocumentModelList filteredEntries = new DocumentModelListImpl();

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -48,6 +45,9 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * @since 5.9.3
@@ -86,7 +86,7 @@ public class SuggestCollectionEntry {
     @OperationMethod
     public Blob run() throws OperationException {
         JSONArray result = new JSONArray();
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
         Map<String, Object> vars = new HashMap<>();

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -190,7 +190,7 @@ public class DocumentPageProviderOperation {
         List<SortInfo> sortInfos = null;
         if (sortInfoAsStringList != null) {
             // BBB
-            sortInfos = new ArrayList<SortInfo>();
+            sortInfos = new ArrayList<>();
             for (String sortInfoDesc : sortInfoAsStringList) {
                 SortInfo sortInfo;
                 if (sortInfoDesc.contains(SORT_PARAMETER_SEPARATOR)) {
@@ -234,7 +234,7 @@ public class DocumentPageProviderOperation {
             }
         }
 
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
         if (query == null && StringUtils.isBlank(providerName)) {

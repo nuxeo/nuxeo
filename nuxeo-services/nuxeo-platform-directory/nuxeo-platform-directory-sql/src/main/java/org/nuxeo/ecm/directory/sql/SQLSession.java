@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -64,7 +64,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.OperationNotAllowedException;
 import org.nuxeo.ecm.directory.PasswordHelper;
 import org.nuxeo.ecm.directory.Reference;
@@ -131,9 +130,7 @@ public class SQLSession extends BaseSession {
             logger.logSQL(sql, values);
         }
 
-        PreparedStatement ps = null;
-        try {
-            ps = sqlConnection.prepareStatement(sql);
+        try (PreparedStatement ps = sqlConnection.prepareStatement(sql)) {
             setFieldValue(ps, 1, table.getPrimaryColumn(), id);
             addFilterValues(ps, 2);
 
@@ -194,14 +191,6 @@ public class SQLSession extends BaseSession {
             return entry;
         } catch (SQLException e) {
             throw new DirectoryException("getEntry failed", e);
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException sqle) {
-                throw new DirectoryException(sqle);
-            }
         }
     }
 
@@ -237,8 +226,8 @@ public class SQLSession extends BaseSession {
                 sqlConnection = getDirectory().getConnection();
             }
         } catch (SQLException e) {
-            throw new DirectoryException("Cannot connect to SQL directory '" + directory.getName() + "': "
-                    + e.getMessage(), e);
+            throw new DirectoryException(
+                    "Cannot connect to SQL directory '" + directory.getName() + "': " + e.getMessage(), e);
         }
     }
 
@@ -389,39 +378,37 @@ public class SQLSession extends BaseSession {
         }
 
         // Assume in this case that there are no References to this entry.
-        PreparedStatement ps = null;
-        try {
-            Delete delete = new Delete(table);
-            StringBuilder whereClause = new StringBuilder();
-            List<Serializable> values = new ArrayList<>(1 + map.size());
+        Delete delete = new Delete(table);
+        StringBuilder whereClause = new StringBuilder();
+        List<Serializable> values = new ArrayList<>(1 + map.size());
 
-            whereClause.append(table.getPrimaryColumn().getQuotedName());
-            whereClause.append(" = ?");
-            values.add(id);
-            for (Entry<String, String> e : map.entrySet()) {
-                String key = e.getKey();
-                String value = e.getValue();
-                whereClause.append(" AND ");
-                Column col = table.getColumn(key);
-                if (col == null) {
-                    throw new IllegalArgumentException("Unknown column " + key);
-                }
-                whereClause.append(col.getQuotedName());
-                if (value == null) {
-                    whereClause.append(" IS NULL");
-                } else {
-                    whereClause.append(" = ?");
-                    values.add(value);
-                }
+        whereClause.append(table.getPrimaryColumn().getQuotedName());
+        whereClause.append(" = ?");
+        values.add(id);
+        for (Entry<String, String> e : map.entrySet()) {
+            String key = e.getKey();
+            String value = e.getValue();
+            whereClause.append(" AND ");
+            Column col = table.getColumn(key);
+            if (col == null) {
+                throw new IllegalArgumentException("Unknown column " + key);
             }
-            delete.setWhere(whereClause.toString());
-            String sql = delete.getStatement();
-
-            if (logger.isLogEnabled()) {
-                logger.logSQL(sql, values);
+            whereClause.append(col.getQuotedName());
+            if (value == null) {
+                whereClause.append(" IS NULL");
+            } else {
+                whereClause.append(" = ?");
+                values.add(value);
             }
+        }
+        delete.setWhere(whereClause.toString());
+        String sql = delete.getStatement();
 
-            ps = sqlConnection.prepareStatement(sql);
+        if (logger.isLogEnabled()) {
+            logger.logSQL(sql, values);
+        }
+
+        try (PreparedStatement ps = sqlConnection.prepareStatement(sql)) {
             for (int i = 0; i < values.size(); i++) {
                 if (i == 0) {
                     setFieldValue(ps, 1, table.getPrimaryColumn(), values.get(i));
@@ -433,14 +420,6 @@ public class SQLSession extends BaseSession {
         } catch (SQLException e) {
             checkConcurrentUpdate(e);
             throw new DirectoryException("deleteEntry failed", e);
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException sqle) {
-                throw new DirectoryException(sqle);
-            }
         }
         getDirectory().invalidateCaches();
     }
@@ -787,14 +766,9 @@ public class SQLSession extends BaseSession {
         }
 
         DocumentModel entry;
-        PreparedStatement ps = null;
         Statement st = null;
-        try {
-            if (autoincrementId && dialect.hasIdentityGeneratedKey()) {
-                ps = sqlConnection.prepareStatement(sql, new String[] { getIdField() });
-            } else {
-                ps = sqlConnection.prepareStatement(sql);
-            }
+        try (PreparedStatement ps = prepareStatementWithAutoKeys(sql)) {
+
             int index = 1;
             for (Column column : columnList) {
                 String prefixField = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
@@ -823,25 +797,31 @@ public class SQLSession extends BaseSession {
                 Serializable rawId = column.getFromResultSet(rs, 1);
                 fieldMap.put(idFieldName, rawId);
                 rs.close();
+                if (st != null) {
+                    st.close();
+                }
             }
             entry = fieldMapToDocumentModel(fieldMap);
         } catch (SQLException e) {
             checkConcurrentUpdate(e);
             throw new DirectoryException("createEntry failed", e);
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (st != null) {
-                    st.close();
-                }
-            } catch (SQLException sqle) {
-                throw new DirectoryException(sqle);
-            }
         }
 
         return entry;
+    }
+
+    /**
+     * Create a {@link PreparedStatement} returning the id key if it is auto-incremented and dialect has identity
+     * generated key ({@see Dialect#hasIdentityGeneratedKey}.
+     *
+     * @since 10.1
+     */
+    protected PreparedStatement prepareStatementWithAutoKeys(String sql) throws SQLException {
+        if (autoincrementId && dialect.hasIdentityGeneratedKey()) {
+            return sqlConnection.prepareStatement(sql, new String[] { getIdField() });
+        } else {
+            return sqlConnection.prepareStatement(sql);
+        }
     }
 
     @Override
@@ -913,9 +893,7 @@ public class SQLSession extends BaseSession {
                 logger.logSQL(sql, values);
             }
 
-            PreparedStatement ps = null;
-            try {
-                ps = sqlConnection.prepareStatement(sql);
+            try (PreparedStatement ps = sqlConnection.prepareStatement(sql)) {
 
                 int index = 1;
                 // TODO: how can I reset dirty fields?
@@ -929,14 +907,6 @@ public class SQLSession extends BaseSession {
             } catch (SQLException e) {
                 checkConcurrentUpdate(e);
                 throw new DirectoryException("updateEntry failed for " + docModel.getId(), e);
-            } finally {
-                try {
-                    if (ps != null) {
-                        ps.close();
-                    }
-                } catch (SQLException sqle) {
-                    throw new DirectoryException(sqle);
-                }
             }
         }
 
@@ -946,29 +916,19 @@ public class SQLSession extends BaseSession {
     @Override
     public void deleteEntryWithoutReferences(String id) throws DirectoryException {
         // second step: clean stored fields
-        PreparedStatement ps = null;
-        try {
-            Delete delete = new Delete(table);
-            String whereString = table.getPrimaryColumn().getQuotedName() + " = ?";
-            delete.setWhere(whereString);
-            String sql = delete.getStatement();
-            if (logger.isLogEnabled()) {
-                logger.logSQL(sql, Collections.singleton(id));
-            }
-            ps = sqlConnection.prepareStatement(sql);
+        Delete delete = new Delete(table);
+        String whereString = table.getPrimaryColumn().getQuotedName() + " = ?";
+        delete.setWhere(whereString);
+        String sql = delete.getStatement();
+        if (logger.isLogEnabled()) {
+            logger.logSQL(sql, Collections.singleton(id));
+        }
+        try (PreparedStatement ps = sqlConnection.prepareStatement(sql)) {
             setFieldValue(ps, 1, table.getPrimaryColumn(), id);
             ps.execute();
         } catch (SQLException e) {
             checkConcurrentUpdate(e);
             throw new DirectoryException("deleteEntry failed", e);
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException sqle) {
-                throw new DirectoryException(sqle);
-            }
         }
     }
 
@@ -1084,30 +1044,17 @@ public class SQLSession extends BaseSession {
             logger.logSQL(sql, Collections.singleton(id));
         }
 
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = sqlConnection.prepareStatement(sql);
+        try (PreparedStatement ps = sqlConnection.prepareStatement(sql)) {
             setFieldValue(ps, 1, table.getPrimaryColumn(), id);
-            rs = ps.executeQuery();
-            boolean has = rs.next();
-            if (logger.isLogEnabled()) {
-                logger.logCount(has ? 1 : 0);
+            try (ResultSet rs = ps.executeQuery()) {
+                boolean has = rs.next();
+                if (logger.isLogEnabled()) {
+                    logger.logCount(has ? 1 : 0);
+                }
+                return has;
             }
-            return has;
         } catch (SQLException e) {
             throw new DirectoryException("hasEntry failed", e);
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException sqle) {
-                throw new DirectoryException(sqle);
-            }
         }
     }
 

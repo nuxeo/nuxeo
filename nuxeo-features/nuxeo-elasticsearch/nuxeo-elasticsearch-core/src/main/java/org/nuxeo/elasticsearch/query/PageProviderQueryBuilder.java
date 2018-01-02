@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,8 +79,7 @@ public class PageProviderQueryBuilder {
         String fixedPart = whereClause.getFixedPart();
         if (!StringUtils.isBlank(additionalFixedPart)) {
             fixedPart = (!StringUtils.isBlank(fixedPart))
-                    ? NXQLQueryBuilder.appendClause(fixedPart, additionalFixedPart)
-                    : additionalFixedPart;
+                    ? NXQLQueryBuilder.appendClause(fixedPart, additionalFixedPart) : additionalFixedPart;
         }
         if (params != null) {
             for (Object param : params) {

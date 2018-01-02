@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -149,11 +149,11 @@ public class LDAPServerDescriptor {
         if (ldapUrls == null) {
             throw new DirectoryException("At least one <ldapUrl/> server declaration is required");
         }
-        ldapEntries = new LinkedHashSet<LdapEntry>();
+        ldapEntries = new LinkedHashSet<>();
 
-        Set<LDAPUrlDescriptor> processed = new HashSet<LDAPUrlDescriptor>();
+        Set<LDAPUrlDescriptor> processed = new HashSet<>();
 
-        List<String> urls = new ArrayList<String>(ldapUrls.length);
+        List<String> urls = new ArrayList<>(ldapUrls.length);
         for (LDAPUrlDescriptor url : ldapUrls) {
             LdapURL ldapUrl;
             try {
@@ -212,8 +212,8 @@ public class LDAPServerDescriptor {
                     ldapEntries.add(new LdapEntryDomain(url, domain, ldapUrl.useSsl()));
                     isDynamicServerList = true;
                 } else {
-                    throw new DirectoryException("Invalid LDAP SRV reference, this should be of the form"
-                            + " ldap:///dc=example,dc=org");
+                    throw new DirectoryException(
+                            "Invalid LDAP SRV reference, this should be of the form" + " ldap:///dc=example,dc=org");
                 }
             } else {
                 /*
@@ -252,15 +252,15 @@ public class LDAPServerDescriptor {
      * @throws NamingException if DNS lookup fails
      */
     protected List<String> discoverLdapServers(String domain, boolean useSsl, String srvPrefix) throws NamingException {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         List<DNSServiceEntry> servers = getSRVResolver().resolveLDAPDomainServers(domain, srvPrefix);
 
         for (DNSServiceEntry serviceEntry : servers) {
             /*
              * Rebuild the URL
              */
-            StringBuilder realUrl = (useSsl) ? new StringBuilder(LDAPS_SCHEME + "://") : new StringBuilder(LDAP_SCHEME
-                    + "://");
+            StringBuilder realUrl = (useSsl) ? new StringBuilder(LDAPS_SCHEME + "://")
+                    : new StringBuilder(LDAP_SCHEME + "://");
             realUrl.append(serviceEntry);
             result.add(realUrl.toString());
         }
@@ -278,7 +278,7 @@ public class LDAPServerDescriptor {
         try {
             LdapDN ldapDN = new LdapDN(dn);
             Enumeration<String> components = ldapDN.getAll();
-            List<String> domainComponents = new ArrayList<String>();
+            List<String> domainComponents = new ArrayList<>();
             while (components.hasMoreElements()) {
                 String component = components.nextElement();
                 if (component.startsWith("dc=")) {

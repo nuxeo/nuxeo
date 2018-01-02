@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,6 @@ import java.util.Map;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -67,8 +65,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService {
 
-    private static final Log log = LogFactory.getLog(DefaultUserWorkspaceServiceImpl.class);
-
     private static final long serialVersionUID = 1L;
 
     protected static final char ESCAPE_CHAR = '~';
@@ -81,8 +77,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
 
     public AbstractUserWorkspaceImpl() {
         super();
-        maxsize = Framework.getService(PathSegmentService.class)
-                .getMaxSize();
+        maxsize = Framework.getService(PathSegmentService.class).getMaxSize();
     }
 
     protected String getDomainName(CoreSession userCoreSession) {
@@ -215,7 +210,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
      */
     @Override
     public DocumentModel getCurrentUserPersonalWorkspace(CoreSession userCoreSession, DocumentModel context) {
-       return getCurrentUserPersonalWorkspace(userCoreSession);
+        return getCurrentUserPersonalWorkspace(userCoreSession);
     }
 
     /**
@@ -353,7 +348,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
             return userName;
         }
 
-        UserAdapter userAdapter = null;
+        UserAdapter userAdapter;
         userAdapter = userModel.getAdapter(UserAdapter.class);
 
         if (userAdapter == null) {
@@ -363,14 +358,12 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         // compute the title
         StringBuilder title = new StringBuilder();
         String firstName = userAdapter.getFirstName();
-        if (firstName != null && firstName.trim()
-                .length() > 0) {
+        if (firstName != null && firstName.trim().length() > 0) {
             title.append(firstName);
         }
 
         String lastName = userAdapter.getLastName();
-        if (lastName != null && lastName.trim()
-                .length() > 0) {
+        if (lastName != null && lastName.trim().length() > 0) {
             if (title.length() > 0) {
                 title.append(" ");
             }
@@ -388,9 +381,9 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
     protected void notifyEvent(CoreSession coreSession, DocumentModel document, NuxeoPrincipal principal,
             String eventId, Map<String, Serializable> properties) {
         if (properties == null) {
-            properties = new HashMap<String, Serializable>();
+            properties = new HashMap<>();
         }
-        EventContext eventContext = null;
+        EventContext eventContext;
         if (document != null) {
             properties.put(CoreEventConstants.REPOSITORY_NAME, document.getRepositoryName());
             properties.put(CoreEventConstants.SESSION_ID, coreSession.getSessionId());
@@ -401,8 +394,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         }
         eventContext.setProperties(properties);
         Event event = eventContext.newEvent(eventId);
-        Framework.getService(EventProducer.class)
-                .fireEvent(event);
+        Framework.getService(EventProducer.class).fireEvent(event);
     }
 
     protected class UnrestrictedUserWorkspaceFinder extends UnrestrictedSessionRunner {
@@ -412,8 +404,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         protected String userName;
 
         protected UnrestrictedUserWorkspaceFinder(String userName, DocumentModel context) {
-            super(context.getCoreSession()
-                    .getRepositoryName(), userName);
+            super(context.getCoreSession().getRepositoryName(), userName);
             this.userName = userName;
         }
 
@@ -432,8 +423,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
 
     protected UserWorkspaceServiceImplComponent getComponent() {
         return (UserWorkspaceServiceImplComponent) Framework.getRuntime()
-                .getComponent(
-                        UserWorkspaceServiceImplComponent.NAME);
+                                                            .getComponent(UserWorkspaceServiceImplComponent.NAME);
     }
 
     protected abstract DocumentModel doCreateUserWorkspacesRoot(CoreSession unrestrictedSession, PathRef rootRef);

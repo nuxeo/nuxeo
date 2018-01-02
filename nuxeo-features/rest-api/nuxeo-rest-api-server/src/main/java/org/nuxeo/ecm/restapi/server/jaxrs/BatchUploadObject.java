@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     public Response initBatch() throws IOException {
         BatchManager bm = Framework.getService(BatchManager.class);
         String batchId = bm.initBatch();
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         result.put("batchId", batchId);
         return buildResponse(Status.CREATED, result);
     }
@@ -126,7 +126,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
     protected Response uploadNoTransaction(@Context HttpServletRequest request,
             @PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx)
-            throws IOException {
+                    throws IOException {
 
         if (!Framework.getService(BatchManager.class).hasBatch(batchId)) {
             return buildEmptyResponse(Status.NOT_FOUND);
@@ -228,7 +228,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
     protected void addStream(String uploadType, String batchId, String fileIdx, InputStream is, String fileName,
             String mimeType, long uploadedSize, int chunkCount, int uploadChunkIndex, long fileSize)
-            throws IOException {
+                    throws IOException {
         String uploadedSizeDisplay = uploadedSize > -1 ? uploadedSize + "b" : "unknown size";
         if (UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
             if (log.isDebugEnabled()) {

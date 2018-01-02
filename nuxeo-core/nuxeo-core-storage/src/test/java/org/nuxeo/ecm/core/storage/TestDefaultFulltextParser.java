@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ public class TestDefaultFulltextParser extends NXRuntimeTestCase {
 
     protected void check(String expected, String s, String mimeType) {
         FulltextParser parser = new DefaultFulltextParser();
-        List<String> strings = new ArrayList<String>();
+        List<String> strings = new ArrayList<>();
         parser.parse(s, "fakepath", mimeType, null, strings);
         assertEquals(expected, StringUtils.join(strings, "|"));
     }

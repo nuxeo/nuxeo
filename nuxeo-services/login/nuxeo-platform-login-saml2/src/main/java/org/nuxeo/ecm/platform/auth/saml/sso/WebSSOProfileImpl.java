@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,13 @@
  */
 package org.nuxeo.ecm.platform.auth.saml.sso;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.platform.auth.saml.AbstractSAMLProfile;
@@ -27,19 +34,29 @@ import org.opensaml.common.SAMLException;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.SAMLVersion;
 import org.opensaml.common.binding.SAMLMessageContext;
-import org.opensaml.saml2.core.*;
+import org.opensaml.saml2.core.Assertion;
+import org.opensaml.saml2.core.Attribute;
+import org.opensaml.saml2.core.AttributeStatement;
+import org.opensaml.saml2.core.AuthnContextClassRef;
+import org.opensaml.saml2.core.AuthnContextComparisonTypeEnumeration;
+import org.opensaml.saml2.core.AuthnRequest;
+import org.opensaml.saml2.core.AuthnStatement;
+import org.opensaml.saml2.core.EncryptedAssertion;
+import org.opensaml.saml2.core.EncryptedAttribute;
+import org.opensaml.saml2.core.Issuer;
+import org.opensaml.saml2.core.NameID;
+import org.opensaml.saml2.core.NameIDPolicy;
+import org.opensaml.saml2.core.NameIDType;
+import org.opensaml.saml2.core.RequestedAuthnContext;
+import org.opensaml.saml2.core.Response;
+import org.opensaml.saml2.core.StatusCode;
+import org.opensaml.saml2.core.Subject;
 import org.opensaml.saml2.metadata.SPSSODescriptor;
 import org.opensaml.saml2.metadata.SingleSignOnService;
 import org.opensaml.xml.encryption.DecryptionException;
 import org.opensaml.xml.security.SecurityException;
 import org.opensaml.xml.signature.Signature;
 import org.opensaml.xml.validation.ValidationException;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * WebSSO (Single Sign On) profile implementation.
@@ -190,7 +207,7 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
         request.setVersion(SAMLVersion.VERSION_20);
         request.setIssueInstant(new DateTime());
         // Let the IdP pick a protocol binding
-        //request.setProtocolBinding(SAMLConstants.SAML2_POST_BINDING_URI);
+        // request.setProtocolBinding(SAMLConstants.SAML2_POST_BINDING_URI);
 
         // Fill the assertion consumer URL
         request.setAssertionConsumerServiceURL(getStartPageURL(httpRequest));

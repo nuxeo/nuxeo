@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -164,8 +164,8 @@ public abstract class AbstractDirectory implements Directory {
         } else if (refs.size() == 1) {
             return refs.get(0);
         } else {
-            throw new DirectoryException("Unexpected multiple references for " + referenceFieldName + " in directory "
-                    + getName());
+            throw new DirectoryException(
+                    "Unexpected multiple references for " + referenceFieldName + " in directory " + getName());
         }
     }
 
@@ -231,7 +231,7 @@ public abstract class AbstractDirectory implements Directory {
      * @param orderBy an ordered map of field name -> "asc" or "desc".
      */
     public void orderEntries(List<DocumentModel> entries, Map<String, String> orderBy) throws DirectoryException {
-        Collections.sort(entries, new DocumentModelComparator(getSchema(), orderBy));
+        entries.sort(new DocumentModelComparator(getSchema(), orderBy));
     }
 
     @Override

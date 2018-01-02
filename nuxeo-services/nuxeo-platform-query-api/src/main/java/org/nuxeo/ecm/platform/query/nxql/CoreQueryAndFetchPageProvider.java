@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
     protected List<Map<String, Serializable>> currentItems;
 
     protected CoreSession getCoreSession() {
-        CoreSession coreSession = null;
+        CoreSession coreSession;
         Map<String, Serializable> props = getProperties();
         coreSession = (CoreSession) props.get(CORE_SESSION_PROPERTY);
         return coreSession;
@@ -107,9 +107,8 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
                 throw new NuxeoException(String.format("Cannot perform null query: check provider '%s'", getName()));
             }
 
-            currentItems = new ArrayList<Map<String, Serializable>>();
+            currentItems = new ArrayList<>();
 
-            Map<String, Serializable> props = getProperties();
             coreSession = getCoreSession();
             if (coreSession == null) {
                 throw new NuxeoException("cannot find core session");

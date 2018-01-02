@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @since 8.2
  */
-public abstract class AbstractGroupMemberPageProvider<T> extends AbstractPageProvider<T>
-    implements PageProvider<T> {
+public abstract class AbstractGroupMemberPageProvider<T> extends AbstractPageProvider<T> implements PageProvider<T> {
 
     private static final long serialVersionUID = 1L;
 
@@ -52,7 +51,7 @@ public abstract class AbstractGroupMemberPageProvider<T> extends AbstractPagePro
     @Override
     public List<T> getCurrentPage() {
         if (currentPage == null) {
-            currentPage = new ArrayList<T>();
+            currentPage = new ArrayList<>();
             NuxeoGroup group = (NuxeoGroup) getParameters()[0];
             String query = null;
             if (getParameters().length > 1) {

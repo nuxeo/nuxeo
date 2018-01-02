@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,7 @@ public class PrincipalHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<String> getEmailsForPermission(DocumentModel input, String permission, boolean ignoreGroups)
-            {
+    public Set<String> getEmailsForPermission(DocumentModel input, String permission, boolean ignoreGroups) {
         return (Set<String>) collectObjectsMatchingPermission(input, permission, ignoreGroups, true,
                 new EmailCollector(userManager.getUserSchemaName(), userManager.getUserEmailField()));
     }
@@ -92,15 +91,13 @@ public class PrincipalHelper {
         return collector.getResult();
     }
 
-    public Set<String> getUserNamesFromGroup(String groupId, boolean resolveGroups, boolean prefixIds)
-            {
+    public Set<String> getUserNamesFromGroup(String groupId, boolean resolveGroups, boolean prefixIds) {
         IdCollector collector = new IdCollector(prefixIds);
         collectObjectsFromGroup(groupId, resolveGroups, collector);
         return collector.getResult();
     }
 
-    public void collectObjectsFromGroup(String groupId, boolean resolveGroups, Collector<?> collector)
-            {
+    public void collectObjectsFromGroup(String groupId, boolean resolveGroups, Collector<?> collector) {
         NuxeoGroup group = userManager.getGroup(groupId);
         if (group == null) {
             userManager.getPrincipal(groupId);
@@ -191,7 +188,7 @@ public class PrincipalHelper {
 
         protected final String userEmailFieldName;
 
-        protected HashSet<String> result = new HashSet<String>();
+        protected HashSet<String> result = new HashSet<>();
 
         EmailCollector(String userSchemaName, String userEmailFieldName) {
             this.userSchemaName = userSchemaName;
@@ -223,7 +220,7 @@ public class PrincipalHelper {
 
     static class PrincipalCollector implements Collector<NuxeoPrincipal> {
 
-        protected HashSet<NuxeoPrincipal> result = new HashSet<NuxeoPrincipal>();
+        protected HashSet<NuxeoPrincipal> result = new HashSet<>();
 
         @Override
         public void collect(NuxeoPrincipal principal) {
@@ -248,7 +245,7 @@ public class PrincipalHelper {
 
         protected final boolean prefixIds;
 
-        protected HashSet<String> result = new HashSet<String>();
+        protected HashSet<String> result = new HashSet<>();
 
         IdCollector(boolean prefixIds) {
             this.prefixIds = prefixIds;

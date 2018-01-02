@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -38,7 +38,7 @@ import org.apache.commons.lang.StringUtils;
 public final class ACE implements Serializable, Cloneable {
 
     public enum Status {
-        PENDING, EFFECTIVE, ARCHIVED;
+        PENDING, EFFECTIVE, ARCHIVED
     }
 
     /**
@@ -77,7 +77,7 @@ public final class ACE implements Serializable, Cloneable {
         // An ACE is composed of tokens separated with ":" caracter
         // First 3 tokens are mandatory; following 3 tokens are optional
         // The ":" separator is still present even if the tokens are empty
-        //   Example: jsmith:ReadWrite:true:::
+        // Example: jsmith:ReadWrite:true:::
         // The first token (username) is allowed to contain embedded ":".
         Matcher m = ID_PATTERN.matcher(aceId);
         if (!m.matches()) {
@@ -91,7 +91,7 @@ public final class ACE implements Serializable, Cloneable {
 
         String username = parts[0];
         String permission = parts[1];
-        boolean isGranted = Boolean.valueOf(parts[2]);
+        boolean isGranted = Boolean.parseBoolean(parts[2]);
 
         ACEBuilder builder = ACE.builder(username, permission).isGranted(isGranted);
 
@@ -101,13 +101,13 @@ public final class ACE implements Serializable, Cloneable {
 
         if (parts.length >= 5 && StringUtils.isNotBlank(parts[4])) {
             Calendar begin = new GregorianCalendar();
-            begin.setTimeInMillis(Long.valueOf(parts[4]));
+            begin.setTimeInMillis(Long.parseLong(parts[4]));
             builder.begin(begin);
         }
 
         if (parts.length >= 6 && StringUtils.isNotBlank(parts[5])) {
             Calendar end = new GregorianCalendar();
-            end.setTimeInMillis(Long.valueOf(parts[5]));
+            end.setTimeInMillis(Long.parseLong(parts[5]));
             builder.end(end);
         }
 
@@ -247,7 +247,7 @@ public final class ACE implements Serializable, Cloneable {
      */
     public void setEnd(Calendar end) {
         this.end = end;
-        if (this.end!= null) {
+        if (this.end != null) {
             this.end.set(Calendar.MILLISECOND, 0);
         }
     }
@@ -352,15 +352,15 @@ public final class ACE implements Serializable, Cloneable {
         sb.append('(');
         sb.append("username=").append(username);
         sb.append(", ");
-        sb.append("permission=" + permission);
+        sb.append("permission=").append(permission);
         sb.append(", ");
-        sb.append("isGranted=" + isGranted);
+        sb.append("isGranted=").append(isGranted);
         sb.append(", ");
-        sb.append("creator=" + creator);
+        sb.append("creator=").append(creator);
         sb.append(", ");
-        sb.append("begin=" + (begin != null ? begin.getTimeInMillis() : null));
+        sb.append("begin=").append(begin != null ? begin.getTimeInMillis() : null);
         sb.append(", ");
-        sb.append("end=" + (end != null ? end.getTimeInMillis() : null));
+        sb.append("end=").append(end != null ? end.getTimeInMillis() : null);
         sb.append(')');
         return sb.toString();
     }

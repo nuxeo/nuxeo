@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,13 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implements ShibbolethAuthenticationService {
 
@@ -58,7 +59,7 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
             return null;
         }
 
-        Map<String, String> urlParameters = new HashMap<String, String>(1);
+        Map<String, String> urlParameters = new HashMap<>(1);
         urlParameters.put(config.getLoginRedirectURLParameter(), redirectURL);
         return URIUtils.addParametersToURIQuery(config.getLoginURL(), urlParameters);
     }
@@ -69,7 +70,7 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
             return null;
         }
 
-        Map<String, String> urlParameters = new HashMap<String, String>(1);
+        Map<String, String> urlParameters = new HashMap<>(1);
         urlParameters.put(config.getLogoutRedirectURLParameter(), redirectURL);
         return URIUtils.addParametersToURIQuery(config.getLogoutURL(), urlParameters);
     }
@@ -99,7 +100,7 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
 
     @Override
     public Map<String, Object> getUserMetadata(String userIdField, HttpServletRequest httpRequest) {
-        Map<String, Object> fieldMap = new HashMap<String, Object>(config.fieldMapping.size());
+        Map<String, Object> fieldMap = new HashMap<>(config.fieldMapping.size());
         for (String key : config.getFieldMapping().keySet()) {
             fieldMap.put(config.getFieldMapping().get(key), readHeader(httpRequest, key));
         }

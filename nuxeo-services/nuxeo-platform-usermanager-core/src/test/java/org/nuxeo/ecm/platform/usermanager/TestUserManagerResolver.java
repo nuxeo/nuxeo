@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
-import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
@@ -80,7 +79,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void userAndGroupSupportedClasses() throws Exception {
         UserManagerResolver umr = new UserManagerResolver();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         umr.configure(parameters);
         List<Class<?>> classes = umr.getManagedClasses();
         assertEquals(2, classes.size());
@@ -91,7 +90,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void userSupportedClasses() throws Exception {
         UserManagerResolver umr = new UserManagerResolver();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_USER);
         umr.configure(parameters);
         List<Class<?>> classes = umr.getManagedClasses();
@@ -102,7 +101,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void groupSupportedClasses() throws Exception {
         UserManagerResolver umr = new UserManagerResolver();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_GROUP);
         umr.configure(parameters);
         List<Class<?>> classes = umr.getManagedClasses();
@@ -138,7 +137,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test(expected = IllegalStateException.class)
     public void testLifecycleConfigurationTwice() {
         UserManagerResolver umr = new UserManagerResolver();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         umr.configure(parameters);
         umr.configure(parameters);
     }
@@ -146,7 +145,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testConfigurationDefaultUserOrGroup() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         assertTrue(umr.isIncludingGroups());
         assertTrue(umr.isIncludingUsers());
         Map<String, Serializable> outputParameters = umr.getParameters();
@@ -157,7 +156,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testConfigurationUser() {
         UserManagerResolver umr = new UserManagerResolver();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_USER);
         umr.configure(parameters);
         assertFalse(umr.isIncludingGroups());
@@ -170,7 +169,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testConfigurationGroup() {
         UserManagerResolver umr = new UserManagerResolver();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_GROUP);
         umr.configure(parameters);
         assertTrue(umr.isIncludingGroups());
@@ -183,21 +182,21 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testName() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         assertEquals(UserManagerResolver.NAME, umr.getName());
     }
 
     @Test
     public void testValidateGoodUserWithDefaultConf() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         assertTrue(umr.validate("user:Administrator"));
     }
 
     @Test
     public void testValidateGoodUserWithFilterUser() {
         UserManagerResolver umr = new UserManagerResolver();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_USER);
         umr.configure(parameters);
         assertTrue(umr.validate("user:Administrator"));
@@ -206,21 +205,21 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testValidateUserFailedWithBadValue() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         assertFalse(umr.validate("toto"));
     }
 
     @Test
     public void testValidateUserSucceedWithoutPrefix() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         assertTrue(umr.validate("Administrator"));
     }
 
     @Test
     public void testValidateUserFailedWithFilterGroup() {
         UserManagerResolver umr = new UserManagerResolver();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_GROUP);
         umr.configure(parameters);
         assertFalse(umr.validate("user:Administrator"));
@@ -229,14 +228,14 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testValidateGoodGroupWithDefaultConf() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         assertTrue(umr.validate("group:members"));
     }
 
     @Test
     public void testValidateGoodGroupWithFilterGroup() {
         UserManagerResolver umr = new UserManagerResolver();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_GROUP);
         umr.configure(parameters);
         assertTrue(umr.validate("group:members"));
@@ -245,21 +244,21 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testValidateGroupFailedWithBadValue() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         assertFalse(umr.validate("toto"));
     }
 
     @Test
     public void testValidateGroupSucceedWithoutPrefix() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         assertTrue(umr.validate("members"));
     }
 
     @Test
     public void testValidateGroupFailedWithFilterGroup() {
         UserManagerResolver umr = new UserManagerResolver();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_USER);
         umr.configure(parameters);
         assertFalse(umr.validate("group:members"));
@@ -268,7 +267,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testFetchGoodUserWithDefaultConf() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         Object entity = umr.fetch("user:Administrator");
         assertTrue(entity instanceof NuxeoPrincipal);
         assertEquals("Administrator", ((NuxeoPrincipal) entity).getName());
@@ -277,7 +276,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testFetchGoodUserWithFilterUser() {
         UserManagerResolver umr = new UserManagerResolver();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_USER);
         umr.configure(parameters);
         Object entity = umr.fetch("user:Administrator");
@@ -288,21 +287,21 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testFetchUserFailedWithBadValue() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         assertNull(umr.fetch("user:toto"));
     }
 
     @Test
     public void testFetchUserSucceedWithoutPrefix() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         assertNotNull(umr.fetch("Administrator"));
     }
 
     @Test
     public void testFetchUserFailedWithFilterGroup() {
         UserManagerResolver umr = new UserManagerResolver();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_GROUP);
         umr.configure(parameters);
         assertNull(umr.fetch("user:Administrator"));
@@ -311,7 +310,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testFetchGoodGroupWithDefaultConf() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         Object entity = umr.fetch("group:members");
         assertTrue(entity instanceof NuxeoGroup);
         assertEquals("members", ((NuxeoGroup) entity).getName());
@@ -320,7 +319,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testFetchGoodGroupWithFilterGroup() {
         UserManagerResolver umr = new UserManagerResolver();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_GROUP);
         umr.configure(parameters);
         Object entity = umr.fetch("group:members");
@@ -331,21 +330,21 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testFetchGroupFailedWithBadValue() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         assertNull(umr.fetch("group:toto"));
     }
 
     @Test
     public void testFetchGroupSucceedWithoutPrefix() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         assertNotNull(umr.fetch("members"));
     }
 
     @Test
     public void testFetchGroupFailedWithFilterUser() {
         UserManagerResolver umr = new UserManagerResolver();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_USER);
         umr.configure(parameters);
         assertNull(umr.fetch("group:members"));
@@ -354,7 +353,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testFetchCastNuxeoPrincipal() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         NuxeoPrincipal principal = umr.fetch(NuxeoPrincipal.class, "user:Administrator");
         assertNotNull(principal);
         assertEquals("Administrator", principal.getName());
@@ -366,7 +365,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testFetchCastNuxeoGroup() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         NuxeoGroup group = umr.fetch(NuxeoGroup.class, "group:members");
         assertNotNull(group);
         assertEquals("members", group.getName());
@@ -378,21 +377,21 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testFetchCastDoesntSupportDocumentModel() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         assertNull(umr.fetch(DocumentModel.class, "user:Administrator"));
     }
 
     @Test
     public void testFetchCastDoesntSupportStupidTypes() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         assertNull(umr.fetch(List.class, "user:Administrator"));
     }
 
     @Test
     public void testGetReferenceUser() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         NuxeoPrincipal principal = userManager.getPrincipal("Administrator");
         assertEquals("user:Administrator", umr.getReference(principal));
     }
@@ -400,7 +399,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testGetReferenceGroup() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         NuxeoGroup group = userManager.getGroup("members");
         assertEquals("group:members", umr.getReference(group));
     }
@@ -408,7 +407,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testGetReferenceWithNonExistingUserWorks() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         NuxeoPrincipal principal = new NuxeoPrincipalImpl("chaps");
         assertEquals("user:chaps", umr.getReference(principal));
     }
@@ -416,7 +415,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testGetReferenceWithNonExistingGroupWorks() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         NuxeoGroup group = new NuxeoGroupImpl("chaps");
         assertEquals("group:chaps", umr.getReference(group));
     }
@@ -424,19 +423,25 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testGetReferenceInvalid() {
         UserManagerResolver umr = new UserManagerResolver();
-        umr.configure(new HashMap<String, String>());
+        umr.configure(new HashMap<>());
         assertNull(umr.getReference("nothing"));
     }
 
     @Test
     public void testConfigurationIsLoaded() {
-        UserManagerResolver userResolver = (UserManagerResolver) ((SimpleType) doc.getProperty(USER_XPATH).getType()).getObjectResolver();
+        UserManagerResolver userResolver = (UserManagerResolver) doc.getProperty(USER_XPATH)
+                                                                    .getType()
+                                                                    .getObjectResolver();
         assertTrue(userResolver.isIncludingUsers());
         assertFalse(userResolver.isIncludingGroups());
-        UserManagerResolver groupResolver = (UserManagerResolver) ((SimpleType) doc.getProperty(GROUP_XPATH).getType()).getObjectResolver();
+        UserManagerResolver groupResolver = (UserManagerResolver) doc.getProperty(GROUP_XPATH)
+                                                                     .getType()
+                                                                     .getObjectResolver();
         assertFalse(groupResolver.isIncludingUsers());
         assertTrue(groupResolver.isIncludingGroups());
-        UserManagerResolver anyResolver = (UserManagerResolver) ((SimpleType) doc.getProperty(USER_GROUP_XPATH).getType()).getObjectResolver();
+        UserManagerResolver anyResolver = (UserManagerResolver) doc.getProperty(USER_GROUP_XPATH)
+                                                                   .getType()
+                                                                   .getObjectResolver();
         assertTrue(anyResolver.isIncludingUsers());
         assertTrue(anyResolver.isIncludingGroups());
     }
@@ -558,15 +563,15 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     @Test
     public void testTranslation() {
         UserManagerResolver allUMR = new UserManagerResolver();
-        allUMR.configure(new HashMap<String, String>());
+        allUMR.configure(new HashMap<>());
         checkMessage(allUMR);
         UserManagerResolver userUMR = new UserManagerResolver();
-        Map<String, String> userParams = new HashMap<String, String>();
+        Map<String, String> userParams = new HashMap<>();
         userParams.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_USER);
         userUMR.configure(userParams);
         checkMessage(userUMR);
         UserManagerResolver groupUMR = new UserManagerResolver();
-        Map<String, String> groupParams = new HashMap<String, String>();
+        Map<String, String> groupParams = new HashMap<>();
         groupParams.put(UserManagerResolver.INPUT_PARAM_FILTER, UserManagerResolver.FILTER_GROUP);
         groupUMR.configure(groupParams);
         checkMessage(groupUMR);
@@ -577,7 +582,7 @@ public class TestUserManagerResolver extends UserManagerTestCase {
     public void testSerialization() throws Exception {
         // create it
         UserManagerResolver resolver = new UserManagerResolver();
-        resolver.configure(new HashMap<String, String>());
+        resolver.configure(new HashMap<>());
         // write it
         byte[] buffer = SerializationUtils.serialize(resolver);
         // forget the resolver

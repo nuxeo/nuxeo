@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,7 +95,7 @@ public class JSONDocumentModelReader implements MessageBodyReader<DocumentModel>
     @Override
     public DocumentModel readFrom(Class<DocumentModel> type, Type genericType, Annotation[] annotations,
             MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
+                    throws IOException, WebApplicationException {
         String content = IOUtils.toString(entityStream);
         if (content.isEmpty()) {
             throw new NuxeoException("No content in request body", SC_BAD_REQUEST);

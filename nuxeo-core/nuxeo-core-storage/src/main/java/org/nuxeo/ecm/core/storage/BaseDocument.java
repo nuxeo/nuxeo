@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,16 +118,16 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
     public static final String LOCK_CREATED_PROP = "ecm:lockCreated";
 
-    public static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<String>(Arrays.asList( //
-            FULLTEXT_JOBID_PROP, //
-            FULLTEXT_BINARYTEXT_PROP, //
-            MISC_LIFECYCLE_STATE_PROP, //
-            LOCK_OWNER_PROP, //
-            LOCK_CREATED_PROP, //
-            DC_ISSUED, //
-            RELATED_TEXT_RESOURCES, //
-            RELATED_TEXT_ID, //
-            RELATED_TEXT //
+    public static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<>(Arrays.asList( //
+                                                                                          FULLTEXT_JOBID_PROP, //
+                                                                                          FULLTEXT_BINARYTEXT_PROP, //
+                                                                                          MISC_LIFECYCLE_STATE_PROP, //
+                                                                                          LOCK_OWNER_PROP, //
+                                                                                          LOCK_CREATED_PROP, //
+                                                                                          DC_ISSUED, //
+                                                                                          RELATED_TEXT_RESOURCES, //
+                                                                                          RELATED_TEXT_ID, //
+                                                                                          RELATED_TEXT //
     ));
 
     protected final static Pattern NON_CANONICAL_INDEX = Pattern.compile("[^/\\[\\]]+" // name
@@ -737,7 +737,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
          * Records a blob update.
          */
         public void recordBlob(BaseDocument<T> doc, T state, Blob blob, String xpath) {
-            BlobWriteInfo<T> info = new BlobWriteInfo<T>(state, blob, xpath);
+            BlobWriteInfo<T> info = new BlobWriteInfo<>(state, blob, xpath);
             blobWriteInfos.computeIfAbsent(doc, k -> new ArrayList<>()).add(info);
         }
 
@@ -790,7 +790,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         @SuppressWarnings("unchecked")
         BlobWriteContext<T> writeContext = (BlobWriteContext<T>) wc;
         if (complexProperty instanceof BlobProperty) {
-            Serializable value = ((BlobProperty) complexProperty).getValueForWrite();
+            Serializable value = complexProperty.getValueForWrite();
             if (value != null && !(value instanceof Blob)) {
                 throw new PropertyException("Cannot write a non-Blob value: " + value);
             }
@@ -1056,7 +1056,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     /**
      * Removes a lock from this recently created and unsaved document.
      *
-     * @param the owner to check, or {@code null} for no check
+     * @param owner the owner to check, or {@code null} for no check
      * @return {@code null} if there was no lock or if removal succeeded, or a lock if it blocks removal due to owner
      *         mismatch
      * @since 7.4

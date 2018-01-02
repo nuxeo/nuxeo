@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,10 @@
  */
 package org.nuxeo.ecm.core.api;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -44,10 +41,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.PrefetchInfo;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeProvider;
-import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -88,7 +82,7 @@ public class DocumentModelFactory {
         boolean immutable = doc.isVersion() || (doc.isProxy() && sourceDoc.isVersion());
 
         // Instance facets
-        Set<String> facets = new HashSet<String>(Arrays.asList(doc.getFacets()));
+        Set<String> facets = new HashSet<>(Arrays.asList(doc.getFacets()));
         if (immutable) {
             facets.add(FacetNames.IMMUTABLE);
         }
@@ -115,16 +109,15 @@ public class DocumentModelFactory {
         }
 
         // populate datamodels
-        List<String> loadSchemas = new LinkedList<String>();
+        List<String> loadSchemas = new LinkedList<>();
         if (schemas == null) {
             PrefetchInfo prefetchInfo = type.getPrefetchInfo();
             if (prefetchInfo != null) {
-                Set<String> docSchemas = new HashSet<String>(Arrays.asList(docModel.getSchemas()));
                 schemas = prefetchInfo.getSchemas();
             }
         }
         if (schemas != null) {
-            Set<String> validSchemas = new HashSet<String>(Arrays.asList(docModel.getSchemas()));
+            Set<String> validSchemas = new HashSet<>(Arrays.asList(docModel.getSchemas()));
             for (String schemaName : schemas) {
                 if (validSchemas.contains(schemaName)) {
                     loadSchemas.add(schemaName);
@@ -217,12 +210,12 @@ public class DocumentModelFactory {
         // facets added/removed
         Set<String> instanceFacets = ((DocumentModelImpl) docModel).instanceFacets;
         Set<String> instanceFacetsOrig = ((DocumentModelImpl) docModel).instanceFacetsOrig;
-        Set<String> addedFacets = new HashSet<String>(instanceFacets);
+        Set<String> addedFacets = new HashSet<>(instanceFacets);
         addedFacets.removeAll(instanceFacetsOrig);
         for (String facet : addedFacets) {
             changed = doc.addFacet(facet) || changed;
         }
-        Set<String> removedFacets = new HashSet<String>(instanceFacetsOrig);
+        Set<String> removedFacets = new HashSet<>(instanceFacetsOrig);
         removedFacets.removeAll(instanceFacets);
         for (String facet : removedFacets) {
             changed = doc.removeFacet(facet) || changed;
@@ -257,7 +250,7 @@ public class DocumentModelFactory {
             throws LifeCycleException {
         DocumentModelRefresh refresh = new DocumentModelRefresh();
 
-        refresh.instanceFacets = new HashSet<String>(Arrays.asList(doc.getFacets()));
+        refresh.instanceFacets = new HashSet<>(Arrays.asList(doc.getFacets()));
         Set<String> docSchemas = DocumentModelImpl.computeSchemas(doc.getType(), refresh.instanceFacets, doc.isProxy());
 
         if ((flags & DocumentModel.REFRESH_STATE) != 0) {
@@ -293,9 +286,6 @@ public class DocumentModelFactory {
      * Create an empty documentmodel for a given type with its id already setted. This can be useful when trying to
      * attach a documentmodel that has been serialized and modified.
      *
-     * @param type
-     * @param id
-     * @return
      * @since 5.7.2
      */
     public static DocumentModel createDocumentModel(String type, String id) {

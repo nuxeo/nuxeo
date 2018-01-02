@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,6 +44,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
@@ -58,7 +58,6 @@ import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
@@ -870,7 +869,7 @@ public class DialectPostgreSQL extends Dialect {
             break;
         case SEQUENCE:
             // check that it's really an integer
-            if (id != null && !org.apache.commons.lang.StringUtils.isNumeric(id)) {
+            if (id != null && !StringUtils.isNumeric(id)) {
                 throw new IllegalArgumentException("Invalid sequence id: " + id);
             }
             ret = "::bigint";

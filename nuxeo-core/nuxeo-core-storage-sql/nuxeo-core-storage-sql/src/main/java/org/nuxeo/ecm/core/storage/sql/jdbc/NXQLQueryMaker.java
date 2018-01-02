@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -186,12 +186,12 @@ public class NXQLQueryMaker implements QueryMaker {
     public static final String ECM_TAG_STAR = NXQL.ECM_TAG + "/*";
 
     /**
-     *@since 9.3
+     * @since 9.3
      */
     public static final String FACETED_TAG = "nxtag:tags";
 
     /**
-     *@since 9.3
+     * @since 9.3
      */
     public static final String FACETED_TAG_LABEL = "label";
 
@@ -1460,7 +1460,8 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public final boolean needsSubSelect;
 
-        public ColumnInfo(Column column, Column posColumn, int arrayElementIndex, boolean isArrayElement, boolean isArray) {
+        public ColumnInfo(Column column, Column posColumn, int arrayElementIndex, boolean isArrayElement,
+                boolean isArray) {
             this.column = column;
             this.posColumn = posColumn;
             this.arrayElementIndex = arrayElementIndex;
@@ -1625,8 +1626,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     String newName = FACETED_TAG + "/*";
                     if (name.startsWith(ECM_TAG_STAR)) {
                         newName += name.substring(ECM_TAG_STAR.length()) + "/" + FACETED_TAG_LABEL;
-                    }
-                    else {
+                    } else {
                         newName += "1/" + FACETED_TAG_LABEL;
                     }
                     return getRegularColumnInfo(newName);

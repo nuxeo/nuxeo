@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *     Florent Guillaume, Mathieu Guillaume, jcarsique
+ *     Florent Guillaume
+ *     Mathieu Guillaume
+ *     jcarsique
  */
 
 package org.nuxeo.ecm.core.blob.binary;
@@ -181,17 +183,15 @@ public class LocalBinaryManager extends AbstractBinaryManager {
 
     protected String storeAndDigest(InputStream in) throws IOException {
         File tmp = File.createTempFile("create_", ".tmp", tmpDir);
-        OutputStream out = new FileOutputStream(tmp);
         /*
          * First, write the input stream to a temporary file, while computing a digest.
          */
         try {
             String digest;
-            try {
+            try (OutputStream out = new FileOutputStream(tmp)) {
                 digest = storeAndDigest(in, out);
             } finally {
                 in.close();
-                out.close();
             }
             /*
              * Move the tmp file to its destination.
@@ -358,11 +358,8 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         try {
             // Windows: the file may be open for reading
             // workaround found by Thomas Mueller, see JCR-2872
-            RandomAccessFile r = new RandomAccessFile(file, "rw");
-            try {
+            try (RandomAccessFile r = new RandomAccessFile(file, "rw")) {
                 r.setLength(r.length());
-            } finally {
-                r.close();
             }
         } catch (IOException e) {
             log.error("Cannot set last modified for file: " + file, e);

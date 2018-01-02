@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,13 +84,11 @@ public class DocumentTaskProvider implements TaskProvider {
      * Returns a list of task instances assigned to one of the actors in the list or to its pool.
      *
      * @param actors a list used as actorId to retrieve the tasks.
-     * @param filter
-     * @return
      */
     @Override
     public List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession) {
         if (actors == null || actors.isEmpty()) {
-            return new ArrayList<Task>();
+            return new ArrayList<>();
         }
         return getTasks(TaskQueryConstant.GET_TASKS_FOR_ACTORS_PP, coreSession, true, null, actors);
     }
@@ -101,17 +99,15 @@ public class DocumentTaskProvider implements TaskProvider {
      * @since 5.9.3
      */
     @Override
-    public List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession, List<SortInfo> sortInfos)
-            {
+    public List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession, List<SortInfo> sortInfos) {
         if (actors == null || actors.isEmpty()) {
-            return new ArrayList<Task>();
+            return new ArrayList<>();
         }
         return getTasks(TaskQueryConstant.GET_TASKS_FOR_ACTORS_PP, coreSession, true, sortInfos, actors);
     }
 
     @Override
-    public List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user, CoreSession coreSession)
-            {
+    public List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user, CoreSession coreSession) {
         if (user == null) {
             return getTasks(TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_PP, coreSession, true, null, dm.getId(),
                     dm.getId());
@@ -123,10 +119,9 @@ public class DocumentTaskProvider implements TaskProvider {
     }
 
     @Override
-    public List<Task> getTaskInstances(DocumentModel dm, List<String> actors, CoreSession coreSession)
-            {
+    public List<Task> getTaskInstances(DocumentModel dm, List<String> actors, CoreSession coreSession) {
         if (actors == null || actors.isEmpty()) {
-            return new ArrayList<Task>();
+            return new ArrayList<>();
         }
         return getTasks(TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_PP, coreSession, true, null,
                 dm.getId(), dm.getId(), actors);
@@ -138,15 +133,13 @@ public class DocumentTaskProvider implements TaskProvider {
     }
 
     @Override
-    public List<Task> getAllTaskInstances(String processId, NuxeoPrincipal user, CoreSession session)
-            {
+    public List<Task> getAllTaskInstances(String processId, NuxeoPrincipal user, CoreSession session) {
         List<String> actors = TaskActorsHelper.getTaskActors(user);
         return getAllTaskInstances(processId, actors, session);
     }
 
     @Override
-    public List<Task> getAllTaskInstances(String processId, List<String> actors, CoreSession session)
-            {
+    public List<Task> getAllTaskInstances(String processId, List<String> actors, CoreSession session) {
         return getTasks(TaskQueryConstant.GET_TASKS_FOR_PROCESS_AND_ACTORS_PP, session, true, null, processId, actors);
     }
 
@@ -154,10 +147,9 @@ public class DocumentTaskProvider implements TaskProvider {
      * Converts a {@link DocumentModelList} to a list of {@link Task}s.
      *
      * @since 6.0
-     * @param taskDocuments
      */
     public static List<Task> wrapDocModelInTask(List<DocumentModel> taskDocuments) {
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         for (DocumentModel doc : taskDocuments) {
             tasks.add(doc.getAdapter(Task.class));
         }
@@ -180,7 +172,7 @@ public class DocumentTaskProvider implements TaskProvider {
      */
     @Deprecated
     public static List<Task> wrapDocModelInTask(DocumentModelList taskDocuments, boolean detach) {
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         for (DocumentModel doc : taskDocuments) {
             if (detach) {
                 doc.detach(true);
@@ -212,12 +204,8 @@ public class DocumentTaskProvider implements TaskProvider {
         if (StringUtils.isNotBlank(eventName)) {
             TaskEventNotificationHelper.notifyTaskEnded(coreSession, principal, task, comment, eventName, null);
         }
-        String seamEventName = isValidated ? TaskEventNames.WORKFLOW_TASK_COMPLETED
-                : TaskEventNames.WORKFLOW_TASK_REJECTED;
-        return seamEventName;
+        return isValidated ? TaskEventNames.WORKFLOW_TASK_COMPLETED : TaskEventNames.WORKFLOW_TASK_REJECTED;
     }
-
-
 
     @Override
     public List<Task> getAllTaskInstances(String processId, String nodeId, CoreSession session) {
@@ -228,8 +216,8 @@ public class DocumentTaskProvider implements TaskProvider {
     public List<Task> getTaskInstances(DocumentModel dm, List<String> actors, boolean includeDelegatedTasks,
             CoreSession session) {
         if (includeDelegatedTasks) {
-            return getTasks(TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_OR_DELEGATED_ACTORS_PP,
-                    session, true, null, dm.getId(), dm.getId(), actors, actors);
+            return getTasks(TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_OR_DELEGATED_ACTORS_PP, session,
+                    true, null, dm.getId(), dm.getId(), actors, actors);
         } else {
             return getTasks(TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_PP, session, true, null,
                     dm.getId(), dm.getId(), actors);
@@ -237,16 +225,15 @@ public class DocumentTaskProvider implements TaskProvider {
     }
 
     @Override
-    public List<Task> getAllCurrentTaskInstances(CoreSession session,
-            List<SortInfo> sortInfos) {
+    public List<Task> getAllCurrentTaskInstances(CoreSession session, List<SortInfo> sortInfos) {
         // Get tasks for current user
         // We need to build the task actors list: prefixed and unprefixed names
         // of the principal and all its groups
         NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
         List<String> actors = TaskActorsHelper.getTaskActors(principal);
 
-        return getTasks(TaskQueryConstant.GET_TASKS_FOR_ACTORS_OR_DELEGATED_ACTORS_PP, session, true, sortInfos,
-                actors, actors);
+        return getTasks(TaskQueryConstant.GET_TASKS_FOR_ACTORS_OR_DELEGATED_ACTORS_PP, session, true, sortInfos, actors,
+                actors);
     }
 
     /**
@@ -259,7 +246,7 @@ public class DocumentTaskProvider implements TaskProvider {
         if (ppService == null) {
             throw new RuntimeException("Missing PageProvider service");
         }
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         // first retrieve potential props from definition
         PageProviderDefinition def = ppService.getPageProviderDefinition(pageProviderName);
         if (def != null) {

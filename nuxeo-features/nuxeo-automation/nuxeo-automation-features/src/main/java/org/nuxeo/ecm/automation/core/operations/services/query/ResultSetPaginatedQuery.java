@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,8 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
  * @since 6.0 Result set query operation to perform queries on the repository.
  */
 @Operation(id = ResultSetPaginatedQuery.ID, category = Constants.CAT_FETCH, label = "ResultSet Query", description = "Perform a query on the "
-        + "repository. The result set returned will become the input for the " + "next operation.", since = "6.0", addToStudio = true, aliases = { "ResultSet.PaginatedQuery" })
+        + "repository. The result set returned will become the input for the "
+        + "next operation.", since = "6.0", addToStudio = true, aliases = { "ResultSet.PaginatedQuery" })
 public class ResultSetPaginatedQuery {
 
     public static final String ID = "Repository.ResultSetQuery";
@@ -73,8 +74,8 @@ public class ResultSetPaginatedQuery {
     @Param(name = "query", required = true, description = "The query to " + "perform.")
     protected String query;
 
-    @Param(name = "language", required = false, description = "The query " + "language.", widget = Constants.W_OPTION, values = {
-            NXQL.NXQL, CMIS })
+    @Param(name = "language", required = false, description = "The query "
+            + "language.", widget = Constants.W_OPTION, values = { NXQL.NXQL, CMIS })
     protected String lang = NXQL.NXQL;
 
     @Param(name = PageProviderService.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
@@ -93,8 +94,8 @@ public class ResultSetPaginatedQuery {
     @Param(name = "sortBy", required = false, description = "Sort by " + "properties (separated by comma)")
     protected String sortBy;
 
-    @Param(name = "sortOrder", required = false, description = "Sort order, " + "ASC or DESC", widget = Constants.W_OPTION, values = {
-            ASC, DESC })
+    @Param(name = "sortOrder", required = false, description = "Sort order, "
+            + "ASC or DESC", widget = Constants.W_OPTION, values = { ASC, DESC })
     protected String sortOrder;
 
     @SuppressWarnings("unchecked")
@@ -141,7 +142,7 @@ public class ResultSetPaginatedQuery {
             }
         }
 
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         DocumentModel searchDocumentModel = DocumentPaginatedQuery.getSearchDocumentModel(session, namedParameters);
         QueryAndFetchProviderDescriptor desc = new QueryAndFetchProviderDescriptor();

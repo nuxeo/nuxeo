@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,7 +182,6 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
         OAuth2Error error = OAuth2Error.invalidRequest(
                 String.format("The /oauth2/%s endpoint only accepts POST requests.", endpoint));
         handleError(error, SC_METHOD_NOT_ALLOWED, request, response);
-        return;
     }
 
     protected void doPostAuthorizeSubmit(HttpServletRequest request, HttpServletResponse response)

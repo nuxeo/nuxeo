@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,7 +139,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
         // Iterate on each index to set the binaryText column
         BlobsExtractor extractor = new BlobsExtractor();
         DocumentLocation docLocation = new DocumentLocationImpl(doc);
-        List<IndexAndText> indexesAndText = new LinkedList<IndexAndText>();
+        List<IndexAndText> indexesAndText = new LinkedList<>();
         for (String indexName : fulltextConfiguration.indexNames) {
             if (!fulltextConfiguration.indexesAllBinary.contains(indexName)
                     && fulltextConfiguration.propPathsByIndexBinary.get(indexName) == null) {
@@ -169,7 +169,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
                 WorkManager workManager = Framework.getService(WorkManager.class);
                 workManager.schedule(work, true);
             } else {
-                ((FulltextUpdaterWork)work).updateWithSession(session);
+                ((FulltextUpdaterWork) work).updateWithSession(session);
             }
         }
 
@@ -184,7 +184,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
 
     protected StringBlob blobsToStringBlob(List<Blob> blobs, String docId) {
         String mimeType = null;
-        List<String> strings = new LinkedList<String>();
+        List<String> strings = new LinkedList<>();
         for (Blob blob : blobs) {
             try {
                 SimpleBlobHolder bh = new SimpleBlobHolder(blob);

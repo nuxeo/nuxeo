@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,8 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
  * <li>label.schema.constraint.violation=Value '{0}' for field '{1}.{2}' does not respect constraint '{3}'</li>
  * <li>label.schema.constraint.violation.PatternConstraint='{1}.{2}' value ({0}) should match the following format :
  * '{4}'</li>
- * <li>label.schema.constraint.violation.PatternConstraint.myuserschema.firstname ='The firstname should not be empty'</li>
+ * <li>label.schema.constraint.violation.PatternConstraint.myuserschema.firstname ='The firstname should not be empty'
+ * </li>
  * </ul>
  * </p>
  *
@@ -84,7 +85,7 @@ public class ConstraintViolation implements Serializable {
 
     public ConstraintViolation(Schema schema, List<PathNode> fieldPath, Constraint constraint, Object invalidValue) {
         this.schema = schema;
-        path = new ArrayList<PathNode>(fieldPath);
+        path = new ArrayList<>(fieldPath);
         this.constraint = constraint;
         this.invalidValue = invalidValue;
     }
@@ -112,7 +113,7 @@ public class ConstraintViolation implements Serializable {
     public String getMessage(Locale locale) {
         // test whether there's a specific translation for for this field and this constraint
         // the expected key is label.schema.constraint.violation.[constraintName].[schemaName].[field].[subField]
-        List<String> pathTokens = new ArrayList<String>();
+        List<String> pathTokens = new ArrayList<>();
         pathTokens.add(Constraint.MESSAGES_KEY);
         pathTokens.add(constraint.getDescription().getName());
         pathTokens.add(schema.getName());
@@ -132,7 +133,7 @@ public class ConstraintViolation implements Serializable {
         }
         Object[] params = new Object[] { computedInvalidValue };
         Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
-        String message = null;
+        String message;
         try {
             message = I18NUtils.getMessageString(Constraint.MESSAGES_BUNDLE, key, params, computedLocale);
         } catch (MissingResourceException e) {

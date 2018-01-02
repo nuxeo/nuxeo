@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ public class AutomationRenderer {
                 String filename = getFilenameWithExtension(doc.getTitle(), blob.getMimeType(), "bin");
                 blob.setFilename(filename);
             }
-            List<Blob> blobs = new ArrayList<Blob>();
+            List<Blob> blobs = new ArrayList<>();
             blobs.add(blob);
             return blobs;
 

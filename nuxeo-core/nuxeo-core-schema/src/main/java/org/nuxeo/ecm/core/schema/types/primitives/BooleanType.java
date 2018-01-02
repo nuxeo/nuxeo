@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ public final class BooleanType extends PrimitiveType {
     }
 
     public List<Class<? extends Constraint>> getRelevantConstraints() {
-        List<Class<? extends Constraint>> classes = new ArrayList<Class<? extends Constraint>>();
+        List<Class<? extends Constraint>> classes = new ArrayList<>();
         classes.add(NotNullConstraint.class);
         return classes;
     }

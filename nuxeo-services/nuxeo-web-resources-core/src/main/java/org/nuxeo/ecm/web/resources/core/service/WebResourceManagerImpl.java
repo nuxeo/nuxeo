@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -209,7 +209,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
     }
 
     protected Map<String, Resource> getSubResources(DAG graph, Resource r, String type) {
-        Map<String, Resource> res = new HashMap<String, Resource>();
+        Map<String, Resource> res = new HashMap<>();
         List<String> deps = r.getDependencies();
         if (deps != null) {
             for (String dn : deps) {

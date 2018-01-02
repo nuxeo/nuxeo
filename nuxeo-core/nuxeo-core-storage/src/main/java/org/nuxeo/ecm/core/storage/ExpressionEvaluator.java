@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,7 +105,7 @@ public abstract class ExpressionEvaluator {
 
     public ExpressionEvaluator(PathResolver pathResolver, String[] principals, boolean fulltextSearchDisabled) {
         this.pathResolver = pathResolver;
-        this.principals = principals == null ? null : new HashSet<String>(Arrays.asList(principals));
+        this.principals = principals == null ? null : new HashSet<>(Arrays.asList(principals));
         this.fulltextSearchDisabled = fulltextSearchDisabled;
     }
 
@@ -426,7 +426,7 @@ public abstract class ExpressionEvaluator {
     }
 
     public List<Object> walkLiteralList(LiteralList litList) {
-        List<Object> list = new ArrayList<Object>(litList.size());
+        List<Object> list = new ArrayList<>(litList.size());
         for (Literal lit : litList) {
             list.add(walkLiteral(lit));
         }
@@ -750,7 +750,7 @@ public abstract class ExpressionEvaluator {
             return null;
         }
         // query
-        List<String> query = new ArrayList<String>();
+        List<String> query = new ArrayList<>();
         String phrase = null;
         int phraseWordCount = 1;
         int maxPhraseWordCount = 1; // maximum number of words in a phrase
@@ -789,7 +789,7 @@ public abstract class ExpressionEvaluator {
             return FALSE;
         }
         // fulltext
-        Set<String> fulltext = new HashSet<String>();
+        Set<String> fulltext = new HashSet<>();
         fulltext.addAll(parseFullText(string1, maxPhraseWordCount));
         fulltext.addAll(parseFullText(string2, maxPhraseWordCount));
 
@@ -800,7 +800,7 @@ public abstract class ExpressionEvaluator {
         if (string == null) {
             return Collections.emptySet();
         }
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         Deque<String> phraseWords = new LinkedList<>();
         for (String word : WORD_PATTERN.split(string)) {
             word = parseWord(word);
@@ -869,7 +869,7 @@ public abstract class ExpressionEvaluator {
     // matches "foo OR bar baz" as "foo OR (bar AND baz)"
     protected static boolean fulltext(Set<String> fulltext, List<String> query) {
         boolean andMatch = true;
-        for (PeekingIterator<String> it = Iterators.peekingIterator(query.iterator()); it.hasNext(); ) {
+        for (PeekingIterator<String> it = Iterators.peekingIterator(query.iterator()); it.hasNext();) {
             String word = it.next();
             boolean match;
             if (word.endsWith("*") || word.endsWith("%")) {
@@ -912,7 +912,7 @@ public abstract class ExpressionEvaluator {
     protected static boolean fulltext1(Set<String> fulltext, List<String> query) {
         boolean inOr = false; // if we're in a OR group
         boolean orMatch = false; // value of the OR group
-        for (PeekingIterator<String> it = Iterators.peekingIterator(query.iterator()); it.hasNext(); ) {
+        for (PeekingIterator<String> it = Iterators.peekingIterator(query.iterator()); it.hasNext();) {
             String word = it.next();
             if (it.hasNext() && it.peek().equals(OR)) {
                 inOr = true;

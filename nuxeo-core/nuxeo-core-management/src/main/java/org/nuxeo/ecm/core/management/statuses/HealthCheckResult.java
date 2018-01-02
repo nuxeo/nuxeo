@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class HealthCheckResult {
 
     public String toJson() {
         ObjectMapper om = new ObjectMapper();
-        Map<String, String> res = new HashMap<String, String>();
+        Map<String, String> res = new HashMap<>();
         try {
             for (ProbeInfo probe : probes) {
                 res.put(probe.getShortcutName(), (probe.getStatus().isSuccess() ? "ok" : "failed"));

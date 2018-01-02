@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public final class WrappedContext {
 
     private RenderingContext ctx;
 
-    private Map<String, Object> entries = new HashMap<String, Object>();
+    private Map<String, Object> entries = new HashMap<>();
 
     private WrappedContext(RenderingContext ctx) {
         if (ctx == null) {
@@ -129,7 +129,6 @@ public final class WrappedContext {
      *     // do not call the other marshaller
      * }
      * </pre>
-     *
      * </p>
      * <p>
      * You can also control the depth before (usefull for list):
@@ -147,12 +146,9 @@ public final class WrappedContext {
      *     // manage the case
      * }
      * </pre>
-     *
      * </p>
      *
-     * @return
-     * @throws MaxDepthReachedException
-     * @since TODO
+     * @since 7.2
      */
     public final WrappedContext controlDepth() throws MaxDepthReachedException {
         String depthKey = DEPTH_CONTROL_KEY_PREFIX + "DEFAULT";
@@ -186,7 +182,7 @@ public final class WrappedContext {
      * @since 7.2
      */
     public final Map<String, Object> flatten() {
-        Map<String, Object> mergedResult = new HashMap<String, Object>();
+        Map<String, Object> mergedResult = new HashMap<>();
         if (parent != null) {
             mergedResult.putAll(parent.flatten());
         }
@@ -220,7 +216,7 @@ public final class WrappedContext {
      *
      * @since 7.2
      */
-    private final <T> T innerGetEntity(String entityType) {
+    private <T> T innerGetEntity(String entityType) {
         @SuppressWarnings("unchecked")
         T value = (T) entries.get(entityType);
         if (value == null && parent != null) {

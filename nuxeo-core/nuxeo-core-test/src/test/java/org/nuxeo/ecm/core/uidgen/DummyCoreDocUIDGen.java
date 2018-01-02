@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.GregorianCalendar;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.uidgen.AbstractUIDGenerator;
 
 /**
  * Simulates a dummy UID generation based on a property.

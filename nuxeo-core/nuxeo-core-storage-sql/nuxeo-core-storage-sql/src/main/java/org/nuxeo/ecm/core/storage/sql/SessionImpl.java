@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionMetaData;
@@ -1121,8 +1120,7 @@ public class SessionImpl implements Session, XAResource {
                                                         .collect(Collectors.toSet());
         if (!retentionActiveIds.isEmpty()) {
             if (retentionActiveIds.contains(id)) {
-                throw new DocumentExistsException(
-                        "Cannot remove " + id + ", it is under active retention");
+                throw new DocumentExistsException("Cannot remove " + id + ", it is under active retention");
             } else {
                 throw new DocumentExistsException("Cannot remove " + id + ", subdocument "
                         + retentionActiveIds.iterator().next() + " is under active retention");
@@ -1247,12 +1245,7 @@ public class SessionImpl implements Session, XAResource {
         if (parent != null) {
             // filter by parent
             Serializable parentId = parent.getId();
-            for (Iterator<Node> it = nodes.iterator(); it.hasNext();) {
-                Node node = it.next();
-                if (!parentId.equals(node.getParentId())) {
-                    it.remove();
-                }
-            }
+            nodes.removeIf(node -> !parentId.equals(node.getParentId()));
         }
 
         return nodes;

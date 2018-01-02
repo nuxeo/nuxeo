@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,45 +15,42 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.mail.utils;
 
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CORE_SESSION_KEY;
-import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.EMAIL_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.EMAILS_LIMIT_PROPERTY_NAME;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.EMAIL_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.HOST_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.IMAP;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.IMAPS;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.LEAVE_ON_SERVER_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MIMETYPE_SERVICE_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PARENT_PATH_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PASSWORD_PROPERTY_NAME;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.POP3S;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PORT_PROPERTY_NAME;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PROTOCOL_TYPE_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PROTOCOL_TYPE_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SOCKET_FACTORY_FALLBACK_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SOCKET_FACTORY_PORT_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SSL_PROTOCOLS_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.STARTTLS_ENABLE_PROPERTY_NAME;
-import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.IMAPS;
-import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.POP3S;
-import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PROTOCOL_TYPE_KEY;
-import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.LEAVE_ON_SERVER_KEY;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.mail.FetchProfile;
 import javax.mail.Flags;
+import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
-import javax.mail.Flags.Flag;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -63,13 +60,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 import org.nuxeo.ecm.platform.mail.action.MessageActionPipe;
 import org.nuxeo.ecm.platform.mail.action.Visitor;
+import org.nuxeo.ecm.platform.mail.listener.MailEventListener;
 import org.nuxeo.ecm.platform.mail.service.MailService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
-import org.nuxeo.ecm.platform.mail.listener.MailEventListener;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.mail.imap.IMAPFolder;
-import com.sun.mail.imap.IMAPMessage;
 
 /**
  * Helper for Mail Core.
@@ -94,7 +90,7 @@ public final class MailCoreHelper {
 
     public static final String IMAP_DEBUG = "org.nuxeo.mail.imap.debug";
 
-    protected static final CopyOnWriteArrayList<String> processingMailBoxes = new CopyOnWriteArrayList<String>();
+    protected static final CopyOnWriteArrayList<String> processingMailBoxes = new CopyOnWriteArrayList<>();
 
     private MailCoreHelper() {
     }
@@ -236,7 +232,7 @@ public final class MailCoreHelper {
                     // ((IMAPFolder)rootFolder).doCommand(FetchProfile)
                 }
 
-                List<Message> unreadMessagesList = new ArrayList<Message>();
+                List<Message> unreadMessagesList = new ArrayList<>();
                 for (Message message : allMessages) {
                     Flags flags = message.getFlags();
                     int unreadMessagesListSize = unreadMessagesList.size();

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Stream;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -72,9 +72,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.BatchFinderWork;
 import org.nuxeo.ecm.core.BatchProcessorWork;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
-import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
+import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
@@ -157,11 +156,7 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
                 for (String itemPairStr : record) {
                     itemPairStr = StringUtils.remove(itemPairStr, QUOTE);
                     String[] parts = itemPairStr.split(EQUAL_SEPARATOR, 2);
-                    if (parts == null) {
-                        continue;
-                    } else {
-                        map.put(parts[0].trim(), parts[1].trim());
-                    }
+                    map.put(parts[0].trim(), parts[1].trim());
                 }
             }
         } catch (IOException e) {

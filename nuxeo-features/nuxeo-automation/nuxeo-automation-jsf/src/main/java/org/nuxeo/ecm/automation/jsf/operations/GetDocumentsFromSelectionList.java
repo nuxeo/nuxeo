@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public class GetDocumentsFromSelectionList {
             workingListName = DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
         }
 
-        List<DocumentModel> res = null;
+        List<DocumentModel> res;
         if (OperationHelper.isSeamContextAvailable()) {
             res = OperationHelper.getDocumentListManager().getWorkingList(workingListName);
         } else {
@@ -69,10 +69,9 @@ public class GetDocumentsFromSelectionList {
                 res = pm.loadPersistentDocumentsLists(ctx.getCoreSession(), ctx.getPrincipal().getName(),
                         workingListName);
             } else {
-                throw new OperationException(
-                        String.format(
-                                "Cannot get selected documents from selection list '%s' because the Seam context is not available and this list is not persisted.",
-                                workingListName));
+                throw new OperationException(String.format(
+                        "Cannot get selected documents from selection list '%s' because the Seam context is not available and this list is not persisted.",
+                        workingListName));
             }
         }
         return new DocumentModelListImpl(res);

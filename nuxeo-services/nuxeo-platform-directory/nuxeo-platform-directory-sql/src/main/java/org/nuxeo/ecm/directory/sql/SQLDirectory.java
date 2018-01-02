@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -204,9 +204,8 @@ public class SQLDirectory extends AbstractDirectory {
             readColumnsAllSQL = readColumnsAll.stream().map(Column::getQuotedName).collect(Collectors.joining(", "));
             readColumnsSQL = readColumns.stream().map(Column::getQuotedName).collect(Collectors.joining(", "));
             if (!hasPrimary) {
-                throw new DirectoryException(String.format(
-                        "Directory '%s' id field '%s' is not present in schema '%s'", getName(), getIdField(),
-                        getSchema()));
+                throw new DirectoryException(String.format("Directory '%s' id field '%s' is not present in schema '%s'",
+                        getName(), getIdField(), getSchema()));
             }
 
             SQLHelper helper = new SQLHelper(sqlConnection, table, descriptor.getCreateTablePolicy());

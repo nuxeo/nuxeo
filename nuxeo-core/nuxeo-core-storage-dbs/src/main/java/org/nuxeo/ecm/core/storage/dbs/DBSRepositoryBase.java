@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.storage.dbs;
 
 import static java.lang.Boolean.FALSE;
 
-import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -124,7 +123,6 @@ public abstract class DBSRepositoryBase implements DBSRepository {
      */
     protected boolean selfRegisteredLockManager = false;
 
-
     public DBSRepositoryBase(ConnectionManager cm, String repositoryName, DBSRepositoryDescriptor descriptor) {
         this.repositoryName = repositoryName;
         String idt = descriptor.idType;
@@ -161,7 +159,8 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         try {
             NuxeoContainer.disposeConnectionManager(cm);
         } catch (RuntimeException e) {
-            LogFactory.getLog(ConnectionFactoryImpl.class).warn("cannot dispose connection manager of " + repositoryName);
+            LogFactory.getLog(ConnectionFactoryImpl.class)
+                      .warn("cannot dispose connection manager of " + repositoryName);
         }
         if (selfRegisteredLockManager) {
             LockManagerService lms = Framework.getService(LockManagerService.class);
@@ -282,7 +281,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
      */
     public void initRoot() {
         Session session = getSession();
-        Document root = session.importDocument(getRootId(), null, "", TYPE_ROOT, new HashMap<String, Serializable>());
+        Document root = session.importDocument(getRootId(), null, "", TYPE_ROOT, new HashMap<>());
         ACLImpl acl = new ACLImpl();
         acl.add(new ACE(SecurityConstants.ADMINISTRATORS, SecurityConstants.EVERYTHING, true));
         acl.add(new ACE(SecurityConstants.ADMINISTRATOR, SecurityConstants.EVERYTHING, true));

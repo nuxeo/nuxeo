@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.SystemUtils;
-import org.apache.log4j.Priority;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,14 +39,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider;
 import org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider;
@@ -77,17 +74,12 @@ public class TestPageProvider {
     protected WorkManager workManager;
 
     @Inject
-    ElasticSearchIndexing esi;
+    protected ElasticSearchAdmin esa;
 
     @Inject
-    ElasticSearchAdmin esa;
-
-    @Inject
-    ElasticSearchService ess;
+    protected ElasticSearchService ess;
 
     private int commandProcessed;
-
-    private Priority consoleThresold;
 
     // Number of processed command since the startTransaction
     public void assertNumberOfCommandProcessed(int processed) throws Exception {
@@ -127,7 +119,7 @@ public class TestPageProvider {
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
-        PageProvider<?> pp = pps.getPageProvider("NATIVE_PP_PATTERN", ppdef, null, null, pageSize, (long) 0, props);
+        PageProvider<?> pp = pps.getPageProvider("NATIVE_PP_PATTERN", ppdef, null, null, pageSize, 0L, props);
         Assert.assertNotNull(pp);
 
         // create 10 docs
@@ -170,7 +162,7 @@ public class TestPageProvider {
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
         ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_PP_PATTERN", ppdef,
-                null, null, pageSize, (long) 0, props);
+                null, null, pageSize, 0L, props);
         Assert.assertNotNull(pp);
 
         // create 10 docs
@@ -206,8 +198,8 @@ public class TestPageProvider {
         pageSize = 10000;
         ppdef = pps.getPageProviderDefinition("NXQL_PP_PATTERN2");
         Assert.assertNotNull(ppdef);
-        pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_PP_PATTERN2", ppdef, null, null, pageSize,
-                (long) 0, props);
+        pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_PP_PATTERN2", ppdef, null, null, pageSize, 0L,
+                props);
         Assert.assertNotNull(pp);
         p = pp.getCurrentPage();
         Assert.assertEquals(10, pp.getResultsCount());
@@ -227,7 +219,7 @@ public class TestPageProvider {
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
-        PageProvider<?> pp = pps.getPageProvider("nxql_search", ppdef, null, null, pageSize, (long) 0, props);
+        PageProvider<?> pp = pps.getPageProvider("nxql_search", ppdef, null, null, pageSize, 0L, props);
         startTransaction();
         // create 10 docs
         for (int i = 0; i < 10; i++) {
@@ -245,35 +237,15 @@ public class TestPageProvider {
         pp.setParameters(params);
         List<DocumentModel> p = (List<DocumentModel>) pp.getCurrentPage();
         String esquery = ((ElasticSearchNxqlPageProvider) pp).getCurrentQueryAsEsBuilder().toString();
-        assertEqualsEvenUnderWindows("{\n" +
-                "  \"bool\" : {\n" +
-                "    \"must\" : [\n" +
-                "      {\n" +
-                "        \"match_phrase_prefix\" : {\n" +
-                "          \"dc:title\" : {\n" +
-                "            \"query\" : \"Test\",\n" +
-                "            \"slop\" : 0,\n" +
-                "            \"max_expansions\" : 50,\n" +
-                "            \"boost\" : 1.0\n" +
-                "          }\n" +
-                "        }\n" +
-                "      }\n" +
-                "    ],\n" +
-                "    \"filter\" : [\n" +
-                "      {\n" +
-                "        \"terms\" : {\n" +
-                "          \"ecm:primaryType\" : [\n" +
-                "            \"File\"\n" +
-                "          ],\n" +
-                "          \"boost\" : 1.0\n" +
-                "        }\n" +
-                "      }\n" +
-                "    ],\n" +
-                "    \"disable_coord\" : false,\n" +
-                "    \"adjust_pure_negative\" : true,\n" +
-                "    \"boost\" : 1.0\n" +
-                "  }\n" +
-                "}", esquery);
+        assertEqualsEvenUnderWindows("{\n" + "  \"bool\" : {\n" + "    \"must\" : [\n" + "      {\n"
+                + "        \"match_phrase_prefix\" : {\n" + "          \"dc:title\" : {\n"
+                + "            \"query\" : \"Test\",\n" + "            \"slop\" : 0,\n"
+                + "            \"max_expansions\" : 50,\n" + "            \"boost\" : 1.0\n" + "          }\n"
+                + "        }\n" + "      }\n" + "    ],\n" + "    \"filter\" : [\n" + "      {\n"
+                + "        \"terms\" : {\n" + "          \"ecm:primaryType\" : [\n" + "            \"File\"\n"
+                + "          ],\n" + "          \"boost\" : 1.0\n" + "        }\n" + "      }\n" + "    ],\n"
+                + "    \"disable_coord\" : false,\n" + "    \"adjust_pure_negative\" : true,\n"
+                + "    \"boost\" : 1.0\n" + "  }\n" + "}", esquery);
 
         Assert.assertEquals(10, pp.getResultsCount());
         Assert.assertNotNull(p);
@@ -295,7 +267,7 @@ public class TestPageProvider {
         model.setProperty("advanced_search", "source_agg", sources);
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
-        PageProvider<?> pp = pps.getPageProvider("NXQL_PP_FIXED_PART", ppdef, model, null, pageSize, (long) 0, props);
+        PageProvider<?> pp = pps.getPageProvider("NXQL_PP_FIXED_PART", ppdef, model, null, pageSize, 0L, props);
         // create 10 docs
         startTransaction();
         for (int i = 0; i < 10; i++) {
@@ -330,7 +302,7 @@ public class TestPageProvider {
         Assert.assertNotNull(ppdef);
         HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-        PageProvider<?> pp = pps.getPageProvider("INVALID_PP", ppdef, null, null, (long) 0, (long) 0, props);
+        PageProvider<?> pp = pps.getPageProvider("INVALID_PP", ppdef, null, null, 0L, 0L, props);
         assertNotNull(pp);
         logFeature.hideWarningFromConsoleLog();
         List<?> p = pp.getCurrentPage();
@@ -806,7 +778,7 @@ public class TestPageProvider {
         model.setProperty("advanced_search", "fulltext_all", "you know");
         model.setProperty("advanced_search", "description", "for search");
         ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_WITH_HINT", ppdef,
-                model, null, pageSize, (long) 0, props);
+                model, null, pageSize, 0L, props);
         Assert.assertNotNull(pp);
         pp.getCurrentPage(); // This is needed to build the nxql query
         String esquery = pp.getCurrentQueryAsEsBuilder().toString();
@@ -872,7 +844,7 @@ public class TestPageProvider {
         model.setProperty("advanced_search", "fulltext_all", "you know");
         model.setProperty("advanced_search", "description", "for search");
         ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_WITH_HINT", ppdef,
-                model, null, pageSize, (long) 0, props);
+                model, null, pageSize, 0L, props);
         Assert.assertNotNull(pp);
         pp.getCurrentPage(); // This is needed to build the nxql query
         String esquery = pp.getCurrentQueryAsEsBuilder().toString();
@@ -934,7 +906,7 @@ public class TestPageProvider {
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 2;
         ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_PP_PATTERN", ppdef,
-                null, null, pageSize, (long) 0, props);
+                null, null, pageSize, 0L, props);
         pp.setMaxResultWindow(6);
         Assert.assertEquals(6, pp.getMaxResultWindow());
         // create 10 docs

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.filemanager.service.extension;
 import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfiguration;
@@ -37,8 +35,6 @@ public class DefaultFileImporter extends AbstractFileImporter {
     public static final String TYPE_NAME = "File";
 
     private static final long serialVersionUID = 1L;
-
-    private static final Log log = LogFactory.getLog(DefaultFileImporter.class);
 
     @Override
     public boolean isOverwriteByTitle() {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,14 +53,14 @@ public class EnumConstraint extends AbstractConstraint {
      * Supports any objects, use their String representation.
      */
     public EnumConstraint(List<?> possibleValues) {
-        this.possibleValues = new HashSet<String>();
+        this.possibleValues = new HashSet<>();
         for (Object possibleValue : possibleValues) {
             this.possibleValues.add(possibleValue.toString());
         }
     }
 
     public EnumConstraint(Object... possibleValues) {
-        this.possibleValues = new HashSet<String>();
+        this.possibleValues = new HashSet<>();
         for (Object possibleValue : possibleValues) {
             this.possibleValues.add(possibleValue.toString());
         }
@@ -84,8 +84,8 @@ public class EnumConstraint extends AbstractConstraint {
      */
     @Override
     public Description getDescription() {
-        Map<String, Serializable> params = new HashMap<String, Serializable>();
-        params.put(EnumConstraint.PNAME_VALUES, new ArrayList<String>(possibleValues));
+        Map<String, Serializable> params = new HashMap<>();
+        params.put(EnumConstraint.PNAME_VALUES, new ArrayList<>(possibleValues));
         return new Description(EnumConstraint.NAME, params);
     }
 
@@ -98,7 +98,7 @@ public class EnumConstraint extends AbstractConstraint {
         // test whether there's a custom translation for this field constraint specific translation
         // the expected key is label.schema.constraint.violation.[ConstraintName]
         // follow the AbstractConstraint behavior otherwise
-        List<String> pathTokens = new ArrayList<String>();
+        List<String> pathTokens = new ArrayList<>();
         pathTokens.add(MESSAGES_KEY);
         pathTokens.add(EnumConstraint.NAME);
         String key = StringUtils.join(pathTokens, '.');

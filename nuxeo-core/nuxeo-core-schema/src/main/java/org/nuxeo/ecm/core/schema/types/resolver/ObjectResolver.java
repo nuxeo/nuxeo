@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public interface ObjectResolver extends Serializable {
      * @throws IllegalStateException If this resolver is already configured.
      * @since 7.1
      */
-    void configure(Map<String, String> parameters) throws IllegalArgumentException, IllegalArgumentException;
+    void configure(Map<String, String> parameters) throws IllegalArgumentException, IllegalStateException;
 
     /**
      * Returns the resolved object types.
@@ -124,11 +124,11 @@ public interface ObjectResolver extends Serializable {
     String getConstraintErrorMessage(Object invalidValue, Locale locale);
 
     /**
-     * Manage translation for resolver : {@link #getConstraintErrorMessage(ObjectResolver, Object, Locale)}
+     * Manage translation for resolver : {@link #getConstraintErrorMessage(ObjectResolver, Object, Locale, String...)}
      *
      * @since 7.1
      */
-    public static final class Helper {
+    final class Helper {
 
         private static final Log log = LogFactory.getLog(Helper.class);
 
@@ -148,7 +148,7 @@ public interface ObjectResolver extends Serializable {
          */
         public static String getConstraintErrorMessage(ObjectResolver resolver, String suffixCase, Object invalidValue,
                 Locale locale, String... additionnalParameters) {
-            List<String> pathTokens = new ArrayList<String>();
+            List<String> pathTokens = new ArrayList<>();
             pathTokens.add(Constraint.MESSAGES_KEY);
             pathTokens.add("resolver");
             pathTokens.add(resolver.getName());

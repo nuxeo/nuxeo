@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.core.operations.notification;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,7 +31,6 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.ws.rs.core.UriBuilder;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
@@ -59,7 +59,6 @@ import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 import freemarker.template.TemplateException;
@@ -81,9 +80,6 @@ public class SendMail {
 
     @Context
     protected OperationContext ctx;
-
-    @Context
-    protected UserManager umgr;
 
     @Param(name = "from")
     protected String from;
@@ -152,7 +148,7 @@ public class SendMail {
                 throw new OperationException("No such mail template: " + name);
             }
             try (InputStream in = url.openStream()) {
-                return IOUtils.toString(in, Charsets.UTF_8);
+                return IOUtils.toString(in, StandardCharsets.UTF_8);
             }
         } else {
             return StringEscapeUtils.unescapeHtml(message);

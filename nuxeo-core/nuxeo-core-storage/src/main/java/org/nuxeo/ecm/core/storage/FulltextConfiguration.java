@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.schema.Namespace;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -63,43 +61,43 @@ public class FulltextConfiguration {
     public static final String FULLTEXT_DEFAULT_INDEX = "default";
 
     /** All index names. */
-    public final Set<String> indexNames = new LinkedHashSet<String>();
+    public final Set<String> indexNames = new LinkedHashSet<>();
 
     /** Indexes holding exactly one field. */
-    public final Map<String, String> fieldToIndexName = new HashMap<String, String>();
+    public final Map<String, String> fieldToIndexName = new HashMap<>();
 
     /** Indexes containing all simple properties. */
-    public final Set<String> indexesAllSimple = new HashSet<String>();
+    public final Set<String> indexesAllSimple = new HashSet<>();
 
     /** Indexes containing all binaries properties. */
-    public final Set<String> indexesAllBinary = new HashSet<String>();
+    public final Set<String> indexesAllBinary = new HashSet<>();
 
     /** Indexes for each specific simple property path. */
-    public final Map<String, Set<String>> indexesByPropPathSimple = new HashMap<String, Set<String>>();
+    public final Map<String, Set<String>> indexesByPropPathSimple = new HashMap<>();
 
     /** Indexes for each specific binary property path. */
     // DBSTransactionState.findDirtyDocuments expects this to contain unprefixed versions for schemas
     // without prefix, like "content/data".
-    public final Map<String, Set<String>> indexesByPropPathBinary = new HashMap<String, Set<String>>();
+    public final Map<String, Set<String>> indexesByPropPathBinary = new HashMap<>();
 
     /** Indexes for each specific simple property path excluded. */
-    public final Map<String, Set<String>> indexesByPropPathExcludedSimple = new HashMap<String, Set<String>>();
+    public final Map<String, Set<String>> indexesByPropPathExcludedSimple = new HashMap<>();
 
     /** Indexes for each specific binary property path excluded. */
-    public final Map<String, Set<String>> indexesByPropPathExcludedBinary = new HashMap<String, Set<String>>();
+    public final Map<String, Set<String>> indexesByPropPathExcludedBinary = new HashMap<>();
 
     // inverse of above maps
-    public final Map<String, Set<String>> propPathsByIndexSimple = new HashMap<String, Set<String>>();
+    public final Map<String, Set<String>> propPathsByIndexSimple = new HashMap<>();
 
-    public final Map<String, Set<String>> propPathsByIndexBinary = new HashMap<String, Set<String>>();
+    public final Map<String, Set<String>> propPathsByIndexBinary = new HashMap<>();
 
-    public final Map<String, Set<String>> propPathsExcludedByIndexSimple = new HashMap<String, Set<String>>();
+    public final Map<String, Set<String>> propPathsExcludedByIndexSimple = new HashMap<>();
 
-    public final Map<String, Set<String>> propPathsExcludedByIndexBinary = new HashMap<String, Set<String>>();
+    public final Map<String, Set<String>> propPathsExcludedByIndexBinary = new HashMap<>();
 
-    public final Set<String> excludedTypes = new HashSet<String>();
+    public final Set<String> excludedTypes = new HashSet<>();
 
-    public final Set<String> includedTypes = new HashSet<String>();
+    public final Set<String> includedTypes = new HashSet<>();
 
     public final boolean fulltextSearchDisabled;
 
@@ -123,7 +121,7 @@ public class FulltextConfiguration {
 
         List<FulltextIndexDescriptor> descs = fulltextDescriptor.getFulltextIndexes();
         if (descs == null) {
-            descs = new ArrayList<FulltextIndexDescriptor>(1);
+            descs = new ArrayList<>(1);
         }
         if (descs.isEmpty()) {
             descs.add(new FulltextIndexDescriptor());
@@ -132,10 +130,10 @@ public class FulltextConfiguration {
             String name = desc.name == null ? FULLTEXT_DEFAULT_INDEX : desc.name;
             indexNames.add(name);
             if (desc.fields == null) {
-                desc.fields = new HashSet<String>();
+                desc.fields = new HashSet<>();
             }
             if (desc.excludeFields == null) {
-                desc.excludeFields = new HashSet<String>();
+                desc.excludeFields = new HashSet<>();
             }
             if (desc.fields.size() == 1 && desc.excludeFields.isEmpty()) {
                 fieldToIndexName.put(desc.fields.iterator().next(), name);

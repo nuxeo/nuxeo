@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,6 @@ import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Adapter allowing to convert a Blob using a named converter or a destination mime type.

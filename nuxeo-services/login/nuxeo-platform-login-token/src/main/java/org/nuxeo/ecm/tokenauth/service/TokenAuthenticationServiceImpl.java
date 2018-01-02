@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,7 +158,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                                                                                                              .getComponent(
                                                                                                                      PluggableAuthenticationService.NAME);
             AuthenticationPluginDescriptor tokenAuthPluginDesc = authenticationService.getDescriptor("TOKEN_AUTH");
-            if (tokenAuthPluginDesc == null || !(Boolean.valueOf(
+            if (tokenAuthPluginDesc == null || !(Boolean.parseBoolean(
                     tokenAuthPluginDesc.getParameters().get(TokenAuthenticator.ALLOW_ANONYMOUS_KEY)))) {
                 return null;
             }
@@ -195,7 +195,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                 // Look for a token bound to the (userName,
                 // applicationName, deviceId) triplet, if it exists return it,
                 // else return null
-                final Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                final Map<String, Serializable> filter = new HashMap<>();
                 filter.put(USERNAME_FIELD, userName);
                 filter.put(APPLICATION_NAME_FIELD, applicationName);
                 filter.put(DEVICE_ID_FIELD, deviceId);
@@ -310,12 +310,12 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
         }
         try {
             try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
-                final Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                final Map<String, Serializable> filter = new HashMap<>();
                 filter.put(USERNAME_FIELD, userName);
                 if (applicationName != null) {
                     filter.put(APPLICATION_NAME_FIELD, applicationName);
                 }
-                final Map<String, String> orderBy = new HashMap<String, String>();
+                final Map<String, String> orderBy = new HashMap<>();
                 orderBy.put(CREATION_DATE_FIELD, "desc");
                 return session.query(filter, Collections.emptySet(), orderBy);
             }

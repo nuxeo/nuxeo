@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,26 +26,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.api.client.auth.oauth2.TokenResponse;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
-
-import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
-import com.google.api.client.auth.oauth2.BearerToken;
-import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpExecuteInterceptor;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
-import javax.servlet.http.HttpServletRequest;
+import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
+import com.google.api.client.auth.oauth2.BearerToken;
+import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.auth.oauth2.TokenResponse;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpExecuteInterceptor;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 
 public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
 
@@ -87,18 +86,12 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
 
     @Override
     public String getAuthorizationUrl(HttpServletRequest request) {
-        return getAuthorizationCodeFlow()
-            .newAuthorizationUrl()
-            .setRedirectUri(getCallbackUrl(request))
-            .build();
+        return getAuthorizationCodeFlow().newAuthorizationUrl().setRedirectUri(getCallbackUrl(request)).build();
     }
 
     @Override
     public String getAuthorizationUrl(String serverURL) {
-        return getAuthorizationCodeFlow()
-            .newAuthorizationUrl()
-            .setRedirectUri(getCallbackUrl(serverURL))
-            .build();
+        return getAuthorizationCodeFlow().newAuthorizationUrl().setRedirectUri(getCallbackUrl(serverURL)).build();
     }
 
     protected String getCallbackUrl(HttpServletRequest request) {
@@ -134,8 +127,10 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
             String redirectUri = getCallbackUrl(request);
 
             TokenResponse tokenResponse = flow.newTokenRequest(code)
-                .setScopes(scopes.isEmpty() ? null : scopes) // some providers do not support the 'scopes' param
-                .setRedirectUri(redirectUri).execute();
+                                              .setScopes(scopes.isEmpty() ? null : scopes) // some providers do not
+                                                                                           // support the 'scopes' param
+                                              .setRedirectUri(redirectUri)
+                                              .execute();
 
             // Create a unique userId to use with the credential store
             String userId = getOrCreateServiceUser(request, tokenResponse.getAccessToken());
@@ -160,8 +155,8 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
     }
 
     /**
-     * Returns the userId to use for token entries.
-     * Should be overriden by subclasses wanting to rely on a different field as key.
+     * Returns the userId to use for token entries. Should be overriden by subclasses wanting to rely on a different
+     * field as key.
      */
     protected String getServiceUserId(String key) {
         Map<String, Serializable> filter = new HashMap<>();
@@ -170,8 +165,8 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
     }
 
     /**
-     * Retrieves or creates a service user.
-     * Should be overriden by subclasses wanting to rely on a different field as key.
+     * Retrieves or creates a service user. Should be overriden by subclasses wanting to rely on a different field as
+     * key.
      */
     protected String getOrCreateServiceUser(HttpServletRequest request, String accessToken) throws IOException {
         String nuxeoLogin = request.getUserPrincipal().getName();
@@ -189,10 +184,9 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
         String authorizationServerUrl = authorizationServerURL;
 
         return new AuthorizationCodeFlow.Builder(method, HTTP_TRANSPORT, JSON_FACTORY, tokenServerUrl,
-                clientAuthentication, clientId, authorizationServerUrl)
-                .setScopes(scopes)
-                .setCredentialDataStore(getCredentialDataStore())
-                .build();
+                clientAuthentication, clientId, authorizationServerUrl).setScopes(scopes)
+                                                                       .setCredentialDataStore(getCredentialDataStore())
+                                                                       .build();
     }
 
     protected OAuth2ServiceUserStore getServiceUserStore() {

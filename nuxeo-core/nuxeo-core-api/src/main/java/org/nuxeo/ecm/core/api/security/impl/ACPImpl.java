@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,8 @@ public class ACPImpl implements ACP {
     private transient Map<String, Access> cache;
 
     public ACPImpl() {
-        acls = new ArrayList<ACL>();
-        cache = new HashMap<String, Access>();
+        acls = new ArrayList<>();
+        cache = new HashMap<>();
     }
 
     /**
@@ -132,17 +132,8 @@ public class ACPImpl implements ACP {
 
     @Override
     public ACL getACL(String name) {
-        if (name == null) {
-            name = ACL.LOCAL_ACL;
-        }
-        int len = acls.size();
-        for (int i = 0; i < len; i++) {
-            ACL acl = acls.get(i);
-            if (acl.getName().equals(name)) {
-                return acl;
-            }
-        }
-        return null;
+        String localName = name == null ? ACL.LOCAL_ACL : name;
+        return acls.stream().filter(acl -> acl.getName().equals(localName)).findFirst().orElse(null);
     }
 
     @Override
@@ -337,7 +328,7 @@ public class ACPImpl implements ACP {
         // always perform the default de-serialization first
         in.defaultReadObject();
         // initialize cache to avoid NPE
-        cache = new HashMap<String, Access>();
+        cache = new HashMap<>();
     }
 
     /*
@@ -346,7 +337,7 @@ public class ACPImpl implements ACP {
      */
     @Override
     public String[] listUsernamesForAnyPermission(Set<String> perms) {
-        List<String> usernames = new ArrayList<String>();
+        List<String> usernames = new ArrayList<>();
         ACL merged = getMergedACLs("merged");
         for (ACE ace : merged.getACEs()) {
             if (perms.contains(ace.getPermission()) && ace.isGranted()) {

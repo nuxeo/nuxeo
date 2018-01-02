@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,9 +63,8 @@ public class ScreenshotTaker {
         if (TakesScreenshot.class.isInstance(driver)) {
             try {
                 Thread.sleep(250);
-                String name = filename;
                 return TakesScreenshot.class.cast(driver)
-                                            .getScreenshotAs(new ScreenShotFileOutput(targetDirName, name));
+                                            .getScreenshotAs(new ScreenShotFileOutput(targetDirName, filename));
             } catch (InterruptedException e) {
                 log.error(e, e);
             }

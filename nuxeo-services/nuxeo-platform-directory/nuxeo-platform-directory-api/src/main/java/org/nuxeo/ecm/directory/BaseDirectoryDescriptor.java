@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class BaseDirectoryDescriptor implements Cloneable {
         /** Matches final substring. */
         subfinal,
         /** Matches any substring. */
-        subany;
+        subany
     }
 
     public static final boolean AUTO_INCREMENT_ID_FIELD_DEFAULT = false;
@@ -240,7 +240,7 @@ public class BaseDirectoryDescriptor implements Cloneable {
         }
         try {
             return SubstringMatchType.valueOf(substringMatchType);
-        } catch (IllegalArgumentException  e) {
+        } catch (IllegalArgumentException e) {
             log.error("Unknown value for <substringMatchType>: " + substringMatchType);
             return SUBSTRING_MATCH_TYPE_DEFAULT;
         }
@@ -275,9 +275,8 @@ public class BaseDirectoryDescriptor implements Cloneable {
                                      .toArray(ReferenceDescriptor[]::new);
         }
         if (inverseReferences != null) {
-            clone.inverseReferences = Arrays.stream(inverseReferences)
-                                     .map(InverseReferenceDescriptor::clone)
-                                     .toArray(InverseReferenceDescriptor[]::new);
+            clone.inverseReferences = Arrays.stream(inverseReferences).map(InverseReferenceDescriptor::clone).toArray(
+                    InverseReferenceDescriptor[]::new);
         }
         return clone;
     }

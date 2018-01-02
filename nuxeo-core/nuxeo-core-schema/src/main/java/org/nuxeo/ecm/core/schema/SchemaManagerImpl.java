@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,6 +127,7 @@ public class SchemaManagerImpl implements SchemaManager {
 
     /**
      * Default used for clearComplexPropertyBeforeSet if there is no XML configuration found.
+     *
      * @since 9.3
      */
     public static final boolean CLEAR_COMPLEX_PROP_BEFORE_SET_DEFAULT = true;
@@ -530,11 +531,7 @@ public class SchemaManagerImpl implements SchemaManager {
         documentTypesForFacet.clear();
         for (DocumentType docType : documentTypes.values()) {
             for (String facet : docType.getFacets()) {
-                Set<String> set = documentTypesForFacet.get(facet);
-                if (set == null) {
-                    documentTypesForFacet.put(facet, set = new HashSet<>());
-                }
-                set.add(docType.getName());
+                documentTypesForFacet.computeIfAbsent(facet, k -> new HashSet<>()).add(docType.getName());
             }
         }
 

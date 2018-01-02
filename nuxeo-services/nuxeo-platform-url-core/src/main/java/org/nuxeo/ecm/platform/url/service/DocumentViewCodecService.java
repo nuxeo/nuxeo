@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,8 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
     protected final Map<String, DocumentViewCodec> codecs;
 
     public DocumentViewCodecService() {
-        descriptors = new ConcurrentHashMap<String, DocumentViewCodecDescriptor>();
-        codecs = new ConcurrentHashMap<String, DocumentViewCodec>();
+        descriptors = new ConcurrentHashMap<>();
+        codecs = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -123,7 +123,7 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
     }
 
     public List<String> getDocumentViewCodecDescriptorNames() {
-        List<String> lst = new ArrayList<String>();
+        List<String> lst = new ArrayList<>();
         for (String k : descriptors.keySet()) {
             if (descriptors.get(k).getEnabled()) {
                 lst.add(k);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -262,7 +262,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         if (imageInfo == null) {
             imageInfo = getImageInfo(blob);
         }
-        List<PictureView> views = new ArrayList<PictureView>();
+        List<PictureView> views = new ArrayList<>();
         for (PictureConversion pictureConversion : pictureConversions) {
             views.add(computeView(blob, pictureConversion, imageInfo, convert));
         }
@@ -296,7 +296,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         String filename = blob.getFilename();
         String title = pictureConversion.getId();
         String viewFilename = title + "_" + filename;
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
         map.put(PictureView.FIELD_TITLE, pictureConversion.getId());
         map.put(PictureView.FIELD_DESCRIPTION, pictureConversion.getDescription());
         map.put(PictureView.FIELD_FILENAME, viewFilename);
@@ -325,17 +325,16 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     @Deprecated
     protected PictureView computeOriginalJpegView(Blob blob, PictureConversion pictureConversion, ImageInfo imageInfo)
             throws IOException {
-        String filename = blob.getFilename();
         String title = pictureConversion.getId();
         int width = imageInfo.getWidth();
         int height = imageInfo.getHeight();
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
         map.put(PictureView.FIELD_TITLE, pictureConversion.getId());
         map.put(PictureView.FIELD_DESCRIPTION, pictureConversion.getDescription());
         map.put(PictureView.FIELD_TAG, pictureConversion.getTag());
         map.put(PictureView.FIELD_WIDTH, width);
         map.put(PictureView.FIELD_HEIGHT, height);
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
         options.put(OPTION_RESIZE_WIDTH, width);
         options.put(OPTION_RESIZE_HEIGHT, height);
         options.put(OPTION_RESIZE_DEPTH, imageInfo.getDepth());
@@ -376,7 +375,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
 
         String title = pictureConversion.getId();
 
-        Map<String, Serializable> pictureViewMap = new HashMap<String, Serializable>();
+        Map<String, Serializable> pictureViewMap = new HashMap<>();
         pictureViewMap.put(PictureView.FIELD_TITLE, title);
         pictureViewMap.put(PictureView.FIELD_DESCRIPTION, pictureConversion.getDescription());
         pictureViewMap.put(PictureView.FIELD_TAG, pictureConversion.getTag());
@@ -533,7 +532,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     @Override
     public List<List<PictureView>> computeViewsFor(List<Blob> blobs, List<PictureConversion> pictureConversions,
             ImageInfo imageInfo, boolean convert) throws IOException {
-        List<List<PictureView>> allViews = new ArrayList<List<PictureView>>();
+        List<List<PictureView>> allViews = new ArrayList<>();
         for (Blob blob : blobs) {
             allViews.add(computeViewsFor(blob, pictureConversions, imageInfo, convert));
         }

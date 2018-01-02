@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,10 @@
 
 package org.nuxeo.elasticsearch.test.nxql;
 
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.apache.commons.lang.SystemUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -34,7 +38,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.query.NxqlQueryConverter;
@@ -44,10 +47,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
 
 /**
  * Test that NXQL can be used to generate ES queries
@@ -71,9 +70,6 @@ public class TestNxqlConversion {
 
     @Inject
     protected ElasticSearchAdmin esa;
-
-    @Inject
-    protected ElasticSearchIndexing esi;
 
     protected void buildDocs() throws Exception {
         for (int i = 0; i < 10; i++) {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,11 +77,13 @@ public class TokenAuthenticationServlet extends HttpServlet {
         // the authentication plugin configuration
         Principal principal = req.getUserPrincipal();
         if (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAnonymous()) {
-            PluggableAuthenticationService authenticationService = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                    PluggableAuthenticationService.NAME);
-            AuthenticationPluginDescriptor tokenAuthPluginDesc = authenticationService.getDescriptor(TOKEN_AUTH_PLUGIN_NAME);
-            if (tokenAuthPluginDesc == null
-                    || !(Boolean.valueOf(tokenAuthPluginDesc.getParameters().get(TokenAuthenticator.ALLOW_ANONYMOUS_KEY)))) {
+            PluggableAuthenticationService authenticationService = (PluggableAuthenticationService) Framework.getRuntime()
+                                                                                                             .getComponent(
+                                                                                                                     PluggableAuthenticationService.NAME);
+            AuthenticationPluginDescriptor tokenAuthPluginDesc = authenticationService.getDescriptor(
+                    TOKEN_AUTH_PLUGIN_NAME);
+            if (tokenAuthPluginDesc == null || !(Boolean.parseBoolean(
+                    tokenAuthPluginDesc.getParameters().get(TokenAuthenticator.ALLOW_ANONYMOUS_KEY)))) {
                 log.debug("Anonymous user is not allowed to acquire an authentication token.");
                 resp.sendError(HttpStatus.SC_UNAUTHORIZED);
                 return;
@@ -95,18 +97,20 @@ public class TokenAuthenticationServlet extends HttpServlet {
         String deviceDescription = req.getParameter(DEVICE_DESCRIPTION_PARAM);
         String permission = req.getParameter(PERMISSION_PARAM);
         String revokeParam = req.getParameter(REVOKE_PARAM);
-        boolean revoke = Boolean.valueOf(revokeParam);
+        boolean revoke = Boolean.parseBoolean(revokeParam);
 
         // If one of the required parameters is null or empty, send an
         // error with the 400 status
-        if (!revoke
-                && (StringUtils.isEmpty(applicationName) || StringUtils.isEmpty(deviceId) || StringUtils.isEmpty(permission))) {
-            log.error("The following request parameters are mandatory to acquire an authentication token: applicationName, deviceId, permission.");
+        if (!revoke && (StringUtils.isEmpty(applicationName) || StringUtils.isEmpty(deviceId)
+                || StringUtils.isEmpty(permission))) {
+            log.error(
+                    "The following request parameters are mandatory to acquire an authentication token: applicationName, deviceId, permission.");
             resp.sendError(HttpStatus.SC_BAD_REQUEST);
             return;
         }
         if (revoke && (StringUtils.isEmpty(applicationName) || StringUtils.isEmpty(deviceId))) {
-            log.error("The following request parameters are mandatory to revoke an authentication token: applicationName, deviceId.");
+            log.error(
+                    "The following request parameters are mandatory to revoke an authentication token: applicationName, deviceId.");
             resp.sendError(HttpStatus.SC_BAD_REQUEST);
             return;
         }
@@ -119,7 +123,7 @@ public class TokenAuthenticationServlet extends HttpServlet {
         String userName = principal.getName();
 
         // Write response
-        String response = null;
+        String response;
         int statusCode;
         TokenAuthenticationService tokenAuthService = Framework.getService(TokenAuthenticationService.class);
         try {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.picture.recompute;
 
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
+
+import java.io.Serializable;
+
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -35,10 +39,6 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.Serializable;
-
-import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
 
 @Name("imagingRecomputeActions")
 @Scope(ScopeType.CONVERSATION)

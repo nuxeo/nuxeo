@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,6 @@
 
 package org.nuxeo.usermapper.extension;
 
-import groovy.lang.Binding;
-import groovy.lang.GroovyClassLoader;
-import groovy.lang.Script;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -32,6 +28,10 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+
+import groovy.lang.Binding;
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.Script;
 
 /**
  * Implement the {@link UserMapper} using Groovy Scripting for the mapping part

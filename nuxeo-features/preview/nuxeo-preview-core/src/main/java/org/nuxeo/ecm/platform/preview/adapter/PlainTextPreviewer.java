@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class PlainTextPreviewer extends AbstractPreviewer implements MimeTypePre
 
     @Override
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
-        List<Blob> blobResults = new ArrayList<Blob>();
+        List<Blob> blobResults = new ArrayList<>();
 
         StringBuilder htmlPage = new StringBuilder();
 
@@ -64,7 +64,7 @@ public class PlainTextPreviewer extends AbstractPreviewer implements MimeTypePre
             encoding = detector.detect().getName();
         }
 
-        String content = null;
+        String content;
         try {
             content = new String(data, encoding);
         } catch (UnsupportedEncodingException e) {

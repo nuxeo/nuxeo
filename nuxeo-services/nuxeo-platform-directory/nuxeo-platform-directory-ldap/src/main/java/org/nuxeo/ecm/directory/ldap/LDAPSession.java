@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -288,8 +288,11 @@ public class LDAPSession extends BaseSession {
                 }
 
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
-                            + "mod_op='REMOVE_ATTRIBUTE' attr='%s' [%s]", docModel, dn, attrsToDel, this));
+                    log.debug(
+                            String.format(
+                                    "LDAPSession.updateEntry(%s): LDAP modifyAttributes dn='%s' "
+                                            + "mod_op='REMOVE_ATTRIBUTE' attr='%s' [%s]",
+                                    docModel, dn, attrsToDel, this));
                 }
                 getContext().modifyAttributes(dn, DirContext.REMOVE_ATTRIBUTE, attrsToDel);
 
@@ -460,29 +463,29 @@ public class LDAPSession extends BaseSession {
                 StringBuilder currentFilter = new StringBuilder();
                 currentFilter.append("(");
                 if (fieldValue == null) {
-                    currentFilter.append("!(" + backendFieldName + "=*)");
+                    currentFilter.append("!(").append(backendFieldName).append("=*)");
                 } else if ("".equals(fieldValue)) {
                     if (fulltext.contains(fieldName)) {
-                        currentFilter.append(backendFieldName + "=*");
+                        currentFilter.append(backendFieldName).append("=*");
                     } else {
-                        currentFilter.append("!(" + backendFieldName + "=*)");
+                        currentFilter.append("!(").append(backendFieldName).append("=*)");
                     }
                 } else {
-                    currentFilter.append(backendFieldName + "=");
+                    currentFilter.append(backendFieldName).append("=");
                     if (fulltext.contains(fieldName)) {
                         switch (substringMatchType) {
                         case subinitial:
-                            currentFilter.append("{" + index + "}*");
+                            currentFilter.append("{").append(index).append("}*");
                             break;
                         case subfinal:
-                            currentFilter.append("*{" + index + "}");
+                            currentFilter.append("*{").append(index).append("}");
                             break;
                         case subany:
-                            currentFilter.append("*{" + index + "}*");
+                            currentFilter.append("*{").append(index).append("}*");
                             break;
                         }
                     } else {
-                        currentFilter.append("{" + index + "}");
+                        currentFilter.append("{").append(index).append("}");
                     }
                 }
                 currentFilter.append(")");
@@ -891,10 +894,10 @@ public class LDAPSession extends BaseSession {
     @SuppressWarnings("unchecked")
     protected List<String> getMandatoryAttributes(Attribute objectClassesAttribute) throws DirectoryException {
         try {
-            List<String> mandatoryAttributes = new ArrayList<String>();
+            List<String> mandatoryAttributes = new ArrayList<>();
 
             DirContext schema = getContext().getSchema("");
-            List<String> objectClasses = new ArrayList<String>();
+            List<String> objectClasses = new ArrayList<>();
             if (objectClassesAttribute == null) {
                 // use the creation classes as reference schema for this entry
                 objectClasses.addAll(Arrays.asList(getDirectory().getDescriptor().getCreationClasses()));

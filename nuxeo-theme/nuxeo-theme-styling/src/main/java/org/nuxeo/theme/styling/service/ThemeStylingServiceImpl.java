@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -215,7 +215,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
     }
 
     protected List<FlavorPresets> computePresets(FlavorDescriptor flavor, List<String> flavors) {
-        List<FlavorPresets> presets = new ArrayList<FlavorPresets>();
+        List<FlavorPresets> presets = new ArrayList<>();
         if (flavor != null) {
             List<FlavorPresets> localPresets = flavor.getPresets();
             if (localPresets != null) {
@@ -266,7 +266,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         } else {
             resource.setName(name + "." + ResourceType.css.name());
         }
-        resource.setProcessors(Arrays.asList(new String[] { "flavor" }));
+        resource.setProcessors(Collections.singletonList("flavor"));
         return resource;
     }
 
@@ -274,7 +274,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         if (path == null) {
             return null;
         }
-        URL url = null;
+        URL url;
         try {
             url = new URL(path);
         } catch (MalformedURLException e) {
@@ -305,9 +305,9 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             FlavorDescriptor flavor = flavorReg.getFlavor(flavorName);
             if (flavor != null) {
                 FlavorDescriptor clone = flavor.clone();
-                clone.setLogo(computeLogo(flavor, new ArrayList<String>()));
-                clone.setPalettePreview(computePalettePreview(flavor, new ArrayList<String>()));
-                clone.setFavicons(computeIcons(flavor, new ArrayList<String>()));
+                clone.setLogo(computeLogo(flavor, new ArrayList<>()));
+                clone.setPalettePreview(computePalettePreview(flavor, new ArrayList<>()));
+                clone.setFavicons(computeIcons(flavor, new ArrayList<>()));
                 return clone;
             }
         }
@@ -409,7 +409,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         if (pageReg != null) {
             PageDescriptor themePage = pageReg.getPage(themePageName);
             if (themePage != null) {
-                List<String> flavors = new ArrayList<String>();
+                List<String> flavors = new ArrayList<>();
                 List<String> localFlavors = themePage.getFlavors();
                 if (localFlavors != null) {
                     flavors.addAll(localFlavors);
@@ -439,7 +439,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
     public List<FlavorDescriptor> getFlavors(String themePageName) {
         List<String> flavorNames = getFlavorNames(themePageName);
         if (flavorNames != null) {
-            List<FlavorDescriptor> flavors = new ArrayList<FlavorDescriptor>();
+            List<FlavorDescriptor> flavors = new ArrayList<>();
             for (String flavorName : flavorNames) {
                 FlavorDescriptor flavor = getFlavor(flavorName);
                 if (flavor != null) {
@@ -453,8 +453,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
 
     protected Map<String, Map<String, String>> getPresetsByCat(FlavorDescriptor flavor) {
         String flavorName = flavor.getName();
-        List<FlavorPresets> presets = computePresets(flavor, new ArrayList<String>());
-        Map<String, Map<String, String>> presetsByCat = new HashMap<String, Map<String, String>>();
+        List<FlavorPresets> presets = computePresets(flavor, new ArrayList<>());
+        Map<String, Map<String, String>> presetsByCat = new HashMap<>();
         if (presets != null) {
             for (FlavorPresets myPreset : presets) {
                 String content = myPreset.getContent();
@@ -467,7 +467,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                     if (presetsByCat.containsKey(cat)) {
                         allEntries = presetsByCat.get(cat);
                     } else {
-                        allEntries = new HashMap<String, String>();
+                        allEntries = new HashMap<>();
                     }
                     try {
                         Map<String, String> newEntries = PaletteParser.parse(content.getBytes(), myPreset.getSrc());
@@ -491,7 +491,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
 
     @Override
     public Map<String, String> getPresetVariables(String flavorName) {
-        Map<String, String> res = new HashMap<String, String>();
+        Map<String, String> res = new HashMap<>();
         FlavorDescriptor flavor = getFlavor(flavorName);
         if (flavor == null) {
             return res;
@@ -519,7 +519,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
 
     @Override
     public List<PageDescriptor> getPages() {
-        List<PageDescriptor> pages = new ArrayList<PageDescriptor>();
+        List<PageDescriptor> pages = new ArrayList<>();
         List<String> names = pageReg.getPageNames();
         PageDescriptor globalPage = pageReg.getPage("*");
         for (String name : names) {

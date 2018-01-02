@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,13 +51,13 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory im
     public static final String RENDITION_NAME_PARAMETER_KEY = "renditionName";
 
     @Override
-    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            {
+    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode,
+            Map<String, String> params) {
         if (params != null && params.containsKey(RENDITION_NAME_PARAMETER_KEY)) {
             String renditionName = params.get(RENDITION_NAME_PARAMETER_KEY);
             if (!StringUtils.isEmpty(renditionName)) {
-                DocumentModel renditionDocument = null;
-                Rendition rendition = null;
+                DocumentModel renditionDocument;
+                Rendition rendition;
                 rendition = getRenditionService().getRendition(doc, renditionName, true);
                 if (rendition != null) {
                     renditionDocument = rendition.getHostDocument();
