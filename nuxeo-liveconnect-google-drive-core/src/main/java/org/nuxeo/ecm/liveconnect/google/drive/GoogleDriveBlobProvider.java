@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -273,8 +273,8 @@ public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<Goo
         LiveConnectFileInfo fileInfo = toFileInfo(blob);
         if (fileInfo.getRevisionId().isPresent()) {
             Revision revision = getRevision(fileInfo);
-            return revision != null && TRUE.equals(revision.getPinned()) ?
-                    revision.getExportLinks() : Collections.emptyMap();
+            return revision != null && TRUE.equals(revision.getPinned()) ? revision.getExportLinks()
+                    : Collections.emptyMap();
         } else {
             File file = getDriveFile(fileInfo);
             return file.getExportLinks();
@@ -461,7 +461,8 @@ public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<Goo
             ListProperty conversions = (ListProperty) doc.getProperty(BLOB_CONVERSIONS_PROPERTY);
             for (int i = 0; i < conversions.size(); i++) {
                 if (blob.getKey().equals(conversions.get(i).getValue(BLOB_CONVERSION_KEY))) {
-                    String conversionXPath = String.format("%s/%d/%s", BLOB_CONVERSIONS_PROPERTY, i, BLOB_CONVERSION_BLOB);
+                    String conversionXPath = String.format("%s/%d/%s", BLOB_CONVERSIONS_PROPERTY, i,
+                            BLOB_CONVERSION_BLOB);
                     Blob conversion = (Blob) doc.getPropertyValue(conversionXPath);
                     if (conversion.getMimeType().equals(mimeType)) {
                         return conversion;
@@ -501,8 +502,13 @@ public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<Goo
         HttpTransport httpTransport = credential.getTransport();
         JsonFactory jsonFactory = credential.getJsonFactory();
         return new Drive.Builder(httpTransport, jsonFactory, credential) //
-        .setApplicationName(APPLICATION_NAME) // set application name to avoid a WARN
-        .build();
+                                                                         .setApplicationName(APPLICATION_NAME) // set
+                                                                                                               // application
+                                                                                                               // name
+                                                                                                               // to
+                                                                                                               // avoid
+                                                                                                               // a WARN
+                                                                         .build();
     }
 
     @Override
@@ -592,7 +598,9 @@ public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<Goo
      * Executes a GET request with the user's credentials.
      */
     protected InputStream doGet(LiveConnectFileInfo fileInfo, URI url) throws IOException {
-        HttpResponse response = getService(fileInfo.getUser()).getRequestFactory().buildGetRequest(new GenericUrl(url)).execute();
+        HttpResponse response = getService(fileInfo.getUser()).getRequestFactory()
+                                                              .buildGetRequest(new GenericUrl(url))
+                                                              .execute();
         return response.getContent();
     }
 

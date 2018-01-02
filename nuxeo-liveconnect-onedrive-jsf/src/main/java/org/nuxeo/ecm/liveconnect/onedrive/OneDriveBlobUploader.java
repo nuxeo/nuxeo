@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.liveconnect.core.LiveConnectFileInfo;
-import org.nuxeo.ecm.liveconnect.onedrive.OneDriveBlobProvider;
-import org.nuxeo.ecm.liveconnect.onedrive.OneDriveOAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.ecm.platform.ui.web.component.file.InputFileChoice;
 import org.nuxeo.ecm.platform.ui.web.component.file.InputFileInfo;
@@ -118,8 +116,7 @@ public class OneDriveBlobUploader implements JSFBlobUploader {
             String authorizationUrl = getOAuthAuthorizationUrl(oauthProvider);
             String baseUrl = oauthProvider.getAPIInitializer().apply("").getBaseURL();
 
-            String onButtonClick = onClick
-                    + ";"
+            String onButtonClick = onClick + ";"
                     + String.format("new nuxeo.utils.OneDrivePicker('%s', '%s','%s', '%s', '%s', '%s')",
                             getClientId(oauthProvider), inputId, infoId, accessToken, authorizationUrl, baseUrl);
             writer.writeAttribute("onclick", onButtonClick, null);
@@ -144,8 +141,7 @@ public class OneDriveBlobUploader implements JSFBlobUploader {
             // if oauth service provider not properly setup, add warning message
             writer.startElement("span", parent);
             writer.writeAttribute("class", "processMessage completeWarning", null);
-            writer.writeAttribute(
-                    "style",
+            writer.writeAttribute("style",
                     "margin: 0 0 .5em 0; font-size: 11px; padding: 0.4em 0.5em 0.5em 2.2em; background-position-y: 0.6em",
                     null);
             message = I18NUtils.getMessageString("messages", "error.oneDrive.providerUnavailable", null, locale);
@@ -244,10 +240,8 @@ public class OneDriveBlobUploader implements JSFBlobUploader {
 
     private Optional<NuxeoOAuth2Token> getCurrentNuxeoToken(OneDriveBlobProvider provider) {
         Map<String, Serializable> filter = new HashMap<>();
-        filter.put(NuxeoOAuth2Token.KEY_NUXEO_LOGIN, FacesContext.getCurrentInstance()
-                                                                 .getExternalContext()
-                                                                 .getUserPrincipal()
-                                                                 .getName());
+        filter.put(NuxeoOAuth2Token.KEY_NUXEO_LOGIN,
+                FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal().getName());
         return provider.getOAuth2Provider()
                        .getCredentialDataStore()
                        .query(filter)

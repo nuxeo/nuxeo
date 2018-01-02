@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,10 +116,8 @@ public class BoxBlobUploader implements JSFBlobUploader {
         // only add onclick event to button if oauth service provider is available
         // this prevents users from using the picker if some configuration is missing
         if (isProviderAvailable) {
-            String onButtonClick = onClick
-                    + ";"
-                    + String.format("new nuxeo.utils.BoxPicker('%s', '%s','%s', '%s')", getClientId(provider), inputId,
-                            infoId, authorizationUrl);
+            String onButtonClick = onClick + ";" + String.format("new nuxeo.utils.BoxPicker('%s', '%s','%s', '%s')",
+                    getClientId(provider), inputId, infoId, authorizationUrl);
             writer.writeAttribute("onclick", onButtonClick, null);
         }
 
@@ -142,8 +140,7 @@ public class BoxBlobUploader implements JSFBlobUploader {
             // if oauth service provider not properly setup, add warning message
             writer.startElement("span", parent);
             writer.writeAttribute("class", "processMessage completeWarning", null);
-            writer.writeAttribute(
-                    "style",
+            writer.writeAttribute("style",
                     "margin: 0 0 .5em 0; font-size: 11px; padding: 0.4em 0.5em 0.5em 2.2em; background-position-y: 0.6em",
                     null);
             message = I18NUtils.getMessageString("messages", "error.box.providerUnavailable", null, locale);
@@ -186,14 +183,14 @@ public class BoxBlobUploader implements JSFBlobUploader {
         }
 
         String fileId = string;
-        Optional<String> serviceUserId = getServiceUserId(provider, fileId, FacesContext.getCurrentInstance()
-                                                                                        .getExternalContext()
-                                                                                        .getUserPrincipal());
+        Optional<String> serviceUserId = getServiceUserId(provider, fileId,
+                FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal());
         if (!serviceUserId.isPresent()) {
             String link = String.format(
                     "<a href='#' onclick=\"openPopup('%s'); return false;\">Register a new token</a> and try again.",
                     getOAuthAuthorizationUrl(provider));
-            ComponentUtils.addErrorMessage(context, parent, "error.inputFile.boxInvalidPermissions", new Object[] { link });
+            ComponentUtils.addErrorMessage(context, parent, "error.inputFile.boxInvalidPermissions",
+                    new Object[] { link });
             parent.setValid(false);
             return;
         }

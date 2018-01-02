@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,10 +118,9 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         // this prevents users from using the picker if some configuration is missing
         if (isProviderAvailable) {
             // TODO pass existing access token
-            String onButtonClick = onClick
-                + ";"
-                + String.format("new nuxeo.utils.GoogleDrivePicker('%s','%s','%s','%s','%s','%s', '%s')",
-                getClientId(), pickId, authId, inputId, infoId, getGoogleDomain(), authorizationUrl);
+            String onButtonClick = onClick + ";"
+                    + String.format("new nuxeo.utils.GoogleDrivePicker('%s','%s','%s','%s','%s','%s', '%s')",
+                            getClientId(), pickId, authId, inputId, infoId, getGoogleDomain(), authorizationUrl);
             writer.writeAttribute("onclick", onButtonClick, null);
         }
 
@@ -192,7 +191,9 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         // check if we can get an access token
         String accessToken = getAccessToken(user);
         if (accessToken == null) {
-            String link = String.format("<a href='#' onclick=\"openPopup('%s'); return false;\">Register a new token</a> and try again.", getOAuthAuthorizationUrl());
+            String link = String.format(
+                    "<a href='#' onclick=\"openPopup('%s'); return false;\">Register a new token</a> and try again.",
+                    getOAuthAuthorizationUrl());
             ComponentUtils.addErrorMessage(context, parent, "error.inputFile.accessToken", new Object[] { user, link });
             parent.setValid(false);
             return;
@@ -205,7 +206,8 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
     }
 
     /**
-     * Google Drive upload button is added to the file widget if and only if Google Drive OAuth service provider is enabled
+     * Google Drive upload button is added to the file widget if and only if Google Drive OAuth service provider is
+     * enabled
      *
      * @return true if Google Drive OAuth service provider is enabled or false otherwise.
      */
@@ -229,8 +231,7 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
     }
 
     protected GoogleDriveBlobProvider getGoogleDriveBlobProvider() {
-        return (GoogleDriveBlobProvider) Framework.getService(BlobManager.class)
-            .getBlobProvider(id);
+        return (GoogleDriveBlobProvider) Framework.getService(BlobManager.class).getBlobProvider(id);
     }
 
     protected String getGoogleDomain() {
@@ -259,14 +260,18 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
     }
 
     private boolean hasServiceAccount() {
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
+                                                                      .getExternalContext()
+                                                                      .getRequest();
         String username = request.getUserPrincipal().getName();
         GoogleOAuth2ServiceProvider provider = getGoogleDriveBlobProvider().getOAuth2Provider();
         return provider != null && provider.getServiceUser(username) != null;
     }
 
     private String getOAuthAuthorizationUrl() {
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
+                                                                      .getExternalContext()
+                                                                      .getRequest();
         GoogleOAuth2ServiceProvider provider = getGoogleDriveBlobProvider().getOAuth2Provider();
         return (provider != null && provider.getClientId() != null) ? provider.getAuthorizationUrl(request) : "";
     }

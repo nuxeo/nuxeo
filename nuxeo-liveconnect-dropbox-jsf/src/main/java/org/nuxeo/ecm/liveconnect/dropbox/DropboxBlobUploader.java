@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -246,9 +246,6 @@ public class DropboxBlobUploader implements JSFBlobUploader {
 
     /**
      * Retrieves a file path from a Dropbox sharable URL.
-     *
-     * @param url
-     * @return
      */
     private String getPathFromUrl(String url) {
         String pattern = "https://dl.dropboxusercontent.com/1/view/[\\w]*";
@@ -265,10 +262,6 @@ public class DropboxBlobUploader implements JSFBlobUploader {
      * Iterates all registered Dropbox tokens of a {@link Principal} to get the serviceLogin of a token with access to a
      * Dropbox file. We need this because Dropbox file picker doesn't provide any information about the account that was
      * used to select the file, and therefore we need to "guess".
-     *
-     * @param filePath
-     * @param principal
-     * @return
      */
     private String getServiceUserId(String filePath, Principal principal) {
         Map<String, Serializable> filter = new HashMap<>();
@@ -289,8 +282,6 @@ public class DropboxBlobUploader implements JSFBlobUploader {
     /**
      * Attempts to retrieve a Dropbox file's metadata to check if an accessToken has permissions to access the file.
      *
-     * @param filePath
-     * @param accessToken
      * @return true if metadata was successfully retrieved, or false otherwise.
      */
     private boolean hasAccessToFile(String filePath, String accessToken) {
