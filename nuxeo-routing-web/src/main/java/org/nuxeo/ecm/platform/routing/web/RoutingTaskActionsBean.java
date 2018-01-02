@@ -395,7 +395,7 @@ public class RoutingTaskActionsBean implements Serializable {
     public Map<String, Action> getTaskActionsMap(Task task) {
         Map<String, Action> actions = new LinkedHashMap<String, Action>();
         // bulk processing, don't fetch formVariables to avoid overriding them
-        TaskInfo taskInfo = getTaskInfo(task, false);
+        TaskInfo taskInfo = getTaskInfo(task, true);
         String layout = taskInfo.layout;
         List<Button> buttons = taskInfo.buttons;
 
@@ -521,13 +521,13 @@ public class RoutingTaskActionsBean implements Serializable {
         String buttonId = (String) taskAction.getProperties().get("buttonId");
         Map<String, Serializable> formVariables = (Map<String, Serializable>) taskAction.getProperties().get(
                 "formVariables");
-        if (formVariables != null) {
+        if (formVariables != null && !formVariables.isEmpty()) {
             data.put("WorkflowVariables", formVariables);
             data.put("NodeVariables", formVariables);
             // if there is a comment on the submitted form, pass it to be
             // logged by audit
-            if (formVariables.containsKey("comment")) {
-                data.put("comment", formVariables.get("comment"));
+            if (formVariables.containsKey(GraphNode.NODE_VARIABLE_COMMENT)) {
+                data.put(GraphNode.NODE_VARIABLE_COMMENT, formVariables.get(GraphNode.NODE_VARIABLE_COMMENT));
             }
         }
 
