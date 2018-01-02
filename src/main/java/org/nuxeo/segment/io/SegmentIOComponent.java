@@ -301,11 +301,6 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     }
 
     @Override
-    public void track(NuxeoPrincipal principal, String eventName) {
-        track(principal, null);
-    }
-
-    @Override
     public void track(NuxeoPrincipal principal, String eventName, Map<String, Serializable> metadata) {
 
         SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal, metadata);

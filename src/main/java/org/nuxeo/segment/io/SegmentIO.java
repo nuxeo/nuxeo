@@ -36,8 +36,6 @@ public interface SegmentIO {
 
     void identify(NuxeoPrincipal principal, Map<String, Serializable> metadata);
 
-    void track(NuxeoPrincipal principal, String eventName);
-
     void track(NuxeoPrincipal principal, String eventName, Map<String, Serializable> metadata);
 
     void flush();
