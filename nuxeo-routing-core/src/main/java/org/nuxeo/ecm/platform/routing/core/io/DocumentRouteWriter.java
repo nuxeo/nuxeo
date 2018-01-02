@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,9 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+
 import javax.inject.Inject;
+
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -117,7 +119,7 @@ public class DocumentRouteWriter extends ExtensibleEntityJsonWriter<DocumentRout
             writeVariables(item, jg, registry, ctx, schemaManager);
 
             jg.writeEndObject();
-            String graphResourceUrl = "";
+            String graphResourceUrl;
             if (item.isValidated()) {
                 // it is a model
                 graphResourceUrl = ctx.getBaseUrl() + "api/v1/workflowModel/" + item.getDocument().getName() + "/graph";
@@ -143,8 +145,9 @@ public class DocumentRouteWriter extends ExtensibleEntityJsonWriter<DocumentRout
 
                 Writer<Property> propertyWriter = registry.getWriter(ctx, Property.class, APPLICATION_JSON_TYPE);
                 // provides the current route to the property marshaller
-                try (Closeable resource = ctx.wrap().with(DocumentModelJsonWriter.ENTITY_TYPE,
-                        item.getDocument()).open()) {
+                try (Closeable resource = ctx.wrap()
+                                             .with(DocumentModelJsonWriter.ENTITY_TYPE, item.getDocument())
+                                             .open()) {
                     for (Field f : type.getFields()) {
                         String name = f.getName().getLocalName();
                         Property property = hasFacet ? item.getDocument().getProperty(name) : null;

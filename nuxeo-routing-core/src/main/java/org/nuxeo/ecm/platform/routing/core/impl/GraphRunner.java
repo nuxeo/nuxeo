@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,7 +127,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
             finishTask(session, graph, node, task, false, status);
             // don't delete (yet)
             if (task != null) {
-                Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+                Map<String, Serializable> eventProperties = new HashMap<>();
                 eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
                 eventProperties.put("taskName", task.getName());
                 eventProperties.put("modelName", graph.getModelName());
@@ -180,14 +180,14 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
     public void cancel(CoreSession session, DocumentRouteElement element) {
         GraphRoute graph = element instanceof GraphRoute ? (GraphRoute) element : null;
 
-        Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+        Map<String, Serializable> eventProperties = new HashMap<>();
         if (graph != null) {
             eventProperties.put("modelId", graph.getModelId());
             eventProperties.put("modelName", graph.getModelName());
             eventProperties.put(RoutingAuditHelper.WORKFLOW_VARIABLES, (Serializable) graph.getVariables());
             eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, graph.getInitiator());
             // Get the list of pending node
-            List<String> pendingNodeNames = new ArrayList<String>();
+            List<String> pendingNodeNames = new ArrayList<>();
             for (GraphNode suspendedNode : graph.getSuspendedNodes()) {
                 pendingNodeNames.add(suspendedNode.getId());
             }
@@ -210,14 +210,13 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
     /**
      * Runs the graph starting with the given node.
      *
-     * @param graph the graph
      * @param initialNode the initial node to run
      */
     protected void runGraph(CoreSession session, DocumentRouteElement element, GraphNode initialNode)
             throws DocumentRouteException {
         GraphRoute graph = (GraphRoute) element;
-        List<GraphNode> pendingSubRoutes = new LinkedList<GraphNode>();
-        LinkedList<GraphNode> pendingNodes = new LinkedList<GraphNode>();
+        List<GraphNode> pendingSubRoutes = new LinkedList<>();
+        LinkedList<GraphNode> pendingNodes = new LinkedList<>();
         pendingNodes.add(initialNode);
         boolean done = false;
         int count = 0;
@@ -326,9 +325,9 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
     }
 
     protected void recursiveCancelInput(GraphRoute graph, GraphNode originalNode, LinkedList<GraphNode> pendingNodes) {
-        LinkedList<GraphNode> todo = new LinkedList<GraphNode>();
+        LinkedList<GraphNode> todo = new LinkedList<>();
         todo.add(originalNode);
-        Set<String> done = new HashSet<String>();
+        Set<String> done = new HashSet<>();
         while (!todo.isEmpty()) {
             GraphNode node = todo.pop();
             done.add(node.getId());
@@ -359,7 +358,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
 
     protected void createTask(CoreSession session, GraphRoute graph, GraphNode node) throws DocumentRouteException {
         DocumentRouteElement routeInstance = graph;
-        Map<String, String> taskVariables = new HashMap<String, String>();
+        Map<String, String> taskVariables = new HashMap<>();
         taskVariables.put(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY,
                 routeInstance.getDocument().getId());
         taskVariables.put(DocumentRoutingConstants.TASK_NODE_ID_KEY, node.getId());
@@ -372,7 +371,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
             taskVariables.put(TaskEventNames.DISABLE_NOTIFICATION_SERVICE, "true");
         }
         // evaluate task assignees from taskVar if any
-        HashSet<String> actors = new LinkedHashSet<String>();
+        HashSet<String> actors = new LinkedHashSet<>();
         actors.addAll(node.evaluateTaskAssignees());
         actors.addAll(node.getTaskAssignees());
         // evaluate taskDueDate from the taskDueDateExpr;
@@ -386,13 +385,13 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
         // has the property
         // hasMultipleTasks set to true
         List<Task> tasks = taskService.createTask(session, (NuxeoPrincipal) session.getPrincipal(), docs,
-                node.getTaskDocType(), node.getDocument().getTitle(), node.getId(), routeInstance.getDocument().getId(),
-                new ArrayList<String>(actors), node.hasMultipleTasks(), node.getTaskDirective(), null, dueDate,
-                taskVariables, null, node.getWorkflowContextualInfo(session, true));
+                                                  node.getTaskDocType(), node.getDocument().getTitle(), node.getId(), routeInstance.getDocument().getId(),
+                                                  new ArrayList<>(actors), node.hasMultipleTasks(), node.getTaskDirective(), null, dueDate,
+                                                  taskVariables, null, node.getWorkflowContextualInfo(session, true));
 
         // Audit task assignment
         for (Task task : tasks) {
-            Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+            Map<String, Serializable> eventProperties = new HashMap<>();
             eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
             eventProperties.put("taskName", node.getDocument().getTitle());
             eventProperties.put("actors", actors);

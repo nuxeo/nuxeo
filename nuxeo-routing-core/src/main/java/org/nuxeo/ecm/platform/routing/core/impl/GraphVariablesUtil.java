@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ public class GraphVariablesUtil {
      */
     public static Map<String, Serializable> getVariables(DocumentModel doc, String facetProp, boolean mapToJSON) {
         String facet = (String) doc.getPropertyValue(facetProp);
-        Map<String, Serializable> map = new LinkedHashMap<String, Serializable>();
+        Map<String, Serializable> map = new LinkedHashMap<>();
         if (StringUtils.isBlank(facet)) {
             return map;
         }
@@ -123,10 +123,11 @@ public class GraphVariablesUtil {
     /**
      * @since 7.2
      */
-    public static void setVariables(DocumentModel doc, String facetProp, Map<String, Serializable> map, final boolean save) {
+    public static void setVariables(DocumentModel doc, String facetProp, Map<String, Serializable> map,
+            final boolean save) {
         if (map.containsKey(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON)
                 && (Boolean) map.get(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON)) {
-            Map<String, String> vars = new HashMap<String, String>();
+            Map<String, String> vars = new HashMap<>();
             map.remove(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON);
             for (String key : map.keySet()) {
                 if (map.get(key) != null && !(map.get(key) instanceof String)) {
@@ -137,7 +138,7 @@ public class GraphVariablesUtil {
             }
             GraphVariablesUtil.setJSONVariables(doc, facetProp, vars, save);
         } else {
-            String facet = null;
+            String facet;
             try {
                 facet = (String) doc.getPropertyValue(facetProp);
             } catch (PropertyNotFoundException e) {
@@ -176,24 +177,20 @@ public class GraphVariablesUtil {
     /**
      * Sets the variables of the workflow based on their JSON representation (especially for scalar lists).
      *
-     * @param doc
-     * @param facetProp
-     * @param map
-     * @param save
      * @since 5.9.3, 5.8.0-HF10
      */
     public static void setJSONVariables(DocumentModel doc, String facetProp, Map<String, String> map) {
         setJSONVariables(doc, facetProp, map, true);
     }
 
-
     /**
      * @since 7.2
      */
-    public static void setJSONVariables(DocumentModel doc, String facetProp, Map<String, String> map, final boolean save) {
+    public static void setJSONVariables(DocumentModel doc, String facetProp, Map<String, String> map,
+            final boolean save) {
         // normally the variables in the map don't contain the schema prefix
         Properties jsonProperties = new Properties();
-        String facet = null;
+        String facet;
         try {
             facet = (String) doc.getPropertyValue(facetProp);
         } catch (PropertyNotFoundException e) {
@@ -203,8 +200,6 @@ public class GraphVariablesUtil {
             return;
         }
         CompositeType type = getSchemaManager().getFacet(facet);
-        if (type == null) {
-        }
         boolean hasFacet = doc.hasFacet(facet);
         for (Field f : type.getFields()) {
             String name = f.getName().getLocalName();

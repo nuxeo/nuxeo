@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +112,7 @@ public class JsonEncodeDecodeUtils {
     public static Map<String, Serializable> decodeVariables(JsonNode jsnode,
             Map<String, Serializable> originalVariables, CoreSession session) throws ClassNotFoundException,
             IOException {
-        Map<String, Serializable> variables = new HashMap<String, Serializable>();
+        Map<String, Serializable> variables = new HashMap<>();
         Iterator<Entry<String, JsonNode>> it = jsnode.fields();
         while (it.hasNext()) {
             Entry<String, JsonNode> variable = it.next();

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.DocumentException;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -105,7 +104,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     public GraphNodeImpl(DocumentModel doc, GraphRouteImpl graph) {
         super(doc, new GraphRunner());
         this.graph = graph;
-        inputTransitions = new ArrayList<Transition>(2);
+        inputTransitions = new ArrayList<>(2);
     }
 
     /**
@@ -114,7 +113,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     public GraphNodeImpl(DocumentModel doc) {
         super(doc, new GraphRunner());
         graph = (GraphRouteImpl) getDocumentRoute(doc.getCoreSession());
-        inputTransitions = new ArrayList<Transition>(2);
+        inputTransitions = new ArrayList<>(2);
     }
 
     @Override
@@ -165,7 +164,6 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         String lc = state.getLifeCycleState();
         if (lc == null) {
             localState = state;
-            return;
         } else {
             localState = null;
             String oldLc = document.getCurrentLifeCycleState();
@@ -324,12 +322,13 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         // get variables from node and graph
         Map<String, Serializable> graphVariables = mapToJSON ? graph.getJsonVariables() : graph.getVariables();
         Map<String, Serializable> nodeVariables = mapToJSON ? getJsonVariables() : getVariables();
-        Map<String, Serializable> changedGraphVariables = new HashMap<String, Serializable>();
-        Map<String, Serializable> changedNodeVariables = new HashMap<String, Serializable>();
+        Map<String, Serializable> changedGraphVariables = new HashMap<>();
+        Map<String, Serializable> changedNodeVariables = new HashMap<>();
 
         // set variables back into node and graph
         if (map.get(Constants.VAR_WORKFLOW_NODE) != null) {
-            for (Entry<String, Serializable> es : ((Map<String, Serializable>) map.get(Constants.VAR_WORKFLOW_NODE)).entrySet()) {
+            for (Entry<String, Serializable> es : ((Map<String, Serializable>) map.get(
+                    Constants.VAR_WORKFLOW_NODE)).entrySet()) {
                 String key = es.getKey();
                 Serializable value = es.getValue();
                 if (nodeVariables.containsKey(key)) {
@@ -340,17 +339,19 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
                 }
             }
         }
-        final String transientSchemaName =  DocumentRoutingConstants.GLOBAL_VAR_SCHEMA_PREFIX + getId();
+        final String transientSchemaName = DocumentRoutingConstants.GLOBAL_VAR_SCHEMA_PREFIX + getId();
         final SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         if (map.get(Constants.VAR_WORKFLOW) != null) {
             final Schema transientSchema = schemaManager.getSchema(transientSchemaName);
-            for (Entry<String, Serializable> es : ((Map<String, Serializable>) map.get(Constants.VAR_WORKFLOW)).entrySet()) {
+            for (Entry<String, Serializable> es : ((Map<String, Serializable>) map.get(
+                    Constants.VAR_WORKFLOW)).entrySet()) {
                 String key = es.getKey();
                 Serializable value = es.getValue();
                 if (graphVariables.containsKey(key)) {
                     Serializable oldValue = graphVariables.get(key);
                     if (!equality(value, oldValue)) {
-                        if (!allowGlobalVariablesAssignement && transientSchema != null && !transientSchema.hasField(key)) {
+                        if (!allowGlobalVariablesAssignement && transientSchema != null
+                                && !transientSchema.hasField(key)) {
                             throw new DocumentRouteException(String.format(
                                     "You don't have the permission to set the workflow variable %s", key));
                         }
@@ -369,7 +370,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
             if (transientFacet != null) {
                 changedGraphVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, mapToJSON);
                 transientDocumentModel.addFacet("facet-" + transientSchemaName);
-                GraphVariablesUtil.setVariables(transientDocumentModel, "facet-" + transientSchemaName, changedGraphVariables, false);
+                GraphVariablesUtil.setVariables(transientDocumentModel, "facet-" + transientSchemaName,
+                        changedGraphVariables, false);
             }
             changedNodeVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, mapToJSON);
             GraphVariablesUtil.setVariables(transientDocumentModel, PROP_VARIABLES_FACET, changedNodeVariables, false);
@@ -421,7 +423,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     @Override
     public Map<String, Serializable> getWorkflowContextualInfo(CoreSession session, boolean detached) {
-        Map<String, Serializable> context = new HashMap<String, Serializable>();
+        Map<String, Serializable> context = new HashMap<>();
         // workflow context
         context.put("WorkflowVariables", (Serializable) graph.getVariables());
         context.put("workflowInitiator", getWorkflowInitiator());
@@ -526,7 +528,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     protected List<Transition> computeOutputTransitions() {
         ListProperty props = (ListProperty) document.getProperty(PROP_TRANSITIONS);
-        List<Transition> trans = new ArrayList<Transition>(props.size());
+        List<Transition> trans = new ArrayList<>(props.size());
         for (Property p : props) {
             trans.add(new Transition(this, p));
         }
@@ -543,7 +545,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     @Override
     public List<Transition> evaluateTransitions() throws DocumentRouteException {
-        List<Transition> trueTrans = new ArrayList<Transition>();
+        List<Transition> trueTrans = new ArrayList<>();
         for (Transition t : getOutputTransitions()) {
             try (OperationContext context = getExecutionContext(getSession())) {
                 context.put("transition", t.id);
@@ -567,9 +569,6 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
             } catch (DocumentRouteException e) {
                 throw e;
             } catch (OperationException | RuntimeException e) {
-                if (e instanceof DocumentRouteException) {
-                    throw (DocumentRouteException)e;
-                }
                 throw new DocumentRouteException("Error evaluating condition: " + t.condition, e);
             }
         }
@@ -578,7 +577,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     @Override
     public List<String> evaluateTaskAssignees() throws DocumentRouteException {
-        List<String> taskAssignees = new ArrayList<String>();
+        List<String> taskAssignees = new ArrayList<>();
         String taskAssigneesVar = getTaskAssigneesVar();
         if (StringUtils.isEmpty(taskAssigneesVar)) {
             return taskAssignees;
@@ -663,7 +662,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     protected List<Button> computeTaskButtons() {
         ListProperty props = (ListProperty) document.getProperty(PROP_TASK_BUTTONS);
-        List<Button> btns = new ArrayList<Button>(props.size());
+        List<Button> btns = new ArrayList<>(props.size());
         for (Property p : props) {
             btns.add(new Button(this, p));
         }
@@ -789,7 +788,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     protected Map<String, Serializable> getSubRouteInitialVariables() {
         ListProperty props = (ListProperty) document.getProperty(PROP_SUB_ROUTE_VARS);
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
         try (OperationContext context = getExecutionContext(getSession())) {
             for (Property p : props) {
                 MapProperty prop = (MapProperty) p;
@@ -828,8 +827,9 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
             throw new DocumentRouteException("Error evaluating expression: " + v, e);
         }
         if (!(klass.isAssignableFrom(res.getClass()))) {
-            throw new DocumentRouteException(kind + " of node '" + getId() + "' of graph '" + graph.getName()
-                    + "' does not evaluate to " + klass.getSimpleName() + " but " + res.getClass().getName() + ": " + v);
+            throw new DocumentRouteException(
+                    kind + " of node '" + getId() + "' of graph '" + graph.getName() + "' does not evaluate to "
+                            + klass.getSimpleName() + " but " + res.getClass().getName() + ": " + v);
         }
         return (T) res;
     }
@@ -846,7 +846,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     protected List<EscalationRule> computeEscalationRules() {
         ListProperty props = (ListProperty) document.getProperty(PROP_ESCALATION_RULES);
-        List<EscalationRule> rules = new ArrayList<EscalationRule>(props.size());
+        List<EscalationRule> rules = new ArrayList<>(props.size());
         for (Property p : props) {
             rules.add(new EscalationRule(this, p));
         }
@@ -864,7 +864,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     @Override
     public List<EscalationRule> evaluateEscalationRules() {
-        List<EscalationRule> rulesToExecute = new ArrayList<EscalationRule>();
+        List<EscalationRule> rulesToExecute = new ArrayList<>();
         // add specific helpers for escalation
         for (EscalationRule rule : getEscalationRules()) {
             try (OperationContext context = getExecutionContext(getSession())) {
@@ -896,7 +896,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     protected List<TaskInfo> computeTasksInfo() {
         ListProperty props = (ListProperty) document.getProperty(PROP_TASKS_INFO);
-        List<TaskInfo> tasks = new ArrayList<TaskInfo>(props.size());
+        List<TaskInfo> tasks = new ArrayList<>(props.size());
         for (Property p : props) {
             tasks.add(new TaskInfo(this, p));
         }
@@ -935,8 +935,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     }
 
     @Override
-    public void updateTaskInfo(String taskId, boolean ended, String status, String actor, String comment)
-            {
+    public void updateTaskInfo(String taskId, boolean ended, String status, String actor, String comment) {
         boolean updated = false;
         List<TaskInfo> tasksInfo = getTasksInfo();
         for (TaskInfo taskInfo : tasksInfo) {
@@ -964,7 +963,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     @Override
     public List<TaskInfo> getEndedTasksInfo() {
         List<TaskInfo> tasksInfo = getTasksInfo();
-        List<TaskInfo> endedTasks = new ArrayList<TaskInfo>();
+        List<TaskInfo> endedTasks = new ArrayList<>();
         for (TaskInfo taskInfo : tasksInfo) {
             if (taskInfo.isEnded()) {
                 endedTasks.add(taskInfo);
@@ -981,7 +980,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     @Override
     public List<TaskInfo> getProcessedTasksInfo() {
         List<TaskInfo> tasksInfo = getTasksInfo();
-        List<TaskInfo> processedTasks = new ArrayList<TaskInfo>();
+        List<TaskInfo> processedTasks = new ArrayList<>();
         for (TaskInfo taskInfo : tasksInfo) {
             if (taskInfo.isEnded() && taskInfo.getStatus() != null) {
                 processedTasks.add(taskInfo);
@@ -1001,8 +1000,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         if (!session.exists(taskRef)) {
             log.info(String.format("Task with id %s does not exist anymore", taskId));
             DocumentModelList docs = graph.getAttachedDocumentModels();
-            Framework.getService(DocumentRoutingService.class).removePermissionsForTaskActors(session, docs,
-                    taskId);
+            Framework.getService(DocumentRoutingService.class).removePermissionsForTaskActors(session, docs, taskId);
             NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
             String actor = principal.getActingUser();
             updateTaskInfo(taskId, true, null, actor, null);

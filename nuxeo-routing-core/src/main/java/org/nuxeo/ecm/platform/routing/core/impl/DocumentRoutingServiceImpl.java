@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -287,8 +287,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     route.save(session);
                 }
                 fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<>(), route, session);
-                DocumentRoutingEngineService routingEngine = Framework.getService(
-                        DocumentRoutingEngineService.class);
+                DocumentRoutingEngineService routingEngine = Framework.getService(DocumentRoutingEngineService.class);
                 routingEngine.start(route, map, session);
                 fireEventAfterWorkflowStarted(route, session);
             }
@@ -1236,8 +1235,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                                 "Invalid node " + routeId + " referenced by the task " + taskId);
                     }
                     DocumentModelList docs = routeInstance.getAttachedDocumentModels();
-                    Framework.getService(TaskService.class).delegateTask(session, taskId, delegatedActors,
-                            comment);
+                    Framework.getService(TaskService.class).delegateTask(session, taskId, delegatedActors, comment);
                     // refresh task
                     task.getDocument().refresh();
                     // grant permission to the new assignees

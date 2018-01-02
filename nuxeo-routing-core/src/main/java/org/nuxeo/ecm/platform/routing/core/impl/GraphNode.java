@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -495,8 +495,7 @@ public interface GraphNode {
 
         /**
          * @since 5.9.3 Returns 'null' if the node was not executed, or the executed date was not computed ( for rules
-         *        created before
-         * @5.9.3)
+         *        created before 5.9.3)
          */
         public Calendar getLastExecutionTime() {
             if (executed && lastExcutionTime != null) {
@@ -644,8 +643,6 @@ public interface GraphNode {
 
     /**
      * Gets the canceled count for this node.
-     *
-     * @return
      */
     long getCanceledCount();
 
@@ -682,34 +679,26 @@ public interface GraphNode {
 
     /**
      * Gets the due date
-     *
-     * @return
      */
     Date getTaskDueDate();
 
     /**
      * Gets the task directive
-     *
-     * @return
      */
     String getTaskDirective();
 
     /**
      * Gets the permission to the granted to the actors on this task on the document following the workflow
-     *
-     * @return
      */
     String getTaskAssigneesPermission();
 
     /**
      * Gets the task layout
-     *
-     * @return
      */
     String getTaskLayout();
 
     /**
-     * @returns the taskDocType. If none is specified, the default task type is returned.
+     * @return the taskDocType. If none is specified, the default task type is returned.
      */
     String getTaskDocType();
 
@@ -796,22 +785,16 @@ public interface GraphNode {
 
     /**
      * Gets the document representing this node
-     *
-     * @return
      */
     DocumentModel getDocument();
 
     /**
      * Gets a map containing the variables currently defined on this node
-     *
-     * @return
      */
     Map<String, Serializable> getVariables();
 
     /**
      * Gets a map containing the Json formatted variables currently defined on this node
-     *
-     * @return
      * @since 7.2
      */
     Map<String, Serializable> getJsonVariables();
@@ -819,8 +802,6 @@ public interface GraphNode {
     /**
      * Sets the property button on the node, keeping the id of the last action executed by the user on the associated
      * task if any
-     *
-     * @param status
      */
     void setButton(String status);
 
@@ -833,17 +814,11 @@ public interface GraphNode {
 
     /**
      * Evaluates the task assignees from the taskAssigneesVar
-     * <p>
-     *
-     * @return
      */
     List<String> evaluateTaskAssignees() throws DocumentRouteException;
 
     /**
      * Evaluates the task due date from the taskDueDateExpr and sets it as the dueDate
-     *
-     * @return
-     * @throws DocumentRouteException
      */
     Date computeTaskDueDate() throws DocumentRouteException;
 
@@ -974,7 +949,7 @@ public interface GraphNode {
      *
      * @since 5.8
      */
-    public void setVariable(String name, String value);
+    void setVariable(String name, String value);
 
     /**
      * Sets the node variables.

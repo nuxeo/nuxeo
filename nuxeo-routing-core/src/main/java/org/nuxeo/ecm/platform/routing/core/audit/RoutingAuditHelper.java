@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,15 +53,12 @@ public final class RoutingAuditHelper {
     /**
      * Query the audit for an entry of the Routing category matching the given event and returns the time elapsed  since it is recorded.
      *
-     * @param event
-     * @param elementId
-     * @return
      * @since 7.4
      */
     public static long computeElapsedTime(DocumentRoutingConstants.Events event, String elementId) {
         Logs logs = Framework.getService(Logs.class);
         if (logs != null && StringUtils.isNotBlank(elementId)) {
-            Map<String, FilterMapEntry> filterMap = new HashMap<String, FilterMapEntry>();
+            Map<String, FilterMapEntry> filterMap = new HashMap<>();
 
             FilterMapEntry categoryFilterMapEntry = new FilterMapEntry();
             categoryFilterMapEntry.setColumnName(BuiltinLogEntryData.LOG_CATEGORY);

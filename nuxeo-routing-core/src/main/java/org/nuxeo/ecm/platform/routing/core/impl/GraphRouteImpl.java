@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,8 +84,8 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
     protected String computeNodes() {
         CoreSession session = document.getCoreSession();
         DocumentModelList children = session.getChildren(document.getRef());
-        nodes = new ArrayList<GraphNode>(children.size());
-        nodesById = new HashMap<String, GraphNode>();
+        nodes = new ArrayList<>(children.size());
+        nodesById = new HashMap<>();
         String startNodeId = null;
         for (DocumentModel doc : children) {
             // TODO use adapters
@@ -133,12 +133,12 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
          * depth. After visiting the last sibling, we go back to the parent and at this point mark it as visited in
          * post-traversal order.
          */
-        List<String> postOrder = new LinkedList<String>();
-        Deque<Deque<String>> stack = new LinkedList<Deque<String>>();
-        Deque<String> first = new LinkedList<String>();
+        List<String> postOrder = new LinkedList<>();
+        Deque<Deque<String>> stack = new LinkedList<>();
+        Deque<String> first = new LinkedList<>();
         first.add(startNodeId);
         stack.push(first);
-        Set<String> done = new HashSet<String>();
+        Set<String> done = new HashSet<>();
         for (;;) {
             // find next sibling
             String nodeId = stack.peek().peek();
@@ -154,7 +154,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
                 postOrder.add(nodeId); // mark post-traversal order
             } else if (done.add(nodeId)) {
                 // traverse the next sibling
-                Deque<String> children = new LinkedList<String>();
+                Deque<String> children = new LinkedList<>();
                 for (Transition t : getNode(nodeId).getOutputTransitions()) {
                     children.add(t.target);
                 }
@@ -168,7 +168,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
 
         // reverse the post-order to find the topological ordering
         Collections.reverse(postOrder);
-        Map<String, Integer> ordering = new HashMap<String, Integer>();
+        Map<String, Integer> ordering = new HashMap<>();
         int i = 1;
         for (String nodeId : postOrder) {
             ordering.put(nodeId, Integer.valueOf(i++));
@@ -178,7 +178,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         // and mark as looping the transitions pointing to a node
         // with a smaller order that the source
         done.clear();
-        Deque<String> todo = new LinkedList<String>();
+        Deque<String> todo = new LinkedList<>();
         todo.add(startNodeId);
         while (!todo.isEmpty()) {
             String nodeId = todo.pop();
@@ -241,7 +241,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         @SuppressWarnings("unchecked")
         List<String> ids = (List<String>) document.getPropertyValue(
                 DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
-        ArrayList<DocumentRef> docRefs = new ArrayList<DocumentRef>();
+        ArrayList<DocumentRef> docRefs = new ArrayList<>();
         for (String id : ids) {
             IdRef idRef = new IdRef(id);
             if (document.getCoreSession().exists(idRef)) {
@@ -276,7 +276,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
 
     @Override
     public List<GraphNode> getSuspendedNodes() {
-        List<GraphNode> result = new ArrayList<GraphNode>();
+        List<GraphNode> result = new ArrayList<>();
         for (GraphNode node : getNodes()) {
             if (State.SUSPENDED.equals(node.getState())) {
                 result.add(node);
