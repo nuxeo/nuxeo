@@ -314,6 +314,18 @@
   </function>
 
   <function>
+    <function-name>formatDateUsingFullDateAndTimeFormatter</function-name>
+    <function-class>org.nuxeo.ecm.platform.ui.web.tag.fn.Functions</function-class>
+    <function-signature>java.lang.String
+      formatDateUsingFullDateAndTimeFormatter(java.util.Date)
+    </function-signature>
+    <description>
+      Returns a formatted string for given date, using the
+      nxu:dateFormat("full") function logics.
+    </description>
+  </function>
+
+  <function>
     <function-name>dateAndTimeFormatter</function-name>
     <function-class>org.nuxeo.ecm.platform.ui.web.tag.fn.Functions</function-class>
     <function-signature>java.lang.String dateAndTimeFormatter(java.lang.String)</function-signature>
