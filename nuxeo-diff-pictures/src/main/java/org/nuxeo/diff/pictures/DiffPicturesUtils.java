@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,7 @@ public class DiffPicturesUtils {
      */
     public static String updateTargetFileName(Blob inBlob, String inTargetFileName, String inTargetFileSuffix) {
 
-        String updatedName = "";
-
+        String updatedName;
         if (inTargetFileName == null || inTargetFileName.isEmpty()) {
             updatedName = inBlob.getFilename();
         } else {
@@ -73,8 +72,6 @@ public class DiffPicturesUtils {
      * If blobs are null or are not pictures, we do nothing, it will fails with later (or here with a null pointer
      * exception)
      * 
-     * @param inB1
-     * @param inB2
      * @return true if the 2 blobs are pictures with same format and dimensions
      * @since 7.10
      */

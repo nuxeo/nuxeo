@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,10 +67,10 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
     @Override
     public List<Blob> getContentDiff(DocumentModel leftDoc, DocumentModel rightDoc, String xpath, Locale locale)
             throws ContentDiffException {
-        Blob leftBlob = null;
-        Blob rightBlob = null;
-        BlobHolder leftBlobHolder = null;
-        BlobHolder rightBlobHolder = null;
+        Blob leftBlob;
+        Blob rightBlob;
+        BlobHolder leftBlobHolder;
+        BlobHolder rightBlobHolder;
         if (StringUtils.isBlank(xpath) || ContentDiffHelper.DEFAULT_XPATH.equals(xpath)) {
             leftBlobHolder = leftDoc.getAdapter(BlobHolder.class);
             rightBlobHolder = rightDoc.getAdapter(BlobHolder.class);
@@ -91,9 +91,8 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
 
     @Override
     public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob, Locale locale) throws ContentDiffException {
-
         try {
-            List<Blob> blobResults = new ArrayList<Blob>();
+            List<Blob> blobResults = new ArrayList<>();
             StringWriter sw = new StringWriter();
 
             SAXTransformerFactory stf = (SAXTransformerFactory) TransformerFactory.newInstance();
@@ -102,11 +101,7 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
 
             XslFilter htmlHeaderXslFilter = new XslFilter();
 
-            StringBuilder sb = new StringBuilder("xslfilter/htmldiffheader");
-            sb.append("_");
-            sb.append(locale.getLanguage());
-            sb.append(".xsl");
-            String htmlHeaderXslPath = sb.toString();
+            String htmlHeaderXslPath = String.format("xslfilter/htmldiffheader_%s.xsl", locale.getLanguage());
             ContentHandler postProcess;
             try {
                 postProcess = htmlHeaderXslFilter.xsl(transformHandler, htmlHeaderXslPath);

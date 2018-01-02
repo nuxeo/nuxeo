@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -108,7 +107,7 @@ public class DiffPicturesServlet extends HttpServlet {
 
                 DiffPictures dp = new DiffPictures(leftDoc, rightDoc, xpath);
 
-                HashMap<String, Serializable> params = new HashMap<String, Serializable>();
+                HashMap<String, Serializable> params = new HashMap<>();
                 if (StringUtils.isNotBlank(fuzz)) {
                     params.put("fuzz", fuzz);
                 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,9 +77,7 @@ public class DiffPicturesWithDocsOp {
     @OperationMethod()
     public Blob run() throws OperationException, CommandNotAvailable, IOException {
         
-        Blob result = null;
-
-        Map<String, Serializable> serializableParameters = new HashMap<String, Serializable>();
+        Map<String, Serializable> serializableParameters = new HashMap<>();
         if (parameters != null && parameters.size() > 0) {
             Set<String> parameterNames = parameters.keySet();
             for (String parameterName : parameterNames) {
@@ -93,9 +91,7 @@ public class DiffPicturesWithDocsOp {
         }
 
         DiffPictures dp = new DiffPictures(leftDoc, rightDoc, xpath);
-        result = dp.compare(commandLine, serializableParameters);
-
-        return result;
+        return dp.compare(commandLine, serializableParameters);
     }
 
 }

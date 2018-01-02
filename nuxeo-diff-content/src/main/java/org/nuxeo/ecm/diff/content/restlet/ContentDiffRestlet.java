@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,7 +189,8 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         }
     }
 
-    private List<Blob> initCachedContentDiffBlobs(Response res, String xpath, ContentDiffConversionType conversionType) {
+    private List<Blob> initCachedContentDiffBlobs(Response res, String xpath,
+            ContentDiffConversionType conversionType) {
 
         ContentDiffAdapter contentDiffAdapter = leftDoc.getAdapter(ContentDiffAdapter.class);
 
@@ -198,7 +199,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             return null;
         }
 
-        List<Blob> contentDiffBlobs = null;
+        List<Blob> contentDiffBlobs;
         try {
             if (xpath.equals(ContentDiffHelper.DEFAULT_XPATH)) {
                 contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(rightDoc, conversionType,

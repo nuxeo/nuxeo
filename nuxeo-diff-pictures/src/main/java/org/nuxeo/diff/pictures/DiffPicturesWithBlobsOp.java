@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,14 +70,13 @@ public class DiffPicturesWithBlobsOp {
 
     @OperationMethod(collector = BlobCollector.class)
     public Blob run(Blob inBlob) throws OperationException, CommandNotAvailable, IOException {
-        Blob result = null;
 
         Blob blob2 = (Blob) ctx.get(blob2VarName);
         if (blob2 == null) {
             throw new OperationException("The blob to append from variable context: '" + blob2VarName + "' is null.");
         }
 
-        Map<String, Serializable> serializableParameters = new HashMap<String, Serializable>();
+        Map<String, Serializable> serializableParameters = new HashMap<>();
         if (parameters != null && parameters.size() > 0) {
             Set<String> parameterNames = parameters.keySet();
             for (String parameterName : parameterNames) {
@@ -91,9 +90,7 @@ public class DiffPicturesWithBlobsOp {
         }
 
         DiffPictures dp = new DiffPictures(inBlob, blob2);
-        result = dp.compare(commandLine, serializableParameters);
-
-        return result;
+        return dp.compare(commandLine, serializableParameters);
     }
 
 }

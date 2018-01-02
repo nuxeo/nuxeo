@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,11 +44,11 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
 
     private static final Log log = LogFactory.getLog(ContentDiffAdapterManagerComponent.class);
 
-    protected Map<String, ContentDiffAdapterFactory> factoryRegistry = new HashMap<String, ContentDiffAdapterFactory>();
+    protected Map<String, ContentDiffAdapterFactory> factoryRegistry = new HashMap<>();
 
-    protected Map<String, MimeTypeContentDiffer> contentDifferFactory = new HashMap<String, MimeTypeContentDiffer>();
+    protected Map<String, MimeTypeContentDiffer> contentDifferFactory = new HashMap<>();
 
-    protected Map<String, MimeTypeContentDiffer> contentDifferFactoryByName = new HashMap<String, MimeTypeContentDiffer>();
+    protected Map<String, MimeTypeContentDiffer> contentDifferFactoryByName = new HashMap<>();
 
     // Component and EP management
 

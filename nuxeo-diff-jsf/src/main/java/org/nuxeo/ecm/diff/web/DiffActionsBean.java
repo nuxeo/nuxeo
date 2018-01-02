@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -342,7 +342,7 @@ public class DiffActionsBean implements Serializable {
     public List<DiffDisplayBlock> getDefaultDiffDisplayBlocks() {
 
         if (leftDoc == null || rightDoc == null) {
-            return new ArrayList<DiffDisplayBlock>();
+            return new ArrayList<>();
         }
 
         DocumentDiff docDiff = getDocumentDiffService().diff(documentManager, leftDoc, rightDoc);
@@ -386,9 +386,6 @@ public class DiffActionsBean implements Serializable {
      *
      * @param docLeftId a DocumentModel id, not a path.
      * @param docRightId a DocumentModel id, not a path.
-     * @param propertyXPath
-     * @param conversionTypeParam
-     * @return
      */
     public String getContentDiffURL(String docLeftId, String docRightId, String propertyXPath,
             String conversionTypeParam) {

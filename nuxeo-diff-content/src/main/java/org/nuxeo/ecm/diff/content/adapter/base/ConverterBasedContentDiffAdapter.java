@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,10 +65,10 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
     public List<Blob> getContentDiffBlobs(DocumentModel otherDoc, String xpath,
             ContentDiffConversionType conversionType, Locale locale) throws ContentDiffException, ConversionException {
 
-        Blob adaptedDocBlob = null;
-        Blob otherDocBlob = null;
-        BlobHolder adaptedDocBlobHolder = null;
-        BlobHolder otherDocBlobHolder = null;
+        Blob adaptedDocBlob;
+        Blob otherDocBlob;
+        BlobHolder adaptedDocBlobHolder;
+        BlobHolder otherDocBlobHolder;
 
         if ((xpath == null) || (ContentDiffHelper.DEFAULT_XPATH.equals(xpath))) {
             adaptedDocBlobHolder = adaptedDoc.getAdapter(BlobHolder.class);
@@ -87,7 +87,7 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
             throw new ContentDiffException("Can not make a content diff of documents without a blob");
         }
 
-        List<Blob> blobResults = new ArrayList<Blob>();
+        List<Blob> blobResults = new ArrayList<>();
 
         String adaptedDocMimeType = getMimeType(adaptedDocBlob);
         String otherDocMimeType = getMimeType(otherDocBlob);
@@ -199,7 +199,8 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
      * @return the converted blob holder
      * @throws ConversionException if an error occurs while converting the blob holder
      */
-    protected BlobHolder getConvertedBlobHolder(BlobHolder blobHolder, String converterName) throws ConversionException {
+    protected BlobHolder getConvertedBlobHolder(BlobHolder blobHolder, String converterName)
+            throws ConversionException {
 
         if (converterName == null) {
             log.debug(String.format("No converter parameter, using generic one: '%s'.", DEFAULT_CONVERTER_NAME));
@@ -213,8 +214,11 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
 
     protected Blob getHtmlStringBlob(Blob blob) throws ContentDiffException {
         try {
-            Blob htmlStringBlob = Blobs.createBlob(StringEscapeUtils.escapeHtml(
-                    new String(blob.getByteArray(), "UTF-8")).replace("\r\n", "\n").replace("\n", "<br />"));
+            Blob htmlStringBlob = Blobs.createBlob(StringEscapeUtils
+                                                                    .escapeHtml(
+                                                                            new String(blob.getByteArray(), "UTF-8"))
+                                                                    .replace("\r\n", "\n")
+                                                                    .replace("\n", "<br />"));
             htmlStringBlob.setFilename(blob.getFilename());
             return htmlStringBlob;
         } catch (IOException ioe) {

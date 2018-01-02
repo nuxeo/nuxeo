@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -190,8 +190,7 @@ public class TestContentDiffAdapter {
             contentDiffAdapter.getFileContentDiffBlobs(rightDoc, ContentDiffConversionType.text, Locale.ENGLISH);
             fail("No png2text converter is registered, call should have thrown a ConverterNotRegistered exception.");
         } catch (ConverterNotRegistered cnr) {
-            assertEquals(
-                    "Converter for sourceMimeType = image/png, destinationMimeType = text/plain is not registered",
+            assertEquals("Converter for sourceMimeType = image/png, destinationMimeType = text/plain is not registered",
                     cnr.getMessage());
         }
 

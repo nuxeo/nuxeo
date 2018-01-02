@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,8 +78,8 @@ public final class ContentDiffHelper {
      * @param conversionType the conversion type
      * @return the content diff fancy box URL
      */
-    public static String getContentDiffFancyBoxURL(DocumentModel currentDoc, String propertyLabel,
-            String propertyXPath, String conversionType) {
+    public static String getContentDiffFancyBoxURL(DocumentModel currentDoc, String propertyLabel, String propertyXPath,
+            String conversionType) {
         DocumentLocation docLocation = new DocumentLocationImpl(currentDoc.getRepositoryName(), currentDoc.getRef());
         DocumentView docView = new DocumentViewImpl(docLocation, CONTENT_DIFF_FANCYBOX_VIEW);
         docView.setPatternName("id");
@@ -235,12 +235,12 @@ public final class ContentDiffHelper {
      * </ul>
      * </p>
      *
-     * @see https://jira.nuxeo.com/browse/NXP-9421
-     * @see https://jira.nuxeo.com/browse/NXP-9431
+     * @see <a href="https://jira.nuxeo.com/browse/NXP-9421">NXP-9421</a>
+     * @see <a href="https://jira.nuxeo.com/browse/NXP-9431">NXP-9431</a>
      */
     protected static List<String> getHtmlConversionBlackListedMimeTypes() {
 
-        List<String> blackListedMimeTypes = new ArrayList<String>();
+        List<String> blackListedMimeTypes = new ArrayList<>();
 
         // PDF
         blackListedMimeTypes.add("application/pdf");
@@ -284,7 +284,7 @@ public final class ContentDiffHelper {
             }
             return new DocumentStringBlobHolder(doc, xPath, mimeType);
         }
-        throw new ContentDiffException(String.format("Cannot get BlobHolder for doc '%s' and xpath '%s'.",
-                doc.getTitle(), xPath));
+        throw new ContentDiffException(
+                String.format("Cannot get BlobHolder for doc '%s' and xpath '%s'.", doc.getTitle(), xPath));
     }
 }
