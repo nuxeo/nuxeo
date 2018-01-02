@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,14 @@
  */
 package org.nuxeo.snapshot;
 
+import static org.nuxeo.snapshot.Snapshotable.ABOUT_TO_CREATE_LEAF_VERSION_EVENT;
+import static org.nuxeo.snapshot.Snapshotable.ROOT_DOCUMENT_PROPERTY;
+
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-
-import static org.nuxeo.snapshot.Snapshotable.ABOUT_TO_CREATE_LEAF_VERSION_EVENT;
-import static org.nuxeo.snapshot.Snapshotable.ROOT_DOCUMENT_PROPERTY;
 
 public class CreateLeafListener implements EventListener {
 
