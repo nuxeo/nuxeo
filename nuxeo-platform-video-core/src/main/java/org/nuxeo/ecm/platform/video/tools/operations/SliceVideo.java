@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Slices the video to obtain a part of it.
+ *
  * @since 8.4
  */
 @Operation(id = SliceVideo.ID, category = Constants.CAT_CONVERSION, label = "SliceVideo the video for a given duration and startAt time.", description = "SliceVideo the input blob starting at startAt, for a certain duration. The duration and startAt arguments are optional, but not simultaneously. A specific converter can be used.")
@@ -78,10 +79,8 @@ public class SliceVideo {
     public Blob run(Blob input) throws OperationException {
         try {
             VideoToolsService videoService = Framework.getService(VideoToolsService.class);
-            return videoService.slice(input,
-                    StringUtils.isEmpty(startAt) ? "00:00" : startAt,
-                    duration, encode).get(0);
-        } catch(NuxeoException e) {
+            return videoService.slice(input, StringUtils.isEmpty(startAt) ? "00:00" : startAt, duration, encode).get(0);
+        } catch (NuxeoException e) {
             throw new OperationException(e);
         }
     }
