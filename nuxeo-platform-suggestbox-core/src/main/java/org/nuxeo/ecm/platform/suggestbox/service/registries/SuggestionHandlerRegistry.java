@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,10 +57,12 @@ public class SuggestionHandlerRegistry extends ContributionFragmentRegistry<Sugg
     public void contributionUpdated(String id, SuggestionHandlerDescriptor contrib,
             SuggestionHandlerDescriptor newOrigContrib) {
         if (contrib.isEnabled()) {
-            log.trace(String.format("Putting contribution %s with id %s in suggestion handler descriptors", contrib, id));
+            log.trace(
+                    String.format("Putting contribution %s with id %s in suggestion handler descriptors", contrib, id));
             suggestionHandlerDescriptors.put(id, contrib);
         } else {
-            log.trace(String.format("Removing disabled contribution with id %s from suggestion handler descriptors", id));
+            log.trace(
+                    String.format("Removing disabled contribution with id %s from suggestion handler descriptors", id));
             suggestionHandlerDescriptors.remove(id);
         }
     }

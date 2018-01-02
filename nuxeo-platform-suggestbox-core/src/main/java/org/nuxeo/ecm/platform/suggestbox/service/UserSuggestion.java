@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class UserSuggestion extends Suggestion {
 
     @Override
     public String getObjectUrl() {
-        List<String> items = new ArrayList<String>();
+        List<String> items = new ArrayList<>();
         items.add(PREFIX);
         items.add(userId);
         return StringUtils.join(items, "/");

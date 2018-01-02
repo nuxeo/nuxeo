@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ public class DocumentLookupSuggester implements Suggester {
     @SuppressWarnings("unchecked")
     public List<Suggestion> suggest(String userInput, SuggestionContext context) throws SuggestionException {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) context.session);
         userInput = NXQLQueryBuilder.sanitizeFulltextInput(userInput);
         if (userInput.trim().isEmpty()) {
@@ -86,7 +86,7 @@ public class DocumentLookupSuggester implements Suggester {
             userInput += "*";
         }
         try {
-            List<Suggestion> suggestions = new ArrayList<Suggestion>();
+            List<Suggestion> suggestions = new ArrayList<>();
             PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(providerName, null,
                     null, null, null, props, highlights, null, new Object[] { userInput });
             for (DocumentModel doc : pp.getCurrentPage()) {
