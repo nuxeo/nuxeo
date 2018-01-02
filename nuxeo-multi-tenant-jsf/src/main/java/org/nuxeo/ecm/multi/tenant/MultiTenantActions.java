@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,11 @@ import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ID_PROPERTY;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
+
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -39,11 +44,6 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.directory.DirectoryUIActionsBean;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.validator.ValidatorException;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -99,8 +99,7 @@ public class MultiTenantActions implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public void validateTenantAdministrators(FacesContext context, UIComponent component, Object value)
-            {
+    public void validateTenantAdministrators(FacesContext context, UIComponent component, Object value) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String currentDocumentTenantId = (String) currentDocument.getPropertyValue(TENANT_ID_PROPERTY);
         NuxeoPrincipal currentUser = (NuxeoPrincipal) documentManager.getPrincipal();
@@ -111,8 +110,8 @@ public class MultiTenantActions implements Serializable {
             if (currentUser.isMemberOf(administratorGroup)) {
                 List<String> users = (List<String>) value;
                 if (!users.contains(currentUser.getName())) {
-                    FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, TENANT_ADMINISTRATORS_VALIDATION_ERROR), null);
+                    FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            ComponentUtils.translate(context, TENANT_ADMINISTRATORS_VALIDATION_ERROR), null);
                     throw new ValidatorException(message);
                 }
             }

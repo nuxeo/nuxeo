@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.multi.tenant;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +32,6 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -49,7 +50,7 @@ public class MultiTenantConfiguration {
     protected boolean enabledByDefault = false;
 
     @XNodeList(value = "prohibitedGroups/group", type = ArrayList.class, componentType = String.class)
-    private List<String> prohibitedGroups = new ArrayList<String>(Arrays.asList("members", EVERYONE));
+    private List<String> prohibitedGroups = new ArrayList<>(Arrays.asList("members", EVERYONE));
 
     public String getTenantDocumentType() {
         return tenantDocumentType;

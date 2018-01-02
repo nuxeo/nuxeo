@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     @Override
     public boolean isTenantIsolationEnabled(CoreSession session) {
         if (isTenantIsolationEnabled == null) {
-            final List<DocumentModel> tenants = new ArrayList<DocumentModel>();
+            final List<DocumentModel> tenants = new ArrayList<>();
             new UnrestrictedSessionRunner(session) {
                 @Override
                 public void run() {
@@ -101,7 +101,8 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
                 @Override
                 public void run() {
                     String query = "SELECT * FROM Document WHERE ecm:primaryType = '%s' AND ecm:currentLifeCycleState != 'deleted'";
-                    List<DocumentModel> docs = session.query(String.format(query, configuration.getTenantDocumentType()));
+                    List<DocumentModel> docs = session.query(
+                            String.format(query, configuration.getTenantDocumentType()));
                     for (DocumentModel doc : docs) {
                         enableTenantIsolationFor(session, doc);
                     }
@@ -147,7 +148,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     private DocumentModel registerTenant(DocumentModel doc) {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
-            Map<String, Object> m = new HashMap<String, Object>();
+            Map<String, Object> m = new HashMap<>();
             m.put("id", getTenantIdForTenant(doc));
             m.put("label", doc.getTitle());
             m.put("docId", doc.getId());
@@ -191,7 +192,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
         String tenantAdministratorsGroup = computeTenantAdministratorsGroup(tenantId);
         int tenantAdministratorsGroupACEIndex = acl.indexOf(new ACE(tenantAdministratorsGroup, EVERYTHING, true));
         if (tenantAdministratorsGroupACEIndex >= 0) {
-            List<ACE> newACEs = new ArrayList<ACE>();
+            List<ACE> newACEs = new ArrayList<>();
             newACEs.addAll(acl.subList(0, tenantAdministratorsGroupACEIndex));
             newACEs.addAll(acl.subList(tenantAdministratorsGroupACEIndex + 3, acl.size()));
             acl.setACEs(newACEs.toArray(new ACE[newACEs.size()]));

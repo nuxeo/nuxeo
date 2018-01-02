@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,6 +71,5 @@ public class MultiTenantUserWorkspaceService extends DefaultUserWorkspaceService
         path = path.append(UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT);
         return path.toString();
     }
-
 
 }
