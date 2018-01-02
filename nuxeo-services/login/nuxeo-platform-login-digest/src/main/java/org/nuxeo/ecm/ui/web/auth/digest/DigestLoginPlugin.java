@@ -125,7 +125,7 @@ public class DigestLoginPlugin extends BaseLoginModule {
         try (Session dir = directoryService.open(dirName)) {
             dir.setReadAllColumns(true); // needed to read digest password
             String schema = directoryService.getDirectorySchema(dirName);
-            DocumentModel entry = dir.getEntry(username, true);
+            DocumentModel entry = Framework.doPrivileged(() -> dir.getEntry(username, true));
             String passwordField = (parameters.containsKey(PASSWORD_FIELD)) ? parameters.get(PASSWORD_FIELD)
                     : dir.getPasswordField();
             return entry == null ? null : (String) entry.getProperty(schema, passwordField);
