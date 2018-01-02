@@ -114,7 +114,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
         } else if (type instanceof BooleanType) {
             jg.writeBoolean((Boolean) value);
         } else if (type instanceof LongType) {
-            jg.writeNumber((Long) value);
+            jg.writeNumber(((Number) value).longValue()); // value may be a DeltaLong
         } else if (type instanceof DoubleType) {
             jg.writeNumber((Double) value);
         } else if (type instanceof IntegerType) {
