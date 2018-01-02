@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,18 +41,14 @@ public final class RootDefinitionsHelper {
      * Parses the given synchronization root definitions string.
      */
     public static Map<String, Set<IdRef>> parseRootDefinitions(String rootDefinitions) {
-        Map<String, Set<IdRef>> lastActiveRootRefs = new LinkedHashMap<String, Set<IdRef>>();
+        Map<String, Set<IdRef>> lastActiveRootRefs = new LinkedHashMap<>();
         if (rootDefinitions != null) {
             String[] rootDefinitionComponents = StringUtils.split(rootDefinitions, ",");
             for (String rootDefinition : rootDefinitionComponents) {
                 String[] rootComponents = StringUtils.split(rootDefinition, ":");
                 String repoName = rootComponents[0].trim();
-                Set<IdRef> refs = lastActiveRootRefs.get(repoName);
-                if (refs == null) {
-                    refs = new HashSet<IdRef>();
-                    lastActiveRootRefs.put(repoName, refs);
-                }
-                refs.add(new IdRef(rootComponents[1].trim()));
+                lastActiveRootRefs.computeIfAbsent(repoName, k -> new HashSet<>())
+                                  .add(new IdRef(rootComponents[1].trim()));
             }
         }
         return lastActiveRootRefs;

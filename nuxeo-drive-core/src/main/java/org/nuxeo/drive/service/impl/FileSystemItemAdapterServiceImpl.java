@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,7 +121,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
         topLevelFolderItemFactoryRegistry = new TopLevelFolderItemFactoryRegistry();
         activeTopLevelFolderItemFactoryRegistry = new ActiveTopLevelFolderItemFactoryRegistry();
         activeFileSystemItemFactoryRegistry = new ActiveFileSystemItemFactoryRegistry();
-        fileSystemItemFactories = new ArrayList<FileSystemItemFactoryWrapper>();
+        fileSystemItemFactories = new ArrayList<>();
     }
 
     @Override
@@ -312,7 +312,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     protected FileSystemItem getFileSystemItem(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
             boolean includeDeleted, boolean relaxSyncRootConstraint, boolean getLockInfo) {
 
-        FileSystemItem fileSystemItem = null;
+        FileSystemItem fileSystemItem;
 
         // Try the topLevelFolderItemFactory
         if (forceParentItem) {

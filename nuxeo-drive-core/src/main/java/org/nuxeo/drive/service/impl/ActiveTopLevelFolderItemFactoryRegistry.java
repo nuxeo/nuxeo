@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * @author Antoine Taillefer
  * @see FileSystemItemAdapterServiceImpl
  */
-public class ActiveTopLevelFolderItemFactoryRegistry extends
-        ContributionFragmentRegistry<ActiveTopLevelFolderItemFactoryDescriptor> {
+public class ActiveTopLevelFolderItemFactoryRegistry
+        extends ContributionFragmentRegistry<ActiveTopLevelFolderItemFactoryDescriptor> {
 
     private static final Log log = LogFactory.getLog(ActiveTopLevelFolderItemFactoryRegistry.class);
 

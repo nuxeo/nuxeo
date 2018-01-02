@@ -142,13 +142,13 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     public List<FileSystemItem> getChildren() {
         try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
-            Map<String, Serializable> props = new HashMap<String, Serializable>();
+            Map<String, Serializable> props = new HashMap<>();
             props.put(CORE_SESSION_PROPERTY, (Serializable) session);
             PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
                     FOLDER_ITEM_CHILDREN_PAGE_PROVIDER, null, null, 0L, props, docId);
-            Long pageSize = childrenPageProvider.getPageSize();
+            long pageSize = childrenPageProvider.getPageSize();
 
-            List<FileSystemItem> children = new ArrayList<FileSystemItem>();
+            List<FileSystemItem> children = new ArrayList<>();
             int nbChildren = 0;
             boolean reachedPageSize = false;
             boolean hasNextPage = true;
@@ -427,7 +427,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             log.trace(String.format("No parent FolderItem found in cache for doc %s, computing ancestor cache",
                     doc.getPathAsString()));
         }
-        DocumentModel parentDoc = null;
+        DocumentModel parentDoc;
         try {
             parentDoc = session.getDocument(parentDocRef);
         } catch (DocumentSecurityException e) {

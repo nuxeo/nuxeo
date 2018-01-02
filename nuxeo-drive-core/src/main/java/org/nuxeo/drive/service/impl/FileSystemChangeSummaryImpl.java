@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class FileSystemChangeSummaryImpl implements FileSystemChangeSummary {
         this.syncDate = syncDate;
         this.upperBound = upperBound;
         this.hasTooManyChanges = tooManyChanges;
-        List<String> rootDefinitions = new ArrayList<String>();
+        List<String> rootDefinitions = new ArrayList<>();
         for (Map.Entry<String, Set<IdRef>> entry : activeRootRefs.entrySet()) {
             for (IdRef ref : entry.getValue()) {
                 rootDefinitions.add(String.format("%s:%s", entry.getKey(), ref.toString()));

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -220,7 +220,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
      * modification was done more than {@link #versioningDelay} seconds ago.
      *
      * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     * drive level, this method is not used anymore
+     *             drive level, this method is not used anymore
      */
     @Override
     @Deprecated

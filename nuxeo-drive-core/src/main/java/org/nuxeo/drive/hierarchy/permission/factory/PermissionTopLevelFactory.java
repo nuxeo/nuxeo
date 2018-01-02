@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class PermissionTopLevelFactory extends AbstractVirtualFolderItemFactory 
 
     protected static final String CHILDREN_FACTORIES_PARAM = "childrenFactories";
 
-    protected List<String> childrenFactoryNames = new ArrayList<String>();
+    protected List<String> childrenFactoryNames = new ArrayList<>();
 
     /*---------------------- FileSystemItemFactory ---------------*/
     @Override

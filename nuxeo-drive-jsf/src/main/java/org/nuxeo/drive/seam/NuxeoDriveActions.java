@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -227,11 +227,11 @@ public class NuxeoDriveActions extends InputController implements Serializable {
                                                                      .getExternalContext()
                                                                      .getRequest();
         String baseURL = VirtualHostHelper.getBaseURL(servletRequest);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(NXDRIVE_PROTOCOL).append("://");
         sb.append(PROTOCOL_COMMAND_EDIT).append("/");
         sb.append(baseURL.replaceFirst("://", "/"));
-        if (Boolean.valueOf(Framework.getProperty(NEW_DRIVE_EDIT_URL_PROP_KEY))) {
+        if (Boolean.parseBoolean(Framework.getProperty(NEW_DRIVE_EDIT_URL_PROP_KEY))) {
             sb.append("user/");
             sb.append(documentManager.getPrincipal().getName());
             sb.append("/");
@@ -243,7 +243,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         sb.append("/filename/");
         String escapedFilename = fileName.replaceAll("(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
         sb.append(URIUtils.quoteURIPathComponent(escapedFilename, true));
-        if (Boolean.valueOf(Framework.getProperty(NEW_DRIVE_EDIT_URL_PROP_KEY))) {
+        if (Boolean.parseBoolean(Framework.getProperty(NEW_DRIVE_EDIT_URL_PROP_KEY))) {
             sb.append("/downloadUrl/");
             DownloadService downloadService = Framework.getService(DownloadService.class);
             String downloadUrl = downloadService.getDownloadUrl(currentDocument, DownloadService.BLOBHOLDER_0, "");

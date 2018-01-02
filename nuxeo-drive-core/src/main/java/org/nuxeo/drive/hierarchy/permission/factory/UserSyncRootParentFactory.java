@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import org.nuxeo.drive.service.VirtualFolderItemFactory;
 import org.nuxeo.drive.service.impl.AbstractFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -62,8 +61,8 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
         // Look for the "folderName" parameter
         String folderNameParam = parameters.get(FOLDER_NAME_PARAM);
         if (StringUtils.isEmpty(folderNameParam)) {
-            throw new NuxeoException(String.format("Factory %s has no %s parameter, please provide one.", getName(),
-                    FOLDER_NAME_PARAM));
+            throw new NuxeoException(
+                    String.format("Factory %s has no %s parameter, please provide one.", getName(), FOLDER_NAME_PARAM));
         }
         folderName = folderNameParam;
     }
@@ -109,7 +108,8 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted,
+            boolean relaxSyncRootConstraint) {
         Principal principal = doc.getCoreSession().getPrincipal();
         return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted, relaxSyncRootConstraint);
     }
@@ -127,11 +127,13 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
     public FolderItem getVirtualFolderItem(Principal principal) {
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         // TODO: handle multiple repositories
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryManager.getDefaultRepositoryName(), principal)) {
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryManager.getDefaultRepositoryName(),
+                principal)) {
             UserWorkspaceService userWorkspaceService = Framework.getService(UserWorkspaceService.class);
-            DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
+            DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session);
             if (userWorkspace == null) {
-                throw new NuxeoException(String.format("No personal workspace found for user %s.", principal.getName()));
+                throw new NuxeoException(
+                        String.format("No personal workspace found for user %s.", principal.getName()));
             }
             return (FolderItem) getFileSystemItem(userWorkspace);
         }

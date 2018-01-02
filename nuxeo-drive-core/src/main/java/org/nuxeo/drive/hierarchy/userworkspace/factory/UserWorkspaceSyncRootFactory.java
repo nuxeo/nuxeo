@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,10 +48,9 @@ public class UserWorkspaceSyncRootFactory extends AbstractSyncRootFolderItemFact
     public void handleParameters(Map<String, String> parameters) {
         String syncRootParentFactoryParam = parameters.get(SYNC_ROOT_PARENT_FACTORY_PARAM);
         if (StringUtils.isEmpty(syncRootParentFactoryParam)) {
-            throw new NuxeoException(
-                    String.format(
-                            "Factory %s has no %s parameter, please provide it in the factory contribution to set the name of the factory for the parent folder of the synchronization roots.",
-                            getName(), SYNC_ROOT_PARENT_FACTORY_PARAM));
+            throw new NuxeoException(String.format(
+                    "Factory %s has no %s parameter, please provide it in the factory contribution to set the name of the factory for the parent folder of the synchronization roots.",
+                    getName(), SYNC_ROOT_PARENT_FACTORY_PARAM));
         }
         syncRootParentFactoryName = syncRootParentFactoryParam;
     }
@@ -69,9 +68,9 @@ public class UserWorkspaceSyncRootFactory extends AbstractSyncRootFolderItemFact
         FolderItem parent = getFileSystemAdapterService().getVirtualFolderItemFactory(syncRootParentFactoryName)
                                                          .getVirtualFolderItem(principal);
         if (parent == null) {
-            throw new NuxeoException(String.format(
-                    "Cannot find the parent of document %s: virtual folder from factory %s.", doc.getId(),
-                    syncRootParentFactoryName));
+            throw new NuxeoException(
+                    String.format("Cannot find the parent of document %s: virtual folder from factory %s.", doc.getId(),
+                            syncRootParentFactoryName));
         }
         return parent;
     }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public class NuxeoDriveCreateFile {
 
     /**
      * @deprecated
-     * @see https://jira.nuxeo.com/browse/NXP-12173
+     * @see <a href="https://jira.nuxeo.com/browse/NXP-12173">NXP-12173</a>
      */
     @Deprecated
     @Param(name = "name", required = false)

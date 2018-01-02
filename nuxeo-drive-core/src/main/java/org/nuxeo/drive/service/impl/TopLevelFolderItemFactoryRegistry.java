@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class TopLevelFolderItemFactoryRegistry extends
 
     private static final Log log = LogFactory.getLog(TopLevelFolderItemFactoryRegistry.class);
 
-    protected Map<String, TopLevelFolderItemFactory> factories = new HashMap<String, TopLevelFolderItemFactory>();
+    protected Map<String, TopLevelFolderItemFactory> factories = new HashMap<>();
 
     @Override
     public String getContributionId(TopLevelFolderItemFactoryDescriptor contrib) {

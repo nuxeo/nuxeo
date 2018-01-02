@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class FileSystemItemFactoryRegistry extends ContributionFragmentRegistry<
 
     private static final Log log = LogFactory.getLog(FileSystemItemFactoryRegistry.class);
 
-    protected final Map<String, FileSystemItemFactoryDescriptor> factoryDescriptors = new HashMap<String, FileSystemItemFactoryDescriptor>();
+    protected final Map<String, FileSystemItemFactoryDescriptor> factoryDescriptors = new HashMap<>();
 
     @Override
     public String getContributionId(FileSystemItemFactoryDescriptor contrib) {
@@ -124,15 +124,14 @@ public class FileSystemItemFactoryRegistry extends ContributionFragmentRegistry<
     }
 
     protected List<FileSystemItemFactoryWrapper> getOrderedActiveFactories(Set<String> activeFactories) {
-        List<FileSystemItemFactoryWrapper> factories = new ArrayList<FileSystemItemFactoryWrapper>();
-        List<FileSystemItemFactoryDescriptor> orderedFactoryDescriptors = new ArrayList<FileSystemItemFactoryDescriptor>(
-                factoryDescriptors.values());
+        List<FileSystemItemFactoryWrapper> factories = new ArrayList<>();
+        List<FileSystemItemFactoryDescriptor> orderedFactoryDescriptors = new ArrayList<>(factoryDescriptors.values());
         Collections.sort(orderedFactoryDescriptors);
         for (FileSystemItemFactoryDescriptor factoryDesc : orderedFactoryDescriptors) {
             // Only include active factories
             if (activeFactories.contains(factoryDesc.getName())) {
-                FileSystemItemFactoryWrapper factoryWrapper = new FileSystemItemFactoryWrapper(
-                        factoryDesc.getDocType(), factoryDesc.getFacet(), factoryDesc.getFactory());
+                FileSystemItemFactoryWrapper factoryWrapper = new FileSystemItemFactoryWrapper(factoryDesc.getDocType(),
+                        factoryDesc.getFacet(), factoryDesc.getFactory());
                 factories.add(factoryWrapper);
             }
         }
