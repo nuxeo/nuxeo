@@ -197,8 +197,18 @@ public final class Functions {
         return formatDate(date, basicDateFormatter());
     }
 
+    public static String formatDateUsingFullDateAndTimeFormatter(Date date) {
+        // We're using the US one for consistency.
+        String dateFormat = "EEEE, MMMM d, yyyy h:mm:ss a z";
+        return formatDate(date, dateFormat);
+    }
+
     public static String formatDate(Date date, String format) {
-        return new SimpleDateFormat(format).format(date);
+        FacesContext context = FacesContext.getCurrentInstance();
+        Locale locale = context.getViewRoot().getLocale();
+
+        return new SimpleDateFormat(format, locale)
+                .format(date);
     }
 
     public static String concat(String s1, String s2) {
