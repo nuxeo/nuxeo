@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 package org.nuxeo.targetplatforms.core.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,13 +35,13 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.BaseSession;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.targetplatforms.api.TargetInfo;
 import org.nuxeo.targetplatforms.api.TargetPackage;
 import org.nuxeo.targetplatforms.api.TargetPackageInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatform;
@@ -75,8 +74,9 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
 
     public static final String XP_PACKAGES = "packages";
 
-    protected static final DateTimeFormatter dateParser = DateTimeFormat.forPattern("yyyy/MM/dd").withLocale(
-            Locale.ENGLISH).withZone(DateTimeZone.UTC);
+    protected static final DateTimeFormatter dateParser = DateTimeFormat.forPattern("yyyy/MM/dd")
+                                                                        .withLocale(Locale.ENGLISH)
+                                                                        .withZone(DateTimeZone.UTC);
 
     protected ServiceConfigurationRegistry conf;
 
@@ -112,7 +112,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
             packages.addContribution(desc);
         } else if (XP_CONF.equals(extensionPoint)) {
             ServiceConfigurationDescriptor desc = (ServiceConfigurationDescriptor) contribution;
-            log.info(String.format("Register TargetPlatformService configuration"));
+            log.info("Register TargetPlatformService configuration");
             conf.addContribution(desc);
         }
     }
@@ -129,7 +129,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
             packages.removeContribution(desc);
         } else if (XP_CONF.equals(extensionPoint)) {
             ServiceConfigurationDescriptor desc = (ServiceConfigurationDescriptor) contribution;
-            log.info(String.format("Unregister TargetPlatformService configuration"));
+            log.info("Unregister TargetPlatformService configuration");
             conf.removeContribution(desc);
         }
     }
@@ -212,23 +212,23 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
         if (entry != null) {
             Long enabled = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.ENABLED_PROP);
             if (enabled != null && enabled.intValue() >= 0) {
-                tp.setEnabled(enabled.intValue() == 0 ? false : true);
+                tp.setEnabled(enabled.intValue() != 0);
             }
             Long restricted = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.RESTRICTED_PROP);
             if (restricted != null && restricted.intValue() >= 0) {
-                tp.setRestricted(restricted.intValue() == 0 ? false : true);
+                tp.setRestricted(restricted.intValue() != 0);
             }
             Long deprecated = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.DEPRECATED_PROP);
             if (deprecated != null && deprecated.intValue() >= 0) {
-                tp.setDeprecated(deprecated.intValue() == 0 ? false : true);
+                tp.setDeprecated(deprecated.intValue() != 0);
             }
             Long trial = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.TRIAL_PROP);
             if (trial != null && trial.intValue() >= 0) {
-                tp.setTrial(trial.intValue() == 0 ? false : true);
+                tp.setTrial(trial.intValue() != 0);
             }
             Long isDefault = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.DEFAULT_PROP);
             if (isDefault != null && isDefault.intValue() >= 0) {
-                tp.setDefault(isDefault.intValue() == 0 ? false : true);
+                tp.setDefault(isDefault.intValue() != 0);
             }
             tp.setOverridden(true);
         }
@@ -281,8 +281,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
             return null;
         }
         TargetPlatformDescriptor desc = platforms.getTargetPlatform(id);
-        TargetPlatformInfo tpi = getTargetPlatformInfo(desc);
-        return tpi;
+        return getTargetPlatformInfo(desc);
     }
 
     protected TargetPlatformInfo getTargetPlatformInfo(TargetPlatformDescriptor desc) {
@@ -310,23 +309,23 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
         if (entry != null) {
             Long enabled = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.ENABLED_PROP);
             if (enabled != null && enabled.intValue() >= 0) {
-                tpi.setEnabled(enabled.intValue() == 0 ? false : true);
+                tpi.setEnabled(enabled.intValue() != 0);
             }
             Long restricted = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.RESTRICTED_PROP);
             if (restricted != null && restricted.intValue() >= 0) {
-                tpi.setRestricted(restricted.intValue() == 0 ? false : true);
+                tpi.setRestricted(restricted.intValue() != 0);
             }
             Long deprecated = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.DEPRECATED_PROP);
             if (deprecated != null && deprecated.intValue() >= 0) {
-                tpi.setDeprecated(deprecated.intValue() == 0 ? false : true);
+                tpi.setDeprecated(deprecated.intValue() != 0);
             }
             Long trial = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.TRIAL_PROP);
             if (trial != null && trial.intValue() >= 0) {
-                tpi.setTrial(trial.intValue() == 0 ? false : true);
+                tpi.setTrial(trial.intValue() != 0);
             }
             Long isDefault = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.DEFAULT_PROP);
             if (isDefault != null && isDefault.intValue() >= 0) {
-                tpi.setDefault(isDefault.intValue() == 0 ? false : true);
+                tpi.setDefault(isDefault.intValue() != 0);
             }
             tpi.setOverridden(true);
         }
@@ -419,12 +418,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
             tps.add(tp);
         }
         // always sort for a deterministic result
-        Collections.sort(tps, new Comparator<TargetPlatform>() {
-            @Override
-            public int compare(TargetPlatform arg0, TargetPlatform arg1) {
-                return arg0.getId().compareTo(arg1.getId());
-            }
-        });
+        tps.sort(Comparator.comparing(TargetInfo::getId));
         return tps;
     }
 
@@ -441,12 +435,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
             }
             tps.add(tp);
         }
-        Collections.sort(tps, new Comparator<TargetPlatformInfo>() {
-            @Override
-            public int compare(TargetPlatformInfo arg0, TargetPlatformInfo arg1) {
-                return arg0.getId().compareTo(arg1.getId());
-            }
-        });
+        tps.sort(Comparator.comparing(TargetInfo::getId));
         return tps;
     }
 
@@ -577,15 +566,15 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
         if (entry != null) {
             Long enabled = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.ENABLED_PROP);
             if (enabled != null && enabled.intValue() >= 0) {
-                tpi.setEnabled(enabled.intValue() == 0 ? false : true);
+                tpi.setEnabled(enabled.intValue() != 0);
             }
             Long restricted = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.RESTRICTED_PROP);
             if (restricted != null && restricted.intValue() >= 0) {
-                tpi.setRestricted(restricted.intValue() == 0 ? false : true);
+                tpi.setRestricted(restricted.intValue() != 0);
             }
             Long deprecated = (Long) entry.getProperty(DirectoryUpdater.SCHEMA, DirectoryUpdater.DEPRECATED_PROP);
             if (deprecated != null && deprecated.intValue() >= 0) {
-                tpi.setDeprecated(deprecated.intValue() == 0 ? false : true);
+                tpi.setDeprecated(deprecated.intValue() != 0);
             }
             tpi.setOverridden(true);
         }
