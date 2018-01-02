@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -47,7 +46,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
         Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        String query = "";
+        String query;
         // if the user gives a query, we build a new Page Provider with the query provided
         if (StringUtils.isNotBlank(customQuery)) {
             if (customQuery.toLowerCase().contains(" where")) {
@@ -63,8 +62,8 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
 
         PageProviderService ppService = Framework.getService(PageProviderService.class);
         @SuppressWarnings("unchecked")
-        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider("customPP", desc,
-                null, null, null, null, props, new Object[] { doc.getId() });
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider("customPP", desc, null,
+                null, null, null, props, new Object[] { doc.getId() });
 
         int countPages = 1;
         // get all the documents of the first page
@@ -74,9 +73,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
             while (countPages < pp.getNumberOfPages()) {
                 pp.nextPage();
                 List<DocumentModel> childrenTemp = pp.getCurrentPage();
-                for (DocumentModel childTemp : childrenTemp) {
-                    children.add(childTemp);
-                }
+                children.addAll(childrenTemp);
                 countPages++;
             }
         }
@@ -86,7 +83,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
 
     @Override
     public File serialize(CoreSession session, DocumentModel docfrom, String fsPath) throws IOException {
-        File folder = null;
+        File folder;
         File newFolder = null;
         folder = new File(fsPath);
 
