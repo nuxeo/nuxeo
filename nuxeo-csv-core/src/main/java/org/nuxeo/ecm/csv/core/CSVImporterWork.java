@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,7 +47,6 @@ import java.util.Map;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
@@ -97,8 +97,6 @@ import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
-
-;
 
 /**
  * Work task to import form a CSV file. Because the file is read from the local filesystem, this must be executed in a
@@ -282,7 +280,6 @@ public class CSVImporterWork extends TransientStoreWork {
     }
 
     /**
-     * @throws IOException
      * @since 7.3
      */
     protected BufferedReader newReader(Blob blob) throws IOException {
@@ -392,8 +389,7 @@ public class CSVImporterWork extends TransientStoreWork {
 
         DocumentType docType = Framework.getService(SchemaManager.class).getDocumentType(type);
         if (docType == null) {
-            logError(getLineNumber(record), "The type '%s' does not exist", LABEL_CSV_IMPORTER_NOT_EXISTING_TYPE,
-                    type);
+            logError(getLineNumber(record), "The type '%s' does not exist", LABEL_CSV_IMPORTER_NOT_EXISTING_TYPE, type);
             return false;
         }
         Map<String, Serializable> properties = computePropertiesMap(record, docType, header);
@@ -773,7 +769,7 @@ public class CSVImporterWork extends TransientStoreWork {
         InputStream io = CSVImporterWork.class.getClassLoader().getResourceAsStream(key);
         if (io != null) {
             try {
-                return IOUtils.toString(io, Charsets.UTF_8);
+                return IOUtils.toString(io, StandardCharsets.UTF_8);
             } catch (IOException e) {
                 // cannot happen
                 throw new NuxeoException(e);

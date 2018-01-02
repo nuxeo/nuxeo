@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,7 @@
 
 package org.nuxeo.ecm.csv.core;
 
-import org.apache.commons.lang.StringUtils;
-import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.query.sql.NXQL;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,7 +29,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME;
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
