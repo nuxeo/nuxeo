@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -103,7 +104,7 @@ public class PDFLinks {
                 List pageAnnotations = page.getAnnotations();
                 for (Object annotationObject : pageAnnotations) {
                     PDAnnotation annot = (PDAnnotation) annotationObject;
-                    if (!(annot instanceof  PDAnnotationLink)) {
+                    if (!(annot instanceof PDAnnotationLink)) {
                         continue;
                     }
                     PDAnnotationLink link = (PDAnnotationLink) annot;
@@ -127,8 +128,6 @@ public class PDFLinks {
 
     /**
      * Return all links of type "GoToR" ({@link PDActionRemoteGoTo#SUB_TYPE}).
-     *
-     * @throws IOException
      */
     public List<LinkInfo> getRemoteGoToLinks() throws IOException {
         if (remoteGoToLinks == null) {
@@ -140,8 +139,6 @@ public class PDFLinks {
 
     /**
      * Return all links of type "Launch" ({@link PDActionLaunch#SUB_TYPE}).
-     *
-     * @throws IOException
      */
     public List<LinkInfo> getLaunchLinks() throws IOException {
         if (launchLinks == null) {
@@ -153,8 +150,6 @@ public class PDFLinks {
 
     /**
      * Return all links of type "URI" ({@link PDActionURI#SUB_TYPE}).
-     *
-     * @throws IOException
      */
     public List<LinkInfo> getURILinks() throws IOException {
         if (uriLinks == null) {
@@ -176,7 +171,7 @@ public class PDFLinks {
             stripper.extractRegions(page);
             List<PDAnnotation> annotations = page.getAnnotations();
             for (PDAnnotation annot : annotations) {
-                if (!(annot instanceof  PDAnnotationLink)) {
+                if (!(annot instanceof PDAnnotationLink)) {
                     continue;
                 }
                 PDAnnotationLink link = (PDAnnotationLink) annot;

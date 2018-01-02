@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,14 @@
  */
 package org.nuxeo.ecm.platform.pdf;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -31,12 +39,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.runtime.api.Framework;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Extract pages from a PDF.
@@ -111,7 +113,7 @@ public class PDFPageExtractor {
     public Blob extract(int inStartPage, int inEndPage, String inFileName, String inTitle, String inSubject,
                         String inAuthor) throws NuxeoException {
         Blob result;
-        PDDocument extracted = null;
+        PDDocument extracted;
         try (PDDocument pdfDoc = PDFUtils.load(pdfBlob, password)) {
             PageExtractor pe = new PageExtractor(pdfDoc, inStartPage, inEndPage);
             extracted = pe.extract();

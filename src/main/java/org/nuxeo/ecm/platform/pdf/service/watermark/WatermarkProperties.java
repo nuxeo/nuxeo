@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,10 @@
  */
 package org.nuxeo.ecm.platform.pdf.service.watermark;
 
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
-
-import java.util.Map;
 
 public class WatermarkProperties {
 
@@ -78,7 +77,7 @@ public class WatermarkProperties {
     }
 
     public void setRotation(int rotation) {
-        this.rotation = rotation %360;
+        this.rotation = rotation % 360;
     }
 
     public String getHex255Color() {
@@ -144,41 +143,41 @@ public class WatermarkProperties {
             String value = entry.getValue();
             String key = entry.getKey();
             switch (key) {
-                case "fontFamily":
-                    setFontFamily(value);
-                    break;
-                case "fontSize":
-                    setFontSize(Double.valueOf(value));
-                    break;
-                case "rotation":
-                    setRotation(Integer.valueOf(value));
-                    break;
-                case "hex255Color":
-                    setHex255Color(value);
-                    break;
-                case "alphaColor":
-                    setAlphaColor(Double.valueOf(value));
-                    break;
-                case "xPosition":
-                    setxPosition(Double.valueOf(value));
-                    break;
-                case "yPosition":
-                    setyPosition(Double.valueOf(value));
-                    break;
-                case "invertY":
-                    setInvertY(Boolean.valueOf(value));
-                    break;
-                case "invertX":
-                    setInvertX(Boolean.valueOf(value));
-                    break;
-                case "relativeCoordinates":
-                    setRelativeCoordinates(Boolean.valueOf(value));
-                    break;
-                case "scale":
-                    setScale(Double.valueOf(value));
-                    break;
-                default:
-                    throw new NuxeoException("Unknown property: " + key);
+            case "fontFamily":
+                setFontFamily(value);
+                break;
+            case "fontSize":
+                setFontSize(Double.parseDouble(value));
+                break;
+            case "rotation":
+                setRotation(Integer.parseInt(value));
+                break;
+            case "hex255Color":
+                setHex255Color(value);
+                break;
+            case "alphaColor":
+                setAlphaColor(Double.parseDouble(value));
+                break;
+            case "xPosition":
+                setxPosition(Double.parseDouble(value));
+                break;
+            case "yPosition":
+                setyPosition(Double.parseDouble(value));
+                break;
+            case "invertY":
+                setInvertY(Boolean.parseBoolean(value));
+                break;
+            case "invertX":
+                setInvertX(Boolean.parseBoolean(value));
+                break;
+            case "relativeCoordinates":
+                setRelativeCoordinates(Boolean.parseBoolean(value));
+                break;
+            case "scale":
+                setScale(Double.parseDouble(value));
+                break;
+            default:
+                throw new NuxeoException("Unknown property: " + key);
             }
         }
     }

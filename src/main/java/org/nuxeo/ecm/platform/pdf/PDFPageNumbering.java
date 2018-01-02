@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.pdf;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -91,7 +92,7 @@ public class PDFPageNumbering {
      * @return Blob
      */
     public Blob addPageNumbers(int inStartAtPage, int inStartAtNumber, String inFontName, float inFontSize,
-                               String inHex255Color, PAGE_NUMBER_POSITION inPosition) throws NuxeoException {
+            String inHex255Color, PAGE_NUMBER_POSITION inPosition) throws NuxeoException {
         Blob result;
         inStartAtPage = inStartAtPage < 1 ? 1 : inStartAtPage;
         int pageNumber = inStartAtNumber < 1 ? 1 : inStartAtNumber;

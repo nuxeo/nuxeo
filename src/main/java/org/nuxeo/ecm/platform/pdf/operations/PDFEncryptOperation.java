@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,12 +40,12 @@ import org.nuxeo.ecm.platform.pdf.PDFEncryption;
  *
  * @since 8.10
  */
-@Operation(id = PDFEncryptOperation.ID, category = Constants.CAT_CONVERSION, label = "PDF: Encrypt",
-    description = "Encrypts the PDF with the given permissions, returning a copy. Permissions are print, modify, " +
-        "copy, modifyAnnot, fillForms, extractForAccessibility, assemble and printDegraded. Any missing permission " +
-        "is set to false (values are true or false, assemble=true for example). originalOwnerPwd is used if the PDF " +
-        "was originally encrypted. If no keyLength is provided, use 128. If the operation is ran on Document(s), " +
-        "xpath lets you specificy where to get the blob from (default: file:content).")
+@Operation(id = PDFEncryptOperation.ID, category = Constants.CAT_CONVERSION, label = "PDF: Encrypt", //
+description = "Encrypts the PDF with the given permissions, returning a copy. Permissions are print, modify, "
+        + "copy, modifyAnnot, fillForms, extractForAccessibility, assemble and printDegraded. Any missing permission "
+        + "is set to false (values are true or false, assemble=true for example). originalOwnerPwd is used if the PDF "
+        + "was originally encrypted. If no keyLength is provided, use 128. If the operation is ran on Document(s), "
+        + "xpath lets you specificy where to get the blob from (default: file:content).")
 public class PDFEncryptOperation {
 
     public static final String ID = "PDF.Encrypt";

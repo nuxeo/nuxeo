@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.pdf;
 
 import java.util.Arrays;
 import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -206,7 +207,6 @@ public class PDFEncryption {
      * Possible values are 40 and 128. Default value is 128 if <code>keyLength</code> is <= 0.
      *
      * @param keyLength Lenght of the encryption key.
-     * @throws NuxeoException
      */
     public void setKeyLength(int keyLength) throws NuxeoException {
         if (keyLength < 1) {

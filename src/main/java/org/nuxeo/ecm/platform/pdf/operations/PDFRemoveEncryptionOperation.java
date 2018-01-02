@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.platform.pdf.operations;
 
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -30,16 +32,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.pdf.PDFEncryption;
 
-import java.util.stream.Collectors;
-
 /**
  * Removes the encryption, returns a copy of the blob.
  *
  * @since 8.10
  */
-@Operation(id = PDFRemoveEncryptionOperation.ID, category = Constants.CAT_CONVERSION, label = "PDF: Remove Encryption",
-    description = "Removes the encryption, returns a copy of the blob. If the operation is ran on Document(s), xpath " +
-        "lets you specificy where to get the blob from (default: file:content).")
+@Operation(id = PDFRemoveEncryptionOperation.ID, category = Constants.CAT_CONVERSION, label = "PDF: Remove Encryption", //
+description = "Removes the encryption, returns a copy of the blob. If the operation is ran on Document(s), xpath "
+        + "lets you specificy where to get the blob from (default: file:content).")
 public class PDFRemoveEncryptionOperation {
 
     public static final String ID = "PDF.RemoveEncryption";
