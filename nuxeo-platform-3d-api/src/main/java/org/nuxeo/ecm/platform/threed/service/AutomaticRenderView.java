@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.threed.service;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
-import static java.lang.Math.abs;
-
 /**
  * Object representing an automatic render view on the {@link ThreeDService}. An {@code AutomaticRenderView} references
  * the {@code RenderView} through its name.
@@ -68,7 +66,7 @@ public class AutomaticRenderView implements Comparable<AutomaticRenderView> {
     }
 
     public String getId() {
-        return String.valueOf(abs(name.hashCode()));
+        return String.valueOf(name.hashCode() & 0x7fffffff);
     }
 
     public boolean isEnabled() {

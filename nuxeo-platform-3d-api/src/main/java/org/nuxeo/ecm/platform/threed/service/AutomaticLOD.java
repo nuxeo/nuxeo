@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.threed.service;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
-import static java.lang.Math.abs;
-
 /**
  * Object representing a registered automatic level of detail conversion on the {@link ThreeDService}. An
  * {@code AutomaticLOD} references the percentage of mesh polygons through its percentage.
@@ -148,7 +146,7 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
     }
 
     public String getId() {
-        return String.valueOf(abs(name.hashCode()));
+        return String.valueOf(name.hashCode() & 0x7fffffff);
     }
 
     @Override
