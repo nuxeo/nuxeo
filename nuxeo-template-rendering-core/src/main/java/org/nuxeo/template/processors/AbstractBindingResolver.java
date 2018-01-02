@@ -141,7 +141,7 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                                 context.put(param.getName(), new Date());
                             } else if (pType.getName().equals(StringType.ID)) {
                                 context.put(param.getName(), "");
-                            } else if (pType.getName().equals(InputType.Content)) {
+                            } else if (pType.getName().equals(InputType.Content.getValue())) {
                                 context.put(param.getName(), "");
                             } else {
                                 context.put(param.getName(), "!NOVALUE!");

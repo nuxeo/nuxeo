@@ -243,13 +243,11 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
                 DefaultElement valueElem = (DefaultElement) elem.elements().get(0);
                 String xmlValue = valueElem.getTextTrim();
                 if (param.isSourceValue()) {
-                    // XXX this needs to be rewritten
-
-                    if (String.class.getSimpleName().equals(param.getType())) {
+                    if (InputType.StringValue.equals(param.getType())) {
                         adaptedDoc.setPropertyValue(param.getSource(), xmlValue);
                     } else if (InputType.BooleanValue.equals(param.getType())) {
                         adaptedDoc.setPropertyValue(param.getSource(), new Boolean(xmlValue));
-                    } else if (Date.class.getSimpleName().equals(param.getType())) {
+                    } else if (InputType.DateValue.equals(param.getType())) {
                         SimpleDateFormat wordXMLDateFormat = new SimpleDateFormat(WORD_XML_DATE_FORMAT);
                         try {
                             adaptedDoc.setPropertyValue(param.getSource(), wordXMLDateFormat.parse(xmlValue));
