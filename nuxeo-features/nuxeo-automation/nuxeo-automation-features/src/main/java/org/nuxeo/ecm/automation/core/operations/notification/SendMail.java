@@ -32,7 +32,7 @@ import javax.mail.Session;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -151,7 +151,7 @@ public class SendMail {
                 return IOUtils.toString(in, StandardCharsets.UTF_8);
             }
         } else {
-            return StringEscapeUtils.unescapeHtml(message);
+            return StringEscapeUtils.unescapeHtml4(message);
         }
     }
 

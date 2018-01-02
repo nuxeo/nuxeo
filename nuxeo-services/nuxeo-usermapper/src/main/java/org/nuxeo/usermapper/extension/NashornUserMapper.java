@@ -28,7 +28,7 @@ import java.util.Map;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService.Session;
 import org.nuxeo.automation.scripting.internals.AutomationMapper;

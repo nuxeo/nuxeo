@@ -21,7 +21,7 @@ package org.nuxeo.ecm.user.center.profile.localeProvider;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;

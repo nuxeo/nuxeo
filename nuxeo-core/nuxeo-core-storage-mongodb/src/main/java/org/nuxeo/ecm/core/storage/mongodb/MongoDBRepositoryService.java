@@ -20,7 +20,7 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import java.util.function.BiConsumer;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;

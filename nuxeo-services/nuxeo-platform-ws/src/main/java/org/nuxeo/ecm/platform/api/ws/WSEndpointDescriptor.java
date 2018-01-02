@@ -20,7 +20,7 @@ package org.nuxeo.ecm.platform.api.ws;
 
 import static javax.xml.ws.Endpoint.WSDL_PORT;
 import static javax.xml.ws.Endpoint.WSDL_SERVICE;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.platform.shibboleth.service;
 
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REDIRECT_URL;
 
 import java.io.UnsupportedEncodingException;

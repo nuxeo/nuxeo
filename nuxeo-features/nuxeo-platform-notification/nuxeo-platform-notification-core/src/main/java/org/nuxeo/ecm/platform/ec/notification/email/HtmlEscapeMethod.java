@@ -23,7 +23,7 @@ package org.nuxeo.ecm.platform.ec.notification.email;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import freemarker.template.TemplateMethodModel;
 import freemarker.template.TemplateModelException;
@@ -38,7 +38,7 @@ public class HtmlEscapeMethod implements TemplateMethodModel {
             throw new IllegalArgumentException();
         }
         String str = (String) arg0.get(0);
-        return StringEscapeUtils.escapeHtml(str);
+        return StringEscapeUtils.escapeHtml4(str);
     }
 
 }

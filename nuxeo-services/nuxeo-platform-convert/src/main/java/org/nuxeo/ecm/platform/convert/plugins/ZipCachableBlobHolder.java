@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -62,8 +62,8 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
         this.zipBlob = zipBlob;
     }
 
-    public Blob getBlob(String path) throws IOException, MimetypeNotFoundException, MimetypeDetectionException,
-            ConversionException {
+    public Blob getBlob(String path)
+            throws IOException, MimetypeNotFoundException, MimetypeDetectionException, ConversionException {
         String filePath = key + path;
         File file = new File(filePath);
         Blob blob = Blobs.createBlob(file);
@@ -155,10 +155,12 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
 
     protected Blob createIndexBlob() {
         StringBuilder page = new StringBuilder("<html><body>");
-        page.append("<h1>").append(StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(zipBlob.getFilename()))).append("</h1>");
+        page.append("<h1>")
+            .append(StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(zipBlob.getFilename())))
+            .append("</h1>");
         page.append("<ul>");
         for (Blob blob : blobs) {
-            String fn = StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(blob.getFilename()));
+            String fn = StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(blob.getFilename()));
             page.append("<li><a href=\"").append(fn).append("\">");
             page.append(fn);
             page.append("</a></li>");

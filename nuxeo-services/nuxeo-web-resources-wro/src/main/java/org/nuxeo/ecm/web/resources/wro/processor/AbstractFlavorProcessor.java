@@ -25,7 +25,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.web.resources.wro.provider.NuxeoUriLocator;
 

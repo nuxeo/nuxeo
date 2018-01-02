@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
-import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

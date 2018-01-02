@@ -21,7 +21,7 @@ package org.nuxeo.ecm.automation.core.scripting;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.ecm.automation.context.ContextHelper;
 
 /**
@@ -41,7 +41,7 @@ public class CoreFunctions implements ContextHelper {
     }
 
     public String escapeHtml(Object obj) {
-        return StringEscapeUtils.escapeHtml(obj.toString());
+        return StringEscapeUtils.escapeHtml4(obj.toString());
     }
 
 }

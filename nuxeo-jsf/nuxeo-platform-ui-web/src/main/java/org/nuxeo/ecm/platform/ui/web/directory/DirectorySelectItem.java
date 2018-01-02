@@ -23,7 +23,7 @@ package org.nuxeo.ecm.platform.ui.web.directory;
 
 import javax.faces.model.SelectItem;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>

@@ -25,7 +25,7 @@ import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ValueExpressionLiteral;

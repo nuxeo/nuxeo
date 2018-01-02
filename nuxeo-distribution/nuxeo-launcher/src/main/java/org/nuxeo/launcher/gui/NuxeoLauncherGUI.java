@@ -37,7 +37,7 @@ import java.util.concurrent.Executors;
 
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs2.FileChangeEvent;

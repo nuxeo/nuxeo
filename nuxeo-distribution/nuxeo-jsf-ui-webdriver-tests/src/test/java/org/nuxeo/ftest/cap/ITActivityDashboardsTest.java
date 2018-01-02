@@ -20,7 +20,7 @@ package org.nuxeo.ftest.cap;
 
 import java.util.Date;
 
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.functionaltests.AbstractTest;

@@ -23,7 +23,7 @@ package org.nuxeo.ecm.platform.ui.web.directory;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * This class represents a list of directory items { item1, item2, item3, .. }, where item &lt;i&gt; represents the item

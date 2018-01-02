@@ -39,8 +39,8 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -157,7 +157,7 @@ public final class Functions {
     }
 
     public static String htmlEscape(String data) {
-        return StringEscapeUtils.escapeHtml(data);
+        return StringEscapeUtils.escapeHtml4(data);
     }
 
     /**
@@ -167,7 +167,7 @@ public final class Functions {
      */
     public static String javaScriptEscape(String data) {
         if (data != null) {
-            data = StringEscapeUtils.escapeJavaScript(data);
+            data = StringEscapeUtils.escapeEcmaScript(data);
         }
         return data;
     }

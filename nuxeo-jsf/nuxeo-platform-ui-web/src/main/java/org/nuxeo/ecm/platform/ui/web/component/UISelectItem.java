@@ -22,7 +22,7 @@ import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 

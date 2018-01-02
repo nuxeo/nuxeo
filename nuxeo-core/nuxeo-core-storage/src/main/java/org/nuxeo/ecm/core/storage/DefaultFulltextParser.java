@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.runtime.api.Framework;
 
@@ -106,7 +106,7 @@ public class DefaultFulltextParser implements FulltextParser {
         if (TEXT_HTML.equals(mimeType)) {
             s = removeHtml(s);
         }
-        return StringEscapeUtils.unescapeHtml(s);
+        return StringEscapeUtils.unescapeHtml4(s);
     }
 
     protected String removeHtml(String s) {

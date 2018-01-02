@@ -27,7 +27,7 @@ import java.net.URLDecoder;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>

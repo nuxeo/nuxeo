@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.automation.core.exception;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.ecm.automation.AutomationFilter;
 import org.nuxeo.ecm.automation.core.AutomationFilterDescriptor;
 import org.nuxeo.ecm.automation.core.scripting.Expression;

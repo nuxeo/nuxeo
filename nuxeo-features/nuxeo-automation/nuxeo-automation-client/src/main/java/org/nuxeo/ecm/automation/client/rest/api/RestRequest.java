@@ -32,7 +32,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.automation.client.AutomationException;
 import org.nuxeo.ecm.automation.client.Constants;
 

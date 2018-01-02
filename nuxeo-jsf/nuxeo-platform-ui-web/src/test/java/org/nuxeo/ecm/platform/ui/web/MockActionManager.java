@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ActionFilter;
@@ -54,17 +54,17 @@ public class MockActionManager implements ActionManager {
 
     @Override
     public List<Action> getActions(String category, ActionContext context, boolean hideUnavailableActions) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("test");
     }
 
     @Override
     public List<Action> getActions(String category, ActionContext context) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("test");
     }
 
     @Override
     public List<Action> getAllActions(String category) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("test");
     }
 
     @Override
@@ -79,7 +79,7 @@ public class MockActionManager implements ActionManager {
 
     @Override
     public ActionFilter[] getFilters(String actionId) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("test");
     }
 
     @Override
@@ -94,32 +94,32 @@ public class MockActionManager implements ActionManager {
 
     @Override
     public boolean isRegistered(String actionId) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("test");
     }
 
     @Override
     public void remove() {
-        throw new NotImplementedException();
+        throw new NotImplementedException("test");
     }
 
     @Override
     public Action getAction(String actionId, ActionContext context, boolean hideUnavailableActions) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("test");
     }
 
     @Override
     public boolean checkFilter(String filterId, ActionContext context) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("test");
     }
 
     @Override
     public boolean checkFilters(List<String> filterIds, ActionContext context) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("test");
     }
 
     @Override
     public boolean checkFilters(Action action, ActionContext context) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("test");
     }
 
 }

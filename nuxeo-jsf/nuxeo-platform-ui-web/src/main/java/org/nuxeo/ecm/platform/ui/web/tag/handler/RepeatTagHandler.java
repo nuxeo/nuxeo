@@ -37,7 +37,7 @@ import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagHandler;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.sun.faces.facelets.component.UIRepeat;
 import com.sun.faces.facelets.tag.TagAttributeImpl;

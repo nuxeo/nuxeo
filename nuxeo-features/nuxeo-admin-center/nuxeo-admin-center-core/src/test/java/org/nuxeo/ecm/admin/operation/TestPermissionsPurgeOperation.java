@@ -26,7 +26,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.admin.permissions.AbstractPermissionsPurge;
 import org.nuxeo.ecm.automation.AutomationService;

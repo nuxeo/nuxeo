@@ -30,7 +30,7 @@ import javax.faces.component.UIGraphic;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.sun.faces.RIConstants;
 import com.sun.faces.renderkit.Attribute;

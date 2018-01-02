@@ -20,7 +20,7 @@ package org.nuxeo.ecm.web.resources.wro.factory;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.web.resources.api.Resource;

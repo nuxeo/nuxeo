@@ -18,7 +18,7 @@
  */
 package org.nuxeo.connect.update.task.guards;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 

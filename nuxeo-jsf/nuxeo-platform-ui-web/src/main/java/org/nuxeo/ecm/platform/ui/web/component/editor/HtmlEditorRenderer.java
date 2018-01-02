@@ -33,7 +33,7 @@ import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.platform.ui.web.htmleditor.api.HtmlEditorPluginService;
 import org.nuxeo.runtime.api.Framework;
 

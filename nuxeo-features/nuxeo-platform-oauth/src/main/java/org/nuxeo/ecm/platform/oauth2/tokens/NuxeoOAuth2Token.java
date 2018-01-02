@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 import com.google.api.client.auth.oauth2.StoredCredential;

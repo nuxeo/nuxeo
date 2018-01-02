@@ -19,7 +19,7 @@
  */
 package org.nuxeo.ecm.core.query.sql.model;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A named reference to a variable (this can be a field or table).

@@ -33,7 +33,7 @@ import javax.faces.event.ComponentSystemEventListener;
 import javax.faces.event.ListenerFor;
 import javax.faces.event.PostAddToViewEvent;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -142,10 +142,10 @@ public class NXMessagesRenderer extends MessagesRenderer implements ComponentSys
             String scriptContent = new StringBuilder().append("jQuery(document).ready(function() {\n")
                                                       .append("  jQuery.ambiance({\n")
                                                       .append("    message: \"")
-                                                      .append(StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(message)))
+                                                      .append(StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(message)))
                                                       .append("\",\n")
                                                       .append("    title: \"")
-                                                      .append(StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(summary)))
+                                                      .append(StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(summary)))
                                                       .append("\",\n")
                                                       .append("    type: \"")
                                                       .append(errorType)

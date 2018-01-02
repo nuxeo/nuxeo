@@ -24,7 +24,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlForm;
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 

@@ -29,7 +29,7 @@ import static org.nuxeo.ecm.permissions.Constants.PERMISSION_NOTIFICATION_EVENT;
 import java.util.Collections;
 import java.util.Locale;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
@@ -127,7 +127,7 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
                     if (entry != null) {
                         String comment = (String) entry.getPropertyValue(ACE_INFO_COMMENT);
                         if (comment != null) {
-                            comment = StringEscapeUtils.escapeHtml(comment);
+                            comment = StringEscapeUtils.escapeHtml4(comment);
                             comment = comment.replaceAll("\n", "<br/>");
                             ctx.put("comment", comment);
                         }

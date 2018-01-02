@@ -35,7 +35,7 @@ import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.ValidatorHandler;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;

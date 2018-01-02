@@ -28,7 +28,7 @@ import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.styling.service.descriptors.IconDescriptor;
 

@@ -21,7 +21,7 @@ package org.nuxeo.ecm.core.uidgen;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

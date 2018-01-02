@@ -25,7 +25,7 @@ import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.sun.faces.config.FaceletsConfiguration;
 import com.sun.faces.config.WebConfiguration;

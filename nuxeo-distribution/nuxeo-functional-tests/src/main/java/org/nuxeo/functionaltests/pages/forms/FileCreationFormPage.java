@@ -21,7 +21,7 @@ package org.nuxeo.functionaltests.pages.forms;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.functionaltests.forms.FileWidgetElement;
 import org.nuxeo.functionaltests.forms.LayoutElement;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;

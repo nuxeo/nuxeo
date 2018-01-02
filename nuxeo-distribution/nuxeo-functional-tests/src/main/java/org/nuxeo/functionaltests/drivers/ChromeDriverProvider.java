@@ -26,7 +26,7 @@ package org.nuxeo.functionaltests.drivers;
 import java.io.File;
 import java.util.Arrays;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.chrome.ChromeDriver;

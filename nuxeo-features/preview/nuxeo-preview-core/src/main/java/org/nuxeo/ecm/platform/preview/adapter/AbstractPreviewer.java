@@ -21,7 +21,7 @@
 
 package org.nuxeo.ecm.platform.preview.adapter;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -41,7 +41,7 @@ public class AbstractPreviewer {
         sb.append(" (preview)");
 
         String title = sb.toString();
-        return StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(title));
+        return StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(title));
     }
 
 }

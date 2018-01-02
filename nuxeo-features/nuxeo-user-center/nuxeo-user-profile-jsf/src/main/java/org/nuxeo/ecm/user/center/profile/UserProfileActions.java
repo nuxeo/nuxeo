@@ -31,7 +31,7 @@ import static org.nuxeo.ecm.webapp.security.UserManagementActions.USER_SELECTED_
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;

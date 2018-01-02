@@ -26,10 +26,8 @@
     </dependency>
     <!-- Upgrade commons-lang when connect client will update -->
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <!-- don't pollute modules depending on this one -->
-      <scope>provided</scope>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
@@ -46,12 +44,6 @@
     <dependency>
       <groupId>org.nuxeo.connect</groupId>
       <artifactId>nuxeo-connect-client</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-lang</groupId>
-          <artifactId>commons-lang</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>

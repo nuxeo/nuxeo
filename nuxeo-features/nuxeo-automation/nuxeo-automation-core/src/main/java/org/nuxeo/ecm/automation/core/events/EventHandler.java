@@ -283,7 +283,7 @@ public class EventHandler {
          * The following are not evaluated in quick mode, as we need a full DocumentModelImpl to evaluate most
          * expressions.
          */
-        if (!org.apache.commons.lang.StringUtils.isBlank(condition)) {
+        if (!org.apache.commons.lang3.StringUtils.isBlank(condition)) {
             Expression expr = Scripting.newExpression(condition);
             try {
                 if (!Boolean.TRUE.equals(expr.eval(ctx))) {

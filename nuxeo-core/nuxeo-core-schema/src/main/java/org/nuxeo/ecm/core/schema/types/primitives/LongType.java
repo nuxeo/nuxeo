@@ -20,7 +20,7 @@
  */
 package org.nuxeo.ecm.core.schema.types.primitives;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.schema.types.PrimitiveType;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.EnumConstraint;
