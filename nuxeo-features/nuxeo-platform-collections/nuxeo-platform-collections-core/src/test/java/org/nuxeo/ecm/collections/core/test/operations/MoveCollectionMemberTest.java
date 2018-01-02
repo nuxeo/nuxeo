@@ -314,4 +314,31 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
 
     }
 
+    // move member before itself should do nothing
+    @Test
+    public void testWrongMoveMembers2() throws OperationException {
+        Collection collectionAdapter = collection.getAdapter(Collection.class);
+        collectionAdapter.getCollectedDocumentIds();
+        initialCheck(collectionAdapter);
+
+        chain = new OperationChain("test-chain");
+        int index = (NB_FILES / 2) + 1;
+        chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(index)).set("member2",
+                listDocs.get(index)); // twice same index
+
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(collection);
+            boolean result = (boolean) service.run(ctx, chain);
+            assertFalse(result);
+        }
+
+        collection = session.getDocument(collection.getRef());
+        collectionAdapter = collection.getAdapter(Collection.class);
+
+        // Check nothing changed
+        for (int i = 0; i < NB_FILES; i++) {
+            assertEquals(listDocs.get(i).getId(), collectionAdapter.getCollectedDocumentIds().get(i));
+        }
+    }
+
 }

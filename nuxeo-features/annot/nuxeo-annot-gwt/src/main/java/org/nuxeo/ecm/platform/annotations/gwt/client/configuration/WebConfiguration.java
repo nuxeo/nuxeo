@@ -75,7 +75,7 @@ public class WebConfiguration implements IsSerializable {
     }
 
     public void removeAnnotationDefinition(AnnotationDefinition annotationDefinition) {
-        annotationDefinitions.remove(annotationDefinition);
+        annotationDefinitions.remove(annotationDefinition.getName());
     }
 
     public List<AnnotationDefinition> getAnnotationDefinitions() {

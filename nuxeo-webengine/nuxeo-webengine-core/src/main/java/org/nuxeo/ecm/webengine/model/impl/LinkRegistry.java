@@ -143,8 +143,7 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
             return;
         }
         for (int i = 0; i < descriptors.length; i++) {
-            // FIXME: this can't work, comparison between a String and a LinkDescriptor
-            if (link.getId().equals(descriptors[i])) {
+            if (link.getId().equals(descriptors[i].getId())) {
                 if (descriptors.length == 1 && i == 0) {
                     links.remove(category);
                     return;

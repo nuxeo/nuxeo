@@ -118,7 +118,8 @@ public class PictureTilingCacheGCManager {
 
         long deletedVolume = 0;
         for (Date accessDate : accesTimeList) {
-            PictureTilingCacheInfo cacheEntry = cache.get(sortingMap.get(accessDate));
+            String key = sortingMap.get(accessDate);
+            PictureTilingCacheInfo cacheEntry = cache.get(key);
 
             long deletePotential = cacheEntry.getDiskSpaceUsageInBytes() / (1024);
 
@@ -128,7 +129,7 @@ public class PictureTilingCacheGCManager {
             } else {
                 deletedVolume += deletePotential;
                 cacheEntry.cleanUp();
-                cache.remove(accessDate);
+                cache.remove(key);
             }
             if (deletedVolume > deltaInKB)
                 break;

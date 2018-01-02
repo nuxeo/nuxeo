@@ -588,7 +588,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
                                 }
 
                                 // check onelevel scope constraints
-                                if ("onelevel".equals(ldapUrl.getScope())) {
+                                if (ldapUrl.getScope() == SearchControls.ONELEVEL_SCOPE) {
                                     int targetDnSize = new LdapName(targetDn).size();
                                     int urlDnSize = new LdapName(candidateDN).size();
                                     if (targetDnSize - urlDnSize > 1) {

@@ -300,8 +300,6 @@ public class ConfigurationGenerator {
     // Common default configuration file
     private File nuxeoDefaultConf;
 
-    public boolean isJBoss;
-
     public boolean isJetty;
 
     public boolean isTomcat;
@@ -406,9 +404,8 @@ public class ConfigurationGenerator {
         // detect server type based on System properties
         isJetty = System.getProperty(JettyConfigurator.JETTY_HOME) != null;
         isTomcat = System.getProperty(TomcatConfigurator.TOMCAT_HOME) != null;
-        if (!isJBoss && !isJetty && !isTomcat) {
+        if (!isJetty && !isTomcat) {
             // fallback on jar detection
-            isJBoss = new File(nuxeoHome, "bin/run.jar").exists();
             isTomcat = new File(nuxeoHome, "bin/bootstrap.jar").exists();
             String[] files = nuxeoHome.list();
             for (String file : files) {

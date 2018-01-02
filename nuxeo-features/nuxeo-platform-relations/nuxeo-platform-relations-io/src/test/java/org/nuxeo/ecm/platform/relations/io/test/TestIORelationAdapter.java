@@ -21,9 +21,8 @@
 package org.nuxeo.ecm.platform.relations.io.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -171,9 +170,9 @@ public class TestIORelationAdapter {
     }
 
     private static void feedGraph(String filePath, Graph graph) {
-        assertSame(0L, graph.size());
+        assertEquals(0, graph.size().longValue());
         graph.read(getTestFile(filePath), null, null);
-        assertNotSame(0L, graph.size());
+        assertNotEquals(0, graph.size().longValue());
     }
 
     private static void compareGraph(String filePath, Graph graph) {

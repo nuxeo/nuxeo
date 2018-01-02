@@ -88,7 +88,7 @@ public class Failures {
             buffer.append("\n* Failure " + i + ": ");
             String trace = failure.getTrace();
             if (originalMessage != null && originalMessage.equals(failure.getMessage())) {
-                trace.replaceAll(originalMessage, customMessage);
+                trace = trace.replaceAll(originalMessage, customMessage);
             }
             buffer.append(failure.getTestHeader()).append("\n").append(trace);
             errors.addSuppressed(failure.getException());

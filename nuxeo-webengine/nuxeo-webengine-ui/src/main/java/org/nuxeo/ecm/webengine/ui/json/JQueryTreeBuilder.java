@@ -35,10 +35,6 @@ public abstract class JQueryTreeBuilder<T> {
 
     public static final String CHILDREN = "children";
 
-    public JSONArray buildTree(String rootName, String path) {
-        return buildTree(rootName, path);
-    }
-
     public JSONArray buildTree(T root, String path) {
         if (path == null || path.length() == 0 || "/".equals(path)) {
             return buildChildren(root);

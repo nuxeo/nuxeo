@@ -128,7 +128,7 @@ public class ModuleManager {
         }
         if (md.roots != null) {
             for (Class<?> cl : md.roots) {
-                roots.remove(cl);
+                roots.remove(cl.getName());
             }
         }
         return md.file;

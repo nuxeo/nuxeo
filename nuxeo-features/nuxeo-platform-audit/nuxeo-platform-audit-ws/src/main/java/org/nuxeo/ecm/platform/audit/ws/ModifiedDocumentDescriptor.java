@@ -43,10 +43,6 @@ public class ModifiedDocumentDescriptor implements Serializable {
         return uuid;
     }
 
-    public ModifiedDocumentDescriptor() {
-        this(null, null, null);
-    }
-
     public ModifiedDocumentDescriptor(Date modified, String type, String uuid) {
         this.modified = modified.toString();
         this.type = type;

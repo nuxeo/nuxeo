@@ -289,7 +289,7 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
 
     @Override
     public String toString() {
-        return category + " > " + label + " [" + id + ": " + Arrays.asList(signature) + "] (" + params + ")\n"
+        return category + " > " + label + " [" + id + ": " + Arrays.toString(signature) + "] (" + Arrays.toString(params) + ")\n"
                 + description;
     }
 }

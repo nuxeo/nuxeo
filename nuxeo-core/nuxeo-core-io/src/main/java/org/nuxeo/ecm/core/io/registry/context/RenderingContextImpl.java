@@ -306,8 +306,9 @@ public class RenderingContextImpl implements RenderingContext {
         String realName = name.toLowerCase().trim();
         if (values == null) {
             parameters.remove(realName);
+        } else {
+            parameters.put(realName, new CopyOnWriteArrayList<>(values));
         }
-        parameters.put(realName, new CopyOnWriteArrayList<>(values));
     }
 
     @Override

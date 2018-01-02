@@ -47,8 +47,8 @@ public class ContextHelperRegistry extends SimpleContributionRegistry<ContextHel
         }
         if (Arrays.asList(RESERVED_VAR_NAMES).contains(id)) {
             log.warn("The context helper '" + contextHelper.toString() + "' cannot be registered:'" + id
-                    + "' is reserved. Please use another one. The Nuxeo reserved " + "aliases are"
-                    + RESERVED_VAR_NAMES.toString());
+                    + "' is reserved. Please use another one. The Nuxeo reserved aliases are "
+                    + Arrays.toString(RESERVED_VAR_NAMES));
             return;
         }
         super.addContribution(contextHelperDescriptor);

@@ -92,7 +92,7 @@ public class NuxeoOAuthToken implements OAuthToken {
         this.creationDate = (Calendar) entry.getProperty(SCHEMA, "creationDate");
 
         Long clientTokenL = (Long) entry.getProperty(SCHEMA, "clientToken");
-        if (clientTokenL != null && clientTokenL.equals(1)) {
+        if (Long.valueOf(1).equals(clientTokenL)) {
             this.clientToken = true;
         }
         this.clientId = (String) entry.getProperty(SCHEMA, "clientId");

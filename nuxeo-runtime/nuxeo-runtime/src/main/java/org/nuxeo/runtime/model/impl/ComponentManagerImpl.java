@@ -440,8 +440,7 @@ public class ComponentManagerImpl implements ComponentManager {
         } else { // maybe it's pending
             Set<Extension> extensions = pendingExtensions.get(name);
             if (extensions != null) {
-                // FIXME: extensions is a set of Extensions, not ComponentNames.
-                extensions.remove(name);
+                extensions.remove(extension);
                 if (extensions.isEmpty()) {
                     pendingExtensions.remove(name);
                 }

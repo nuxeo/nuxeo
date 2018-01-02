@@ -1464,7 +1464,7 @@ public abstract class NuxeoLauncher {
             projects.subList(fromIndex, toIndex).forEach(
                     project -> System.out.println("\t- " + project.getSymbolicName()));
             if (toIndex < projects.size()) {
-                int pageLeft = (int) Math.ceil((projects.size() - (i * PAGE_SIZE)) / PAGE_SIZE);
+                int pageLeft = (projects.size() - i * PAGE_SIZE + PAGE_SIZE - 1) / PAGE_SIZE;
                 System.out.print(String.format("Project name (press Enter for next page; %d pages left): ", pageLeft));
             } else {
                 System.out.print("Project name: ");

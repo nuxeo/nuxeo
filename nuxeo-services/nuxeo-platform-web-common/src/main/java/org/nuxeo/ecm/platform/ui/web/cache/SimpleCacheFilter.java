@@ -22,8 +22,6 @@
 package org.nuxeo.ecm.platform.ui.web.cache;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -37,6 +35,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestControllerFilter;
 
 /**
@@ -50,14 +49,9 @@ public class SimpleCacheFilter implements Filter {
 
     private String cacheTime = "3599";
 
-    public static final DateFormat HTTP_EXPIRES_DATE_FORMAT = httpExpiresDateFormat();
-
-    private static DateFormat httpExpiresDateFormat() {
-        // formatted http Expires: Thu, 01 Dec 1994 16:00:00 GMT
-        DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
-        df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return df;
-    }
+    // formatted http Expires: Thu, 01 Dec 1994 16:00:00 GMT
+    public static final FastDateFormat HTTP_EXPIRES_DATE_FORMAT = FastDateFormat.getInstance(
+            "EEE, dd MMM yyyy HH:mm:ss z", TimeZone.getTimeZone("GMT"), Locale.US);
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
