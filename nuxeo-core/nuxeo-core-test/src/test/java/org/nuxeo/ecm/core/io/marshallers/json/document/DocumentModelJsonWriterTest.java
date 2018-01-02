@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
@@ -152,6 +153,15 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
         document.setPropertyValue(propName, value);
         JsonAssert json = jsonAssert(document, CtxBuilder.properties("documentResolver").get());
         json.has("properties." + propName).isEquals(value);
+    }
+
+    @Test
+    public void testDeltaLongPropertyValue() throws Exception {
+        DeltaLong delta = DeltaLong.valueOf(Long.valueOf(123), 456);
+        String propName = "dr:propInt";
+        document.setPropertyValue(propName, delta);
+        JsonAssert json = jsonAssert(document, CtxBuilder.properties("documentResolver").get());
+        json.has("properties." + propName).isEquals(delta.longValue());
     }
 
     @Test
