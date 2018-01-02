@@ -248,7 +248,7 @@ public class TestDiffDisplayServiceDefaultDisplay extends DiffDisplayServiceTest
                 }
                 if (!isFieldDef) {
                     fail(String.format("Item %s doesn't match any of the expected field items %s", fieldDefName,
-                            fieldItemNames));
+                            Arrays.toString(fieldItemNames)));
                 }
             }
         }
