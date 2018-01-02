@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
 
     public static final String GENERIC_QUERY_SELECT = "SELECT * FROM DOCUMENT WHERE ";
 
-    public static enum SPECIAL_OPERATORS {
+    public enum SPECIAL_OPERATORS {
 
         CONTAINS("CONTAINS"), BETWEEN("BETWEEN"), NOT_CONTAINS("NOT CONTAINS"), NOT_STARTSWITH("NOT STARTSWITH");
 
@@ -165,8 +165,8 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
                     builder.append(String.format("DATE '%s'", isoDate.format(Long.valueOf(dateValue.getTime()))));
                     if (otherDateValue != null) {
                         builder.append(" AND ");
-                        builder.append(String.format("DATE '%s'",
-                                isoDate.format(Long.valueOf(otherDateValue.getTime()))));
+                        builder.append(
+                                String.format("DATE '%s'", isoDate.format(Long.valueOf(otherDateValue.getTime()))));
                     }
                 } else if (integerValue != null) {
                     builder.append(integerValue);

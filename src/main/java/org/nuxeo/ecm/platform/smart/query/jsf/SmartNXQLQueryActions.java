@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -255,7 +255,7 @@ public class SmartNXQLQueryActions implements Serializable {
     /**
      * Updates the query part, asking the {@link #currentSmartQuery} to build the new resulting query.
      *
-     * @see #setQueryPart(ActionEvent, String)
+     * @see #setQueryPart(ActionEvent, String, boolean)
      */
     public void buildQueryPart(ActionEvent event) {
         if (currentSmartQuery != null) {
@@ -267,7 +267,7 @@ public class SmartNXQLQueryActions implements Serializable {
     /**
      * Sets the query part to an empty value.
      *
-     * @see #setQueryPart(ActionEvent, String)
+     * @see #setQueryPart(ActionEvent, String, boolean)
      */
     public void clearQueryPart(ActionEvent event) {
         setQueryPart(event, "", false);

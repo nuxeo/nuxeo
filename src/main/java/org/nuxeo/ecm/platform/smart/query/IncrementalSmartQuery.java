@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -243,7 +243,7 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
     // TODO: will be useful if layout tag can use it to filter other rows, see
     // NXP-5725
     public List<String> getSelectedRowNames() {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         if (selectedRowName != null) {
             res.add(selectedRowName);
         }
