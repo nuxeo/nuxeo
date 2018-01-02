@@ -54,7 +54,7 @@ public class AttributeConfigDescriptor {
 
     @XNode("@overwrite")
     protected boolean overwrite = false;
-    
+
     public AttributeConfigDescriptor() {
     }
 
@@ -63,7 +63,7 @@ public class AttributeConfigDescriptor {
         this.tagName = tagName;
         this.targetDocProperty = targetDocProperty;
         if (mapping == null) {
-            mapping = new HashMap<String, String>();
+            this.mapping = new HashMap<String, String>();
         } else {
             this.mapping = mapping;
         }
