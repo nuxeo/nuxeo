@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,12 +59,12 @@ public class MetadataCollector {
 
     public static String REGEXP_ARRAY_SEPARATOR = "\\|\\|";
 
-    protected Map<String, Map<String, Serializable>> collectedMetadata = new HashMap<String, Map<String, Serializable>>();
+    protected Map<String, Map<String, Serializable>> collectedMetadata = new HashMap<>();
 
     protected ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     public void addPropertiesFromStrings(String contextPath, Map<String, String> properties) {
-        Map<String, Serializable> collectedProperties = new HashMap<String, Serializable>();
+        Map<String, Serializable> collectedProperties = new HashMap<>();
         for (String name : properties.keySet()) {
             Serializable value = parseFromString(name, properties.get(name));
             collectedProperties.put(name, value);
@@ -108,7 +108,7 @@ public class MetadataCollector {
             if (value.contains(ARRAY_SEPARATOR)) {
                 prop = value.split(REGEXP_ARRAY_SEPARATOR);
             } else if (value.contains(LIST_SEPARATOR)) {
-                List<Serializable> lstprop = new ArrayList<Serializable>();
+                List<Serializable> lstprop = new ArrayList<>();
                 String[] parts = value.split(REGEXP_LIST_SEPARATOR);
                 for (String part : parts) {
                     lstprop.add(parseFromString(name, part));
@@ -146,7 +146,7 @@ public class MetadataCollector {
                 File file = new File(contextPath);
                 while (props == null && !StringUtils.isEmpty(file.getParent())) {
                     file = file.getParentFile();
-                    props = collectedMetadata.get(file.getPath().toString());
+                    props = collectedMetadata.get(file.getPath());
                 }
             }
 
@@ -164,7 +164,7 @@ public class MetadataCollector {
         Properties mdProperties = new Properties();
         mdProperties.load(new FileInputStream(propertyFile));
 
-        Map<String, String> stringMap = new HashMap<String, String>();
+        Map<String, String> stringMap = new HashMap<>();
         Enumeration names = mdProperties.propertyNames();
         while (names.hasMoreElements()) {
             String name = (String) names.nextElement();

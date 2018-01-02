@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -185,7 +185,12 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
         return Collections.emptyList();
     }
 
-    /** Modify this to get right mime types depending on the file input */
+    /**
+     * Modify this to get right mime types depending on the file input
+     *
+     * @deprecated since 10.1 seems unused
+     */
+    @Deprecated
     protected String getMimeType(String name) {
         // Dummy MimeType detection : plug nuxeo Real MimeType service to
         // have better results
