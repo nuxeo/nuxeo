@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ package org.nuxeo.ecm.user.registration;
 
 import static org.nuxeo.ecm.user.registration.DocumentRegistrationInfo.ACL_NAME;
 
+import java.util.Calendar;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,8 +32,6 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.user.invite.DefaultInvitationUserFactory;
 import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
-
-import java.util.Calendar;
 
 public class DefaultRegistrationUserFactory extends DefaultInvitationUserFactory implements RegistrationUserFactory {
 
@@ -70,8 +70,8 @@ public class DefaultRegistrationUserFactory extends DefaultInvitationUserFactory
     }
 
     @Override
-    public void doPostAddDocumentPermission(CoreSession session, DocumentModel registrationDoc, DocumentModel document)
-            {
+    public void doPostAddDocumentPermission(CoreSession session, DocumentModel registrationDoc,
+            DocumentModel document) {
         // Nothing to do in the default implementation
     }
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@ import javax.mail.MessagingException;
 import javax.naming.NamingException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -52,8 +50,6 @@ import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 import org.nuxeo.runtime.api.Framework;
 
 public class UserRegistrationComponent extends UserInvitationComponent implements UserRegistrationService {
-
-    protected static Log log = LogFactory.getLog(UserRegistrationService.class);
 
     private static final String REGISTRATION_SUBMITTED_EVENT = "registrationSubmitted";
 
@@ -169,14 +165,13 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
     public String submitRegistrationRequest(String configurationName, UserRegistrationInfo userInfo,
             DocumentRegistrationInfo docInfo, Map<String, Serializable> additionnalInfo,
             ValidationMethod validationMethod, boolean autoAccept, String principalName)
-            throws UserRegistrationException {
+                    throws UserRegistrationException {
         RegistrationCreator creator = new RegistrationCreator(configurationName, userInfo, docInfo, additionnalInfo,
                 validationMethod, principalName);
         creator.runUnrestricted();
         String registrationUuid = creator.getRegistrationUuid();
 
-        boolean userAlreadyExists = null != Framework.getService(UserManager.class)
-                                                     .getPrincipal(userInfo.getLogin());
+        boolean userAlreadyExists = null != Framework.getService(UserManager.class).getPrincipal(userInfo.getLogin());
         // Directly accept registration if the configuration allow it and the
         // user already exists
         RegistrationRules registrationRules = getRegistrationRules(configurationName);
@@ -209,7 +204,7 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
 
         Map<String, Serializable> registrationInfo = validateRegistration(requestId, additionnalInfo);
 
-        Map<String, Serializable> input = new HashMap<String, Serializable>();
+        Map<String, Serializable> input = new HashMap<>();
         input.putAll(registrationInfo);
         input.put("info", (Serializable) additionnalInfo);
         StringWriter writer = new StringWriter();
