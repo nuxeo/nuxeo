@@ -213,9 +213,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 // unregistered synchronization root nor a security update denying access to the current user.
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
-                            "No extended info found in audit log entry: this is not a deleted document, a moved document,"
+                            "No extended info found in audit log entry %s (%s): this is not a deleted document, a moved document,"
                                     + " an unregistered synchronization root nor a security update denying access to the current user.",
-                            docRef));
+                            entry.getDocPath(), docRef));
                 }
                 if (!session.exists(docRef)) {
                     if (log.isDebugEnabled()) {
