@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,12 +83,12 @@ public class DatadogReporterConfDescriptor {
     }
 
     public List<String> getTags() {
-        if(StringUtils.isBlank(tags)) {
+        if (StringUtils.isBlank(tags)) {
             return Collections.emptyList();
         } else {
             List<String> result = new ArrayList<>();
 
-            for(String tag : Arrays.asList(tags.split(","))){
+            for (String tag : Arrays.asList(tags.split(","))) {
                 result.add(tag.trim());
             }
             return result;

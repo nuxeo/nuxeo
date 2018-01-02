@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,6 @@
  */
 package org.nuxeo.datadog.reporter;
 
-import static org.coursera.metrics.datadog.DatadogReporter.Expansion.COUNT;
-import static org.coursera.metrics.datadog.DatadogReporter.Expansion.MEDIAN;
-import static org.coursera.metrics.datadog.DatadogReporter.Expansion.P95;
-import static org.coursera.metrics.datadog.DatadogReporter.Expansion.P99;
-import static org.coursera.metrics.datadog.DatadogReporter.Expansion.RATE_15_MINUTE;
-import static org.coursera.metrics.datadog.DatadogReporter.Expansion.RATE_1_MINUTE;
-
-import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
@@ -54,7 +46,7 @@ public class DatadogReporterServiceImpl extends DefaultComponent implements Data
     private static final Log log = LogFactory.getLog(DatadogReporterService.class);
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         if (reporter != null) {
             startReporter();
         }
@@ -77,15 +69,14 @@ public class DatadogReporterServiceImpl extends DefaultComponent implements Data
     }
 
     private void buildReporter() {
-
         HttpTransport httpTransport = new HttpTransport.Builder().withApiKey(conf.getApiKey()).build();
         reporter = DatadogReporter.forRegistry(metrics)//
-        .withHost(conf.getHost())//
-        .withTags(conf.getTags())
-        .withTransport(httpTransport)//
-        .withExpansions(Expansion.ALL)//
-        .withMetricNameFormatter(new DefaultMetricNameFormatter())//
-        .build();
+                                  .withHost(conf.getHost())//
+                                  .withTags(conf.getTags())
+                                  .withTransport(httpTransport)//
+                                  .withExpansions(Expansion.ALL)//
+                                  .withMetricNameFormatter(new DefaultMetricNameFormatter())//
+                                  .build();
 
     }
 
