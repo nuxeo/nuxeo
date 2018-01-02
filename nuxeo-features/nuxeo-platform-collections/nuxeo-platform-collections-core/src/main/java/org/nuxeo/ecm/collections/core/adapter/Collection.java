@@ -95,7 +95,7 @@ public class Collection {
             if (member2IdIndex < 0) {
                 return false;
             }
-            if (member1Id.equals(member2IdIndex)) {
+            if (member1IdIndex == member2IdIndex) {
                return false;
             }
             if (member2IdIndex > member1IdIndex) {

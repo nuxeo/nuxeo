@@ -27,11 +27,9 @@ import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,11 +50,7 @@ import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.runtime.api.Framework;
 
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Protocol;
-import redis.clients.jedis.ScanParams;
-import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.exceptions.JedisException;
-import redis.clients.util.SafeEncoder;
 
 /**
  * Implementation of a {@link WorkQueuing} storing {@link Work} instances in Redis.
@@ -778,54 +772,6 @@ public class RedisWorkQueuing implements WorkQueuing {
      */
     protected void removeScheduledWork(final String queueId, final String workId) throws IOException {
         evalSha(cancelledScheduledWorkSha, keys(queueId), args(workId));
-    }
-
-    /**
-     * Helper to call SSCAN but fall back on a custom implementation based on SMEMBERS if the backend (embedded) does
-     * not support SSCAN.
-     *
-     * @since 7.3
-     */
-    public static class SScanner {
-
-        // results of SMEMBERS for last key, in embedded mode
-        protected List<String> smembers;
-
-        protected ScanResult<String> sscan(Jedis jedis, String key, String cursor, ScanParams params) {
-            ScanResult<String> scanResult;
-            try {
-                scanResult = jedis.sscan(key, cursor, params);
-            } catch (Exception e) {
-                // when testing with embedded fake redis, we may get an un-declared exception
-                if (!(e.getCause() instanceof NoSuchMethodException)) {
-                    throw e;
-                }
-                // no SSCAN available in embedded, do a full SMEMBERS
-                if (smembers == null) {
-                    Set<String> set = jedis.smembers(key);
-                    smembers = new ArrayList<>(set);
-                }
-                Collection<byte[]> bparams = params.getParams();
-                int count = 1000;
-                for (Iterator<byte[]> it = bparams.iterator(); it.hasNext();) {
-                    byte[] param = it.next();
-                    if (param.equals(Protocol.Keyword.MATCH.raw)) {
-                        throw new UnsupportedOperationException("MATCH not supported");
-                    }
-                    if (param.equals(Protocol.Keyword.COUNT.raw)) {
-                        count = Integer.parseInt(SafeEncoder.encode(it.next()));
-                    }
-                }
-                int pos = Integer.parseInt(cursor); // don't check range, callers are cool
-                int end = Math.min(pos + count, smembers.size());
-                int nextPos = end == smembers.size() ? 0 : end;
-                scanResult = new ScanResult<>(String.valueOf(nextPos), smembers.subList(pos, end));
-                if (nextPos == 0) {
-                    smembers = null;
-                }
-            }
-            return scanResult;
-        }
     }
 
     Number[] evalSha(byte[] sha, List<byte[]> keys, List<byte[]> args) throws JedisException {

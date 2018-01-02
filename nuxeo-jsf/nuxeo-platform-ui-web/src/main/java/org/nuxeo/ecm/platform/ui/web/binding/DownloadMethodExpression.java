@@ -88,7 +88,7 @@ public class DownloadMethodExpression extends MethodExpression implements Serial
 
     @Override
     public boolean isLiteralText() {
-        return blobExpression == null ? null : blobExpression.isLiteralText();
+        return blobExpression != null && blobExpression.isLiteralText();
     }
 
     // MethodExpression interface

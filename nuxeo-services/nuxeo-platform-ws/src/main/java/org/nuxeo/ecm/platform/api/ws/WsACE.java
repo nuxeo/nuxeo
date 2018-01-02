@@ -81,4 +81,46 @@ public class WsACE {
         return result.toArray(new WsACE[result.size()]);
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (isGranted ? 1231 : 1237);
+        result = prime * result + ((permission == null) ? 0 : permission.hashCode());
+        result = prime * result + ((username == null) ? 0 : username.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof WsACE)) {
+            return false;
+        }
+        WsACE other = (WsACE) obj;
+        if (isGranted != other.isGranted) {
+            return false;
+        }
+        if (permission == null) {
+            if (other.permission != null) {
+                return false;
+            }
+        } else if (!permission.equals(other.permission)) {
+            return false;
+        }
+        if (username == null) {
+            if (other.username != null) {
+                return false;
+            }
+        } else if (!username.equals(other.username)) {
+            return false;
+        }
+        return true;
+    }
+
 }

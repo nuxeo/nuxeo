@@ -161,7 +161,7 @@ public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
     protected Description describeChild(FeaturesRunner child) {
         Description description = child.getDescription();
         return Description.createTestDescription(description.getTestClass(), description.getDisplayName() + " "
-                + Arrays.toString(runnersParams.get(child)), (Annotation[]) description.getAnnotations().toArray());
+                + Arrays.toString(runnersParams.get(child)), description.getAnnotations().toArray(new Annotation[0]));
     }
 
     @Override

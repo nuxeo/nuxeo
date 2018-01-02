@@ -136,7 +136,7 @@ public class TestMemoryDirectory {
 
     @Test
     public void testCreateFromModel() throws Exception {
-        DocumentModel entry = BaseSession.createEntryModel(null, SCHEMA_NAME, null, null);
+        entry = BaseSession.createEntryModel(null, SCHEMA_NAME, null, null);
         entry.setProperty(SCHEMA_NAME, "i", "yo");
 
         assertNull(dir.getEntry("yo"));

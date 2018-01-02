@@ -19,9 +19,8 @@
 package org.nuxeo.ecm.platform.relations.jena;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -117,7 +116,7 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
 
             int index = first.indexOf(secondStmt);
             Statement firstStmt = first.get(index);
-            assertSame(firstStmt.getProperties().size(), secondStmt.getProperties().size());
+            assertEquals(firstStmt.getProperties().size(), secondStmt.getProperties().size());
 
             List<Node> firstProps = Arrays.asList(firstStmt.getProperties(createdBy));
             Collections.sort(firstProps);
@@ -129,25 +128,25 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
 
     @Test
     public void testAdd() {
-        assertSame(0L, graph.size());
+        assertEquals(0, graph.size().longValue());
 
         graph.add(statements);
         // 2 statements, 3 properties
-        assertSame(5L, graph.size());
+        assertEquals(5, graph.size().longValue());
     }
 
     @Test
     public void testRemove() {
-        assertSame(0L, graph.size());
+        assertEquals(0, graph.size().longValue());
 
         graph.add(statements);
-        assertSame(5L, graph.size());
+        assertEquals(5, graph.size().longValue());
 
         List<Statement> stmts = new ArrayList<>();
         stmts.add(st1);
         graph.remove(stmts);
         // 1 statement, 1 property
-        assertSame(2L, graph.size());
+        assertEquals(2, graph.size().longValue());
     }
 
     @Test
@@ -163,9 +162,9 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
     @Test
     public void testRead() throws Exception {
         InputStream in = new FileInputStream(getTestFile());
-        assertSame(0L, graph.size());
+        assertEquals(0, graph.size().longValue());
         graph.read(in, null, null);
-        assertNotSame(0L, graph.size());
+        assertNotEquals(0, graph.size().longValue());
         List<Statement> stmts = graph.getStatements();
         compareStatements(stmts, statements);
     }

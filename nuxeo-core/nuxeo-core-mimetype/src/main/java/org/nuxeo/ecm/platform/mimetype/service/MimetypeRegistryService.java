@@ -160,10 +160,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
         List<String> extensions = mimetype.getExtensions();
         mimetypeByNormalisedRegistry.remove(mimetypeName);
         for (String extension : extensions) {
-            // FIXME: equals always fails because types are incompatible.
-            if (mimetype.getNormalized().equals(mimetypeByExtensionRegistry.get(extension))) {
-                mimetypeByExtensionRegistry.remove(extension);
-            }
+            mimetypeByExtensionRegistry.remove(extension);
         }
     }
 

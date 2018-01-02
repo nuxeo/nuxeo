@@ -240,7 +240,7 @@ public class ObjectCodecService {
             throw new IllegalStateException("Invalid stream. Entity-Type is null");
         }
         jp.nextValue(); // move to next value
-        ObjectCodec<?> codec = codecs.get(name);
+        ObjectCodec<?> codec = codecsByName.get(name);
         if (codec == null) {
             return readGenericObject(jp, name, cl);
         } else {

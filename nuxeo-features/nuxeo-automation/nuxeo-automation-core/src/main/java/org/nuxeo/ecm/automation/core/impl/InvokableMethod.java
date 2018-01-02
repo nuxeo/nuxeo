@@ -91,9 +91,6 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         }
         this.op = op;
         this.method = method;
-        if (priority > 0) {
-            priority += USER_PRIORITY;
-        }
         String inputType = this.op.getInputType();
         if (inputType != null) {
             switch (inputType) {

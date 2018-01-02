@@ -153,7 +153,7 @@ public class ResultSetPageProviderOperation {
             for (String sortInfoDesc : sortInfoAsStringList) {
                 SortInfo sortInfo;
                 if (sortInfoDesc.contains("|")) {
-                    String[] parts = sortInfoDesc.split("|");
+                    String[] parts = sortInfoDesc.split("\\|");
                     sortInfo = new SortInfo(parts[0], Boolean.parseBoolean(parts[1]));
                 } else {
                     sortInfo = new SortInfo(sortInfoDesc, true);

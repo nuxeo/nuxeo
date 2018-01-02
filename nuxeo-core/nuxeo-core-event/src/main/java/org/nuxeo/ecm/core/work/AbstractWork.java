@@ -134,7 +134,7 @@ public abstract class AbstractWork implements Work {
         // we user RANDOM to deal with these cases:
         // - several calls in the time granularity of nanoTime()
         // - several concurrent calls on different servers
-        this(System.nanoTime() + "." + Math.abs(RANDOM.nextInt()));
+        this(System.nanoTime() + "." + (RANDOM.nextInt() & 0x7fffffff));
         callerThread = SequenceTracer.getThreadName();
     }
 

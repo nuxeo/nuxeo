@@ -65,10 +65,6 @@ public class PlatformHelper {
         return cg.isTomcat;
     }
 
-    public boolean isJBoss() {
-        return cg.isJBoss;
-    }
-
     public boolean isJetty() {
         return cg.isJetty;
     }

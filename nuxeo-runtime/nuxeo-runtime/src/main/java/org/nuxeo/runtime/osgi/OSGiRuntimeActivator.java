@@ -104,7 +104,7 @@ public class OSGiRuntimeActivator implements BundleActivator {
             throw new RuntimeException("Interrupted during shutdown", cause);
         } finally {
             runtime = null;
-            context = null;
+            this.context = null;
         }
     }
 

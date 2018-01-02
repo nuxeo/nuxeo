@@ -102,7 +102,8 @@ public class DownloadablePackageOptions {
                 for (String implied : option.getPackage().getImpliedDeps()) {
                     if (!ids.contains(implied)) {
                         if (findById(id, pkgOptions) != null) {
-                            if (option.isExclusive() && option.getSiblingPackages().contains(implied)) {
+                            if (option.isExclusive() && option.getSiblingPackages().stream().anyMatch(
+                                    sib -> sib.getId().equals(implied))) {
                                 log.error(String.format(
                                         "Option %s cannot be exclusive and imply one of its sibling packages", id));
                                 continue;

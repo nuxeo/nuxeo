@@ -97,7 +97,7 @@ public class AdapterBindingTest extends BaseTest {
         // Given a note and a modified business object representation
         DocumentModel folder = RestServerInit.getFolder(0, session);
         String ba = String.format("{\"entity-type\":\"BusinessBeanAdapter\",\"value\":{\"type\"" + ":\"Note\","
-                + "\"note\":\"Note 1\",\"title\":\"Note 1\",\"description\":\"description\"}}", folder.getId());
+                + "\"note\":\"Note 1\",\"title\":\"Note 1\",\"description\":\"description\"}}");
         assertTrue(session.getChildren(folder.getRef()).isEmpty());
 
         // When i do a put request on it

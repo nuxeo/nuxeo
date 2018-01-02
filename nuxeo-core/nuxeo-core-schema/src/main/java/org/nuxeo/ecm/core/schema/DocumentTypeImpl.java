@@ -117,7 +117,7 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
 
     @Override
     public boolean hasSubtype(String subtype) {
-        return subtype.contains(subtype);
+        return subtypes.contains(subtype);
     }
 
     @Override

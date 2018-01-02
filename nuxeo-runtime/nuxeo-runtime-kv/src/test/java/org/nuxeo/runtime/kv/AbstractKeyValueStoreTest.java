@@ -128,7 +128,7 @@ public abstract class AbstractKeyValueStoreTest {
         String key5 = "foo5";
         Set<String> keys = new HashSet<>(Arrays.asList(key1, key2, key3, key4, key5));
 
-        assertEquals(Collections.emptyMap(), store.get(keys));
+        assertTrue(store.get(keys).isEmpty());
 
         Map<String, String> map = new HashMap<>();
         map.put(key1, BAR);
