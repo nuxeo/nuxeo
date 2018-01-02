@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1074,10 +1074,8 @@ class MarkLogicQueryBuilder {
 
         @Override
         public String build() {
-            String text = Arrays.stream(values)
-                                .map(this::serializeValue)
-                                .map(value -> '"' + value + '"')
-                                .collect(Collectors.joining(",", "(", ")"));
+            String text = Arrays.stream(values).map(this::serializeValue).map(value -> '"' + value + '"').collect(
+                    Collectors.joining(",", "(", ")"));
             String query = "cts:word-query(" + text + ", (\"case-insensitive\",\"diacritic-sensitive\","
                     + "\"punctuation-sensitive\",\"whitespace-sensitive\",\"stemmed\"))";
             if (not) {
