@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -331,15 +331,16 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         // Try to create bucket if it doesn't exist
         if (!isEncrypted) {
             s3Builder = AmazonS3ClientBuilder.standard()
-                            .withCredentials(awsCredentialsProvider)
-                            .withClientConfiguration(clientConfiguration);
+                                             .withCredentials(awsCredentialsProvider)
+                                             .withClientConfiguration(clientConfiguration);
 
         } else {
             s3Builder = AmazonS3EncryptionClientBuilder.standard()
-                            .withClientConfiguration(clientConfiguration)
-                            .withCryptoConfiguration(cryptoConfiguration)
-                            .withCredentials(awsCredentialsProvider)
-                            .withEncryptionMaterials(new StaticEncryptionMaterialsProvider(encryptionMaterials));
+                                                       .withClientConfiguration(clientConfiguration)
+                                                       .withCryptoConfiguration(cryptoConfiguration)
+                                                       .withCredentials(awsCredentialsProvider)
+                                                       .withEncryptionMaterials(new StaticEncryptionMaterialsProvider(
+                                                               encryptionMaterials));
         }
         if (isNotBlank(endpoint)) {
             s3Builder = s3Builder.withEndpointConfiguration(new EndpointConfiguration(endpoint, bucketRegion));
@@ -478,7 +479,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                 log.debug("fetching blob " + digest + " from S3");
             }
             try {
-                Download download = transferManager.download(new GetObjectRequest(bucketName, bucketNamePrefix + digest), file);
+                Download download = transferManager.download(
+                        new GetObjectRequest(bucketName, bucketNamePrefix + digest), file);
                 download.waitForCompletion();
                 // Check ETag it is by default MD5 if not multipart
                 if (!isEncrypted && !digest.equals(download.getObjectMetadata().getETag())) {
@@ -489,7 +491,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                     }
                     if (!currentDigest.equals(digest)) {
                         log.error("Invalid ETag in S3, currentDigest=" + currentDigest + " expectedDigest=" + digest);
-                        throw new IOException("Invalid S3 object, it is corrupted expected digest is " + digest + " got " + currentDigest);
+                        throw new IOException("Invalid S3 object, it is corrupted expected digest is " + digest
+                                + " got " + currentDigest);
                     }
                 }
                 return true;

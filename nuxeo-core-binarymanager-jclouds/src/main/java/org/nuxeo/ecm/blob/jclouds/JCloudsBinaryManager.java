@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,7 +168,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
 
         // Try to create container if it doesn't exist
         blobStore = context.getBlobStore();
-        boolean created = false;
+        boolean created;
         if (storeLocation == null) {
             created = blobStore.createContainerInLocation(null, container);
         } else {
