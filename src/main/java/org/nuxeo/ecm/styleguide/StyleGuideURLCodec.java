@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ public class StyleGuideURLCodec extends AbstractDocumentViewCodec {
     public String getUrlFromDocumentView(DocumentView docView) {
         DocumentLocation docLoc = docView.getDocumentLocation();
         if (docLoc != null) {
-            List<String> items = new ArrayList<String>();
+            List<String> items = new ArrayList<>();
             items.add(getPrefix());
             String viewId = docView.getViewId();
             if (viewId != null) {
@@ -65,7 +65,7 @@ public class StyleGuideURLCodec extends AbstractDocumentViewCodec {
                 items.add(DEFAULT_VIEW_ID);
             }
             Map<String, String> docViewParams = docView.getParameters();
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             if (docViewParams != null) {
                 params.putAll(docViewParams);
                 params.remove("conversationId");
@@ -134,7 +134,7 @@ public class StyleGuideURLCodec extends AbstractDocumentViewCodec {
                 // System.err.println(i + ": " + m.group(i));
                 // }
 
-                Map<String, String> params = new HashMap<String, String>();
+                Map<String, String> params = new HashMap<>();
                 String menuId = m.group(1);
                 if (menuId != null && !"".equals(menuId)) {
                     params.put("menuId", menuId);
