@@ -18,7 +18,7 @@
  */
 package org.nuxeo.targetplatforms.api.impl;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.targetplatforms.api.TargetInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatformFilter;
 
