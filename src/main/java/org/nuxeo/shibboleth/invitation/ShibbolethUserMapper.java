@@ -102,7 +102,7 @@ public class ShibbolethUserMapper implements UserMapper {
             DocumentModel finalUserDoc = userDoc; // Effectively final
             TransactionHelper.runInTransaction(() -> updateACP(userName, email, finalUserDoc));
         } else {
-            userDoc = findUser(userManager.getUserIdField(), userInfo.getUserName());
+            userDoc = userManager.getUserModel(userName);
         }
         if (userDoc == null) {
             userDoc = createUser(userInfo);
