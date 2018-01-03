@@ -133,7 +133,7 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
                     if (entry == null) {
                         userDir.createEntry(fieldMap);
                     } else {
-                        entry.setProperties(userManager.getUserSchemaName(), fieldMap);
+                        fieldMap.forEach((k, v) -> entry.setProperty(userManager.getUserSchemaName(), k, v));
                         userDir.updateEntry(entry);
                     }
                 });
