@@ -18,13 +18,14 @@
 
 package org.nuxeo.ecm.automation.task;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -71,8 +72,8 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
 
     @SuppressWarnings("unchecked")
     @OperationMethod
-    public Blob run() {
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+    public Blob run() throws IOException {
+        Map<String, Serializable> props = new HashMap<>();
         props.put(UserTaskPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         PageProviderService pps = Framework.getService(PageProviderService.class);
 
@@ -89,14 +90,14 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
 
         Locale locale = language != null && !language.isEmpty() ? new Locale(language) : Locale.ENGLISH;
 
-        JSONArray processes = new JSONArray();
+        List<Map<String, Object>> processes = new ArrayList<>();
         for (DashBoardItem dashBoardItem : pageProvider.getCurrentPage()) {
             dashBoardItem.setLocale(locale);
-            JSONObject obj = dashBoardItem.asJSON();
+            Map<String, Object> obj = dashBoardItem.asMap();
             processes.add(obj);
         }
 
-        JSONObject json = new JSONObject();
+        Map<String, Object> json = new LinkedHashMap<>();
         json.put("isPaginable", Boolean.TRUE);
         json.put("totalSize", Long.valueOf(pageProvider.getResultsCount()));
         json.put("pageIndex", Long.valueOf(pageProvider.getCurrentPageIndex()));
@@ -104,7 +105,7 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
         json.put("pageCount", Long.valueOf(pageProvider.getNumberOfPages()));
 
         json.put("entries", processes);
-        return Blobs.createJSONBlob(json.toString());
+        return Blobs.createJSONBlobFromValue(json);
     }
 
 }

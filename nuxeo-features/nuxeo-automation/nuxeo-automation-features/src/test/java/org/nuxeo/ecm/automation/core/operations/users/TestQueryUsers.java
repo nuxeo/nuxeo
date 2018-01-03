@@ -21,7 +21,9 @@ package org.nuxeo.ecm.automation.core.operations.users;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -82,7 +84,7 @@ public class TestQueryUsers {
     protected AutomationService automationService;
 
     private static final Map<String, Object> map(Object... args) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new LinkedHashMap<>();
         for (int i = 0; i < args.length;) {
             map.put((String) args[i++], args[i++]);
         }
@@ -96,7 +98,7 @@ public class TestQueryUsers {
         });
         @SuppressWarnings("unchecked")
         List<Map<String, String>> users = (List<Map<String, String>>) res.get("users");
-        users.sort((a, b) -> a.get("username").compareTo(b.get("username")));
+        users.sort(Comparator.comparing(a -> a.get("username")));
         assertEquals(expected, users);
     }
 

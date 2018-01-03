@@ -6,4 +6,5 @@ Bundle-Vendor: Nuxeo
 Bundle-Category: stateless
 Require-Bundle: org.nuxeo.ecm.platform.forms.layout.api,
  org.nuxeo.ecm.platform.forms.layout.client
+Nuxeo-Component: OSGI-INF/marshallers-contrib.xml
 Nuxeo-WebModule: org.nuxeo.ecm.platform.forms.layout.export.WebLayoutApplication

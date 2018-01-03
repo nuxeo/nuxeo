@@ -19,11 +19,13 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services.directory;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -53,9 +55,6 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * SuggestDirectoryEntries Operation
@@ -87,7 +86,7 @@ public class SuggestDirectoryEntries {
 
         private Boolean isLeaf = null;
 
-        private JSONObject obj;
+        private Map<String, Object> obj;
 
         public JSONAdapter(Session session, Schema schema) {
             this.session = session;
@@ -102,25 +101,26 @@ public class SuggestDirectoryEntries {
             // Carry entry, not root
             isRoot = false;
             // build JSON object for this entry
-            obj = new JSONObject();
+            obj = new LinkedHashMap<>();
             for (Field field : schema.getFields()) {
                 QName fieldName = field.getName();
                 String key = fieldName.getLocalName();
                 Serializable value = entry.getPropertyValue(fieldName.getPrefixedName());
-                if (label.equals(key)) {
-                    if (localize && !dbl10n) {
-                        // translations are in messages*.properties files
-                        value = translate(value.toString());
+                if (value != null) {
+                    if (label.equals(key)) {
+                        if (localize && !dbl10n) {
+                            // translations are in messages*.properties files
+                            value = translate(value.toString());
+                        }
+                        obj.put(SuggestConstants.LABEL, value);
                     }
-                    obj.element(SuggestConstants.LABEL, value);
+                    obj.put(key, value);
                 }
-                obj.element(key, value);
-
             }
             if (displayObsoleteEntries) {
                 if (obj.containsKey(SuggestConstants.OBSOLETE_FIELD_ID)
-                        && obj.getInt(SuggestConstants.OBSOLETE_FIELD_ID) > 0) {
-                    obj.element(SuggestConstants.WARN_MESSAGE_LABEL, getObsoleteWarningMessage());
+                        && Integer.parseInt(obj.get(SuggestConstants.OBSOLETE_FIELD_ID).toString()) > 0) {
+                    obj.put(SuggestConstants.WARN_MESSAGE_LABEL, getObsoleteWarningMessage());
                 }
             }
         }
@@ -164,15 +164,15 @@ public class SuggestDirectoryEntries {
             return true;
         }
 
-        public JSONArray getChildrenJSONArray() {
-            JSONArray result = new JSONArray();
+        public List<Map<String, Object>> getChildrenJSONArray() {
+            List<Map<String, Object>> result = new ArrayList<>();
             for (JSONAdapter ja : getSortedChildren()) {
                 // When serializing in JSON, we are now able to COMPUTED_ID
                 // which is the chained path of the entry (i.e absolute path
                 // considering its ancestor)
-                ja.getObj().element(SuggestConstants.COMPUTED_ID,
+                ja.getObj().put(SuggestConstants.COMPUTED_ID,
                         (!isRoot ? (getComputedId() + keySeparator) : "") + ja.getId());
-                ja.getObj().element(SuggestConstants.ABSOLUTE_LABEL,
+                ja.getObj().put(SuggestConstants.ABSOLUTE_LABEL,
                         (!isRoot ? (getAbsoluteLabel() + absoluteLabelSeparator) : "") + ja.getLabel());
                 result.add(ja.toJSONObject());
             }
@@ -180,27 +180,28 @@ public class SuggestDirectoryEntries {
         }
 
         public String getComputedId() {
-            return isRoot ? null : obj.optString(SuggestConstants.COMPUTED_ID);
+            return isRoot ? null : obj.getOrDefault(SuggestConstants.COMPUTED_ID, "").toString();
         }
 
         public String getId() {
-            return isRoot ? null : obj.optString(SuggestConstants.ID);
+            return isRoot ? null : obj.getOrDefault(SuggestConstants.ID, "").toString();
         }
 
         public String getLabel() {
-            return isRoot ? null : obj.optString(SuggestConstants.LABEL);
+            return isRoot ? null : obj.getOrDefault(SuggestConstants.LABEL, "").toString();
         }
 
         public String getAbsoluteLabel() {
-            return isRoot ? null : obj.optString(SuggestConstants.ABSOLUTE_LABEL);
+            return isRoot ? null : obj.getOrDefault(SuggestConstants.ABSOLUTE_LABEL, "").toString();
         }
 
-        public JSONObject getObj() {
+        public Map<String, Object> getObj() {
             return obj;
         }
 
         public int getOrder() {
-            return isRoot ? -1 : obj.optInt(SuggestConstants.DIRECTORY_ORDER_FIELD_NAME);
+            return isRoot ? -1
+                    : Integer.parseInt(obj.getOrDefault(SuggestConstants.DIRECTORY_ORDER_FIELD_NAME, "0").toString());
         }
 
         private SuggestDirectoryEntries getOuterType() {
@@ -208,7 +209,7 @@ public class SuggestDirectoryEntries {
         }
 
         public String getParentId() {
-            return isRoot ? null : obj.optString(SuggestConstants.PARENT_FIELD_ID);
+            return isRoot ? null : obj.getOrDefault(SuggestConstants.PARENT_FIELD_ID, "").toString();
         }
 
         public List<JSONAdapter> getSortedChildren() {
@@ -260,7 +261,9 @@ public class SuggestDirectoryEntries {
         }
 
         public boolean isObsolete() {
-            return isRoot ? false : obj.optInt(SuggestConstants.OBSOLETE_FIELD_ID) > 0;
+            int obsoleteFieldId = Integer.parseInt(
+                    obj.getOrDefault(SuggestConstants.OBSOLETE_FIELD_ID, "0").toString());
+            return isRoot ? false : obsoleteFieldId > 0;
         }
 
         private void mergeJsonAdapter(JSONAdapter branch) {
@@ -314,7 +317,7 @@ public class SuggestDirectoryEntries {
             }
         }
 
-        private JSONObject toJSONObject() {
+        private Map<String, Object> toJSONObject() {
             if (isLeaf()) {
                 return getObj();
             } else {
@@ -324,12 +327,16 @@ public class SuggestDirectoryEntries {
                 // we provide an Id or not in the JSON object.
                 if (canSelectParent) {
                     // Make it selectable, keep as it is
-                    return getObj().element("children", getChildrenJSONArray());
+                    Map<String, Object> obj = getObj();
+                    obj.put("children", getChildrenJSONArray());
+                    return obj;
                 } else {
                     // We don't want it to be selectable, we just serialize the
                     // label
-                    return new JSONObject().element(SuggestConstants.LABEL, getLabel()).element("children",
-                            getChildrenJSONArray());
+                    Map<String, Object> obj = new LinkedHashMap<>();
+                    obj.put(SuggestConstants.LABEL, getLabel());
+                    obj.put("children", getChildrenJSONArray());
+                    return obj;
                 }
             }
         }
@@ -457,7 +464,7 @@ public class SuggestDirectoryEntries {
     }
 
     @OperationMethod
-    public Blob run() {
+    public Blob run() throws IOException {
         Directory directory = directoryService.getDirectory(directoryName);
         if (directory == null) {
             log.error("Could not find directory with name " + directoryName);
@@ -527,7 +534,7 @@ public class SuggestDirectoryEntries {
                 jsonAdapter.push(adapter);
 
             }
-            return Blobs.createJSONBlob(jsonAdapter.getChildrenJSONArray().toString());
+            return Blobs.createJSONBlobFromValue(jsonAdapter.getChildrenJSONArray());
         }
     }
 

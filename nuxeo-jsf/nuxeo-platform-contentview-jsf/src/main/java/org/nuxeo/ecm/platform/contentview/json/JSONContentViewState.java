@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.platform.contentview.json;
 
+import java.io.IOException;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
@@ -33,11 +33,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,6 +44,11 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayoutImpl;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewStateImpl;
 import org.nuxeo.ecm.platform.forms.layout.io.Base64;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
 
 /**
  * Exporter/importer in JSON format of a {@link ContentViewState}.
@@ -66,9 +66,8 @@ public class JSONContentViewState {
      *
      * @param state the state to serialize
      * @param encode if true, the resulting String will be zipped and encoded in Base-64 format.
-     * @throws UnsupportedEncodingException
      */
-    public static String toJSON(ContentViewState state, boolean encode) throws UnsupportedEncodingException {
+    public static String toJSON(ContentViewState state, boolean encode) throws IOException {
         if (state == null) {
             return null;
         }
@@ -143,10 +142,9 @@ public class JSONContentViewState {
      *
      * @param json the state to de-serialize
      * @param decode if true, the input String is decoded from Base-64 format and unzipped.
-     * @throws UnsupportedEncodingException
      */
     @SuppressWarnings("unchecked")
-    public static ContentViewState fromJSON(String json, boolean decode) throws UnsupportedEncodingException {
+    public static ContentViewState fromJSON(String json, boolean decode) throws IOException {
         if (json == null || json.trim().length() == 0) {
             return null;
         }
@@ -212,6 +210,7 @@ public class JSONContentViewState {
         if (log.isDebugEnabled()) {
             log.debug("Decoded content view state: " + state);
         }
+
         return state;
     }
 

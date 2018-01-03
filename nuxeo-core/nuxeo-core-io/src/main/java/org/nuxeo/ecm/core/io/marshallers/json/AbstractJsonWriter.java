@@ -24,7 +24,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
@@ -153,7 +157,93 @@ public abstract class AbstractJsonWriter<EntityType> implements Writer<EntityTyp
             OutputStreamWithJsonWriter casted = (OutputStreamWithJsonWriter) out;
             return casted.getJsonGenerator();
         }
-        return JsonFactoryProvider.get().createJsonGenerator(out);
+        return JsonFactoryProvider.get().createGenerator(out);
+    }
+
+    /**
+     * Writes a list of {@link Serializable}.
+     *
+     * @param fieldName The name of the Json field in which the serializables will be wrote.
+     * @param serializables The serializables to write.
+     * @param jg The {@link JsonGenerator} used to write the given serializables.
+     * @since 10.1
+     */
+    protected <T extends Serializable> void writeSerializableListField(String fieldName, Collection<T> serializables,
+            JsonGenerator jg) throws IOException {
+        jg.writeArrayFieldStart(fieldName);
+        for (T serializable : serializables) {
+            writeSerializable(serializable, jg);
+        }
+        jg.writeEndArray();
+    }
+
+    /**
+     * Writes a map whose values are {@link Serializable}.
+     *
+     * @param fieldName The name of the Json field in which the serializables will be wrote.
+     * @param map The map to write.
+     * @param jg The {@link JsonGenerator} used to write the given map.
+     * @since 10.1
+     */
+    protected <T extends Serializable> void writeSerializableMapField(String fieldName, Map<String, T> map,
+            JsonGenerator jg) throws IOException {
+        jg.writeObjectFieldStart(fieldName);
+        for (Entry<String, T> entry : map.entrySet()) {
+            writeSerializableField(entry.getKey(), entry.getValue(), jg);
+        }
+        jg.writeEndObject();
+    }
+
+    /**
+     * Writes a {@link Serializable}.
+     * <p/>
+     * This method will first try to cast value to {@link Collection}, array, {@link String}, {@link Boolean} and
+     * {@link Number}. If none of previous cast could work, try to write it with marshallers
+     *
+     * @param fieldName The name of the Json field in which the serializable will be wrote.
+     * @param value The value to write.
+     * @param jg The {@link JsonGenerator} used to write the given serializable.
+     * @since 10.1
+     */
+    protected void writeSerializableField(String fieldName, Serializable value, JsonGenerator jg) throws IOException {
+        jg.writeFieldName(fieldName);
+        writeSerializable(value, jg);
+    }
+
+    /**
+     * Writes a {@link Serializable}.
+     * <p/>
+     * This method will first try to cast value to {@link Collection}, array, {@link String}, {@link Boolean} and
+     * {@link Number}. If none of previous cast could work, try to write it with marshallers
+     *
+     * @param value The value to write.
+     * @param jg The {@link JsonGenerator} used to write the given serializable.
+     * @since 10.1
+     */
+    @SuppressWarnings("unchecked")
+    protected void writeSerializable(Serializable value, JsonGenerator jg) throws IOException {
+        if (value instanceof Collection) {
+            jg.writeStartArray();
+            for (Serializable serializable : (Collection<Serializable>) value) {
+                writeSerializable(serializable, jg);
+            }
+            jg.writeEndArray();
+        } else if (value instanceof Serializable[]) {
+            jg.writeStartArray();
+            for (Serializable serializable : (Serializable[]) value) {
+                writeSerializable(serializable, jg);
+            }
+            jg.writeEndArray();
+        } else if (value instanceof String) {
+            jg.writeString((String) value);
+        } else if (value instanceof Boolean) {
+            jg.writeBoolean((boolean) value);
+        } else if (value instanceof Number) {
+            jg.writeNumber(value.toString());
+        } else {
+            // try with marshallers
+            writeEntity(value, jg);
+        }
     }
 
 }

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.test.service;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -71,8 +72,9 @@ public class RestServiceTest extends BaseRestTest {
         json = json.replace(doc.getParentRef().toString(), "the-parent-id");
         // if no change token enabled (null) do as if we had one
         json = json.replace("\"changeToken\":null", "\"changeToken\":\"1-0\"");
+
         File file = FileUtils.getResourceFileFromContext("test-expected-document1.json");
-        String expected = org.apache.commons.io.FileUtils.readFileToString(file);
+        String expected = org.apache.commons.io.FileUtils.readFileToString(file, StandardCharsets.UTF_8);
         assertEqualsJson(expected, json);
     }
 
@@ -85,7 +87,7 @@ public class RestServiceTest extends BaseRestTest {
         json = json.replace(doc.getParentRef().toString(), "the-parent-id");
         json = json.replace("\"changeToken\":null", "\"changeToken\":\"1-0\"");
         File file = FileUtils.getResourceFileFromContext("test-expected-document1.json");
-        String expected = org.apache.commons.io.FileUtils.readFileToString(file);
+        String expected = org.apache.commons.io.FileUtils.readFileToString(file, StandardCharsets.UTF_8);
         assertEqualsJson(expected, json);
     }
 

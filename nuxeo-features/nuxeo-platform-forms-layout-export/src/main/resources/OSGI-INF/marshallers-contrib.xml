@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.contentview.json.marshallers" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
+    <register class="org.nuxeo.ecm.platform.forms.layout.export.FieldDefinitionJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.forms.layout.export.LayoutDefinitionJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.forms.layout.export.LayoutDefinitionsJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.forms.layout.export.LayoutJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.forms.layout.export.LayoutTypeConfigurationJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.forms.layout.export.LayoutTypeDefinitionJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.forms.layout.export.LayoutTypeDefinitionsJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.forms.layout.export.RenderingInfoJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.forms.layout.export.WidgetDefinitionJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.forms.layout.export.WidgetReferenceJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.forms.layout.export.WidgetSelectOptionJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.forms.layout.export.WidgetTypeConfigurationJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.forms.layout.export.WidgetTypeDefinitionJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.forms.layout.export.WidgetTypeDefinitionsJsonWriter" enable="true" />
+  </extension>
+
+</component>

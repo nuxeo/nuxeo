@@ -3,7 +3,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.ecm.webengine.ui.json.*;
 import org.nuxeo.ecm.webengine.ui.tree.*;
 import org.nuxeo.ecm.webengine.ui.tree.directory.*; 
-import net.sf.json.*;
 
 
 Context.getUserSession().getComponent(DirectoryTree.class, "myTree");

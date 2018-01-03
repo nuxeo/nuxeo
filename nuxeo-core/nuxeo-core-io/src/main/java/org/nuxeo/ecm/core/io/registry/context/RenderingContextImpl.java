@@ -317,7 +317,7 @@ public class RenderingContextImpl implements RenderingContext {
     }
 
     @Override
-    public void addParameterListValues(String name, List<Object> values) {
+    public void addParameterListValues(String name, List<?> values) {
         if (StringUtils.isEmpty(name)) {
             return;
         }
@@ -373,7 +373,7 @@ public class RenderingContextImpl implements RenderingContext {
             return this;
         }
 
-        public RenderingContextBuilder paramList(String name, List<Object> values) {
+        public RenderingContextBuilder paramList(String name, List<?> values) {
             ctx.addParameterListValues(name, values);
             return this;
         }

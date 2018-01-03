@@ -18,16 +18,16 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -68,28 +68,28 @@ public class AuditQuery {
     protected int maxResults;
 
     @OperationMethod
-    public Blob run() {
+    public Blob run() throws IOException {
         List<LogEntry> result = query();
-        JSONArray rows = new JSONArray();
+        List<Map<String, Object>> rows = new ArrayList<>();
         for (LogEntry entry : result) {
-            JSONObject obj = new JSONObject();
-            obj.element("eventId", entry.getEventId());
-            obj.element("category", entry.getCategory());
-            obj.element("eventDate", entry.getEventDate().getTime());
-            obj.element("principal", entry.getPrincipalName());
-            obj.element("docUUID", entry.getDocUUID());
-            obj.element("docType", entry.getDocType());
-            obj.element("docPath", entry.getDocPath());
-            obj.element("docLifeCycle", entry.getDocLifeCycle());
-            obj.element("repoId", entry.getRepositoryId());
-            obj.element("comment", entry.getComment());
+            Map<String, Object> obj = new LinkedHashMap<>();
+            obj.put("eventId", entry.getEventId());
+            obj.put("category", entry.getCategory());
+            obj.put("eventDate", entry.getEventDate().getTime());
+            obj.put("principal", entry.getPrincipalName());
+            obj.put("docUUID", entry.getDocUUID());
+            obj.put("docType", entry.getDocType());
+            obj.put("docPath", entry.getDocPath());
+            obj.put("docLifeCycle", entry.getDocLifeCycle());
+            obj.put("repoId", entry.getRepositoryId());
+            obj.put("comment", entry.getComment());
             // Map<String, ExtendedInfo> info = entry.getExtendedInfos();
             // if (info != null) {
             // info.get
             // }
             rows.add(obj);
         }
-        return Blobs.createJSONBlob(rows.toString());
+        return Blobs.createJSONBlobFromValue(rows);
     }
 
     public List<LogEntry> query() {

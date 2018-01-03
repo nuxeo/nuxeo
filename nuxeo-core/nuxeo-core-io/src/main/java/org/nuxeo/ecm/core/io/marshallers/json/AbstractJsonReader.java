@@ -89,16 +89,14 @@ public abstract class AbstractJsonReader<EntityType> implements Reader<EntityTyp
      * @return A valid {@link JsonNode}.
      * @since 7.2
      */
-    protected JsonNode getNode(InputStream in, boolean getCurrentIfAvailable) throws IOException, JsonParseException,
-            JsonProcessingException {
-        if (getCurrentIfAvailable) {
-            if (in instanceof InputStreamWithJsonNode) {
-                return ((InputStreamWithJsonNode) in).getJsonNode();
-            }
+    protected JsonNode getNode(InputStream in, boolean getCurrentIfAvailable)
+            throws IOException, JsonParseException, JsonProcessingException {
+        if (getCurrentIfAvailable && in instanceof InputStreamWithJsonNode) {
+            return ((InputStreamWithJsonNode) in).getJsonNode();
         }
-        JsonParser jp = JsonFactoryProvider.get().createJsonParser(in);
-        JsonNode jn = jp.readValueAsTree();
-        return jn;
+        try (JsonParser jp = JsonFactoryProvider.get().createParser(in)) {
+            return jp.readValueAsTree();
+        }
     }
 
     /**
@@ -149,11 +147,11 @@ public abstract class AbstractJsonReader<EntityType> implements Reader<EntityTyp
 
     /**
      * Tries to get a boolean property of the given {@link JsonNode}. Return {@code null} if the node is {@code null} or
-     *  not a boolean.
+     * not a boolean.
+     *
      * @param jn the {@link JsonNode} to parse
      * @param elName the property name
      * @return the boolean value if it exists and is a boolean property, {@code null} otherwise
-     *
      * @since 9.2
      */
     protected Boolean getBooleanField(JsonNode jn, String elName) {
@@ -174,10 +172,10 @@ public abstract class AbstractJsonReader<EntityType> implements Reader<EntityTyp
     /**
      * Tries to get a string list property of the given {@link JsonNode}. Return {@code null} if the node is
      * {@code null} or not a string list.
+     *
      * @param jn the {@link JsonNode} to parse
      * @param elName the property name
      * @return a string list if it exists and is a valid string list property, {@code null} otherwise
-     *
      * @since 9.2
      */
     protected List<String> getStringListField(JsonNode jn, String elName) {
@@ -194,7 +192,7 @@ public abstract class AbstractJsonReader<EntityType> implements Reader<EntityTyp
                     }
                     result.add(value);
                 }
-                return  result;
+                return result;
             } else {
                 return null;
             }

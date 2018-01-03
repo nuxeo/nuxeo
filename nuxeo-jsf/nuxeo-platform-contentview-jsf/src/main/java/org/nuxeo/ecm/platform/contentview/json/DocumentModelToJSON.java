@@ -22,10 +22,6 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +32,10 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
 
 /**
  * Transforms a document model properties into a json object.
@@ -70,7 +70,7 @@ public class DocumentModelToJSON implements PropertyVisitor {
 
     @Override
     public Object visit(MapProperty property, Object arg) throws PropertyException {
-        Object value = null;
+        Object value;
         if (property.isContainer()) {
             value = new JSONObject();
         } else {
@@ -98,7 +98,7 @@ public class DocumentModelToJSON implements PropertyVisitor {
 
     @Override
     public Object visit(ListProperty property, Object arg) throws PropertyException {
-        Object value = null;
+        Object value;
         if (property.isContainer()) {
             value = new JSONArray();
         } else {

@@ -21,10 +21,10 @@
 
 package org.nuxeo.ecm.webengine.ui.json;
 
+import java.util.ArrayList;
 import java.util.Collection;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.utils.StringUtils;
 
@@ -35,7 +35,7 @@ public abstract class JQueryTreeBuilder<T> {
 
     public static final String CHILDREN = "children";
 
-    public JSONArray buildTree(T root, String path) {
+    public List<Map<String, Object>> buildTree(T root, String path) {
         if (path == null || path.length() == 0 || "/".equals(path)) {
             return buildChildren(root);
         }
@@ -50,34 +50,34 @@ public abstract class JQueryTreeBuilder<T> {
         return buildChildren(root);
     }
 
-    public JSONArray buildChildren(T parent) {
-        JSONArray json = new JSONArray();
+    public List<Map<String, Object>> buildChildren(T parent) {
+        List<Map<String, Object>> json = new ArrayList<>();
         Collection<T> children = getChildren(parent);
         if (children != null) {
             for (T obj : children) {
-                JSONObject map = toJson(obj);
+                Map<String, Object> map = toJson(obj);
                 json.add(map);
             }
         }
         return json;
     }
 
-    public JSONArray buildChildren(T parent, String[] path, int off) {
-        JSONArray json = new JSONArray();
+    public List<Map<String, Object>> buildChildren(T parent, String[] path, int off) {
+        List<Map<String, Object>> json = new ArrayList<>();
         String expandName = path[off];
         Collection<T> children = getChildren(parent);
         if (children != null) {
             for (T obj : children) {
-                JSONObject map = toJson(obj);
+                Map<String, Object> map = toJson(obj);
                 String childName = getName(obj);
                 if (expandName.equals(childName)) {
-                    JSONArray jsonChildren = null;
+                    List<Map<String, Object>> jsonChildren;
                     if (off < path.length - 1) {
                         jsonChildren = buildChildren(obj, path, off + 1);
                     } else {
                         jsonChildren = buildChildren(obj);
                     }
-                    map.element(CHILDREN, jsonChildren);
+                    map.put(CHILDREN, jsonChildren);
                 }
                 json.add(map);
             }
@@ -91,6 +91,6 @@ public abstract class JQueryTreeBuilder<T> {
 
     protected abstract Collection<T> getChildren(T obj);
 
-    protected abstract JSONObject toJson(T obj);
+    protected abstract Map<String, Object> toJson(T obj);
 
 }

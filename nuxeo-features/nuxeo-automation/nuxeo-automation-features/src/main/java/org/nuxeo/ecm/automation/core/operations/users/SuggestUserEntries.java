@@ -18,10 +18,14 @@
  */
 package org.nuxeo.ecm.automation.core.operations.users;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -49,9 +53,6 @@ import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserAdapter;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * SuggestUser Operation.
@@ -132,8 +133,8 @@ public class SuggestUserEntries {
     protected String lang;
 
     @OperationMethod
-    public Blob run() {
-        JSONArray result = new JSONArray();
+    public Blob run() throws IOException {
+        List<Map<String, Object>> result = new ArrayList<>();
         boolean isGroupRestriction = !StringUtils.isBlank(groupRestriction);
         boolean groupOnly = false;
         boolean userOnly = isGroupRestriction;
@@ -153,7 +154,7 @@ public class SuggestUserEntries {
                 userList = userManager.searchUsers(prefix);
                 Directory userDir = directoryService.getDirectory(userManager.getUserDirectoryName());
                 for (DocumentModel user : userList) {
-                    JSONObject obj = new JSONObject();
+                    Map<String, Object> obj = new LinkedHashMap<>();
                     for (Field field : schema.getFields()) {
                         QName fieldName = field.getName();
                         String key = fieldName.getLocalName();
@@ -161,7 +162,7 @@ public class SuggestUserEntries {
                         if (key.equals(userDir.getPasswordField())) {
                             continue;
                         }
-                        obj.element(key, value);
+                        obj.put(key, value);
                     }
                     String userId = user.getId();
                     obj.put(SuggestConstants.ID, userId);
@@ -192,8 +193,7 @@ public class SuggestUserEntries {
                 if (hideAdminGroups) {
                     admins = userManager.getAdministratorsGroups();
                 }
-                groupLoop:
-                for (DocumentModel group : groupList) {
+                groupLoop: for (DocumentModel group : groupList) {
                     if (hideAdminGroups) {
                         for (String adminGroupName : admins) {
                             if (adminGroupName.equals(group.getId())) {
@@ -206,12 +206,12 @@ public class SuggestUserEntries {
                             break groupLoop;
                         }
                     }
-                    JSONObject obj = new JSONObject();
+                    Map<String, Object> obj = new LinkedHashMap<>();
                     for (Field field : schema.getFields()) {
                         QName fieldName = field.getName();
                         String key = fieldName.getLocalName();
                         Serializable value = group.getPropertyValue(fieldName.getPrefixedName());
-                        obj.element(key, value);
+                        obj.put(key, value);
                     }
                     String groupId = group.getId();
                     obj.put(SuggestConstants.ID, groupId);
@@ -239,20 +239,18 @@ public class SuggestUserEntries {
             return searchOverflowMessage();
         }
 
-        return Blobs.createJSONBlob(result.toString());
+        return Blobs.createJSONBlobFromValue(result);
     }
 
     /**
      * @return searchOverflowMessage
      * @since 5.7.3
      */
-    private Blob searchOverflowMessage() {
-        JSONArray result = new JSONArray();
-        JSONObject obj = new JSONObject();
-        obj.put(SuggestConstants.LABEL,
-                I18NUtils.getMessageString("messages", "label.security.searchOverFlow", new Object[0], getLocale()));
-        result.add(obj);
-        return Blobs.createJSONBlob(result.toString());
+    private Blob searchOverflowMessage() throws IOException {
+        String label = I18NUtils.getMessageString("messages", "label.security.searchOverFlow", new Object[0],
+                getLocale());
+        Map<String, Object> obj = Collections.singletonMap(SuggestConstants.LABEL, label);
+        return Blobs.createJSONBlobFromValue(Collections.singletonList(obj));
     }
 
     protected String getLang() {

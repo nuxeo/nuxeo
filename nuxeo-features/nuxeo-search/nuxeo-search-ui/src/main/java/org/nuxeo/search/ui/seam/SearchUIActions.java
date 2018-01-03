@@ -26,6 +26,7 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.ecm.webapp.helpers.EventNames.LOCAL_CONFIGURATION_CHANGED;
 import static org.nuxeo.ecm.webapp.helpers.EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -226,7 +227,7 @@ public class SearchUIActions implements Serializable {
         return false;
     }
 
-    public String getJSONContentViewState() throws UnsupportedEncodingException {
+    public String getJSONContentViewState() throws IOException {
         ContentView contentView = contentViewActions.getContentView(currentContentViewName);
         ContentViewService contentViewService = Framework.getService(ContentViewService.class);
         ContentViewState state = contentViewService.saveContentView(contentView);
@@ -427,7 +428,7 @@ public class SearchUIActions implements Serializable {
      * ----- Permanent links -----
      */
 
-    public void setState(String state) throws UnsupportedEncodingException {
+    public void setState(String state) throws IOException {
         if (isNotBlank(state)) {
             Long finalPageSize = null;
             if (!StringUtils.isBlank(pageSize)) {
@@ -506,7 +507,7 @@ public class SearchUIActions implements Serializable {
     /**
      * Compute a permanent link for the current search.
      */
-    public String getSearchPermanentLinkUrl() throws UnsupportedEncodingException {
+    public String getSearchPermanentLinkUrl() throws IOException {
         // do not try to compute an URL if we don't have any CoreSession
         if (documentManager == null) {
             return null;
@@ -518,7 +519,7 @@ public class SearchUIActions implements Serializable {
     /**
      * @return the URL of the search tab with the search term defined.
      */
-    public String getSearchTabUrl(String searchTerm) throws UnsupportedEncodingException {
+    public String getSearchTabUrl(String searchTerm) throws IOException {
         // do not try to compute an URL if we don't have any CoreSession
         if (documentManager == null) {
             return null;
@@ -534,7 +535,7 @@ public class SearchUIActions implements Serializable {
      *
      * @param withState If set to true, the state is added in the parameters.
      */
-    protected String generateSearchUrl(boolean withState) throws UnsupportedEncodingException {
+    protected String generateSearchUrl(boolean withState) throws IOException {
         String currentContentViewName = getCurrentContentViewName();
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentView docView = computeDocumentView(currentDocument);

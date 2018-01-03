@@ -18,8 +18,10 @@
  */
 package org.nuxeo.ecm.collections.core.automation;
 
-import java.io.Serializable;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -44,10 +46,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * @since 5.9.3
@@ -84,10 +82,8 @@ public class SuggestCollectionEntry {
     protected String searchTerm;
 
     @OperationMethod
-    public Blob run() throws OperationException {
-        JSONArray result = new JSONArray();
-        Map<String, Serializable> props = new HashMap<>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+    public Blob run() throws OperationException, IOException {
+        List<Map<String, Object>> result = new ArrayList<>();
 
         Map<String, Object> vars = new HashMap<>();
         {
@@ -105,29 +101,29 @@ public class SuggestCollectionEntry {
 
         boolean found = false;
         for (DocumentModel doc : docs) {
-            JSONObject obj = new JSONObject();
+            Map<String, Object> obj = new LinkedHashMap<>();
             if (collectionManager.canAddToCollection(doc, session)) {
-                obj.element(SuggestConstants.ID, doc.getId());
+                obj.put(SuggestConstants.ID, doc.getId());
             }
             if (doc.getTitle().equals(searchTerm)) {
                 found = true;
             }
-            obj.element(SuggestConstants.LABEL, doc.getTitle());
+            obj.put(SuggestConstants.LABEL, doc.getTitle());
             if (StringUtils.isNotBlank((String) doc.getProperty("common", "icon"))) {
-                obj.element(SuggestConstants.ICON, doc.getProperty("common", "icon"));
+                obj.put(SuggestConstants.ICON, doc.getProperty("common", "icon"));
             }
-            obj.element(PATH, doc.getPath().toString());
+            obj.put(PATH, doc.getPath().toString());
             result.add(obj);
         }
 
         if (!found && StringUtils.isNotBlank(searchTerm)) {
-            JSONObject obj = new JSONObject();
-            obj.element(SuggestConstants.LABEL, searchTerm);
-            obj.element(SuggestConstants.ID, CollectionConstants.MAGIC_PREFIX_ID + searchTerm);
+            Map<String, Object> obj = new LinkedHashMap<>();
+            obj.put(SuggestConstants.LABEL, searchTerm);
+            obj.put(SuggestConstants.ID, CollectionConstants.MAGIC_PREFIX_ID + searchTerm);
             result.add(0, obj);
         }
 
-        return Blobs.createJSONBlob(result.toString());
+        return Blobs.createJSONBlobFromValue(result);
     }
 
     protected Locale getLocale() {

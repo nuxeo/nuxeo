@@ -19,10 +19,9 @@ package org.nuxeo.ecm.platform.task.dashboard;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import net.sf.json.JSONObject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -103,11 +102,11 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
         return Boolean.parseBoolean(getTask().getVariable(Task.TaskVariableName.needi18n.name()));
     }
 
-    public JSONObject asJSON() {
+    public Map<String, Object> asMap() {
 
         boolean createdFromCreateTaskOperation = isCreatedFromCreateTaskOperation();
 
-        JSONObject obj = new JSONObject();
+        Map<String, Object> obj = new LinkedHashMap<>();
         obj.put("id", getTask().getId());
         obj.put("docref", getDocument().getRef().toString());
         obj.put("name", getName());

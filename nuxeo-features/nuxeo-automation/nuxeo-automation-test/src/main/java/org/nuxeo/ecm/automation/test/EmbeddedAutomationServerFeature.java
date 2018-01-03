@@ -24,13 +24,11 @@ import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.core.test.DetectThreadDeadlocksFeature;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Binder;
-import com.google.inject.Provider;
 import com.google.inject.Scopes;
 
 /**
@@ -39,9 +37,7 @@ import com.google.inject.Scopes;
  * @since 5.7
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.server",
-        "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api" })
-@Features({ DetectThreadDeadlocksFeature.class, WebEngineFeature.class })
+@Features({ DetectThreadDeadlocksFeature.class, WebEngineFeature.class, AutomationServerFeature.class })
 @DetectThreadDeadlocksFeature.Config(dumpAtTearDown = true)
 public class EmbeddedAutomationServerFeature extends SimpleFeature {
 
@@ -64,30 +60,24 @@ public class EmbeddedAutomationServerFeature extends SimpleFeature {
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         super.configure(runner, binder);
-        binder.bind(HttpAutomationClient.class).toProvider(new Provider<HttpAutomationClient>() {
-            @Override
-            public HttpAutomationClient get() {
-                if (client == null) {
-                    client = getHttpAutomationClient();
-                }
-                return client;
+        binder.bind(HttpAutomationClient.class).toProvider(() -> {
+            if (client == null) {
+                client = getHttpAutomationClient();
             }
+            return client;
         }).in(Scopes.SINGLETON);
-        binder.bind(Session.class).toProvider(new Provider<Session>() {
-            @Override
-            public Session get() {
-                if (client == null) {
-                    client = getHttpAutomationClient();
-                }
-                if (session == null) {
-                    try {
-                        session = client.getSession("Administrator", "Administrator");
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                return session;
+        binder.bind(Session.class).toProvider(() -> {
+            if (client == null) {
+                client = getHttpAutomationClient();
             }
+            if (session == null) {
+                try {
+                    session = client.getSession("Administrator", "Administrator");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return session;
         }).in(Scopes.SINGLETON);
     }
 

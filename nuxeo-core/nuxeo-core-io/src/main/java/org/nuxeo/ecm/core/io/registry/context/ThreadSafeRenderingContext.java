@@ -141,7 +141,7 @@ public final class ThreadSafeRenderingContext implements RenderingContext {
     }
 
     @Override
-    public void addParameterListValues(String name, List<Object> values) {
+    public void addParameterListValues(String name, List<?> values) {
         ctx.get().addParameterListValues(name, values);
     }
 

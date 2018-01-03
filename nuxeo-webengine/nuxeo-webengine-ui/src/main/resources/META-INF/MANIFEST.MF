@@ -17,7 +17,6 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.webengine.ui;singleton:=true
 Import-Package: javax.annotation;version="1.0",
  javax.ws.rs,
- net.sf.json,
  org.apache.commons.logging,
  org.nuxeo.common.utils,
  org.nuxeo.ecm.core;api=split,

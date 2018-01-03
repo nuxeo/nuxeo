@@ -20,7 +20,9 @@
 
 package org.nuxeo.ecm.automation.core.operations.services;
 
-import java.io.Serializable;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -44,9 +46,6 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Queries {@link ActionManager} for available actions in the given context
@@ -118,37 +117,33 @@ public class GetActions {
     }
 
     @OperationMethod
-    public Blob run() throws OperationException {
+    public Blob run() throws IOException, OperationException {
         return run(null);
     }
 
     @OperationMethod
-    public Blob run(DocumentModel currentDocument) throws OperationException {
+    public Blob run(DocumentModel currentDocument) throws IOException, OperationException {
 
         ActionContext actionContext = getActionContext(currentDocument);
         List<Action> actions = actionService.getActions(category, actionContext);
 
-        JSONArray rows = new JSONArray();
+        List<Map<String, Object>> rows = new ArrayList<>();
         for (Action action : actions) {
-            JSONObject obj = new JSONObject();
+            Map<String, Object> obj = new LinkedHashMap<>();
 
-            obj.element("id", action.getId());
-            obj.element("link", action.getLink());
-            obj.element("icon", action.getIcon());
+            obj.put("id", action.getId());
+            obj.put("link", action.getLink());
+            obj.put("icon", action.getIcon());
 
             String label = translate(action.getLabel());
-            obj.element("label", label);
+            obj.put("label", label);
             String help = translate(action.getHelp());
-            obj.element("help", help);
+            obj.put("help", help);
 
-            JSONObject properties = new JSONObject();
-            Map<String, Serializable> actionProperties = action.getProperties();
-            for (Map.Entry<String, Serializable> entry : actionProperties.entrySet()) {
-                properties.element(entry.getKey(), entry.getValue());
-            }
-            obj.element("properties", properties);
+            Map<String, Object> properties = new LinkedHashMap<>(action.getProperties());
+            obj.put("properties", properties);
             rows.add(obj);
         }
-        return Blobs.createJSONBlob(rows.toString());
+        return Blobs.createJSONBlobFromValue(rows);
     }
 }

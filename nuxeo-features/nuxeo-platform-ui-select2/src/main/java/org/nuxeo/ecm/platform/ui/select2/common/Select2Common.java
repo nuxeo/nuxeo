@@ -18,9 +18,12 @@
  */
 package org.nuxeo.ecm.platform.ui.select2.common;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,11 +33,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Group fields and methods used at initialization and runtime for select2 feature.
@@ -44,6 +47,8 @@ import net.sf.json.JSONObject;
 public class Select2Common extends SuggestConstants {
 
     private static final Log log = LogFactory.getLog(Select2Common.class);
+
+    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     // no instantiation
     private Select2Common() {
@@ -134,14 +139,18 @@ public class Select2Common extends SuggestConstants {
         if (list == null || list.isEmpty()) {
             return "[]";
         } else {
-            JSONArray result = new JSONArray();
-            for (String l : list) {
-                JSONObject obj = new JSONObject();
-                obj.element(Select2Common.ID, l);
-                obj.element(Select2Common.LABEL, l);
-                result.add(obj);
+            try {
+                List<Map<String, Object>> result = new ArrayList<>();
+                for (String l : list) {
+                    Map<String, Object> obj = new LinkedHashMap<>();
+                    obj.put(Select2Common.ID, l);
+                    obj.put(Select2Common.LABEL, l);
+                    result.add(obj);
+                }
+               return OBJECT_MAPPER.writeValueAsString(result);
+            } catch (IOException e) {
+                throw new NuxeoException("Unable to serialize json", e);
             }
-            return result.toString();
         }
     }
 

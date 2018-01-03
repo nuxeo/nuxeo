@@ -1,11 +1,11 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,9 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id: TestWidgetTypeHandler.java 28498 2008-01-05 11:46:25Z sfermigier $
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 
 package org.nuxeo.ecm.platform.layout.facelets;
@@ -55,7 +53,7 @@ public class DummyWidgetTypeHandler extends AbstractWidgetTypeHandler {
     public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         String mode = widget.getMode();
-        FaceletHandler[] handlers = null;
+        FaceletHandler[] handlers;
         String originalId = helper.generateUniqueId(ctx);
         TagAttributes attributes = helper.getTagAttributes(originalId, widget);
         FaceletHandler leaf = new LeafFaceletHandler();

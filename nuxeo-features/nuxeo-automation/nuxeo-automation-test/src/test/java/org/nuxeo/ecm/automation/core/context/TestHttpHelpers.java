@@ -49,9 +49,9 @@ import org.nuxeo.runtime.test.runner.Jetty;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ EmbeddedAutomationServerFeature.class })
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.url.api",
-        "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.platform.restapi.io", "org.nuxeo.ecm.platform.restapi.server" })
+@Deploy({ "org.nuxeo.ecm.platform.url.api", "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.types.api",
+        "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.restapi.io",
+        "org.nuxeo.ecm.platform.restapi.server" })
 @Jetty(port = 18090)
 @RepositoryConfig(init = AutomationRepositoryInit.class, cleanup = Granularity.METHOD)
 public class TestHttpHelpers {
@@ -65,8 +65,7 @@ public class TestHttpHelpers {
     @Test
     public void canUseHttpHelperGET() throws OperationException, IOException {
         Map<String, Object> params = new HashMap<>();
-        params.put(
-                "script",
+        params.put("script",
                 "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \"http://localhost:18090/api/v1/path/default-domain\");");
         OperationContext ctx = new OperationContext(session);
         automationService.run(ctx, "RunScript", params);
@@ -84,8 +83,7 @@ public class TestHttpHelpers {
         OperationContext ctx = new OperationContext(session);
         ctx.put("data", data);
         ctx.put("headers", headers);
-        params.put(
-                "script",
+        params.put("script",
                 "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"POST\", \"http://localhost:18090/api/v1/path/default-domain\", Context.data, Context.headers);");
         automationService.run(ctx, "RunScript", params);
         String result = ((Blob) ctx.get("result")).getString();
@@ -96,8 +94,7 @@ public class TestHttpHelpers {
     @Test
     public void canUseHttpHelperGETStringBlob() throws OperationException, IOException {
         Map<String, Object> params = new HashMap<>();
-        params.put(
-                "script",
+        params.put("script",
                 "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \"http://localhost:18090/api/v1/path/testBlob/@blob/file:content\");");
         OperationContext ctx = new OperationContext(session);
         automationService.run(ctx, "RunScript", params);
@@ -109,8 +106,7 @@ public class TestHttpHelpers {
     @Test
     public void canUseHttpHelperGETBlob() throws OperationException, IOException {
         Map<String, Object> params = new HashMap<>();
-        params.put(
-                "script",
+        params.put("script",
                 "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \"http://localhost:18090/api/v1/path/testBlob2/@blob/file:content\");");
         OperationContext ctx = new OperationContext(session);
         automationService.run(ctx, "RunScript", params);

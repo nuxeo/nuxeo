@@ -26,12 +26,14 @@ import static org.nuxeo.ecm.platform.usermanager.UserConfig.SCHEMA_NAME;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.TENANT_ID_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.USERNAME_COLUMN;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,9 +49,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * @since 5.6
@@ -97,7 +96,7 @@ public class QueryUsers {
     protected String tenantId;
 
     @OperationMethod
-    public Blob run() {
+    public Blob run() throws IOException {
         List<DocumentModel> users;
         if (StringUtils.isBlank(pattern)) {
             Map<String, Serializable> filter = new HashMap<>();
@@ -134,21 +133,25 @@ public class QueryUsers {
         return buildResponse(users);
     }
 
-    protected Blob buildResponse(List<DocumentModel> users) {
-        JSONArray array = new JSONArray();
+    protected Blob buildResponse(List<DocumentModel> users) throws IOException {
+        List<Map<String, Object>> array = new ArrayList<>();
         for (DocumentModel user : users) {
-            JSONObject o = new JSONObject();
-            o.element(JSON_USERNAME, user.getProperty(SCHEMA_NAME, USERNAME_COLUMN));
-            o.element(JSON_FIRSTNAME, user.getProperty(SCHEMA_NAME, FIRSTNAME_COLUMN));
-            o.element(JSON_LASTNAME, user.getProperty(SCHEMA_NAME, LASTNAME_COLUMN));
-            o.element(JSON_EMAIL, user.getProperty(SCHEMA_NAME, EMAIL_COLUMN));
-            o.element(JSON_COMPANY, user.getProperty(SCHEMA_NAME, COMPANY_COLUMN));
-            o.element(JSON_TENANT_ID, user.getProperty(SCHEMA_NAME, TENANT_ID_COLUMN));
+            Map<String, Object> o = new LinkedHashMap<>();
+            putIfNotNull(o, JSON_USERNAME, user.getProperty(SCHEMA_NAME, USERNAME_COLUMN));
+            putIfNotNull(o, JSON_FIRSTNAME, user.getProperty(SCHEMA_NAME, FIRSTNAME_COLUMN));
+            putIfNotNull(o, JSON_LASTNAME, user.getProperty(SCHEMA_NAME, LASTNAME_COLUMN));
+            putIfNotNull(o, JSON_EMAIL, user.getProperty(SCHEMA_NAME, EMAIL_COLUMN));
+            putIfNotNull(o, JSON_COMPANY, user.getProperty(SCHEMA_NAME, COMPANY_COLUMN));
+            putIfNotNull(o, JSON_TENANT_ID, user.getProperty(SCHEMA_NAME, TENANT_ID_COLUMN));
             array.add(o);
         }
-        JSONObject result = new JSONObject();
-        result.put("users", array);
-        return Blobs.createJSONBlob(result.toString());
+        return Blobs.createJSONBlobFromValue(Collections.singletonMap("users", array));
+    }
+
+    protected void putIfNotNull(Map<String, Object> map, String key, Object value) {
+        if (value != null) {
+            map.put(key, value);
+        }
     }
 
 }

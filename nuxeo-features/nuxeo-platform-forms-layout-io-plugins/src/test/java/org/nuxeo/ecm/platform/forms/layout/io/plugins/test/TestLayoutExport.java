@@ -18,22 +18,27 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.io.plugins.test;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import net.sf.json.JSONObject;
-
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
+import org.nuxeo.ecm.core.io.registry.Writer;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -41,7 +46,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.converters.LayoutConversionContex
 import org.nuxeo.ecm.platform.forms.layout.api.converters.LayoutDefinitionConverter;
 import org.nuxeo.ecm.platform.forms.layout.api.converters.WidgetDefinitionConverter;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
-import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
+import org.nuxeo.ecm.platform.forms.layout.export.LayoutExportConstants;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -49,11 +54,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
-
-import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Anahide Tchertchian
@@ -61,8 +63,9 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.forms.layout.core", "org.nuxeo.ecm.platform.forms.layout.client",
-        "org.nuxeo.ecm.platform.forms.layout.io.plugins" })
+@Deploy({ "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.platform.forms.layout.core",
+        "org.nuxeo.ecm.platform.forms.layout.client", "org.nuxeo.ecm.platform.forms.layout.io.plugins",
+        "org.nuxeo.ecm.platform.forms.layout.export" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.forms.layout.io.plugins:layouts-test-contrib.xml",
         "org.nuxeo.ecm.platform.forms.layout.io.plugins:test-directories-contrib.xml" })
 public class TestLayoutExport {
@@ -74,6 +77,9 @@ public class TestLayoutExport {
 
     @Inject
     protected WebLayoutManager jsfService;
+
+    @Inject
+    protected MarshallerRegistry marshallerRegistry;
 
     @Test
     public void testLayoutDefinitionExport() throws Exception {
@@ -98,16 +104,20 @@ public class TestLayoutExport {
             langFilePath = "nolang";
         }
         File file = Framework.createTempFile("layout-export-" + langFilePath, ".json");
-        FileOutputStream out = new FileOutputStream(file);
-        JSONLayoutExporter.export(WebLayoutManager.JSF_CATEGORY, layoutDef, ctx, widgetConverters, out);
-        out.close();
+        RenderingContext renderingCtx = CtxBuilder.param(
+                LayoutExportConstants.CATEGORY_PARAMETER, WebLayoutManager.JSF_CATEGORY)
+                                                  .param(LayoutExportConstants.LAYOUT_CONTEXT_PARAMETER, ctx)
+                                                  .paramList(LayoutExportConstants.WIDGET_CONVERTERS_PARAMETER,
+                                                          widgetConverters)
+                                                  .get();
+        writeJsonToFile(renderingCtx, layoutDef, file);
 
         InputStream written = new FileInputStream(file);
-        InputStream expected = new FileInputStream(FileUtils.getResourcePathFromContext("layout-export-" + langFilePath
-                + ".json"));
+        InputStream expected = new FileInputStream(
+                FileUtils.getResourcePathFromContext("layout-export-" + langFilePath + ".json"));
 
-        String expectedString = IOUtils.toString(expected, Charsets.UTF_8);
-        String writtenString = IOUtils.toString(written, Charsets.UTF_8);
+        String expectedString = IOUtils.toString(expected, StandardCharsets.UTF_8);
+        String writtenString = IOUtils.toString(written, StandardCharsets.UTF_8);
         // order of select options may depend on directory database => do not
         // check order of element by using the NON_EXTENSIBLE mode
         JSONAssert.assertEquals(expectedString, writtenString, JSONCompareMode.NON_EXTENSIBLE);
@@ -130,20 +140,26 @@ public class TestLayoutExport {
             langFilePath = "nolang";
         }
         File file = Framework.createTempFile("layout-instance-export-" + langFilePath, ".json");
-        FileOutputStream out = new FileOutputStream(file);
-        JSONObject res = JSONLayoutExporter.exportToJson(layout);
-        out.write(res.toString(2).getBytes(JSONLayoutExporter.ENCODED_VALUES_ENCODING));
-        out.close();
+        writeJsonToFile(CtxBuilder.get(), layout, file);
 
         InputStream written = new FileInputStream(file);
-        InputStream expected = new FileInputStream(FileUtils.getResourcePathFromContext("layout-instance-export-"
-                + langFilePath + ".json"));
+        InputStream expected = new FileInputStream(
+                FileUtils.getResourcePathFromContext("layout-instance-export-" + langFilePath + ".json"));
 
-        String expectedString = IOUtils.toString(expected, Charsets.UTF_8);
-        String writtenString = IOUtils.toString(written, Charsets.UTF_8);
+        String expectedString = IOUtils.toString(expected, StandardCharsets.UTF_8);
+        String writtenString = IOUtils.toString(written, StandardCharsets.UTF_8);
         // order of select options may depend on directory database => do not
         // check order of element by using the NON_EXTENSIBLE mode
         JSONAssert.assertEquals(expectedString, writtenString, JSONCompareMode.NON_EXTENSIBLE);
+    }
+
+    protected <T> void writeJsonToFile(RenderingContext ctx, T entity, File file) throws IOException {
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            @SuppressWarnings("unchecked")
+            Class<T> type = (Class<T>) entity.getClass();
+            Writer<T> writer = marshallerRegistry.getWriter(ctx, type, APPLICATION_JSON_TYPE);
+            writer.write(entity, type, type, APPLICATION_JSON_TYPE, out);
+        }
     }
 
 }

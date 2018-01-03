@@ -17,8 +17,10 @@
  */
 package org.nuxeo.ecm.platform.rendition.automation;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -31,9 +33,8 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 import org.nuxeo.runtime.api.Framework;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * @since 8.3
