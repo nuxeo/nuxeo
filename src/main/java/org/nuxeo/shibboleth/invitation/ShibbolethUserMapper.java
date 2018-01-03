@@ -101,7 +101,7 @@ public class ShibbolethUserMapper implements UserMapper {
         if (userDoc != null && userName != null) {
             updateACP(userName, email, userDoc);
         } else {
-            userDoc = findUser(userManager.getUserIdField(), userInfo.getUserName());
+            userDoc = userManager.getUserModel(userName);
         }
         if (userDoc == null) {
             userDoc = createUser(userInfo);
