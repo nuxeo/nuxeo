@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.multi.tenant.userworkspace;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.multi.tenant.MultiTenantHelper;

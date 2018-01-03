@@ -27,7 +27,7 @@ import static org.nuxeo.ecm.multi.tenant.MultiTenantHelper.computeTenantMembersG
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
