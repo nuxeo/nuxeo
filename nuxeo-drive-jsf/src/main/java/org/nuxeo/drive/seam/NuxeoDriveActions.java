@@ -31,7 +31,7 @@ import java.util.Set;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletRequest;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;

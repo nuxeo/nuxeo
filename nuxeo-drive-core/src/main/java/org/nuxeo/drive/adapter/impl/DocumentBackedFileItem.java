@@ -18,7 +18,7 @@
  */
 package org.nuxeo.drive.adapter.impl;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;

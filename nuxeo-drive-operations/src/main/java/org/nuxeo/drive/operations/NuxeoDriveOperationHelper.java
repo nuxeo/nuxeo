@@ -21,7 +21,7 @@ package org.nuxeo.drive.operations;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
