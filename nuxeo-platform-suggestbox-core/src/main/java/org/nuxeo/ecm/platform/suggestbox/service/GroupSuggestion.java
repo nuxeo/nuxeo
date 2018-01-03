@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.suggestbox.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Suggest to navigate to a specific group profile.
