@@ -65,7 +65,7 @@ import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
 import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
 import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.ecm.webdav.jaxrs.IsCollection;
 import org.nuxeo.ecm.webdav.jaxrs.IsFolder;
 import org.nuxeo.ecm.webdav.jaxrs.IsHidden;
@@ -89,7 +89,7 @@ public class VirtualFolderResource extends AbstractResource {
         sb.append("/");
         sb.append("</p>\n<ul>\n");
         for (String name : rootFolderNames) {
-            String qname = StringEscapeUtils.escapeHtml(name);
+            String qname = StringEscapeUtils.escapeHtml4(name);
             sb.append("<li><a href=\"");
             sb.append(qname);
             sb.append("/"); // terminating slash

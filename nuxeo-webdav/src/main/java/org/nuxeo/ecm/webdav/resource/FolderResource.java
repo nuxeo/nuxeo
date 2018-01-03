@@ -50,7 +50,7 @@ import net.java.dev.webdav.jaxrs.xml.elements.Status;
 import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
 import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -81,7 +81,7 @@ public class FolderResource extends ExistingResource {
         List<DocumentModel> children = backend.getChildren(doc.getRef());
         for (DocumentModel child : children) {
             String name = backend.getDisplayName(child);
-            String qname = StringEscapeUtils.escapeHtml(name);
+            String qname = StringEscapeUtils.escapeHtml4(name);
             sb.append("<li><a href=\"");
             sb.append(qname);
             if (child.isFolder()) {

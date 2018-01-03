@@ -20,7 +20,7 @@
  */
 package org.nuxeo.ecm.webdav.backend;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 public class SearchRootBackend extends SearchVirtualBackend {
