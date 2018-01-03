@@ -394,7 +394,6 @@ public class RoutingTaskActionsBean implements Serializable {
      */
     public Map<String, Action> getTaskActionsMap(Task task) {
         Map<String, Action> actions = new LinkedHashMap<String, Action>();
-        // bulk processing, don't fetch formVariables to avoid overriding them
         TaskInfo taskInfo = getTaskInfo(task, true);
         String layout = taskInfo.layout;
         List<Button> buttons = taskInfo.buttons;
