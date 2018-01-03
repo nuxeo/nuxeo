@@ -21,7 +21,7 @@ package org.nuxeo.snapshot;
 import static org.nuxeo.snapshot.Snapshotable.ABOUT_TO_CREATE_LEAF_VERSION_EVENT;
 import static org.nuxeo.snapshot.Snapshotable.ROOT_DOCUMENT_PROPERTY;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
