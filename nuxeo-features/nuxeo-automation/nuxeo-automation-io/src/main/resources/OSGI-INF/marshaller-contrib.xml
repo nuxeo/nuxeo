@@ -1,4 +1,6 @@
 <component name="org.nuxeo.ecm.automation.server.marshallers">
+  <!-- this is needed by JsonOperationWriter -->
+  <require>org.nuxeo.ecm.platform.contentview.json.marshallers</require>
   <extension point="marshallers" target="org.nuxeo.ecm.automation.server.AutomationServer">
     <marshaller>
       <reader>org.nuxeo.ecm.automation.jaxrs.io.operations.JsonRequestReader</reader>

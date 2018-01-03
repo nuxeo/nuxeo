@@ -1,0 +1,252 @@
+{
+  "name": "test",
+  "aliases": ["testAlias"],
+  "handlerClassName": "org.nuxeo.ecm.platform.forms.layout.export.DummyWidgetTypeHandler",
+  "properties":   {
+    "foo1": "bar1",
+    "foo2": "bar2"
+  },
+  "configuration":   {
+    "title": "Test widget type",
+    "description": "This is a test widget type",
+    "demo":     {
+      "id": "test",
+      "previewEnabled": true
+    },
+    "sinceVersion": "5.4",
+    "deprecatedVersion": "5.6",
+    "confProperties":     {
+      "confProp": "foo",
+      "sortProperty": "dc:title"
+    },
+    "supportedModes":     [
+      "edit",
+      "view"
+    ],
+    "acceptingSubWidgets": true,
+    "handlingLabels": true,
+    "supportedControls":     [
+      "requireSurroundingForm",
+      "handlingLabels"
+    ],
+    "containingForm": true,
+    "fields":     {
+      "list": false,
+      "complex": false,
+      "supportedTypes":       [
+        "string",
+        "path"
+      ],
+      "defaultTypes": ["string"],
+      "defaultConfiguration":       [
+                {
+          "fieldName": "dc:title",
+          "propertyName": "dc:title"
+        },
+                {
+          "fieldName": "data.ref",
+          "propertyName": "data.ref"
+        }
+      ],
+      "layouts": {"any": [      {
+        "rows": [        {
+          "name": "layout_row_0",
+          "widgets": [{"name": "field_0"}]
+        }],
+        "widgets": [        {
+          "name": "field_0",
+          "type": "selectOneResource",
+          "labels": {"any": "The widget field binding"},
+          "translated": true,
+          "handlingLabels": false,
+          "properties": {"any": {"resourceName": "fields"}}
+        }]
+      }]}
+    },
+    "categories":     [
+      "foo",
+      "bar"
+    ],
+    "defaultPropertyValues": {"any": {"rendered": "true"}},
+    "properties": {"layouts":     {
+      "any": [      {
+        "rows": [        {
+          "name": "layout_row_0",
+          "widgets": [          {
+            "name": "required_property",
+            "category": "widgetTypeConfiguration"
+          }]
+        }],
+        "widgets": [        {
+          "name": "required_property",
+          "type": "text",
+          "labels": {"any": "Required"},
+          "translated": true,
+          "handlingLabels": false,
+          "fields": [          {
+            "fieldName": "bar",
+            "schemaName": "foo",
+            "propertyName": "foo:bar"
+          }],
+          "renderingInfos": {"any": [          {
+            "level": "error",
+            "message": "This is my widget rendering message",
+            "translated": false
+          }]}
+        }],
+        "renderingInfos": {"any": [        {
+          "level": "error",
+          "message": "This is my layout rendering message",
+          "translated": false
+        }]}
+      }],
+      "edit": [      {
+        "rows":         [
+                    {
+            "name": "layout_row_0",
+            "widgets": [{"name": "rendered_property"}]
+          },
+                    {
+            "name": "selection_property_row",
+            "widgets": [{"name": "selection_property"}]
+          },
+                    {
+            "name": "layout_row_2",
+            "widgets": [{"name": "subwidgets"}]
+          },
+                    {
+            "name": "layout_row_3",
+            "widgets": [{"name": "subwidgetRefs"}]
+          }
+        ],
+        "widgets":         [
+                    {
+            "name": "rendered_property",
+            "type": "text",
+            "labels": {"any": "Rendered"},
+            "translated": true,
+            "handlingLabels": false,
+            "widgetModes": {"any": "view"},
+            "fields": [            {
+              "fieldName": "bar",
+              "schemaName": "foo",
+              "propertyName": "foo:bar"
+            }],
+            "subWidgets": [            {
+              "name": "subwidget",
+              "type": "text",
+              "labels": {"any": "subwidget label"},
+              "translated": true,
+              "handlingLabels": false,
+              "fields": [              {
+                "fieldName": "bar",
+                "schemaName": "foo",
+                "propertyName": "foo:bar"
+              }]
+            }],
+            "controls": {"any": {"requireSurroundingForm": "true"}}
+          },
+                    {
+            "name": "selection_property",
+            "type": "selectOneListbox",
+            "labels": {"any": "Selection"},
+            "translated": true,
+            "handlingLabels": false,
+            "fields": [            {
+              "fieldName": "bar2",
+              "schemaName": "foo2",
+              "propertyName": "foo2:bar2"
+            }],
+            "selectOptions":             [
+                            {
+                "multiple": false,
+                "itemLabel": "foo",
+                "itemValue": "bar"
+              },
+                            {
+                "multiple": false,
+                "value": "#{currentDocument}",
+                "var": "doc",
+                "itemLabel": "#{doc.dc.title}",
+                "itemValue": "#{doc.id}",
+                "itemDisabled": "false",
+                "itemRendered": "true"
+              },
+                            {
+                "multiple": true,
+                "value": "#{myBean.myList}",
+                "var": "item",
+                "itemLabel": "#{item.title}",
+                "itemValue": "#{item.id}"
+              },
+                            {
+                "multiple": true,
+                "value": "#{documentList}",
+                "var": "doc",
+                "itemLabel": "#{doc.dc.title}",
+                "itemValue": "#{doc.id}",
+                "itemDisabled": "false",
+                "itemRendered": "true",
+                "ordering": "label",
+                "caseSensitive": true
+              },
+                            {
+                "multiple": false,
+                "itemLabel": "foo2",
+                "itemLabels":                 {
+                  "fr": "foo2_fr",
+                  "en": "foo2_eng"
+                },
+                "itemValue": "bar2"
+              }
+            ]
+          },
+                    {
+            "name": "subwidgets",
+            "type": "test",
+            "labels": {"any": "Selection"},
+            "translated": true,
+            "handlingLabels": false,
+            "fields": [            {
+              "fieldName": "bar2",
+              "schemaName": "foo2",
+              "propertyName": "foo2:bar2"
+            }],
+            "subWidgets": [            {
+              "name": "subwidget",
+              "type": "text",
+              "labels": {"any": "subwidget label"},
+              "translated": true,
+              "handlingLabels": false,
+              "fields": [              {
+                "fieldName": "bar",
+                "schemaName": "foo",
+                "propertyName": "foo:bar"
+              }]
+            }]
+          },
+                    {
+            "name": "subwidgetRefs",
+            "type": "test",
+            "labels": {"any": "Selection"},
+            "translated": true,
+            "handlingLabels": false,
+            "subWidgetRefs": [{"name": "localSubWidget"}]
+          },
+                    {
+            "name": "localSubWidget",
+            "type": "test",
+            "translated": true,
+            "handlingLabels": false,
+            "fields": [            {
+              "fieldName": "bar3",
+              "schemaName": "foo3",
+              "propertyName": "foo3:bar3"
+            }]
+          }
+        ]
+      }]
+    }},
+    "defaultControlValues": {"any": {"handlingLabels": "false"}}
+  }
+}

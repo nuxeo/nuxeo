@@ -1,11 +1,11 @@
 /*
- * (C) Copyright 2010-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     Anahide Tchertchian
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.ecm.platform.layout.service;
 
@@ -29,13 +29,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -60,6 +58,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import net.sf.json.JSONObject;
+
 /**
  * @author Anahide Tchertchian
  * @since 5.4
@@ -82,8 +82,8 @@ public class TestLayoutExport extends NXRuntimeTestCase {
     }
 
     protected void checkEquals(InputStream expected, InputStream actual) throws Exception {
-        String expectedString = IOUtils.toString(expected, Charsets.UTF_8).replaceAll("\r?\n", "");
-        String actualString = IOUtils.toString(actual, Charsets.UTF_8).replaceAll("\r?\n", "");
+        String expectedString = IOUtils.toString(expected, StandardCharsets.UTF_8).replaceAll("\r?\n", "");
+        String actualString = IOUtils.toString(actual, StandardCharsets.UTF_8).replaceAll("\r?\n", "");
         JSONAssert.assertEquals(expectedString, actualString, true);
     }
 

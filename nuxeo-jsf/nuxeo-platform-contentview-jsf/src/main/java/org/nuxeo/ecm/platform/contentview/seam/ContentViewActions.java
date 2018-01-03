@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.contentview.seam;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -280,7 +281,7 @@ public class ContentViewActions implements Serializable {
      * @since 5.7
      */
     public ContentView restoreContentView(String contentViewName, Long currentPage, Long pageSize,
-            List<SortInfo> sortInfos, String jsonContentViewState) throws UnsupportedEncodingException {
+            List<SortInfo> sortInfos, String jsonContentViewState) throws IOException {
         ContentView cv = contentViewRestActions.restoreContentView(contentViewName, currentPage, pageSize, sortInfos,
                 jsonContentViewState);
         cache.add(cv);

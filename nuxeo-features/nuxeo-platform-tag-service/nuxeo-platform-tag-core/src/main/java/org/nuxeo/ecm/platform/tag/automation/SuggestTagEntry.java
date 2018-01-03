@@ -18,9 +18,12 @@
  */
 package org.nuxeo.ecm.platform.tag.automation;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -35,9 +38,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.tag.TagService;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * @since 6.0
@@ -69,8 +69,8 @@ public class SuggestTagEntry {
     protected DocumentModel doc;
 
     @OperationMethod
-    public Blob run() {
-        JSONArray result = new JSONArray();
+    public Blob run() throws IOException {
+        List<Map<String, String>> result = new ArrayList<>();
         if (tagService != null && tagService.isEnabled()) {
             if (!StringUtils.isEmpty(value)) {
                 if (doc == null) {
@@ -80,9 +80,9 @@ public class SuggestTagEntry {
                     List<String> tags = new ArrayList<>(tagService.getTags(documentManager, docId));
                     Collections.sort(tags);
                     for (String tag : tags) {
-                        JSONObject obj = new JSONObject();
-                        obj.element(SuggestConstants.ID, tag);
-                        obj.element(SuggestConstants.LABEL, tag);
+                        Map<String, String> obj = new LinkedHashMap<>();
+                        obj.put(SuggestConstants.ID, tag);
+                        obj.put(SuggestConstants.LABEL, tag);
                         result.add(obj);
                     }
                 }
@@ -91,16 +91,16 @@ public class SuggestTagEntry {
                     List<String> tags = new ArrayList<>(tagService.getSuggestions(documentManager, searchTerm));
                     Collections.sort(tags);
                     for (int i = 0; i < 10 && i < tags.size(); i++) {
-                        JSONObject obj = new JSONObject();
+                        Map<String, String> obj = new LinkedHashMap<>();
                         String tag = tags.get(i);
-                        obj.element(SuggestConstants.ID, tag);
-                        obj.element(SuggestConstants.LABEL, tag);
+                        obj.put(SuggestConstants.ID, tag);
+                        obj.put(SuggestConstants.LABEL, tag);
                         result.add(obj);
                     }
                 }
             }
         }
-        return Blobs.createJSONBlob(result.toString());
+        return Blobs.createJSONBlobFromValue(result);
     }
 
 }

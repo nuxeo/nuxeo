@@ -19,11 +19,11 @@
 
 package org.nuxeo.ecm.admin.operation;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
@@ -249,14 +249,18 @@ public class HotReloadStudioSnapshot {
     }
 
     protected static Blob jsonHelper(String status, String message, List<String> dependencies) {
-        JSONObject resultJSON = new JSONObject();
-        JSONArray result = new JSONArray();
+        List<Map<String, Object>> result = new ArrayList<>();
+        Map<String, Object> resultJSON = new LinkedHashMap<>();
         resultJSON.put("status", status);
         resultJSON.put("message", message);
         if (dependencies != null) {
             resultJSON.put("deps", dependencies);
         }
         result.add(resultJSON);
-        return Blobs.createJSONBlob(result.toString());
+        try {
+            return Blobs.createJSONBlobFromValue(result);
+        } catch (IOException e) {
+            throw new NuxeoException("Unable to create json response", e);
+        }
     }
 }

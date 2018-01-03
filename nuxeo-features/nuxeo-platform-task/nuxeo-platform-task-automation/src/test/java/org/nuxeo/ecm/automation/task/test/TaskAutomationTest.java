@@ -32,9 +32,8 @@ import java.util.TimeZone;
 
 import javax.inject.Inject;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,9 +63,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.platform.task.automation", "org.nuxeo.ecm.platform.task.core",
-        "org.nuxeo.ecm.platform.task.testing" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.platform.task.automation",
+        "org.nuxeo.ecm.platform.task.core", "org.nuxeo.ecm.platform.task.testing" })
 @LocalDeploy("org.nuxeo.ecm.platform.task.automation:test-operations.xml")
 public class TaskAutomationTest {
 
@@ -166,8 +164,8 @@ public class TaskAutomationTest {
         OperationChain chain = new OperationChain("test");
         chain.add(GetUserTasks.ID);
         Blob blob = (Blob) automationService.run(ctx, chain);
-        JSONArray rows = JSONArray.fromObject(blob.getString());
-        assertEquals(1, rows.size());
+        JSONArray rows = new JSONArray(blob.getString());
+        assertEquals(1, rows.length());
         JSONObject obj = rows.getJSONObject(0);
         assertNotNull(obj.get("id")); // can be 1 or 2 depending
         assertEquals(obj.get("docref"), document.getRef().toString());

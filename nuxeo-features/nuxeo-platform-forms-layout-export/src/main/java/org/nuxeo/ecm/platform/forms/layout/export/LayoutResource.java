@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.export;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,17 +29,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.converters.LayoutConversionContext;
 import org.nuxeo.ecm.platform.forms.layout.api.converters.LayoutDefinitionConverter;
 import org.nuxeo.ecm.platform.forms.layout.api.converters.WidgetDefinitionConverter;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
-import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
 import org.nuxeo.runtime.api.Framework;
@@ -92,7 +92,7 @@ public class LayoutResource {
     @GET
     @Path("json")
     public String getAsJson(@QueryParam("layoutName") String layoutName, @QueryParam("lang") String lang,
-            @QueryParam("convertCat") String conversionCategory) {
+            @QueryParam("convertCat") String conversionCategory) throws IOException {
         if (layoutName != null) {
             if (StringUtils.isBlank(lang)) {
                 lang = DEFAULT_LANGUAGE;
@@ -110,8 +110,14 @@ public class LayoutResource {
                 }
                 if (layoutDef != null) {
                     List<WidgetDefinitionConverter> widgetConverters = service.getWidgetConverters(conversionCategory);
-                    JSONObject json = JSONLayoutExporter.exportToJson(category, layoutDef, ctx, widgetConverters);
-                    return json.toString(2);
+                    RenderingContext renderingCtx = CtxBuilder.param(LayoutExportConstants.CATEGORY_PARAMETER, category)
+                                                              .param(LayoutExportConstants.LAYOUT_CONTEXT_PARAMETER,
+                                                                      ctx)
+                                                              .paramList(
+                                                                      LayoutExportConstants.WIDGET_CONVERTERS_PARAMETER,
+                                                                      widgetConverters)
+                                                              .get();
+                    return MarshallerHelper.objectToJson(layoutDef, renderingCtx);
                 }
             }
         }
@@ -121,7 +127,7 @@ public class LayoutResource {
     @GET
     @Path("docType/{docType}")
     public String getLayoutsForTypeAsJson(@PathParam("docType") String docType, @QueryParam("mode") String mode,
-            @QueryParam("lang") String lang, @QueryParam("convertCat") String conversionCategory) {
+            @QueryParam("lang") String lang, @QueryParam("convertCat") String conversionCategory) throws IOException {
 
         if (StringUtils.isBlank(mode)) {
             mode = DEFAULT_DOCUMENT_LAYOUT_MODE;
@@ -135,21 +141,27 @@ public class LayoutResource {
         TypeManager tm = Framework.getService(TypeManager.class);
         String[] layoutNames = tm.getType(docType).getLayouts(mode);
 
-        JSONArray jsonLayouts = new JSONArray();
+        LayoutConversionContext ctx = new LayoutConversionContext(lang, null);
+        List<LayoutDefinitionConverter> layoutConverters = service.getLayoutConverters(conversionCategory);
+        List<WidgetDefinitionConverter> widgetConverters = service.getWidgetConverters(conversionCategory);
+
+        LayoutDefinitions layoutDefinitions = new LayoutDefinitions();
         for (String layoutName : layoutNames) {
             LayoutDefinition layoutDef = service.getLayoutDefinition(category, layoutName);
-            LayoutConversionContext ctx = new LayoutConversionContext(lang, null);
-            List<LayoutDefinitionConverter> layoutConverters = service.getLayoutConverters(conversionCategory);
+
             // pass layout converters now
             for (LayoutDefinitionConverter conv : layoutConverters) {
                 layoutDef = conv.getLayoutDefinition(layoutDef, ctx);
             }
             if (layoutDef != null) {
-                List<WidgetDefinitionConverter> widgetConverters = service.getWidgetConverters(conversionCategory);
-                JSONObject jsonLayout = JSONLayoutExporter.exportToJson(category, layoutDef, ctx, widgetConverters);
-                jsonLayouts.add(jsonLayout);
+                layoutDefinitions.add(layoutDef);
             }
         }
-        return jsonLayouts.toString(2);
+        RenderingContext renderingCtx = CtxBuilder.param(LayoutExportConstants.CATEGORY_PARAMETER, category)
+                                                  .param(LayoutExportConstants.LAYOUT_CONTEXT_PARAMETER, ctx)
+                                                  .paramList(LayoutExportConstants.WIDGET_CONVERTERS_PARAMETER,
+                                                          widgetConverters)
+                                                  .get();
+        return MarshallerHelper.objectToJson(layoutDefinitions, renderingCtx);
     }
 }

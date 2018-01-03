@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.automation.features;
 
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,8 +27,6 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
-
-import net.sf.json.JSONObject;
 
 /**
  * Constants used to generate JSON for suggestion in operations.
@@ -75,13 +75,13 @@ public class SuggestConstants {
 
     public static final String DEFAULT_KEY_SEPARATOR = "/";
 
-    public static void computeGroupLabel(final JSONObject obj, final String groupId, final String groupLabelField,
+    public static void computeGroupLabel(final Map<String, Object> obj, final String groupId, final String groupLabelField,
             final boolean hideFirstLabel) {
         String label = null;
         if (hideFirstLabel) {
             label = groupId;
         } else {
-            String groupLabelValue = obj.optString(groupLabelField);
+            String groupLabelValue = (String) obj.get(groupLabelField);
             if (StringUtils.isNotBlank(groupLabelValue)) {
                 label = groupLabelValue;
             } else {
@@ -91,17 +91,17 @@ public class SuggestConstants {
         obj.put(LABEL, label);
     }
 
-    public static void computeUserGroupIcon(final JSONObject obj, final boolean hideIcon) {
+    public static void computeUserGroupIcon(final Map<String, Object> obj, final boolean hideIcon) {
         if (obj != null) {
             if (!hideIcon) {
-                String userGroupType = obj.optString(TYPE_KEY_NAME);
-                obj.element(DISPLAY_ICON, StringUtils.isNotBlank(userGroupType)
+                String userGroupType = (String) obj.get(TYPE_KEY_NAME);
+                obj.put(DISPLAY_ICON, StringUtils.isNotBlank(userGroupType)
                         && (userGroupType.equals(USER_TYPE) || userGroupType.equals(GROUP_TYPE)));
             }
         }
     }
 
-    public static void computeUserLabel(final JSONObject obj, final String firstLabelField,
+    public static void computeUserLabel(final Map<String, Object> obj, final String firstLabelField,
             final String secondLabelField, final String thirdLabelField, final boolean hideFirstLabel,
             final boolean hideSecondLabel, final boolean hideThirdLabel, boolean displayEmailInSuggestion,
             final String userId) {
@@ -110,17 +110,17 @@ public class SuggestConstants {
 
             if (StringUtils.isNotBlank(firstLabelField) && !hideFirstLabel) {
                 // If firtLabelField given and first label not hidden
-                final String firstLabel = obj.optString(firstLabelField);
+                final String firstLabel = (String) obj.get(firstLabelField);
                 result += StringUtils.isNotBlank(firstLabel) ? firstLabel : "";
             } else if (!hideFirstLabel) {
                 // Else we use firstname
-                final String firstname = obj.optString(UserConfig.FIRSTNAME_COLUMN);
+                final String firstname = (String) obj.get(UserConfig.FIRSTNAME_COLUMN);
                 result += StringUtils.isNotBlank(firstname) ? firstname : "";
             }
 
             if (StringUtils.isNotBlank(secondLabelField) && !hideSecondLabel) {
                 // If secondLabelField given and second label not hidden
-                final String secondLabel = obj.optString(firstLabelField);
+                final String secondLabel = (String) obj.get(firstLabelField);
                 if (StringUtils.isNotBlank(secondLabel)) {
                     if (StringUtils.isNotBlank(result)) {
                         result += " ";
@@ -129,7 +129,7 @@ public class SuggestConstants {
                 }
             } else if (!hideSecondLabel) {
                 // Else we use lastname
-                final String lastname = obj.optString(UserConfig.LASTNAME_COLUMN);
+                final String lastname = (String) obj.get(UserConfig.LASTNAME_COLUMN);
                 if (StringUtils.isNotBlank(lastname)) {
                     if (StringUtils.isNotBlank(result)) {
                         result += " ";
@@ -144,7 +144,7 @@ public class SuggestConstants {
 
             if (isForceDisplayEmailInSuggestion() || (displayEmailInSuggestion && !hideThirdLabel)) {
                 if (StringUtils.isNotBlank(thirdLabelField)) {
-                    final String thirdLabel = obj.optString(thirdLabelField);
+                    final String thirdLabel = (String) obj.get(thirdLabelField);
                     if (StringUtils.isNotBlank(thirdLabel)) {
                         if (StringUtils.isNotBlank(result)) {
                             result += " ";
@@ -153,7 +153,7 @@ public class SuggestConstants {
                     }
                 } else {
                     // Else we use email
-                    String email = obj.optString(UserConfig.EMAIL_COLUMN);
+                    String email = (String) obj.get(UserConfig.EMAIL_COLUMN);
                     if (StringUtils.isNotBlank(email)) {
                         if (StringUtils.isNotBlank(result)) {
                             result += " ";

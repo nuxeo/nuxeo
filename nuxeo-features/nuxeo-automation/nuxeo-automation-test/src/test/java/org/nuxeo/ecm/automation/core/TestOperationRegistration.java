@@ -30,15 +30,14 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
-import org.nuxeo.ecm.automation.test.AutomationFeature;
+import org.nuxeo.ecm.automation.test.AutomationServerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features(AutomationFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.test", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.server",
-        "org.nuxeo.ecm.webengine.core" })
+@Features(AutomationServerFeature.class)
+@Deploy({ "org.nuxeo.ecm.automation.test", "org.nuxeo.ecm.webengine.core" })
 public class TestOperationRegistration {
 
     @Inject

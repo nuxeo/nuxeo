@@ -18,14 +18,14 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -53,8 +53,6 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 @Operation(id = GetDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Get directory entries", description = "Get the entries of a directory. This is returning a blob containing a serialized JSON array. The input document, if specified, is used as a context for a potential local configuration of the directory.", addToStudio = false)
 public class GetDirectoryEntries {
 
-    private static final Log log = LogFactory.getLog(GetDirectoryEntries.class);
-
     public static final String ID = "Directory.Entries";
 
     @Context
@@ -76,15 +74,15 @@ public class GetDirectoryEntries {
     protected String lang;
 
     @OperationMethod
-    public Blob run(DocumentModel doc) {
+    public Blob run(DocumentModel doc) throws IOException {
         Directory directory = directoryService.getDirectory(directoryName, doc);
         try (Session session = directory.getSession()) {
             DocumentModelList entries = session.getEntries();
             String schemaName = directory.getSchema();
             Schema schema = schemaManager.getSchema(schemaName);
-            JSONArray rows = new JSONArray();
+            List<Map<String, Object>> rows = new ArrayList<>();
             for (DocumentModel entry : entries) {
-                JSONObject obj = new JSONObject();
+                Map<String, Object> obj = new LinkedHashMap<>();
                 for (Field field : schema.getFields()) {
                     QName fieldName = field.getName();
                     String key = fieldName.getLocalName();
@@ -92,16 +90,16 @@ public class GetDirectoryEntries {
                     if (translateLabels && "label".equals(key)) {
                         value = translate((String) value);
                     }
-                    obj.element(key, value);
+                    obj.put(key, value);
                 }
                 rows.add(obj);
             }
-            return Blobs.createJSONBlob(rows.toString());
+            return Blobs.createJSONBlobFromValue(rows);
         }
     }
 
     @OperationMethod
-    public Blob run() {
+    public Blob run() throws IOException {
         return run(null);
     }
 

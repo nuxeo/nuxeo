@@ -18,42 +18,50 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.export;
 
+import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
+import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+
 import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
-
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriter;
+import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
-import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * @since 6.0
+ * @since 10.1 converted to a marshaller
  */
-@Provider
-@Produces({ "application/json", "text/plain" })
-public class LayoutTypeDefinitionJsonWriter implements MessageBodyWriter<LayoutTypeDefinition> {
+@Setup(mode = SINGLETON, priority = REFERENCE)
+public class LayoutTypeDefinitionJsonWriter extends AbstractJsonWriter<LayoutTypeDefinition> {
 
     @Override
-    public long getSize(LayoutTypeDefinition arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
-        return -1;
-    }
+    public void write(LayoutTypeDefinition entity, JsonGenerator jg) throws IOException {
+        jg.writeStartObject();
+        jg.writeStringField("name", entity.getName());
 
-    @Override
-    public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2, MediaType arg3) {
-        return LayoutTypeDefinition.class.isAssignableFrom(arg0);
-    }
+        List<String> aliases = entity.getAliases();
+        if (CollectionUtils.isNotEmpty(aliases)) {
+            writeSerializableListField("aliases", aliases, jg);
+        }
 
-    @Override
-    public void writeTo(LayoutTypeDefinition arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4,
-            MultivaluedMap<String, Object> arg5, OutputStream arg6) throws IOException, WebApplicationException {
-        JSONLayoutExporter.exportLayoutType(arg0, arg6);
+        Map<String, String> templates = entity.getTemplates();
+        if (MapUtils.isNotEmpty(templates)) {
+            writeSerializableMapField("templates", new TreeMap<>(templates), jg);
+        }
+
+        LayoutTypeConfiguration configuration = entity.getConfiguration();
+        if (configuration != null) {
+            writeEntityField("configuration", configuration, jg);
+        }
+        jg.writeEndObject();
     }
 
 }

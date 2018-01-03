@@ -18,10 +18,10 @@
  */
 package org.nuxeo.ecm.automation.task;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
@@ -64,15 +63,14 @@ public class GetUserTasks {
     protected TaskService taskService;
 
     @OperationMethod
-    public Blob run() {
+    public Blob run() throws IOException {
         List<Task> tasks = taskService.getCurrentTaskInstances(repo);
         if (tasks == null) {
             return null;
         }
-        JSONArray rows = new JSONArray();
+        List<Map<String, Object>> rows = new ArrayList<>();
         for (Task task : tasks) {
-            DocumentModel doc = null;
-            doc = taskService.getTargetDocumentModel(task, repo);
+            DocumentModel doc = taskService.getTargetDocumentModel(task, repo);
             if (doc == null) {
                 log.warn(String.format("User '%s' has a task of type '%s' on an " + "unexisting or invisible document",
                         principal().getName(), task.getName()));
@@ -80,10 +78,10 @@ public class GetUserTasks {
             }
 
             DashBoardItem item = new DashBoardItemImpl(task, doc, null);
-            JSONObject obj = item.asJSON();
+            Map<String, Object> obj = item.asMap();
             rows.add(obj);
         }
-        return Blobs.createJSONBlob(rows.toString());
+        return Blobs.createJSONBlobFromValue(rows);
     }
 
     protected NuxeoPrincipal principal() {

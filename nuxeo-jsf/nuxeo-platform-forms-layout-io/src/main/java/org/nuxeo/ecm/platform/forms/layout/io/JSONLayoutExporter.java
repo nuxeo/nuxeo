@@ -83,10 +83,17 @@ public class JSONLayoutExporter {
 
     public static final String ENCODED_VALUES_ENCODING = "UTF-8";
 
-    public static String encode(JSONObject jsonObject) throws UnsupportedEncodingException {
-        String json = jsonObject.toString();
+    /**
+     * @since 10.1
+     */
+    public static String encode(String json) throws UnsupportedEncodingException {
         String encodedValues = Base64.encodeBytes(json.getBytes(), Base64.GZIP | Base64.DONT_BREAK_LINES);
         return URLEncoder.encode(encodedValues, ENCODED_VALUES_ENCODING);
+    }
+
+    public static String encode(JSONObject jsonObject) throws UnsupportedEncodingException {
+        String json = jsonObject.toString();
+        return encode(json);
     }
 
     public static JSONObject decode(String json) throws UnsupportedEncodingException {

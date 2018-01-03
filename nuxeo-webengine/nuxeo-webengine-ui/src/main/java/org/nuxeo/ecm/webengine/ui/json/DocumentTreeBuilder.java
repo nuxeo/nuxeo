@@ -22,8 +22,8 @@
 package org.nuxeo.ecm.webengine.ui.json;
 
 import java.util.Collection;
-
-import net.sf.json.JSONObject;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,9 +54,10 @@ public class DocumentTreeBuilder extends JQueryTreeBuilder<DocumentModel> {
     }
 
     @Override
-    protected JSONObject toJson(DocumentModel obj) {
-        JSONObject json = new JSONObject();
-        json.element("text", obj.getName()).element("id", obj.getPathAsString());
+    protected Map<String, Object> toJson(DocumentModel obj) {
+        Map<String, Object> json = new LinkedHashMap<>();
+        json.put("text", obj.getName());
+        json.put("id", obj.getPathAsString());
         return json;
     }
 

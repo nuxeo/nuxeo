@@ -19,13 +19,14 @@
  */
 package org.nuxeo.ecm.automation.core.operations.management;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import java.util.Map;
 
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -59,11 +60,11 @@ public class GetCounters {
     protected StringList counterNames;
 
     @OperationMethod
-    public Blob run() {
+    public Blob run() throws IOException {
 
         CounterManager cm = Framework.getService(CounterManager.class);
 
-        JSONObject collection = new JSONObject();
+        Map<String, Object> collection = new LinkedHashMap<>();
 
         Principal principal = ctx.getPrincipal();
         if (principal instanceof NuxeoPrincipal) {
@@ -74,17 +75,15 @@ public class GetCounters {
                     CounterHistoryStack stack = cm.getCounterHistory(counterName);
 
                     // copy and reverse the list
-                    List<long[]> valueList = new ArrayList<long[]>(stack.getAsList());
+                    List<long[]> valueList = new ArrayList<>(stack.getAsList());
                     Collections.reverse(valueList);
 
-                    JSONObject counter = new JSONObject();
-
                     // bare values [ [t0,v0], [t1,v1] ...]
-                    JSONArray valueSerie = new JSONArray();
+                    List<List<Number>> valueSerie = new ArrayList<>();
                     // delta values [ [t1,v1-v0], [t2,v2-v3] ...]
-                    JSONArray deltaSerie = new JSONArray();
+                    List<List<Number>> deltaSerie = new ArrayList<>();
                     // speed values [ [t1,v1-v0/t1-t0], ...]
-                    JSONArray speedSerie = new JSONArray();
+                    List<List<Number>> speedSerie = new ArrayList<>();
 
                     float lastTS = 0;
                     float lastValue = 0;
@@ -95,35 +94,30 @@ public class GetCounters {
                         long ts = values[0];
                         float t = (now - ts) / 1000;
                         float value = values[1];
-
-                        JSONArray valueArray = new JSONArray();
-                        JSONArray deltaArray = new JSONArray();
-                        JSONArray speedArray = new JSONArray();
+                        Float tFloat = Float.valueOf(ts);
 
                         // bare values
-                        valueArray.add(ts);
-                        valueArray.add(value);
-                        valueSerie.add(valueArray);
+                        Float bareValue = Float.valueOf(value);
+                        valueSerie.add(Arrays.asList(tFloat, bareValue));
 
                         // delta values
-                        deltaArray.add(ts);
-                        deltaArray.add(value - lastValue);
-                        deltaSerie.add(deltaArray);
+                        Float deltaValue = Float.valueOf(value - lastValue);
+                        deltaSerie.add(Arrays.asList(tFloat, deltaValue));
 
                         if (lastTS > 0) {
                             // speed values
-                            speedArray.add(ts);
                             float tdelta = lastTS - t;
                             if (tdelta == 0) {
                                 tdelta = 1;
                             }
-                            speedArray.add(60 * (value - lastValue) / (tdelta));
-                            speedSerie.add(speedArray);
+                            Float speedValue = Float.valueOf(60 * (value - lastValue) / (tdelta));
+                            speedSerie.add(Arrays.asList(tFloat, speedValue));
                         }
                         lastTS = t;
                         lastValue = value;
                     }
 
+                    Map<String, Object> counter = new LinkedHashMap<>();
                     counter.put("values", valueSerie);
                     counter.put("deltas", deltaSerie);
                     counter.put("speed", speedSerie);
@@ -133,7 +127,7 @@ public class GetCounters {
             }
         }
 
-        return Blobs.createJSONBlob(collection.toString());
+        return Blobs.createJSONBlobFromValue(collection);
     }
 
 }

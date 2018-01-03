@@ -233,7 +233,7 @@ public interface RenderingContext {
      * @param values The parameter values.
      * @since 7.2
      */
-    public void addParameterListValues(String name, List<Object> values);
+    public void addParameterListValues(String name, List<?> values);
 
     /**
      * {@link RenderingContext} builder.
@@ -277,7 +277,7 @@ public interface RenderingContext {
             return builder.paramValues(name, values);
         }
 
-        public static RenderingContextBuilder paramList(String name, List<Object> values) {
+        public static RenderingContextBuilder paramList(String name, List<?> values) {
             RenderingContextBuilder builder = new RenderingContextBuilder();
             return builder.paramList(name, values);
         }

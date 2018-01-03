@@ -20,8 +20,7 @@ package org.nuxeo.ecm.platform.task.dashboard;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Locale;
-
-import net.sf.json.JSONObject;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -134,11 +133,9 @@ public interface DashBoardItem extends Serializable {
     String getI18nDirective();
 
     /**
-     * Returns JSON representation of the item
-     *
-     * @return
+     * Returns JSON representation of the item as map
      */
-    JSONObject asJSON();
+    Map<String, Object> asMap();
 
     /**
      * Return the link url to the target Document

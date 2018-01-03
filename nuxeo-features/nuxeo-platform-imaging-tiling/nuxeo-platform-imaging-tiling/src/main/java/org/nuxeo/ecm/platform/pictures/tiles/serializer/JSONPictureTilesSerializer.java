@@ -21,9 +21,14 @@
  */
 package org.nuxeo.ecm.platform.pictures.tiles.serializer;
 
-import net.sf.json.JSONObject;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * JSON serializer for PictureTiles structure
@@ -32,15 +37,13 @@ import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
  */
 public class JSONPictureTilesSerializer implements PictureTilesSerializer {
 
+    @Override
     public String serialize(PictureTiles tiles) {
 
-        JSONObject mainMap = new JSONObject();
-        JSONObject tileInfo = new JSONObject();
-        JSONObject orgImgInfo = new JSONObject();
-        JSONObject srcImgInfo = new JSONObject();
-        JSONObject otherInfo = new JSONObject();
+        Map<String, Object> mainMap = new LinkedHashMap<>();
 
         // tileInfo
+        Map<String, Object> tileInfo = new LinkedHashMap<>();
         tileInfo.put("maxtiles", tiles.getMaxTiles());
         tileInfo.put("xtiles", tiles.getXTiles());
         tileInfo.put("ytiles", tiles.getYTiles());
@@ -50,24 +53,32 @@ public class JSONPictureTilesSerializer implements PictureTilesSerializer {
         mainMap.put("tileInfo", tileInfo);
 
         // orginial Image info
+        Map<String, Object> orgImgInfo = new LinkedHashMap<>();
         orgImgInfo.put("format", tiles.getOriginalImageInfo().getFormat());
         orgImgInfo.put("width", tiles.getOriginalImageInfo().getWidth());
         orgImgInfo.put("height", tiles.getOriginalImageInfo().getHeight());
         mainMap.put("originalImage", orgImgInfo);
 
         // src Image info
+        Map<String, Object> srcImgInfo = new LinkedHashMap<>();
         srcImgInfo.put("format", tiles.getSourceImageInfo().getFormat());
         srcImgInfo.put("width", tiles.getSourceImageInfo().getWidth());
         srcImgInfo.put("height", tiles.getSourceImageInfo().getHeight());
         mainMap.put("srcImage", srcImgInfo);
 
         // misc tiler info
+        Map<String, Object> otherInfo = new LinkedHashMap<>();
         for (String k : tiles.getInfo().keySet()) {
             otherInfo.put(k, tiles.getInfo().get(k));
         }
         mainMap.put("additionalInfo", otherInfo);
 
-        return mainMap.toString(1);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(mainMap);
+        } catch (JsonProcessingException e) {
+            throw new NuxeoException("Unable to serialize tile", e);
+        }
     }
 
 }
