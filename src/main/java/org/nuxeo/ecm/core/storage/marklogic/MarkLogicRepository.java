@@ -49,7 +49,7 @@ import java.util.stream.StreamSupport;
 import javax.net.ssl.SSLContext;
 import javax.resource.spi.ConnectionManager;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CursorService;

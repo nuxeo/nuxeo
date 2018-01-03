@@ -43,8 +43,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
@@ -1327,7 +1327,7 @@ class MarkLogicQueryBuilder {
         }
 
         default String serializeValue(Object value) {
-            return StringEscapeUtils.escapeXml(MarkLogicStateSerializer.serializeValue(value));
+            return StringEscapeUtils.escapeXml10(MarkLogicStateSerializer.serializeValue(value));
         }
 
     }

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
@@ -100,7 +100,7 @@ class MarkLogicQuerySimpleBuilder {
 
     private String serializeValues(Function<String, String> format, Object... values) {
         Function<Object, String> serializeValue = MarkLogicStateSerializer::serializeValue;
-        Function<String, String> escapeXml = StringEscapeUtils::escapeXml;
+        Function<String, String> escapeXml = StringEscapeUtils::escapeXml10;
         Function<Object, String> serializer = serializeValue.andThen(escapeXml).andThen(format);
         if (values.length == 1) {
             return serializer.apply(values[0]);
