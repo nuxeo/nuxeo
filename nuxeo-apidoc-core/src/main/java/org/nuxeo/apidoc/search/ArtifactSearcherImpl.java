@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.text.StrBuilder;
+import org.apache.commons.lang3.text.StrBuilder;
 import org.nuxeo.apidoc.adapters.BaseNuxeoArtifactDocAdapter;
 import org.nuxeo.apidoc.adapters.BundleGroupDocAdapter;
 import org.nuxeo.apidoc.adapters.BundleInfoDocAdapter;

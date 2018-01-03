@@ -19,7 +19,7 @@
 
 package org.nuxeo.apidoc.listener;
 
-import static org.apache.commons.lang.BooleanUtils.isFalse;
+import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.nuxeo.apidoc.snapshot.DistributionSnapshot.PROP_LATEST_FT;
 import static org.nuxeo.apidoc.snapshot.DistributionSnapshot.PROP_LATEST_LTS;
 import static org.nuxeo.apidoc.snapshot.DistributionSnapshot.TYPE_NAME;

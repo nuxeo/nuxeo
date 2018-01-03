@@ -18,7 +18,7 @@
  */
 package org.nuxeo.apidoc.documentation;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class ContributionItem {
 
@@ -45,7 +45,7 @@ public class ContributionItem {
         sb.append("</p>");
 
         sb.append("\n<code>");
-        sb.append(StringEscapeUtils.escapeHtml(xml));
+        sb.append(StringEscapeUtils.escapeHtml4(xml));
         sb.append("</code>");
 
         sb.append("</div>");
@@ -70,7 +70,7 @@ public class ContributionItem {
     }
 
     public String getXml() {
-        return StringEscapeUtils.escapeHtml(xml);
+        return StringEscapeUtils.escapeHtml4(xml);
     }
 
     public String getRawXml() {

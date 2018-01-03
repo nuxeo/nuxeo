@@ -20,7 +20,7 @@ package org.nuxeo.apidoc.documentation;
 
 import java.util.LinkedList;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerService;
 import org.nuxeo.runtime.api.Framework;
 
