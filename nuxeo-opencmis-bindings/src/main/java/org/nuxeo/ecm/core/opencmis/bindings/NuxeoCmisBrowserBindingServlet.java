@@ -41,7 +41,7 @@ import org.apache.chemistry.opencmis.server.impl.browser.BrowserCallContextImpl;
 import org.apache.chemistry.opencmis.server.impl.browser.CmisBrowserBindingServlet;
 import org.apache.chemistry.opencmis.server.shared.Dispatcher;
 import org.apache.chemistry.opencmis.server.shared.ExceptionHelper;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisErrorHelper.ErrorInfo;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.slf4j.Logger;

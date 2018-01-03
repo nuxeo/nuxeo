@@ -32,8 +32,8 @@ import org.apache.chemistry.opencmis.server.impl.atompub.AbstractAtomPubServiceC
 import org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet;
 import org.apache.chemistry.opencmis.server.shared.Dispatcher;
 import org.apache.chemistry.opencmis.server.shared.ExceptionHelper;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisErrorHelper.ErrorInfo;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.slf4j.Logger;
@@ -95,7 +95,7 @@ public class NuxeoCmisAtomPubServlet extends CmisAtomPubServlet {
                     + "HR {color:#3c78b5;height:1px;}--></style></head><body>");
             pw.print("<h1>HTTP Status " + errorInfo.statusCode + " - <!--exception-->" + errorInfo.exceptionName
                     + "<!--/exception--></h1>");
-            pw.print("<p><!--message-->" + StringEscapeUtils.escapeHtml(errorInfo.message) + "<!--/message--></p>");
+            pw.print("<p><!--message-->" + StringEscapeUtils.escapeHtml4(errorInfo.message) + "<!--/message--></p>");
 
             String st = ExceptionHelper.getStacktraceAsString(ex);
             if (st != null) {

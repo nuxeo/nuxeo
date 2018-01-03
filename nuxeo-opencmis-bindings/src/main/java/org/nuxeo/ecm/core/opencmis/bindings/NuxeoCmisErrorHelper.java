@@ -21,7 +21,7 @@
  */
 package org.nuxeo.ecm.core.opencmis.bindings;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
