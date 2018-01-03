@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.pdf.service.watermark;
 
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 public class WatermarkProperties {
