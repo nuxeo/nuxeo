@@ -18,7 +18,7 @@
  */
 package org.nuxeo.diff.pictures;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;

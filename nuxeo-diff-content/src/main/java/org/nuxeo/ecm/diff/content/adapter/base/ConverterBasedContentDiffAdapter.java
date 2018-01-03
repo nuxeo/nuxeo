@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -214,11 +214,10 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
 
     protected Blob getHtmlStringBlob(Blob blob) throws ContentDiffException {
         try {
-            Blob htmlStringBlob = Blobs.createBlob(StringEscapeUtils
-                                                                    .escapeHtml(
-                                                                            new String(blob.getByteArray(), "UTF-8"))
-                                                                    .replace("\r\n", "\n")
-                                                                    .replace("\n", "<br />"));
+            String htmlString = StringEscapeUtils.escapeHtml4(new String(blob.getByteArray(), "UTF-8"))
+                                                 .replace("\r\n", "\n")
+                                                 .replace("\n", "<br />");
+            Blob htmlStringBlob = Blobs.createBlob(htmlString);
             htmlStringBlob.setFilename(blob.getFilename());
             return htmlStringBlob;
         } catch (IOException ioe) {

@@ -29,8 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -351,17 +351,17 @@ public class DiffPictures {
         html = html.replace(TMPL_CONTEXT_PATH, VirtualHostHelper.getContextPathProperty());
         html = html.replace(TMPL_ACTION, "diff");
         html = html.replace(TMPL_LEFT_DOC_ID,
-                StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(leftDocId)));
+                StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(leftDocId)));
         html = html.replace(TMPL_LEFT_DOC_LABEL,
-                StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(leftLabel)));
+                StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(leftLabel)));
         html = html.replace(TMPL_RIGHT_DOC_ID,
-                StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(rightDocId)));
+                StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(rightDocId)));
         html = html.replace(TMPL_RIGHT_DOC_LABEL,
-                StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(rightLabel)));
+                StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(rightLabel)));
         if (StringUtils.isBlank(xpath) || xpath.toLowerCase().equals("default")) {
             xpath = DEFAULT_XPATH;
         }
-        html = html.replace(TMPL_XPATH, StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(xpath)));
+        html = html.replace(TMPL_XPATH, StringEscapeUtils.escapeEcmaScript(StringEscapeUtils.escapeHtml4(xpath)));
         // dc:modified can be null... When running the Unit Tests for example
         String lastModification;
         Calendar cal = (Calendar) rightDoc.getPropertyValue("dc:modified");
