@@ -62,7 +62,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.download.DownloadService;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.ecm.user.center.UserCenterViewManager;
@@ -121,10 +120,6 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     public static final String OSX_PLATFORM = "osx";
 
     private static final String DRIVE_METADATA_VIEW = "view_drive_metadata";
-
-    @SuppressWarnings("hiding")
-    @In(create = true, required = false)
-    protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
