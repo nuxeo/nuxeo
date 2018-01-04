@@ -43,8 +43,9 @@ public class RenderingHelper {
 
     public RenderingEngine getRenderingEngine() {
         if (engine == null) {
-            engine = new FreemarkerEngine();
-            engine.setResourceLocator(new CLResourceLocator());
+            FreemarkerEngine fme = new FreemarkerEngine();
+            fme.setResourceLocator(new CLResourceLocator());
+            engine = fme;
         }
         return engine;
     }

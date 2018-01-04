@@ -67,8 +67,6 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
 
     private static final long serialVersionUID = 1L;
 
-    protected List<DocumentModel> currentPageDocuments;
-
     protected HashMap<String, Aggregate<? extends Bucket>> currentAggregates;
 
     protected Long maxResultWindow;

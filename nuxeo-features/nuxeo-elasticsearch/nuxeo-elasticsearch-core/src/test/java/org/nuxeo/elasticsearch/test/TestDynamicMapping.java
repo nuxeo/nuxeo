@@ -24,11 +24,9 @@ import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -43,12 +41,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @LocalDeploy({ "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:elasticsearch-test-dynamic-mapping-contrib.xml" })
 public class TestDynamicMapping extends TestMapping {
-
-    @Inject
-    protected CoreSession session;
-
-    @Inject
-    protected ElasticSearchService ess;
 
     @Inject
     ElasticSearchAdmin esa;

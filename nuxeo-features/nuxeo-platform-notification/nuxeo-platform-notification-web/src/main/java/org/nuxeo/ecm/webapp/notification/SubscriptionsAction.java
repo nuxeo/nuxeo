@@ -39,7 +39,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
-import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -47,10 +46,8 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * Handles the subscriptions page.
@@ -64,9 +61,6 @@ public class SubscriptionsAction extends InputController implements Serializable
     private static final long serialVersionUID = -2440187703248677446L;
 
     private static final Log log = LogFactory.getLog(SubscriptionsAction.class);
-
-    @In
-    protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -82,12 +76,6 @@ public class SubscriptionsAction extends InputController implements Serializable
 
     @In(create = true)
     protected transient NotificationManager notificationManager;
-
-    @In(create = true, required = false)
-    protected transient FacesMessages facesMessages;
-
-    @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
 
     public static final String CONFIRM_FOLLOW = "label.subscriptions.follow.confirm";
 

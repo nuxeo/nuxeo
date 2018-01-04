@@ -349,7 +349,7 @@ public class LDAPServerDescriptor {
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof LdapEntryDescriptor) {
-                return url.equals(obj);
+                return url.equals(((LdapEntryDescriptor) obj).url);
             }
             return false;
         }

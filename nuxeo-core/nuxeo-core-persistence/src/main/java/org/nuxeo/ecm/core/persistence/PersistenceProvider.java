@@ -33,7 +33,7 @@ public class PersistenceProvider {
 
     protected static final Log log = LogFactory.getLog(PersistenceProvider.class);
 
-    protected EntityManagerFactory emf;
+    protected volatile EntityManagerFactory emf;
 
     protected final EntityManagerFactoryProvider emfProvider;
 

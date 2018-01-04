@@ -185,11 +185,12 @@ public class ModuleImpl implements Module {
         if (typeReg == null) { // create type registry if not already created
             synchronized (typeLock) {
                 if (typeReg == null) {
-                    typeReg = createTypeRegistry();
+                    TypeRegistry registry = createTypeRegistry();
                     if (configuration.rootType != null) {
                         // compatibility code for avoiding NPE
-                        rootType = typeReg.getType(configuration.rootType);
+                        rootType = registry.getType(configuration.rootType);
                     }
+                    typeReg = registry;
                 }
             }
         }

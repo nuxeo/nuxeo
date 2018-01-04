@@ -50,7 +50,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.action.TypesTool;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
@@ -81,9 +80,6 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
 
     @In(required = false)
     protected DocumentModel changeableDocument;
-
-    @In(required = false, create = true)
-    protected transient NavigationContext navigationContext;
 
     // cached list of templates
     private DocumentModelList templates;

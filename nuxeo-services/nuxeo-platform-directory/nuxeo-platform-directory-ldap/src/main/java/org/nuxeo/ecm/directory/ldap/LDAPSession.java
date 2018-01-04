@@ -68,7 +68,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
-import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
@@ -103,8 +102,6 @@ public class LDAPSession extends BaseSession {
     protected final Set<String> emptySet = Collections.emptySet();
 
     protected final String sid;
-
-    protected SubstringMatchType substringMatchType;
 
     protected final String rdnAttribute;
 

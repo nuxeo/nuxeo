@@ -49,7 +49,6 @@ import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
@@ -220,13 +219,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
 
     protected ErrorHandler getHandler(Throwable t) {
         Throwable throwable = ExceptionHelper.unwrapException(t);
-        String className = null;
-        if (throwable instanceof WrappedException) {
-            WrappedException wrappedException = (WrappedException) throwable;
-            className = wrappedException.getClassName();
-        } else {
-            className = throwable.getClass().getName();
-        }
+        String className = throwable.getClass().getName();
         for (ErrorHandler handler : parameters.getHandlers()) {
             if (handler.getError() != null && className.matches(handler.getError())) {
                 return handler;

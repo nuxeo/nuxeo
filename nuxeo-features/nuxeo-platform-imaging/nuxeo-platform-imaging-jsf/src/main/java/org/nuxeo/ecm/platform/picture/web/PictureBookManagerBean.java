@@ -56,7 +56,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureBlobHolder;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -96,9 +95,6 @@ public class PictureBookManagerBean extends InputController implements PictureBo
     protected List<SelectItem> selectItems;
 
     protected String[] selectedViews = { "OriginalJpeg" };
-
-    @In(create = true)
-    protected transient NavigationContext navigationContext;
 
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;

@@ -26,14 +26,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsConstants;
 import org.nuxeo.ecm.platform.annotations.repository.AbstractRepositoryTestCase;
@@ -49,9 +46,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class AnnotatedEventListenerTest extends AbstractRepositoryTestCase {
 
     private static final String HTTP_LOCALHOST_8080_NUXEO = "http://localhost:8080/nuxeo";
-
-    @Inject
-    protected EventService eventService;
 
     @Test
     public void testEventLister() throws Exception {

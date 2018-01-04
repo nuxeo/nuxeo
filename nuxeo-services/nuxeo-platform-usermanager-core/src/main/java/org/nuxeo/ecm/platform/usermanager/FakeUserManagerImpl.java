@@ -158,6 +158,10 @@ public class FakeUserManagerImpl implements UserManager {
         return userSearchFields.keySet();
     }
 
+    public void setGroupSearchFields(Map<String, MatchType> groupSearchFields) {
+        this.groupSearchFields = groupSearchFields;
+    }
+
     @Override
     public Set<String> getGroupSearchFields() {
         return groupSearchFields.keySet();
@@ -317,6 +321,7 @@ public class FakeUserManagerImpl implements UserManager {
         setGroupMembersField(descriptor.groupMembersField);
         setGroupSubGroupsField(descriptor.groupSubGroupsField);
         setGroupParentGroupsField(descriptor.groupParentGroupsField);
+        setGroupSearchFields(descriptor.groupSearchFields);
         setAnonymousUser(descriptor.anonymousUser);
         setVirtualUsers(descriptor.virtualUsers);
     }

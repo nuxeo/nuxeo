@@ -62,7 +62,6 @@ import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.query.api.PageSelection;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -81,9 +80,6 @@ public class SecurityActionsBean extends InputController implements SecurityActi
     private static final long serialVersionUID = -7190826911734958662L;
 
     private static final Log log = LogFactory.getLog(SecurityActionsBean.class);
-
-    @In(create = true)
-    protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;

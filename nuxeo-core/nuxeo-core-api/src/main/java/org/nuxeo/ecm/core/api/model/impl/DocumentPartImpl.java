@@ -27,7 +27,6 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyDiff;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -109,15 +108,6 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
     @Override
     public boolean getClearComplexPropertyBeforeSet() {
         return clearComplexPropertyBeforeSet;
-    }
-
-    @Override
-    public PropertyDiff exportDiff() {
-        return null;
-    }
-
-    @Override
-    public void importDiff(PropertyDiff diff) {
     }
 
     public boolean isSameAs(DocumentPart dp) {

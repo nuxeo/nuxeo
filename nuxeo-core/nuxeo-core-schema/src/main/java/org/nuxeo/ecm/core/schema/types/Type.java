@@ -60,8 +60,6 @@ import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
  */
 public interface Type extends Serializable {
 
-    AnyType ANY = AnyType.INSTANCE;
-
     /**
      * Gets the name of this type.
      *

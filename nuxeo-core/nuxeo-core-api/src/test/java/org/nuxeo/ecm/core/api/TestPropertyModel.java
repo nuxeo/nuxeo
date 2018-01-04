@@ -111,13 +111,11 @@ public class TestPropertyModel extends NXRuntimeTestCase {
     private class FileName implements Serializable {
         private static final long serialVersionUID = -3238719896844696496L;
 
-        String name;
-
         String extension;
 
         HashMap<String, Serializable> getMap() {
             HashMap<String, Serializable> map = new HashMap<>();
-            map.put("name", name);
+            map.put("name", null);
             map.put("extension", extension);
             return map;
         }

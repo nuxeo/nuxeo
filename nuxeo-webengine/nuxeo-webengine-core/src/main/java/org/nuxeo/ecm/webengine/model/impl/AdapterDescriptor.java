@@ -100,7 +100,7 @@ public class AdapterDescriptor extends TypeDescriptor {
         if (obj == null) {
             return false;
         }
-        if (obj instanceof AdapterDescriptor) {
+        if (obj.getClass() == AdapterDescriptor.class) { // don't use instanceof in an overridden equals() method
             AdapterDescriptor td = (AdapterDescriptor) obj;
             return type.equals(td.type) && Utils.streq(fragment, td.fragment);
         }

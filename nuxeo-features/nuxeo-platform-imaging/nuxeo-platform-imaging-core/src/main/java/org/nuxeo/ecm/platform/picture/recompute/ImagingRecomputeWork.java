@@ -30,8 +30,6 @@ public class ImagingRecomputeWork extends AbstractWork {
 
     protected final static int BATCH_SIZE = 10;
 
-    protected String repositoryName;
-
     protected String nxqlQuery;
 
     public ImagingRecomputeWork(String repositoryName, String nxqlQuery) {

@@ -173,8 +173,11 @@ public class DefaultAuditBulker implements AuditBulkerMBean, AuditBulker {
                     Thread.currentThread().interrupt();
                     return;
                 } finally {
-                    isEmpty.signalAll();
-                    lock.unlock();
+                    try {
+                        isEmpty.signalAll();
+                    } finally {
+                        lock.unlock();
+                    }
                 }
             }
             log.info("bulk audit logger stopped");
