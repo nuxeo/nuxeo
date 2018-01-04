@@ -114,17 +114,17 @@ pre {
             <table border="1">
             <#list layoutDefinition.getRows() as rowDef>
               <tr>
-                 <#list rowDef.getWidgets() as widgetName>
+                 <#list rowDef.getWidgetReferences() as widgetRef>
                  <td>
-                   <#if layoutDefinition.getWidgetDefinition(widgetName)==null>
-                    ${widgetName}
+                   <#if layoutDefinition.getWidgetDefinition(widgetRef.getName())==null>
+                    ${widgetRef.getName()}
                    <#else>
-                    <A href="${baseURL}../widget-types/?widgetType=${layoutDefinition.getWidgetDefinition(widgetName).getType()}">${widgetName}</A>
+                    <A href="${baseURL}../widget-types/?widgetType=${layoutDefinition.getWidgetDefinition(widgetRef.getName()).getType()}">${widgetRef.getName()}</A>
                    </#if>
                  </td>
                  </#list>
-                 <#if rowDef.getWidgets()?size < layoutDefinition.getColumns()>
-                 <td colspan="${layoutDefinition.getColumns() - rowDef.getWidgets()?size}"> &nbsp; </td>
+                 <#if rowDef.getWidgetReferences()?size < layoutDefinition.getColumns()>
+                 <td colspan="${layoutDefinition.getColumns() - rowDef.getWidgetReferences()?size}"> &nbsp; </td>
                  </#if>
               </tr>
             </#list>

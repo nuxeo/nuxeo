@@ -1,0 +1,451 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layout.LayoutService.testContrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgets">
+
+    <widget name="required_property" type="text">
+      <categories>
+        <category>widgetTypeConfiguration</category>
+      </categories>
+      <labels>
+        <label mode="any">Required</label>
+      </labels>
+      <fields>
+        <field schema="foo">bar</field>
+      </fields>
+      <renderingInfos mode="any">
+        <renderingInfo level="error">
+          <translated>false</translated>
+          <message>This is my widget rendering message</message>
+        </renderingInfo>
+      </renderingInfos>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="test">
+      <aliases>
+        <alias>testAlias</alias>
+      </aliases>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.export.DummyWidgetTypeHandler
+      </handler-class>
+      <property name="foo1">bar1</property>
+      <property name="foo2">bar2</property>
+      <configuration>
+        <title>Test widget type</title>
+        <description>This is a test widget type</description>
+        <demo id="test" previewEnabled="true" />
+        <sinceVersion>5.4</sinceVersion>
+        <deprecatedVersion>5.6</deprecatedVersion>
+        <confProperties>
+          <property name="confProp">foo</property>
+          <property name="sortProperty">dc:title</property>
+        </confProperties>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <handlingLabels>true</handlingLabels>
+        <supportedControls>
+          <control>requireSurroundingForm</control>
+          <control>handlingLabels</control>
+        </supportedControls>
+        <acceptingSubWidgets>true</acceptingSubWidgets>
+        <containingForm>true</containingForm>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+            <type>path</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>string</type>
+          </defaultTypes>
+          <defaultConfiguration>
+            <field>dc:title</field>
+            <field>data.ref</field>
+          </defaultConfiguration>
+          <!-- this is just a test layout, configuration should match default values
+            for fields -->
+          <layouts mode="any">
+            <layout>
+              <rows>
+                <row>
+                  <widget>field_0</widget>
+                </row>
+              </rows>
+              <widget name="field_0" type="selectOneResource">
+                <labels>
+                  <label mode="any">The widget field binding</label>
+                </labels>
+                <properties mode="any">
+                  <property name="resourceName">fields</property>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
+        </fields>
+        <categories>
+          <category>foo</category>
+          <category>bar</category>
+        </categories>
+        <controls>
+          <defaultValues mode="any">
+            <control name="handlingLabels">false</control>
+          </defaultValues>
+        </controls>
+        <properties>
+          <defaultValues mode="any">
+            <property name="rendered">true</property>
+          </defaultValues>
+          <layouts mode="any">
+            <layout>
+              <rows>
+                <row>
+                  <widget category="widgetTypeConfiguration">
+                    required_property
+                  </widget>
+                </row>
+              </rows>
+              <renderingInfos mode="any">
+                <renderingInfo level="error">
+                  <translated>false</translated>
+                  <message>This is my layout rendering message</message>
+                </renderingInfo>
+              </renderingInfos>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout>
+              <rows>
+                <row>
+                  <widget>rendered_property</widget>
+                </row>
+                <row name="selection_property_row">
+                  <widget>selection_property</widget>
+                </row>
+                <row>
+                  <widget>subwidgets</widget>
+                </row>
+                <row>
+                  <widget>subwidgetRefs</widget>
+                </row>
+              </rows>
+              <widget name="rendered_property" type="text">
+                <labels>
+                  <label mode="any">Rendered</label>
+                </labels>
+                <fields>
+                  <field schema="foo">bar</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">view</mode>
+                </widgetModes>
+                <controls mode="any">
+                  <control name="requireSurroundingForm">true</control>
+                </controls>
+                <subWidgets>
+                  <widget name="subwidget" type="text">
+                    <labels>
+                      <label mode="any">subwidget label</label>
+                    </labels>
+                    <fields>
+                      <field schema="foo">bar</field>
+                    </fields>
+                  </widget>
+                </subWidgets>
+              </widget>
+              <widget name="selection_property" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Selection</label>
+                </labels>
+                <fields>
+                  <field schema="foo2">bar2</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="foo" itemValue="bar" />
+                  <option value="#{currentDocument}" var="doc"
+                    itemLabel="#{doc.dc.title}" itemValue="#{doc.id}"
+                    itemDisabled="false" itemRendered="true" />
+                  <options value="#{myBean.myList}" var="item"
+                    itemValue="#{item.id}" itemLabel="#{item.title}" />
+                  <options value="#{documentList}" var="doc" itemValue="#{doc.id}"
+                    itemLabel="#{doc.dc.title}" itemDisabled="false"
+                    itemRendered="true" ordering="label" caseSensitive="true" />
+                  <option itemLabel="foo2" itemValue="bar2">
+                    <itemLabel locale="en">foo2_eng</itemLabel>
+                    <itemLabel locale="fr">foo2_fr</itemLabel>
+                  </option>
+                </selectOptions>
+              </widget>
+              <widget name="subwidgets" type="test">
+                <labels>
+                  <label mode="any">Selection</label>
+                </labels>
+                <fields>
+                  <field schema="foo2">bar2</field>
+                </fields>
+                <subWidgets>
+                  <widget name="subwidget" type="text">
+                    <labels>
+                      <label mode="any">subwidget label</label>
+                    </labels>
+                    <fields>
+                      <field schema="foo">bar</field>
+                    </fields>
+                  </widget>
+                </subWidgets>
+              </widget>
+              <widget name="subwidgetRefs" type="test">
+                <labels>
+                  <label mode="any">Selection</label>
+                </labels>
+                <subWidgetRefs>
+                  <widget>localSubWidget</widget>
+                </subWidgetRefs>
+              </widget>
+              <widget name="localSubWidget" type="test">
+                <fields>
+                  <field schema="foo3">bar3</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouttypes">
+
+    <layoutType name="listing">
+      <aliases>
+        <alias>listingAlias</alias>
+      </aliases>
+      <categories>
+        <category>jsf</category>
+      </categories>
+      <templates>
+        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <configuration>
+        <title>Test layout type for a custom type category</title>
+        <sinceVersion>6.0</sinceVersion>
+        <properties>
+          <defaultValues mode="any">
+            <property name="showListingHeader">true</property>
+            <property name="showRowEvenOddClass">true</property>
+          </defaultValues>
+          <defaultValues mode="edit_columns">
+            <property name="availableElementsLabel">
+              label.selection.availableColumns
+            </property>
+            <property name="selectedElementsLabel">
+              label.selection.selectedColumns
+            </property>
+            <property name="selectedElementsHelp"></property>
+            <property name="selectSize">10</property>
+            <property name="columnSelectionRequired">true</property>
+            <property name="displayAlwaysSelectedColumns">false</property>
+          </defaultValues>
+          <defaultValues mode="edit_sort_infos">
+            <property name="newSortInfoTemplate">
+              #{documentSearchActions.newSortInfo}
+            </property>
+            <property name="sortInfoSelectionRequired">false</property>
+          </defaultValues>
+        </properties>
+      </configuration>
+    </layoutType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="globalTestWidget" type="test">
+      <fields>
+        <field schema="foo">bar</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="testLayout" type="test">
+      <rows>
+        <row>
+          <widget>testWidget</widget>
+        </row>
+        <row>
+          <widget>testWidgetWithoutLabel</widget>
+        </row>
+        <row>
+          <widget>globalTestWidget</widget>
+        </row>
+      </rows>
+      <widget name="testWidget" type="test">
+        <labels>
+          <label mode="any">label.test.widget</label>
+        </labels>
+        <helpLabels>
+          <label mode="edit">help text</label>
+        </helpLabels>
+        <fields>
+          <field schema="foo">bar</field>
+        </fields>
+        <properties mode="any">
+          <property name="styleClass">cssClass</property>
+        </properties>
+        <properties mode="edit">
+          <property name="rendered">false</property>
+        </properties>
+      </widget>
+      <widget name="testWidgetWithoutLabel" type="test">
+        <fields>
+          <field schema="foo">bar</field>
+        </fields>
+      </widget>
+    </layout>
+
+    <layout name="dublincore">
+      <templates>
+        <template mode="any">default_template</template>
+        <template mode="view">view_template</template>
+        <template mode="edit">edit_template</template>
+        <template mode="create">create_template</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>title</widget>
+        </row>
+        <row>
+          <widget>description</widget>
+        </row>
+        <row>
+          <widget>creationDate</widget>
+          <widget />
+          <widget>modificationDate</widget>
+        </row>
+      </rows>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">label.dublincore.title</label>
+          <label mode="edit"></label>
+        </labels>
+        <helpLabels>
+          <label mode="edit">help text</label>
+        </helpLabels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties mode="any">
+          <property name="styleClass">styleClass</property>
+          <property name="required">#{!currentUser.administrator}</property>
+        </properties>
+        <properties mode="edit">
+          <property name="rendered">false</property>
+        </properties>
+        <properties mode="create">
+          <property name="rendered">false</property>
+        </properties>
+      </widget>
+      <widget name="subjects" type="list">
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <fields>
+          <field schema="dublincore">subjects</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="foo">bar</property>
+        </properties>
+        <properties mode="any">
+          <property name="directory">subject</property>
+          <propertyList name="list">
+            <value>fooListItem</value>
+            <value>barListItem</value>
+          </propertyList>
+        </properties>
+      </widget>
+    </layout>
+
+    <!-- FIXME AT: sub widgets registration does not seem to work -->
+    <layout name="files">
+      <rows>
+        <row>
+          <widget>files</widget>
+        </row>
+      </rows>
+      <widget name="files" type="complexList">
+        <fields>
+          <field schema="files">files</field>
+        </fields>
+        <subWidgets>
+          <widget name="blob" type="file">
+            <fields>
+              <field>blob</field>
+            </fields>
+          </widget>
+          <widget name="filename" type="text">
+            <fields>
+              <field>filename</field>
+            </fields>
+          </widget>
+        </subWidgets>
+      </widget>
+    </layout>
+
+    <layout name="layoutPropertiesTest">
+      <properties mode="any">
+        <property name="layoutPropName">layoutPropValue</property>
+      </properties>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="layoutRowPropName">layoutRowPropValue</property>
+          </properties>
+          <widget>globalTestWidget</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="layoutColumnsTest">
+      <columns>
+        <column name="mycol" alwaysSelected="true">
+          <properties mode="any">
+            <property name="layoutColumnPropName">
+              layoutColumnPropValue
+            </property>
+          </properties>
+          <widget>globalTestWidget</widget>
+        </column>
+        <column name="myothercol" selectedByDefault="false">
+          <widget>globalTestWidget</widget>
+        </column>
+        <column>
+          <widget>globalTestWidget</widget>
+        </column>
+      </columns>
+    </layout>
+  </extension>
+
+</component>
