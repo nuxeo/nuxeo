@@ -287,7 +287,6 @@ public class TestVideoImporterAndListeners {
         blob.setFilename("Sample.mpg");
         String rootPath = "/";
         assertNotNull(blob);
-        assertNotNull(rootPath);
         assertNotNull(session);
         assertNotNull(fileManagerService);
 
