@@ -223,9 +223,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
 
         Calendar modified = (Calendar) doc.getProperty("dublincore", "modified");
         PictureTilesCachedEntry entry = new PictureTilesCachedEntry(modified, adapter, xpath);
-        synchronized (cachedAdapters) {
-            cachedAdapters.put(doc.getId(), entry);
-        }
+        cachedAdapters.put(doc.getId(), entry);
         cacheGC();
     }
 
@@ -234,9 +232,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         if (entry != null) {
             entry.getAdapter().cleanup();
         }
-        synchronized (cachedAdapters) {
-            cachedAdapters.remove(key);
-        }
+        cachedAdapters.remove(key);
     }
 
     protected boolean isSameDate(Calendar d1, Calendar d2) {

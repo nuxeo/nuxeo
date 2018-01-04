@@ -33,8 +33,6 @@ import org.nuxeo.ecm.webengine.ui.tree.TreeModelImpl;
  */
 public class DocumentTree extends JSonTree {
 
-    DocumentModel rootDoc;
-
     public DocumentTree(WebContext ctx, DocumentModel rootDoc) {
         tree = new TreeModelImpl();
         tree.setContentProvider(getProvider(ctx));
@@ -58,7 +56,7 @@ public class DocumentTree extends JSonTree {
 
     @Override
     protected Object getInput(WebContext ctx) {
-        return rootDoc;
+        return null;
     }
 
 }

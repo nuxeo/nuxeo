@@ -64,9 +64,6 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    @In(create = true)
-    protected Principal currentUser;
-
     @In(required = false)
     @Out(required = false)
     private List<String> selectedNotifications;

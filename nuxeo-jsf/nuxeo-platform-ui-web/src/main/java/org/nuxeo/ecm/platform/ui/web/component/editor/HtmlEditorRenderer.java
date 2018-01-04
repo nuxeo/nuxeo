@@ -64,13 +64,15 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
 
         if (pluginsOptions == null) {
             final HtmlEditorPluginService pluginService = Framework.getService(HtmlEditorPluginService.class);
-            pluginsOptions = new HashMap<String, String>();
-            pluginsOptions.put("plugins", pluginService.getFormattedPluginsNames());
+            Map<String,String> options = new HashMap<>();
+            options.put("plugins", pluginService.getFormattedPluginsNames());
+            pluginsOptions = options;
         }
         if (toolbarPluginsOptions == null) {
             final HtmlEditorPluginService pluginService = Framework.getService(HtmlEditorPluginService.class);
-            toolbarPluginsOptions = new HashMap<String, String>();
-            toolbarPluginsOptions.put("toolbar", pluginService.getFormattedToolbarsButtonsNames());
+            Map<String,String> options = new HashMap<>();
+            options.put("toolbar", pluginService.getFormattedToolbarsButtonsNames());
+            toolbarPluginsOptions = options;
         }
 
         String clientId = editorComp.getClientId(context);

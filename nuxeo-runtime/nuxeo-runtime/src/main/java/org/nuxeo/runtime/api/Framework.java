@@ -166,21 +166,22 @@ public final class Framework {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        resourceLoader = new SharedResourceLoader(new URL[] { url }, Framework.class.getClassLoader());
+        SharedResourceLoader loader = new SharedResourceLoader(new URL[] { url }, Framework.class.getClassLoader());
         // add back existing urls unless they should be removed, and add new
         // urls
         if (existing != null) {
             for (URL oldURL : existing) {
                 if (urlsToRemove == null || !urlsToRemove.contains(oldURL)) {
-                    resourceLoader.addURL(oldURL);
+                    loader.addURL(oldURL);
                 }
             }
         }
         if (urlsToAdd != null) {
             for (URL newURL : urlsToAdd) {
-                resourceLoader.addURL(newURL);
+                loader.addURL(newURL);
             }
         }
+        resourceLoader = loader;
     }
 
     public static void shutdown() throws InterruptedException {

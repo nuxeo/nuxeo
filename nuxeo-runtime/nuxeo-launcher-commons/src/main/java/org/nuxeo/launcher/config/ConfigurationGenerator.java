@@ -1797,22 +1797,16 @@ public class ConfigurationGenerator {
         File databaseTemplateDir = new File(nuxeoHome, TEMPLATES + File.separator + databaseTemplate);
         Properties templateProperties = loadTrimmedProperties(new File(databaseTemplateDir, NUXEO_DEFAULT_CONF));
         String classname, connectionUrl;
-        if (userConfig.getProperty(PARAM_TEMPLATE_DBNAME).equals(databaseTemplateDir)) {
-            // userConfig already includes databaseTemplate
-            classname = userConfig.getProperty(PARAM_DB_DRIVER);
-            connectionUrl = userConfig.getProperty(PARAM_DB_JDBC_URL);
-        } else { // testing a databaseTemplate not included in userConfig
-            // check if value is set in nuxeo.conf
-            if (userConfig.containsKey(PARAM_DB_DRIVER)) {
-                classname = (String) userConfig.get(PARAM_DB_DRIVER);
-            } else {
-                classname = templateProperties.getProperty(PARAM_DB_DRIVER);
-            }
-            if (userConfig.containsKey(PARAM_DB_JDBC_URL)) {
-                connectionUrl = (String) userConfig.get(PARAM_DB_JDBC_URL);
-            } else {
-                connectionUrl = templateProperties.getProperty(PARAM_DB_JDBC_URL);
-            }
+        // check if value is set in nuxeo.conf
+        if (userConfig.containsKey(PARAM_DB_DRIVER)) {
+            classname = (String) userConfig.get(PARAM_DB_DRIVER);
+        } else {
+            classname = templateProperties.getProperty(PARAM_DB_DRIVER);
+        }
+        if (userConfig.containsKey(PARAM_DB_JDBC_URL)) {
+            connectionUrl = (String) userConfig.get(PARAM_DB_JDBC_URL);
+        } else {
+            connectionUrl = templateProperties.getProperty(PARAM_DB_JDBC_URL);
         }
         // Load driver class from template or default lib directory
         Driver driver = lookupDriver(databaseTemplate, databaseTemplateDir, classname);

@@ -141,7 +141,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     protected static final String LOGIN_JMS_CATEGORY = "NuxeoAuthentication";
 
-    protected static Boolean isLoginSynchronized;
+    protected static volatile Boolean isLoginSynchronized;
 
     /** Used internally as a marker. */
     protected static final Principal DIRECTORY_ERROR_PRINCIPAL = new PrincipalImpl("__DIRECTORY_ERROR__\0\0\0");
@@ -673,23 +673,17 @@ public class NuxeoAuthenticationFilter implements Filter {
                 if (service != null) {
                     return;
                 }
-                service = (PluggableAuthenticationService) Framework.getRuntime()
-                                                                    .getComponent(PluggableAuthenticationService.NAME);
-                // init preFilters
-                service.initPreFilters();
-                if (service == null) {
-                    log.error("Unable to get Service " + PluggableAuthenticationService.NAME);
-                    throw new ServletException("Can't initialize Nuxeo Pluggable Authentication Service");
-                } else {
-                    new ComponentManager.Listener() {
-                        // nullify service field if components are restarting
-                        @Override
-                        public void beforeStart(ComponentManager mgr, boolean isResume) {
-                            service = null;
-                            uninstall();
-                        }
-                    }.install();
-                }
+                PluggableAuthenticationService svc = (PluggableAuthenticationService) Framework.getRuntime().getComponent(PluggableAuthenticationService.NAME);
+                svc.initPreFilters();
+                new ComponentManager.Listener() {
+                    // nullify service field if components are restarting
+                    @Override
+                    public void beforeStart(ComponentManager mgr, boolean isResume) {
+                        service = null;
+                        uninstall();
+                    }
+                }.install();
+                service = svc;
             }
         }
     }

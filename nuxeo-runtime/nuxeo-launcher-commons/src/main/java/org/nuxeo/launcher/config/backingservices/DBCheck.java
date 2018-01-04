@@ -105,22 +105,16 @@ public class DBCheck implements BackingChecker {
         File databaseTemplateDir = new File(cg.getNuxeoHome(), ConfigurationGenerator.TEMPLATES + File.separator + databaseTemplate);
         Properties templateProperties = ConfigurationGenerator.loadTrimmedProperties(new File(databaseTemplateDir, ConfigurationGenerator.NUXEO_DEFAULT_CONF));
         String classname, connectionUrl;
-        if (config.getProperty(PARAM_TEMPLATE_DBNAME).equals(databaseTemplateDir)) {
-            // config already includes databaseTemplate
-            classname = config.getProperty(PARAM_DB_DRIVER);
-            connectionUrl = config.getProperty(PARAM_DB_JDBC_URL);
-        } else { // testing a databaseTemplate not included in config
-            // check if value is set in nuxeo.conf
-            if (config.containsKey(PARAM_DB_DRIVER)) {
-                classname = (String) config.get(PARAM_DB_DRIVER);
-            } else {
-                classname = templateProperties.getProperty(PARAM_DB_DRIVER);
-            }
-            if (config.containsKey(PARAM_DB_JDBC_URL)) {
-                connectionUrl = (String) config.get(PARAM_DB_JDBC_URL);
-            } else {
-                connectionUrl = templateProperties.getProperty(PARAM_DB_JDBC_URL);
-            }
+        // check if value is set in nuxeo.conf
+        if (config.containsKey(PARAM_DB_DRIVER)) {
+            classname = (String) config.get(PARAM_DB_DRIVER);
+        } else {
+            classname = templateProperties.getProperty(PARAM_DB_DRIVER);
+        }
+        if (config.containsKey(PARAM_DB_JDBC_URL)) {
+            connectionUrl = (String) config.get(PARAM_DB_JDBC_URL);
+        } else {
+            connectionUrl = templateProperties.getProperty(PARAM_DB_JDBC_URL);
         }
         // Load driver class from template or default lib directory
         Driver driver = lookupDriver(cg, databaseTemplate, databaseTemplateDir, classname);

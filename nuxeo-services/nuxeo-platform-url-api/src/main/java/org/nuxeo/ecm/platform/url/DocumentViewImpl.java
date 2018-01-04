@@ -42,8 +42,6 @@ public class DocumentViewImpl implements DocumentView, Serializable {
 
     private String viewId;
 
-    private String tabId;
-
     private String subURI;
 
     private String patternName;
@@ -86,10 +84,10 @@ public class DocumentViewImpl implements DocumentView, Serializable {
     }
 
     public String getTabId() {
-        if (tabId == null && parameters != null) {
+        if (parameters != null) {
             return parameters.get("tabId");
         }
-        return tabId;
+        return null;
     }
 
     public String getViewId() {
@@ -159,8 +157,8 @@ public class DocumentViewImpl implements DocumentView, Serializable {
     public String toString() {
         return String.format(
                 "DocumentViewImpl [documentLocation=%s, "
-                        + "parameters=%s, patternName=%s, subURI=%s, tabId=%s, viewId=%s]",
-                documentLocation, parameters, patternName, subURI, tabId, viewId);
+                        + "parameters=%s, patternName=%s, subURI=%s, viewId=%s]",
+                documentLocation, parameters, patternName, subURI, viewId);
     }
 
 }

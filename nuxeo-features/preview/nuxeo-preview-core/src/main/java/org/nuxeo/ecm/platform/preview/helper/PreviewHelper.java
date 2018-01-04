@@ -59,15 +59,11 @@ public class PreviewHelper {
         } else {
             HtmlPreviewAdapter adapter = doc.getAdapter(HtmlPreviewAdapter.class);
             if (adapter == null) {
-                synchronized (hasPreviewByType) {
-                    hasPreviewByType.put(docType, false);
-                    return false;
-                }
+                hasPreviewByType.put(docType, false);
+                return false;
             } else {
-                synchronized (hasPreviewByType) {
-                    hasPreviewByType.put(docType, true);
-                    return true;
-                }
+                hasPreviewByType.put(docType, true);
+                return true;
             }
         }
     }

@@ -62,7 +62,6 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.types.Type;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
@@ -96,9 +95,6 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     public static final String LIFE_CYCLE_TRANSITION_KEY = "lifeCycleTransition";
 
     public static final String BLOB_ACTIONS_CATEGORY = "BLOB_ACTIONS";
-
-    @In(create = true)
-    protected transient NavigationContext navigationContext;
 
     @RequestParameter
     protected String fileFieldFullName;

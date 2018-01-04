@@ -54,8 +54,6 @@ public class BlobListZipWork extends TransientStoreWork {
 
     private static final long serialVersionUID = 1L;
 
-    protected List<String> docIds;
-
     protected String filename;
 
     protected final String key;

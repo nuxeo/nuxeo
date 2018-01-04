@@ -49,10 +49,6 @@ public interface DocumentPart extends Property {
 
     Property createProperty(Property parent, Field field, int flags);
 
-    PropertyDiff exportDiff() throws PropertyException;
-
-    void importDiff(PropertyDiff diff) throws PropertyException;
-
     /**
      * Whether or not to ignore any previous values when setting complex properties.
      *

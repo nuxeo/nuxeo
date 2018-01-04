@@ -41,6 +41,8 @@ import com.sun.jersey.api.client.ClientResponse;
  */
 public class PortalSSOAuthInterceptor extends RequestInterceptor {
 
+    protected static final Random RANDOM = new Random();
+
     protected final String secret;
 
     protected final String username;
@@ -58,7 +60,7 @@ public class PortalSSOAuthInterceptor extends RequestInterceptor {
     protected Map<String, String> computeHeaders() {
         // compute token
         long ts = new Date().getTime();
-        long random = new Random(ts).nextInt();
+        long random = RANDOM.nextInt();
 
         String clearToken = String.format("%d:%d:%s:%s", ts, random, secret, username);
 

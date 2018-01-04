@@ -60,8 +60,6 @@ public class RedisPubSubProvider extends AbstractPubSubProvider {
     /** Maximum delay to wait for a channel subscription on startup. */
     public static final long TIMEOUT_SUBSCRIBE_SECONDS = 5;
 
-    protected String namespace;
-
     protected Dispatcher dispatcher;
 
     protected Thread thread;

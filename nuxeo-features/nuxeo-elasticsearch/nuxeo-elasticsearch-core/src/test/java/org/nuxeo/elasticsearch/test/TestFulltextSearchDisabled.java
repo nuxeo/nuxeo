@@ -19,15 +19,12 @@
 
 package org.nuxeo.elasticsearch.test;
 
-import javax.inject.Inject;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.QueryParseException;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -37,9 +34,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features({ FulltextSearchDisabledFeature.class, RepositoryElasticSearchFeature.class })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestFulltextSearchDisabled extends TestFulltextEnabled {
-
-    @Inject
-    protected CoreFeature coreFeature;
 
     @Override
     @Test

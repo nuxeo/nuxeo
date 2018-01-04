@@ -52,6 +52,8 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
 
     public static final String DIRECTORY_NAME = "oauthServiceProviders";
 
+    protected static final Random RANDOM = new Random();
+
     protected Map<String, NuxeoOAuthServiceProvider> inMemoryProviders = new HashMap<String, NuxeoOAuthServiceProvider>();
 
     @Override
@@ -171,7 +173,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
     public NuxeoOAuthServiceProvider addReadOnlyProvider(String gadgetUri, String serviceName, String consumerKey,
             String consumerSecret, String publicKey) {
         String id = mkStringIdx(gadgetUri, serviceName);
-        Long dummyId = new Random().nextLong();
+        long dummyId = RANDOM.nextLong();
         NuxeoOAuthServiceProvider sp = new NuxeoOAuthServiceProvider(dummyId, gadgetUri, serviceName, consumerKey,
                 consumerSecret, publicKey);
         inMemoryProviders.put(id, sp);

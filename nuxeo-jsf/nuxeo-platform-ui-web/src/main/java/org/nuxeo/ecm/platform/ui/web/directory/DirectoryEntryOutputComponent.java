@@ -48,12 +48,6 @@ public class DirectoryEntryOutputComponent extends DirectoryAwareComponent {
 
     protected String keySeparator;
 
-    /**
-     * @deprecated never used
-     */
-    @Deprecated
-    protected String display;
-
     public DirectoryEntryOutputComponent() {
         setRendererType(COMPONENT_TYPE);
     }
@@ -113,24 +107,6 @@ public class DirectoryEntryOutputComponent extends DirectoryAwareComponent {
 
     public void setKeySeparator(String keySeparator) {
         this.keySeparator = keySeparator;
-    }
-
-    /**
-     * @deprecated never used
-     */
-    @Override
-    @Deprecated
-    public String getDisplay() {
-        return display;
-    }
-
-    /**
-     * @deprecated never used
-     */
-    @Override
-    @Deprecated
-    public void setDisplay(String display) {
-        this.display = display;
     }
 
     @Override

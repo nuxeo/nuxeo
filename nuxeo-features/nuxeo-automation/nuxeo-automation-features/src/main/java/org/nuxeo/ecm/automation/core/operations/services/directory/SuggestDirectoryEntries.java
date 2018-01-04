@@ -334,8 +334,9 @@ public class SuggestDirectoryEntries {
             }
         }
 
+        @Override
         public String toString() {
-            return obj != null ? obj.toString() : null;
+            return String.valueOf(obj);
         }
 
     }
