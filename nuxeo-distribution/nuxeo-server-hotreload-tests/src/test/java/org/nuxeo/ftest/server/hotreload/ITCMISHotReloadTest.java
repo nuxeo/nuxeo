@@ -26,6 +26,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.junit.Rule;
 import org.junit.Test;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
+import org.nuxeo.jaxrs.test.HttpClientTestRule;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

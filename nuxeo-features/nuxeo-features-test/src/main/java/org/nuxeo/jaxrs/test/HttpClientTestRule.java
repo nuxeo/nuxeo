@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,17 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-package org.nuxeo.ftest.server.hotreload;
-
-import static org.nuxeo.functionaltests.AbstractTest.NUXEO_URL;
-import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
+package org.nuxeo.jaxrs.test;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-import org.nuxeo.jaxrs.test.CloseableClientResponse;
-import org.nuxeo.jaxrs.test.JerseyClientHelper;
 
 import com.google.common.base.Splitter;
 import com.sun.jersey.api.client.Client;
@@ -43,6 +39,8 @@ import com.sun.jersey.api.client.WebResource;
 public class HttpClientTestRule implements TestRule {
 
     public static final String APPLICATION_JSON_NXENTITY = "application/json+nxentity";
+
+    public static final String ADMINISTRATOR = "Administrator";
 
     private final String url;
 
@@ -107,19 +105,21 @@ public class HttpClientTestRule implements TestRule {
         return execute(path, builder -> builder.delete(ClientResponse.class));
     }
 
-    protected CloseableClientResponse execute(String path, Function<WebResource.Builder, ClientResponse> executer) {
+    protected CloseableClientResponse execute(String path, Function<WebResource.Builder, ClientResponse> invoker) {
         // extract queryParams from path
         Map<String, String> queryParams = Collections.emptyMap();
         int interrogationIdx = path.indexOf('?');
-        if (interrogationIdx > 0) {
-            queryParams = Splitter.on('&').withKeyValueSeparator('=').split(path.substring(interrogationIdx));
+        if (interrogationIdx >= 0) {
+            queryParams = Splitter.on('&').withKeyValueSeparator('=').split(path.substring(interrogationIdx + 1));
             path = path.substring(0, interrogationIdx);
         }
         WebResource webResource = service.path(path);
-        queryParams.forEach(webResource::queryParam);
+        for (Entry<String, String> entry : queryParams.entrySet()) {
+            webResource = webResource.queryParam(entry.getKey(), entry.getValue());
+        }
         WebResource.Builder builder = webResource.accept(accept);
         headers.forEach(builder::header);
-        return executer.andThen(CloseableClientResponse::of).apply(builder);
+        return invoker.andThen(CloseableClientResponse::of).apply(builder);
     }
 
     /**
@@ -138,7 +138,7 @@ public class HttpClientTestRule implements TestRule {
         private Map<String, String> headers;
 
         public Builder() {
-            this.url = NUXEO_URL;
+            this.url = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo").replaceAll("/$", "");
             this.username = null;
             this.password = null;
             this.accept = APPLICATION_JSON_NXENTITY;
