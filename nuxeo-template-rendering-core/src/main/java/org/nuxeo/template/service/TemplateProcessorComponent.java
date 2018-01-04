@@ -76,7 +76,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     protected OutputFormatRegistry outputFormatRegistry;
 
-    protected ConcurrentHashMap<String, List<String>> type2Template = null;
+    protected volatile Map<String, List<String>> type2Template;
 
     @Override
     public void activate(ComponentContext context) {
@@ -333,10 +333,11 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         if (type2Template == null) {
             synchronized (this) {
                 if (type2Template == null) {
-                    type2Template = new ConcurrentHashMap<>();
+                    Map<String, List<String>> map = new ConcurrentHashMap<>();
                     TemplateMappingFetcher fetcher = new TemplateMappingFetcher();
                     fetcher.runUnrestricted();
-                    type2Template.putAll(fetcher.getMapping());
+                    map.putAll(fetcher.getMapping());
+                    type2Template = map;
                 }
             }
         }

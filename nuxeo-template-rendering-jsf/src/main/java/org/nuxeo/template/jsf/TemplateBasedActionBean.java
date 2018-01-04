@@ -31,7 +31,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
-import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -63,9 +62,6 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
     @In(create = true)
     protected transient WebActions webActions;
-
-    @In(create = true, required = false)
-    protected FacesMessages facesMessages;
 
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
