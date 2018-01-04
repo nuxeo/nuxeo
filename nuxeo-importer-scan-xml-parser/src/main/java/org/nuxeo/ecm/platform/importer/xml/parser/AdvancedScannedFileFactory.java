@@ -48,8 +48,6 @@ public class AdvancedScannedFileFactory extends ScanedFileFactory implements Imp
 
     protected static String targetContainerType = null;
 
-    protected ImporterConfig config;
-
     @Override
     public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws IOException {
 

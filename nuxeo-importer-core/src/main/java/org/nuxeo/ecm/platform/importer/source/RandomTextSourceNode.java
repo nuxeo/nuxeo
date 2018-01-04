@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -77,13 +79,13 @@ public class RandomTextSourceNode implements SourceNode {
 
     protected static int minFoldersPerNode = 0;
 
-    protected static Integer nbNodes = 0;
+    protected static AtomicInteger nbNodes;
 
-    protected static Integer nbFolders = 0;
+    protected static AtomicInteger nbFolders;
 
-    protected static Integer nbVisitedFolders = 0;
+    protected static AtomicInteger nbVisitedFolders;
 
-    protected static Long size;
+    protected static AtomicLong size;
 
     protected Random hazard;
 
@@ -156,10 +158,10 @@ public class RandomTextSourceNode implements SourceNode {
         gen = new RandomTextGenerator(dictionaryHolder);
         gen.prefilCache();
         maxNode = maxSize;
-        nbNodes = 0;
-        nbFolders = 1;
-        nbVisitedFolders = 0;
-        size = new Long(0);
+        nbNodes = new AtomicInteger(0);
+        nbFolders = new AtomicInteger(1);
+        nbVisitedFolders = new AtomicInteger(0);
+        size = new AtomicLong(0);
         RandomTextSourceNode.blobSizeInKB = blobSizeInKB;
         minGlobalFolders = maxNode / defaultNbDataNodesPerFolder;
         minFoldersPerNode = 1 + (int) Math.pow(minGlobalFolders, (1.0 / maxDepth));
@@ -193,9 +195,7 @@ public class RandomTextSourceNode implements SourceNode {
         } else {
             content = gen.getRandomText(blobSizeInKB);
         }
-        synchronized (size) {
-            size += content.length();
-        }
+        size.addAndGet(content.length());
         Blob blob = Blobs.createBlob(content, getBlobMimeType(), null, getName() + ".txt");
         if (withProperties) {
             return new SimpleBlobHolderWithProperties(blob, getRandomProperties(content));
@@ -247,7 +247,7 @@ public class RandomTextSourceNode implements SourceNode {
      */
     protected int getNonUniform(int target, boolean folderish) {
         int res;
-        int remainder = nbVisitedFolders % 10;
+        int remainder = nbVisitedFolders.get() % 10;
         if (remainder == 8) {
             res = 1 + target / smallNbNodesDivider;
             if (log.isDebugEnabled()) {
@@ -284,14 +284,14 @@ public class RandomTextSourceNode implements SourceNode {
     }
 
     protected int getMaxChildren() {
-        if (maxNode < nbNodes) {
+        if (maxNode < nbNodes.get()) {
             return 0;
         }
-        int targetRemainingFolders = minGlobalFolders - nbFolders;
+        int targetRemainingFolders = minGlobalFolders - nbFolders.get();
         if (targetRemainingFolders <= 0) {
             return defaultNbDataNodesPerFolder + 1;
         }
-        int target = ((maxNode - nbNodes) / targetRemainingFolders);
+        int target = ((maxNode - nbNodes.get()) / targetRemainingFolders);
         if (target <= 0) {
             return 0;
         }
@@ -303,7 +303,7 @@ public class RandomTextSourceNode implements SourceNode {
     }
 
     protected int getMaxFolderish() {
-        if (maxNode <= nbNodes) {
+        if (maxNode <= nbNodes.get()) {
             return 0;
         }
         if (nonUniformRepartition) {
@@ -325,7 +325,7 @@ public class RandomTextSourceNode implements SourceNode {
         }
 
         List<SourceNode> children = new ArrayList<SourceNode>();
-        if (nbNodes > maxNode) {
+        if (nbNodes.get() > maxNode) {
             return children;
         }
 
@@ -333,18 +333,16 @@ public class RandomTextSourceNode implements SourceNode {
         for (int i = 0; i < nbChildren; i++) {
             children.add(new RandomTextSourceNode(false, level, i, onlyText, withProperties));
         }
-        synchronized (nbNodes) {
-            nbNodes = nbNodes + nbChildren;
-            if (log.isDebugEnabled()) {
-                String nodeStr;
-                if (nbChildren > 1) {
-                    nodeStr = "nodes";
-                } else {
-                    nodeStr = "node";
-                }
-                log.debug(String.format("Added %d data %s to %s; data node total count = %d", nbChildren, nodeStr,
-                        getName(), nbNodes));
+        nbNodes.addAndGet(nbChildren);
+        if (log.isDebugEnabled()) {
+            String nodeStr;
+            if (nbChildren > 1) {
+                nodeStr = "nodes";
+            } else {
+                nodeStr = "node";
             }
+            log.debug(String.format("Added %d data %s to %s; data node total count = %d", nbChildren, nodeStr,
+                    getName(), nbNodes));
         }
 
         if (level < maxDepth) {
@@ -355,18 +353,16 @@ public class RandomTextSourceNode implements SourceNode {
                 for (int i = 0; i < nbFolderish; i++) {
                     children.add(new RandomTextSourceNode(true, level + 1, i, onlyText, withProperties));
                 }
-                synchronized (nbFolders) {
-                    nbFolders = nbFolders + nbFolderish;
-                    if (log.isDebugEnabled()) {
-                        String nodeStr;
-                        if (nbFolderish > 1) {
-                            nodeStr = "nodes";
-                        } else {
-                            nodeStr = "node";
-                        }
-                        log.debug(String.format("Added %d folderish %s to %s; folderish node total count = %d",
-                                nbFolderish, nodeStr, getName(), nbFolders));
+                nbFolders.addAndGet(nbFolderish);
+                if (log.isDebugEnabled()) {
+                    String nodeStr;
+                    if (nbFolderish > 1) {
+                        nodeStr = "nodes";
+                    } else {
+                        nodeStr = "node";
                     }
+                    log.debug(String.format("Added %d folderish %s to %s; folderish node total count = %d",
+                            nbFolderish, nodeStr, getName(), nbFolders));
                 }
             }
         }
@@ -374,17 +370,15 @@ public class RandomTextSourceNode implements SourceNode {
             cachedChildren = children;
         }
 
-        synchronized (nbVisitedFolders) {
-            nbVisitedFolders++;
-            if (log.isDebugEnabled()) {
-                String folderStr;
-                if (nbVisitedFolders > 1) {
-                    folderStr = "folders";
-                } else {
-                    folderStr = "folder";
-                }
-                log.debug(String.format("Visited %d %s", nbVisitedFolders, folderStr));
+        nbVisitedFolders.incrementAndGet();
+        if (log.isDebugEnabled()) {
+            String folderStr;
+            if (nbVisitedFolders.get() > 1) {
+                folderStr = "folders";
+            } else {
+                folderStr = "folder";
             }
+            log.debug(String.format("Visited %d %s", nbVisitedFolders, folderStr));
         }
 
         return children;
@@ -418,11 +412,11 @@ public class RandomTextSourceNode implements SourceNode {
     }
 
     public static Integer getNbNodes() {
-        return nbNodes;
+        return nbNodes.get();
     }
 
     public static Long getSize() {
-        return size;
+        return size.get();
     }
 
     public int getLevel() {
