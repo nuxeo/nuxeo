@@ -89,11 +89,7 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
     }
 
     public void setValue(Object value) {
-        Serializable old = null;
-        if (value == null && old == null) {
-            return;
-        }
-        if (value != null && value.equals(old)) {
+        if (value == null) {
             return;
         }
         throw new CmisConstraintException("Read-only property: " + propertyDefinition.getId());

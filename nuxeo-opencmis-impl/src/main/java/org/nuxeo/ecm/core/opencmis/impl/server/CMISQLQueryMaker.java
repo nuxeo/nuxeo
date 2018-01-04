@@ -263,13 +263,13 @@ public class CMISQLQueryMaker implements QueryMaker {
             recordSelectSelector(sel);
         }
         for (CmisSelector sel : query.getJoinReferences()) {
-            recordSelector(sel, JOIN);
+            recordSelector(sel, ClauseType.JOIN);
         }
         for (CmisSelector sel : query.getWhereReferences()) {
-            recordSelector(sel, WHERE);
+            recordSelector(sel, ClauseType.WHERE);
         }
         for (SortSpec spec : query.getOrderBys()) {
-            recordSelector(spec.getSelector(), ORDER_BY);
+            recordSelector(spec.getSelector(), ClauseType.ORDER_BY);
         }
 
         findVersionableQualifiers();
@@ -793,19 +793,19 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
     }
 
-    protected static final String JOIN = "JOIN";
-
-    protected static final String WHERE = "WHERE";
-
-    protected static final String ORDER_BY = "ORDER BY";
+    public enum ClauseType {
+        JOIN,
+        WHERE,
+        ORDER_BY;
+    }
 
     /**
      * Records a JOIN / WHERE / ORDER BY selector, and associates it to a database column.
      */
-    protected void recordSelector(CmisSelector sel, String clauseType) {
+    protected void recordSelector(CmisSelector sel, ClauseType clauseType) {
         if (sel instanceof FunctionReference) {
             FunctionReference fr = (FunctionReference) sel;
-            if (clauseType != ORDER_BY) { // == ok
+            if (clauseType != ClauseType.ORDER_BY) {
                 throw new QueryParseException("Cannot use function in " + clauseType + " clause: " + fr.getFunction());
             }
             // ORDER BY SCORE, nothing further to record
@@ -827,13 +827,13 @@ public class CMISQLQueryMaker implements QueryMaker {
         col.setInfo(column);
         String qual = canonicalQualifier.get(col.getQualifier());
 
-        if (clauseType == WHERE && NuxeoTypeHelper.NX_LIFECYCLE_STATE.equals(col.getPropertyId())) {
+        if (clauseType == ClauseType.WHERE && NuxeoTypeHelper.NX_LIFECYCLE_STATE.equals(col.getPropertyId())) {
             // explicit lifecycle query: do not include the 'deleted' lifecycle
             // filter
             skipDeleted = false;
             lifecycleWhereClauseQualifiers.add(qual);
         }
-        if (clauseType == WHERE && isFacetsColumn(col.getPropertyId())) {
+        if (clauseType == ClauseType.WHERE && isFacetsColumn(col.getPropertyId())) {
             mixinTypeWhereClauseQualifiers.add(qual);
         }
         // record as a needed fragment

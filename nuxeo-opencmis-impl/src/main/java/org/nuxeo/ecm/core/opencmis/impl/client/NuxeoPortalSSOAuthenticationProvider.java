@@ -1,4 +1,4 @@
-/* 
+/*
  * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,6 +35,8 @@ public class NuxeoPortalSSOAuthenticationProvider extends AbstractAuthentication
 
     private static final long serialVersionUID = 1L;
 
+    protected static final Random RANDOM = new Random();
+
     public final static String SECRET_KEY = "NUXEO_PORTAL_SSO_SECRET";
 
     protected String getSecretKey() {
@@ -45,7 +47,7 @@ public class NuxeoPortalSSOAuthenticationProvider extends AbstractAuthentication
     public Map<String, List<String>> getHTTPHeaders(String url) {
 
         long ts = new Date().getTime();
-        long random = new Random(ts).nextInt();
+        long random = RANDOM.nextInt();
 
         String secret = getSecretKey();
 

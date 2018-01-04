@@ -1440,10 +1440,10 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals(1, res.getNumItems().intValue());
     }
 
-    protected String NOT_NULL = new String("__NOTNULL__");
+    protected String NOT_NULL = "__NOTNULL__";
 
     protected void checkWhereTerm(String type, String prop, String value) {
-        if (value == NOT_NULL) {
+        if (NOT_NULL.equals(value)) {
             checkQueriedValue(type, prop + " IS NOT NULL");
         } else {
             checkQueriedValue(type, prop + " = " + value);
@@ -1595,7 +1595,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     protected void checkValue(String prop, Object expected, ObjectData data) {
         Object value = expected instanceof List ? getValues(data, prop) : getValue(data, prop);
-        if (expected == NOT_NULL) {
+        if (NOT_NULL.equals(expected)) {
             assertNotNull(value);
         } else {
             assertEquals(expected, value);
