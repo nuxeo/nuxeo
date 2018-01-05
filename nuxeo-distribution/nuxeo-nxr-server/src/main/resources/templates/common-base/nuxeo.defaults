@@ -129,6 +129,16 @@ elasticsearch.index.translog.durability=request
 elasticsearch.restClient.connectionTimeoutMs=5000
 # For the rest client, a maximum period, in milliseconds, of inactivity between two consecutive data packets
 elasticsearch.restClient.socketTimeoutMs=20000
+# A username for client basic authentication
+elasticsearch.restClient.username=
+# A password for client basic authentication
+elasticsearch.restClient.password=
+# A path to a valid keystore
+elasticsearch.restClient.keystorePath=
+# The keystore password
+elasticsearch.restClient.keystorePassword=
+# The type of keystore, e.g. jks (defaults to Java system keystore type)
+elasticsearch.restClient.keystoreType=
 
 # Kafka
 kafka.enabled=false
