@@ -20,10 +20,17 @@ package org.nuxeo.elasticsearch.test;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.security.KeyStore;
+
 import org.junit.Test;
 import org.nuxeo.elasticsearch.api.ESClient;
+import org.nuxeo.elasticsearch.client.ESRestClient;
 import org.nuxeo.elasticsearch.client.ESRestClientFactory;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Basic test for ESRestClientFactory creation and config
@@ -46,5 +53,80 @@ public class TestESRestClient {
         ESClient esClient = factory.create(null, config);
         assertNotNull(esClient);
         //Its not possible to get a reference to the list of hosts to check they are configured
+    }
+
+    @Test
+    public void testCredentialProvider() throws Exception {
+        ElasticSearchClientConfig config = new ElasticSearchClientConfig();
+        config.options.put("addressList", "localhost:9200");
+        config.options.put(ESRestClientFactory.AUTH_USER_OPT, "bob");
+        config.options.put(ESRestClientFactory.AUTH_PASSWORD_OPT, "bob");
+        ESRestClient esClient = (ESRestClient) factory.create(null, config);
+        assertNotNull(esClient);
+        //Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
+    }
+
+    @Test
+    public void testAllNulls() throws Exception {
+        ElasticSearchClientConfig config = new ElasticSearchClientConfig();
+        config.options.put("addressList", "localhost:9200");
+        config.options.put(ESRestClientFactory.AUTH_USER_OPT, null);
+        config.options.put(ESRestClientFactory.AUTH_PASSWORD_OPT, null);
+        config.options.put(ESRestClientFactory.KEYSTORE_PATH_OPT, null);
+        config.options.put(ESRestClientFactory.KEYSTORE_PASSWORD_OPT, null);
+        config.options.put(ESRestClientFactory.KEYSTORE_TYPE_OPT, null);
+        ESRestClient esClient = (ESRestClient) factory.create(null, config);
+        assertNotNull(esClient);
+        //Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
+    }
+
+
+    @Test
+    public void testDefaultKeystore() throws Exception {
+        ElasticSearchClientConfig config = new ElasticSearchClientConfig();
+        String password = "difficultpass";
+        File keystoreFile = getKeystoreFile(password, KeyStore.getDefaultType());
+
+        config.options.put("addressList", "localhost:9200");
+        config.options.put(ESRestClientFactory.KEYSTORE_PATH_OPT, keystoreFile.getAbsolutePath());
+        config.options.put(ESRestClientFactory.KEYSTORE_PASSWORD_OPT, password);
+        config.options.put(ESRestClientFactory.KEYSTORE_TYPE_OPT, null);
+        ESRestClient esClient = (ESRestClient) factory.create(null, config);
+        assertNotNull(esClient);
+        //This would error if it couldn't open the keystore.
+
+        keystoreFile.delete();
+    }
+
+    @Test
+    public void testSslContext() throws Exception {
+        ElasticSearchClientConfig config = new ElasticSearchClientConfig();
+
+        String password = "mypass";
+        String keystoreType = "pkcs12";
+        File keystoreFile = getKeystoreFile(password, keystoreType);
+
+        config.options.put("addressList", "localhost:9200");
+        config.options.put(ESRestClientFactory.KEYSTORE_PATH_OPT, keystoreFile.getAbsolutePath());
+        config.options.put(ESRestClientFactory.KEYSTORE_PASSWORD_OPT, password);
+        config.options.put(ESRestClientFactory.KEYSTORE_TYPE_OPT, keystoreType);
+        ESRestClient esClient = (ESRestClient) factory.create(null, config);
+        assertNotNull(esClient);
+        //Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
+
+        keystoreFile.delete();
+    }
+
+    /**
+     * Sets up a temporary keystore
+     */
+    public File getKeystoreFile(String password, String keystoreType) throws Exception {
+        File keystoreFile = Framework.createTempFile("keystore_", ".tmp");
+        KeyStore ks = KeyStore.getInstance(keystoreType);
+        ks.load(null, password.toCharArray());
+        try (OutputStream os = new FileOutputStream(keystoreFile)) {
+           ks.store(os, password.toCharArray());
+        }
+        return keystoreFile;
     }
 }

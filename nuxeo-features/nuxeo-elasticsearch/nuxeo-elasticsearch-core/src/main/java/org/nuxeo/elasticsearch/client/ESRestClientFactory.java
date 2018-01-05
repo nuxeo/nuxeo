@@ -73,6 +73,8 @@ public class ESRestClientFactory implements ESClientFactory {
 
     public static final String KEYSTORE_PASSWORD_OPT = "keystore.password";
 
+    public static final String KEYSTORE_TYPE_OPT = "keystore.type";
+
     @Override
     public ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchClientConfig config) {
         if (node != null) {
@@ -152,9 +154,11 @@ public class ESRestClientFactory implements ESClientFactory {
         try {
             Path keyStorePath = Paths.get(config.getOption(KEYSTORE_PATH_OPT));
             String keyStorePass = config.getOption(KEYSTORE_PASSWORD_OPT);
-            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            String keyStoreType = StringUtils.defaultIfBlank(config.getOption(KEYSTORE_TYPE_OPT), KeyStore.getDefaultType());
+            char[] keyPass = StringUtils.isBlank(keyStorePass) ? null : keyStorePass.toCharArray();
+            KeyStore keyStore = KeyStore.getInstance(keyStoreType);
             try (InputStream is = Files.newInputStream(keyStorePath)) {
-                keyStore.load(is, keyStorePass.toCharArray());
+                keyStore.load(is, keyPass);
             }
             SSLContextBuilder sslBuilder = SSLContexts.custom().loadTrustMaterial(keyStore, null);
             return sslBuilder.build();
