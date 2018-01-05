@@ -18,8 +18,6 @@
  */
 package org.nuxeo.elasticsearch.status;
 
-import java.util.List;
-
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.nuxeo.ecm.core.management.api.Probe;
 import org.nuxeo.ecm.core.management.api.ProbeStatus;
@@ -35,10 +33,9 @@ public class ElasticSearchStatusProbe implements Probe {
 
     @Override
     public ProbeStatus run() {
-        String[] indices = getIndexNames();
         ClusterHealthStatus clusterStatus = Framework.getService(ElasticSearchAdmin.class)
-                                                     .getClient()
-                                                     .getHealthStatus(indices);
+                                                     .getClient().admin().cluster().prepareHealth().execute().actionGet().getStatus();
+                                                
         switch (clusterStatus) {
         case GREEN:
         case YELLOW:
@@ -47,16 +44,4 @@ public class ElasticSearchStatusProbe implements Probe {
             return ProbeStatus.newFailure(clusterStatus.toString());
         }
     }
-
-    protected String[] getIndexNames() {
-        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-        List<String> repositoryNames = Framework.getService(ElasticSearchAdmin.class).getRepositoryNames();
-        String indices[] = new String[repositoryNames.size()];
-        int i = 0;
-        for (String repo : repositoryNames) {
-            indices[i++] = esa.getIndexNameForRepository(repo);
-        }
-        return indices;
-    }
-
 }
