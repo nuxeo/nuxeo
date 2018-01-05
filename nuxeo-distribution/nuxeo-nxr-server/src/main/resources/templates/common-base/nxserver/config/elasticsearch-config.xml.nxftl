@@ -17,6 +17,11 @@
       <option name="addressList">${elasticsearch.addressList}</option>
       <option name="connection.timeout.ms">${elasticsearch.restClient.connectionTimeoutMs}</option>
       <option name="socket.timeout.ms">${elasticsearch.restClient.socketTimeoutMs}</option>
+      <option name="username">${elasticsearch.restClient.username}</option>
+      <option name="password">${elasticsearch.restClient.password}</option>
+      <option name="keystore.path">${elasticsearch.restClient.keystorePath}</option>
+      <option name="keystore.password">${elasticsearch.restClient.keystorePassword}</option>
+      <option name="keystore.type">${elasticsearch.restClient.keystoreType}</option>
     </elasticSearchClient>
 <#else>
   <elasticSearchClient class="org.nuxeo.elasticsearch.client.ESTransportClientFactory">
