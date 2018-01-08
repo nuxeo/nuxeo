@@ -20,9 +20,12 @@
 
 package org.nuxeo.ecm.platform.mail.service;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.mail.Address;
 import javax.mail.Folder;
@@ -41,6 +44,7 @@ import org.nuxeo.ecm.platform.mail.action.MessageActionPipeDescriptor;
 import org.nuxeo.ecm.platform.mail.fetcher.PropertiesFetcher;
 import org.nuxeo.ecm.platform.mail.fetcher.PropertiesFetcherDescriptor;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -74,8 +78,15 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
 
     private final Map<String, MessageActionPipeDescriptor> actionPipeDescriptorsRegistry = new HashMap<>();
 
+    protected final Map<String, Session> sessions = new ConcurrentHashMap<>();
+
     static {
         setDecodeUTFFileNamesSystemProperty();
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        sessions.clear();
     }
 
     @Override
@@ -217,6 +228,14 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
     }
 
     protected Session newSession(Properties props) {
-        return EmailHelper.newSession(props);
+        // build a key for sessions cache
+        String sessionKey = props.entrySet()
+                                 .stream()
+                                 // by design of PropertiesFetcher, keys are strings
+                                 // sort them alphabetically to have a deterministic order
+                                 .sorted(Comparator.comparing(e -> e.getKey().toString()))
+                                 .map(e -> e.getKey() + "#" + e.getValue())
+                                 .collect(Collectors.joining("-", "{", "}"));
+        return sessions.computeIfAbsent(sessionKey, k -> EmailHelper.newSession(props));
     }
 }

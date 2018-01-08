@@ -211,7 +211,7 @@ public class EmailHelper {
      */
     public static Session newSession(Properties props) {
         Authenticator authenticator = new EmailAuthenticator(props);
-        Session session = Session.getDefaultInstance(props, authenticator);
+        Session session = Session.getInstance(props, authenticator);
         String protocol = props.getProperty("mail.transport.protocol");
         if (protocol != null && protocol.length() > 0) {
             session.setProtocolForAddress("rfc822", protocol);
