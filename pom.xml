@@ -6678,10 +6678,6 @@
     </profile>
     <profile>
       <id>kafka</id>
-      <properties>
-        <kafka.bootstrap.servers>localhost:9092</kafka.bootstrap.servers>
-        <kafka.zkServers>localhost:2181</kafka.zkServers>
-      </properties>
        <build>
          <plugins>
            <plugin>
@@ -6697,7 +6693,7 @@
                   <configuration>
                     <files>
                       <file>/etc/kafka.properties</file>
-                      <file>${home.dir}/kafka.properties</file>
+                      <file>${user.home}/kafka.properties</file>
                       <file>kafka.properties</file>
                     </files>
                     <quiet>true</quiet>
