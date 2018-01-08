@@ -6679,7 +6679,7 @@
     <profile>
       <id>kafka</id>
       <properties>
-        <kafka.bootstrap.servers>localhost:9902</kafka.bootstrap.servers>
+        <kafka.bootstrap.servers>localhost:9092</kafka.bootstrap.servers>
         <kafka.zkServers>localhost:2181</kafka.zkServers>
       </properties>
        <build>
