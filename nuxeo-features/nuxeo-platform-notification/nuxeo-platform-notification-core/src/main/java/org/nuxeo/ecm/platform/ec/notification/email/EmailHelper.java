@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ public class EmailHelper {
     private static final Log log = LogFactory.getLog(EmailHelper.class);
 
     // used for loading templates from strings
-    private final Configuration stringCfg = new Configuration();
+    private final Configuration stringCfg = new Configuration(Configuration.VERSION_2_3_0);
 
     protected static boolean javaMailNotAvailable = false;
 
@@ -220,7 +220,7 @@ public class EmailHelper {
     }
 
     protected Map<String, Object> initMvelBindings(Map<String, Serializable> infos) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("NotificationContext", infos);
         return map;
     }
@@ -229,9 +229,6 @@ public class EmailHelper {
      * Evaluates a MVEL expression within some context infos accessible on the "NotificationContext" object. Returns
      * null if the result is not evaluated to a String
      *
-     * @param expr
-     * @param ctx
-     * @return
      * @since 5.6
      */
     public String evaluateMvelExpresssion(String expr, Map<String, Serializable> ctx) {

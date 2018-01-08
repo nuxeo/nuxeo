@@ -22,9 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.mail.Address;
 import javax.mail.Flags.Flag;
 import javax.mail.Folder;
@@ -116,8 +113,6 @@ public class TestMailService extends NXRuntimeTestCase {
         assertEquals("foo", message.getSubject());
         rootFolder.close(true);
         store.close();
-        Map<String, Object> variablesMap = new HashMap<>();
-        variablesMap.put("sender", "alex");
         mailService.sendMail("templates/SimpleMail.tpl", A_GREAT_TEMPLATE_MAIL, TEST_FACTORY,
                 new Address[] { internetAddress });
         mailService.sendMail(VERY_SMALL_MAIL, A_DEAD_SIMPLE_MAIL, TEST_FACTORY, new Address[] { internetAddress });

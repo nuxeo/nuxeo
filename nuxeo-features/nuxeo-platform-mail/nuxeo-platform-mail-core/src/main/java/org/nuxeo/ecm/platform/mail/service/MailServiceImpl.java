@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Alexandre Russel
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.mail.service;
@@ -56,15 +55,24 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
 
     private static final String ACTION_PIPES = "actionPipes";
 
-    private final Map</* fetcher name */String, Class<? extends PropertiesFetcher>> fetchers = new HashMap<String, Class<? extends PropertiesFetcher>>();
+    /**
+     * Fetchers aggregated by name.
+     */
+    private final Map<String, Class<? extends PropertiesFetcher>> fetchers = new HashMap<>();
 
-    private final Map</* session factory name */String, SessionFactoryDescriptor> sessionFactories = new HashMap<String, SessionFactoryDescriptor>();
+    /**
+     * Session factories aggregated by name.
+     */
+    private final Map<String, SessionFactoryDescriptor> sessionFactories = new HashMap<>();
 
-    private final Map</* session factory name */String, PropertiesFetcher> configuredFetchers = new HashMap<String, PropertiesFetcher>();
+    /**
+     * Fetchers aggregated by session factory name.
+     */
+    private final Map<String, PropertiesFetcher> configuredFetchers = new HashMap<>();
 
-    private final Map<String, MessageActionPipe> actionPipesRegistry = new HashMap<String, MessageActionPipe>();
+    private final Map<String, MessageActionPipe> actionPipesRegistry = new HashMap<>();
 
-    private final Map<String, MessageActionPipeDescriptor> actionPipeDescriptorsRegistry = new HashMap<String, MessageActionPipeDescriptor>();
+    private final Map<String, MessageActionPipeDescriptor> actionPipeDescriptorsRegistry = new HashMap<>();
 
     static {
         setDecodeUTFFileNamesSystemProperty();
