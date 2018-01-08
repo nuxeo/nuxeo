@@ -20,6 +20,8 @@ package org.nuxeo.ecm.platform.mail.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import javax.mail.Address;
@@ -185,6 +187,26 @@ public class TestMailService extends NXRuntimeTestCase {
         assertEquals(pipe.get(0).getClass().getSimpleName(), "ExtractMessageInformationAction");
         assertEquals(pipe.get(1).getClass().getSimpleName(), "CreateDocumentsAction");
 
+    }
+
+    @Test
+    public void testSessionFactoryUnique() throws Exception {
+        deployBundle("org.nuxeo.ecm.platform.mail");
+        pushInlineDeployments("org.nuxeo.ecm.platform.mail.test:OSGI-INF/mailService-session-factory-test-contrib.xml");
+
+        MailService mailService = Framework.getService(MailService.class);
+        Session session1 = mailService.getSession("testFactory");
+        assertNotNull(session1);
+        // check we get the same session by getting a session again
+        Session session1a = mailService.getSession("testFactory");
+        assertNotNull(session1a);
+        // check equality by reference
+        assertSame("Sessions should be equals", session1,  session1a);
+
+        // now get a new session
+        Session session2 = mailService.getSession("testFactory2");
+        assertNotNull(session2);
+        assertNotSame("Sessions shouldn't be equals", session1, session2);
     }
 
     static class TestMailAction implements MessageAction {
