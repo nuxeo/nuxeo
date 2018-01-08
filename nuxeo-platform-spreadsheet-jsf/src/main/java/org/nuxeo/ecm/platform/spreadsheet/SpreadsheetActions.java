@@ -20,14 +20,13 @@ package org.nuxeo.ecm.platform.spreadsheet;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
+import java.io.IOException;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
@@ -47,7 +46,7 @@ public class SpreadsheetActions implements Serializable {
     @In(create = true)
     protected ContentViewService contentViewService;
 
-    public String urlFor(ContentView contentView) throws UnsupportedEncodingException {
+    public String urlFor(ContentView contentView) throws IOException {
         String cv = "";
 
         // Set the content view state
