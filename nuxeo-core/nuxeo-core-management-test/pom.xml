@@ -7,7 +7,6 @@
     <version>10.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.core</groupId>
   <artifactId>nuxeo-core-management-test</artifactId>
   <name>Nuxeo Core Management Test</name>
   <description>Nuxeo Core Management Test</description>

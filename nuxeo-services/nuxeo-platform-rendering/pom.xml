@@ -6,7 +6,6 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-rendering</artifactId>
   <name>Nuxeo Rendering Service</name>
   <description>Rendering service based on freemarker to render content form Nuxeo Core into any format.</description>

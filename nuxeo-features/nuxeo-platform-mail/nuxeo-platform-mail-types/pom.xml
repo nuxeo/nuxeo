@@ -7,7 +7,6 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-mail-types</artifactId>
   <packaging>jar</packaging>
   <name>Nuxeo Mail - Types contrib</name>

@@ -7,7 +7,6 @@
     <version>10.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.annot</groupId>
   <artifactId>nuxeo-annot-api</artifactId>
   <name>Nuxeo Platform Annotation API</name>
 

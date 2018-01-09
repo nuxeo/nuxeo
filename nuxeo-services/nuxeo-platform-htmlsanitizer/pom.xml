@@ -6,7 +6,6 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-htmlsanitizer</artifactId>
   <name>Nuxeo HTML Sanitizer Service</name>
   <description>Nuxeo HTML Sanitizer Service against XSS.</description>
