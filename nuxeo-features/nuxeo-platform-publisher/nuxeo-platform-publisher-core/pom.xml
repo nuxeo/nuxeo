@@ -5,7 +5,6 @@
     <version>10.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-publisher-core</artifactId>
   <name>Nuxeo Platform Publisher Core</name>
   <description>Nuxeo Platform Publisher Core</description>

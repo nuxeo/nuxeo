@@ -5,7 +5,6 @@
     <artifactId>nuxeo-platform-publisher-parent</artifactId>
     <version>10.1-SNAPSHOT</version>
   </parent>
-  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-publisher-core-contrib</artifactId>
   <name>Nuxeo Platform Publisher Core Contrib</name>
   <description>Nuxeo Platform Publisher Core Contrib</description>

@@ -6,7 +6,6 @@
     <version>10.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.annot</groupId>
   <artifactId>nuxeo-annot-http</artifactId>
   <name>Nuxeo Platform Annotation HTTP Connector</name>
 

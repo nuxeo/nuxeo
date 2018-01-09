@@ -5,7 +5,6 @@
     <artifactId>parent</artifactId>
     <version>10.1-SNAPSHOT</version>
   </parent>
-  <groupId>org.nuxeo.ecm.annot</groupId>
   <artifactId>nuxeo-annot-core</artifactId>
   <name>Nuxeo Platform Annotation Core</name>
   <dependencies>
@@ -49,7 +48,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-versioning-core</artifactId>
-      <version>${nuxeo.services.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

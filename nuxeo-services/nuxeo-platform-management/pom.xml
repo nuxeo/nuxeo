@@ -7,7 +7,6 @@
     <version>10.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-management</artifactId>
   <name>Nuxeo Platform Management</name>
   <description>Nuxeo Enterprise Platform: Management</description>
