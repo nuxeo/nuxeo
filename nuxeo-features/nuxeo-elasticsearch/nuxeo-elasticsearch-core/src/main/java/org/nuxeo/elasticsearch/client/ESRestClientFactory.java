@@ -69,6 +69,9 @@ public class ESRestClientFactory implements ESClientFactory {
 
     public static final String KEYSTORE_PASSWORD_OPT = "keystore.password";
 
+    /**
+     * @since 9.10-HF01
+     */
     public static final String KEYSTORE_TYPE_OPT = "keystore.type";
 
     @Override
