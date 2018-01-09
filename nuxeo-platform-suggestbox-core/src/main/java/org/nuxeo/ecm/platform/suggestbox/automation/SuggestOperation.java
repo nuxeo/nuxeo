@@ -18,7 +18,11 @@
  */
 package org.nuxeo.ecm.platform.suggestbox.automation;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.nuxeo.ecm.automation.core.Constants;
@@ -33,9 +37,6 @@ import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionService;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * Operation used to suggest result by getting and calling all the suggesters defined in contributions.
@@ -59,8 +60,8 @@ public class SuggestOperation {
     protected String searchTerm;
 
     @OperationMethod
-    public Blob run() throws SuggestionException {
-        JSONArray result = new JSONArray();
+    public Blob run() throws SuggestionException, IOException {
+        List<Map<String, Object>> result = new ArrayList<>();
 
         SuggestionContext suggestionContext = new SuggestionContext(SUGGESTER_GROUP, session.getPrincipal());
         suggestionContext.withSession(session);
@@ -69,7 +70,7 @@ public class SuggestOperation {
 
         // For each suggestion, create a JSON object and add it to the result
         for (Suggestion suggestion : listSuggestions) {
-            JSONObject suggestionJSON = new JSONObject();
+            Map<String, Object> suggestionJSON = new LinkedHashMap<>();
             suggestionJSON.put("id", suggestion.getId());
             suggestionJSON.put("label", suggestion.getLabel());
             suggestionJSON.put("type", suggestion.getType());
@@ -77,10 +78,10 @@ public class SuggestOperation {
             suggestionJSON.put("thumbnailUrl", suggestion.getThumbnailURL());
             suggestionJSON.put("url", suggestion.getObjectUrl());
 
-            JSONArray highlights = new JSONArray();
+            List<Map<String, Object>> highlights = new ArrayList<>();
             if (suggestion.getHighlights() != null) {
                 for (Entry<String, List<String>> e : suggestion.getHighlights().entrySet()) {
-                    JSONObject h = new JSONObject();
+                    Map<String, Object> h = new LinkedHashMap<>();
                     h.put("field", e.getKey());
                     h.put("segments", e.getValue());
                     highlights.add(h);
@@ -91,6 +92,6 @@ public class SuggestOperation {
             result.add(suggestionJSON);
         }
 
-        return Blobs.createJSONBlob(result.toString());
+        return Blobs.createJSONBlobFromValue(result);
     }
 }
