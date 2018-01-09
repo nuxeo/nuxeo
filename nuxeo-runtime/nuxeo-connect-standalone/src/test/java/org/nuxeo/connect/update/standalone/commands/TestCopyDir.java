@@ -47,6 +47,8 @@ public class TestCopyDir extends AbstractCommandTest {
 
     private final static String testConfigFilename = "test-config.xml";
 
+    private static final int NEW_JAR_LENGTH = 168;
+
     private File deprecatedFile;
 
     private File snapshotFile;
@@ -80,13 +82,7 @@ public class TestCopyDir extends AbstractCommandTest {
         assertTrue(newFilename + " was not installed", newFile.isFile());
         assertEquals(IOUtils.createMd5(src), IOUtils.createMd5(newFile));
         assertFalse(deprecatedFilename + " was not replaced", deprecatedFile.exists());
-        BufferedReader reader = new BufferedReader(new FileReader(snapshotFile));
-        try {
-            String line = reader.readLine();
-            assertEquals("new SNAPSHOT content", line);
-        } finally {
-            org.apache.commons.io.IOUtils.closeQuietly(reader);
-        }
+        assertEquals(NEW_JAR_LENGTH, snapshotFile.length());
         assertFalse("New feature was copied whereas 'upgradeOnly=true'",
                 new File(bundles, notToDeployFilename).exists());
 
