@@ -95,7 +95,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Jetty(port = 18090)
 @Deploy({ "org.nuxeo.ecm.platform.restapi.server.routing", "org.nuxeo.ecm.automation.test",
-        "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.platform.restapi.io", "org.nuxeo.ecm.platform.restapi.test",
+        "org.nuxeo.ecm.platform.restapi.io", "org.nuxeo.ecm.platform.restapi.test",
         "org.nuxeo.ecm.platform.restapi.server", "org.nuxeo.ecm.platform.routing.default",
         "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.actions" })
 public class WorkflowEndpointTest extends RoutingRestBaseTest {
@@ -700,8 +700,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
             assertEquals(2, taskActions.size());
             JsonNode taskAction = taskActions.elements().next();
             assertNotNull(taskAction);
-            assertEquals(
-                    String.format("http://localhost:18090/api/v1/task/%s/cancel", element.get("id").textValue()),
+            assertEquals(String.format("http://localhost:18090/api/v1/task/%s/cancel", element.get("id").textValue()),
                     taskAction.get("url").textValue());
         }
     }
