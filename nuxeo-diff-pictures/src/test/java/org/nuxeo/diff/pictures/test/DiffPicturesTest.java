@@ -87,6 +87,7 @@ public class DiffPicturesTest {
         DiffPictures dp = new DiffPictures(blob1, blob2);
 
         result = dp.compare(null, null);
+        assertEquals("image/png", result.getMimeType());
 
         BufferedImage bi = checkIsImage(result);
         assertEquals(bi.getWidth(), ISLAND_W);
