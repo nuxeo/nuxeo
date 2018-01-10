@@ -396,7 +396,8 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             if (FilenameUtils.getExtension(filename).toLowerCase().equals("dae")) {
                 String[] filenameArray = filename.split("-");
                 if (filenameArray.length != 4) {
-                    throw new ConversionException(filenameArray + " incompatible with conversion file name schema.");
+                    throw new ConversionException(
+                            Arrays.toString(filenameArray) + " incompatible with conversion file name schema.");
                 }
                 lodBlobIndexes.put(filenameArray[1], blobs.size());
             } else {
