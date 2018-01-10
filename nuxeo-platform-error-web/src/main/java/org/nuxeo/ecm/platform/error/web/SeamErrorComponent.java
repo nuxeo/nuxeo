@@ -70,10 +70,6 @@ public class SeamErrorComponent implements Serializable {
     protected transient CoreSession documentManager;
 
     protected void createNewDocument() {
-        if (documentManager == null) {
-            log.error("********** Unexpected exception while testing "
-                    + "error handling: documentManager is null ***********");
-        }
         DocumentModel newDocument = documentManager.createDocumentModel("Workspace");
         String title = "Test document";
         newDocument.setProperty("dublincore", "title", "Test document");
