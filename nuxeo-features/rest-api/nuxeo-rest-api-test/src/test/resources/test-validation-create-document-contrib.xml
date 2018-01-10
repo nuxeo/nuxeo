@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.rest.api.test.create.document.dirty.contrib">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="org.nuxeo.core.validate.dirty.only.creation">false</property>
+  </extension>
+
+</component>

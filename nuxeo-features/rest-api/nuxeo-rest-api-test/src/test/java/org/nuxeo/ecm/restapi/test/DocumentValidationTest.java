@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -109,6 +110,7 @@ public class DocumentValidationTest extends BaseTest {
      * NXP-23267
      */
     @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-validation-create-document-contrib.xml")
     public void testCreateDocumentWithViolationNotDirtyEndpointId() throws Exception {
         DocumentModel root = session.getDocument(new PathRef("/"));
         ClientResponse response = getResponse(RequestType.POST, "id/" + root.getId(), INVALID_DOC_NOT_DIRTY);
@@ -120,6 +122,7 @@ public class DocumentValidationTest extends BaseTest {
      * NXP-23267
      */
     @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-validation-create-document-contrib.xml")
     public void testCreateDocumentWithViolationNotDirtyEndpointPath() throws Exception {
         ClientResponse response = getResponse(RequestType.POST, "path/", INVALID_DOC_NOT_DIRTY);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
