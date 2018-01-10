@@ -25,6 +25,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -56,8 +57,11 @@ public class SegmentIOUserFilter {
     public String getAnonymousUserId() {
         if (anonymousUserId == null) {
             UserManager um = Framework.getService(UserManager.class);
-            if (um==null && Framework.isTestModeSet()) {
-                return "Guest";
+            if (um == null) {
+                if (Framework.isTestModeSet()) {
+                    return "Guest";
+                }
+                throw new NuxeoException("Missing UserManager");
             }
             anonymousUserId = um.getAnonymousUserId();
         }
