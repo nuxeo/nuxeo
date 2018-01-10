@@ -213,7 +213,7 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         } else if (targetType.equals(ServiceInfo.TYPE_NAME)) {
             artifact = snap.getService(targetId);
         } else {
-            artifact = null;
+            return null;
         }
         return resolveInTree(session, distribId, artifact, searchedType);
     }
