@@ -83,8 +83,15 @@ public abstract class TestTools {
     }
 
     @Test
+    public void testPosition() {
+        run("help position");
+        runShouldFail(String.format("position %s --log-name %s --group anotherGroup --to-timestamp %s", getManagerOptions(), LOG_NAME, 123));
+        run(String.format("position %s --log-name %s --group anotherGroup --to-end", getManagerOptions(), LOG_NAME));
+    }
+
+    @Test
     public void testReset() {
-        run(String.format("reset %s --log-name %s --group anotherGroup", getManagerOptions(), LOG_NAME));
+        run(String.format("position --reset %s --log-name %s --group anotherGroup", getManagerOptions(), LOG_NAME));
     }
 
     @Test

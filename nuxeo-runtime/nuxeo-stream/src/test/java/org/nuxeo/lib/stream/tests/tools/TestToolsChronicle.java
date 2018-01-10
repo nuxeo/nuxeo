@@ -18,8 +18,13 @@
  */
 package org.nuxeo.lib.stream.tests.tools;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.nio.file.Path;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
@@ -62,6 +67,17 @@ public class TestToolsChronicle extends TestTools {
             tailer.commit();
         }
 
+    }
+
+    @Override
+    public void testPosition() {
+        super.testPosition();
+        try {
+            run(String.format("position %s --log-name %s --group anotherGroup --to-timestamp %s", getManagerOptions(), LOG_NAME, Instant.now().minus(1, ChronoUnit.HOURS)));
+            fail();
+        } catch (UnsupportedOperationException uoe) {
+            assertTrue(uoe.getMessage().contains("does not support seek by timestamp"));
+        }
     }
 
     @Override
