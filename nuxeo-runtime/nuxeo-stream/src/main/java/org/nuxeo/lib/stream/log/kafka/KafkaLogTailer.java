@@ -42,6 +42,7 @@ import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.clients.consumer.OffsetAndTimestamp;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.InterruptException;
 import org.apache.kafka.common.errors.WakeupException;
@@ -306,6 +307,19 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         consumer.commitSync(offsetToCommit);
         lastCommittedOffsets.remove(topicPartition);
         seek(new LogOffsetImpl(partition, beginningOffsets.get(topicPartition)));
+    }
+
+    @Override
+    public LogOffset offsetForTimestamp(LogPartition partition, long timestamp) {
+        TopicPartition topicPartition = new TopicPartition(prefix + partition.name(), partition.partition());
+        Map<TopicPartition, OffsetAndTimestamp> offsetsForTimes = consumer.offsetsForTimes(Collections.singletonMap(topicPartition, timestamp));
+        if (offsetsForTimes.size() == 1) {
+            OffsetAndTimestamp offsetAndTimestamp = offsetsForTimes.get(topicPartition);
+            if (offsetAndTimestamp != null) {
+                return new LogOffsetImpl(partition, offsetAndTimestamp.offset());
+            }
+        }
+        return null;
     }
 
     @Override
