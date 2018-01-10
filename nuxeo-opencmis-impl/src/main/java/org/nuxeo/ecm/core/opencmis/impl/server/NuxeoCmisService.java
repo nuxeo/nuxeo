@@ -1114,9 +1114,7 @@ public class NuxeoCmisService extends AbstractCmisService
         if (isFilteredOut(parent)) {
             throw new CmisObjectNotFoundException("No parent: " + objectId);
         }
-        if (sourceFolderId == null) {
-            sourceFolderId = parent.getId();
-        } else {
+        if (sourceFolderId != null) {
             // check it's the actual parent
             if (!parent.getId().equals(sourceFolderId)) {
                 throw new CmisInvalidArgumentException("Object " + objectId + " is not filed in " + sourceFolderId);

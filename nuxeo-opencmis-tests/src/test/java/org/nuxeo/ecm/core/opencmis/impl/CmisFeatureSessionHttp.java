@@ -332,6 +332,9 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
                 klass = klass.getSuperclass();
             }
         }
+        if (f == null) {
+            throw new NoSuchFieldException("No field " + name + " on " + object.getClass().getName());
+        }
         f.setAccessible(true);
         return f.get(object);
     }

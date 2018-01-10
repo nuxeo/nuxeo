@@ -458,8 +458,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
             // security check
 
-            boolean checkSecurity = !isRelation //
-                    && queryFilter != null && queryFilter.getPrincipals() != null;
+            boolean checkSecurity = !isRelation && queryFilter.getPrincipals() != null;
             if (checkSecurity) {
                 Serializable principals;
                 Serializable permissions;

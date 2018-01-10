@@ -108,12 +108,8 @@ public class NuxeoCmisServiceFactoryManager extends DefaultComponent {
     public NuxeoCmisServiceFactory getNuxeoCmisServiceFactory() {
         NuxeoCmisServiceFactoryDescriptor descriptor = registry.getNuxeoCmisServiceFactoryDescriptor();
 
-        Class<? extends NuxeoCmisServiceFactory> factoryClass = null;
-        Map<String, String> factoryParameters = null;
-        if (descriptor != null) {
-            factoryClass = descriptor.getFactoryClass();
-            factoryParameters = descriptor.factoryParameters;
-        }
+        Class<? extends NuxeoCmisServiceFactory> factoryClass = descriptor.getFactoryClass();
+        Map<String, String> factoryParameters = descriptor.factoryParameters;
         NuxeoCmisServiceFactory nuxeoCmisServiceFactory;
         try {
             nuxeoCmisServiceFactory = factoryClass.getDeclaredConstructor().newInstance();
