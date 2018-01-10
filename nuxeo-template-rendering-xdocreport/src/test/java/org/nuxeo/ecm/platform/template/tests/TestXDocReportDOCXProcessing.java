@@ -101,7 +101,6 @@ public class TestXDocReportDOCXProcessing extends SimpleTemplateDocTestCase {
         assertNotNull(testDoc);
 
         // remove picture
-        List<Map<String, Serializable>> blobs = new ArrayList<Map<String, Serializable>>();
         testDoc.setPropertyValue("files:files", (Serializable) null);
         testDoc = session.saveDocument(testDoc);
 

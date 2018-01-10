@@ -73,10 +73,11 @@ public class XMLSerializer {
             field.addAttribute("name", input.getName());
 
             InputType type = input.getType();
-            if (type == null) {
+            if (type != null) {
+                field.addAttribute("type", type.getValue());
+            } else {
                 log.warn(input.getName() + " is null");
             }
-            field.addAttribute("type", type.getValue());
 
             if (input.isReadOnly()) {
                 field.addAttribute("readonly", "true");
