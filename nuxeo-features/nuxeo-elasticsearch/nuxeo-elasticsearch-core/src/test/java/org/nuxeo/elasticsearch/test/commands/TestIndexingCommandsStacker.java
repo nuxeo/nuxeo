@@ -199,7 +199,6 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
     @Test
     public void shouldRecurseReindexInSync() throws Exception {
         DocumentModel doc1 = new MockDocumentModel("1", true);
-        DocumentModel doc2 = new MockDocumentModel("2", true);
 
         stackCommand(doc1, DocumentEventTypes.DOCUMENT_MOVED, true);
 

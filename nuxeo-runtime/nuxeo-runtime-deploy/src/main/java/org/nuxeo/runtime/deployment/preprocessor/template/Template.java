@@ -22,8 +22,6 @@ package org.nuxeo.runtime.deployment.preprocessor.template;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,24 +38,12 @@ public class Template {
 
     public static final String END = "END";
 
-    protected static final String JBOSS5_COMPAT = "org.nuxeo.runtme.preprocessing.jboss5";
-
     // we should use a linked hash map to preserve the
     // insertion order when iterating over the elements in the map
     final LinkedHashMap<String, Part> parts;
 
-    /**
-     * Must be removed when fixing deployment-fragment.xml files.
-     */
-    protected boolean runningOnJBoss5 = false;
-
     public Template() {
         parts = new LinkedHashMap<>();
-        // XXX compat code
-        String v = System.getProperty(JBOSS5_COMPAT);
-        if (v != null) {
-            runningOnJBoss5 = Boolean.parseBoolean(v);
-        }
     }
 
     public void addPart(String name, String text) {
@@ -65,7 +51,7 @@ public class Template {
     }
 
     public void update(TemplateContribution tc, Map<String, String> ctx) {
-        String content = getContent(tc, ctx);
+        String content = tc.getContent();
         content = new TextTemplate(ctx).processText(content);
         if (tc.isAppending()) {
             appendText(tc.getMarker(), content);
@@ -144,46 +130,6 @@ public class Template {
             return name;
         }
 
-    }
-
-    /*
-     * TODO: Remove the following methods when deployment-fragment.xml files will be fixed. These files must not contain
-     * <module><java>...</java></module> declarations.
-     */
-
-    /**
-     * Wrapper method introduced to fix JEE java modules in application template. XXX When this will be solved in trunk
-     * you can remove this method and simply call {@code tc.getContent();}.
-     */
-    protected String getContent(TemplateContribution tc, Map<String, String> context) {
-        String content = tc.getContent();
-        if (runningOnJBoss5 && "application".equals(tc.getTemplate()) && "MODULE".equals(tc.getMarker())) {
-            // remove JEE java modules
-            String oldcontent = content;
-            content = removeJavaModules(content);
-            if (oldcontent != content) {
-                log.warn("The deployment-fragment contains illegal JEE java module contribution: "
-                        + context.get("bundle.shortName"));
-            }
-            if (content.length() == 0) {
-                return "";
-            }
-        }
-        return "\n" + content.trim() + "\n";
-    }
-
-    protected static final Pattern JAVA_MODULE = Pattern.compile("<\\s*module\\s*>\\s*<\\s*java\\s*>.+<\\s*/\\s*java\\s*>\\s*<\\s*/\\s*module\\s*>");
-
-    /**
-     * Remove {@code <module><java>...</java></module>} from {@code application.xml} contributions. This a temporary fix
-     * to remove incorrect java module declarations from deployment-fragments - this should be fixed in each fragment.
-     */
-    protected static String removeJavaModules(String content) {
-        Matcher m = JAVA_MODULE.matcher(content);
-        if (m.find()) {
-            return m.replaceAll("").trim();
-        }
-        return content;
     }
 
 }

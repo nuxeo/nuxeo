@@ -98,7 +98,7 @@ public class DownloadablePackageOption {
         List<DownloadablePackageOption> siblings = new ArrayList<>();
         if (parent != null) {
             for (DownloadablePackageOption sibling : parent.getChildrenPackages()) {
-                if (sibling.getId() != getId()) {
+                if (!sibling.getId().equals(getId())) {
                     siblings.add(sibling);
                 }
             }

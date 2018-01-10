@@ -92,7 +92,7 @@ public class OSGiAdapter {
     }
 
     protected void initialize(Properties properties) {
-        this.properties = properties == null ? new Properties() : properties;
+        this.properties = properties;
         registry = new BundleRegistry();
         frameworkListeners = new ListenerList();
         bundleListeners = new ListenerList();

@@ -272,7 +272,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         if (ctxDoc == null && newDoc != null || ctxDoc != null && newDoc == null) {
             return true;
         }
-        if (ctxDoc == null && newDoc == null) {
+        if (ctxDoc == null) {
             return false;
         }
         if (log.isDebugEnabled()) {

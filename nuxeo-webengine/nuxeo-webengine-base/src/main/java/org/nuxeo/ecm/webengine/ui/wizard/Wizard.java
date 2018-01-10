@@ -216,7 +216,7 @@ public abstract class Wizard extends DefaultObject {
         try {
             // process page
             pageId = page.getNextPage(this, validate(page));
-            if (pageId == WizardPage.NEXT_PAGE) {
+            if (WizardPage.NEXT_PAGE.equals(pageId)) {
                 pageId = session.getPageAt(page.getIndex() + 1);
             }
             if (pageId == null) { // finish the wizard

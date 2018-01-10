@@ -109,12 +109,10 @@ public class TestLayoutExport extends NXRuntimeTestCase {
     }
 
     protected void checkLayoutTypeImport(String filename, boolean isCompat) throws Exception {
-        JSONObject json = null;
+        JSONObject json;
         try (InputStream in = new FileInputStream(FileUtils.getResourcePathFromContext(filename))) {
             byte[] bytes = IOUtils.toByteArray(in);
-            if (bytes.length != 0) {
-                json = JSONObject.fromObject(new String(bytes, "UTF-8"));
-            }
+            json = JSONObject.fromObject(new String(bytes, "UTF-8"));
         }
 
         LayoutTypeDefinition def = JSONLayoutExporter.importLayoutTypeDefinition(json);
@@ -172,12 +170,10 @@ public class TestLayoutExport extends NXRuntimeTestCase {
     }
 
     protected void checkWidgetTypeImport(String filename, boolean isCompat) throws Exception {
-        JSONObject json = null;
+        JSONObject json;
         try (InputStream in = new FileInputStream(FileUtils.getResourcePathFromContext(filename))) {
             byte[] bytes = IOUtils.toByteArray(in);
-            if (bytes.length != 0) {
-                json = JSONObject.fromObject(new String(bytes, "UTF-8"));
-            }
+            json = JSONObject.fromObject(new String(bytes, "UTF-8"));
         }
 
         WidgetTypeDefinition def = JSONLayoutExporter.importWidgetTypeDefinition(json);

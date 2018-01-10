@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.relations.api.Blank;
@@ -313,9 +314,9 @@ public class JenaGraph implements Graph {
             String value = label.getLexicalForm();
             String type = jenaNodeInst.getLiteralDatatypeURI();
             String language = jenaNodeInst.getLiteralLanguage();
-            if (type != "") {
+            if (StringUtils.isNotEmpty(type)) {
                 nuxNode = NodeFactory.createTypedLiteral(value, type);
-            } else if (language != "") {
+            } else if (StringUtils.isNotEmpty(language)) {
                 nuxNode = NodeFactory.createLiteral(value, language);
             } else {
                 nuxNode = NodeFactory.createLiteral(value);

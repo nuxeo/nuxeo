@@ -1,7 +1,6 @@
 Export-Package: org.nuxeo.ecm.webengine.jaxrs,
  org.nuxeo.ecm.webengine.jaxrs.annotations,
  org.nuxeo.ecm.webengine.jaxrs.context,
- org.nuxeo.ecm.webengine.jaxrs.login,
  org.nuxeo.ecm.webengine.jaxrs.servlet,
  org.nuxeo.ecm.webengine.jaxrs.servlet.config,
  org.nuxeo.ecm.webengine.jaxrs.servlet.mapping,

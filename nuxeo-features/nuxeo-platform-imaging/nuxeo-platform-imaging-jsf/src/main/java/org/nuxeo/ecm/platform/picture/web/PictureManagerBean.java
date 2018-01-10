@@ -26,6 +26,7 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -225,7 +226,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
             String[] propertyPath = path.split(":");
             String title = null;
             String field = null;
-            Property datamodel = null;
+            Property datamodel;
             if (propertyPath.length == 2) {
                 title = propertyPath[0];
                 field = propertyPath[1];
@@ -235,6 +236,9 @@ public class PictureManagerBean implements PictureManager, Serializable {
                 title = propertyPath[1];
                 field = propertyPath[2];
                 datamodel = doc.getProperty(schema + ":" + "views");
+            } else {
+                log.debug("Invalid property path: " + Arrays.toString(propertyPath));
+                return;
             }
             Property view = null;
             for (Property property : datamodel) {

@@ -32,6 +32,7 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
@@ -364,7 +365,7 @@ public class DirectoryTreeNode {
                 log.error("Cannot perform path preprocessing: " + "search document model is null");
             }
         }
-        if (aPath != null && aPath != "") {
+        if (StringUtils.isNotEmpty(aPath)) {
             String[] bitsOfPath = aPath.split("/");
             String myPath = "";
             String property = "";

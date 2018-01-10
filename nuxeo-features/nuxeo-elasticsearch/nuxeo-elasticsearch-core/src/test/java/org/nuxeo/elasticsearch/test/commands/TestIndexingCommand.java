@@ -50,20 +50,20 @@ public class TestIndexingCommand {
     public void testConstructorWithRecurseSync() throws Exception {
         DocumentModel doc = new MockDocumentModel("foo");
         exception.expect(IllegalArgumentException.class);
-        IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, true, true);
+        new IndexingCommand(doc, Type.INSERT, true, true);
     }
 
     @Test
     public void testConstructorWithNullDoc() throws Exception {
         exception.expect(IllegalArgumentException.class);
-        IndexingCommand cmd = new IndexingCommand(null, Type.INSERT, true, false);
+        new IndexingCommand(null, Type.INSERT, true, false);
     }
 
     @Test
     public void testConstructorWithNullDocId() throws Exception {
         DocumentModel doc = new MockDocumentModel(null);
         exception.expect(IllegalArgumentException.class);
-        IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, true, false);
+        new IndexingCommand(doc, Type.INSERT, true, false);
     }
 
     @Test

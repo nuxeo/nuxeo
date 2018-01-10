@@ -65,10 +65,10 @@ public class MyObject {
             if (!id.equals(myf.id)) {
                 return false;
             }
-            if (fid == null || myf.fid == null) {
-                return fid == myf.fid;
+            if (!fid.equals(myf.fid)) {
+                return false;
             }
-            return fid.equals(myf.fid);
+            return true;
         }
         return false;
     }

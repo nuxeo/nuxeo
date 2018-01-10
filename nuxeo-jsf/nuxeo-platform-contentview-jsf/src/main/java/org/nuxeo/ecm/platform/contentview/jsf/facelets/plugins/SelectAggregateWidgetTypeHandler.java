@@ -135,7 +135,7 @@ public abstract class SelectAggregateWidgetTypeHandler extends AbstractSelectWid
                 boolean done = false;
                 if (l10n_labels != null && !l10n_labels.isEmpty()) {
                     Locale locale = ctx.getFacesContext().getViewRoot().getLocale();
-                    if (l10n_labels.containsKey(locale.getLanguage()) | l10n_labels.containsKey("en")) {
+                    if (l10n_labels.containsKey(locale.getLanguage()) || l10n_labels.containsKey("en")) {
                         if (l10n_labels.containsKey(locale.getLanguage())) {
                             labels.put(selectOption.getItemValue(), l10n_labels.get(locale.getLanguage()));
                         } else {

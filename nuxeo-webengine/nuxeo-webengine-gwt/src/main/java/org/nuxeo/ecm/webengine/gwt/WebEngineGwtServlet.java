@@ -77,15 +77,13 @@ public class WebEngineGwtServlet extends RemoteServiceServlet {
     protected SerializationPolicy _doGetSerializationPolicy(HttpServletRequest request, String moduleBaseURL,
             String strongName) throws FileNotFoundException  {
 
-        String modulePath = null;
-        if (moduleBaseURL != null) {
-            try {
-                modulePath = new URL(moduleBaseURL).getPath();
-            } catch (MalformedURLException ex) {
-                // log the information, we will default
-                log.warn("Malformed moduleBaseURL: " + moduleBaseURL, ex);
-                return super.doGetSerializationPolicy(request, moduleBaseURL, strongName);
-            }
+        String modulePath;
+        try {
+            modulePath = new URL(moduleBaseURL).getPath();
+        } catch (MalformedURLException ex) {
+            // log the information, we will default
+            log.warn("Malformed moduleBaseURL: " + moduleBaseURL, ex);
+            return super.doGetSerializationPolicy(request, moduleBaseURL, strongName);
         }
         String moduleId = new File(modulePath).getName();
         if (moduleId.length() == 0) {

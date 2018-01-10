@@ -115,7 +115,7 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
 
     @Override
     public int size() throws TemplateModelException {
-        return DefaultDocumentView.DEFAULT.size(null);
+        return DefaultDocumentView.DEFAULT.size(doc);
     }
 
 }

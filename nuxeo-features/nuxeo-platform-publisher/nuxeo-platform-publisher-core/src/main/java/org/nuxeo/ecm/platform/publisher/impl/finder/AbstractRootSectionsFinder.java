@@ -100,12 +100,10 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
         }
 
         if (unrestrictedDefaultSectionRoot.isEmpty() && addDefaultSectionRoots) {
-            if (unrestrictedDefaultSectionRoot == null || unrestrictedDefaultSectionRoot.isEmpty()) {
-                DocumentModelList defaultSectionRoots = getDefaultSectionRoots(session);
-                unrestrictedDefaultSectionRoot = new ArrayList<String>();
-                for (DocumentModel root : defaultSectionRoots) {
-                    unrestrictedDefaultSectionRoot.add(root.getPathAsString());
-                }
+            DocumentModelList defaultSectionRoots = getDefaultSectionRoots(session);
+            unrestrictedDefaultSectionRoot = new ArrayList<String>();
+            for (DocumentModel root : defaultSectionRoots) {
+                unrestrictedDefaultSectionRoot.add(root.getPathAsString());
             }
         }
 
@@ -125,12 +123,10 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
         }
 
         if (unrestrictedDefaultSectionRoot.isEmpty() && addDefaultSectionRoots) {
-            if (unrestrictedDefaultSectionRoot == null || unrestrictedDefaultSectionRoot.isEmpty()) {
-                DocumentModelList defaultSectionRoots = getDefaultSectionRoots(session);
-                unrestrictedDefaultSectionRoot = new ArrayList<String>();
-                for (DocumentModel root : defaultSectionRoots) {
-                    unrestrictedDefaultSectionRoot.add(root.getPathAsString());
-                }
+            DocumentModelList defaultSectionRoots = getDefaultSectionRoots(session);
+            unrestrictedDefaultSectionRoot = new ArrayList<String>();
+            for (DocumentModel root : defaultSectionRoots) {
+                unrestrictedDefaultSectionRoot.add(root.getPathAsString());
             }
         }
 

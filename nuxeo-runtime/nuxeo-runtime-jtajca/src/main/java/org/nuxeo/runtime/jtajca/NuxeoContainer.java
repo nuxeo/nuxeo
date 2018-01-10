@@ -133,12 +133,11 @@ public class NuxeoContainer {
     /**
      * Install naming and bind transaction and connection management factories "by hand".
      */
-    protected static void install() throws NamingException {
+    protected static synchronized void install() throws NamingException {
         if (installContext != null) {
             throw new RuntimeException("Nuxeo container already installed");
         }
         installContext = new InstallContext();
-        log.trace("Installing nuxeo container", installContext);
         rootContext = new NamingContext();
         parentContext = InitialContextAccessor.getInitialContext();
         if (parentContext != null && parentContext != rootContext) {

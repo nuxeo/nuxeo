@@ -1,4 +1,4 @@
-/* 
+/*
  * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,12 +62,10 @@ public class Toc {
             entry.index = 1;
         } else {
             Entry prev = tail.parent;
-            // FIXME: null consistency check
-            while (prev.level > level && prev != null) {
+            while (prev.level > level) {
                 prev = prev.parent;
             }
-            // FIXME: null consistency check
-            if (prev == null || prev.parent == null) {
+            if (prev.parent == null) {
                 throw new IllegalStateException("Invalid headers. Header levels underflowed");
             }
             prev.next = entry;

@@ -243,21 +243,19 @@ public class PictureBookManagerBean extends InputController implements PictureBo
         }
         for (Blob content : blobs) {
             String fileName = content.getFilename();
-            if (content != null) {
-                // Workaround to deal with duplicate file names.
-                int tryCount = 0;
-                while (true) {
-                    try {
-                        if (tryCount == 0) {
-                            ZipUtils._zip(path + fileName, content.getStream(), out);
-                        } else {
-                            ZipUtils._zip(path + formatFileName(fileName, "(" + tryCount + ")"), content.getStream(),
-                                    out);
-                        }
-                        break;
-                    } catch (ZipException e) {
-                        tryCount++;
+            // Workaround to deal with duplicate file names.
+            int tryCount = 0;
+            while (true) {
+                try {
+                    if (tryCount == 0) {
+                        ZipUtils._zip(path + fileName, content.getStream(), out);
+                    } else {
+                        ZipUtils._zip(path + formatFileName(fileName, "(" + tryCount + ")"), content.getStream(),
+                                out);
                     }
+                    break;
+                } catch (ZipException e) {
+                    tryCount++;
                 }
             }
         }

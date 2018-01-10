@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.auth.saml.binding.HTTPPostBinding;
 import org.nuxeo.ecm.platform.auth.saml.binding.HTTPRedirectBinding;
@@ -171,7 +172,7 @@ public class SAMLAuthenticationProvider
             try {
                 userResolverClass = Class.forName(userResolverClassname).asSubclass(AbstractUserResolver.class);
             } catch (ClassNotFoundException e) {
-                log.error("Failed get user resolver class " + userResolverClassname);
+                throw new NuxeoException("Failed get user resolver class " + userResolverClassname, e);
             }
 
         }

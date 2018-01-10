@@ -76,10 +76,10 @@ public class ObjectResolverServiceImpl extends DefaultComponent implements Objec
             return null;
         }
         try {
-            resolver.configure(parameters != null ? parameters : new HashMap<String, String>());
+            resolver.configure(parameters);
         } catch (IllegalArgumentException e) {
             log.info(String.format("Unable to configure %s with parameters %s", resolverClass.getCanonicalName(),
-                    parameters.toString()));
+                    parameters));
             return null;
         }
         return resolver;

@@ -181,12 +181,12 @@ public abstract class BaseDocumentsListsManager implements Serializable {
         List<DocumentModel> docList = getWorkingList(listName);
         DocumentsListDescriptor desc = getWorkingListDescriptor(listName);
 
-        // FIXME needs to be checked
         for (DocumentModel doc : lst) {
 
             if (desc.getPersistent()) {
-                if (getPersistenceManager().removeDocumentFromPersistentList(userName, listName, doc));
-                docList.remove(doc);
+                if (getPersistenceManager().removeDocumentFromPersistentList(userName, listName, doc)) {
+                    docList.remove(doc);
+                }
             } else
                 docList.remove(doc);
         }
@@ -201,10 +201,10 @@ public abstract class BaseDocumentsListsManager implements Serializable {
         List<DocumentModel> docList = getWorkingList(listName);
         DocumentsListDescriptor desc = getWorkingListDescriptor(listName);
 
-        // FIXME needs to be checked
         if (desc.getPersistent()) {
-            if (getPersistenceManager().removeDocumentFromPersistentList(userName, listName, doc));
-            docList.remove(doc);
+            if (getPersistenceManager().removeDocumentFromPersistentList(userName, listName, doc)) {
+                docList.remove(doc);
+            }
         } else
             docList.remove(doc);
         notifyListUpdated(listName);
