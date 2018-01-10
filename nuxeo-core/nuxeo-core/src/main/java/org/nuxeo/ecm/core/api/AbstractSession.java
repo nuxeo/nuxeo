@@ -136,6 +136,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     public static final String BINARY_TEXT_SYS_PROP = "fulltextBinary";
 
+    public static final String VALIDATE_DIRTY_ONLY_ON_CREATION = "org.nuxeo.core.validate.dirty.only.creation";
+
     private Boolean limitedResults;
 
     private Long maxResults;
@@ -705,9 +707,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         String childName = docModel.getName();
         Map<String, Serializable> options = getContextMapEventInfo(docModel);
 
+        ConfigurationService configService = Framework.getService(ConfigurationService.class);
+        boolean validateDirtyOnly = configService.isBooleanPropertyTrue(VALIDATE_DIRTY_ONLY_ON_CREATION);
         // document validation
         if (getValidationService().isActivated(DocumentValidationService.CTX_CREATEDOC, options)) {
-            DocumentValidationReport report = getValidationService().validate(docModel, false);
+            DocumentValidationReport report = getValidationService().validate(docModel, validateDirtyOnly);
             if (report.hasError()) {
                 throw new DocumentValidationException(report);
             }
