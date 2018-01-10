@@ -147,6 +147,11 @@ public class ChronicleCompoundLogTailer<M extends Externalizable> implements Log
     }
 
     @Override
+    public LogOffset offsetForTimestamp(LogPartition partition, long timestamp) {
+        throw new UnsupportedOperationException("ChronicleLog does not support seek by timestamp");
+    }
+
+    @Override
     public void reset() {
         tailers.forEach(ChronicleLogTailer::reset);
     }

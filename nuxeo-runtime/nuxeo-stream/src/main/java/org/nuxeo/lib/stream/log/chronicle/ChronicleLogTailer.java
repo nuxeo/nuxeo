@@ -182,6 +182,11 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
     }
 
     @Override
+    public LogOffset offsetForTimestamp(LogPartition partition, long timestamp) {
+        throw new UnsupportedOperationException("ChronicleLog does not support seek by timestamp");
+    }
+
+    @Override
     public Collection<LogPartition> assignments() {
         return Collections.singletonList(new LogPartition(id.name, id.partition));
     }
