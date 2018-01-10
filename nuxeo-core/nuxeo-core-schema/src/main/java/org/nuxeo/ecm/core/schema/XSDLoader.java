@@ -659,7 +659,7 @@ public class XSDLoader {
         if (xsItemType.getTargetNamespace().equals(NS_XSD)) {
             itemType = XSDTypes.getType(xsItemType.getName());
         } else {
-            itemType = loadSimpleType(schema, xsItemType != null ? xsItemType : type.getSimpleBaseType(), null);
+            itemType = loadSimpleType(schema, xsItemType, null);
         }
         if (itemType == null) {
             log.error("list item type was not defined -> you should define first the item type");

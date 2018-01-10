@@ -207,25 +207,6 @@ public class TestService extends NXRuntimeTestCase {
 
     }
 
-    @Test
-    @Ignore
-    public void testBig() throws Exception {
-        PictureTilingService pts = Framework.getService(PictureTilingService.class);
-        assertNotNull(pts);
-        PictureTilingComponent.setDefaultTiler(new MagickTiler());
-        File file = new File("/home/tiry/photos/orion.jpg");
-        Blob image = Blobs.createBlob(file);
-
-        long t0 = System.currentTimeMillis();
-        PictureTiles tiles = pts.getTiles(new BlobResource(image), 100, 100, 180);
-        assertNotNull(tiles);
-        long t1 = System.currentTimeMillis();
-
-        System.out.println("Big picture " + tiles.getOriginalImageInfo().getWidth() + "x"
-                + tiles.getOriginalImageInfo().getHeight() + " at zoom " + tiles.getZoomfactor() + " generated in "
-                + (t1 - t0) + "ms");
-    }
-
     protected void benchTiler(PictureTilingService pts, PictureTiler tiler) throws Exception {
 
         PictureTilingComponent.setDefaultTiler(tiler);

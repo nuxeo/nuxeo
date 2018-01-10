@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Seam;
 import org.jboss.seam.core.Init;
 import org.jboss.seam.init.Initialization;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ServerLocator;
@@ -74,11 +75,12 @@ public class SeamHotReloadHelper {
         ServletContext servletContext = httpRequest.getSession().getServletContext();
 
         Init init = (Init) servletContext.getAttribute(Seam.getComponentName(Init.class));
-        if (init != null && init.hasHotDeployableComponents()) {
+        if (init.hasHotDeployableComponents()) {
             try {
                 new Initialization(servletContext).redeploy(httpRequest);
             } catch (InterruptedException e) {
-                log.error("Error during hot redeploy", e);
+                Thread.currentThread().interrupt();
+                throw new NuxeoException(e);
             }
         }
 

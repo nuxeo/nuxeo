@@ -198,7 +198,7 @@ public class SerializableEventBundle implements Serializable {
                         String[] part = arg.split(":");
                         DocumentRef idRef = new IdRef(part[2]);
                         DocumentModel doc = null;
-                        if (session != null && session.exists(idRef)) {
+                        if (session.exists(idRef)) {
                             doc = session.getDocument(idRef);
                         } else {
                             String parentPath = new Path(part[4]).removeLastSegments(1).toString();

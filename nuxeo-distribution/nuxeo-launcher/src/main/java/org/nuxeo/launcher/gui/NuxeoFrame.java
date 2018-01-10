@@ -481,6 +481,7 @@ public class NuxeoFrame extends JFrame {
             image = ImageIO.read(getClass().getClassLoader().getResource(resourcePath));
         } catch (IOException e) {
             log.error(e);
+            throw new RuntimeException(e);
         }
         return new ImageIcon(image);
     }

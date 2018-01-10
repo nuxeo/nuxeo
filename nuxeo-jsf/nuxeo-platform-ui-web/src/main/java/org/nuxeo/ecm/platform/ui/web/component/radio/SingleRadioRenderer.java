@@ -68,11 +68,8 @@ public class SingleRadioRenderer extends RendererBase {
             writer.writeAttribute("disabled", "disabled", "disabled");
         }
 
-        String targetOnchange = null;
-        if (targetComponent != null) {
-            targetOnchange = convertToString(RenderKitUtils.getAttributeAndBehaviorsValue(context, targetComponent,
-                    RenderKitUtils.attributes().generic("onchange", "onchange", "change", "valueChange").first()));
-        }
+        String targetOnchange = convertToString(RenderKitUtils.getAttributeAndBehaviorsValue(context, targetComponent,
+                RenderKitUtils.attributes().generic("onchange", "onchange", "change", "valueChange").first()));
         String onchange = convertToString(RenderKitUtils.getAttributeAndBehaviorsValue(context, component,
                 RenderKitUtils.attributes().generic("onchange", "onchange", "change", "valueChange").first()));
         if (targetOnchange != null && !targetOnchange.trim().isEmpty()) {

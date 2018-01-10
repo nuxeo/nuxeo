@@ -144,7 +144,7 @@ public class DuplicatedCollectionListener implements EventListener {
         }
         doc = session.saveDocument(doc);
         doc.removeFacet(CollectionConstants.COLLECTABLE_FACET);
-        doc = session.saveDocument(doc);
+        session.saveDocument(doc);
     }
 
 }

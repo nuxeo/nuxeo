@@ -57,7 +57,7 @@ public class ELActionContext extends AbstractActionContext implements ActionCont
 
     @Override
     public boolean checkCondition(String expression) throws ELException {
-        if (StringUtils.isBlank(expression) || (expression != null && StringUtils.isBlank(expression.trim()))) {
+        if (StringUtils.isBlank(expression)) {
             return false;
         }
         String expr = expression.trim();

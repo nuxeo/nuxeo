@@ -29,6 +29,7 @@ import java.security.PrivilegedExceptionAction;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.security.auth.Subject;
@@ -274,9 +275,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
             if (other instanceof Principal) {
                 Principal oPal = (Principal) other;
                 String oName = oPal.getName();
-                if (userName == null && oName != null) {
-                    return false;
-                } else if (!userName.equals(oName)) {
+                if (!Objects.equals(userName, oName)) {
                     return false;
                 }
                 if (systemLoginManager.isRemoteSystemLoginRestricted() && (other instanceof LoginComponent.SystemID)) {

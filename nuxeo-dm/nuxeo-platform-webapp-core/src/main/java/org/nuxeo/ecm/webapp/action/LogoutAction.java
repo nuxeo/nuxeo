@@ -68,16 +68,8 @@ public class LogoutAction extends InputController implements Serializable {
         Map<String, String> parameters = new HashMap<String, String>();
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext eContext = context.getExternalContext();
-        Object req = eContext.getRequest();
-        Object resp = eContext.getResponse();
-        HttpServletRequest request = null;
-        if (req instanceof HttpServletRequest) {
-            request = (HttpServletRequest) req;
-        }
-        HttpServletResponse response = null;
-        if (resp instanceof HttpServletResponse) {
-            response = (HttpServletResponse) resp;
-        }
+        HttpServletRequest request = (HttpServletRequest) eContext.getRequest();
+        HttpServletResponse response = (HttpServletResponse) eContext.getResponse();
         Principal principal = request.getUserPrincipal();
         if (principal instanceof NuxeoPrincipal) {
             NuxeoPrincipal nuxeoPrincipal = (NuxeoPrincipal) principal;
@@ -85,7 +77,7 @@ public class LogoutAction extends InputController implements Serializable {
                 parameters.put(FORCE_ANONYMOUS_LOGIN, "true");
             }
         }
-        if (response != null && request != null && !context.getResponseComplete()) {
+        if (response != null && !context.getResponseComplete()) {
             String baseURL = BaseURL.getBaseURL(request) + LOGOUT_PAGE;
             request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, true);
             baseURL = URIUtils.addParametersToURIQuery(baseURL, parameters);

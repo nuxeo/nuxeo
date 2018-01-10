@@ -59,6 +59,7 @@ public class MetadataServlet extends HttpServlet {
             if (marshaller == null) {
                 log.error("Unable to marshall message, no marshaller registered for message object: "
                         + descriptor.getElementQName());
+                return;
             }
             Element dom = marshaller.marshall(descriptor);
             XMLHelper.writeNode(dom, response.getWriter());

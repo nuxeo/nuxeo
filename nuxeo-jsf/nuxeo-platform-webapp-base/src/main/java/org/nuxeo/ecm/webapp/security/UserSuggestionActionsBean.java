@@ -132,7 +132,7 @@ public class UserSuggestionActionsBean implements Serializable {
                 // XXX: this doesn't fetch group members (references)
                 Map<String, Serializable> filter = new HashMap<String, Serializable>();
 
-                if (pattern != null && pattern != "") {
+                if (StringUtils.isNotEmpty(pattern)) {
                     filter.put(field, pattern);
                 }
                 if (Boolean.TRUE.equals(hideVirtualGroups)) {

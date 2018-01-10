@@ -63,24 +63,27 @@ public class PropertyMapSetter {
     public void set(String key, Boolean value) {
         if (value == null) {
             map.remove(key);
+        } else {
+            map.put(key, value.toString());
         }
-        map.put(key, value.toString());
         dirties.add(key);
     }
 
     public void set(String key, Long value) {
         if (value == null) {
             map.remove(key);
+        } else {
+            map.put(key, value.toString());
         }
-        map.put(key, value.toString());
         dirties.add(key);
     }
 
     public void set(String key, Double value) {
         if (value == null) {
             map.remove(key);
+        } else {
+            map.put(key, value.toString());
         }
-        map.put(key, value.toString());
         dirties.add(key);
     }
 

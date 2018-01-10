@@ -76,8 +76,7 @@ public class FancyNavigationHandler extends ConfigurableNavigationHandler {
         parent.handleNavigation(context, fromAction, outcome);
         UIViewRoot newRoot = context.getViewRoot();
         boolean rootChanged = !oldRoot.equals(newRoot);
-        if (outcome != null && !context.getResponseComplete() && !rootChanged && pservice != null
-                && Framework.isDevModeSet()) {
+        if (outcome != null && !context.getResponseComplete() && !rootChanged && Framework.isDevModeSet()) {
             // navigation was not done => maybe a hot reload issue: perform
             // navigation again using local code because it uses
             // information from the StaticNavigationHandler that is

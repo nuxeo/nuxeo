@@ -3223,26 +3223,6 @@ public class TestSQLRepositoryAPI {
         List list = (List) doc.getProperty("testList", "attachments");
         assertNotNull(list);
         assertTrue(list.isEmpty());
-
-        ListDiff diff = new ListDiff();
-        /*
-         * diff.add(new Attachment("at1", "value1").asMap()); diff.add(new Attachment("at2", "value2").asMap());
-         * doc.setProperty("testList", "attachments", diff); doc = session.saveDocument(doc); list = (List)
-         * doc.getProperty("testList", "attachments"); assertNotNull(list); assertEquals(2, list.size()); Blob blob;
-         * blob = (Blob) ((Map) list.get(0)).get("content"); assertEquals("value1", blob.getString()); blob = (Blob)
-         * ((Map) list.get(1)).get("content"); assertEquals("value2", blob.getString()); diff = new ListDiff();
-         * diff.remove(0); diff.insert(0, new Attachment("at1.bis", "value1.bis").asMap()); doc.setProperty("testList",
-         * "attachments", diff); doc = session.saveDocument(doc); list = (List) doc.getProperty("testList",
-         * "attachments"); assertNotNull(list); assertEquals(2, list.size()); blob = (Blob) ((Map)
-         * list.get(0)).get("content"); assertEquals("value1.bis", blob.getString()); blob = (Blob) ((Map)
-         * list.get(1)).get("content"); assertEquals("value2", blob.getString()); diff = new ListDiff(); diff.move(0,
-         * 1); doc.setProperty("testList", "attachments", diff); doc = session.saveDocument(doc); list = (List)
-         * doc.getProperty("testList", "attachments"); assertNotNull(list); assertEquals(2, list.size()); blob = (Blob)
-         * ((Map) list.get(0)).get("content"); assertEquals("value2", blob.getString()); blob = (Blob) ((Map)
-         * list.get(1)).get("content"); assertEquals("value1.bis", blob.getString()); diff = new ListDiff();
-         * diff.removeAll(); doc.setProperty("testList", "attachments", diff); doc = session.saveDocument(doc); list =
-         * (List) doc.getProperty("testList", "attachments"); assertNotNull(list); assertEquals(0, list.size());
-         */
     }
 
     @Test
@@ -3282,18 +3262,6 @@ public class TestSQLRepositoryAPI {
         List list = (List) doc.getProperty("testList", "attachments");
         assertNotNull(list);
         assertTrue(list.isEmpty());
-
-        ListDiff diff = new ListDiff();
-        /*
-         * diff.add(new Attachment("at1", "value1").asMap()); diff.add(new Attachment("at2", "value2").asMap());
-         * doc.setProperty("testList", "attachments", diff); doc = session.saveDocument(doc); dm =
-         * doc.getDataModel("testList"); dm.setValue("attachments/item[0]/name", "at1-modif"); assertEquals("at1-modif",
-         * dm.getValue("attachments/item[0]/name")); dm.setValue("attachments/item[0]/name", "at1-modif2");
-         * assertEquals("at1-modif2", dm.getValue("attachments/item[0]/name")); dm.setValue("attachments/item[1]/name",
-         * "at2-modif"); assertEquals("at2-modif", dm.getValue("attachments/item[1]/name"));
-         * dm.setValue("attachments/item[1]/name", "at2-modif2"); assertEquals("at2-modif2",
-         * dm.getValue("attachments/item[1]/name"));
-         */
     }
 
     @Test

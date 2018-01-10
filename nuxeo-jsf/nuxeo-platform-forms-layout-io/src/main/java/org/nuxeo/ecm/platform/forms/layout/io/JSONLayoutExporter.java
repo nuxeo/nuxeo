@@ -112,10 +112,8 @@ public class JSONLayoutExporter {
 
     public static void export(List<WidgetTypeDefinition> defs, OutputStream out) throws IOException {
         JSONObject res = new JSONObject();
-        if (defs != null) {
-            // sort so that order is deterministic
-            Collections.sort(defs, new WidgetTypeDefinitionComparator(false));
-        }
+        // sort so that order is deterministic
+        Collections.sort(defs, new WidgetTypeDefinitionComparator(false));
         for (WidgetTypeDefinition def : defs) {
             res.element(def.getName(), exportToJson(def));
         }
@@ -135,10 +133,8 @@ public class JSONLayoutExporter {
      */
     public static void exportLayoutTypes(List<LayoutTypeDefinition> defs, OutputStream out) throws IOException {
         JSONObject res = new JSONObject();
-        if (defs != null) {
-            // sort so that order is deterministic
-            Collections.sort(defs, new LayoutTypeDefinitionComparator());
-        }
+        // sort so that order is deterministic
+        Collections.sort(defs, new LayoutTypeDefinitionComparator());
         for (LayoutTypeDefinition def : defs) {
             res.element(def.getName(), exportToJson(def));
         }

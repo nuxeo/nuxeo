@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.platform.ui.web.component.list;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -248,7 +249,7 @@ public class EditableListBean {
                 type = EditableListModificationType.valueOfString(typeString);
             } catch (IllegalArgumentException err) {
                 log.error("Illegal value for '" + TYPE_PARAMETER_NAME + "' attribute: " + typeString
-                        + ", should be one of " + EditableListModificationType.values());
+                        + ", should be one of " + Arrays.toString(EditableListModificationType.values()));
             }
         }
         return type;

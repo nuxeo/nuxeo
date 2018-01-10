@@ -285,11 +285,7 @@ public class LayoutTagHandler extends TagHandler {
                                     selectedRowsValue, selectAllByDefaultValue);
                             applyLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
                                     additionalProps, vm, resolveOnlyValue);
-                            if (layoutInstance != null) {
-                                logId = layoutInstance.getId();
-                            } else {
-                                logId = layoutDef.getName() + " (def)";
-                            }
+                            logId = layoutInstance.getId();
                         }
                     }
                 }
@@ -606,11 +602,7 @@ public class LayoutTagHandler extends TagHandler {
                                     selectedRowsValue, selectAllByDefaultValue);
                             applyCompatLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
                                     additionalProps, vars, resolveOnlyValue);
-                            if (layoutInstance != null) {
-                                logId = layoutInstance.getId();
-                            } else {
-                                logId = layoutDef.getName() + " (def)";
-                            }
+                            logId = layoutInstance.getId();
                         }
                     }
                 }

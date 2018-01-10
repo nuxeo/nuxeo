@@ -98,20 +98,4 @@ public class DirectoryStack {
         return result.toArray(new File[result.size()]);
     }
 
-    public static void main(String[] args) {
-        try {
-            DirectoryStack vd = new DirectoryStack();
-            vd.addDirectory(new File("/home/bstefanescu/Desktop"));
-            vd.addDirectory(new File("/home/bstefanescu/src"));
-
-            for (File file : vd.listFiles()) {
-                System.out.println("> " + file);
-            }
-            System.out.println("dummy: " + vd.getFile("dummy"));
-            System.out.println("dev: " + vd.getFile("dev"));
-        } catch (IOException e) {
-            log.error(e, e);
-        }
-    }
-
 }

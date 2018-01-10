@@ -83,9 +83,6 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
             DocumentModel entry = session.createEntry(Collections.singletonMap("consumerKey", consumer.consumerKey));
             consumer.asDocumentModel(entry);
             session.updateEntry(entry);
-            if (entry == null) {
-                return null;
-            }
             consumer = NuxeoOAuthConsumer.createFromDirectoryEntry(entry, null);
             return consumer;
         }

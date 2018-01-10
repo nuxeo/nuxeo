@@ -118,22 +118,25 @@ public class PropertyList implements Serializable {
     public void set(int i, Boolean value) {
         if (value == null) {
             list.remove(i);
+        } else {
+            list.set(i, value.toString());
         }
-        list.set(i, value.toString());
     }
 
     public void set(int i, Long value) {
         if (value == null) {
             list.remove(i);
+        } else {
+            list.set(i, value.toString());
         }
-        list.set(i, value.toString());
     }
 
     public void set(int i, Double value) {
         if (value == null) {
             list.remove(i);
+        } else {
+            list.set(i, value.toString());
         }
-        list.set(i, value.toString());
     }
 
     public void set(int i, Date value) {

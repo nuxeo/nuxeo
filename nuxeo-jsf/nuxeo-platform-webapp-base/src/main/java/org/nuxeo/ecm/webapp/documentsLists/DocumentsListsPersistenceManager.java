@@ -265,7 +265,7 @@ public class DocumentsListsPersistenceManager {
         }
     }
 
-    public Boolean removeDocumentFromPersistentList(String userName, String listName, DocumentModel doc) {
+    public boolean removeDocumentFromPersistentList(String userName, String listName, DocumentModel doc) {
         if (!initPersistentService()) {
             return false;
         }
@@ -283,7 +283,7 @@ public class DocumentsListsPersistenceManager {
         }
     }
 
-    public Boolean clearPersistentList(String userName, String listName) {
+    public boolean clearPersistentList(String userName, String listName) {
         if (!initPersistentService()) {
             return false;
         }

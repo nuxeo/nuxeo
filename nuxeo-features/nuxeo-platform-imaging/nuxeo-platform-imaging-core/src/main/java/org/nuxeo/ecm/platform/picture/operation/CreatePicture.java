@@ -116,9 +116,7 @@ public class CreatePicture {
         ArrayList<Map<String, Object>> templates = computePictureTemplates();
 
         DocumentModel newDoc = session.createDocumentModel(doc.getPathAsString(), name, "Picture");
-        if (content != null) {
-            DocumentHelper.setProperties(session, newDoc, content);
-        }
+        DocumentHelper.setProperties(session, newDoc, content);
         DocumentModel picture = session.createDocument(newDoc);
 
         if (jsonBlob == null) {

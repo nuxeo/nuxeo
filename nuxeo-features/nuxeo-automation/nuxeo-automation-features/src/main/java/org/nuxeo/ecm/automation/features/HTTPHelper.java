@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.automation.context.ContextHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -122,7 +123,7 @@ public class HTTPHelper implements ContextHelper {
                 builder.header(headerKey, headers.get(headerKey));
             }
         }
-        ClientResponse response = null;
+        ClientResponse response;
         try {
             switch (requestType) {
             case "HEAD":
@@ -147,12 +148,12 @@ public class HTTPHelper implements ContextHelper {
                 response = builder.delete(ClientResponse.class, data);
                 break;
             default:
-                break;
+                throw new NuxeoException("Unknown request type: " + requestType);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        if (response != null && response.getStatus() >= 200 && response.getStatus() < 300) {
+        if (response.getStatus() >= 200 && response.getStatus() < 300) {
             return Blobs.createBlob(response.getEntityInputStream());
         } else {
             return new StringBlob(response.getStatusInfo() != null ? response.getStatusInfo().toString() : "error");
@@ -228,7 +229,7 @@ public class HTTPHelper implements ContextHelper {
                 builder.header(headerKey, headers.get(headerKey));
             }
         }
-        ClientResponse response = null;
+        ClientResponse response;
         try {
             switch (requestType) {
             case "HEAD":
@@ -253,12 +254,12 @@ public class HTTPHelper implements ContextHelper {
                 response = builder.delete(ClientResponse.class, data);
                 break;
             default:
-                break;
+                throw new NuxeoException("Unknown request type: " + requestType);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        if (response != null && response.getStatus() >= 200 && response.getStatus() < 300) {
+        if (response.getStatus() >= 200 && response.getStatus() < 300) {
             return setUpBlob(response, url);
         } else {
             return new StringBlob(response.getStatusInfo() != null ? response.getStatusInfo().toString() : "error");
