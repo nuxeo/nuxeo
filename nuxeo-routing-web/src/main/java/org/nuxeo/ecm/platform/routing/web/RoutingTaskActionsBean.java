@@ -143,16 +143,14 @@ public class RoutingTaskActionsBean implements Serializable {
 
         String messageString = null;
         if (value != null) {
-            Date today = null;
-            Date dueDate = null;
             try {
-                dueDate = dateFormat.parse(dateFormat.format((Date) value));
-                today = dateFormat.parse(dateFormat.format(new Date()));
+                Date dueDate = dateFormat.parse(dateFormat.format((Date) value));
+                Date today = dateFormat.parse(dateFormat.format(new Date()));
+                if (dueDate.before(today)) {
+                    messageString = "label.workflow.error.outdated_duedate";
+                }
             } catch (ParseException e) {
                 messageString = "label.workflow.error.date_parsing";
-            }
-            if (dueDate.before(today)) {
-                messageString = "label.workflow.error.outdated_duedate";
             }
         }
 

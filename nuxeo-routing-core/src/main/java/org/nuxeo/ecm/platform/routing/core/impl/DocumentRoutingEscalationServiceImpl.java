@@ -177,14 +177,12 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
         DocumentModel nodeDoc = session.getDocument(new IdRef(nodeDocId));
         GraphNode node = nodeDoc.getAdapter(GraphNode.class);
         List<EscalationRule> rules = node.getEscalationRules();
-        EscalationRule rule = null;
         for (EscalationRule escalationRule : rules) {
             if (escalationRuleId.equals(escalationRule.getId())) {
-                rule = escalationRule;
+                escalationRule.setExecuted(true);
                 break;
             }
         }
-        rule.setExecuted(true);
         session.saveDocument(nodeDoc);
     }
 }

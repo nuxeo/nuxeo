@@ -41,6 +41,7 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
@@ -174,13 +175,15 @@ public class CreateRoutingTask {
         for (Map.Entry<String, String> prop : mappingProperties.entrySet()) {
             String getter = prop.getKey();
             String setter = prop.getValue();
-            DocumentModel setterDoc = null;
+            DocumentModel setterDoc;
             if (setter.startsWith(DOCUMENT_PREFIX)) {
                 setterDoc = inputDoc;
                 setter = setter.substring(DOCUMENT_PREFIX.length());
             } else if (setter.startsWith(STEP_PREFIX)) {
                 setterDoc = stepDoc;
                 setter = setter.substring(STEP_PREFIX.length());
+            } else {
+                throw new NuxeoException("Unknown setter prefix: " + setter);
             }
             try {
                 taskVariables.put(getter, (String) setterDoc.getPropertyValue(setter));
@@ -195,13 +198,15 @@ public class CreateRoutingTask {
         for (Map.Entry<String, String> prop : mappingProperties.entrySet()) {
             String getter = prop.getKey();
             String setter = prop.getValue();
-            DocumentModel setterDoc = null;
+            DocumentModel setterDoc;
             if (setter.startsWith(DOCUMENT_PREFIX)) {
                 setterDoc = inputDoc;
                 setter = setter.substring(DOCUMENT_PREFIX.length());
             } else if (setter.startsWith(STEP_PREFIX)) {
                 setterDoc = stepDoc;
                 setter = setter.substring(STEP_PREFIX.length());
+            } else {
+                throw new NuxeoException("Unknown setter prefix: " + setter);
             }
             try {
                 taskDoc.setPropertyValue(getter, setterDoc.getPropertyValue(setter));
