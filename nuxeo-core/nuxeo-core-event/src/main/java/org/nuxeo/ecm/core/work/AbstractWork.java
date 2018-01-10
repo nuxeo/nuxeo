@@ -18,11 +18,17 @@
  */
 package org.nuxeo.ecm.core.work;
 
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.DOCUMENT_REFS;
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.REPOSITORY_NAME;
 import static org.nuxeo.ecm.core.work.api.Work.Progress.PROGRESS_INDETERMINATE;
 
+import java.io.Serializable;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.security.auth.login.LoginContext;
@@ -39,6 +45,11 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
 import org.nuxeo.runtime.api.Framework;
@@ -66,6 +77,16 @@ public abstract class AbstractWork implements Work {
     private static final Log log = LogFactory.getLog(AbstractWork.class);
 
     protected static final Random RANDOM = new Random();
+
+    public static final String WORK_FAILED_EVENT = "workFailed";
+
+    public static final String WORK_ID = "workId";
+
+    public static final String WORK_CLASS = "workClass";
+
+    public static final String FAILURE_MSG = "failureMsg";
+
+    public static final String FAILURE_EXCEPTION = "failureException";
 
     protected String id;
 
@@ -323,6 +344,13 @@ public abstract class AbstractWork implements Work {
             SequenceTracer.startFrom(callerThread, "Work " + getTitleOr("unknown"), " #7acde9");
         }
         RuntimeException suppressed = null;
+        String repoName = null;
+        Principal principal = null;
+
+        if (session != null) {
+            repoName = session.getRepositoryName();
+            principal = session.getPrincipal();
+        }
         int retryCount = getRetryCount(); // may be 0
         for (int i = 0; i <= retryCount; i++) {
             if (i > 0) {
@@ -351,8 +379,45 @@ public abstract class AbstractWork implements Work {
             String msg = "Work failed after " + retryCount + " " + (retryCount == 1 ? "retry" : "retries") + ", class="
                     + getClass() + " id=" + getId() + " category=" + getCategory() + " title=" + getTitle();
             SequenceTracer.destroy("Work failure " + (completionTime - startTime) + " ms");
+
+            fireFailureEvent(repoName, principal, msg, suppressed);
             throw new RuntimeException(msg, suppressed);
         }
+    }
+
+    /**
+     * Build failure event properties By default return empty map Work implementation can override this method to inject
+     * more event properties than default
+     * 
+     * @since 10.1
+     */
+    protected Map<String, Serializable> buildWorkFailureEventProps() {
+        return new HashMap<String, Serializable>();
+    }
+
+    private void fireFailureEvent(String repoName, Principal principal, String msg, RuntimeException suppressed) {
+        EventContext eventContext = new EventContextImpl(null, principal);
+
+        List<String> docRefs = new ArrayList<String>();
+        if (docIds != null) {
+            docRefs.addAll(docIds);
+        } else {
+            docRefs.add(docId);
+        }
+        Map<String, Serializable> eventProps = buildWorkFailureEventProps();
+
+        eventProps.put(DOCUMENT_REFS, (Serializable) docRefs);
+        eventProps.put(REPOSITORY_NAME, repoName);
+        eventProps.put(WORK_CLASS, this.getClass().getName());
+        eventProps.put(FAILURE_MSG, msg);
+        eventProps.put(FAILURE_EXCEPTION, suppressed);
+
+        eventContext.setProperties(eventProps);
+        EventService service = Framework.getService(EventService.class);
+        Event event = new EventImpl(WORK_FAILED_EVENT, eventContext);
+        event.setIsCommitEvent(true);
+        service.fireEvent(event);
+
     }
 
     private String getTitleOr(String defaultTitle) {
