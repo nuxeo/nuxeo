@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.core.validation.create.document.dirty.contrib">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Contribution which enables document validation on all properties at creation step. The default value is to
+      validate dirty properties only.
+    </documentation>
+    <property name="org.nuxeo.core.validate.dirty.only.creation">true</property>
+  </extension>
+
+</component>

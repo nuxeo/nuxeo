@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-restapi-test-test
+Bundle-SymbolicName: org.nuxeo.ecm.platform.restapi.test.test;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Fragment-Host: org.nuxeo.ecm.platform.restapi.server

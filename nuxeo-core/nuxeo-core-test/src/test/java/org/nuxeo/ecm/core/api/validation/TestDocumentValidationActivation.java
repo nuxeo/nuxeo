@@ -63,7 +63,7 @@ public class TestDocumentValidationActivation {
         doc = session.createDocument(doc);
     }
 
-    @Test(expected = DocumentValidationException.class)
+    @Test
     public void testOnCreateDocumentActivationWithViolationNotDirty() {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc1", "ValidatedUserGroup");
