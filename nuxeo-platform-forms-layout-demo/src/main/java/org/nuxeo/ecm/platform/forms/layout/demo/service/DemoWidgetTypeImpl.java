@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.forms.layout.demo.service;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Default implementation of the widget type demo
@@ -127,12 +128,7 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
         if (other instanceof DemoWidgetType) {
             DemoWidgetType oWidget = (DemoWidgetType) other;
             String oName = oWidget.getName();
-            if (name == null && oName != null) {
-                return false;
-            } else if (!name.equals(oName)) {
-                return false;
-            }
-            return true;
+            return Objects.equals(name, oName);
         }
         return false;
     }
