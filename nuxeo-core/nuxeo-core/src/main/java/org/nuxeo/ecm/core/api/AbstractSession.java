@@ -146,6 +146,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     public static final String VALIDATION_AFTER_LISTENERS_CONFIG_KEY = "org.nuxeo.core.validation.after.listeners";
 
+    public static final String VALIDATE_DIRTY_ONLY_ON_CREATION = "org.nuxeo.core.validate.dirty.only.creation";
+
     private Boolean limitedResults;
 
     private Long maxResults;
@@ -694,12 +696,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Map<String, Serializable> options = getContextMapEventInfo(docModel);
 
         // retrieve configuration parameter to check if we validate document after listeners
-        boolean validationAfterListeners = Framework.getService(ConfigurationService.class)
-                                                    .isBooleanPropertyTrue(VALIDATION_AFTER_LISTENERS_CONFIG_KEY);
+        ConfigurationService configService = Framework.getService(ConfigurationService.class);
+        boolean validationAfterListeners = configService.isBooleanPropertyTrue(VALIDATION_AFTER_LISTENERS_CONFIG_KEY);
+        boolean validateDirtyOnly = configService.isBooleanPropertyTrue(VALIDATE_DIRTY_ONLY_ON_CREATION);
+
         // document validation
         if (!validationAfterListeners
                 && getValidationService().isActivated(DocumentValidationService.CTX_CREATEDOC, options)) {
-            DocumentValidationReport report = getValidationService().validate(docModel, false);
+            DocumentValidationReport report = getValidationService().validate(docModel, validateDirtyOnly);
             if (report.hasError()) {
                 throw new DocumentValidationException(report);
             }
@@ -719,7 +723,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // document validation
         if (validationAfterListeners
                 && getValidationService().isActivated(DocumentValidationService.CTX_CREATEDOC, options)) {
-            DocumentValidationReport report = getValidationService().validate(docModel, false);
+            DocumentValidationReport report = getValidationService().validate(docModel, validateDirtyOnly);
             if (report.hasError()) {
                 throw new DocumentValidationException(report);
             }
