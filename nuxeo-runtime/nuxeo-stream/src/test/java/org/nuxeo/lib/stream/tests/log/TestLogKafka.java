@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,10 +39,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.LogOffset;
+import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.RebalanceException;
@@ -98,6 +102,44 @@ public class TestLogKafka extends TestLog {
     @After
     public void resetPrefix() {
         prefix = null;
+    }
+
+    @Test
+    public void testSeekByTimestamp() throws Exception {
+        final String GROUP = "defaultTest";
+
+        manager.createIfNotExists(logName, 1);
+        LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
+
+        appender.append(0, KeyValueMessage.of("id1"));
+        appender.append(0, KeyValueMessage.of("id2"));
+        appender.append(0, KeyValueMessage.of("id3"));
+        appender.append(0, KeyValueMessage.of("id4"));
+        appender.append(0, KeyValueMessage.of("id5"));
+
+        //Get the time and wait 3 seconds
+        Instant now = Instant.now();
+        Thread.sleep(3000);
+
+        appender.append(0, KeyValueMessage.of("id6"));
+        appender.append(0, KeyValueMessage.of("id7"));
+        appender.append(0, KeyValueMessage.of("id8"));
+        LogOffset offset9 = appender.append(0, KeyValueMessage.of("id9"));
+        LogPartition logPartition = LogPartition.of(logName, 0);
+
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(GROUP, logPartition)) {
+            Assert.assertEquals("id1", tailer.read(DEF_TIMEOUT).message().key());
+            tailer.seek(offset9);
+            Assert.assertEquals("id9", tailer.read(DEF_TIMEOUT).message().key());
+            tailer.commit();
+
+            LogOffset logOffset = tailer.offsetForTimestamp(logPartition, now.toEpochMilli());
+            tailer.seek(logOffset);
+            Assert.assertEquals("id6", tailer.read(DEF_TIMEOUT).message().key());
+            Assert.assertEquals("id7", tailer.read(DEF_TIMEOUT).message().key());
+            Assert.assertEquals("id8", tailer.read(DEF_TIMEOUT).message().key());
+            Assert.assertEquals("Must read 9 again","id9", tailer.read(DEF_TIMEOUT).message().key());
+        }
     }
 
     @Test

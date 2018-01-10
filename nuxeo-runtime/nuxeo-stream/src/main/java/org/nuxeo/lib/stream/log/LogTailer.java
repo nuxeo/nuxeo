@@ -83,6 +83,16 @@ public interface LogTailer<M extends Externalizable> extends AutoCloseable {
     void seek(LogOffset offset);
 
     /**
+     * Look up the offset for the given partition by timestamp.
+     * The position is the earliest offset whose timestamp is greater than or equal to the given timestamp.<p/>
+     * The timestamp used depends on the implementation, for Kafka this is the LogAppendTime.
+     * Returns null if no record offset is found with an appropriate timestamp.
+     *
+     * @since 10.1
+     */
+    LogOffset offsetForTimestamp(LogPartition partition, long timestamp);
+
+    /**
      * Reset all committed positions for this group, next read will be done from beginning.
      *
      * @since 9.3

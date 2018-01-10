@@ -20,6 +20,8 @@ package org.nuxeo.lib.stream.tests.tools;
 
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import org.junit.BeforeClass;
 import org.nuxeo.lib.stream.computation.Record;
@@ -74,6 +76,13 @@ public class TestToolsKafka extends TestTools {
             tailer.commit();
         }
 
+    }
+
+    @Override
+    public void testPosition() {
+        super.testPosition();
+        run(String.format("position %s --log-name %s --group anotherGroup --to-timestamp %s", getManagerOptions(), LOG_NAME, Instant.now().minus(1, ChronoUnit.HOURS)));
+        runShouldFail(String.format("position %s --log-name %s --group anotherGroup --to-timestamp %s", getManagerOptions(), LOG_NAME, Instant.now().plus(1, ChronoUnit.HOURS)));
     }
 
     @Override
