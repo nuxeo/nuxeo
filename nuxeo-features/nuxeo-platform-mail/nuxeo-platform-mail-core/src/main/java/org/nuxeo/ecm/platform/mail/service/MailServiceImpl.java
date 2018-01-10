@@ -20,7 +20,6 @@
 
 package org.nuxeo.ecm.platform.mail.service;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -231,10 +230,8 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         // build a key for sessions cache
         String sessionKey = props.entrySet()
                                  .stream()
-                                 // by design of PropertiesFetcher, keys are strings
-                                 // sort them alphabetically to have a deterministic order
-                                 .sorted(Comparator.comparing(e -> e.getKey().toString()))
                                  .map(e -> e.getKey() + "#" + e.getValue())
+                                 .sorted()
                                  .collect(Collectors.joining("-", "{", "}"));
         return sessions.computeIfAbsent(sessionKey, k -> EmailHelper.newSession(props));
     }
