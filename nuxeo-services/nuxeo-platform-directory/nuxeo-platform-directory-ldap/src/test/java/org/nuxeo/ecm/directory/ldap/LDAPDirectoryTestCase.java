@@ -46,6 +46,7 @@ import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.directory.server.core.CoreSession;
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
 import org.apache.directory.server.protocol.shared.store.LdifLoadFilter;
 import org.bouncycastle.x509.X509V1CertificateGenerator;
@@ -132,7 +133,7 @@ public abstract class LDAPDirectoryTestCase {
 
     protected static void loadDataFromLdif(String ldif, DirContext ctx) {
         List<LdifLoadFilter> filters = new ArrayList<>();
-        LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif), filters, Thread.currentThread()
+        LdifFileLoader loader = new LdifFileLoader((CoreSession) ctx, new File(ldif), filters, Thread.currentThread()
                                                                                        .getContextClassLoader());
         loader.execute();
     }

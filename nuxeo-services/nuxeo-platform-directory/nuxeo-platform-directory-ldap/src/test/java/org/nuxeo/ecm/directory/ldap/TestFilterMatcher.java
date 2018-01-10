@@ -24,7 +24,9 @@ package org.nuxeo.ecm.directory.ldap;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.directory.shared.ldap.message.AttributesImpl;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttributes;
+
 import org.junit.Test;
 import org.nuxeo.ecm.directory.DirectoryException;
 
@@ -42,7 +44,7 @@ public class TestFilterMatcher {
 
     @Test
     public void testAtomicFilter() throws Exception {
-        AttributesImpl attributes = new AttributesImpl();
+        Attributes attributes = new BasicAttributes();
         attributes.put("attribute1", "value1");
         attributes.put("attribute2", "val$ue2");
         attributes.put("attribute3", "val^ue3");
@@ -86,7 +88,7 @@ public class TestFilterMatcher {
 
     @Test
     public void testCompoundFilter() throws Exception {
-        AttributesImpl attributes = new AttributesImpl();
+        Attributes attributes = new BasicAttributes();
         attributes.put("attribute1", "value1");
         attributes.put("attribute2", "value2");
 

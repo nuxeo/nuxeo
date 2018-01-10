@@ -30,15 +30,19 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 
+import org.apache.directory.shared.ldap.entry.Value;
+import org.apache.directory.shared.ldap.exception.LdapException;
+import org.apache.directory.shared.ldap.filter.AndNode;
 import org.apache.directory.shared.ldap.filter.BranchNode;
 import org.apache.directory.shared.ldap.filter.ExprNode;
 import org.apache.directory.shared.ldap.filter.FilterParser;
-import org.apache.directory.shared.ldap.filter.FilterParserImpl;
+import org.apache.directory.shared.ldap.filter.NotNode;
+import org.apache.directory.shared.ldap.filter.OrNode;
 import org.apache.directory.shared.ldap.filter.PresenceNode;
 import org.apache.directory.shared.ldap.filter.SimpleNode;
 import org.apache.directory.shared.ldap.filter.SubstringNode;
-import org.apache.directory.shared.ldap.name.DefaultStringNormalizer;
 import org.apache.directory.shared.ldap.schema.Normalizer;
+import org.apache.directory.shared.ldap.name.DefaultStringNormalizer;
 import org.nuxeo.ecm.directory.DirectoryException;
 
 /**
@@ -50,15 +54,6 @@ import org.nuxeo.ecm.directory.DirectoryException;
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
 public class LDAPFilterMatcher {
-
-    private final FilterParser parser;
-
-    // lazily initialized normalizer for the substring match
-    private Normalizer normalizer;
-
-    LDAPFilterMatcher() {
-        parser = new FilterParserImpl();
-    }
 
     /**
      * Check whether a raw string filter expression matches on the given LDAP entry.
@@ -73,9 +68,9 @@ public class LDAPFilterMatcher {
             return true;
         }
         try {
-            ExprNode parsedFilter = parser.parse(filter);
+            ExprNode parsedFilter = FilterParser.parse(filter);
             return recursiveMatch(attributes, parsedFilter);
-        } catch (DirectoryException | IOException | ParseException e) {
+        } catch (DirectoryException | ParseException e) {
             throw new DirectoryException("could not parse LDAP filter: " + filter, e);
         }
     }
@@ -118,12 +113,12 @@ public class LDAPFilterMatcher {
             try {
                 while (rawValues.hasMore()) {
                     String rawValue = rawValues.next().toString();
-                    if (isCaseSensitive || !(simpleElement.getValue() instanceof String)) {
+                    if (isCaseSensitive || !(simpleElement.getValue().get() instanceof String)) {
                         if (simpleElement.getValue().equals(rawValue)) {
                             return true;
                         }
                     } else {
-                        String stringElementValue = (String) simpleElement.getValue();
+                        String stringElementValue = (String) simpleElement.getValue().get();
                         if (stringElementValue.equalsIgnoreCase(rawValue)) {
                             return true;
                         }
@@ -172,22 +167,21 @@ public class LDAPFilterMatcher {
             try {
                 while (rawValues.hasMore()) {
                     String rawValue = rawValues.next().toString();
-                    getNormalizer();
                     StringBuffer sb = new StringBuffer();
                     String initial = substringElement.getInitial();
                     String finalSegment = substringElement.getFinal();
                     if (initial != null && !initial.isEmpty()) {
-                        sb.append(Pattern.quote((String) normalizer.normalize(initial)));
+                        sb.append(Pattern.quote(DefaultStringNormalizer.normalizeString(initial)));
                     }
                     sb.append(".*");
-                    for (Object segment : substringElement.getAny()) {
+                    for (String segment : substringElement.getAny()) {
                         if (segment instanceof String) {
-                            sb.append(Pattern.quote((String) normalizer.normalize(segment)));
+                            sb.append(Pattern.quote(DefaultStringNormalizer.normalizeString(segment)));
                             sb.append(".*");
                         }
                     }
                     if (finalSegment != null && !finalSegment.isEmpty()) {
-                        sb.append(Pattern.quote((String) normalizer.normalize(finalSegment)));
+                        sb.append(Pattern.quote(DefaultStringNormalizer.normalizeString(finalSegment)));
                     }
                     Pattern pattern;
                     try {
@@ -213,35 +207,28 @@ public class LDAPFilterMatcher {
         }
     }
 
-    private Normalizer getNormalizer() {
-        if (normalizer == null) {
-            normalizer = new DefaultStringNormalizer();
-        }
-        return normalizer;
-    }
-
     /**
      * Handle conjunction, disjunction and negation nodes and recursively call the generic matcher on children.
      *
      * @return the boolean value of the evaluation of the sub expression
      */
     private boolean branchMatch(Attributes attributes, BranchNode branchElement) throws DirectoryException {
-        if (branchElement.isConjunction()) {
+        if (branchElement instanceof AndNode) {
             for (ExprNode child : branchElement.getChildren()) {
                 if (!recursiveMatch(attributes, child)) {
                     return false;
                 }
             }
             return true;
-        } else if (branchElement.isDisjunction()) {
+        } else if (branchElement instanceof OrNode) {
             for (ExprNode child : branchElement.getChildren()) {
                 if (recursiveMatch(attributes, child)) {
                     return true;
                 }
             }
             return false;
-        } else if (branchElement.isNegation()) {
-            return !recursiveMatch(attributes, branchElement.getChild());
+        } else if (branchElement instanceof NotNode) {
+            return !recursiveMatch(attributes, branchElement.getFirstChild());
         } else {
             throw new DirectoryException("unsupported branching filter element type: " + branchElement.toString());
         }

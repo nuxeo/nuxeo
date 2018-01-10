@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.directory.shared.ldap.name.LdapDN;
+import org.apache.directory.shared.ldap.name.Rdn;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -277,12 +278,12 @@ public class LDAPServerDescriptor {
     protected String convertDNtoFQDN(String dn) throws DirectoryException {
         try {
             LdapDN ldapDN = new LdapDN(dn);
-            Enumeration<String> components = ldapDN.getAll();
+            Enumeration<Rdn> components = ldapDN.getAllRdn();
             List<String> domainComponents = new ArrayList<>();
             while (components.hasMoreElements()) {
-                String component = components.nextElement();
-                if (component.startsWith("dc=")) {
-                    domainComponents.add(component.substring(3));
+                Rdn component = components.nextElement();
+                if (component.getUpName().startsWith("dc=")) {
+                    domainComponents.add(component.getUpName().substring(3));
                 } else {
                     break;
                 }

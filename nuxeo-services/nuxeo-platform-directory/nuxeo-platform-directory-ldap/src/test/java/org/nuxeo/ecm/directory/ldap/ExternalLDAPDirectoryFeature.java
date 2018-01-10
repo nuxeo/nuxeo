@@ -31,6 +31,7 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.directory.server.core.CoreSession;
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
 import org.apache.directory.server.protocol.shared.store.LdifLoadFilter;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
@@ -83,7 +84,7 @@ public class ExternalLDAPDirectoryFeature extends SimpleFeature {
 
     protected void loadDataFromLdif(String ldif, DirContext ctx) {
         List<LdifLoadFilter> filters = new ArrayList<>();
-        LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif), filters, Thread.currentThread()
+        LdifFileLoader loader = new LdifFileLoader((CoreSession) ctx, new File(ldif), filters, Thread.currentThread()
                                                                                        .getContextClassLoader());
         loader.execute();
     }

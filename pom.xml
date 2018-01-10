@@ -144,8 +144,8 @@
     <lucene.version>6.6.1</lucene.version>
     <elasticsearch.version>5.6.3</elasticsearch.version>
     <elasticsearch.shield.version>2.3.5</elasticsearch.shield.version>
-    <apacheds.version>1.5.1</apacheds.version>
-    <apachedshared.version>0.9.7</apachedshared.version>
+    <apacheds.version>1.5.5</apacheds.version>
+    <apachedshared.version>0.9.15</apachedshared.version>
     <gwt.version>2.7.0-NX1</gwt.version>
     <guice.version>3.0</guice.version>
     <jersey.version>1.18.3</jersey.version>
