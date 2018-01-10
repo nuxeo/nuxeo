@@ -341,7 +341,7 @@ public class RandomTextSourceNode implements SourceNode {
             } else {
                 nodeStr = "node";
             }
-            log.debug(String.format("Added %d data %s to %s; data node total count = %d", nbChildren, nodeStr,
+            log.debug(String.format("Added %s data %s to %s; data node total count = %s", nbChildren, nodeStr,
                     getName(), nbNodes));
         }
 
@@ -361,7 +361,7 @@ public class RandomTextSourceNode implements SourceNode {
                     } else {
                         nodeStr = "node";
                     }
-                    log.debug(String.format("Added %d folderish %s to %s; folderish node total count = %d",
+                    log.debug(String.format("Added %s folderish %s to %s; folderish node total count = %s",
                             nbFolderish, nodeStr, getName(), nbFolders));
                 }
             }
@@ -378,7 +378,7 @@ public class RandomTextSourceNode implements SourceNode {
             } else {
                 folderStr = "folder";
             }
-            log.debug(String.format("Visited %d %s", nbVisitedFolders, folderStr));
+            log.debug(String.format("Visited %s %s", nbVisitedFolders, folderStr));
         }
 
         return children;

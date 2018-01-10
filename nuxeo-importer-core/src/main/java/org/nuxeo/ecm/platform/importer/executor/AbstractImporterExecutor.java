@@ -87,11 +87,11 @@ public abstract class AbstractImporterExecutor {
     }
 
     protected void startTask(ImporterRunner runner, boolean interactive) {
-        executorMainThread = new Thread(runner);
-        executorMainThread.setName("ImporterExecutorMainThread");
         if (interactive) {
-            executorMainThread.run();
+            runner.run();
         } else {
+            executorMainThread = new Thread(runner);
+            executorMainThread.setName("ImporterExecutorMainThread");
             executorMainThread.start();
         }
     }
