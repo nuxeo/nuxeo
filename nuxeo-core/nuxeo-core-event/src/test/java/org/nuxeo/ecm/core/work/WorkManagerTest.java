@@ -42,6 +42,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.logging.SequenceTracer;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.test.DummyPostCommitEventListener;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
@@ -252,6 +254,26 @@ public class WorkManagerTest {
         assertWorkIdsEquals(Collections.emptyList(), SCHEDULED);
         assertWorkIdsEquals(Collections.emptyList(), RUNNING);
         assertWorkIdsEquals(Collections.emptyList(), null);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.event:test-work-failure-listeners.xml")
+    public void itCanFireWorkFailureEvent() throws Exception {
+        int initCount = DummyPostCommitEventListener.handledCount();
+        int initEvtCount = DummyPostCommitEventListener.eventCount();
+        
+        int duration = 5000; // 2s
+
+        SleepAndFailWork work = new SleepAndFailWork(0, false);
+        service.schedule(work);
+
+        assertTrue(service.awaitCompletion(duration * 3, TimeUnit.MILLISECONDS));
+
+        EventService service = Framework.getService(EventService.class);
+        service.waitForAsyncCompletion();
+        
+        assertEquals(1 + initCount, DummyPostCommitEventListener.handledCount());
+        assertEquals(1 + initEvtCount, DummyPostCommitEventListener.eventCount());
     }
 
     @Test
