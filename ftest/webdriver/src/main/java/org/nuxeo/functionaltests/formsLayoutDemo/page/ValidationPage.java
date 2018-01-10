@@ -84,7 +84,7 @@ public class ValidationPage {
         return body != null && body.contains("Validation done");
     }
 
-    protected LayoutElement getLayout() {
+    public LayoutElement getLayout() {
         return new LayoutElement(driver, "validateForm:nxl_layout_demo_validation_sample");
     }
 
@@ -113,6 +113,36 @@ public class ValidationPage {
         subList.addNewElement();
         subList.getSubWidget("nxw_stringListSubItem", 0).setInputValue("aaa");
     }
+
+    /**
+     * @since 10.1
+     */
+    public void fillLayoutInvalidWithMissingRequiredField() {
+        LayoutElement l = getLayout();
+        l.getWidget("nxw_title").setInputValue(" ");
+        l.getWidget("nxw_groupCode").setInputValue("123");
+        submitWhileTyping();
+        l.getWidget("nxw_manager:nxw_firstname").setInputValue("John");
+        submitWhileTyping();
+        l.getWidget("nxw_manager:nxw_lastname").setInputValue("Doe");
+        JSListWidgetElement slist = l.getWidget("nxw_roles", JSListWidgetElement.class);
+        slist.addNewElement();
+        slist.getSubWidget("nxw_role", 0).setInputValue("myRole");
+        JSListWidgetElement list = l.getWidget("nxw_users", JSListWidgetElement.class);
+        list.addNewElement();
+        list.getSubWidget("nxw_fn", 0).setInputValue("test");
+        list.getSubWidget("nxw_ln", 0).setInputValue("user");
+        JSListWidgetElement llist = l.getWidget("nxw_listOfListsWidget", JSListWidgetElement.class);
+        llist.addNewElement();
+        llist.addNewElement();
+        JSListWidgetElement subList1 = llist.getSubWidget("nxw_stringListItem", 0, JSListWidgetElement.class, false);
+        subList1.addNewElement();
+        subList1.getSubWidget("nxw_stringListSubItem", 0).setInputValue("Aaa");
+        JSListWidgetElement subList2 = llist.getSubWidget("nxw_stringListItem", 1, JSListWidgetElement.class, false);
+        subList2.addNewElement();
+        subList2.getSubWidget("nxw_stringListSubItem", 0).setInputValue("Bbb");
+    }
+
 
     public void fillLayoutValid() {
         LayoutElement l = getLayout();

@@ -18,11 +18,14 @@
  */
 package org.nuxeo.ftest.formsLayoutDemo;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.forms.JSListWidgetElement;
 import org.nuxeo.functionaltests.formsLayoutDemo.page.ValidationPage;
 
 /**
@@ -46,6 +49,26 @@ public class ITLayoutDocumentValidationTest extends AbstractTest {
         page.submit();
         assertTrue(page.hasGlobalError());
         page.checkLayoutInvalid();
+    }
+
+    /**
+     * NXP-23644
+     */
+    @Test
+    @Ignore
+    public void testDocumentValidationInvalidWithRequiredFieldMissing() {
+        ValidationPage page = get(ValidationPage.PAGE_PATH, ValidationPage.class);
+        page.fillLayoutInvalidWithMissingRequiredField();
+        page.submit();
+        assertTrue(page.hasGlobalError());
+        page.submit();
+
+        JSListWidgetElement llist = page.getLayout().getWidget("nxw_listOfListsWidget", JSListWidgetElement.class);
+        JSListWidgetElement firstSubList = llist.getSubWidget("nxw_stringListItem", 0, JSListWidgetElement.class,
+                false);
+
+        // Ensure that the field from the second sublist was not copied and duplicated in the first one
+        assertEquals(1, firstSubList.getRows().size());
     }
 
     @Test
