@@ -105,7 +105,7 @@ public class DiffBlockDefinitionImpl implements DiffBlockDefinition {
         if (name == null && otherName == null) {
             return true;
         }
-        if (name == null && otherName != null || name != null && otherName == null || !name.equals(otherName)) {
+        if (name == null || otherName == null || !name.equals(otherName)) {
             return false;
         }
 

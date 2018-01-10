@@ -954,10 +954,10 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
             // Keep fieldXPaths null if one of the left or right properties is
             // empty
             if (leftContent != null && rightContent != null
-                    && (!StringUtils.isEmpty(leftContent.getFilename())
-                            && !StringUtils.isEmpty(rightContent.getFilename()))
-                    || (!StringUtils.isEmpty(leftContent.getDigest())
-                            && !StringUtils.isEmpty(rightContent.getDigest()))) {
+                    && ((StringUtils.isNotEmpty(leftContent.getFilename())
+                            && StringUtils.isNotEmpty(rightContent.getFilename()))
+                            || (StringUtils.isNotEmpty(leftContent.getDigest())
+                                    && StringUtils.isNotEmpty(rightContent.getDigest())))) {
                 fieldXPaths = new ContentDiffDisplayImpl(propertyName, contentPropertyDiff.getDifferenceType(),
                         isDisplayHtmlConversion, isDisplayTextConversion);
             }
