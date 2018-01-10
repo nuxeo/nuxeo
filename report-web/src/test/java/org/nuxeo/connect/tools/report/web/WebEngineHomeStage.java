@@ -42,7 +42,7 @@ public class WebEngineHomeStage<SELF extends WebEngineHomeStage<SELF>> extends S
     }
 
     SELF I_am_on_the_homepage() {
-        if (homepage.getDriver().getCurrentUrl() != homepage.getConfiguration().getHome()) {
+        if (!homepage.getDriver().getCurrentUrl().equals(homepage.getConfiguration().getHome())) {
             I_navigate_the_homepage();
         }
         WebEngineHomeAssert.assertThat(homepage).isCurrent();
