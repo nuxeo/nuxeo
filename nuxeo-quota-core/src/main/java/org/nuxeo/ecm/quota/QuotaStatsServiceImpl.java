@@ -275,7 +275,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
             return true;
         }
         List<DocumentModel> parents = getParentsInReverseOrder(doc, session);
-        if (parents != null && parents.size() > 0) {
+        if (!parents.isEmpty()) {
             if ("UserWorkspacesRoot".equals(parents.get(0).getType())) {
                 // checks don't apply to personal user workspaces
                 return true;

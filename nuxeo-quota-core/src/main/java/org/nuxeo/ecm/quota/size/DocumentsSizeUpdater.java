@@ -235,7 +235,7 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
         QuotaAware quotaDoc = doc.getAdapter(QuotaAware.class);
         long size = quotaDoc == null ? 0 : quotaDoc.getTotalSize();
         checkQuota(session, doc, size);
-        long versionsSize = quotaDoc.getVersionsSize();
+        long versionsSize = quotaDoc == null ? 0 : quotaDoc.getVersionsSize();
         // add on new ancestors
         updateAncestors(session, doc, size, 0, versionsSize);
         // remove from old ancestors
