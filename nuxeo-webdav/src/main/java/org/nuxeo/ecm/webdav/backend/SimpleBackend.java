@@ -348,7 +348,7 @@ public class SimpleBackend extends AbstractCoreBackend {
             if (!blobUpdated) {
                 source.setPropertyValue("dc:title", destinationName);
                 moveItem(source, source.getParentRef(), destinationName);
-                source = getSession().saveDocument(source);
+                getSession().saveDocument(source);
             }
         }
     }
