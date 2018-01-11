@@ -85,7 +85,7 @@ public final class ArrayUtils {
             return (T[]) Array.newInstance(type, 0);
         }
 
-        final List<T> commonItems = new ArrayList<T>();
+        final List<T> commonItems = new ArrayList<>();
 
         final T[] firstArray = arrays[0];
         commonItems.addAll(Arrays.asList(firstArray));
@@ -97,7 +97,7 @@ public final class ArrayUtils {
 
             final List<T> arrayAsList = Arrays.asList(array);
 
-            final Set<T> itemsToRemove = new HashSet<T>();
+            final Set<T> itemsToRemove = new HashSet<>();
             for (T item : commonItems) {
                 if (!arrayAsList.contains(item)) {
                     itemsToRemove.add(item);

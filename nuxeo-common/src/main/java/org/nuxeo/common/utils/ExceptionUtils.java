@@ -51,12 +51,12 @@ public final class ExceptionUtils {
     public static Throwable getRootCause(Throwable throwable) {
         // This code is taken from Apache commons utils org.apache.commons.lang3.exception.ExceptionUtils
         final List<Throwable> list = getThrowableList(throwable);
-        return list.size() < 2 ? null : (Throwable) list.get(list.size() - 1);
+        return list.size() < 2 ? null : list.get(list.size() - 1);
     }
 
     public static List<Throwable> getThrowableList(Throwable throwable) {
         final List<Throwable> list = new ArrayList<>();
-        while (throwable != null && list.contains(throwable) == false) {
+        while (throwable != null && !list.contains(throwable)) {
             list.add(throwable);
             throwable = getCause(throwable);
         }

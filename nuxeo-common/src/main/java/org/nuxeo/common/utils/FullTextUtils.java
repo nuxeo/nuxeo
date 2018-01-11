@@ -39,8 +39,7 @@ public class FullTextUtils {
             + "i in is it of on or that the this to was what when where who will with "
             + "car donc est il ils je la le les mais ni nous or ou pour tu un une vous " + "www com net org";
 
-    public static final Set<String> stopWords = new HashSet<String>(Arrays.asList(StringUtils.split(STOP_WORDS, ' ',
-            false)));
+    public static final Set<String> stopWords = new HashSet<>(Arrays.asList(StringUtils.split(STOP_WORDS, ' ', false)));
 
     public static final String UNACCENTED = "aaaaaaaceeeeiiii\u00f0nooooo\u00f7ouuuuy\u00fey";
 
@@ -63,7 +62,7 @@ public class FullTextUtils {
         if (string == null) {
             return Collections.emptySet();
         }
-        Set<String> set = new LinkedHashSet<String>();
+        Set<String> set = new LinkedHashSet<>();
         for (String word : wordPattern.split(string)) {
             String w = parseWord(word, removeDiacritics);
             if (w != null) {

@@ -58,32 +58,20 @@ public final class JarUtils {
     }
 
     public static Manifest getDirectoryManifest(File file) throws IOException {
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(new File(file, "META-INF/MANIFEST.MF"));
+        try (FileInputStream fis = new FileInputStream(new File(file, "META-INF/MANIFEST.MF"));) {
             return new Manifest(fis);
-        } finally {
-            if (fis != null) {
-                fis.close();
-            }
         }
     }
 
     public static Manifest getJarManifest(File file) throws IOException {
-        JarFile jar = null;
-        try {
-            jar = new JarFile(file);
+        try (JarFile jar = new JarFile(file)) {
             return jar.getManifest();
-        } finally {
-            if (jar != null) {
-                jar.close();
-            }
         }
     }
 
     public static Manifest getManifest(URL url) {
-        try {
-            return new JarFile(new File(url.getFile())).getManifest();
+        try (JarFile jarFile = new JarFile(new File(url.getFile()))) {
+            return jarFile.getManifest();
         } catch (IOException e) {
             return null;
         }

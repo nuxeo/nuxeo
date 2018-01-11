@@ -114,9 +114,7 @@ public class URLStreamHandlerFactoryInstaller {
                 factoryField.set(null, null);
                 resetURLStreamHandlers();
             }
-        } catch (IllegalArgumentException e) {
-            // ignore and continue closing the framework
-        } catch (IllegalAccessException e) {
+        } catch (IllegalArgumentException | IllegalAccessException e) {
             // ignore and continue closing the framework
         }
     }
@@ -145,9 +143,7 @@ public class URLStreamHandlerFactoryInstaller {
                 // reinstall factory (to flush cache)
                 flush(factoryField);
             }
-        } catch (IllegalArgumentException e) {
-            // ignore and continue closing the framework
-        } catch (IllegalAccessException e) {
+        } catch (IllegalArgumentException | IllegalAccessException e) {
             // ignore and continue closing the framework
         }
 
@@ -173,14 +169,13 @@ public class URLStreamHandlerFactoryInstaller {
     public static void resetURLStreamHandlers() {
         Field handlersField = getStaticField(URL.class, Hashtable.class);
         if (handlersField != null) {
-            Hashtable<?, ?> handlers;
             try {
-                handlers = (Hashtable<?, ?>) handlersField.get(null);
+                Hashtable<?, ?> handlers = (Hashtable<?, ?>) handlersField.get(null);
+                if (handlers != null) {
+                    handlers.clear();
+                }
             } catch (IllegalAccessException e) {
                 throw new IllegalArgumentException("Cannot clear URL handlers cache", e);
-            }
-            if (handlers != null) {
-                handlers.clear();
             }
         }
     }
@@ -212,7 +207,7 @@ public class URLStreamHandlerFactoryInstaller {
 
     public static class FactoryStack implements URLStreamHandlerFactory {
 
-        final ArrayList<URLStreamHandlerFactory> factories = new ArrayList<URLStreamHandlerFactory>();
+        final ArrayList<URLStreamHandlerFactory> factories = new ArrayList<>();
 
         @Override
         public URLStreamHandler createURLStreamHandler(String protocol) {

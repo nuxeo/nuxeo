@@ -43,7 +43,7 @@ public class FileNamePattern {
         if (pattern == null || pattern.length() == 0) {
             return;
         }
-        List<char[]> result = new ArrayList<char[]>();
+        List<char[]> result = new ArrayList<>();
         StringBuffer buf = new StringBuffer();
         char[] chars = pattern.toCharArray();
         char c = chars[0];

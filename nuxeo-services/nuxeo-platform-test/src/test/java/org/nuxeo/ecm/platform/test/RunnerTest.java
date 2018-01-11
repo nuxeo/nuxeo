@@ -22,17 +22,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import javax.inject.Inject;
-import javax.naming.InitialContext;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.server.DataSource;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.runtime.datasource.DataSourceHelper;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -60,13 +56,6 @@ public class RunnerTest {
     public void testLocalResource() {
         DocumentType dt = sm.getDocumentType("MyFolder");
         assertEquals("MyFolder", dt.getName());
-    }
-
-    @Test
-    @Ignore
-    public void testDatasourceBinding() throws Exception {
-        DataSource ds = (DataSource) new InitialContext().lookup(DataSourceHelper.getDataSourceJNDIName("nxsqldirectory"));
-        assertNotNull(ds);
     }
 
     @Test

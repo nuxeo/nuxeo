@@ -22,6 +22,8 @@
 
 package org.nuxeo.common.utils;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -41,12 +43,10 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
 
@@ -179,46 +179,6 @@ public class TextTemplate {
     }
 
     /**
-     * @deprecated Since 7.4. Use {@link #processText(CharSequence)} instead.
-     */
-    @Deprecated
-    public String process(CharSequence text) {
-        return processText(text);
-    }
-
-    /**
-     * @deprecated Since 7.4. Use {@link #processText(InputStream)} instead.
-     */
-    @Deprecated
-    public String process(InputStream in) throws IOException {
-        return processText(in);
-    }
-
-    /**
-     * @deprecated Since 7.4. Use {@link #processText(InputStream, OutputStream)} instead.
-     */
-    @Deprecated
-    public void process(InputStream in, OutputStream out) throws IOException {
-        processText(in, out);
-    }
-
-    /**
-     * @param processText if true, text is processed for parameters replacement
-     * @deprecated Since 7.4. Use {@link #processText(InputStream, OutputStream)} (if {@code processText}) or
-     *             {@link IOUtils#copy(InputStream, OutputStream)}
-     */
-    @Deprecated
-    public void process(InputStream is, OutputStream os, boolean processText) throws IOException {
-        if (processText) {
-            String text = IOUtils.toString(is, Charsets.UTF_8);
-            text = processText(text);
-            os.write(text.getBytes());
-        } else {
-            IOUtils.copy(is, os);
-        }
-    }
-
-    /**
      * That method is not recursive. It processes the given text only once.
      *
      * @param props CryptoProperties containing the variable values
@@ -230,7 +190,6 @@ public class TextTemplate {
         Matcher m = PATTERN.matcher(text);
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
-            // newVarsValue == ${[#]embeddedVar[:=default]}
             String embeddedVar = m.group(PATTERN_GROUP_VAR);
             String value = props.getProperty(embeddedVar, keepEncryptedAsVar);
             if (value == null) {
@@ -261,9 +220,7 @@ public class TextTemplate {
      * unescape variables
      */
     protected Properties unescape(Properties props) {
-        for (Object key : props.keySet()) {
-            props.put(key, unescape((String) props.get(key)));
-        }
+        props.replaceAll((k, v) -> unescape((String) v));
         return props;
     }
 
@@ -312,14 +269,6 @@ public class TextTemplate {
     }
 
     /**
-     * @deprecated Since 7.4. Use {@link #processText(String)}
-     */
-    @Deprecated
-    public String processText(CharSequence text) {
-        return processText(text.toString());
-    }
-
-    /**
      * @since 7.4
      */
     public String processText(String text) {
@@ -346,14 +295,14 @@ public class TextTemplate {
     }
 
     public String processText(InputStream in) throws IOException {
-        String text = IOUtils.toString(in, Charsets.UTF_8);
+        String text = IOUtils.toString(in, UTF_8);
         return processText(text);
     }
 
     public void processText(InputStream is, OutputStream os) throws IOException {
-        String text = IOUtils.toString(is, Charsets.UTF_8);
+        String text = IOUtils.toString(is, UTF_8);
         text = processText(text);
-        os.write(text.getBytes(Charsets.UTF_8));
+        os.write(text.getBytes(UTF_8));
     }
 
     /**
@@ -506,15 +455,8 @@ public class TextTemplate {
                     processFreemarker(in, out);
                 } else if (processAsText) {
                     log.debug("Process as Text " + in.getPath());
-                    InputStream is = null;
-                    OutputStream os = null;
-                    try {
-                        is = new FileInputStream(in);
-                        os = new FileOutputStream(out);
+                    try (InputStream is = new FileInputStream(in); OutputStream os = new FileOutputStream(out)) {
                         processText(is, os);
-                    } finally {
-                        IOUtils.closeQuietly(is);
-                        IOUtils.closeQuietly(os);
                     }
                 } else {
                     log.debug("Process as copy " + in.getPath());
@@ -538,17 +480,6 @@ public class TextTemplate {
             }
         }
         return newFiles;
-    }
-
-    /**
-     * @param extensionsList comma-separated list of files extensions to parse
-     * @deprecated Since 7.4. Use {@link #setTextParsingExtensions(String)} instead.
-     * @see #setTextParsingExtensions(String)
-     * @see #setFreemarkerParsingExtensions(String)
-     */
-    @Deprecated
-    public void setParsingExtensions(String extensionsList) {
-        setTextParsingExtensions(extensionsList);
     }
 
     /**

@@ -26,14 +26,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
-import net.sf.jmimemagic.MagicDetector;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.Framework;
+
+import net.sf.jmimemagic.MagicDetector;
 
 public class XlsMimetypeSniffer implements MagicDetector {
 
@@ -73,7 +72,7 @@ public class XlsMimetypeSniffer implements MagicDetector {
 
         try {
             file = Framework.createTempFile("magicdetector", ".xls");
-            FileUtils.writeFile(file, data);
+            FileUtils.writeByteArrayToFile(file, data);
             mimetypes = guessExcel(file);
         } catch (IOException e) {
             log.error(e, e);

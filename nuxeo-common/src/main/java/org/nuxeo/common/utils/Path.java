@@ -44,13 +44,6 @@ public class Path implements Serializable {
      */
     private static final char SEPARATOR = '/';
 
-    /** Constant empty string value. */
-    private static final String EMPTY_STRING = ""; //$NON-NLS-1$
-
-    /** Constant value containing the empty path with no device. */
-    private static final Path EMPTY = new Path(EMPTY_STRING);
-
-    //
     private static final int HASH_MASK = ~HAS_TRAILING;
 
     /** Constant root path string (<code>"/"</code>). */
@@ -81,9 +74,6 @@ public class Path implements Serializable {
 
     /**
      * Optimized constructor - no validations on segments are done.
-     *
-     * @param segments
-     * @param separators
      */
     private Path(String[] segments, int separators) {
         // no segment validations are done for performance reasons
@@ -644,7 +634,7 @@ public class Path implements Serializable {
     public String toString() {
         final int resultSize = computeLength();
         if (resultSize <= 0) {
-            return EMPTY_STRING;
+            return "";
         }
         char[] result = new char[resultSize];
         int offset = 0;
@@ -689,11 +679,10 @@ public class Path implements Serializable {
      */
     public static String getFileNameFromPath(String iconPath) {
         String iconName;
-        // String fileSeparator = System.getProperty("file.separator");
 
         // temporary not working with the file separator, only with /
         int firstCharOfIconName = iconPath.lastIndexOf(SEPARATOR);
-        int lastCharOfIconName = iconPath.lastIndexOf(".");
+        int lastCharOfIconName = iconPath.lastIndexOf('.');
         if (firstCharOfIconName == -1) {
             iconName = iconPath;
         } else {

@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.query.sql.model;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 
 import com.google.common.collect.Iterables;
@@ -27,7 +28,7 @@ import com.google.common.collect.Iterables;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class FromList extends LinkedHashMap<String, String> {
+public class FromList extends LinkedHashMap<String, String> implements Serializable {
 
     private static final long serialVersionUID = -1931385427413643944L;
 
