@@ -71,7 +71,7 @@ public class FileVersion implements Comparable<FileVersion> {
             // special case for caja-r1234 versions
             value = value.substring(1);
         }
-        List<Integer> versions = new ArrayList<Integer>();
+        List<Integer> versions = new ArrayList<>();
         this.tmpVersion = value;
         do {
             if (".".equals(separator)) {

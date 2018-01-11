@@ -24,7 +24,7 @@ package org.nuxeo.runtime.deployment.preprocessor.install.commands;
 import java.io.File;
 import java.io.IOException;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.runtime.deployment.preprocessor.install.Command;
 import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
@@ -61,7 +61,7 @@ public class MkfileCommand implements Command {
         }
 
         if (content != null && content.length > 0) {
-            FileUtils.writeFile(file, content);
+            FileUtils.writeByteArrayToFile(file, content);
         } else {
             file.createNewFile();
         }

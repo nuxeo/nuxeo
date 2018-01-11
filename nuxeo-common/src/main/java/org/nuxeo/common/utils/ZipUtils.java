@@ -26,18 +26,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.net.URL;
-import java.nio.file.CopyOption;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.function.Function;
@@ -47,9 +38,9 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author bstefanescu
@@ -90,8 +81,8 @@ public final class ZipUtils {
             out.putNextEntry(zentry);
             out.closeEntry();
             File[] files = file.listFiles();
-            for (int i = 0, len = files.length; i < len; i++) {
-                _zip(entryName + files[i].getName(), files[i], out);
+            for (File child : files) {
+                _zip(entryName + child.getName(), child, out);
             }
         } else {
             InputStream in = null;
@@ -107,33 +98,31 @@ public final class ZipUtils {
     }
 
     public static void _zip(File[] files, ZipOutputStream out, String prefix) throws IOException {
-        if (prefix != null) {
-            int len = prefix.length();
-            if (len == 0) {
-                prefix = null;
-            } else if (prefix.charAt(len - 1) != '/') {
-                prefix += '/';
-            }
-        }
-        for (int i = 0, len = files.length; i < len; i++) {
-            String name = prefix != null ? prefix + files[i].getName() : files[i].getName();
-            _zip(name, files[i], out);
+        String normalizedPrefix = normalizePrefix(prefix);
+        for (File file : files) {
+            String name = normalizedPrefix + file.getName();
+            _zip(name, file, out);
         }
     }
 
     public static void zip(File file, OutputStream out, String prefix) throws IOException {
-        if (prefix != null) {
-            int len = prefix.length();
-            if (len == 0) {
-                prefix = null;
-            } else if (prefix.charAt(len - 1) != '/') {
-                prefix += '/';
-            }
-        }
-        String name = prefix != null ? prefix + file.getName() : file.getName();
+        prefix = normalizePrefix(prefix);
+        String name = normalizePrefix(prefix) + file.getName();
         try (ZipOutputStream zout = new ZipOutputStream(out)) {
             _zip(name, file, zout);
         }
+    }
+
+    /**
+     * @return the empty string if prefix is null or empty, otherwise append a '/' at the end if needed
+     */
+    protected static String normalizePrefix(String prefix) {
+        String result = StringUtils.defaultString(prefix);
+        int len = result.length();
+        if (len > 0 && result.charAt(len - 1) != '/') {
+            result += '/';
+        }
+        return result;
     }
 
     public static void zip(File[] files, OutputStream out, String prefix) throws IOException {
@@ -325,7 +314,7 @@ public final class ZipUtils {
     @Deprecated
     public static String getEntryContentAsString(File file, String entryName) throws IOException {
         try (InputStream resultStream = getEntryContentAsStream(file, entryName)) {
-            return IOUtils.toString(resultStream, Charsets.UTF_8);
+            return IOUtils.toString(resultStream, StandardCharsets.UTF_8);
         }
     }
 
@@ -351,7 +340,7 @@ public final class ZipUtils {
      * @return The list of entries
      */
     public static List<String> getEntryNames(File file) throws IOException {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         try (ZipFile zip = new ZipFile(file)) {
             Enumeration<? extends ZipEntry> entries = zip.entries();
             while (entries.hasMoreElements()) {
@@ -388,7 +377,7 @@ public final class ZipUtils {
 
     public static String getEntryContentAsString(InputStream stream, String searchedEntryName) throws IOException {
         try (InputStream resultStream = getEntryContentAsStream(stream, searchedEntryName)) {
-            return IOUtils.toString(resultStream, Charsets.UTF_8);
+            return IOUtils.toString(resultStream, StandardCharsets.UTF_8);
         }
     }
 
@@ -400,7 +389,7 @@ public final class ZipUtils {
 
     public static List<String> getEntryNames(InputStream stream) throws IOException {
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         try (ZipInputStream zip = new ZipInputStream(stream)) {
             while (zip.available() == 1) {
                 ZipEntry entry = zip.getNextEntry();
@@ -423,7 +412,7 @@ public final class ZipUtils {
 
     public static String getEntryContentAsString(URL url, String entryName) throws IOException {
         try (InputStream resultStream = getEntryContentAsStream(url, entryName)) {
-            return IOUtils.toString(resultStream, Charsets.UTF_8);
+            return IOUtils.toString(resultStream, StandardCharsets.UTF_8);
         }
     }
 

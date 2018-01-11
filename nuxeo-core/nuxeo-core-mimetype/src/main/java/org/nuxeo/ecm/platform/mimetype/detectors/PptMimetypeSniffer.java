@@ -25,14 +25,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 
-import net.sf.jmimemagic.MagicDetector;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hslf.usermodel.HSLFSlideShow;
-
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.Framework;
+
+import net.sf.jmimemagic.MagicDetector;
 
 public class PptMimetypeSniffer implements MagicDetector {
 
@@ -72,7 +71,7 @@ public class PptMimetypeSniffer implements MagicDetector {
 
         try {
             file = Framework.createTempFile("magicdetector", ".ppt");
-            FileUtils.writeFile(file, data);
+            FileUtils.writeByteArrayToFile(file, data);
             mimetypes = guessPowerpoint(file);
         } catch (IOException e) {
             log.error(e, e);

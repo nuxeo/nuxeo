@@ -20,26 +20,16 @@
  */
 package org.nuxeo.common.utils;
 
-import java.io.BufferedOutputStream;
-import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.zip.ZipInputStream;
 
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -52,177 +42,11 @@ public final class FileUtils {
     }
 
     /**
-     * @deprecated since 9.1 seems unused
-     */
-    @Deprecated
-    public static void safeClose(Closeable stream) {
-        try {
-            stream.close();
-        } catch (IOException e) {
-            // do nothing
-        }
-    }
-
-    /**
-     * @deprecated since 9.1 use {@link IOUtils#copy(InputStream, OutputStream)} instead.
-     */
-    @Deprecated
-    public static void copy(InputStream in, OutputStream out) throws IOException {
-        IOUtils.copy(in, out);
-    }
-
-    /**
-     * @deprecated since 9.1 use {@link IOUtils#toByteArray(URL)} instead.
-     */
-    @Deprecated
-    public static byte[] readBytes(URL url) throws IOException {
-        return IOUtils.toByteArray(url);
-    }
-
-    /**
-     * @deprecated since 9.1 use {@link IOUtils#toByteArray(InputStream)} instead.
-     */
-    @Deprecated
-    public static byte[] readBytes(InputStream in) throws IOException {
-        return IOUtils.toByteArray(in);
-    }
-
-    /**
-     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#readLines(File)} instead.
-     */
-    @Deprecated
-    public static String readFile(File file) throws IOException {
-        return org.apache.commons.io.FileUtils.readFileToString(file, Charsets.UTF_8);
-    }
-
-    /**
-     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#readLines(File)} instead.
-     */
-    @Deprecated
-    public static List<String> readLines(File file) throws IOException {
-        return org.apache.commons.io.FileUtils.readLines(file);
-    }
-
-    /**
-     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#writeLines(File, Collection)} instead.
-     */
-    @Deprecated
-    public static void writeLines(File file, List<String> lines) throws IOException {
-        org.apache.commons.io.FileUtils.writeLines(file, lines);
-    }
-
-    /**
-     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#readFileToByteArray(File)} instead.
-     */
-    @Deprecated
-    public static byte[] readBytes(File file) throws IOException {
-        return org.apache.commons.io.FileUtils.readFileToByteArray(file);
-    }
-
-    /**
-     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#writeByteArrayToFile(File, byte[])} instead.
-     */
-    @Deprecated
-    public static void writeFile(File file, byte[] buf) throws IOException {
-        org.apache.commons.io.FileUtils.writeByteArrayToFile(file, buf);
-    }
-
-    /**
-     * @since 5.5
-     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#writeByteArrayToFile(File, byte[], boolean)}
-     *             instead.
-     */
-    @Deprecated
-    public static void writeFile(File file, byte[] buf, boolean append) throws IOException {
-        org.apache.commons.io.FileUtils.writeByteArrayToFile(file, buf, append);
-    }
-
-    /**
-     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#writeStringToFile(File, String)} instead.
-     */
-    @Deprecated
-    public static void writeFile(File file, String buf) throws IOException {
-        org.apache.commons.io.FileUtils.writeStringToFile(file, buf);
-    }
-
-    /**
-     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#writeStringToFile(File, String, boolean)}
-     *             instead.
-     * @since 5.5
-     */
-    @Deprecated
-    public static void writeFile(File file, String buf, boolean append) throws IOException {
-        org.apache.commons.io.FileUtils.writeStringToFile(file, buf, append);
-    }
-
-    /**
-     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#copyURLToFile(URL, File)} instead.
-     */
-    @Deprecated
-    public static void download(URL url, File file) throws IOException {
-        org.apache.commons.io.FileUtils.copyURLToFile(url, file);
-    }
-
-    /**
-     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#copyInputStreamToFile(InputStream, File)}
-     *             instead. <strong>Note:</strong> that proposed method close the stream, could lead to issues with some
-     *             input stream (like {@link ZipInputStream} which uses a global cursor on zip file stream when
-     *             iterating on files in it).
-     */
-    @Deprecated
-    public static void copyToFile(InputStream in, File file) throws IOException {
-        org.apache.commons.io.FileUtils.copyInputStreamToFile(in, file);
-    }
-
-    /**
-     * @deprecated since 9.1 Use {@link IOUtils#copy(InputStream, OutputStream)} instead. See
-     *             {@link #append(InputStream, File, boolean)} for more information.
-     */
-    @Deprecated
-    public static void append(File src, File dst) throws IOException {
-        append(src, dst, false);
-    }
-
-    /**
-     * @deprecated since 9.1 Use {@link IOUtils#copy(InputStream, OutputStream)} instead. See
-     *             {@link #append(InputStream, File, boolean)} for more information.
-     */
-    @Deprecated
-    public static void append(File src, File dst, boolean appendNewLine) throws IOException {
-        try (InputStream in = new FileInputStream(src)) {
-            append(in, dst, appendNewLine);
-        }
-    }
-
-    /**
-     * @deprecated since 9.1 Use {@link IOUtils#copy(InputStream, OutputStream)} instead. See
-     *             {@link #append(InputStream, File, boolean)} for more information.
-     */
-    @Deprecated
-    public static void append(InputStream in, File file) throws IOException {
-        append(in, file, false);
-    }
-
-    /**
-     * @deprecated since 9.1 Use {@link IOUtils#copy(InputStream, OutputStream)} instead.
-     */
-    @Deprecated
-    public static void append(InputStream in, File file, boolean appendNewLine) throws IOException {
-        try (OutputStream out = new BufferedOutputStream(new FileOutputStream(file, true))) {
-            if (appendNewLine) {
-                out.write(System.getProperty("line.separator").getBytes());
-            }
-            IOUtils.copy(in, out);
-        }
-    }
-
-    /**
      * Copies source to destination. If source and destination are the same, does nothing. Both single files and
      * directories are handled.
      *
      * @param src the source file or directory
      * @param dst the destination file or directory
-     * @throws IOException
      */
     public static void copy(File src, File dst) throws IOException {
         if (src.equals(dst)) {
@@ -241,6 +65,11 @@ public final class FileUtils {
         }
     }
 
+    /**
+     * @deprecated since 10.1 - use {@link org.apache.commons.io.FileUtils#copyFile(File, File)} or
+     *             {@link org.apache.commons.io.FileUtils#copyFileToDirectory(File, File)} instead.
+     */
+    @Deprecated
     public static void copyFile(File src, File dst) throws IOException {
         if (dst.isDirectory()) {
             dst = new File(dst, src.getName());
@@ -255,8 +84,9 @@ public final class FileUtils {
      *
      * @param src the source directory
      * @param dst the destination directory
-     * @throws IOException
+     * @deprecated since 10.1 - waiting ReloadComponent to be cleaned
      */
+    @Deprecated
     public static void copyTree(File src, File dst) throws IOException {
         if (src.isFile()) {
             copyFile(src, dst);
@@ -274,6 +104,10 @@ public final class FileUtils {
         }
     }
 
+    /**
+     * @deprecated since 10.1 - seems unused
+     */
+    @Deprecated
     public static void copyTree(File src, File dst, PathFilter filter) throws IOException {
         copyTree(src, dst, new Path("/"), filter);
     }
@@ -445,34 +279,6 @@ public final class FileUtils {
     }
 
     /**
-     * @deprecated since 9.1 Use {@link IOUtils#closeQuietly(InputStream)} instead or {@link AutoCloseable} feature.
-     */
-    @Deprecated
-    public static void close(InputStream in) {
-        if (in != null) {
-            try {
-                in.close();
-            } catch (IOException e) {
-                log.error(e);
-            }
-        }
-    }
-
-    /**
-     * @deprecated since 9.1 Use {@link IOUtils#closeQuietly(InputStream)} instead or {@link AutoCloseable} feature.
-     */
-    @Deprecated
-    public static void close(OutputStream out) {
-        if (out != null) {
-            try {
-                out.close();
-            } catch (IOException e) {
-                log.error(e);
-            }
-        }
-    }
-
-    /**
      * Create a file handler (this doesn't create a real file) given a file URI. This method can be used to create files
      * from invalid URL strings (e.g. containing spaces ..)
      *
@@ -488,14 +294,6 @@ public final class FileUtils {
         } catch (URISyntaxException e) {
             return new File(url.getPath());
         }
-    }
-
-    /**
-     * @deprecated since 9.1 Use {@link IOUtils#readLines(InputStream)} instead.
-     */
-    @Deprecated
-    public static List<String> readLines(InputStream in) throws IOException {
-        return IOUtils.readLines(in);
     }
 
     /**

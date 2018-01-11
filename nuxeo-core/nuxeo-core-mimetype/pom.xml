@@ -23,6 +23,10 @@
     </dependency>
 
     <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
       <groupId>jmimemagic</groupId>
       <artifactId>jmimemagic</artifactId>
     </dependency>

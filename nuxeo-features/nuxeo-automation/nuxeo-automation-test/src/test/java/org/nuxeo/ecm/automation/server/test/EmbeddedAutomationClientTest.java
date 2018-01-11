@@ -392,7 +392,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         mailProperties.add(String.format("mail.smtp.port = %s", "2525"));
         mailProperties.add(String.format("mail.smtp.connectiontimeout = %s", "1000"));
         mailProperties.add(String.format("mail.smtp.timeout = %s", "1000"));
-        FileUtils.writeLines(file, mailProperties);
+        org.apache.commons.io.FileUtils.writeLines(file, mailProperties);
 
         Document rootDoc = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
         assertNotNull(rootDoc);

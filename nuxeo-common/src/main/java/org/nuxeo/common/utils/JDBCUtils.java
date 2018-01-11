@@ -95,13 +95,7 @@ public class JDBCUtils {
      */
     public static Connection getConnection(final String url, final String user, final String password)
             throws SQLException {
-        return callWithRetry(new Callable<Connection>() {
-
-            @Override
-            public Connection call() throws SQLException {
-                return DriverManager.getConnection(url, user, password);
-            }
-        });
+        return callWithRetry(() -> DriverManager.getConnection(url, user, password));
     }
 
     /**
@@ -111,13 +105,7 @@ public class JDBCUtils {
      * @return a connection to the data source
      */
     public static Connection getConnection(final DataSource dataSource) throws SQLException {
-        return callWithRetry(new Callable<Connection>() {
-
-            @Override
-            public Connection call() throws SQLException {
-                return dataSource.getConnection();
-            }
-        });
+        return callWithRetry(dataSource::getConnection);
     }
 
     /**
@@ -127,13 +115,7 @@ public class JDBCUtils {
      * @return a XA connection to the XA data source
      */
     public static XAConnection getXAConnection(final XADataSource xaDataSource) throws SQLException {
-        return callWithRetry(new Callable<XAConnection>() {
-
-            @Override
-            public XAConnection call() throws SQLException {
-                return xaDataSource.getXAConnection();
-            }
-        });
+        return callWithRetry(xaDataSource::getXAConnection);
     }
 
 }

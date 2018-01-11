@@ -18,8 +18,8 @@
  */
 package org.nuxeo.common.utils;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 
 /**
  * Yet Another variable resolver.
@@ -28,46 +28,6 @@ import java.util.Map;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Vars {
-
-    public static interface Resolver {
-        String get(String key);
-    }
-
-    public static Map<String, String> expand(final Map<String, String> vars) {
-        return expand(vars, null);
-    }
-
-    public static Map<String, String> expand(final Map<String, String> vars, final Resolver resolver) {
-        final Map<String, String> result = new HashMap<String, String>(vars.size());
-        Resolver resolver2 = new Resolver() {
-            @Override
-            public String get(String key) {
-                String v = result.get(key);
-                if (v == null) {
-                    v = vars.get(key);
-                    if (v == null && resolver != null) {
-                        return resolver.get(key);
-                    }
-                }
-                return v;
-            }
-        };
-        for (Map.Entry<?, ?> entry : vars.entrySet()) {
-            String key = (String) entry.getKey();
-            String v = (String) entry.getValue();
-            if (v == null) {
-                result.put(key, null);
-            } else {
-                String rv = expand(v, resolver2);
-                while (!rv.equals(v)) {
-                    v = rv;
-                    rv = expand(v, resolver2);
-                }
-                result.put(key, rv);
-            }
-        }
-        return result;
-    }
 
     public static String expand(String expression, final Map<?, ?> vars) {
         int s = expression.indexOf("${", 0);
@@ -78,28 +38,13 @@ public class Vars {
         if (e == -1) {
             return expression;
         }
-        return expand(expression, 0, s, e, new Resolver() {
-            @Override
-            public String get(String key) {
-                Object v = vars.get(key);
-                return v != null ? v.toString() : null;
-            }
+        return expand(expression, 0, s, e, key -> {
+            Object v = vars.get(key);
+            return v != null ? v.toString() : null;
         });
     }
 
-    public static String expand(String expression, Resolver resolver) {
-        int s = expression.indexOf("${", 0);
-        if (s == -1) {
-            return expression;
-        }
-        int e = expression.indexOf('}', s + 2);
-        if (e == -1) {
-            return expression;
-        }
-        return expand(expression, 0, s, e, resolver);
-    }
-
-    private static String expand(String expression, int offset, int s, int e, Resolver resolver) {
+    private static String expand(String expression, int offset, int s, int e, UnaryOperator<String> resolver) {
         StringBuilder buf = new StringBuilder();
 
         do {
@@ -130,19 +75,19 @@ public class Vars {
         return buf.toString();
     }
 
-    private final static String resolveVar(String var, Resolver resolver) {
+    private static String resolveVar(String var, UnaryOperator<String> resolver) {
         String key = var;
         int i = var.indexOf('?');
         if (i > -1) {
             key = key.substring(0, i);
-            Object v = resolver.get(key);
+            Object v = resolver.apply(key);
             if (v != null) {
                 return v.toString();
             } else {
                 return var.substring(i + 1);
             }
         }
-        Object v = resolver.get(key);
+        Object v = resolver.apply(key);
         return v != null ? v.toString() : null;
     }
 
