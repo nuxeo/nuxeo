@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -148,8 +147,6 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
             } catch (NuxeoException e) {
                 e.addInfo("Error when executing worker: " + getTitle());
                 throw e;
-            } catch (OperationException e) {
-                throw new NuxeoException("Error when executing worker: " + getTitle(), e);
             }
         }
 

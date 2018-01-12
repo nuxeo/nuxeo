@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.routing.core.audit;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -75,7 +76,8 @@ public final class RoutingAuditHelper {
             filterMap.put(BuiltinLogEntryData.LOG_EVENT_ID, eventIdFilterMapEntry);
 
             List<LogEntry> logEntries = logs.getLogEntriesFor(elementId, filterMap, true);
-            for (LogEntry logEntry : logEntries) {
+            if (logEntries.size() > 0) {
+                LogEntry logEntry = logEntries.get(0);
                 Date start = logEntry.getEventDate();
                 return new Date().getTime() - start.getTime();
             }

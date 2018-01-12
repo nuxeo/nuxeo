@@ -568,7 +568,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
                 saveDocument();
             } catch (DocumentRouteException e) {
                 throw e;
-            } catch (OperationException | RuntimeException e) {
+            } catch (RuntimeException e) {
                 throw new DocumentRouteException("Error evaluating condition: " + t.condition, e);
             }
         }
@@ -610,7 +610,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
             }
         } catch (DocumentRouteException e) {
             throw e;
-        } catch (OperationException | RuntimeException e) {
+        } catch (RuntimeException e) {
             throw new DocumentRouteException("Error evaluating task assignees: " + taskAssigneesVar, e);
         }
         return taskAssignees;
@@ -720,7 +720,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
             }
         } catch (DocumentRouteException e) {
             throw e;
-        } catch (RuntimeException | OperationException e) {
+        } catch (RuntimeException e) {
             throw new DocumentRouteException("Error evaluating task due date: " + taskDueDateExpr, e);
         }
     }
@@ -753,8 +753,6 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         try (OperationContext context = getExecutionContext(getSession())) {
             String res = valueOrExpression(String.class, subRouteModelExpr, context, "Sub-workflow id expression");
             return StringUtils.defaultIfBlank(res, null);
-        } catch (OperationException e) {
-            throw new DocumentRouteException("Cannot get sub route id for " + getId(), e);
         }
     }
 
@@ -798,8 +796,6 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
                         "Sub-workflow variable expression");
                 map.put(key, value);
             }
-        } catch (OperationException e) {
-            throw new DocumentRouteException("Cannot get initial variables for " + getId(), e);
         }
         return map;
     }
@@ -881,7 +877,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
                 }
             } catch (DocumentRouteException e) {
                 throw e;
-            } catch (RuntimeException | OperationException e) {
+            } catch (RuntimeException e) {
                 throw new DocumentRouteException("Error evaluating condition: " + rule.condition, e);
             }
         }
