@@ -38,6 +38,8 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
@@ -48,6 +50,8 @@ import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
  * @since 8.3
  */
 final class MarkLogicStateDeserializer {
+
+    private static final Log log = LogFactory.getLog(MarkLogicStateDeserializer.class);
 
     private static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
 
@@ -79,15 +83,13 @@ final class MarkLogicStateDeserializer {
                 }
             }
         } catch (XMLStreamException e) {
-            // TODO change that
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         } finally {
             if (xmler != null) {
                 try {
                     xmler.close();
                 } catch (XMLStreamException e) {
-                    // TODO change that
-                    throw new RuntimeException(e);
+                    log.error(e); // don't rethrow inside finally
                 }
             }
         }
